@@ -226,6 +226,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2248941474044011069">Jelszavai titkosításra kerülnek az eszközön, mielőtt elmenti őket a rendszer a Google Jelszókezelőbe</translation>
 <translation id="2249635629516220541">Megszabhatja, hogy a webhelyek milyen adatokat használhassanak, amikor hirdetéseket jelenítnek meg Önnek</translation>
 <translation id="2259659629660284697">Jelszavak exportálása…</translation>
+<translation id="2276231040576210443">A <ph name="BEGIN_LINK1" />beállítások<ph name="END_LINK1" /> között bármikor módosíthatja a szinkronizálni kívánt elemeket. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="2276696007612801991">Jelszavai ellenőrzéséhez jelentkezzen be Google-fiókjába</translation>
 <translation id="2278052315791335171">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Számlázási cím</translation>
@@ -1224,6 +1225,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7596558890252710462">Operációs rendszer</translation>
 <translation id="7605594153474022051">A szinkronizálás nem működik.</translation>
 <translation id="7612619742409846846">Bejelentkezve a Google rendszerébe mint</translation>
+<translation id="7612989789287281429">Bejelentkezés…</translation>
 <translation id="7616551326690708776">Válasszon sablont a kiemeléshez.</translation>
 <translation id="7619072057915878432">A következő fájl letöltése hálózati hibák miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
 <translation id="7626032353295482388">A Chrome üdvözli Önt!</translation>
@@ -1493,6 +1495,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8970887620466824814">Hiba történt.</translation>
 <translation id="8972098258593396643">Letölti az alapértelmezett mappába?</translation>
 <translation id="8987641763863173640">Videó-előnézeti beállítások kezelése</translation>
+<translation id="8987736167266086032">Ott folytathatja, ahol abbahagyta</translation>
 <translation id="8989968390305463310">Böngészési előzményei határozzák meg az Ön számára megjelenő hirdetéseket és az alább látható módon felmért érdeklődési köröket. Adatai védelme érdekében a Chrome havi rendszerességgel automatikusan törli az Ön érdeklődési köreit. Az érdeklődési körök frissülhetnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="8993760627012879038">Új lap megnyitása inkognitó módban</translation>
 <translation id="8996847606757455498">Másik szolgáltató választása</translation>

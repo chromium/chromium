@@ -113,6 +113,7 @@
 <translation id="7780154209050837198">Ak chcete využívať Chrome naplno, prihláste sa doň svojím účtom Google.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuálny.</translation>
 <translation id="7939179037291298976">V sekcii Nastavenia iPhonu otvorte Možnosti hesla a vyberte Chrome</translation>
+<translation id="7975131781538454817">Upozornenia Chromu sú v nastaveniach zariadenia vypnuté. Najprv ich musíte povoliť.</translation>
 <translation id="8022947259858476807">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou Chromu</translation>
 <translation id="81358522153858150">Chrome teraz podporuje pre váš spravovaný účet pravidlá pre používateľov</translation>
 <translation id="8160472928944011082">Chrome sa nedá aktualizovať</translation>
@@ -141,6 +142,7 @@
 <ph name="BEGIN_INDENT" />  • Informácie o vašom používaní Chromu sa odosielajú Googlu, ale nie sú s vami spojené.
   • V prípade pádu Chromu môžu podrobnosti o páde zahŕňať niektoré osobné údaje.
   • Ak zapnete synchronizáciu, metriky môžu zahŕňať aj informácie o webových adresách, ktoré navštívite.<ph name="END_INDENT" /></translation>
+<translation id="9101160735177453133">Ak chcete zapnúť možnosť Sledovať cenu, povoľte upozornenia Chromu v Nastaveniach zariadenia.</translation>
 <translation id="9103442491611662960">Pre tento profil Chromu dostávate štandardnú ochranu zabezpečenia</translation>
 <translation id="9112744793181547300">Chcete nastaviť Chrome ako predvolený prehliadač?</translation>
 <translation id="9122931302567044771">Znamená to, že Chrome bude zakaždým žiadať o verziu webu pre počítače.</translation>

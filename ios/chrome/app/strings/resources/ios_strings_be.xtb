@@ -561,6 +561,7 @@
 <translation id="5118713593561876160">Інтарэсы</translation>
 <translation id="5118764316110575523">Выключана</translation>
 <translation id="5119391094379141756">Выберыце Chrome.</translation>
+<translation id="5121618895923301719">Вы ўжо сочыце за гэтым таварам. Гэта старонка захавана ў <ph name="BEGIN_LINK" />мабільных закладках<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Сінхранізуйце паролі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадзейны пароль}one{{COUNT} ненадзейны пароль}few{{COUNT} ненадзейныя паролі}many{{COUNT} ненадзейных пароляў}other{{COUNT} ненадзейнага пароля}}</translation>
 <translation id="5149188072385105201">Дадаць пароль...</translation>
@@ -591,6 +592,7 @@
 <translation id="5386314158584363703">Тут будуць пералічаны сайты, на якія вы падпісаліся</translation>
 <translation id="5388358297987318779">Адкрыць відарыс</translation>
 <translation id="5407969256130905701">Адхіліць змяненні</translation>
+<translation id="5414763847370083940">Пры зніжэнні цаны на любым з сайтаў вы атрымаеце абвестку.</translation>
 <translation id="5416022985862681400">За апошнія 7 дзён</translation>
 <translation id="5423269318075950257">Адсочванне цэн</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
@@ -1133,6 +1135,7 @@
 <translation id="952704832371081537">Скасаваць</translation>
 <translation id="953008885340860025">Уваход у Chrome не выкананы</translation>
 <translation id="959066944189734975">Вы падпісаны на канал "<ph name="CHANNEL_NAME" />"</translation>
+<translation id="973493300226275298">Адсочвайце цэны на тавары ў інтэрнэт-крамах. Пры зніжэнні цаны вы будзеце атрымліваць абвесткі.</translation>
 <translation id="980712131080209571">Новае</translation>
 <translation id="981498610235328462">Палітыка вашай арганізацыі дазваляе ўваходзіць, выкарыстоўваючы толькі пэўныя ўліковыя запісы. Уліковыя запісы, выкарыстоўваць якія не дазволена, не паказваюцца.</translation>
 <translation id="984509647832111802">Сінхранізацыя не працуе.</translation>

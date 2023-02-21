@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">ChromeOS ਬਾਰੇ</translation>
 <translation id="1154147086299354128">&amp;Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1203500561924088507">ਸਥਾਪਨਾ ਕਰਨ ਲਈ ਧੰਨਵਾਦ। <ph name="BUNDLE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
-<translation id="1236866257838264361">ਤੁਸੀਂ Chrome ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈ ਸਕਦੇ ਹੋ</translation>
 <translation id="1278833599417554002">&amp;Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="1302523850133262269">ਕਿਰਪਾ ਕਰਕੇ Chrome ਵੱਲੋਂ ਨਵੀਨਤਮ ਸਿਸਟਮ ਅੱਪਡੇਟਾਂ ਨੂੰ ਸਥਾਪਤ ਕੀਤੇ ਜਾਣ ਤੱਕ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> ਦੀ ਸ਼ਰਤ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਵਰਤਣ ਤੋਂ ਪਹਿਲਾਂ ਹੇਠਾਂ ਦਿੱਤੇ ਸੇਵਾ ਦੇ ਨਿਯਮ ਪੜ੍ਹ ਕੇ ਸਵੀਕਾਰ ਕਰੋ। ਇਹ ਨਿਯਮ Google ChromeOS Flex ਦੇ ਨਿਯਮਾਂ ਦਾ ਵਿਸਤਾਰ ਨਹੀਂ ਕਰਦੇ, ਇਨ੍ਹਾਂ ਵਿੱਚ ਕੋਈ ਸੋਧ ਨਹੀਂ ਕਰਦੇ ਜਾਂ ਇਨ੍ਹਾਂ ਨੂੰ ਸੀਮਤ ਨਹੀਂ ਕਰਦੇ ਹਨ।</translation>
@@ -262,6 +261,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6003112304606738118">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ... <ph name="HOURS" /> ਘੰਟੇ ਬਾਕੀ</translation>
 <translation id="6010556343189461180">Google Chrome ਸੰਬੰਧੀ ਭਵਿੱਖੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ macOS 10.15 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ macOS 10.14 ਵਰਜਨ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome ਹੁਣ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।}=1{Chrome 1 ਸਕਿੰਟ ਵਿੱਚ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।}other{Chrome # ਸਕਿੰਟਾਂ ਵਿੱਚ ਬੰਦ ਹੋ ਜਾਵੇਗਾ।}}</translation>
+<translation id="6022659036123304283">Chrome ਨੂੰ ਆਪਣੇ ਅਨੁਸਾਰ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6070348360322141662">ਬਿਹਤਰ ਸੁਰੱਖਿਆ ਲਈ, Google Chrome ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕਰੇਗਾ</translation>
 <translation id="608006075545470555">ਇਸ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>

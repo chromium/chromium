@@ -15,7 +15,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1152920704813762236">Mayelana ne-ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Vula ku-Chrome</translation>
 <translation id="1203500561924088507">Siyabonga ngokufaka. Kufanele uqale kabusha ibhrawuza yakho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Ungajabulela okuningi ku-Chrome</translation>
 <translation id="1278833599417554002">Qalisa kabusha ukuze ubuyekeze i-&amp;Chrome</translation>
 <translation id="1302523850133262269">Sicela ulinde ngenkathi i-Chrome ifaka izibuyekezo zesistimu zakamuva.</translation>
 <translation id="1335640173511558774">I-<ph name="MANAGER" /> idinga ukuthi ufunde uphinde wamukele Imigomo Yesevisi elandelayo ngaphambi kokusebenzisa le divayisi. Le migomo ayinwebeki, ayiguquki, noma ayikhawuleli Imigomo ye-Google ChromeOS Flex.</translation>
@@ -262,6 +261,7 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="6003112304606738118">Iyadawuniloda... Kusele amahora angu-<ph name="HOURS" /></translation>
 <translation id="6010556343189461180">Ukuze uthole izibuyekezo zesikhathi esizayo ze-Google Chrome, uzodinga i-macOS 10.15 noma eyakamuva. Le khompyutha isebenzisa i-macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{I-Chrome izovaleka manje.}=1{I-Chrome izovaleka kumzuzu ongu-1.}one{I-Chrome izovaleka emzuzwaneni engu-#.}other{I-Chrome izovaleka emzuzwaneni engu-#.}}</translation>
+<translation id="6022659036123304283">Yenza i-Chrome kube eyakho</translation>
 <translation id="6040143037577758943">Vala</translation>
 <translation id="6070348360322141662">Ngokuvikela okungeziwe, i-Google Chromium izobethela idatha yakho</translation>
 <translation id="608006075545470555">Engeza Iphrofayela Yomsebenzi kulesi siphequluli</translation>

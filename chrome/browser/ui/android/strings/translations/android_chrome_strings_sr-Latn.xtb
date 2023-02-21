@@ -226,6 +226,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2248941474044011069">Lozinke se šifruju na uređaju pre nego što se sačuvaju u Google menadžeru lozinki</translation>
 <translation id="2249635629516220541">Prilagodite informacije koje sajtovi koriste da bi vam prikazivali oglase</translation>
 <translation id="2259659629660284697">Izvezi lozinke…</translation>
+<translation id="2276231040576210443">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK1" />podešavanjima<ph name="END_LINK1" />. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="2276696007612801991">Prijavite se na Google nalog da biste proverili lozinke</translation>
 <translation id="2278052315791335171">Brisanjem ove lozinke nećete izbrisati nalog na <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa za naplatu</translation>
@@ -1224,6 +1225,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7596558890252710462">Operativni sistem</translation>
 <translation id="7605594153474022051">Sinhronizacija ne funkcioniše</translation>
 <translation id="7612619742409846846">Prijavljeni ste u Google kao</translation>
+<translation id="7612989789287281429">Prijavljujete se…</translation>
 <translation id="7616551326690708776">Izaberite šablon za istaknutu stavku.</translation>
 <translation id="7619072057915878432">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema sa mrežom.</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
@@ -1493,6 +1495,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8970887620466824814">Došlo je do greške.</translation>
 <translation id="8972098258593396643">Preuzimate u podrazumevani folder?</translation>
 <translation id="8987641763863173640">Upravljajte podešavanjima pregleda videa</translation>
+<translation id="8987736167266086032">Nastavite tamo gde ste stali</translation>
 <translation id="8989968390305463310">Istorija pregledanja utiče na oglase koji vam se prikazuju i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome automatski briše interesovanja svakog meseca čim postanu dostupna. Interesovanja mogu da se osvežavaju ako ih ne uklonite.</translation>
 <translation id="8993760627012879038">Otvaranje nove kartice u režimu bez arhiviranja</translation>
 <translation id="8996847606757455498">Odaberite drugog dobavljača</translation>

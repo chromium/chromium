@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">O Chrome OS-u</translation>
 <translation id="1154147086299354128">&amp;Otvori u Chromeu</translation>
 <translation id="1203500561924088507">Zahvaljujemo što ste izvršili instaliranje. Da biste mogli koristiti <ph name="BUNDLE_NAME" />, morate ponovno pokrenuti preglednik.</translation>
-<translation id="1236866257838264361">Iskoristite sve prednosti Chromea</translation>
 <translation id="1278833599417554002">Ponovo pokrenite da biste ažurirali &amp;Chrome</translation>
 <translation id="1302523850133262269">Pričekajte da Chrome instalira najnovija ažuriranja sustava.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> zahtijeva da pročitate i prihvatite sljedeće uvjete pružanja usluge prije upotrebe ovog uređaja. Ti uvjeti ne predstavljaju proširenje, izmjenu ili ograničenje uvjeta ChromeOS Flexa.</translation>
@@ -254,6 +253,7 @@
 <translation id="6003112304606738118">Preuzimanje... Još <ph name="HOURS" /> h</translation>
 <translation id="6010556343189461180">Da biste primali buduća ažuriranja Google Chromea, trebat će vam macOS 10.15 ili novija verzija. Na ovom se računalu upotrebljava macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome će se sada zatvoriti.}=1{Chrome će se zatvoriti za jednu sekundu.}one{Chrome će se zatvoriti za # sekundu.}few{Chrome će se zatvoriti za # sekunde.}other{Chrome će se zatvoriti za # sekundi.}}</translation>
+<translation id="6022659036123304283">Prilagodite Chrome sebi</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="6070348360322141662">Radi dodatne sigurnosti Google Chrome kriptirat će vaše podatke</translation>
 <translation id="608006075545470555">Dodavanje poslovnog profila u ovaj preglednik</translation>

@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1209796539517632982">স্বয়ংক্রিয় নাম সার্ভার</translation>
 <translation id="1210831758834677569">লাও</translation>
+<translation id="1221555006497674479">স্টোরেজে স্পেস কম আছে আপনার <ph name="TOTAL_SPACE" /> শেয়ার্ড ড্রাইভ স্টোরেজের <ph name="REMAINING_PERCENTAGE" />% বাকি আছে।</translation>
 <translation id="1243314992276662751">আপলোড</translation>
 <translation id="1249250836236328755">প্রকার</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">চীনা পিনইন</translation>
 <translation id="1646019627374511909">অফলাইনে দেখার জন্য <ph name="NUMBER_OF_ITEMS" />টি ফাইল ডাউনলোড করা হচ্ছে</translation>
 <translation id="164969095109328410">Chrome ডিভাইস</translation>
+<translation id="1661207570040737402">আপনার সমস্ত শেয়ার্ড ড্রাইভ Google Workspace স্টোরেজ ব্যবহার করেছেন।</translation>
 <translation id="1661867754829461514">পিন হারিয়েছে</translation>
 <translation id="166439687370499867">শেয়ার করার নেটওয়ার্ক কনফিগারেশন পরিবর্তনের অনুমতি নেই</translation>
 <translation id="1665611772925418501">ফাইল সংশোধন করা যায়নি৷</translation>
@@ -879,6 +881,7 @@
 <translation id="8116072619078571545">বরফ জল</translation>
 <translation id="8128733386027980860">ইংরেজি (যুক্তরাজ্য) ভাষায় Dvorak কীবোর্ড</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" আপনার সাথে শেয়ার করা হয়েছে৷ আপনি এটিকে মুছে ফেলতে পারবেন না কারণ আপনি এটির মালিক নন৷</translation>
+<translation id="8138705869659070104">ডিভাইস সেট-আপ করার পরে চালু করুন</translation>
 <translation id="813913629614996137">আরম্ভ হচ্ছে…</translation>
 <translation id="8147028810663464959">অক্ষরের প্রস্থ 'সম্পূর্ণ' হিসেবে সেট করা হয়েছে</translation>
 <translation id="8151638057146502721">কনফিগার করুন</translation>

@@ -15,7 +15,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1152920704813762236">Información de ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
 <translation id="1203500561924088507">Gracias por realizar la instalación. Debes reiniciar tu navegador para poder usar <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Puedes disfrutar al máximo de Chrome</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1302523850133262269">Espera mientras Chrome instala las últimas actualizaciones del sistema.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requiere que leas y aceptes los siguientes Términos del Servicio antes de utilizar este dispositivo. Estos términos no amplían, modifican ni limitan los Términos de Google ChromeOS Flex.</translation>
@@ -262,6 +261,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6003112304606738118">Descargando... Horas restantes: <ph name="HOURS" />.</translation>
 <translation id="6010556343189461180">Para recibir futuras actualizaciones de Google Chrome, necesitarás macOS 10.15 o una versión posterior. Este ordenador utiliza macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome se cerrará ahora.}=1{Chrome se cerrará dentro de 1 segundo.}other{Chrome se cerrará dentro de # segundos.}}</translation>
+<translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6070348360322141662">Para mayor seguridad, Google Chrome cifrará tus datos</translation>
 <translation id="608006075545470555">Añadir perfil de trabajo a este navegador</translation>

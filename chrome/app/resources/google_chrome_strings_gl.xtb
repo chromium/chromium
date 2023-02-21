@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">Acerca de Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
-<translation id="1236866257838264361">Podes gozar ao máximo de Chrome</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1302523850133262269">Espera a que Chrome instale as actualizacións do sistema máis recentes.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as de Google Chrome OS Flex.</translation>
@@ -254,12 +253,14 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> (inicio de sesión de rede)</translation>
 <translation id="5924017743176219022">Conectando a Internet…</translation>
+<translation id="5932997892801542621">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíao a Google Drive para mostrarche suxestións de elementos. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="5940385492829620908">Aquí podes atopar as túas páxinas web, marcadores e outros contidos de Chrome.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
 <translation id="6003112304606738118">Descargando… Tempo restante: <ph name="HOURS" /> h</translation>
 <translation id="6010556343189461180">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 10.15 ou unha versión posterior. Este ordenador ten macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome pecharase agora.}=1{Chrome pecharase en 1 segundo.}other{Chrome pecharase en # segundos.}}</translation>
+<translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6070348360322141662">Para obter unha maior seguranza, Google Chrome encriptará os teus datos</translation>
 <translation id="608006075545470555">Engadir un perfil de traballo a este navegador</translation>

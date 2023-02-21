@@ -561,6 +561,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5118713593561876160">Intereses</translation>
 <translation id="5118764316110575523">Non</translation>
 <translation id="5119391094379141756">Selecciona Chrome</translation>
+<translation id="5121618895923301719">Xa estás facendo un seguimento deste produto. A páxina está gardada en <ph name="BEGIN_LINK" />Marcadores do móbil<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Sincroniza os teus contrasinais, o historial e moito máis en todos os dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} contrasinal pouco seguro}other{{COUNT} contrasinais pouco seguros}}</translation>
 <translation id="5149188072385105201">Engadir contrasinal…</translation>
@@ -591,6 +592,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5386314158584363703">Os sitios que sigas mostraranse aquí</translation>
 <translation id="5388358297987318779">Abrir imaxe</translation>
 <translation id="5407969256130905701">Descartar cambios</translation>
+<translation id="5414763847370083940">Recibirás unha alerta se baixa o prezo en calquera sitio.</translation>
 <translation id="5416022985862681400">Últimos 7 días</translation>
 <translation id="5423269318075950257">Facer seguimento do prezo</translation>
 <translation id="543338862236136125">Editar contrasinal</translation>
@@ -1133,6 +1135,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="952704832371081537">Cancelar</translation>
 <translation id="953008885340860025">Pechouse sesión en Chrome</translation>
 <translation id="959066944189734975">Segues a <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Fai un seguimento do prezo dun produto nas tendas en liña. Recibirás alertas se baixa o prezo.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">A túa organización só che permite iniciar sesión con certas contas. As contas que non están permitidas atópanse ocultas.</translation>
 <translation id="984509647832111802">A sincronización non funciona.</translation>

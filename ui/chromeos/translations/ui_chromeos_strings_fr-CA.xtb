@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1209796539517632982">Serveurs de noms automatiques</translation>
 <translation id="1210831758834677569">Laotien</translation>
+<translation id="1221555006497674479">Il ne reste plus que <ph name="REMAINING_PERCENTAGE" /> % dans votre espace de stockage Disque partagé de <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Téléverser</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Pinyin chinois</translation>
 <translation id="1646019627374511909">Mise à disposition hors ligne de <ph name="NUMBER_OF_ITEMS" /> fichiers en cours…</translation>
 <translation id="164969095109328410">Appareil Google Chrome</translation>
+<translation id="1661207570040737402">Vous avez utilisé tout l'espace de stockage Google Workspace de votre espace de stockage Disque partagé.</translation>
 <translation id="1661867754829461514">NIP manquant</translation>
 <translation id="166439687370499867">La modification de configurations de réseau partagé n'est pas autorisée</translation>
 <translation id="1665611772925418501">Le fichier n'a pas pu être modifié.</translation>
@@ -354,6 +356,7 @@
 <translation id="3971140002794351170">Télécharger le profil cellulaire, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglais (R.-U.)</translation>
 <translation id="3975895378829046965">Bangla (phonétique)</translation>
+<translation id="3999574733850440202">Les fichiers Microsoft récemment ouverts ont été déplacés vers OneDrive</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4017788180641807848">Anglais (É.-U.) avec clavier Workman</translation>
 <translation id="4019998208269143058">Épingler à l'accès rapide aux fichiers</translation>
@@ -881,6 +884,7 @@
 <translation id="8116072619078571545">Eau glacée</translation>
 <translation id="8128733386027980860">Anglais (R.-U.) avec clavier Dvorak</translation>
 <translation id="8137331602592933310">Le fichier « <ph name="FILENAME" /> » a été partagé avec vous. Vous ne pouvez pas le supprimer, car vous n'en êtes pas le propriétaire.</translation>
+<translation id="8138705869659070104">Activer après config. app.</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
 <translation id="8147028810663464959">Largeur de caractères : pleine</translation>
 <translation id="8151638057146502721">Configurer</translation>
@@ -906,6 +910,7 @@
 <translation id="8300849813060516376">Échec de l'opération OTASP</translation>
 <translation id="8312871300878166382">Coller dans le dossier</translation>
 <translation id="8329978297633540474">Texte brut</translation>
+<translation id="8332007959299458842">Les fichiers Microsoft récemment ouverts ont été déplacés vers Google Disque</translation>
 <translation id="8335587457941836791">Retirer de l'étagère</translation>
 <translation id="8335837413233998004">Biélorusse</translation>
 <translation id="8336153091935557858">Hier à <ph name="YESTERDAY_DAYTIME" /></translation>

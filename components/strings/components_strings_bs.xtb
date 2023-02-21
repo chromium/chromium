@@ -84,6 +84,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1178821169867863726">12 x 16 in</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1186201132766001848">Provjeri lozinke</translation>
+<translation id="1195073053842921378">Ta će se adresa izbrisati s ovog uređaja</translation>
 <translation id="1195558154361252544">Obavještenja se automatski blokiraju za sve web lokacije osim onih koje omogućite</translation>
 <translation id="1197088940767939838">Narandžasta</translation>
 <translation id="1201402288615127009">Naprijed</translation>
@@ -2018,7 +2019,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5992691462791905444">Inženjersko Z-presavijanje</translation>
 <translation id="5992805036496113940">Pogledajte informacije korištene za prikazivanje oglasa</translation>
 <translation id="5995727681868049093">Upravljajte podacima, privatnošću i sigurnošću na Google računu</translation>
-<translation id="5996887213716993070">Polje <ph name="FIELD" /> ne može biti prazno</translation>
 <translation id="5997247540087773573">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Da osigura vaše račune, Googleov Upravitelj lozinki preporučuje da odmah promijenite lozinku i provjerite sačuvane lozinke.</translation>
 <translation id="6000758707621254961">Broj rezultata <ph name="RESULT_COUNT" /> za "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6005765687956866568">Automatski popunjene informacije su obrisane iz obrasca</translation>

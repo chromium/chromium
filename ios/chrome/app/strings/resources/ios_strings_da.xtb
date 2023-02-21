@@ -561,6 +561,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5118764316110575523">Fra</translation>
 <translation id="5119391094379141756">Vælg Chrome</translation>
+<translation id="5121618895923301719">Du holder allerede øje med dette produkt. Denne side er gemt i <ph name="BEGIN_LINK" />Bogmærker på mobil<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} svag adgangskode}one{{COUNT} svag adgangskode}other{{COUNT} svage adgangskoder}}</translation>
 <translation id="5149188072385105201">Tilføj adgangskode…</translation>
@@ -591,6 +592,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5386314158584363703">Her finder du de websites, du følger</translation>
 <translation id="5388358297987318779">Åbn billede</translation>
 <translation id="5407969256130905701">Kassér ændringer</translation>
+<translation id="5414763847370083940">Du får en underretning, hvis prisen falder på et website.</translation>
 <translation id="5416022985862681400">De seneste syv dage</translation>
 <translation id="5423269318075950257">Hold øje med prisudviklingen</translation>
 <translation id="543338862236136125">Rediger adgangskode</translation>
@@ -1133,6 +1135,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="952704832371081537">Annuller</translation>
 <translation id="953008885340860025">Chrome er logget ud</translation>
 <translation id="959066944189734975">Du følger <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Hold øje med prisen på et produkt i netbutikker. Du får underretninger, når prisen falder.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules.</translation>
 <translation id="984509647832111802">Synkronisering fungerer ikke.</translation>

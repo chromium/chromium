@@ -4,6 +4,7 @@
 <translation id="1047130070405668746">Válassza ki a Chromium böngészőt.</translation>
 <translation id="1091252999271033193">Ez azt jelenti, hogy a Chromium mindig a mobilwebhelyet kéri majd.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
+<translation id="1256849392437386613">Az „Árfigyelés” funkció bekapcsolásához engedélyezze a Chromium-értesítéseket az eszköz beállításaiban</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
 <translation id="1289216811211435351">Váltás Chromiumra</translation>
 <translation id="1361748954329991663">A Chromium elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chromium újabb verzióit.</translation>
@@ -71,6 +72,7 @@
 <translation id="5573014823074921752">Tipp a Chromium használatához. A további lapbeállításokhoz érintse meg és tartsa lenyomva az eszköztárban lévő Lapok megjelenítése gombot, amely a képernyő alsó vagy felső részén található.</translation>
 <translation id="5700709190537129682">A Chromium nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="5777187867430702742">A Chromium oldala</translation>
+<translation id="5918064849477363478">A Chromium-értesítések ki vannak kapcsolva az eszköz beállításaiban. Először engedélyeznie kell az értesítéseket.</translation>
 <translation id="5945387852661427312">Egy <ph name="DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chromium-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chromiumból való kijelentkezéssel törli adatait erről az eszközről, de azok továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="5983312940147103417">A Chromium fejlesztése</translation>
 <translation id="6062449165341879460">Szervezete (<ph name="DOMAIN" />) hozzáfér majd az Ön Chromium-adataihoz, -könyvjelzőihez, -előzményeihez, -jelszavaihoz és az ebben a fiókban tárolt egyéb beállításaihoz. Kijelentkezéskor az adatai törlődnek erről az eszközről.  Az adatok azonban továbbra is megmaradnak a felügyelt Google-fiókban, és hozzáférhetők lesznek szervezete számára. Szervezete felhasználói házirendeket is beállíthat erre a fiókra vonatkozóan, amelyek módosíthatják a Chromium viselkedését.</translation>

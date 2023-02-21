@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1209796539517632982">خود کار نام سرورز</translation>
 <translation id="1210831758834677569">لاؤ</translation>
+<translation id="1221555006497674479">اسٹوریج کم ہے، آپ کی <ph name="TOTAL_SPACE" /> مشترکہ ڈرائیو اسٹوریج میں سے <ph name="REMAINING_PERCENTAGE" /> فیصد باقی ہے۔</translation>
 <translation id="1243314992276662751">اپ لوڈ کریں</translation>
 <translation id="1249250836236328755">نوع</translation>
 <translation id="1254593899333212300">براہ راست انٹرنیٹ کنکشن</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">‏چینی Pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> فائلز کو آف لائن دستیاب بنایا جا رہا ہے</translation>
 <translation id="164969095109328410">‏Chrome آلہ</translation>
+<translation id="1661207570040737402">‏آپ نے مشترکہ ڈرائیو کیGoogle Workspace کی اپنی تمام اسٹوریج استعمال کر لی ہے۔</translation>
 <translation id="1661867754829461514">‏PIN غائب ہے</translation>
 <translation id="166439687370499867">اشتراک کردہ نیٹ ورک کنفیگریشنز تبدیل کرنے کی اجازت نہیں ہے</translation>
 <translation id="1665611772925418501">فائل میں ترمیم نہیں کی جا سکی۔</translation>
@@ -879,6 +881,7 @@
 <translation id="8116072619078571545">برف کا پانی</translation>
 <translation id="8128733386027980860">ڈوراک کی بورڈ کے ساتھ انگریزی (برطانیہ)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" کا آپ کے ساتھ اشتراک کیا گیا ہے۔ آپ اسے حذف نہیں کر سکتے ہیں کیونکہ آپ اس کے مالک نہیں ہیں۔</translation>
+<translation id="8138705869659070104">آلہ سیٹ اپ کرنے کے بعد فعال کریں</translation>
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>
 <translation id="8147028810663464959">حرف کی چوڑائی پوری ہے</translation>
 <translation id="8151638057146502721">کنفیگر کریں</translation>

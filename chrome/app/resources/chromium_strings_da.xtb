@@ -14,7 +14,6 @@
 <translation id="1315551408014407711">Konfigurer din nye Chromium-profil</translation>
 <translation id="1396446129537741364">Chromium forsøger at vise adgangskoder.</translation>
 <translation id="1414495520565016063">Du er logget ind på Chromium.</translation>
-<translation id="1493803763272692301">Få mest muligt ud af Chromium</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>

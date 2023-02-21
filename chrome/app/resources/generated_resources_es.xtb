@@ -4441,7 +4441,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4977942889532008999">Confirmar acceso</translation>
 <translation id="4980805016576257426">Esta extensión contiene malware.</translation>
 <translation id="4981449534399733132">Para borrar los datos de navegación de todos los dispositivos sincronizados y de tu cuenta de Google, <ph name="BEGIN_LINK" />inicia sesión<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Sigue por donde lo dejaste en cualquier dispositivo</translation>
 <translation id="4986706507552097681">Siempre puedes seleccionar qué contenido quieres sincronizar en los ajustes. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4986728572522335985">Esta acción borrará todos los datos de la llave de seguridad, incluido el PIN</translation>
 <translation id="4988526792673242964">Páginas</translation>
@@ -4558,7 +4557,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5097349930204431044">Los sitios que visitas pueden determinar qué te gusta y sugerirte anuncios mientras sigues navegando</translation>
 <translation id="5097649414558628673">Herramienta: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Hacer clic automáticamente cuando se detenga el cursor</translation>
-<translation id="5101683448725092498">Crea una copia de seguridad de tus cosas</translation>
 <translation id="5101839224773798795">Hacer clic automáticamente cuando se detenga el cursor</translation>
 <translation id="5106350808162641062">Quitar</translation>
 <translation id="510695978163689362">Family Link supervisa <ph name="USER_EMAIL" />. Puedes añadir cuentas de centro educativo para acceder a los recursos del centro con supervisión parental.</translation>
@@ -5124,7 +5122,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5623842676595125836">Registro</translation>
 <translation id="5624120631404540903">Gestionar contraseñas</translation>
 <translation id="5625225435499354052">Editar en Google Pay</translation>
-<translation id="5625631605902707678">En varios dispositivos</translation>
 <translation id="5626134646977739690">Nombre:</translation>
 <translation id="5627086634964711283">También controla qué página se muestra al hacer clic en el botón de página principal.</translation>
 <translation id="5627676517703583263">Navega de forma inteligente con Chrome</translation>
@@ -5236,7 +5233,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estos datos o tu dispositivo no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}=1{Este archivo o tu dispositivo no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}other{Estos archivos no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}}</translation>
 <translation id="5736796278325406685">Introduce un nombre de usuario válido</translation>
 <translation id="5738093759615225354">Necesitas esta llave de acceso para iniciar sesión en tu ordenador</translation>
-<translation id="5738329404678738022">Almacena tus marcadores y más con la sincronización</translation>
 <translation id="5739017626473506901">Inicia sesión para ayudar a <ph name="USER_NAME" /> a añadir una cuenta de centro educativo</translation>
 <translation id="5739235828260127894">Esperando verificación. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" />.</translation>
 <translation id="5739458112391494395">Muy grande</translation>
@@ -5258,7 +5254,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5757375109985023827">Selecciona una pestaña para previsualizarla</translation>
 <translation id="5758631781033351321">Aquí verás tu lista de lectura</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> puede leer los documentos que envías para imprimirse a través de <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Inicia sesión para obtener más ventajas</translation>
 <translation id="5762787084360227629">Introducir información de la cuenta de Google</translation>
 <translation id="5763751966069581670">No se ha encontrado ningún dispositivo USB</translation>
 <translation id="5764483294734785780">G&amp;uardar audio como...</translation>
@@ -7797,7 +7792,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8059417245945632445">&amp;Inspeccionar dispositivos</translation>
 <translation id="8059456211585183827">No hay ninguna impresora disponible que guardar.</translation>
 <translation id="8061091456562007989">Deshacer cambio</translation>
-<translation id="8061965471006133016">Protección adicional para tus contraseñas y más</translation>
 <translation id="8061970399284390013">Revisar ortografía y gramática</translation>
 <translation id="8061991877177392872">Parece que ya has configurado Voice Match con el Asistente en otro dispositivo. Las grabaciones anteriores se han utilizado para crear un modelo de voz en este dispositivo.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 hoja de papel}other{{COUNT} hojas de papel}}</translation>

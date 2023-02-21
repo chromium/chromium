@@ -798,6 +798,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política não for definida, os controles da tela pelo usuário ou os recursos de brilho automático não serão afetados.
 
       Observação: os valores da política precisam ser especificados em porcentagens de 0 a 100.</translation>
+<translation id="1733092875104864334">Não permitir a coleta de registros de textos WebRTC em Serviços do Google</translation>
 <translation id="1733768596873041559">Redirecionar para o IdP SAML por padrão. Confirmação do usuário necessária nas versões do <ph name="PRODUCT_NAME" /> anteriores à 99</translation>
 <translation id="1733939382419067578">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica os sites que podem exibir notificações.
 
@@ -1346,6 +1347,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 
       Se esta política não for definida, todo plug-in que corresponder aos padrões em DisabledPlugins será desativado, e o usuário não poderá ativá-los.</translation>
 <translation id="2236488539271255289">Não permitir que nenhum site defina dados locais</translation>
+<translation id="2236593201136596376">Permitir a coleta de registros de textos WebRTC nos Serviços do Google</translation>
 <translation id="2241498944622759244">Esse recurso nunca foi lançado, por isso a política está obsoleta. Se esta política for definida como verdadeira ou não for definida, páginas relacionadas à atual serão sugeridas no <ph name="PRODUCT_NAME" />.
       Essas sugestões são buscadas remotamente dos servidores do Google.
 
@@ -8132,6 +8134,7 @@ Não há suporte à reversão para o <ph name="PRODUCT_OS_NAME" /> 106 ou versã
 
           Se esta política não for definida para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> será aplicada, se definida. Do contrário, um JIT do JavaScript será ativado.</translation>
 <translation id="8543108307976719751">Impedir conexões de acesso remoto a esta máquina</translation>
+<translation id="8543639085146778837">Permitir a coleta de registros de textos WebRTC em Serviços do Google</translation>
 <translation id="8543975123557636331">Ativar saída de áudio</translation>
 <translation id="8544375438507658205">Renderizador padrão de HTML para o <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Permite a sincronização de mensagens SMS do smartphone com o Chromebook.</translation>
@@ -8638,6 +8641,9 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
       O valor da política precisa ser especificado em milissegundos. Os valores são ajustados a um intervalo entre 30 segundos e 24 horas.</translation>
 <translation id="9040042535845939426">Definir o estado da tela de privacidade na tela de login</translation>
+<translation id="9046248916118130378">Se a política é definida como ativada, o <ph name="PRODUCT_NAME" /> pode coletar registros de textos WebRTC em Serviços do Google (por exemplo, no Google Meet) e fazer upload deles para o Google. Esses registros contêm informações de diagnóstico para depurar problemas em videochamadas de áudio ou vídeo no <ph name="PRODUCT_NAME" />, por exemplo, metadados textuais que descrevem streams de entrada e saída, entradas de registro específicas do WebRTC e informações adicionais do sistema. Esses registros não têm conteúdo de áudio ou vídeo da chamada.
+Se a política é definida como desativada, esses registros não são enviados ao Google. Os registros ainda se acumulam localmente no dispositivo do usuário.
+Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode coletar e fazer upload desses registros por padrão.</translation>
 <translation id="9050853837490399534">Esta política controla se é necessário ou não que o dispositivo seja atualizado para um Quick Fix Build.
 
       Se o valor da política for definido para um token que mapeia para um Quick Fix Build, o dispositivo será atualizado para o Quick Fix Build correspondente se a atualização não estiver bloqueada por outra política.

@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1209796539517632982">Automatski serveri naziva</translation>
 <translation id="1210831758834677569">laoski</translation>
+<translation id="1221555006497674479">Ostalo vam je još samo <ph name="REMAINING_PERCENTAGE" />% od <ph name="TOTAL_SPACE" /> deljenog prostora na disku.</translation>
 <translation id="1243314992276662751">Otpremi</translation>
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Direktna veza sa internetom</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">kineski pinjin</translation>
 <translation id="1646019627374511909">Omogućava se korišćenje fajlova oflajn (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Chrome uređaj</translation>
+<translation id="1661207570040737402">Iskoristili ste sav Google Workspace memorijski prostor na deljenom disku.</translation>
 <translation id="1661867754829461514">Nedostaje PIN</translation>
 <translation id="166439687370499867">Promena konfiguracije deljene mreže nije dozvoljena</translation>
 <translation id="1665611772925418501">Nije moguće izmeniti datoteku.</translation>
@@ -880,6 +882,7 @@
 <translation id="8116072619078571545">Voda sa ledom</translation>
 <translation id="8128733386027980860">engleski (SAD) sa tastaturom Dvorak</translation>
 <translation id="8137331602592933310">„<ph name="FILENAME" />“ se deli sa vama. Ne možete da je izbrišete jer nije u vašem vlasništvu.</translation>
+<translation id="8138705869659070104">Aktiviraj posle podešavanja</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
 <translation id="8147028810663464959">Širina znakova je puna</translation>
 <translation id="8151638057146502721">Konfiguriši</translation>

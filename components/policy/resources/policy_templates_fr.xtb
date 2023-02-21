@@ -1489,6 +1489,9 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
       Si cette règle n'est pas configurée, les cookies tiers sont activés. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="2386362615870139244">Autoriser les WakeLock forçant l'activation de l'écran</translation>
 <translation id="2387469539700985783">Cette règle n'a aucun effet sur les rapports effectués par Android.</translation>
+<translation id="2388701318721126001">Si cette règle est désactivée, l'utilisateur <ph name="PRODUCT_OS_NAME" /> ne peut pas sélectionner un fond d'écran dans un album Google Photos.
+
+Si cette règle est activée ou n'est pas définie, l'utilisateur peut définir comme fond d'écran une image issue de Google Photos.</translation>
 <translation id="2393862222659066027">Ouvrir une liste d'URL et restaurer la dernière session</translation>
 <translation id="2394429297128584919">Ne pas autoriser les pages à envoyer des requêtes XHR synchrones pendant leur fermeture</translation>
 <translation id="2394674739523870144">Si cette règle est définie sur une liste de chaînes, celles-ci sont reliées par des espaces avant d'être transmises entre <ph name="IE_PRODUCT_NAME" /> et <ph name="PRODUCT_NAME" /> comme paramètres de ligne de commande. Si un paramètre contient <ph name="URL_PLACEHOLDER" />, l'URL <ph name="URL_PLACEHOLDER" /> est remplacée par l'URL de la page à ouvrir. Si aucun paramètre ne contient l'URL <ph name="URL_PLACEHOLDER" />, elle est ajoutée à la fin de la ligne de commande.
@@ -2848,6 +2851,7 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
 <translation id="3608206578291537084">Activer le pipeline de rapports chiffrés</translation>
 <translation id="3608281460204780443">Afficher l'icône du Chrome Web Store dans le lanceur d'applis <ph name="PRODUCT_OS_NAME" /> et sur la page de nouvel onglet</translation>
 <translation id="3622463490728773174">Autoriser la nouvelle implémentation</translation>
+<translation id="3623332696371971798">Empêcher l'accès à Google Photos depuis l'appli de personnalisation</translation>
 <translation id="3627678165642179114">Activer ou désactiver le service Web de correction orthographique</translation>
 <translation id="3628480121685794414">Activer l'impression recto</translation>
 <translation id="3634125384445314047">Autoriser l'accès aux photos et vidéos récentes prises sur le téléphone via Phone Hub.</translation>
@@ -2885,6 +2889,7 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
 
           Cette règle est temporaire et devrait être supprimée dans <ph name="PRODUCT_NAME" /> 107. Néanmoins, cette échéance peut être repoussée si des entreprises le requièrent.
           </translation>
+<translation id="3678069907945250643">Autoriser l'accès à Google Photos depuis l'appli de personnalisation</translation>
 <translation id="3685979383016152590">Cette règle permet de désigner la règle d'accès qui s'applique à la configuration groupée des imprimantes, en déterminant les imprimantes soumises à la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> qui sont accessibles aux utilisateurs.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valeur  0) utilise <ph name="PRINTERS_BULK_BLOCKLIST" /> pour limiter l'accès aux imprimantes spécifiées
@@ -7171,6 +7176,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
       Si cette règle est désactivée ou qu'elle n'est pas configurée, il se peut que les applis Chrome ne soient pas autorisées à s'exécuter, selon l'état d'avancement du processus d'abandon.
       Dans les deux cas, les applis Chrome qui sont installées d'office par cette règle seront toujours autorisées.</translation>
 <translation id="7774768074957326919">Utiliser les paramètres proxy du système</translation>
+<translation id="7775077662962729812">Sélection de fond d'écran dans Google Photos</translation>
 <translation id="7776848995687565978">Configurez une liste d'origines qui accordent une durée de vie étendue en arrière-plan aux extensions connectées.</translation>
 <translation id="777734450201217641">Activer les raccourcis des fonctionnalités d'accessibilité sur l'écran de connexion.
 

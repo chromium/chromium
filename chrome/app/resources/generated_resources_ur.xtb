@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
 <translation id="1059944192885972544">'<ph name="SEARCH_TEXT" />' کیلئے <ph name="NUM" /> ٹیبز ملے</translation>
 <translation id="1060292118287751956">اس فریکوئنسی کا تعین کرتا ہے جسے اسکرین اپ ڈیٹ کرتی ہے</translation>
+<translation id="1060570945511946595">ٹکٹس کا نظم کریں</translation>
 <translation id="1061130374843955397">اپنے <ph name="DEVICE_TYPE" /> میں خوش آمدید</translation>
 <translation id="1061373870045429865">‏اس لنک کے لیے QR کوڈ تخلیق کریں</translation>
 <translation id="1061904396131502319">وقفے کا وقت تقریباً ہو گیا ہے</translation>
@@ -1114,6 +1115,7 @@
 <translation id="1975841812214822307">ہٹائیں…</translation>
 <translation id="1976150099241323601">سیکیورٹی آلہ میں سائن ان کریں</translation>
 <translation id="1977965994116744507">اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کرنے کیلئے اپنا فون قریب کریں۔</translation>
+<translation id="1978666928180318515">‏Bruschetta کو ہٹائیں</translation>
 <translation id="1979095679518582070">اس خصوصیت کو آف کرنے سے سسٹم اپ ڈیٹس اور سیکیورٹی جیسی لازمی سروسز کے لیے درکار معلومات بھیجنے کی آپ کے آلے کی اہلیت متاثر نہیں ہوتی ہے۔</translation>
 <translation id="1979280758666859181">آپ <ph name="PRODUCT_NAME" /> کے ایک پرانے ورژن کے ساتھ ایک چینل میں تبدیل ہو رہے ہیں۔ آپ کے آلہ پر فی الحال انسٹال کردہ ورژن سے اس چینل ورژن کے مماثل ہونے پر چینل کی تبدیلی لاگو ہوگی۔</translation>
 <translation id="197989455406964291">‏KDC مرموز کاری کی قسم کو سپورٹ نہیں کرتا ہے</translation>
@@ -1919,6 +1921,7 @@
 <translation id="2672142220933875349">‏غلط crx فائل، پیک کھولنا ناکام ہو گیا۔</translation>
 <translation id="2673135533890720193">اپنی براؤزنگ سرگزشت پڑھیں</translation>
 <translation id="2674764818721168631">آف</translation>
+<translation id="2675570801872027281">‏Bruschetta کو ہٹانے میں خرابی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="2676492189600898281">آٹو فل تاثرات فراہم کریں</translation>
 <translation id="2678063897982469759">دوبارہ فعال کریں</translation>
 <translation id="2678100101831051676">کاسٹ کرنے سے قاصر۔</translation>
@@ -2917,6 +2920,7 @@
 <translation id="3593965109698325041">سرٹیفکیٹ نام کی پابندیاں</translation>
 <translation id="3596012367874587041">ایپ کی ترتیبات</translation>
 <translation id="3596414637720633074">پوشیدگی میں فریق ثالث کوکیز کو بلاک کریں</translation>
+<translation id="3598010454707842106">‏"Chrome کو حسب ضرورت بنائیں" پر کلک کریں</translation>
 <translation id="3599221874935822507">ابھرا ہوا</translation>
 <translation id="3600051066689725006">ویب کی درخواست کی معلومات</translation>
 <translation id="360180734785106144">نئی خصوصیات کے دستیاب ہوتے ہی انہیں فراہم کریں</translation>
@@ -3914,6 +3918,7 @@
 <translation id="4495419450179050807">اس صفحہ پر نہ دکھائیں</translation>
 <translation id="4497145443434063861">‏مختلف Wi-Fi نیٹ ورکس پر PC اور Chromecast (مثلاً 2.4GHz vs. 5GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ناکام ہو گیا ہے</translation>
+<translation id="4500647907053779331"><ph name="LANGUAGE" /> میں انتخاب کا &amp;ترجمہ کریں</translation>
 <translation id="450099669180426158">فجائیہ نشان کا آئیکن</translation>
 <translation id="4501530680793980440">ہٹانے کی توثیق کریں</translation>
 <translation id="4502423230170890588">اس آلہ سے ہٹائيں</translation>
@@ -4443,7 +4448,6 @@
 <translation id="4977942889532008999">رسائی کی توثیق کریں</translation>
 <translation id="4980805016576257426">اس ایکسٹینشن میں میلویئر شامل ہے۔</translation>
 <translation id="4981449534399733132">‏اپنے سبھی مطابقت پذیر آلات اور اپنے Google اکاؤنٹ سے براؤزنگ ڈیٹا صاف کرنے کیلئے، <ph name="BEGIN_LINK" />سائن ان کریں<ph name="END_LINK" />۔</translation>
-<translation id="4982111327868342436">کسی بھی آلے پر آپ نے جہاں چھوڑا تھا وہیں سے شروع کریں</translation>
 <translation id="4986706507552097681">‏آپ ترتیبات میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="4986728572522335985">‏اس سے سیکیورٹی کلید کا PIN سمیت تمام ڈیٹا حذف ہو جائے گا</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -4560,7 +4564,6 @@
 <translation id="5097349930204431044">آپ جو سائٹ ملاحظہ جاتے ہیں وہ اس بات کا تعین کر سکتی ہیں کہ آپ کیا پسند کرتے ہیں اور پھر جب آپ براؤز کرنا جاری رکھتے ہیں تو اشتہارات تجویز کر سکتی ہیں۔</translation>
 <translation id="5097649414558628673">ٹول: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">جب کرسر رک جاتا ہے تو خودکار طور پر کلک کریں</translation>
-<translation id="5101683448725092498">اپنے مواد کا بیک اپ لیں</translation>
 <translation id="5101839224773798795">کرسر رُک جانے پر خودکار طور پر کلک کریں</translation>
 <translation id="5106350808162641062">ہٹائیں</translation>
 <translation id="510695978163689362">‏<ph name="USER_EMAIL" /> Family Link کے زیر نگرانی ہوتا ہے۔ والدین کی نگرانی کے ساتھ اسکول کے وسائل تک رسائی حاصل کرنے کے لئے آپ اسکول کے اکاؤنٹس کو شامل کر سکتے ہیں۔</translation>
@@ -5125,7 +5128,6 @@
 <translation id="5623842676595125836">لاگ</translation>
 <translation id="5624120631404540903">پاس ورڈز کا نظم کریں</translation>
 <translation id="5625225435499354052">‏Google Pay میں ترمیم کریں</translation>
-<translation id="5625631605902707678">سبھی آلات</translation>
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5627086634964711283">یہ آپ کی جانب سے ہوم بٹن کلک کرنے پر دکھائی دینے والے صفحہ کو بھی کنٹرول کرتا ہے۔</translation>
 <translation id="5627676517703583263">‏Chrome کے ساتھ اسمارٹ براؤز کا لطف اٹھائیں</translation>
@@ -5237,7 +5239,6 @@
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{یہ ڈیٹا یا آپ کا آلہ آپ کی تنظیم کی سیکیورٹی کی کچھ پالیسیوں کی تعمیل نہیں کرتا ہے۔ اپنے منتظم کے ساتھ چیک کریں کہ کیا ٹھیک کرنے کی ضرورت ہے۔}=1{یہ فائل یا آپ کا آلہ آپ کی تنظیم کی سیکیورٹی کی کچھ پالیسیوں کی تعمیل نہیں کرتا ہے۔ اپنے منتظم کے ساتھ چیک کریں کہ کیا ٹھیک کرنے کی ضرورت ہے۔}other{یہ فائلز آپ کی تنظیم کی سیکیورٹی کی کچھ پالیسیوں کی تعمیل نہیں کرتی ہیں۔ اپنے منتظم کے ساتھ چیک کریں کہ کیا ٹھیک کرنے کی ضرورت ہے۔}}</translation>
 <translation id="5736796278325406685">براہ کرم ایک درست صارف نام درج کریں</translation>
 <translation id="5738093759615225354">آپ کو اپنے کمپیوٹر میں سائن ان کرنے کے لیے اس پاس کی ضرورت ہے</translation>
-<translation id="5738329404678738022">مطابقت پذیری کے ساتھ اپنے بُک مارکس اور بہت کچھ کو اسٹور کریں</translation>
 <translation id="5739017626473506901">اسکول کا اکاؤنٹ شامل کرنے میں <ph name="USER_NAME" /> کی مدد کرنے کیلئے سائن ان کریں</translation>
 <translation id="5739235828260127894">توثیق کا انتظار ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">بہت بڑا</translation>
@@ -5259,7 +5260,6 @@
 <translation id="5757375109985023827">پیش منظر دیکھنے کیلئے ٹیب منتخب کریں</translation>
 <translation id="5758631781033351321">آپ اپنی پڑھنے کی فہرست یہاں پائیں گے</translation>
 <translation id="5759728514498647443">وہ دستاویزات جنہیں آپ <ph name="APP_NAME" /> کے ذریعے پرنٹ کرنے کیلئے بھیجتے ہیں ان کو <ph name="APP_NAME" /> پڑھ سکتی ہے۔</translation>
-<translation id="5760508342220592715">مزید فوائد کیلئے سائن ان کریں</translation>
 <translation id="5762787084360227629">‏Google اکاؤنٹ کی معلومات درج کریں</translation>
 <translation id="5763751966069581670">‏کوئی USB آلہ نہیں ملا</translation>
 <translation id="5764483294734785780">آڈیو &amp;محفوظ کریں بطور…</translation>
@@ -5730,6 +5730,7 @@
 <translation id="617213288191670920">کوئی زبان شامل نہیں کی گئی</translation>
 <translation id="6173623053897475761">‏اپنا PIN دوبارہ ٹائپ کریں</translation>
 <translation id="6175314957787328458">‏Microsoft ڈومین GUID</translation>
+<translation id="6177412385419165772">ہٹایا جا رہا ہے…</translation>
 <translation id="6178664161104547336">ایک سرٹیفکیٹ منتخب کریں</translation>
 <translation id="6178682841350631965">آپ کا سائن ان ڈیٹا اپ ڈیٹ نہیں ہوا</translation>
 <translation id="6180510783007738939">لائن ٹول</translation>
@@ -6206,6 +6207,7 @@
 <translation id="6619801788773578757">کیوسک ایپلیکیشن شامل کریں</translation>
 <translation id="6619990499523117484">‏اپنے PIN کی توثیق کریں</translation>
 <translation id="6620254580880484313">کنٹینر کا نام</translation>
+<translation id="6620927550847360014">‏اپنے <ph name="DEVICE_TYPE" /> سے Bruschetta کو ہٹائیں؟</translation>
 <translation id="6621391692573306628">‏اس ٹیب کو کسی اور آلے میں بھیجنے کے لیے دونوں آلات پر Chrome میں سائن ان کریں</translation>
 <translation id="6622980291894852883">تصاویر کو مسدود کرنا جاری رکھیں</translation>
 <translation id="6624036901798307345">ٹیبلیٹ موڈ میں، ٹیب کاؤنٹر ٹول بار کے بٹن پر تھپتھپائیں تاکہ نئی ٹیب کی اسٹرپ کھل سکے جو ہر ٹیب کے تھمب نیلز دکھاتی ہے۔</translation>
@@ -6423,6 +6425,7 @@
 <translation id="6818547713623251698">اپنے فون کی تصاویر، میڈیا، اطلاعات اور ایپس دیکھیں</translation>
 <translation id="6818802132960437751">پہلے سے شامل وائرس سے تحفظ</translation>
 <translation id="6818920801736417483">پاس ورڈز محفوظ کریں؟</translation>
+<translation id="6820079682647046800">‏Kerberos کی توثیق ناکام ہوگئی</translation>
 <translation id="6823174134746916417">ٹچ پیڈ کلک کرنے کیلئے تھپتھپائیں</translation>
 <translation id="6824564591481349393">ای میل پتہ کاپی کریں</translation>
 <translation id="6824584962142919697">&amp;عناصر کا معائنہ کریں</translation>
@@ -6577,6 +6580,7 @@
 <translation id="6955698182324067397">‏آپ ChromeOS ڈیبگنگ کی خصوصیات فعال کر رہے رہیں جو sshd daemon تشکیل دیں گی اور USB ڈرائیورز سے بوٹنگ کو فعال کریں گی۔</translation>
 <translation id="6955893174999506273">مزید 1 سوئچ تفویض کریں</translation>
 <translation id="6957044667612803194">‏یہ سیکیورٹی کلید PINs کو سپورٹ نہیں کرتی</translation>
+<translation id="6960133692707095572">بغیر ٹکٹ کے ملاحظہ کریں</translation>
 <translation id="6960507406838246615">‏Linux کا اپ ڈیٹ درکار ہے</translation>
 <translation id="6960648667961844909">‏<ph name="LANGUAGE" /> کی اسپیچ فائلز کو ڈاؤن لوڈ نہیں کیا جا سکا۔ بعد میں ڈاؤن لوڈ کرنے کی کوشش کی جائے گی۔ اسپیچ پروسیسنگ کے لیے Google کو بھیجی جاتی ہے جب تک کہ ڈاؤن لوڈ مکمل نہ ہو جائے۔</translation>
 <translation id="696103774840402661">اس <ph name="DEVICE_TYPE" /> پر موجود سبھی صارفین کے لیے تمام فائلز اور مقامی ڈیٹا کو مستقل طور پر حذف کر دیا گیا ہے۔</translation>
@@ -7797,7 +7801,6 @@
 <translation id="8059417245945632445">آلات کا &amp;معائنہ کریں</translation>
 <translation id="8059456211585183827">محفوظ کرنے کے لیے کوئی پرنٹر دستیاب نہیں ہے۔</translation>
 <translation id="8061091456562007989">اسے واپس تبدیل کریں</translation>
-<translation id="8061965471006133016">آپ کے پاس ورڈز اور کچھ کے لیے اضافی تحفظ</translation>
 <translation id="8061970399284390013">ہجے اور گرامر چیک</translation>
 <translation id="8061991877177392872">‏ایسا لگتا ہے کہ آپ نے پہلے ہی کسی دوسرے آلہ پر اپنی اسسٹنٹ کے ساتھ Voice Match کو ترتیب دے دیا ہے۔ ان گزشتہ ریکارڈنگز کا استعمال اس آلہ پر ایک صوتی ماڈل بنانے کے لیے کیا گیا۔</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{پیپر کی 1 شیٹ}other{پیپر کی {COUNT} شیٹس}}</translation>
@@ -8038,6 +8041,7 @@
 <translation id="8272443605911821513">"مزید ٹولز" مینو میں ایکسٹینشنز پر کلک کر کے اپنے ایکسٹینشنز کا نظم کریں۔</translation>
 <translation id="8272786333453048167">دوبارہ اجازت دیں</translation>
 <translation id="8273905181216423293">ابھی ڈاؤن لوڈ کریں</translation>
+<translation id="827488840488530039">‏آپ جس صفحہ کو ملاحظہ کرنے کی کوشش کر رہے ہیں وہ آپ کے Kerberos ٹکٹس کی تصدیق نہیں کر سکا</translation>
 <translation id="8274921654076766238">میگنیفائر کی بورڈ فوکس کے مطابق ہوتا ہے</translation>
 <translation id="8274924778568117936">اپ ڈیٹ مکمل ہونے تک اپنے <ph name="DEVICE_TYPE" /> کو آف یا بند نہ کریں۔ انسٹالیشن مکمل ہونے کے بعد آپ کا <ph name="DEVICE_TYPE" /> دوبارہ شروع ہو جائے گا۔</translation>
 <translation id="8275038454117074363">درآمد کریں</translation>

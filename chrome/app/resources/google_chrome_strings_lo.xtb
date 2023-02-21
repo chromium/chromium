@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">ກ່ຽວກັບ ChromeOS</translation>
 <translation id="1154147086299354128">&amp;ເປີດໃນ Chrome</translation>
 <translation id="1203500561924088507">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">ທ່ານສາມາດເພີດເພີນໄປກັບການນຳໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome</translation>
 <translation id="1278833599417554002">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chrome</translation>
 <translation id="1302523850133262269">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ​ໃນ​ຂະ​ນະ​ທີ່ Chrome ​ຕິດ​ຕັ້ງ​ການອັບເດດລະບົບຫລ້າ​ສຸດ.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອ່ານ ແລະ ຍອມຮັບຂໍ້ກໍານົດບໍລິການຕໍ່ໄປນີ້ກ່ອນທີ່ຈະໃຊ້ອຸປະກອນນີ້. ຂໍ້ກໍານົດເຫຼົ່ານີ້ບໍ່ຂະຫຍາຍ, ແກ້ໄຂ ຫຼື ຈຳກັດຂໍ້ກໍານົດຂອງ Google ChromeOS Flex.</translation>
@@ -262,6 +261,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6003112304606738118">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
 <translation id="6010556343189461180">ເພື່ອຮັບການອັບເດດ Google Chrome ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ macOS 10.15 ຂຶ້ນໄປ. ຄອມພິວເຕີນີ້ກຳລັງໃຊ້ macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome ຈະປິດດຽວນີ້.}=1{Chrome ຈະປິດໃນ 1 ວິນາທີ}other{Chrome ຈະປິດໃນ # ວິນາທີ.}}</translation>
+<translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6070348360322141662">ເພື່ອຄວາມປອດໄພເພີ່ມເຕີມ, Google Chrome ຈະເຂົ້າລະຫັດລັບຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="608006075545470555">ເພີ່ມໂປຣໄຟລ໌ບ່ອນເຮັດວຽກໃສ່ໂປຣແກຣມທ່ອງເວັບນີ້</translation>

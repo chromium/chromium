@@ -796,6 +796,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Wird diese Richtlinie nicht festgelegt, hat dies keine Auswirkungen auf die Steuerung des Bildschirms durch den Nutzer und auf die Funktionen zur automatischen Anpassung der Bildschirmhelligkeit.
 
       Hinweis: Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen.</translation>
+<translation id="1733092875104864334">Erfassen von WebRTC-Textprotokollen aus Google-Diensten nicht zulassen</translation>
 <translation id="1733768596873041559">Standardmäßig zum SAML-Identitätsanbieter weiterleiten (vor <ph name="PRODUCT_NAME" />-Version 99 ist eine Bestätigung durch den Nutzer erforderlich)</translation>
 <translation id="1733939382419067578">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Benachrichtigungen anzeigen dürfen.
 
@@ -1337,6 +1338,7 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
 
       Ist diese Richtlinie nicht konfiguriert, werden alle Plug-ins, die mit den Mustern in DisabledPlugins übereinstimmen, deaktiviert. Sie können dann nicht vom Nutzer aktiviert werden.</translation>
 <translation id="2236488539271255289">Speichern von lokalen Daten für keine Website zulassen</translation>
+<translation id="2236593201136596376">Erfassen von WebRTC-Textprotokollen aus Google-Diensten zulassen</translation>
 <translation id="2241498944622759244">Diese Funktion wurde nie eingeführt und die Richtlinie deshalb eingestellt. Wenn sie auf "true" festgelegt oder nicht konfiguriert wird, schlägt <ph name="PRODUCT_NAME" /> Seiten vor, die der aktuellen Seite ähnlich sind.
       Diese Vorschläge werden per Remotezugriff von Google-Servern abgerufen.
 
@@ -1481,6 +1483,9 @@ Das Zeitlimit bei Inaktivität bis zum Start des Bildschirmschoners und das Inte
       Wenn sie nicht konfiguriert ist, werden Cookies von Drittanbietern zugelassen, aber Nutzer können diese Einstellung ändern.</translation>
 <translation id="2386362615870139244">Bildschirm-Wakelocks zulassen</translation>
 <translation id="2387469539700985783">Diese Richtlinie hat keine Auswirkung auf die Berichterstellung durch Android.</translation>
+<translation id="2388701318721126001">Wenn diese Richtlinie deaktiviert ist, kann das <ph name="PRODUCT_OS_NAME" />-Hintergrundbild des Nutzers nicht aus einem Google Fotos-Album ausgewählt werden.
+
+Der Nutzer kann ein Google Fotos-Bild als Hintergrund auswählen, wenn diese Richtlinie aktiviert oder nicht konfiguriert ist.</translation>
 <translation id="2393862222659066027">Liste mit URLs öffnen und die letzte Sitzung wiederherstellen</translation>
 <translation id="2394429297128584919">Nicht zulassen, dass Seiten beim Schließen synchrone XHR-Anfragen senden</translation>
 <translation id="2394674739523870144">Wenn für die Richtlinie eine Liste von Strings festgelegt ist, werden diese Strings mit Leerzeichen verbunden und als Befehlszeilenparameter von <ph name="IE_PRODUCT_NAME" /> an <ph name="PRODUCT_NAME" /> weitergegeben. Ist in einem Parameter <ph name="URL_PLACEHOLDER" /> enthalten, wird <ph name="URL_PLACEHOLDER" /> durch die URL der Seite ersetzt, die geöffnet werden soll. Wenn kein Parameter <ph name="URL_PLACEHOLDER" /> enthält, wird die URL an das Ende der Befehlszeile angehängt.
@@ -2845,6 +2850,7 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
 <translation id="3608206578291537084">Verschlüsselte Pipeline für die Berichterstellung aktivieren</translation>
 <translation id="3608281460204780443">Chrome Web Store-Symbol im <ph name="PRODUCT_OS_NAME" />-Launcher und auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="3622463490728773174">Neue Implementierung zulassen</translation>
+<translation id="3623332696371971798">Google Fotos den Zugriff über die Personalisierungs-App nicht erlauben</translation>
 <translation id="3627678165642179114">Webdienst für die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
 <translation id="3628480121685794414">Simplexdruck aktivieren</translation>
 <translation id="3634125384445314047">Zulassen, dass Fotos und Videos, die kürzlich mit dem Smartphone aufgenommen wurden, über Phone Hub abgerufen werden können.</translation>
@@ -2882,6 +2888,7 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
 
           Diese Richtlinie kommt nur vorübergehend zum Einsatz und wird voraussichtlich in <ph name="PRODUCT_NAME" /> 107 entfernt. Die Frist kann verlängert werden, sofern bei Unternehmen Bedarf besteht.
           </translation>
+<translation id="3678069907945250643">Google Fotos den Zugriff über die Personalisierungs-App erlauben</translation>
 <translation id="3685979383016152590">Durch die Richtlinie wird angegeben, welche Zugriffsrichtlinie für die Massenkonfiguration von Druckern verwendet wird. Dadurch wird festgelegt, welche Drucker von <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> für Nutzer verfügbar sind.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (Wert 0) verwendet <ph name="PRINTERS_BULK_BLOCKLIST" />, um den Zugriff auf die angegebenen Drucker einzuschränken
@@ -7141,6 +7148,7 @@ werden abgelehnt.</translation>
       Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, dürfen Chrome-Apps unter Umständen nicht ausgeführt werden, je nach dem Status des Einstellungs-Roll-outs.
       In beiden Fällen sind Chrome-Apps zulässig, deren Installation durch die Richtlinie erzwungen wird.</translation>
 <translation id="7774768074957326919">System-Proxyeinstellungen verwenden</translation>
+<translation id="7775077662962729812">Hintergrundauswahl über Google Fotos</translation>
 <translation id="7776848995687565978">Eine Liste von Ursprüngen konfigurieren, von denen die Verlängerung der Hintergrundlebensdauer der verbundenen Erweiterungen gewährt wird.</translation>
 <translation id="777734450201217641">Mit dieser Richtlinie aktivierst du auf dem Anmeldebildschirm die Tastenkombinationen für Bedienungshilfen.
 
@@ -7988,6 +7996,7 @@ Rollback auf <ph name="PRODUCT_OS_NAME" /> Version 106 oder niedriger wird nich
 
           Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls ist JavaScript JIT für die Website aktiviert.</translation>
 <translation id="8543108307976719751">Verbindungen per Remotezugriff verhindern</translation>
+<translation id="8543639085146778837">Erfassen von WebRTC-Textprotokollen aus Google-Diensten zulassen</translation>
 <translation id="8543975123557636331">Audioausgabe aktivieren</translation>
 <translation id="8544375438507658205">Standardanwendung für HTML-Darstellung in <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Zulassen, dass SMS zwischen Smartphone mit Chromebook synchronisiert werden.</translation>
@@ -8493,6 +8502,9 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 
       Der Richtlinienwert sollte in Millisekunden angegeben werden. Der Wert kann zwischen 30 Sekunden und 24 Stunden liegen.</translation>
 <translation id="9040042535845939426">Mit dieser Richtlinie legst du den Status des Datenschutzbildschirms auf dem Anmeldebildschirm fest</translation>
+<translation id="9046248916118130378">Wenn diese Richtlinie aktiviert ist, darf <ph name="PRODUCT_NAME" /> WebRTC-Textprotokolle aus Google-Diensten wie Google Meet speichern und bei Google hochladen. Diese Protokolle enthalten Diagnoseinformationen, die für die Fehlerbehebung bei Audioanrufen oder Videokonferenzen in <ph name="PRODUCT_NAME" /> hilfreich sein können. Dazu zählen Textmetadaten, die eingehende und ausgehende WebRTC-Streams beschreiben, WebRTC-spezifische Protokolleinträge und zusätzliche Systeminformationen. Audio- oder Videoinhalte von Anrufen bzw. Konferenzen gehören nicht dazu.
+Ist die Richtlinie deaktiviert, werden solche Protokolle nicht bei Google hochgeladen. Die Protokolle werden dann lokal auf dem Gerät des Nutzers gesammelt.
+Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> diese Protokolle standardmäßig erfassen und hochladen.</translation>
 <translation id="9050853837490399534">Diese Richtlinie gibt vor, ob das Gerät auf einen Quick-Fix-Build aktualisiert werden soll.
 
       Wenn als Richtlinienwert ein Token festgelegt ist, das mit einem Quick-Fix-Build verknüpft ist, wird das Gerät auf den entsprechenden Build aktualisiert, sofern eine solche Aktualisierung nicht durch eine andere Richtlinie blockiert wird.

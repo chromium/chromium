@@ -561,6 +561,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5118713593561876160">Interessi</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5119391094379141756">Seleziona Chrome</translation>
+<translation id="5121618895923301719">Stai già monitorando questo prodotto. Questa pagina viene salvata nella sezione <ph name="BEGIN_LINK" />Preferiti su disp. mobili<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} password inefficace}other{{COUNT} password inefficaci}}</translation>
 <translation id="5149188072385105201">Aggiungi password…</translation>
@@ -591,6 +592,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5386314158584363703">Qui troverai i siti che segui</translation>
 <translation id="5388358297987318779">Apri immagine</translation>
 <translation id="5407969256130905701">Annulla modifiche</translation>
+<translation id="5414763847370083940">Riceverai un avviso se il prezzo calerà su qualsiasi sito.</translation>
 <translation id="5416022985862681400">Ultimi 7 giorni</translation>
 <translation id="5423269318075950257">Monitora prezzo</translation>
 <translation id="543338862236136125">Modifica password</translation>
@@ -1133,6 +1135,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="952704832371081537">Annulla</translation>
 <translation id="953008885340860025">Chrome è disconnesso</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>
 <translation id="980712131080209571">Novità</translation>
 <translation id="981498610235328462">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti.</translation>
 <translation id="984509647832111802">La sincronizzazione non funziona.</translation>

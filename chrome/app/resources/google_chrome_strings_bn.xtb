@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">ChromeOS সম্পর্কে</translation>
 <translation id="1154147086299354128">&amp;Chrome এ খুলুন</translation>
 <translation id="1203500561924088507">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই ব্রাউজার রিস্টার্ট করতে হবে।</translation>
-<translation id="1236866257838264361">Chrome থেকে সবচেয়ে বেশি সুবিধা পেতে পারেন</translation>
 <translation id="1278833599417554002">&amp;Chrome আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="1302523850133262269">Chrome যখন সাম্প্রতিক সিস্টেম আপডেটগুলিকে ইনস্টল করে তখন দয়া করে অপেক্ষা করুন৷</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" />-এ এই ডিভাইস ব্যবহার করার আগে আপনাকে নিম্নলিখিত পরিষেবার শর্তাবলী পড়ে নিতে হবে এবং তাতে সম্মতি দিতে হবে। এইসব শর্ত Google ChromeOS Flex-এর শর্তাবলীকে সম্প্রসারণ, পরিবর্তন বা সীমাবদ্ধ করে না।</translation>
@@ -258,6 +257,7 @@
 <translation id="6003112304606738118">ডাউনলোড হচ্ছে... <ph name="HOURS" /> ঘণ্টা বাকি আছে</translation>
 <translation id="6010556343189461180">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার macOS 10.15 বা এর পরবর্তী ভার্সন থাকতে হবে। এই কম্পিউটারে macOS 10.14 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome এখন বন্ধ হবে।}=1{Chrome ১ সেকেন্ডের মধ্যে বন্ধ হয়ে যাবে।}one{Chrome # সেকেন্ডের মধ্যে বন্ধ হয়ে যাবে।}other{Chrome # সেকেন্ডের মধ্যে বন্ধ হয়ে যাবে।}}</translation>
+<translation id="6022659036123304283">Chrome-কে আপনার করে নিন</translation>
 <translation id="6040143037577758943">বন্ধ</translation>
 <translation id="6070348360322141662">অতিরিক্ত নিরাপত্তার জন্য, Google Chrome আপনার ডেটা এনক্রিপ্ট করবে</translation>
 <translation id="608006075545470555">এই ব্রাউজারে অফিস প্রোফাইল যোগ করুন</translation>

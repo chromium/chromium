@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">بعدی</translation>
 <translation id="1209796539517632982">سرورهای نام خودکار</translation>
 <translation id="1210831758834677569">لائوسی</translation>
+<translation id="1221555006497674479">فضای ذخیره‌سازی کم است، <ph name="REMAINING_PERCENTAGE" />٪ از <ph name="TOTAL_SPACE" /> فضای ذخیره‌سازی درایو مشترک باقی مانده است.</translation>
 <translation id="1243314992276662751">بارگذاری</translation>
 <translation id="1249250836236328755">ژانر</translation>
 <translation id="1254593899333212300">اتصال اینترنتی مستقیم</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">چینی (پین‌یین)</translation>
 <translation id="1646019627374511909">تنظیم <ph name="NUMBER_OF_ITEMS" /> فایل برای دسترسی آفلاین</translation>
 <translation id="164969095109328410">‏دستگاه Chrome</translation>
+<translation id="1661207570040737402">‏از کل فضای ذخیره‌سازی درایو مشترک Google Workspace استفاده کرده‌اید.</translation>
 <translation id="1661867754829461514">پین جا افتاده</translation>
 <translation id="166439687370499867">تغییر پیکربندی‌های شبکه هم‌رسانی‌شده مجاز نیست</translation>
 <translation id="1665611772925418501">امکان تغییر این فایل وجود نداشت.</translation>
@@ -880,6 +882,7 @@
 <translation id="8116072619078571545">آب یخ</translation>
 <translation id="8128733386027980860">‏انگلیسی (بریتانیا) با صفحه‌کلید Dvorak</translation>
 <translation id="8137331602592933310">«<ph name="FILENAME" />» با شما به اشتراک گذاشته شده است. شما نمی‌توانید آن را حذف کنید زیرا به شما تعلق ندارد.</translation>
+<translation id="8138705869659070104">فعال‌سازی بعداز راه‌اندازی دستگاه</translation>
 <translation id="813913629614996137">درحال مقداردهی اولیه…</translation>
 <translation id="8147028810663464959">عرض نویسه روی «کامل» تنظیم شده است</translation>
 <translation id="8151638057146502721">پیکربندی</translation>

@@ -159,6 +159,7 @@
 <translation id="21133533946938348">Καρφίτσωμα καρτέλας</translation>
 <translation id="2116625576999540962">Μετακινήθηκαν <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> στοιχεία</translation>
 <translation id="2122754583996902531">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">Ενεργοποίηση των ειδοποιήσεων τιμών;</translation>
 <translation id="2139867232736819575">Αναζήτηση του κειμένου που αντιγράψατε</translation>
 <translation id="214201757571129614">Σύνδεση…</translation>
 <translation id="2149973817440762519">Επεξεργασία σελιδοδείκτη</translation>
@@ -250,6 +251,7 @@
 <translation id="2797029671965852011">Εμφάνιση ιστορικού</translation>
 <translation id="2800683595868705743">Αποχώρηση από την εναλλαγή καρτελών</translation>
 <translation id="2815198996063984598">2. Πατήστε Προεπιλεγμένη εφαρμογή προγράμματος περιήγησης.</translation>
+<translation id="2822917246944009066">Η καρτέλα καρφιτσώθηκε</translation>
 <translation id="2830972654601096923">Διαχείριση διευθύνσεων…</translation>
 <translation id="2834399722155632105">3. Πατήστε Επιλογές κωδικών πρόσβασης</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -894,6 +896,7 @@
 <translation id="7431991332293347422">Ελέγξτε τον τρόπο με τον οποίο χρησιμοποιείται το ιστορικό περιήγησής σας για την εξατομίκευση της Αναζήτησης και άλλων λειτουργιών</translation>
 <translation id="7435356471928173109">Απενεργοποιήθηκε από τον διαχειριστή σας.</translation>
 <translation id="7438481509621345350">Θα βλέπετε πλέον ειδήσεις από τον ιστότοπο <ph name="CHANNEL_NAME" /> όταν ανοίγετε μια νέα καρτέλα.</translation>
+<translation id="7446583256109515732">Η καρτέλα ξεκαρφιτσώθηκε</translation>
 <translation id="7454057999980797137">Νομός/Επαρχία</translation>
 <translation id="7459628154744868585">Η Βελτιωμένη προστασία είναι ενεργή</translation>
 <translation id="746684838091935575">3. Επιλέξτε Chrome.</translation>
@@ -1124,6 +1127,7 @@
 <translation id="9137526406337347448">Υπηρεσίες Google</translation>
 <translation id="9148126808321036104">Συνδεθείτε ξανά</translation>
 <translation id="9157836665414082580">Απόκρυψη παραθύρων διαλόγου</translation>
+<translation id="9165320910061267720">Για να λαμβάνετε ειδοποιήσεις σχετικά με τις πτώσεις τιμών, θα πρέπει να ενεργοποιήσετε τις ειδοποιήσεις στις ρυθμίσεις iOS.</translation>
 <translation id="9177438225260810839">Αναζήτηση σε ανοικτές καρτέλες</translation>
 <translation id="9188680907066685419">Αποσύνδεση από διαχειριζόμενο λογαριασμό</translation>
 <translation id="9193147658040604536">Σύρετε εδώ για Καρφίτσωμα καρτέλας</translation>

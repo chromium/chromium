@@ -379,6 +379,7 @@
 <translation id="1339009753652684748">Käytä Assistantia sanomalla "Hey Google". Jos haluat säästää virtaa, valitse Käytössä (suositus). Assistant vastaa vain, jos laite on kytketty virtalähteeseen tai laturiin.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Varmuuskopioi mediatiedostot laitteelta Tiedostot-sovelluksen avulla.</translation>
+<translation id="1341701348342335220">Hyvin tehty!</translation>
 <translation id="1341871421050612057">Synkronointi ei onnistu: <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Anna Linux-sovelluksille USB-laitteiden käyttöoikeus. Linux ei muista USB-laitetta, kun se on poistettu.</translation>
 <translation id="1343920184519992513">Jatka siitä, mihin jäit, ja avaa tietyt sivut</translation>
@@ -3635,6 +3636,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4232375817808480934">Määritä Kerberos</translation>
 <translation id="4235965441080806197">Peru sisäänkirjautuminen</translation>
 <translation id="4236163961381003811">Tutustu muihin laajennuksiin</translation>
+<translation id="4237282663517880406">Näytä Google Drive ‐ehdotukset</translation>
 <translation id="4241182343707213132">Käynnistä uudelleen organisaation sovellusten päivitystä varten</translation>
 <translation id="4242145785130247982">Useita käyttöoikeusvarmenteita ei tueta</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
@@ -4451,7 +4453,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4977942889532008999">Vahvista osoite</translation>
 <translation id="4980805016576257426">Tämä laajennus sisältää haittaohjelmia.</translation>
 <translation id="4981449534399733132">Jos haluat poistaa selailutiedot kaikilta synkronoiduilta laitteiltasi ja Google-tililtäsi, <ph name="BEGIN_LINK" />kirjaudu sisään<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Jatka millä tahansa laitteella siitä, mihin jäit</translation>
 <translation id="4986706507552097681">Voit valita synkronoitavan sisällön asetuksissa. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="4986728572522335985">Tämä poistaa kaiken suojausavaimen datan, mukaan lukien sen PIN-koodin</translation>
 <translation id="4988526792673242964">Sivut</translation>
@@ -4568,7 +4569,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5097349930204431044">Avaamasi sivustot voivat päätellä, mistä pidät, ja ehdottaa mainoksia selatessasi</translation>
 <translation id="5097649414558628673">Työkalu: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klikkaa automaattisesti, kun kohdistin pysähtyy</translation>
-<translation id="5101683448725092498">Varmuuskopioi sisältösi</translation>
 <translation id="5101839224773798795">Klikkaa automaattisesti, kun osoitin pysähtyy</translation>
 <translation id="5106350808162641062">Poista</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> on valvottu Family Linkillä. Voit lisätä koulutilejä, jotka pääsevät oppimateriaaleihin vanhemman valvonnassa.</translation>
@@ -5134,7 +5134,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5623842676595125836">Loki</translation>
 <translation id="5624120631404540903">Hallitse salasanoja</translation>
 <translation id="5625225435499354052">Muokkaa Google Payssa</translation>
-<translation id="5625631605902707678">Kaikissa laitteissa</translation>
 <translation id="5626134646977739690">Nimi:</translation>
 <translation id="5627086634964711283">Määrittää myös Etusivu-painikkeella avattavan sivun.</translation>
 <translation id="5627676517703583263">Selaa älykkäästi Chromella.</translation>
@@ -5246,7 +5245,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Data tai laite ei noudata kaikkia organisaatiosi tietoturvakäytäntöjä. Tarkista järjestelmänvalvojalta, mitä on korjattava.}=1{Tiedosto tai laite ei noudata kaikkia organisaatiosi tietoturvakäytäntöjä. Tarkista järjestelmänvalvojalta, mitä on korjattava.}other{Tiedostot eivät noudata kaikkia organisaatiosi tietoturvakäytäntöjä. Tarkista järjestelmänvalvojalta, mitä on korjattava.}}</translation>
 <translation id="5736796278325406685">Anna kelvollinen käyttäjänimi</translation>
 <translation id="5738093759615225354">Tarvitset tämän koodin tietokoneelle kirjautumiseen</translation>
-<translation id="5738329404678738022">Tallenna kirjanmerkkejä ja muuta synkronoimalla</translation>
 <translation id="5739017626473506901">Kirjaudu sisään, niin <ph name="USER_NAME" /> voi lisätä koulutilin avullasi</translation>
 <translation id="5739235828260127894">Odotetaan vahvistusta. <ph name="LINK_BEGIN" />Lisätietoja<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Hyvin suuri</translation>
@@ -5268,7 +5266,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5757375109985023827">Valitse esikatseltava välilehti</translation>
 <translation id="5758631781033351321">Näet lukulistasi täällä</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> voi lukea dokumentteja, jotka lähetät tulostettavaksi sovelluksen <ph name="APP_NAME" /> kautta.</translation>
-<translation id="5760508342220592715">Kirjaudu sisään, niin saat lisää etuja</translation>
 <translation id="5762787084360227629">Lisää Google-tilin tiedot</translation>
 <translation id="5763751966069581670">USB-laitteita ei löytynyt.</translation>
 <translation id="5764483294734785780">T&amp;allenna audiotiedosto nimellä...</translation>
@@ -7806,7 +7803,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8059417245945632445">Tark&amp;ista laitteet</translation>
 <translation id="8059456211585183827">Tallennettavia tulostimia ei ole.</translation>
 <translation id="8061091456562007989">Vaihda takaisin</translation>
-<translation id="8061965471006133016">Lisäsuojaa salasanoille ja muille tärkeille asioille</translation>
 <translation id="8061970399284390013">Oikeinkirjoitus ja kieliopin tarkistus</translation>
 <translation id="8061991877177392872">Näyttää siltä, että olet jo ottanut Assistantin Voice Matchin käyttöön toisella laitteella. Tämän laitteen äänimalli on luotu aiemmista tallenteista.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 paperiarkki}other{{COUNT} paperiarkkia}}</translation>

@@ -16,7 +16,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1315551408014407711">Configura tu nuevo perfil de Chromium</translation>
 <translation id="1396446129537741364">Chromium está intentando mostrar contraseñas.</translation>
 <translation id="1414495520565016063">Has iniciado sesión en Chromium</translation>
-<translation id="1493803763272692301">Puedes disfrutar al máximo de Chromium</translation>
 <translation id="1524282610922162960">Compartir una pestaña de Chromium</translation>
 <translation id="1553461853655228091">Para crear un mapa 3D de tu entorno, Chromium necesita permiso para acceder a tu cámara</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Tu administrador pide que reinicies Chromium para aplicar una actualización}=1{Tu administrador pide que reinicies Chromium para aplicar una actualización. La ventana de Incógnito no se volverá a abrir.}other{Tu administrador pide que reinicies Chromium para aplicar una actualización. Las # ventanas de Incógnito no se volverán a abrir.}}</translation>

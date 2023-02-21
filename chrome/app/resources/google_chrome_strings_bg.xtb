@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Всичко за Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Отваряне в Chrome</translation>
 <translation id="1203500561924088507">Благодарим ви, че инсталирахте <ph name="BUNDLE_NAME" />. Трябва да рестартирате браузъра си, преди да използвате това приложение.</translation>
-<translation id="1236866257838264361">Можете да се възползвате максимално от Chrome</translation>
 <translation id="1278833599417554002">Повторно стартиране за актуализиране на &amp;Chrome</translation>
 <translation id="1302523850133262269">Моля, изчакайте, докато Chrome инсталира най-новите системни актуализации.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> изисква да прочетете и приемете следните Общи условия, преди да използвате това устройство. Те не разширяват, не променят, нито ограничават Общите условия на Google ChromeOS Flex.</translation>
@@ -249,12 +248,14 @@
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вход в мрежата</translation>
 <translation id="5924017743176219022">Установява се връзка с интернет...</translation>
+<translation id="5932997892801542621">Когато пишете в адресната лента или полето за търсене, Chrome изпраща въведеното от вас до Google Диск с цел получаване на предложения за елементи. Тази функция е изключена в режим „инкогнито“.</translation>
 <translation id="5940385492829620908">Тук ще намерите посещаваните от вас места в мрежата, отметките и другите си неща в Chrome.</translation>
 <translation id="5941711191222866238">Намаляване</translation>
 <translation id="5941830788786076944">Искам Google Chrome да бъде браузърът по подразбиране</translation>
 <translation id="6003112304606738118">Изтегля се... Оставащо време: <ph name="HOURS" /> ч</translation>
 <translation id="6010556343189461180">За да получавате бъдещи актуализации на Google Chrome, трябва да използвате macOS 10.15 или по-нова версия. Компютърът ви работи с macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome ще се затвори сега.}=1{Chrome ще се затвори след 1 секунда.}other{Chrome ще се затвори след # секунди.}}</translation>
+<translation id="6022659036123304283">Персонализирайте Chrome според вкуса си</translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6070348360322141662">За повишаване на сигурността Google Chrome ще шифрова данните ви</translation>
 <translation id="608006075545470555">Добавяне на служебен потребителски профил към този браузър</translation>

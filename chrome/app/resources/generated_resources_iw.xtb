@@ -381,6 +381,7 @@
 <translation id="1339009753652684748">‏כשאומרים "Hey Google", מתבצעת גישה ל-Assistant. כדי לחסוך בצריכת הסוללה, אפשר לבחור באפשרות "מופעל (מומלץ)". Assistant תגיב רק כשהמכשיר מחובר לחשמל או נמצא בטעינה.</translation>
 <translation id="13392265090583506">נגישות</translation>
 <translation id="1340527397989195812">‏גיבוי המדיה מהמכשיר באמצעות אפליקציית Files.</translation>
+<translation id="1341701348342335220">כל הכבוד!</translation>
 <translation id="1341871421050612057">לא ניתן לסנכרן עם <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">‏הענקת הרשאה לאפליקציות Linux לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של Linux.</translation>
 <translation id="1343920184519992513">להמשיך מהמקום שבו הפסקת ולפתוח קבוצת דפים מסוימת</translation>
@@ -3639,6 +3640,7 @@
 <translation id="4232375817808480934">‏הגדרת Kerberos</translation>
 <translation id="4235965441080806197">ביטול כניסה</translation>
 <translation id="4236163961381003811">תוספים נוספים</translation>
+<translation id="4237282663517880406">‏הצגת הצעות מ-Google Drive</translation>
 <translation id="4241182343707213132">יש להפעיל מחדש כדי לעדכן את האפליקציות של הארגון</translation>
 <translation id="4242145785130247982">אין תמיכה באישורי לקוח מרובים.</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
@@ -4455,7 +4457,6 @@
 <translation id="4977942889532008999">אישור גישה</translation>
 <translation id="4980805016576257426">התוסף הזה מכיל תוכנה זדונית.</translation>
 <translation id="4981449534399733132">‏כדי לנקות את נתוני הגלישה מכל המכשירים המסונכרנים ומחשבון Google שלך, <ph name="BEGIN_LINK" />יש לבצע כניסה<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">אפשרות להמשיך מהנקודה שבה הפסקת, מכל מכשיר</translation>
 <translation id="4986706507552097681">‏אפשר לבחור מה לסנכרן בכל שלב דרך ההגדרות. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="4986728572522335985">הפעולה הזו תמחק את כל הנתונים במפתח האבטחה, כולל קוד האימות שלו</translation>
 <translation id="4988526792673242964">דפים</translation>
@@ -4572,7 +4573,6 @@
 <translation id="5097349930204431044">אתרים שביקרת בהם יכולים לזהות מה מעניין אותך ואז להציע מודעות במהלך הגלישה</translation>
 <translation id="5097649414558628673">כלי: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">ללחוץ אוטומטית כשהסמן עוצר</translation>
-<translation id="5101683448725092498">גיבוי הפריטים שלך</translation>
 <translation id="5101839224773798795">קליק אוטומטי כשהסמן עוצר</translation>
 <translation id="5106350808162641062">הסרה</translation>
 <translation id="510695978163689362">‏הפיקוח על <ph name="USER_EMAIL" /> מתבצע באמצעות Family Link. אפשר להוסיף חשבונות בית-ספריים כדי לקבל גישה למקורות מידע הזמינים בבית הספר בעזרת פיקוח הורים.</translation>
@@ -5138,7 +5138,6 @@
 <translation id="5623842676595125836">יומן</translation>
 <translation id="5624120631404540903">ניהול סיסמאות</translation>
 <translation id="5625225435499354052">‏עריכה ב-Google Pay</translation>
-<translation id="5625631605902707678">במכשירים שונים</translation>
 <translation id="5626134646977739690">שם:</translation>
 <translation id="5627086634964711283">הגדרה זו גם קובעת איזה דף מוצג כשלוחצים על הלחצן 'דף הבית'.</translation>
 <translation id="5627676517703583263">‏גלישה חכמה עם Chrome</translation>
@@ -5250,7 +5249,6 @@
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{הנתונים האלה או המכשיר שלך לא עומדים בחלק מהכללים של מדיניות האבטחה של הארגון. עליך לברר עם האדמין מה צריך לתקן.}=1{הקובץ הזה או המכשיר שלך לא עומדים בחלק מהכללים של מדיניות האבטחה של הארגון. עליך לברר עם האדמין מה צריך לתקן.}one{הקבצים האלה לא עומדים בחלק מהכללים של מדיניות האבטחה של הארגון. עליך לברר עם האדמין מה צריך לתקן.}two{הקבצים האלה לא עומדים בחלק מהכללים של מדיניות האבטחה של הארגון. עליך לברר עם האדמין מה צריך לתקן.}other{הקבצים האלה לא עומדים בחלק מהכללים של מדיניות האבטחה של הארגון. עליך לברר עם האדמין מה צריך לתקן.}}</translation>
 <translation id="5736796278325406685">יש להזין שם משתמש חוקי</translation>
 <translation id="5738093759615225354">מפתח הגישה הזה ישמש לכניסה למחשב</translation>
-<translation id="5738329404678738022">אפשר לאחסן את הסימניות ופריטים נוספים בעזרת הסנכרון</translation>
 <translation id="5739017626473506901">כדי לעזור בהוספת חשבון בית ספרי של <ph name="USER_NAME" />, עליך לבצע כניסה למערכת</translation>
 <translation id="5739235828260127894">בהמתנה לאימות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">גדול מאוד</translation>
@@ -5272,7 +5270,6 @@
 <translation id="5757375109985023827">בחירת כרטיסייה לתצוגה מקדימה</translation>
 <translation id="5758631781033351321">רשימת הקריאה זמינה כאן</translation>
 <translation id="5759728514498647443">ניתן להשתמש ב-<ph name="APP_NAME" /> כדי לקרוא מסמכים ששולחים להדפסה באמצעות <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">כדאי להיכנס לחשבון ולקבל עוד הטבות</translation>
 <translation id="5762787084360227629">‏הזנת פרטי חשבון Google</translation>
 <translation id="5763751966069581670">‏לא נמצאו התקני USB</translation>
 <translation id="5764483294734785780">ש&amp;מירת שמע בתור...</translation>
@@ -7814,7 +7811,6 @@
 <translation id="8059417245945632445">&amp;בדיקת מכשירים</translation>
 <translation id="8059456211585183827">אין מדפסות זמינות לשמירה.</translation>
 <translation id="8061091456562007989">חזרה להגדרות הקודמות</translation>
-<translation id="8061965471006133016">הגנה נוספת על הסיסמאות שלך ועוד</translation>
 <translation id="8061970399284390013">בדיקת איות ודקדוק</translation>
 <translation id="8061991877177392872">‏נראה שכבר הגדרת את Voice Match באמצעות Assistant במכשיר אחר. נעשה שימוש בהקלטות הקודמות האלה כדי ליצור תבנית קול במכשיר זה.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{גיליון נייר אחד}one{{COUNT} גיליונות נייר}two{{COUNT} גיליונות נייר}other{{COUNT} גיליונות נייר}}</translation>

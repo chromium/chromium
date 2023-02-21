@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Par Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Atvērt pārlūkā Chrome</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
-<translation id="1236866257838264361">Varat pilnvērtīgi izmantot pārlūku Chrome</translation>
 <translation id="1278833599417554002">Atkārtoti palaist, lai atjauninātu &amp;Chrome</translation>
 <translation id="1302523850133262269">Lūdzu, uzgaidiet, kamēr Chrome instalē jaunākos sistēmas atjauninājumus.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> pieprasa, lai pirms šīs ierīces lietošanas jūs izlasītu tālāk izklāstītos pakalpojumu sniegšanas noteikumus un piekristu tiem. Šie noteikumi nepaplašina, nepārveido un neierobežo operētājsistēmas Google Chrome OS Flex noteikumus.</translation>
@@ -250,12 +249,14 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> — pierakstīšanās tīklā</translation>
 <translation id="5924017743176219022">Notiek savienojuma izveide ar internetu...</translation>
+<translation id="5932997892801542621">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chrome nosūta ierakstīto tekstu Google diskam, lai iegūtu vienumu ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="5940385492829620908">Šeit atrodas jūsu tīmekļa saturs, grāmatzīmes un cits Chrome saturs.</translation>
 <translation id="5941711191222866238">Minimizēt</translation>
 <translation id="5941830788786076944">Izveidot Google Chrome par noklusējuma pārlūku</translation>
 <translation id="6003112304606738118">Notiek lejupielāde... Atlikušais laiks: <ph name="HOURS" /> stunda(-as).</translation>
 <translation id="6010556343189461180">Lai saņemtu turpmākus Google Chrome atjauninājumus, ir nepieciešama operētājsistēma macOS 10.15 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome tūlīt tiks aizvērts.}=1{Chrome tiks aizvērts pēc 1 sekundes.}zero{Chrome tiks aizvērts pēc # sekundēm.}one{Chrome tiks aizvērts pēc # sekundes.}other{Chrome tiks aizvērts pēc # sekundēm.}}</translation>
+<translation id="6022659036123304283">Pielāgojiet Chrome savām prasībām</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6070348360322141662">Papildu drošības nolūkos Google Chrome šifrēs jūsu datus.</translation>
 <translation id="608006075545470555">Darba profila pievienošana šai pārlūkprogrammai</translation>

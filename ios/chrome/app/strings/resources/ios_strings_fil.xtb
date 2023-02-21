@@ -159,6 +159,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="21133533946938348">Pin Tab</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> (na) item ang inilipat</translation>
 <translation id="2122754583996902531">Pinapamahalaan ang iyong browser. <ph name="BEGIN_LINK" />Matuto Pa<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">I-on ang Mga Alerto sa Presyo?</translation>
 <translation id="2139867232736819575">Maghanap para sa Text na Kinopya Mo</translation>
 <translation id="214201757571129614">Mag-sign In…</translation>
 <translation id="2149973817440762519">I-edit ang Bookmark</translation>
@@ -250,6 +251,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2797029671965852011">Ipakita ang History</translation>
 <translation id="2800683595868705743">Umalis sa Tagalipat ng Tab</translation>
 <translation id="2815198996063984598">2. I-tap ang Default na Browser App</translation>
+<translation id="2822917246944009066">Na-pin ang Tab</translation>
 <translation id="2830972654601096923">Pamahalaan ang Mga Address...</translation>
 <translation id="2834399722155632105">3. I-tap ang Mga Opsyon sa Password</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -561,6 +563,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5118713593561876160">Mga Interes</translation>
 <translation id="5118764316110575523">Naka-off</translation>
 <translation id="5119391094379141756">Piliin ang Chrome</translation>
+<translation id="5121618895923301719">Sinusubaybayan mo na ang produktong ito. Naka-save ang page na ito sa <ph name="BEGIN_LINK" />Mga Bookmark sa Mobile<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">I-sync ang iyong mga password, history, at higit pa sa lahat ng device</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} Mahinang Password}one{{COUNT} Mahinang Password}other{{COUNT} na Mahinang Password}}</translation>
 <translation id="5149188072385105201">Magdagdag ng Password...</translation>
@@ -591,6 +594,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5386314158584363703">Makikita mo ang mga sinusubaybayan mong site dito</translation>
 <translation id="5388358297987318779">Buksan ang Larawan</translation>
 <translation id="5407969256130905701">I-discard ang Mga Pagbabago</translation>
+<translation id="5414763847370083940">Makakatanggap ka ng alerto kung bumaba ang presyo sa anumang site.</translation>
 <translation id="5416022985862681400">Huling 7 Araw</translation>
 <translation id="5423269318075950257">Subaybayan ang Presyo</translation>
 <translation id="543338862236136125">I-edit ang password</translation>
@@ -891,6 +895,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7431991332293347422">Kontrolin kung paano ginagamit ang iyong history ng pag-browse para i-personalize ang Paghahanap at higit pa</translation>
 <translation id="7435356471928173109">Na-off ng iyong administrator</translation>
 <translation id="7438481509621345350">Makakakita ka na ngayon ng mga kuwento mula sa <ph name="CHANNEL_NAME" /> kapag nagbukas ka ng bagong tab.</translation>
+<translation id="7446583256109515732">Na-unpin ang Tab</translation>
 <translation id="7454057999980797137">Estado / County</translation>
 <translation id="7459628154744868585">Naka-on ang Pinaigting na Proteksyon</translation>
 <translation id="746684838091935575">3. Piliin ang Chrome</translation>
@@ -1121,6 +1126,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>
 <translation id="9157836665414082580">Pigilan ang Mga Dialog</translation>
+<translation id="9165320910061267720">Para makatanggap ng mga notification tungkol sa mga alerto sa pagbaba ng presyo, kakailanganin mong i-on ang mga notification sa mga setting ng iyong iOS.</translation>
 <translation id="9177438225260810839">Maghanap sa Mga Bukas na Tab</translation>
 <translation id="9188680907066685419">Mag-sign out sa pinamamahalaang account</translation>
 <translation id="9193147658040604536">I-drag dito para I-pin ang Tab</translation>
@@ -1133,6 +1139,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="952704832371081537">Kanselahin</translation>
 <translation id="953008885340860025">Naka-sign Out ang Chrome</translation>
 <translation id="959066944189734975">Sinusubaybayan mo ang <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Subaybayan ang presyo ng produkto sa mga online store. Makakatanggap ka ng mga alerto kapag bumaba ang presyo.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Pinapayagan ka lang ng iyong organisasyon na mag-sign in gamit ang ilang partikular na account. Nakatago ang mga account na hindi pinapayagan.</translation>
 <translation id="984509647832111802">Hindi Gumagana ang Pag-sync.</translation>

@@ -226,6 +226,7 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2248941474044011069">Passordene dine krypteres på enheten før de lagres i Google Passordlagring</translation>
 <translation id="2249635629516220541">Tilpass informasjonen som brukes av nettsteder for å vise deg annonser</translation>
 <translation id="2259659629660284697">Eksportér passord</translation>
+<translation id="2276231040576210443">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK1" />innstillingene<ph name="END_LINK1" />. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="2276696007612801991">Logg på Google-kontoen din for å sjekke passordene dine</translation>
 <translation id="2278052315791335171">Sletting av dette passordet sletter ikke kontoen din på <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
@@ -1224,6 +1225,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7596558890252710462">Operativsystem</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>
 <translation id="7612619742409846846">Logget på Google som</translation>
+<translation id="7612989789287281429">Logger på …</translation>
 <translation id="7616551326690708776">Velg en mal for markeringen.</translation>
 <translation id="7619072057915878432">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av nettverksproblemer.</translation>
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
@@ -1493,6 +1495,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>
 <translation id="8987641763863173640">Administrer innstillinger for videoforhåndsvisning</translation>
+<translation id="8987736167266086032">Fortsett der du slapp</translation>
 <translation id="8989968390305463310">Nettleserloggen din påvirker hvilke annonser du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine automatisk på rullerende basis hver måned. Interessene kan fornyes med mindre du fjerner dem.</translation>
 <translation id="8993760627012879038">Åpne en ny fane i inkognitomodus</translation>
 <translation id="8996847606757455498">Velg en annen leverandør</translation>

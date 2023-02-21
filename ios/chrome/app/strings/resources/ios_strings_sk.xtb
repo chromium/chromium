@@ -561,6 +561,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5118713593561876160">Záujmy</translation>
 <translation id="5118764316110575523">Vypnuté</translation>
 <translation id="5119391094379141756">Vyberte Chrome</translation>
+<translation id="5121618895923301719">Tento výrobok už sledujete. Táto stránka je uložená v <ph name="BEGIN_LINK" />záložkách mobilného zariadenia<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Synchronizujte svoje heslá, históriu a ďalší obsah vo všetkých zariadeniach</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} slabé heslo}few{{COUNT} slabé heslá}many{{COUNT} Weak Passwords}other{{COUNT} slabých hesiel}}</translation>
 <translation id="5149188072385105201">Pridať heslo…</translation>
@@ -591,6 +592,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5386314158584363703">Tu nájdete svoje sledované weby</translation>
 <translation id="5388358297987318779">Otvoriť obrázok</translation>
 <translation id="5407969256130905701">Zahodiť zmeny</translation>
+<translation id="5414763847370083940">Ak cena na niektorom webe klesne, dostanete upozornenie.</translation>
 <translation id="5416022985862681400">Posledných 7 dní</translation>
 <translation id="5423269318075950257">Sledovanie ceny</translation>
 <translation id="543338862236136125">Upraviť heslo</translation>
@@ -1133,6 +1135,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="952704832371081537">Zrušiť</translation>
 <translation id="953008885340860025">Chrome je odhlásený</translation>
 <translation id="959066944189734975">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Sledujte cenu výrobku v internetových obchodoch. Keď klesne, dostanete upozornenie.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Vaša organizácia vám povoľuje prihlásiť sa iba určitým účtami. Nepovolené účty sú skryté.</translation>
 <translation id="984509647832111802">Synchronizácia nefunguje.</translation>

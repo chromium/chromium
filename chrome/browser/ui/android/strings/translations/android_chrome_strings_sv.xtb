@@ -226,6 +226,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2248941474044011069">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering</translation>
 <translation id="2249635629516220541">Anpassa informationen som används av webbplatser för att visa annonser</translation>
 <translation id="2259659629660284697">Exportera lösenord …</translation>
+<translation id="2276231040576210443">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK1" />inställningarna<ph name="END_LINK1" />. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
@@ -1243,6 +1244,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7682724950699840886">Testa följande: kontrollera att det finns tillräckligt mycket utrymme på enheten, gör om exporten.</translation>
 <translation id="7686086654630106285">Mer om föreslagna annonser på webbplatser</translation>
 <translation id="768618399695552958">Vissa av sidorna du besöker läser in i förväg. Sidor kan läsas in i förväg via Googles servrar när de länkas från en Google-webbplats.</translation>
+<translation id="7691043218961417207">Utforska innehåll att följa</translation>
 <translation id="7698359219371678927">Skapa ett e-postmeddelande i <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Mobildata används</translation>
 <translation id="7709094866268987903">Intressen du har tagit bort visas här</translation>
@@ -1493,6 +1495,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="8972098258593396643">Vill du ladda ned till standardmappen?</translation>
 <translation id="8987641763863173640">Hantera inställningar för förhandsgranskning av video</translation>
+<translation id="8987736167266086032">Fortsätt där du slutade</translation>
 <translation id="8989968390305463310">Webbhistoriken påverkar vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen automatiskt och löpande varje månad. Intressen kan förnyas om du inte tar bort dem.</translation>
 <translation id="8993760627012879038">Öppna en ny flik i inkognitoläge</translation>
 <translation id="8996847606757455498">Välj en annan leverantör</translation>

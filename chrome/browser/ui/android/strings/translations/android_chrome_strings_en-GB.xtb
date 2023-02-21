@@ -226,6 +226,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2248941474044011069">Your passwords are encrypted on your device before they’re saved to Google Password Manager</translation>
 <translation id="2249635629516220541">Customise the info used by sites to show you ads</translation>
 <translation id="2259659629660284697">Export passwords…</translation>
+<translation id="2276231040576210443">You can always choose what to sync in <ph name="BEGIN_LINK1" />settings<ph name="END_LINK1" />. Google may personalise Search and other services based on your history.</translation>
 <translation id="2276696007612801991">Sign in to your Google Account to check your passwords</translation>
 <translation id="2278052315791335171">Deleting this password will not delete your account on <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
@@ -1494,6 +1495,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>
 <translation id="8987641763863173640">Manage video preview settings</translation>
+<translation id="8987736167266086032">Pick up from where you left off</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8996847606757455498">Choose another provider</translation>

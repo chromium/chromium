@@ -15,7 +15,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1152920704813762236">Tungkol sa ChromeOS</translation>
 <translation id="1154147086299354128">Buksan sa Chr&amp;ome</translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Masusulit mo ang Chrome</translation>
 <translation id="1278833599417554002">Ilunsad ulit para ma-update ang Chrome</translation>
 <translation id="1302523850133262269">Mangyaring maghintay habang ini-install ng Chrome ang mga pinakabagong update sa system.</translation>
 <translation id="1335640173511558774">Hinihiling ng <ph name="MANAGER" /> na basahin at tanggapin mo ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago, o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Google ChromeOS Flex.</translation>
@@ -262,6 +261,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6003112304606738118">Nagda-download... <ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6010556343189461180">Para makakuha ng mga update sa Google Chrome sa hinaharap, mangangailangan ka ng macOS 10.15 o mas bago. Gumagamit ang computer na ito ng macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Magsasara na ngayon ang Chrome.}=1{Magsasara ang Chrome sa loob ng 1 segundo.}one{Magsasara ang Chrome sa loob ng # segundo.}other{Magsasara ang Chrome sa loob ng # na segundo.}}</translation>
+<translation id="6022659036123304283">Gawing iyo ang Chrome</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6070348360322141662">Para sa karagdagang seguridad, ie-encrypt ng Google Chrome ang iyong data</translation>
 <translation id="608006075545470555">Magdagdag ng Profile sa Trabaho sa browser na ito</translation>

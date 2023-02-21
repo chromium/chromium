@@ -226,6 +226,7 @@
 <translation id="2248941474044011069">비밀번호를 기기 내에서 암호화한 후 Google 비밀번호 관리자에 저장합니다</translation>
 <translation id="2249635629516220541">사이트에서 광고를 표시하는 데 사용하는 정보를 맞춤설정합니다.</translation>
 <translation id="2259659629660284697">비밀번호 내보내기...</translation>
+<translation id="2276231040576210443">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="2276696007612801991">비밀번호를 확인하려면 Google 계정에 로그인하세요.</translation>
 <translation id="2278052315791335171">비밀번호를 삭제해도 <ph name="SITE" /> 계정은 삭제되지 않습니다.</translation>
 <translation id="2286841657746966508">결제주소</translation>
@@ -1493,6 +1494,7 @@
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>
 <translation id="8987641763863173640">동영상 미리보기 설정 관리</translation>
+<translation id="8987736167266086032">멈춘 부분에서 계속</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>
 <translation id="8996847606757455498">다른 제공업체 선택</translation>

@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Sobre Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Obre a Chrome</translation>
 <translation id="1203500561924088507">T'agraïm la instal·lació. Has de reiniciar el navegador abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Pots treure el màxim profit de Chrome</translation>
 <translation id="1278833599417554002">Reinicia per actualitzar &amp;Chrome</translation>
 <translation id="1302523850133262269">Espereu mentre Chrome instal·la les actualitzacions més recents del sistema.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requereix que llegeixis i acceptis les condicions del servei següents abans d'utilitzar el dispositiu. Aquestes condicions no amplien, modifiquen ni limiten les condicions de Google ChromeOS Flex.</translation>
@@ -254,6 +253,7 @@
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>
 <translation id="6010556343189461180">Per obtenir actualitzacions de Google Chrome en un futur, necessitaràs macOS 10.15 o una versió posterior. Aquest ordinador utilitza macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome es tancarà ara.}=1{Chrome es tancarà d'aquí a 1 segon.}other{Chrome es tancarà d'aquí a # segons.}}</translation>
+<translation id="6022659036123304283">Personalitza Chrome</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6070348360322141662">Per a més seguretat, Google Chrome encriptarà les teves dades</translation>
 <translation id="608006075545470555">Afegeix un perfil de treball a aquest navegador</translation>

@@ -159,6 +159,7 @@
 <translation id="21133533946938348">တဘ် ပင်ထိုးရန်</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> အကြောင်းအရာ ရွှေ့ပြောင်းပြီးပါပြီ</translation>
 <translation id="2122754583996902531">သင်၏ဘရောင်ဇာကို စီမံခန့်ခွဲထားသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">ဈေးနှုန်းသတိပေးချက်များ ဖွင့်မလား။</translation>
 <translation id="2139867232736819575">သင်မိတ္တူကူးထားသည့် စာသားကို ရှာဖွေပါ</translation>
 <translation id="214201757571129614">လက်မှတ်ထိုးဝင်ရန်…</translation>
 <translation id="2149973817440762519">စာညှပ် တည်းဖြတ်ရန်</translation>
@@ -250,6 +251,7 @@
 <translation id="2797029671965852011">မှတ်တမ်း ပြပါ</translation>
 <translation id="2800683595868705743">တဘ် ခလုတ်ကို ထားရစ်ခဲ့ရန်</translation>
 <translation id="2815198996063984598">၂။ 'မူရင်း ဘရောင်ဇာအက်ပ်' ကို တို့ပါ</translation>
+<translation id="2822917246944009066">တဘ်ပင်ထိုးထားသည်</translation>
 <translation id="2830972654601096923">လိပ်စာများ စီမံရန်...</translation>
 <translation id="2834399722155632105">၃။ စကားဝှက် ရွေးစရာများကို တို့ပါ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />၊ <ph name="STATE" />၊ <ph name="URL" /></translation>
@@ -314,6 +316,7 @@
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
 <translation id="3240426699337459095">လင့်ခ်ကူးယူပြီးပါပြီ</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">သင့်အပြောင်းအလဲကို သိမ်း၍မရပါ။</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> ၏<ph name="VALUE" />၊ <ph name="ADDITIONAL_INFO" />၊ <ph name="INDEX" /></translation>
 <translation id="3268451620468152448">တဲဘ်များ ဖွင့်ရန်</translation>
 <translation id="3272527697863656322">မလုပ်တော့</translation>
@@ -336,6 +339,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="3448016392200048164">မျက်နှာပြင်ခွဲပြသည့် မြင်ကွင်း</translation>
 <translation id="345565170154308620">စကားဝှက်များ စီမံရန်…</translation>
+<translation id="3464194322481586217">ဈေးနှုန်းစောင့်ကြည့်၍ မရပါ။</translation>
 <translation id="3469166899695866866">ဒေါင်းလုဒ်ကို ရပ်လိုသလား။</translation>
 <translation id="3470502288861289375">ကူးယူနေ...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{ဝဘ်ဆိုက် (သို့) အက်ပ် {COUNT} ခု အတွက်}other{ဝဘ်ဆိုက်နှင့် အက်ပ် {COUNT} ခု အတွက်}}</translation>
@@ -561,6 +565,7 @@
 <translation id="5118713593561876160">စိတ်ဝင်စားမှုများ</translation>
 <translation id="5118764316110575523">ပိတ်ထားသည်</translation>
 <translation id="5119391094379141756">Chrome ကိုရွေးပါ</translation>
+<translation id="5121618895923301719">ဤထုတ်ကုန်ကို စောင့်ကြည့်ထားပြီးပြီ။ ဤစာမျက်နှာကို <ph name="BEGIN_LINK" />မိုဘိုင်းလိပ်စာများ<ph name="END_LINK" /> တွင် သိမ်းထားသည်။</translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{အားနည်းသည့် စကားဝှက် {COUNT} ခု}other{အားနည်းသည့် စကားဝှက် {COUNT} ခု}}</translation>
 <translation id="5149188072385105201">စကားဝှက်ထည့်ရန်...</translation>
@@ -591,6 +596,7 @@
 <translation id="5386314158584363703">သင်လိုက်ကြည့်ထားသည့် ဝဘ်ဆိုက်များကို ဤတွင်ရှာဖွေနိုင်သည်</translation>
 <translation id="5388358297987318779">ရုပ်ပုံဖွင့်မည်</translation>
 <translation id="5407969256130905701">အပြောင်းအလဲများကို ဖယ်ပစ်ရန်</translation>
+<translation id="5414763847370083940">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက် ရရှိမည်။</translation>
 <translation id="5416022985862681400">ပြီးခဲ့သည့် ၇ ရက်</translation>
 <translation id="5423269318075950257">ဈေးနှုန်း စောင့်ကြည့်ခြင်း</translation>
 <translation id="543338862236136125">စကားဝှက်ကို တည်းဖြတ်ခြင်း</translation>
@@ -760,6 +766,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6464397691496239022">သင်၏ဝဘ်ကြည့်ရှုမှု ပိုကောင်းမွန်စေရန် ဥပမာအားဖြင့် အမြဲလက်မှတ်ထိုးဝင်ထားရန် သို့မဟုတ် ဈေးခြင်းတောင်းထဲရှိ အရာများ မှတ်ထားရန်တို့အတွက် ဝဘ်ဆိုက်များက ကွတ်ကီးများကို အသုံးပြုနိုင်သည်။
 
 ဝဘ်ဆိုက်များသည် ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန်အတွက် မတူညီသည့် ဝဘ်ဆိုက်များတစ်လျှောက်တွင် ကွတ်ကီးများသုံးပြီး သင့်ကြည့်ရှုခြင်းမှတ်တမ်းများကို ဝင်ကြည့်ခြင်းမျိုး မလုပ်နိုင်ပါ။</translation>
+<translation id="6476253015009698798">ဈေးနှုန်းစောင့်ကြည့်ခြင်းကို ဤစာမျက်နှာအတွက် မရနိုင်ပါ။</translation>
 <translation id="6476800141292307438">စာမျက်နှာကို <ph name="LANGUAGE" /> ဘာသာသို့ ပြန်ဆိုနေသည်။ မျက်နှာပြင်အောက်ခြေအနီးတွင် ရွေးစရာများ ရှိသည်။</translation>
 <translation id="648164694371393720">အထောက်အထားစိစစ်မှု အမှား</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> အကြောင်းအရာ ဖျက်ပြီးပါပြီ</translation>
@@ -811,6 +818,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6780034285637185932">စာတိုက် ကုဒ်</translation>
 <translation id="6781260999953472352">စင့်ခ်လုပ်ခြင်းကို ဖွင့်မလား။</translation>
 <translation id="6785453220513215166">ပျက်စီးမှုအစီရင်ခံချက် ပေးပို့နေသည်...</translation>
+<translation id="6790502149545262384">တဘ်အသစ်ဖွင့်သောအခါ <ph name="CHANNEL_NAME" /> မှ သတင်းဆောင်းပါးများကို မကြာမီ ကြည့်နိုင်ပါမည်။</translation>
 <translation id="6797885426782475225">အသံဖြင့် ရှာဖွေမှု</translation>
 <translation id="6801927553864092214">သီးသန့်ကြည့်ရှုရန် ရုပ်ဖျက်တဘ် ဖွင့်ပါ</translation>
 <translation id="6807889908376551050">အားလုံးကို ပြရန်...</translation>
@@ -890,6 +898,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7431991332293347422">Search နှင့် အခြားအရာများကို ပုဂ္ဂိုလ်ရေးသီးသန့် သတ်မှတ်ရန်အတွက် အသုံးပြုမှုမှတ်တမ်းအား မည်သို့အသုံးချကြောင်း ထိန်းချုပ်ပါ</translation>
 <translation id="7435356471928173109">သင်၏စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="7438481509621345350">တဘ်အသစ်ဖွင့်သောအခါ <ph name="CHANNEL_NAME" /> မှ သတင်းဆောင်းပါးများကို ယခုကြည့်နိုင်ပြီ။</translation>
+<translation id="7446583256109515732">တဘ်ပင်ဖြုတ်ထားသည်</translation>
 <translation id="7454057999980797137">ပြည်နယ် / ကောင်တီ</translation>
 <translation id="7459628154744868585">‘အဆင့်မြင့်ကာကွယ်မှု’ ဖွင့်ထားသည်</translation>
 <translation id="746684838091935575">၃။ Chrome ကိုရွေးပါ</translation>
@@ -1120,6 +1129,8 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="9137526406337347448">Google ဝန်ဆောင်မှုများ</translation>
 <translation id="9148126808321036104">ထပ်ပြီး လက်မှတ်ထိုး ဝင်ရန်</translation>
 <translation id="9157836665414082580">သတိပေးချက်များကို ပိတ်ရန်</translation>
+<translation id="9162432979321511934">‘အော်တိုဖြည့် စကားဝှက်များ’ ဖွင့်ပါ</translation>
+<translation id="9165320910061267720">ဈေးကျကြောင်း သတိပေးချက်များအတွက် အကြောင်းကြားချက်ရယူရန် သင့် iOS ဆက်တင်များတွင် အကြောင်းကြားချက်များ ဖွင့်ရမည်။</translation>
 <translation id="9177438225260810839">ဖွင့်ထားသည့်တဘ်များတွင် ရှာဖွေခြင်း</translation>
 <translation id="9188680907066685419">စီမံခန့်ခွဲထားသည့် အကောင့်မှထွက်ပါ</translation>
 <translation id="9193147658040604536">တဘ်ကိုပင်ထိုးရန် ဤနေရာသို့ ဖိဆွဲပါ</translation>
@@ -1132,6 +1143,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="952704832371081537">မလုပ်တော့</translation>
 <translation id="953008885340860025">Chrome ထွက်သွားသည်</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> ကို လိုက်ကြည့်နေသည်</translation>
+<translation id="973493300226275298">အွန်လိုင်းဆိုင်များတွင် ကုန်ပစ္စည်းဈေးကို စောင့်ကြည့်နိုင်သည်။ ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရရှိမည်။</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">အကောင့်အချို့ဖြင့်သာ လက်မှတ်ထိုးဝင်ရန် သင့်အဖွဲ့အစည်းက ခွင့်ပြုထားသည်။ ခွင့်ပြုမထားသော အကောင့်များကို ဖျောက်ထားသည်။</translation>
 <translation id="984509647832111802">စင့်ခ်လုပ်၍ မရပါ။</translation>

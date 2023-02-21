@@ -226,6 +226,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2248941474044011069">As palavras-passe são encriptadas no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google</translation>
 <translation id="2249635629516220541">Personalize as informações usadas pelos sites para lhe mostrar anúncios</translation>
 <translation id="2259659629660284697">Exportar palavras-passe</translation>
+<translation id="2276231040576210443">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK1" />definições<ph name="END_LINK1" />. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="2276696007612801991">Inicie sessão na sua Conta Google para verificar as suas palavras-passe.</translation>
 <translation id="2278052315791335171">Eliminar esta palavra-passe não elimina a sua conta em <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Endereço de faturação</translation>
@@ -282,7 +283,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="257470231920177468">Quando a opção está ativada, é apresentada aqui uma lista de sites que visita e que adivinham os seus interesses.</translation>
 <translation id="2580436639406015883">A redução de spam e fraudes depende de símbolos de estado privados para ajudar os sites a combater fraudes e distinguir bots de pessoas.
 
-Com base na sua interação com um site, como iniciar sessão regularmente numa conta, esse site pode emitir um símbolo de estado privado para o seu navegador. Posteriormente, se outros sites que visitar verificarem e encontrarem um símbolo de estado privado válido, é mais provável que tratem o utilizador como uma pessoa e não como um bot.
+Com base na sua interação com um site, como iniciar sessão regularmente numa conta, esse site pode emitir um token de estado privado para o seu navegador. Posteriormente, se outros sites que visitar verificarem e encontrarem um token de estado privado válido, é mais provável que tratem o utilizador como uma pessoa e não como um bot.
 
 Os símbolos de estado privado melhoram a privacidade na Web e não podem ser usados para descobrir a sua identidade.</translation>
 <translation id="2581165646603367611">Esta ação elimina os cookies, a cache e outros dados de sites que o Chrome não considera importantes.</translation>
@@ -573,7 +574,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4141536112466364990">Conheça o Chrome</translation>
 <translation id="4147131678541801076">Quando as avaliações estão ativadas, a redução de spam e fraudes depende de símbolos de estado privado para ajudar os sites a combater fraudes e distinguir bots de pessoas.
 
-Com base na sua interação com um site, como iniciar sessão regularmente numa conta, esse site pode emitir um símbolo de estado privado para o seu navegador. Posteriormente, se outros sites que visitar verificarem e encontrarem um símbolo de estado privado válido, é mais provável que tratem o utilizador como uma pessoa e não como um bot.
+Com base na sua interação com um site, como iniciar sessão regularmente numa conta, esse site pode emitir um token de estado privado para o seu navegador. Posteriormente, se outros sites que visitar verificarem e encontrarem um token de estado privado válido, é mais provável que tratem o utilizador como uma pessoa e não como um bot.
 
 Os símbolos de estado privado melhoram a privacidade na Web e não podem ser usados para descobrir a sua identidade.</translation>
 <translation id="4162867837470729563">Lista de opções de partilha à altura total.</translation>
@@ -1224,6 +1225,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7596558890252710462">Sistema operativo</translation>
 <translation id="7605594153474022051">A sincronização não está a funcionar</translation>
 <translation id="7612619742409846846">Iniciou sessão no Google como</translation>
+<translation id="7612989789287281429">A iniciar sessão…</translation>
 <translation id="7616551326690708776">Selecione um modelo para o seu destaque.</translation>
 <translation id="7619072057915878432">A transferência de <ph name="FILE_NAME" /> falhou devido a falhas de rede.</translation>
 <translation id="7626032353295482388">Bem-vindo ao Chrome</translation>
@@ -1493,6 +1495,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="8972098258593396643">Pretende transferir para a pasta predefinida?</translation>
 <translation id="8987641763863173640">Faça a gestão das definições de pré-visualização de vídeo</translation>
+<translation id="8987736167266086032">Continue onde ficou</translation>
 <translation id="8989968390305463310">O seu histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina automaticamente os seus interesses todos os meses. Os interesses podem ser atualizados, a menos que os remova.</translation>
 <translation id="8993760627012879038">Abrir novo separador no modo de navegação anónima</translation>
 <translation id="8996847606757455498">Escolher outro fornecedor</translation>

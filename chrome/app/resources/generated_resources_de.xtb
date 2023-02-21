@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> Tabs für "<ph name="SEARCH_TEXT" />" gefunden</translation>
 <translation id="1060292118287751956">Bestimmt, wie oft das sichtbare Bild auf dem Bildschirm neu aufgebaut wird</translation>
+<translation id="1060570945511946595">Tickets verwalten</translation>
 <translation id="1061130374843955397">Willkommen bei deinem <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">QR-Code für diesen Link erstellen</translation>
 <translation id="1061904396131502319">Bald ist es Zeit für eine Pause</translation>
@@ -377,6 +378,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1339009753652684748">Mit „Hey Google“ kannst du auf Assistant zugreifen. Damit der Akku geschont wird, solltest du die Option „An (empfohlen)“ auswählen. So reagiert Assistant nur, wenn dein Gerät an eine Stromquelle angeschlossen ist oder auflädt.</translation>
 <translation id="13392265090583506">Barrierefreiheit</translation>
 <translation id="1340527397989195812">Sichere Medien von diesem Gerät mit der App "Dateien".</translation>
+<translation id="1341701348342335220">Gut gemacht!</translation>
 <translation id="1341871421050612057">Synchronisierung mit <ph name="USERNAME" /> nicht möglich</translation>
 <translation id="1343865611738742294">Linux-Apps erlauben, auf USB-Geräte zuzugreifen. Linux merkt sich keine USB-Geräte, nachdem diese entfernt wurden.</translation>
 <translation id="1343920184519992513">Da weitermachen, wo du aufgehört hast, und bestimmte Seiten öffnen</translation>
@@ -1110,6 +1112,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1975841812214822307">Entfernen...</translation>
 <translation id="1976150099241323601">In Sicherheitsgerät anmelden</translation>
 <translation id="1977965994116744507">Verringere den Abstand zwischen Smartphone und <ph name="DEVICE_TYPE" />, um das Gerät zu entsperren.</translation>
+<translation id="1978666928180318515">Bruschetta entfernen</translation>
 <translation id="1979095679518582070">Wenn du diese Funktion deaktivierst, kann dieses Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und -sicherheit erforderlich sind.</translation>
 <translation id="1979280758666859181">Du möchtest zu einem Kanal mit einer älteren Version von <ph name="PRODUCT_NAME" /> wechseln. Die Änderung erfolgt, sobald die Kanalversion der aktuell auf deinem Gerät installierten Version entspricht.</translation>
 <translation id="197989455406964291">KDC unterstützt den Verschlüsselungstyp nicht</translation>
@@ -1913,6 +1916,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2672142220933875349">Fehler beim Entpacken wegen fehlerhafter CRX-Datei.</translation>
 <translation id="2673135533890720193">Browserverlauf lesen</translation>
 <translation id="2674764818721168631">Aus</translation>
+<translation id="2675570801872027281">Fehler beim Entfernen von Bruschetta. Bitte versuch es noch einmal.</translation>
 <translation id="2676492189600898281">Feedback zu Autofill geben</translation>
 <translation id="2678063897982469759">Wieder aktivieren</translation>
 <translation id="2678100101831051676">Streamen nicht möglich.</translation>
@@ -2911,6 +2915,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3593965109698325041">Beschränkungen für Zertifikatsnamen</translation>
 <translation id="3596012367874587041">App-Einstellungen</translation>
 <translation id="3596414637720633074">Cookies von Drittanbietern im Inkognitomodus blockieren</translation>
+<translation id="3598010454707842106">Klicke auf „Chrome anpassen“</translation>
 <translation id="3599221874935822507">Erhöht</translation>
 <translation id="3600051066689725006">Webanfrageinformationen</translation>
 <translation id="360180734785106144">Neue Funktionen anbieten, sobald sie verfügbar sind</translation>
@@ -3621,6 +3626,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4232375817808480934">Kerberos konfigurieren</translation>
 <translation id="4235965441080806197">Anmeldung abbrechen</translation>
 <translation id="4236163961381003811">Mehr Erweiterungen entdecken</translation>
+<translation id="4237282663517880406">Google Drive-Vorschläge anzeigen</translation>
 <translation id="4241182343707213132">Neu starten, um die Apps der Organisation zu aktualisieren</translation>
 <translation id="4242145785130247982">Mehrere Clientzertifikate werden nicht unterstützt</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
@@ -3907,6 +3913,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4495419450179050807">Nicht auf dieser Seite anzeigen</translation>
 <translation id="4497145443434063861">Der PC und Chromecast befinden sich in verschiedenen WLANs, z. B. 2,4 GHz und 5 GHz</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> ist abgestürzt</translation>
+<translation id="4500647907053779331">Auswahl auf <ph name="LANGUAGE" /> überse&amp;tzen</translation>
 <translation id="450099669180426158">Ausrufezeichensymbol</translation>
 <translation id="4501530680793980440">Entfernen bestätigen</translation>
 <translation id="4502423230170890588">Von diesem Gerät entfernen</translation>
@@ -4436,7 +4443,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4977942889532008999">Zugriff bestätigen</translation>
 <translation id="4980805016576257426">Diese Erweiterung enthält Malware.</translation>
 <translation id="4981449534399733132">Wenn du Browserdaten von allen deinen synchronisierten Geräten und aus deinem Google-Konto löschen möchtest, <ph name="BEGIN_LINK" />melde dich an<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Weitermachen, wo du aufgehört hast – auf jedem Gerät</translation>
 <translation id="4986706507552097681">In den Einstellungen kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4986728572522335985">Damit werden alle Daten auf dem Sicherheitsschlüssel und die dazugehörige PIN gelöscht</translation>
 <translation id="4988526792673242964">Seiten</translation>
@@ -4553,7 +4559,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5097349930204431044">Websites, die du besuchst, können feststellen, was dir gefällt, und dir dann Werbung vorschlagen, wenn du hinterher im Internet surfst</translation>
 <translation id="5097649414558628673">Tool: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatisch klicken, wenn der Cursor stoppt</translation>
-<translation id="5101683448725092498">Daten sichern</translation>
 <translation id="5101839224773798795">Automatisch klicken, wenn der Cursor anhält</translation>
 <translation id="5106350808162641062">Entfernen</translation>
 <translation id="510695978163689362">Für <ph name="USER_EMAIL" /> ist die Elternaufsicht über Family Link eingerichtet. Du kannst Konten einer Bildungseinrichtung hinzufügen, um unter Elternaufsicht auf Ressourcen dieser Einrichtung zuzugreifen.</translation>
@@ -5117,7 +5122,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5623842676595125836">Protokoll</translation>
 <translation id="5624120631404540903">Passwörter verwalten</translation>
 <translation id="5625225435499354052">In Google Pay bearbeiten</translation>
-<translation id="5625631605902707678">Auf verschiedenen Geräten</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5627086634964711283">Die Erweiterung legt auch fest, welche Seite beim Klicken auf die Schaltfläche "Startseite" erscheint.</translation>
 <translation id="5627676517703583263">Intelligent surfen mit Chrome</translation>
@@ -5229,7 +5233,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Diese Daten oder dein Gerät entsprechen nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}=1{Diese Datei oder dein Gerät entspricht nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}other{Diese Dateien entsprechen nicht allen Sicherheitsrichtlinien deiner Organisation. Frage deinen Administrator, was korrigiert werden muss.}}</translation>
 <translation id="5736796278325406685">Bitte gib einen gültigen Nutzernamen ein</translation>
 <translation id="5738093759615225354">Du benötigst diesen Passkey, um dich auf deinem Computer anzumelden</translation>
-<translation id="5738329404678738022">Über eine Synchronisierung deine Lesezeichen und weitere Elemente speichern</translation>
 <translation id="5739017626473506901">Melde dich an, damit <ph name="USER_NAME" /> ein Konto einer Bildungseinrichtung hinzufügen kann</translation>
 <translation id="5739235828260127894">Bestätigung steht aus. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Sehr groß</translation>
@@ -5251,7 +5254,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5757375109985023827">Tab für die Vorschau auswählen</translation>
 <translation id="5758631781033351321">Hier wird deine Leseliste angezeigt</translation>
 <translation id="5759728514498647443">Dokumente, die du über <ph name="APP_NAME" /> zum Druck sendest, können von <ph name="APP_NAME" /> gelesen werden.</translation>
-<translation id="5760508342220592715">Anmelden, um weitere Vorteile zu erhalten</translation>
 <translation id="5762787084360227629">Google-Kontoinformationen eingeben</translation>
 <translation id="5763751966069581670">Keine USB-Geräte gefunden</translation>
 <translation id="5764483294734785780">Audio &amp;speichern unter...</translation>
@@ -5721,6 +5723,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="617213288191670920">Keine Sprachen hinzugefügt</translation>
 <translation id="6173623053897475761">PIN noch einmal eingeben</translation>
 <translation id="6175314957787328458">Microsoft-Domain-GUID</translation>
+<translation id="6177412385419165772">Wird entfernt…</translation>
 <translation id="6178664161104547336">Zertifikat auswählen</translation>
 <translation id="6178682841350631965">Deine Anmeldedaten wurden aktualisiert</translation>
 <translation id="6180510783007738939">Linientool</translation>
@@ -6197,6 +6200,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6619801788773578757">Kioskanwendung hinzufügen</translation>
 <translation id="6619990499523117484">PIN bestätigen</translation>
 <translation id="6620254580880484313">Containername</translation>
+<translation id="6620927550847360014">Bruschetta von deinem Gerät (<ph name="DEVICE_TYPE" />) entfernen?</translation>
 <translation id="6621391692573306628">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich auf beiden Geräten in Chrome an</translation>
 <translation id="6622980291894852883">Bilder weiterhin blockieren</translation>
 <translation id="6624036901798307345">Tippe im Tablet-Modus auf die Tab-Zähler-Schaltfläche in der Symbolleiste, um die neue Tableiste zu öffnen, die Miniaturansichten der einzelnen Tabs anzeigt.</translation>
@@ -6414,6 +6418,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6818547713623251698">Fotos, Medien, Benachrichtigungen und Apps von deinem Smartphone abrufen</translation>
 <translation id="6818802132960437751">Integrierter Virenschutz</translation>
 <translation id="6818920801736417483">Passwörter speichern?</translation>
+<translation id="6820079682647046800">Fehler bei Kerberos-Authentifizierung</translation>
 <translation id="6823174134746916417">Touchpad-Klick</translation>
 <translation id="6824564591481349393">E-Mail-Adr&amp;esse kopieren</translation>
 <translation id="6824584962142919697">&amp;Elemente untersuchen</translation>
@@ -6568,6 +6573,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6955698182324067397">Du aktivierst Debugging-Funktionen für Chrome OS. Dadurch wird der SSHD-Daemon eingerichtet und das Starten über USB aktiviert.</translation>
 <translation id="6955893174999506273">1 weiteren Schalter zuweisen</translation>
 <translation id="6957044667612803194">Der Sicherheitsschlüssel unterstützt keine PINs</translation>
+<translation id="6960133692707095572">Ohne Ticket besuchen</translation>
 <translation id="6960507406838246615">Linux-Update erforderlich</translation>
 <translation id="6960648667961844909">Sprachdateien auf <ph name="LANGUAGE" /> konnten nicht heruntergeladen werden. Der Download wird später versucht. Sprachaufnahmen werden zur Verarbeitung an Google gesendet, bis der Download abgeschlossen ist.</translation>
 <translation id="696103774840402661">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> wurden dauerhaft gelöscht.</translation>
@@ -7789,7 +7795,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8059417245945632445">&amp;Geräte untersuchen</translation>
 <translation id="8059456211585183827">Es sind keine Drucker verfügbar, die gespeichert werden können.</translation>
 <translation id="8061091456562007989">Änderung rückgängig machen</translation>
-<translation id="8061965471006133016">Zusätzlicher Schutz, z. B. für deine Passwörter</translation>
 <translation id="8061970399284390013">Rechtschreib- und Grammatikprüfung</translation>
 <translation id="8061991877177392872">Du hast Voice Match schon auf einem anderen Gerät mit Assistant eingerichtet. Diese vorherigen Aufnahmen wurden verwendet, um ein Sprachmodell auf diesem Gerät zu erstellen.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 Blatt Papier}other{{COUNT} Blätter Papier}}</translation>
@@ -8030,6 +8035,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8272443605911821513">Klicke zum Verwalten deiner Erweiterungen im Menü „Mehr Tools“ auf „Erweiterungen“.</translation>
 <translation id="8272786333453048167">Wieder zulassen</translation>
 <translation id="8273905181216423293">Jetzt herunterladen</translation>
+<translation id="827488840488530039">Die Seite, die du besuchen möchtest, konnte deine Kerberos-Tickets nicht bestätigen</translation>
 <translation id="8274921654076766238">Lupe folgt Tastaturfokus</translation>
 <translation id="8274924778568117936">Schalte dein <ph name="DEVICE_TYPE" /> nicht aus bzw. schließe es nicht, bis das Update abgeschlossen ist. Nach Abschluss der Installation wird dein <ph name="DEVICE_TYPE" /> neu gestartet.</translation>
 <translation id="8275038454117074363">Importieren</translation>

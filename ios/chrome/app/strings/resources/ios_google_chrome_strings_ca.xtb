@@ -113,6 +113,7 @@
 <translation id="7780154209050837198">Per treure el màxim profit de Chrome, inicia-hi la sessió amb el teu Compte de Google.</translation>
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
 <translation id="7939179037291298976">A la configuració de l'iPhone, obre Opcions de contrasenya i selecciona Chrome</translation>
+<translation id="7975131781538454817">Les notificacions de Chrome estan desactivades a la configuració del dispositiu. Primer les has de permetre.</translation>
 <translation id="8022947259858476807">Utilitza Chrome de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="81358522153858150">Chrome ara admet polítiques dels usuaris per al compte gestionat</translation>
 <translation id="8160472928944011082">Chrome no es pot actualitzar</translation>
@@ -140,6 +141,7 @@ Aspectes que cal tenir en compte:
 <ph name="BEGIN_INDENT" />  • S'envia informació a Google sobre l'ús que fas de Chrome, però no es relaciona amb tu.
   • Si Chrome falla, els detalls sobre el bloqueig poden incloure informació personal.
   • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
+<translation id="9101160735177453133">Per activar l'opció Seguiment de preus, permet les notificacions de Chrome a la configuració del dispositiu</translation>
 <translation id="9103442491611662960">Tindràs protecció de seguretat estàndard per a aquest perfil de Chrome</translation>
 <translation id="9112744793181547300">Vols establir Chrome com a predeterminat?</translation>
 <translation id="9122931302567044771">Això vol dir que Chrome sol·licitarà el lloc web per a ordinadors cada vegada.</translation>

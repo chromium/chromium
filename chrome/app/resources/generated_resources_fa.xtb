@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">‏پروتکل انتقال ابرمتن (HTTPS)</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> برگه برای «<ph name="SEARCH_TEXT" />» پیدا شد</translation>
 <translation id="1060292118287751956">بسامد به‌روزرسانی‌های صفحه‌نمایش را مشخص می‌کند</translation>
+<translation id="1060570945511946595">مدیریت بلیت‌ها</translation>
 <translation id="1061130374843955397">به <ph name="DEVICE_TYPE" /> خودتان خوش آمدید</translation>
 <translation id="1061373870045429865">ایجاد رمزینه پاسخ‌سریع برای این پیوند</translation>
 <translation id="1061904396131502319">تقریباً زمان استراحت است</translation>
@@ -1123,6 +1124,7 @@
 <translation id="1975841812214822307">حذف...</translation>
 <translation id="1976150099241323601">ورود به سیستم دستگاه امنیتی</translation>
 <translation id="1977965994116744507">برای باز کردن قفل <ph name="DEVICE_TYPE" />، تلفنتان را نزدیک‌تر کنید.</translation>
+<translation id="1978666928180318515">‏برداشتن Bruschetta</translation>
 <translation id="1979095679518582070">خاموش کردن این ویژگی توانایی این دستگاه را برای ارسال اطلاعات موردنیاز برای سرویس‌های ضروری، مانند امنیت و به‌روزرسانی‌های سیستم تحت‌تأثیر قرار نمی‌دهد.</translation>
 <translation id="1979280758666859181">شما در حال تغییر کانال به نسخه قدیمی‌تر <ph name="PRODUCT_NAME" /> هستید. تغییر کانال زمانی اعمال می‌شود که نسخه کانال با نسخه فعلی نصب شده در دستگاه یکسان باشد.</translation>
 <translation id="197989455406964291">‏KDC از نوع رمزگذاری پشتیبانی نمی‌کند</translation>
@@ -1929,6 +1931,7 @@
 <translation id="2672142220933875349">‏فایل crx نادرست، باز کردن بسته انجام نشد.</translation>
 <translation id="2673135533890720193">خواندن سابقه مرور شما</translation>
 <translation id="2674764818721168631">خاموش</translation>
+<translation id="2675570801872027281">‏خطایی هنگام برداشتن Bruschetta روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="2676492189600898281">ارائه بازخورد درباره «تکمیل خودکار»</translation>
 <translation id="2678063897982469759">فعال کردن مجدد</translation>
 <translation id="2678100101831051676">پخش محتوا امکان‌پذیر نیست.</translation>
@@ -2927,6 +2930,7 @@
 <translation id="3593965109698325041">محدودیتهای نام گواهی</translation>
 <translation id="3596012367874587041">تنظیمات برنامه</translation>
 <translation id="3596414637720633074">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
+<translation id="3598010454707842106">‏روی «سفارشی کردن Chrome» کلیک کنید</translation>
 <translation id="3599221874935822507">برجسته</translation>
 <translation id="3600051066689725006">اطلاعات درخواست وب</translation>
 <translation id="360180734785106144">پیشنهاد ویژگی‌های جدید به‌محض دردسترس قرار گرفتن</translation>
@@ -3925,6 +3929,7 @@
 <translation id="4497145443434063861">‏رایانه شخصی و Chromecast در شبکه‌های مختلف Wi-Fi (مثلاً ۲٫۴ گیگاهرتز
     در مقابل ۵ گیگاهرتز)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> خراب شده است</translation>
+<translation id="4500647907053779331">ترجمه ناحیه انتخاب‌شده به <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">نماد علامت تعجب</translation>
 <translation id="4501530680793980440">تأیید حذف</translation>
 <translation id="4502423230170890588">حذف از این دستگاه</translation>
@@ -4454,7 +4459,6 @@
 <translation id="4977942889532008999">تأیید دسترسی</translation>
 <translation id="4980805016576257426">این افزونه بدافزار دارد.</translation>
 <translation id="4981449534399733132">‏برای اینکه داده‌های محصول مرور را از همه دستگاه‌های همگام‌سازی‌شده و حساب Google خود پاک کنید، <ph name="BEGIN_LINK" />به سیستم وارد شوید<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">در هر دستگاهی کار را از جایی که متوقف کرده‌اید ادامه دهید</translation>
 <translation id="4986706507552097681">‏هرزمان بخواهید می‌توانید موارد مدنظرتان را برای همگام‌سازی در تنظیمات انتخاب کنید. Google ممکن است «جستجو» و سرویس‌های دیگر را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="4986728572522335985">با این کار، همه داده‌های موجود در کلید امنیتی، ازجمله پین آن، پاک می‌شود</translation>
 <translation id="4988526792673242964">صفحات</translation>
@@ -4571,7 +4575,6 @@
 <translation id="5097349930204431044">سایت‌هایی که بازدید می‌کنید می‌توانند تعیین کنند که چه چیزی را دوست دارید و سپس در ادامه مرور شما، آگهی‌هایی را به شما پیشنهاد دهند</translation>
 <translation id="5097649414558628673">ابزار: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">کلیک کردن خودکار هنگام متوقف شدن نشانگر</translation>
-<translation id="5101683448725092498">از محتوایتان پشتیبان بگیرید</translation>
 <translation id="5101839224773798795">کلیک خودکار با توقف مرورگر</translation>
 <translation id="5106350808162641062">برداشتن</translation>
 <translation id="510695978163689362">‏<ph name="USER_EMAIL" /> تحت نظارت Family Link است. برای دسترسی به منابع مدرسه با نظارت والدین، می‌توانید حساب‌های محل تحصیل اضافه کنید.</translation>
@@ -5137,7 +5140,6 @@
 <translation id="5623842676595125836">گزارش</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
 <translation id="5625225435499354052">‏ویرایش در Google Pay</translation>
-<translation id="5625631605902707678">در بین دستگاه‌ها</translation>
 <translation id="5626134646977739690">نام:</translation>
 <translation id="5627086634964711283">این برنامه افزودنی همچنین صفحه‌ای را که هنگام کلیک کردن روی دکمه اصلی نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="5627676517703583263">‏با Chrome هوشمندانه مرور کنید</translation>
@@ -5249,7 +5251,6 @@
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{این داده یا دستگاه شما برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}=1{این فایل یا دستگاه شما برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}one{این فایل‌ها برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کنند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}other{این فایل‌ها برخی‌از خط‌مشی‌های امنیتی سازمانتان را رعایت نمی‌کنند. مواردی را که باید برطرف شود از سرپرست خود بپرسید.}}</translation>
 <translation id="5736796278325406685">لطفاً نام کاربری معتبری وارد کنید.</translation>
 <translation id="5738093759615225354">برای ورود به سیستم رایانه‌تان به این گذرکلید نیاز دارید</translation>
-<translation id="5738329404678738022">با همگام‌سازی، نشانک‌ها و موارد دیگر را ذخیره کنید</translation>
 <translation id="5739017626473506901">به سیستم وارد شوید تا بتوانید به <ph name="USER_NAME" /> در افزودن حساب محل تحصیل کمک کنید</translation>
 <translation id="5739235828260127894">در انتظار تأیید. <ph name="LINK_BEGIN" />بیشتر بدانید.<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">خیلی بزرگ</translation>
@@ -5271,7 +5272,6 @@
 <translation id="5757375109985023827">برگه‌ای برای پیش‌نمایش انتخاب کنید</translation>
 <translation id="5758631781033351321">فهرست مطالعه را اینجا خواهید دید</translation>
 <translation id="5759728514498647443">اسنادی که از طریق <ph name="APP_NAME" /> برای چاپ ارسال می‌کنید، می‌توانند توسط <ph name="APP_NAME" /> خوانده شوند.</translation>
-<translation id="5760508342220592715">برای مزایای بیشتر، به سیستم وارد شوید</translation>
 <translation id="5762787084360227629">‏وارد کردن اطلاعات «حساب Google»</translation>
 <translation id="5763751966069581670">‏هیچ دستگاه USB پیدا نشد</translation>
 <translation id="5764483294734785780">ذ&amp;خیره فایل صوتی به‌عنوان...</translation>
@@ -5742,6 +5742,7 @@
 <translation id="617213288191670920">زبانی اضافه نشده است</translation>
 <translation id="6173623053897475761">پین خود را دوباره تایپ کنید</translation>
 <translation id="6175314957787328458">‏GUID دامنه Microsoft</translation>
+<translation id="6177412385419165772">درحال برداشتن…</translation>
 <translation id="6178664161104547336">انتخاب گواهی</translation>
 <translation id="6178682841350631965">داده‌های ورود به سیستم به‌روزرسانی شد</translation>
 <translation id="6180510783007738939">ابزار خط</translation>
@@ -6220,6 +6221,7 @@
 <translation id="6619801788773578757">افزودن برنامه کیوسک</translation>
 <translation id="6619990499523117484">پین را تأیید کنید</translation>
 <translation id="6620254580880484313">نام محتوی</translation>
+<translation id="6620927550847360014">‏Bruschetta از <ph name="DEVICE_TYPE" /> برداشته شود؟</translation>
 <translation id="6621391692573306628">‏برای ارسال این برگه به دستگاهی دیگر، در هردو دستگاه به سیستم Chrome وارد شوید</translation>
 <translation id="6622980291894852883">ادامه مسدودکردن تصاویر</translation>
 <translation id="6624036901798307345">در حالت رایانه لوحی، روی دکمه شمارنده برگه در نوارابزار ضربه بزنید تا نوار برگه جدید که تصویر کوچک هر برگه را نشان می‌دهد باز شود.</translation>
@@ -6437,6 +6439,7 @@
 <translation id="6818547713623251698">مشاهده کردن عکس‌ها، رسانه، اعلان‌ها، و برنامه‌های تلفن شما</translation>
 <translation id="6818802132960437751">مجهز به محافظ دربرابر ویروس</translation>
 <translation id="6818920801736417483">گذرواژه‌ها ذخیره شود؟</translation>
+<translation id="6820079682647046800">‏اصالت‌سنجی Kerberos انجام نشد</translation>
 <translation id="6823174134746916417">کلیک با یک ضربه روی صفحه لمسی</translation>
 <translation id="6824564591481349393">کپی آدرس &amp;ایمیل</translation>
 <translation id="6824584962142919697">&amp;بازرسی عناصر</translation>
@@ -6591,6 +6594,7 @@
 <translation id="6955698182324067397">‏درحال فعال کردن ویژگی‌های اشکال‌زدایی ChromeOS هستید؛ با این کار، sshd daemon راه‌اندازی خواهد شد و راه‌اندازی ازطریق درایوهای USB فعال خواهد شد.</translation>
 <translation id="6955893174999506273">اختصاص دادن ۱ کلید دیگر</translation>
 <translation id="6957044667612803194">این کلید امنیتی از پین‌ها پشتیبانی نمی‌کند</translation>
+<translation id="6960133692707095572">بازدید بدون تیکت</translation>
 <translation id="6960507406838246615">‏Linux باید به‌روزرسانی شود</translation>
 <translation id="6960648667961844909">‏فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری نشد. بارگیری بعداً انجام خواهد شد. تا وقتی بارگیری تمام شود، گفتار برای پردازش به Google ارسال می‌شود.</translation>
 <translation id="696103774840402661">همه فایل‌ها و داده‌های محلی برای همه کاربران این <ph name="DEVICE_TYPE" /> به‌طور دائم حذف شده‌اند.</translation>
@@ -7811,7 +7815,6 @@
 <translation id="8059417245945632445">&amp;بازرسی دستگاه‌ها</translation>
 <translation id="8059456211585183827">هیچ چاپگری برای ذخیره در دسترس نیست.</translation>
 <translation id="8061091456562007989">تغییر را لغو کنید</translation>
-<translation id="8061965471006133016">محافظت بیشتر برای گذرواژه‌ها و موارد بیشتر</translation>
 <translation id="8061970399284390013">بررسی املا و دستور زبان</translation>
 <translation id="8061991877177392872">‏به‌نظر می‌رسد ازقبل Voice Match را با «دستیار» در دستگاه دیگری راه‌اندازی کرده‌اید. از این قطعه‌های قبلاً ضبط‌شده می‌توان برای ایجاد مدل صوتی در این دستگاه استفاده کرد.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{۱ برگ کاغذ}one{{COUNT} برگ کاغذ}other{{COUNT} برگ کاغذ}}</translation>
@@ -8052,6 +8055,7 @@
 <translation id="8272443605911821513">با کلیک کردن روی افزونه‌ها در منوی «ابزارهای بیشتر»، برنامه‌های افزودنی خود را مدیریت کنید.</translation>
 <translation id="8272786333453048167">دوباره اجازه دادن</translation>
 <translation id="8273905181216423293">اکنون بارگیری شود</translation>
+<translation id="827488840488530039">‏صفحه‌ای که می‌خواهید بازدید کنید تیکت‌های Kerberos را تأیید نکرد</translation>
 <translation id="8274921654076766238">کانونی کردن صفحه‌کلید پس‌از ذره‌بین</translation>
 <translation id="8274924778568117936">تا وقتی به‌روزرسانی به پایان نرسیده است، <ph name="DEVICE_TYPE" /> را خاموش نکنید یا نبندید. بعد از کامل شدن نصب، <ph name="DEVICE_TYPE" /> راه‌اندازی مجدد می‌شود.</translation>
 <translation id="8275038454117074363">وارد کردن</translation>

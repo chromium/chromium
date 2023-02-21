@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1209796539517632982">自動名稱伺服器</translation>
 <translation id="1210831758834677569">寮文</translation>
+<translation id="1221555006497674479">儲存空間即將用盡，你的 <ph name="TOTAL_SPACE" /> 共用雲端硬碟儲存空間只剩 <ph name="REMAINING_PERCENTAGE" />% 可用。</translation>
 <translation id="1243314992276662751">上傳</translation>
 <translation id="1249250836236328755">類型</translation>
 <translation id="1254593899333212300">直接連線到網際網路</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">中文 (拼音)</translation>
 <translation id="1646019627374511909">正在將 <ph name="NUMBER_OF_ITEMS" /> 個檔案設為可離線存取</translation>
 <translation id="164969095109328410">Chrome 裝置</translation>
+<translation id="1661207570040737402">Google Workspace 共用雲端硬碟儲存空間已用盡。</translation>
 <translation id="1661867754829461514">找不到 PIN</translation>
 <translation id="166439687370499867">不允許變更共用網路設定</translation>
 <translation id="1665611772925418501">無法修改檔案。</translation>
@@ -880,6 +882,7 @@
 <translation id="8116072619078571545">冰水</translation>
 <translation id="8128733386027980860">英文 (英國) 搭配 Dvorak 鍵盤</translation>
 <translation id="8137331602592933310">「<ph name="FILENAME" />」是他人與你共用的項目。你不是這個檔案的擁有者，無法刪除這個檔案。</translation>
+<translation id="8138705869659070104">在裝置完成設定後啟用</translation>
 <translation id="813913629614996137">正在初始化...</translation>
 <translation id="8147028810663464959">字元寬度為全形</translation>
 <translation id="8151638057146502721">設定</translation>

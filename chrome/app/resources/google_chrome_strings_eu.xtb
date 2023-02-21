@@ -15,7 +15,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1152920704813762236">Chrome OS-ri buruz</translation>
 <translation id="1154147086299354128">&amp;Ireki Chrome-n</translation>
 <translation id="1203500561924088507">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzailea berrabiarazi behar duzu.</translation>
-<translation id="1236866257838264361">Atera ahalik eta etekin handiena Chrome-ri</translation>
 <translation id="1278833599417554002">Abiaraz ezazu berriro &amp;Chrome eguneratzeko</translation>
 <translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
 <translation id="1335640173511558774">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Google Chrome OS Flex-en Baldintzak.</translation>
@@ -261,6 +260,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6003112304606738118">Deskargatzen… <ph name="HOURS" /> ordu geratzen dira.</translation>
 <translation id="6010556343189461180">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, macOS 10.15 edo berriago bat beharko duzu. Ordenagailu hau macOS 10.14 erabiltzen ari da.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Orain itxiko da Chrome.}=1{1 segundo barru itxiko da Chrome.}other{# segundo barru itxiko da Chrome.}}</translation>
+<translation id="6022659036123304283">Zeureganatu Chrome</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6070348360322141662">Segurtasun gehiago izateko, Google Chrome-k datuak enkriptatuko ditu</translation>
 <translation id="608006075545470555">Gehitu laneko profila arakatzaile honetan</translation>

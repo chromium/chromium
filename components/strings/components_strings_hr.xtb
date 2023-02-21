@@ -84,6 +84,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1178821169867863726">12 x 16 in</translation>
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1186201132766001848">Provjeri zaporke</translation>
+<translation id="1195073053842921378">Ta će se adresa izbrisati s ovog uređaja</translation>
 <translation id="1195558154361252544">Obavijesti su automatski blokirane za sve web-lokacije osim za one koje dopustite</translation>
 <translation id="1197088940767939838">Narančasta</translation>
 <translation id="1201402288615127009">Dalje</translation>
@@ -2017,7 +2018,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5992691462791905444">Presavijanje u obliku harmonike s dva nabora</translation>
 <translation id="5992805036496113940">Pregled podataka koji se upotrebljavaju za prikazivanje oglasa</translation>
 <translation id="5995727681868049093">Upravljajte podacima, privatnošću i sigurnošću na svojem Google računu</translation>
-<translation id="5996887213716993070"><ph name="FIELD" /> ne može biti prazno</translation>
 <translation id="5997247540087773573">Zaporka koju ste upravo upotrijebili otkrivena je u povredi podataka. Radi zaštite vaših računa Google upravitelj zaporki preporučuje da je odmah promijenite i provjerite svoje spremljene zaporke.</translation>
 <translation id="6000758707621254961">Rezultata za upit "<ph name="SEARCH_TEXT" />" ima <ph name="RESULT_COUNT" /></translation>
 <translation id="6005765687956866568">Podaci automatskog popunjavanja izbrisani su s obrasca</translation>

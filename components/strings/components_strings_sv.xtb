@@ -84,6 +84,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1178821169867863726">12 x 16 tum</translation>
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1186201132766001848">Kontrollera lösenord</translation>
+<translation id="1195073053842921378">Adressen raderas från enheten</translation>
 <translation id="1195558154361252544">Aviseringar blockeras automatiskt på alla webbplatser utom sådana du tillåter</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1201402288615127009">Nästa</translation>
@@ -2018,7 +2019,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5992691462791905444">Förskjuten Z-falsning</translation>
 <translation id="5992805036496113940">Se vilken information som används för att visa annonser</translation>
 <translation id="5995727681868049093">Hantera uppgifter, integritet och säkerhet i Google-kontot</translation>
-<translation id="5996887213716993070"><ph name="FIELD" /> måste fyllas i.</translation>
 <translation id="5997247540087773573">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att byta det nu och se över dina sparade lösenord för att skydda dina konton.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultat för <ph name="SEARCH_TEXT" /></translation>
 <translation id="6005765687956866568">Informationen som fylldes i automatiskt har rensats från formuläret</translation>

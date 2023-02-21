@@ -4,6 +4,7 @@
 <translation id="1047130070405668746">選取 [Chromium]</translation>
 <translation id="1091252999271033193">這代表 Chromium 每次都會要求取得流動網站。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
+<translation id="1256849392437386613">如要開啟「追蹤價格」功能，請在「裝置設定」中允許「Chromium 通知」</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕按 [設定] 並允許 Chromium 新增您的相片</translation>
 <translation id="1289216811211435351">切換至 Chromium</translation>
 <translation id="1361748954329991663">Chromium 版本過舊。如果<ph name="BEGIN_LINK" />應用程式商店<ph name="END_LINK" />沒有提供任何更新，您的裝置可能已停止支援新版本的 Chromium。</translation>
@@ -71,6 +72,7 @@
 <translation id="5573014823074921752">Chromium 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
+<translation id="5918064849477363478">您已在裝置設定中關閉 Chromium 通知，請先允許傳送通知。</translation>
 <translation id="5945387852661427312">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chromium 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chromium，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
 <translation id="5983312940147103417">讓 Chromium 更臻完美</translation>
 <translation id="6062449165341879460">您的機構 <ph name="DOMAIN" /> 將可存取您儲存在此帳戶中的 Chromium 資料、書籤、記錄、密碼和其他設定。登出帳戶後，系統會清除此裝置中的資料。不過，您的資料仍會儲存在受管 Google 帳戶中，並可供機構使用。您的機構亦可為該帳戶設定特定使用者政策，以變更 Chromium 的行為。</translation>

@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Tentang ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Buka di Chrome</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Anda dapat menikmati manfaat optimal Chrome</translation>
 <translation id="1278833599417554002">Luncurkan kembali untuk mengupdate &amp;Chrome</translation>
 <translation id="1302523850133262269">Harap tunggu selagi Chrome memasang pembaruan sistem terkini.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> mewajibkan Anda membaca dan menyetujui Persyaratan Layanan berikut sebelum menggunakan perangkat ini. Persyaratan ini tidak memperluas, mengubah, atau membatasi Persyaratan Google ChromeOS Flex.</translation>
@@ -254,6 +253,7 @@
 <translation id="6003112304606738118">Mendownload... <ph name="HOURS" /> jam lagi</translation>
 <translation id="6010556343189461180">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu macOS 10.15 atau yang lebih baru. Komputer ini menggunakan macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome akan ditutup sekarang.}=1{Chrome akan ditutup dalam 1 detik.}other{Chrome akan ditutup dalam # detik.}}</translation>
+<translation id="6022659036123304283">Sesuaikan Chrome dengan selera Anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6070348360322141662">Untuk keamanan tambahan, Google Chrome akan mengenkripsi data Anda</translation>
 <translation id="608006075545470555">Tambahkan Profil Kerja ke browser ini</translation>

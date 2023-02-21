@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1209796539517632982">အလိုအလျောက် အမည် ဆာဗာများ</translation>
 <translation id="1210831758834677569">လာအို</translation>
+<translation id="1221555006497674479">မျှသုံးဒရိုက်ဗ် သိုလှောင်ခန်း <ph name="TOTAL_SPACE" /> အနက် <ph name="REMAINING_PERCENTAGE" />% အနည်းငယ်သာ ကျန်တော့သည်။</translation>
 <translation id="1243314992276662751">အာပ်လုဒ် လုပ်ရန်</translation>
 <translation id="1249250836236328755">သီချင်းအမျိုးအစား</translation>
 <translation id="1254593899333212300">တိုက်ရိုက် အင်တာနက် ချိတ်ဆက်မှု</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">တရုတ် ပင်ယင်</translation>
 <translation id="1646019627374511909">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခုကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
 <translation id="164969095109328410">Chrome ကိရိယာ</translation>
+<translation id="1661207570040737402">‘မျှသုံးဒရိုက်ဗ်’ Google Workspace သိုလှောင်ခန်းအားလုံးကို သုံးထားသည်။</translation>
 <translation id="1661867754829461514">ပင်နံပါတ်ကုဒ် လိုသေးသည်</translation>
 <translation id="166439687370499867">မျှဝေထားသော ကွန်ရက်စီစဉ်သတ်မှတ်မှုများကို ပြောင်းခွင့်မပြုပါ</translation>
 <translation id="1665611772925418501">ဖိုင်ကို မွမ်းမံ မပေးနိုင်ခဲ့ပါ။</translation>
@@ -354,6 +356,7 @@
 <translation id="3971140002794351170">မိုဘိုင်းပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">အင်္ဂလိပ် (ယူကေ)</translation>
 <translation id="3975895378829046965">ဘင်္ဂါလီ အသံထွက်</translation>
+<translation id="3999574733850440202">မကြာသေးမီကဖွင့်ထားသော Microsoft ဖိုင်များကို OneDrive သို့ ရွှေ့လိုက်သည်</translation>
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4017788180641807848">Workman ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="4019998208269143058">အမြန်သုံးဖိုင်များတွင် ပင်ထိုးရန်</translation>
@@ -879,6 +882,7 @@
 <translation id="8116072619078571545">ရေခဲရေ</translation>
 <translation id="8128733386027980860">Dvorak ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ကို သင့်အား မျှဝေပေးခဲ့သည်။ သင်သည် ၎င်းကို မပိုင်ဆိုင်၍ ၎င်းကို သင် မဖျက်နိုင်ပါ။</translation>
+<translation id="8138705869659070104">စက်စနစ်ထည့်သွင်းပြီးနောက် စသုံးရန်</translation>
 <translation id="813913629614996137">စတင်နေသည်…</translation>
 <translation id="8147028810663464959">စာလုံးအကျယ် ပြည့်သွားပြီ</translation>
 <translation id="8151638057146502721">ပြုပြင်</translation>
@@ -904,6 +908,7 @@
 <translation id="8300849813060516376">OTASP မအောင်မြင်ပါ</translation>
 <translation id="8312871300878166382">ဖိုင်တွဲထဲသို့ ကူးထည့်ရန်</translation>
 <translation id="8329978297633540474">ရိုးရိုး စာသား</translation>
+<translation id="8332007959299458842">မကြာသေးမီကဖွင့်ထားသော Microsoft ဖိုင်များကို Google Drive သို့ ရွှေ့လိုက်သည်</translation>
 <translation id="8335587457941836791">စင် ပေါ်မှ ထုတ်ပစ်ရန်</translation>
 <translation id="8335837413233998004">ဘီလာရုစ်</translation>
 <translation id="8336153091935557858">မနေ့က <ph name="YESTERDAY_DAYTIME" /></translation>

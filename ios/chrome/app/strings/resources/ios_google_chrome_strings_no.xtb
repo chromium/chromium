@@ -113,6 +113,7 @@
 <translation id="7780154209050837198">For å få mest mulig ut av Chrome, logg på Chrome med Google-kontoen din.</translation>
 <translation id="7855730255114109580">Google Chrome er oppdatert</translation>
 <translation id="7939179037291298976">I iPhone-innstillingene åpner du «Passordalternativer» og velger «Chromium»</translation>
+<translation id="7975131781538454817">Chrome-varsler er slått av i enhetsinnstillingene. Du må først gi tillatelse til at varsler kan vises.</translation>
 <translation id="8022947259858476807">Bruk Chrome som standard til å åpne linker, søke i moduler og fylle ut passord i andre apper automatisk</translation>
 <translation id="81358522153858150">Chrome støtter nå brukerinnstillinger for den administrerte kontoen din</translation>
 <translation id="8160472928944011082">Kan ikke oppdatere Chrome</translation>
@@ -142,6 +143,7 @@ Dette bør du tenke over:
   • Hvis Chrome krasjer, kan detaljene om krasjet inneholde enkelte personopplysninger.
 
   • Hvis du slår på synkronisering, kan verdiene også inneholde informasjon om nettadressene du besøker.<ph name="END_INDENT" /></translation>
+<translation id="9101160735177453133">For å slå på «Spor prisen», tillat Chrome-varsler i enhetsinnstillingene</translation>
 <translation id="9103442491611662960">Du får standard sikkerhetsbeskyttelse for denne Chrome-profilen</translation>
 <translation id="9112744793181547300">Vil du angi Chrome som standard?</translation>
 <translation id="9122931302567044771">Dette betyr at Chrome kommer til å forespørre nettstedet for datamaskiner hver gang.</translation>

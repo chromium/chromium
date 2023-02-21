@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1209796539517632982">Gweinyddwyr enw awtomatig</translation>
 <translation id="1210831758834677569">Laoteg</translation>
+<translation id="1221555006497674479">Storfa yn isel <ph name="REMAINING_PERCENTAGE" />% ar ôl o'ch storfa gyriant cyffredin <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Uwchlwytho</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Cysylltiad Rhyngrwyd uniongyrchol</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Pinyin Tsieinëeg</translation>
 <translation id="1646019627374511909">Wrthi'n gwneud <ph name="NUMBER_OF_ITEMS" /> ffeil ar gael all-lein</translation>
 <translation id="164969095109328410">Dyfais Chrome</translation>
+<translation id="1661207570040737402">Rydych wedi defnyddio'ch holl storfa Gyriant Cyffredin Google Workspace.</translation>
 <translation id="1661867754829461514">PIN ar goll</translation>
 <translation id="166439687370499867">Ni chaniateir newid ffurfweddiadau rhwydwaith cyffredin</translation>
 <translation id="1665611772925418501">Ni ellid addasu'r ffeil.</translation>
@@ -879,6 +881,7 @@
 <translation id="8116072619078571545">Dŵr iâ</translation>
 <translation id="8128733386027980860">Saesneg (DU) gyda bysellfwrdd Dvorak</translation>
 <translation id="8137331602592933310">Mae "<ph name="FILENAME" />" wedi'i rannu gyda chi. Ni allwch ei ddileu gan nad ydych yn berchen arno.</translation>
+<translation id="8138705869659070104">Gweithredu ar ôl gosod y ddyfais</translation>
 <translation id="813913629614996137">Wrthi'n cychwyn…</translation>
 <translation id="8147028810663464959">Mae lled y nod yn Llawn</translation>
 <translation id="8151638057146502721">Ffurfweddu</translation>

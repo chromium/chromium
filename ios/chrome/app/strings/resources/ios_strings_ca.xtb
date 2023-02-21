@@ -561,6 +561,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5118713593561876160">Interessos</translation>
 <translation id="5118764316110575523">Desactivat</translation>
 <translation id="5119391094379141756">Selecciona Chrome.</translation>
+<translation id="5121618895923301719">Ja estàs fent el seguiment d'aquest producte. Aquesta pàgina s'ha desat a <ph name="BEGIN_LINK" />Adreces d'interès per a mòbils<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
 <translation id="5149188072385105201">Afegeix una contrasenya...</translation>
@@ -591,6 +592,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5386314158584363703">Aquí trobaràs els llocs web que segueixes</translation>
 <translation id="5388358297987318779">Obre una imatge</translation>
 <translation id="5407969256130905701">Descarta els canvis</translation>
+<translation id="5414763847370083940">Rebràs una alerta si el preu baixa en qualsevol lloc web.</translation>
 <translation id="5416022985862681400">7 darrers dies</translation>
 <translation id="5423269318075950257">Fes un seguiment del preu</translation>
 <translation id="543338862236136125">Edita la contrasenya</translation>
@@ -1133,6 +1135,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="952704832371081537">Cancel·la</translation>
 <translation id="953008885340860025">S'ha tancat la sessió de Chrome</translation>
 <translation id="959066944189734975">Segueixes <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Fes un seguiment del preu d'un producte en diferents botigues en línia. Rebràs alertes quan el preu baixi.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos s'amaguen.</translation>
 <translation id="984509647832111802">La sincronització no funciona.</translation>

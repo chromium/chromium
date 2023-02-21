@@ -226,6 +226,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2248941474044011069">Hesla jsou před uložením do Správce hesel Google v zařízení zašifrována</translation>
 <translation id="2249635629516220541">Přizpůsobení informací, které weby používají k zobrazování reklam</translation>
 <translation id="2259659629660284697">Exportovat hesla…</translation>
+<translation id="2276231040576210443">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK1" />nastavení<ph name="END_LINK1" />. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="2276696007612801991">Pokud chcete zkontrolovat hesla, přihlaste se k účtu Google</translation>
 <translation id="2278052315791335171">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Fakturační adresa</translation>
@@ -1494,6 +1495,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8970887620466824814">Došlo k chybě.</translation>
 <translation id="8972098258593396643">Stáhnout do výchozí složky?</translation>
 <translation id="8987641763863173640">Spravovat nastavení náhledu videa</translation>
+<translation id="8987736167266086032">Pokračujte, kde jste skončili</translation>
 <translation id="8989968390305463310">Vaše historie prohlížení ovlivňuje zobrazované reklamy a odhadované zájmy uvedené níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se mohou obnovovat, dokud je neodstraníte.</translation>
 <translation id="8993760627012879038">Otevřít novou kartu v anonymním režimu</translation>
 <translation id="8996847606757455498">Vybrat jiného poskytovatele</translation>

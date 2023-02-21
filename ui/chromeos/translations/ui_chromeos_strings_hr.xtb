@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1209796539517632982">Automatski poslužitelji naziva</translation>
 <translation id="1210831758834677569">laoski</translation>
+<translation id="1221555006497674479">Preostalo je malo pohrane, još <ph name="REMAINING_PERCENTAGE" />% od ukupno <ph name="TOTAL_SPACE" /> na dijeljenom disku.</translation>
 <translation id="1243314992276662751">Prenesi</translation>
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Izravna internetska veza</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">kineski pinyin</translation>
 <translation id="1646019627374511909">Broj datoteka koje će biti dostupne offline: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="164969095109328410">Chrome uređaj</translation>
+<translation id="1661207570040737402">U potpunosti ste iskoristili pohranu dijeljenog diska na Google Workspaceu.</translation>
 <translation id="1661867754829461514">Nedostaje PIN</translation>
 <translation id="166439687370499867">Promjena zajedničkih konfiguracija mreže nije dopuštena</translation>
 <translation id="1665611772925418501">Nije bilo moguće mijenjati datoteku.</translation>
@@ -354,6 +356,7 @@
 <translation id="3971140002794351170">Preuzmi mobilni profil, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">engleski (UK)</translation>
 <translation id="3975895378829046965">bengalski fonetski</translation>
+<translation id="3999574733850440202">Nedavno otvorene Microsoftove datoteke premještene su na OneDrive</translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4017788180641807848">engleski (SAD) s Workman tipkovnicom</translation>
 <translation id="4019998208269143058">Prikvači na brzi pristup datotekama</translation>
@@ -880,6 +883,7 @@
 <translation id="8116072619078571545">Ledena voda</translation>
 <translation id="8128733386027980860">engleski (UK) s tipkovnicom Dvorak</translation>
 <translation id="8137331602592933310">S vama je podijeljena datoteka "<ph name="FILENAME" />". Ne možete je izbrisati jer joj niste vlasnik.</translation>
+<translation id="8138705869659070104">Aktiviraj nakon postavljanja uređaja</translation>
 <translation id="813913629614996137">Pokretanje...</translation>
 <translation id="8147028810663464959">Znakovi su u punoj širini</translation>
 <translation id="8151638057146502721">Konfiguracija</translation>
@@ -905,6 +909,7 @@
 <translation id="8300849813060516376">OTASP nije uspio</translation>
 <translation id="8312871300878166382">Zalijepi u mapu</translation>
 <translation id="8329978297633540474">Običan tekst</translation>
+<translation id="8332007959299458842">Nedavno otvorene Microsoftove datoteke premještene su na Google disk</translation>
 <translation id="8335587457941836791">Otkvači s police</translation>
 <translation id="8335837413233998004">bjeloruski</translation>
 <translation id="8336153091935557858">Jučer u <ph name="YESTERDAY_DAYTIME" /></translation>

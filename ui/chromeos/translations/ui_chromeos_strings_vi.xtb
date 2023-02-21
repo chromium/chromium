@@ -356,6 +356,7 @@
 <translation id="3971140002794351170">Tải hồ sơ mạng di động xuống, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Tiếng Anh (Anh)</translation>
 <translation id="3975895378829046965">Tiếng Bangla (phiên âm)</translation>
+<translation id="3999574733850440202">Các tệp Microsoft mới mở gần đây đã được chuyển sang OneDrive</translation>
 <translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4017788180641807848">Tiếng Anh (Mỹ) bằng bàn phím Workman</translation>
 <translation id="4019998208269143058">Ghim vào tệp nhanh</translation>
@@ -882,6 +883,7 @@
 <translation id="8116072619078571545">Nước đá</translation>
 <translation id="8128733386027980860">Tiếng Anh (Anh) bằng bàn phím Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" đã được chia sẻ với bạn. Bạn không thể xóa tệp vì bạn không sở hữu tệp.</translation>
+<translation id="8138705869659070104">Kích hoạt sau khi thiết lập thiết bị</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8147028810663464959">Độ rộng ký tự là Đầy đủ</translation>
 <translation id="8151638057146502721">Định cấu hình</translation>
@@ -907,6 +909,7 @@
 <translation id="8300849813060516376">OTASP không thành công</translation>
 <translation id="8312871300878166382">Dán vào thư mục</translation>
 <translation id="8329978297633540474">Văn bản thuần túy</translation>
+<translation id="8332007959299458842">Các tệp Microsoft mới mở gần đây đã được chuyển sang Google Drive</translation>
 <translation id="8335587457941836791">Bỏ ghim khỏi kệ</translation>
 <translation id="8335837413233998004">Tiếng Belarus</translation>
 <translation id="8336153091935557858">Hôm qua <ph name="YESTERDAY_DAYTIME" /></translation>

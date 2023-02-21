@@ -226,6 +226,7 @@
 <translation id="2248941474044011069">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理器中</translation>
 <translation id="2249635629516220541">自定义要让网站使用什么信息向您展示广告</translation>
 <translation id="2259659629660284697">导出密码…</translation>
+<translation id="2276231040576210443">您随时可在<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />中选择要同步的内容。Google 可能会根据您的历史记录为您提供个性化的 Google 搜索和其他服务。</translation>
 <translation id="2276696007612801991">您需要先登录 Google 帐号才能检查您的密码</translation>
 <translation id="2278052315791335171">删除此密码不会删除您在 <ph name="SITE" /> 上的帐号</translation>
 <translation id="2286841657746966508">帐单邮寄地址</translation>
@@ -1493,6 +1494,7 @@
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="8972098258593396643">是否下载到默认文件夹？</translation>
 <translation id="8987641763863173640">管理视频预览设置</translation>
+<translation id="8987736167266086032">从上次停下的地方继续</translation>
 <translation id="8989968390305463310">您的浏览记录会影响您看到的广告以及系统推测出的兴趣（如下所示）。为了保护您的隐私，Chrome 每个月都会按保留时间先后顺序自动删除您的部分兴趣。兴趣能够刷新，除非您将其移除。</translation>
 <translation id="8993760627012879038">在无痕模式下打开新标签页</translation>
 <translation id="8996847606757455498">另选一个提供商</translation>

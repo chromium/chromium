@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">System operacyjny Chrome – informacje</translation>
 <translation id="1154147086299354128">&amp;Otwórz w Chrome</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
-<translation id="1236866257838264361">Możesz w pełni wykorzystać możliwości Chrome</translation>
 <translation id="1278833599417554002">Uruchom ponownie, aby zaktualizować &amp;Chrome</translation>
 <translation id="1302523850133262269">Poczekaj, aż Chrome zainstaluje najnowsze aktualizacje systemu.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> wymaga, aby przed skorzystaniem z tego urządzenia przeczytać i zaakceptować Warunki korzystania z usługi. Nie rozszerzają, nie zmieniają ani nie ograniczają one Warunków korzystania z Google ChromeOS Flex.</translation>
@@ -253,6 +252,7 @@
 <translation id="6003112304606738118">Pobieram… Pozostało: <ph name="HOURS" /> godz.</translation>
 <translation id="6010556343189461180">Aby otrzymywać w przyszłości aktualizacje Google Chrome, musisz mieć system macOS 10.15 lub nowszy. Na tym komputerze jest zainstalowany system macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Aplikacja Chrome zostanie teraz zamknięta.}=1{Aplikacja Chrome zostanie zamknięta za 1 sekundę.}few{Aplikacja Chrome zostanie zamknięta za # sekundy.}many{Aplikacja Chrome zostanie zamknięta za # sekund.}other{Aplikacja Chrome zostanie zamknięta za # sekundy.}}</translation>
+<translation id="6022659036123304283">Dostosuj Chrome do swoich potrzeb</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6070348360322141662">Dla większego bezpieczeństwa Google Chrome szyfruje dane</translation>
 <translation id="608006075545470555">Dodaj profil służbowy w tej przeglądarce</translation>

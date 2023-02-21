@@ -226,6 +226,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2248941474044011069">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden</translation>
 <translation id="2249635629516220541">Du kannst die Informationen anpassen, die von Websites verwendet werden, um dir Werbung zu präsentieren</translation>
 <translation id="2259659629660284697">Passwörter exportieren…</translation>
+<translation id="2276231040576210443">In den <ph name="BEGIN_LINK1" />Einstellungen<ph name="END_LINK1" /> kannst du auswählen, was synchronisiert werden soll. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="2276696007612801991">Melde dich in deinem Google-Konto an, um deine Passwörter zu prüfen</translation>
 <translation id="2278052315791335171">Durch das Entfernen dieses Passworts wird dein Konto auf <ph name="SITE" /> nicht gelöscht</translation>
 <translation id="2286841657746966508">Rechnungsadresse</translation>
@@ -1242,6 +1243,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7682724950699840886">Probiere folgende Tipps aus: Sorge dafür, dass auf deinem Gerät ausreichend Speicherplatz vorhanden ist, und wiederhole den Export.</translation>
 <translation id="7686086654630106285">Weitere Informationen zu Werbung, die von Websites vorgeschlagen wird</translation>
 <translation id="768618399695552958">Einige der Seiten, die du besuchst, werden vorab geladen. Diese Seiten werden über Google-Server geladen, wenn sie von einer Google Sites-Website verlinkt sind.</translation>
+<translation id="7691043218961417207">Inhalte, denen du folgen kannst</translation>
 <translation id="7698359219371678927">E-Mail in <ph name="APP_NAME" /> erstellen</translation>
 <translation id="7707922173985738739">Mobile Daten verwenden</translation>
 <translation id="7709094866268987903">Die von dir entfernten Interessen werden hier angezeigt</translation>
@@ -1492,6 +1494,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8970887620466824814">Es gab ein Problem.</translation>
 <translation id="8972098258593396643">In Standardordner herunterladen?</translation>
 <translation id="8987641763863173640">Einstellungen für die Videovorschau verwalten</translation>
+<translation id="8987736167266086032">Da weitermachen, wo Sie aufgehört haben</translation>
 <translation id="8989968390305463310">Dein Browserverlauf hat Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome automatisch jeden Monat deine Interessen. Solange du deine Interessen nicht entfernst, können sie aktualisiert werden.</translation>
 <translation id="8993760627012879038">Neuen Tab im Inkognitomodus öffnen</translation>
 <translation id="8996847606757455498">Anderen Anbieter auswählen</translation>

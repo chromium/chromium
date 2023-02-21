@@ -15,7 +15,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1152920704813762236">À propos de Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Ouvrir dans Chrome</translation>
 <translation id="1203500561924088507">Merci pour l'installation. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Vous pouvez profiter au maximum de Chrome</translation>
 <translation id="1278833599417554002">Relancer &amp;Chrome pour le mettre à jour</translation>
 <translation id="1302523850133262269">Veuillez patienter pendant que Chrome installe les dernières mises à jour système.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Ces dernières n'étendent pas, ne modifient pas, ni ne restreignent les conditions d'utilisation de Google Chrome OS Flex.</translation>
@@ -261,6 +260,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6003112304606738118">Téléchargement en cours… <ph name="HOURS" /> heure(s) restante(s)</translation>
 <translation id="6010556343189461180">Vous devez disposer de macOS 10.15 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Cet ordinateur fonctionne sous macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome va maintenant se fermer.}=1{Chrome se fermera dans 1 seconde.}one{Chrome se fermera dans # seconde.}other{Chrome se fermera dans # secondes.}}</translation>
+<translation id="6022659036123304283">Appropriez-vous Chrome</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6070348360322141662">Pour une sécurité accrue, Google Chrome va crypter vos données</translation>
 <translation id="608006075545470555">Ajouter le profil professionnel à ce navigateur</translation>

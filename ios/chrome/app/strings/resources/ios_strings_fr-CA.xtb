@@ -314,6 +314,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3240426699337459095">Lien copié</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">Votre modification n'a pas pu être enregistrée.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> de <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3268451620468152448">Onglets ouverts</translation>
 <translation id="3272527697863656322">Annuler</translation>
@@ -336,6 +337,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Vue partagée</translation>
 <translation id="345565170154308620">Gérer les mots de passe…</translation>
+<translation id="3464194322481586217">Impossible d'effectuer le suivi du prix.</translation>
 <translation id="3469166899695866866">Arrêter le téléchargement?</translation>
 <translation id="3470502288861289375">Copie en cours…</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pour {COUNT} site ou application}one{pour {COUNT} sites ou applications}other{pour {COUNT} sites et applications}}</translation>
@@ -561,6 +563,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5118764316110575523">Désactivé</translation>
 <translation id="5119391094379141756">Sélectionnez Chrome</translation>
+<translation id="5121618895923301719">Vous suivez déjà ce produit. Cette page est enregistrée dans les <ph name="BEGIN_LINK" />Favoris de l'appareil mobile<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} mot de passe faible}one{{COUNT} mots de passe faibles}other{{COUNT} mots de passe faibles}}</translation>
 <translation id="5149188072385105201">Ajouter un mot de passe…</translation>
@@ -591,6 +594,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5386314158584363703">Vous trouverez les sites que vous suivez ici</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
+<translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur n'importe quel site.</translation>
 <translation id="5416022985862681400">Sept derniers jours</translation>
 <translation id="5423269318075950257">Suivre le prix</translation>
 <translation id="543338862236136125">Modifier le mot de passe</translation>
@@ -761,6 +765,7 @@ Vos données ont été chiffrées avec votre phrase de passe le <ph name="TIME" 
 <translation id="6464397691496239022">Les sites peuvent utiliser des témoins afin d'améliorer votre expérience de navigation, par exemple en vous permettant de rester connecté ou en mémorisant des articles de votre panier d'achats.
 
 Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navigation sur différents sites (par exemple, pour personnaliser les annonces).</translation>
+<translation id="6476253015009698798">Le suivi des prix n'est pas offert sur cette page.</translation>
 <translation id="6476800141292307438">Traduction de la page en <ph name="LANGUAGE" /> en cours… Les options sont affichées dans le bas de l'écran.</translation>
 <translation id="648164694371393720">Erreur d'authentification</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> éléments supprimés</translation>
@@ -812,6 +817,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6780034285637185932">Code postal</translation>
 <translation id="6781260999953472352">Activer la synchronisation?</translation>
 <translation id="6785453220513215166">Envoi du rapport de plantage en cours...</translation>
+<translation id="6790502149545262384">Vous verrez bientôt des histoires de <ph name="CHANNEL_NAME" /> lorsque vous ouvrirez un nouvel onglet.</translation>
 <translation id="6797885426782475225">Recherche vocale</translation>
 <translation id="6801927553864092214">Pour naviguer de manière incognito, ouvrez un onglet de navigation privée</translation>
 <translation id="6807889908376551050">Tout afficher…</translation>
@@ -1121,6 +1127,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9148126808321036104">Connectez-vous de nouveau</translation>
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
+<translation id="9162432979321511934">Activer l'option de remplissage automatique des mots de passe</translation>
 <translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9188680907066685419">Se déconnecter du compte géré</translation>
 <translation id="9193147658040604536">Faites glisser ici pour épingler l'onglet</translation>
@@ -1133,6 +1140,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="952704832371081537">Annuler</translation>
 <translation id="953008885340860025">Chrome est déconnecté</translation>
 <translation id="959066944189734975">Vous suivez <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Suivez le prix d'un produit dans les magasins en ligne. Vous recevrez des alertes lorsque le prix baisse.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Votre organisation vous autorise à vous connecter à certains comptes seulement. Les comptes qui ne sont pas autorisés seront masqués.</translation>
 <translation id="984509647832111802">La synchronisation ne fonctionne pas.</translation>

@@ -561,6 +561,7 @@
 <translation id="5118713593561876160">Інтереси</translation>
 <translation id="5118764316110575523">Вимк.</translation>
 <translation id="5119391094379141756">Виберіть Chrome</translation>
+<translation id="5121618895923301719">Ви вже відстежуєте ціну на цей товар. Цю сторінку збережено в папці <ph name="BEGIN_LINK" />Закладки на мобільному<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Синхронізуйте свої паролі, історію тощо на всіх пристроях</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадійний пароль}one{{COUNT} ненадійний пароль}few{{COUNT} ненадійні паролі}many{{COUNT} ненадійних паролів}other{{COUNT} ненадійного пароля}}</translation>
 <translation id="5149188072385105201">Додати пароль…</translation>
@@ -591,6 +592,7 @@
 <translation id="5386314158584363703">Тут показуватимуться сайти, на які ви підписалися</translation>
 <translation id="5388358297987318779">Відкрити зображення</translation>
 <translation id="5407969256130905701">Відхилити зміни</translation>
+<translation id="5414763847370083940">Ви отримаєте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
 <translation id="5416022985862681400">Останні 7 днів</translation>
 <translation id="5423269318075950257">Відстежувати ціну</translation>
 <translation id="543338862236136125">Змінити пароль</translation>
@@ -1133,6 +1135,7 @@
 <translation id="952704832371081537">Скасувати</translation>
 <translation id="953008885340860025">Ви вийшли з облікового запису Chrome</translation>
 <translation id="959066944189734975">Ви підписалися на канал "<ph name="CHANNEL_NAME" />"</translation>
+<translation id="973493300226275298">Відстежуйте ціну на товар в онлайн-магазинах. Коли вона знизиться, ви отримаєте сповіщення.</translation>
 <translation id="980712131080209571">Н</translation>
 <translation id="981498610235328462">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано.</translation>
 <translation id="984509647832111802">Синхронізація не працює.</translation>

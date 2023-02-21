@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">អំពី ChromeOS</translation>
 <translation id="1154147086299354128">&amp;​បើក​នៅក្នុង Chrome</translation>
 <translation id="1203500561924088507">សូមអរគុណសម្រាប់ការដំឡើង។ អ្នកត្រូវតែចាប់ផ្ដើមកម្មវិធីរុករកតាមអ៊ីនធឺណិតរបស់អ្នកឡើងវិញ មុនពេលប្រើ <ph name="BUNDLE_NAME" />។</translation>
-<translation id="1236866257838264361">អ្នកអាច​រីករាយ​នឹង​អត្ថប្រយោជន៍​ច្រើន​បំផុត​ពី Chrome</translation>
 <translation id="1278833599417554002">ចាប់​ផ្តើមឡើងវិញដើម្បីដំឡើងកំណែ &amp;Chrome</translation>
 <translation id="1302523850133262269">សូមរង់ចាំ ខណៈពេលដែល Chrome តំឡើងការធ្វើបច្ចុប្បន្នភាពប្រព័ន្ធចុងក្រោយបំផុត។</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> តម្រូវឱ្យអ្នកអាន និងយល់ព្រមតាមលក្ខខណ្ឌប្រើប្រាស់ខាងក្រោម មុនពេលប្រើឧបករណ៍នេះ។ លក្ខខណ្ឌទាំងនេះមិនបន្ថែម កែប្រែ ឬដាក់កំហិតលើលក្ខខណ្ឌ Google ChromeOS Flex ទេ។</translation>
@@ -262,6 +261,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6003112304606738118">កំពុងទាញ​យក... នៅសល់ <ph name="HOURS" /> ម៉ោងទៀត</translation>
 <translation id="6010556343189461180">ដើម្បីទទួលបានកំណែថ្មីៗរបស់ Google Chrome នាពេលអនាគត អ្នកនឹងត្រូវការ macOS 10.15 ឡើងទៅ។ កុំព្យូទ័រនេះកំពុងប្រើ macOS 10.14។</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome នឹង​បិទ​ឥឡូវ​នេះ។}=1{Chrome នឹង​បិទ​ក្នុង​រយៈពេល 1 វិនាទី។}other{Chrome នឹង​បិទ​ក្នុង​រយៈពេល # វិនាទី។}}</translation>
+<translation id="6022659036123304283">ធ្វើឱ្យ Chrome ក្លាយជា​របស់អ្នក</translation>
 <translation id="6040143037577758943">បិទ</translation>
 <translation id="6070348360322141662">ដើម្បី​ទទួលបាន​សុវត្ថិភាព​បន្ថែម Google Chrome នឹង​អ៊ិនគ្រីប​ទិន្នន័យ​របស់​អ្នក</translation>
 <translation id="608006075545470555">បញ្ចូលកម្រងព័ត៌មានការងារទៅក្នុងកម្មវិធីរុករកតាមអ៊ីនធឺណិតនេះ</translation>

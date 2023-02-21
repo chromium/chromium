@@ -4444,7 +4444,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4977942889532008999">Erişimi Onaylayın</translation>
 <translation id="4980805016576257426">Bu uzantı kötü amaçlı yazılım içeriyor.</translation>
 <translation id="4981449534399733132">Tarama verilerini senkronize edilmiş tüm cihazlarınızdan ve Google Hesabınızdan temizlemek için <ph name="BEGIN_LINK" />oturum açın<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Herhangi bir cihazda, kaldığınız yerden devam edin</translation>
 <translation id="4986706507552097681">Neyin senkronize edileceğini istediğiniz zaman ayarlardan seçebilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="4986728572522335985">Bu işlem, PIN'i de dahil olmak üzere güvenlik anahtarındaki tüm verileri silecek.</translation>
 <translation id="4988526792673242964">Sayfalar</translation>
@@ -4561,7 +4560,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5097349930204431044">Ziyaret ettiğiniz siteler nelerden hoşlandığınızı belirleyip siz internette gezinmeye devam ederken reklam önerebilir</translation>
 <translation id="5097649414558628673">Araç: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">İmleç durduğunda otomatik olarak tıkla</translation>
-<translation id="5101683448725092498">Bilgilerinizi yedekleyin</translation>
 <translation id="5101839224773798795">İmleç durduğunda otomatik olarak tıkla</translation>
 <translation id="5106350808162641062">Kaldır</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" />, Family Link gözetimi altında. Ebeveyn gözetimi ile okul kaynaklarına erişmek için okul hesapları ekleyebilirsiniz.</translation>
@@ -5128,7 +5126,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5623842676595125836">Günlük</translation>
 <translation id="5624120631404540903">Şifreleri yönet</translation>
 <translation id="5625225435499354052">Google Pay'de düzenle</translation>
-<translation id="5625631605902707678">Cihazlarda kullanabilirsiniz.</translation>
 <translation id="5626134646977739690">Adı:</translation>
 <translation id="5627086634964711283">Ayrıca, Ana Sayfa düğmesini tıkladığınızda gösterilen sayfayı denetler.</translation>
 <translation id="5627676517703583263">Chrome ile akıllıca göz atın</translation>
@@ -5240,7 +5237,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Bu veriler veya cihazınız, kuruluşunuzun güvenlik politikalarından bazılarına uymuyor. Neyin düzeltilmesi gerektiğini öğrenmek için yöneticinize danışın.}=1{Bu dosya veya cihazınız, kuruluşunuzun güvenlik politikalarından bazılarına uymuyor. Neyin düzeltilmesi gerektiğini öğrenmek için yöneticinize danışın.}other{Bu dosyalar, kuruluşunuzun güvenlik politikalarından bazılarına uymuyor. Neyin düzeltilmesi gerektiğini öğrenmek için yöneticinize danışın.}}</translation>
 <translation id="5736796278325406685">Lütfen geçerli bir kullanıcı adı girin</translation>
 <translation id="5738093759615225354">Bu şifre anahtarı, bilgisayarınızda oturum açabilmeniz için gereklidir</translation>
-<translation id="5738329404678738022">Senkronizasyon ile yer işaretlerinizi ve diğer öğeleri depolayın</translation>
 <translation id="5739017626473506901"><ph name="USER_NAME" /> kullanıcısının okul hesabı eklemesine yardımcı olmak için oturum açın</translation>
 <translation id="5739235828260127894">Doğrulama bekleniyor. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Çok büyük</translation>
@@ -5262,7 +5258,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5757375109985023827">Önizlemek için bir sekme seçin</translation>
 <translation id="5758631781033351321">Okuma listenizi burada bulabilirsiniz</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> aracılığıyla yazdırılmaları için gönderdiğiniz dokümanlar <ph name="APP_NAME" /> tarafından okunabilir.</translation>
-<translation id="5760508342220592715">Daha fazla avantaj için oturum açın</translation>
 <translation id="5762787084360227629">Google Hesabı bilgilerini gir</translation>
 <translation id="5763751966069581670">USB cihazı bulunamadı</translation>
 <translation id="5764483294734785780">Sesi farklı kay&amp;det...</translation>
@@ -7805,7 +7800,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8059417245945632445">&amp;Cihazları denetle</translation>
 <translation id="8059456211585183827">Kaydedilebilecek yazıcı yok.</translation>
 <translation id="8061091456562007989">Geri değiştir</translation>
-<translation id="8061965471006133016">Şifreleriniz ve diğer öğeler için ek koruma</translation>
 <translation id="8061970399284390013">Yazım ve dil bilgisi denetimi</translation>
 <translation id="8061991877177392872">Asistanınızla Voice Match'i başka bir cihazda zaten kurmuş olduğunuz anlaşılıyor. Önceki bu kayıtlar, bu cihazda bir ses modeli oluşturmak için kullanıldı.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 kağıt}other{{COUNT} kağıt}}</translation>

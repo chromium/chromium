@@ -226,6 +226,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="2248941474044011069">Fjalëkalimet enkriptohen në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google"</translation>
 <translation id="2249635629516220541">Personalizo informacionet e përdorura nga sajtet për të të shfaqur reklama</translation>
 <translation id="2259659629660284697">Eksporto fjalëkalimet…</translation>
+<translation id="2276231040576210443">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK1" />cilësimet<ph name="END_LINK1" />. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="2276696007612801991">Identifikohu në "Llogarinë tënde të Google" për të kontrolluar fjalëkalimet e tua</translation>
 <translation id="2278052315791335171">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa e faturimit</translation>
@@ -1242,6 +1243,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7682724950699840886">Provoni këshillat e mëposhtme: sigurohu që ka hapësirë ​​të mjaftueshme në pajisjen tënde dhe provo të eksportosh përsëri.</translation>
 <translation id="7686086654630106285">Më shumë rreth reklamave të sugjeruara nga sajtet</translation>
 <translation id="768618399695552958">Disa nga faqet që ti viziton janë të ngarkuara paraprakisht. Faqet mund të ngarkohen paraprakisht nëpërmjet serverëve të Google kur lidhen nga një sajt i Google.</translation>
+<translation id="7691043218961417207">Eksploro përmbajtje për t'i ndjekur</translation>
 <translation id="7698359219371678927">Krijo mail në <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Përdor të dhënat celulare</translation>
 <translation id="7709094866268987903">Interesat që hoqe do të shfaqen këtu</translation>
@@ -1492,6 +1494,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8970887620466824814">Ndodhi një gabim.</translation>
 <translation id="8972098258593396643">Të shkarkohet në dosjen e parazgjedhur?</translation>
 <translation id="8987641763863173640">Menaxho cilësimet e pamjes paraprake të videos</translation>
+<translation id="8987736167266086032">Vazhdo ku e ke lënë</translation>
 <translation id="8989968390305463310">Historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin automatikisht interesat e tua në vazhdimësi çdo muaj. Interesat mund të rifreskohen, përveçse nëse ti i heq ato.</translation>
 <translation id="8993760627012879038">Hap një skedë të re në "Modalitetin e fshehtë"</translation>
 <translation id="8996847606757455498">Zgjidh një ofrues tjetër</translation>

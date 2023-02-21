@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1209796539517632982">Automaatsed nimeserverid</translation>
 <translation id="1210831758834677569">lao</translation>
+<translation id="1221555006497674479">Salvestusruumi on vähe, alles on <ph name="REMAINING_PERCENTAGE" />% teie jagatud ketta salvestusruumist <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Laadi üles</translation>
 <translation id="1249250836236328755">Žanr</translation>
 <translation id="1254593899333212300">Otsene Interneti-ühendus</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">hiina, pinyin</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> faili võrguühenduseta kättesaadavaks tegemine</translation>
 <translation id="164969095109328410">Chrome'i seade</translation>
+<translation id="1661207570040737402">Olete kasutanud ära kogu oma jagatud ketta Google Workspace'i salvestusruumi.</translation>
 <translation id="1661867754829461514">PIN-kood puudub</translation>
 <translation id="166439687370499867">Jagatud võrgu seadistuste muutmine ei ole lubatud</translation>
 <translation id="1665611772925418501">Faili ei saa muuta.</translation>
@@ -880,6 +882,7 @@
 <translation id="8116072619078571545">Jäävesi</translation>
 <translation id="8128733386027980860">inglise (Ühendkuningriik), Dvoraki klaviatuuriga</translation>
 <translation id="8137331602592933310">Faili „<ph name="FILENAME" />” on teiega jagatud. Te ei saa seda kustutada, kuna te pole selle omanik.</translation>
+<translation id="8138705869659070104">Aktiveerige pärast seadme seadistust</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
 <translation id="8147028810663464959">Tähemärkide laius on täislaius</translation>
 <translation id="8151638057146502721">Seadista</translation>

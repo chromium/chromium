@@ -15,7 +15,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1152920704813762236">About Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Open in Chrome</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">You can enjoy the most out of Chrome</translation>
 <translation id="1278833599417554002">Relaunch to update &amp;Chrome</translation>
 <translation id="1302523850133262269">Please wait while Chrome installs the latest system updates.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Google Chrome OS Flex terms.</translation>
@@ -261,6 +260,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
 <translation id="6010556343189461180">To get future Google Chrome updates, you'll need macOS 10.15 or later. This computer is using macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome will close now.}=1{Chrome will close in 1 second.}other{Chrome will close in # seconds.}}</translation>
+<translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
 <translation id="608006075545470555">Add work profile to this browser</translation>

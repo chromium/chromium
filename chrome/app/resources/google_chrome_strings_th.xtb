@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">เกี่ยวกับ Chrome OS</translation>
 <translation id="1154147086299354128">เ&amp;ปิดใน Chrome</translation>
 <translation id="1203500561924088507">ขอขอบคุณที่ติดตั้ง คุณต้องรีสตาร์ทเบราว์เซอร์ก่อนใช้ <ph name="BUNDLE_NAME" /></translation>
-<translation id="1236866257838264361">ใช้งาน Chrome อย่างเต็มประสิทธิภาพ</translation>
 <translation id="1278833599417554002">เปิดอีกครั้งเพื่ออัปเดต Chrome</translation>
 <translation id="1302523850133262269">โปรดรอขณะที่ Chrome ติดตั้งการอัปเดตระบบล่าสุด</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> กำหนดว่าคุณต้องอ่านและยอมรับข้อกำหนดในการให้บริการต่อไปนี้ก่อนใช้อุปกรณ์นี้ ข้อกำหนดเหล่านี้ไม่ขยาย แก้ไข หรือจำกัดข้อกำหนดของ Google Chrome OS Flex</translation>
@@ -253,6 +252,7 @@
 <translation id="6003112304606738118">กำลังดาวน์โหลด... เหลืออีก <ph name="HOURS" /> ชั่วโมง</translation>
 <translation id="6010556343189461180">คุณจะต้องใช้ macOS 10.15 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 10.14</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome จะปิดลงในตอนนี้}=1{Chrome จะปิดลงใน 1 วินาที}other{Chrome จะปิดลงใน # วินาที}}</translation>
+<translation id="6022659036123304283">ปรับเปลี่ยน Chrome ในแบบของคุณ</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6070348360322141662">Google Chrome จะเข้ารหัสลับข้อมูลของคุณเพื่อเพิ่มความปลอดภัยให้มากยิ่งขึ้น</translation>
 <translation id="608006075545470555">เพิ่มโปรไฟล์งานลงในเบราว์เซอร์นี้</translation>

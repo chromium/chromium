@@ -799,6 +799,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
       Als je het beleid niet instelt, bepaalt de gebruiker de helderheid en heeft dit geen invloed op de functies voor automatische helderheid.
 
       Opmerking: Geef de beleidswaarden op in procenten, minimaal 0 en maximaal 100.</translation>
+<translation id="1733092875104864334">Verzamelen van WebRTC-tekstlogboeken van Google-services niet toestaan</translation>
 <translation id="1733768596873041559">Standaard omleiden naar SAML IdP (voorafgaand aan <ph name="PRODUCT_NAME" /> 99 is gebruikersbevestiging vereist)</translation>
 <translation id="1733939382419067578">Als je het beleid instelt, kun je een lijst met URL-patronen instellen van de sites die meldingen mogen bekijken.
 
@@ -1342,6 +1343,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 
       Als dit beleid niet wordt toegepast, wordt elke plug-in uitgezet die overeenkomt met de patronen in DisabledPlugins, en kan de gebruiker deze niet aanzetten.</translation>
 <translation id="2236488539271255289">Niet toestaan dat sites lokaal gegevens instellen</translation>
+<translation id="2236593201136596376">Verzamelen van WebRTC-tekstlogboeken van Google-services toestaan</translation>
 <translation id="2241498944622759244">Deze functie is nooit gelanceerd. Het beleid is daardoor beëindigd. Als dit beleid is ingesteld op True of niet is ingesteld, stelt <ph name="PRODUCT_NAME" /> pagina's voor met betrekking tot de huidige pagina.
       Deze suggesties worden extern opgehaald van Google-servers.
 
@@ -7972,6 +7974,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
           Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders staat JavaScript JIT aan voor de site.</translation>
 <translation id="8543108307976719751">Verbindingen voor externe toegang tot deze machine voorkomen</translation>
+<translation id="8543639085146778837">Verzamelen van WebRTC-tekstlogboeken van Google-services toestaan</translation>
 <translation id="8543975123557636331">Audio-uitvoer aanzetten</translation>
 <translation id="8544375438507658205">Standaard HTML-renderer voor <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Toestaan dat sms-berichten worden gesynchroniseerd tussen telefoon en Chromebook.</translation>
@@ -8474,6 +8477,9 @@ Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de
 
       De beleidswaarde moet worden gespecificeerd in milliseconden. Waarden worden afgerond tot een bereik van dertig seconden tot vierentwintig uur.</translation>
 <translation id="9040042535845939426">Stelt de status van het privacyscherm in op het inlogscherm</translation>
+<translation id="9046248916118130378">Als je het beleid toepast, kan <ph name="PRODUCT_NAME" /> WebRTC-tekstlogboeken ophalen uit Google-services zoals Google Meet en deze uploaden naar Google. Deze logboeken bevatten diagnostische informatie voor het oplossen van problemen met audio- of videovergaderingen in <ph name="PRODUCT_NAME" />. Deze informatie betreft bijvoorbeeld tekstmetadata die inkomende en uitgaande WebRTC-streams beschrijven, WebRTC-specifieke logboekitems en aanvullende systeemgegevens. Deze logboeken bevatten geen audio- of videocontent van de vergadering.
+Als je het beleid niet toepast, worden deze logboeken niet geüpload naar Google. Logboeken worden nog steeds lokaal op het apparaat van de gebruiker verzameld.
+Als je het beleid niet instelt, kan <ph name="PRODUCT_NAME" /> deze logboeken standaard verzamelen en uploaden.</translation>
 <translation id="9050853837490399534">Met dit beleid wordt bepaald of het apparaat moet worden geüpdatet naar een Quick Fix Build.
 
       Als de beleidswaarde is ingesteld op een token dat naar een Quick Fix Build verwijst, wordt het apparaat geüpdatet naar de bijbehorende Quick Fix Build als de update niet wordt geblokkeerd door een ander beleid.

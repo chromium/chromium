@@ -561,6 +561,7 @@
 <translation id="5118713593561876160">আগ্রহগুলি</translation>
 <translation id="5118764316110575523">বন্ধ করা আছে</translation>
 <translation id="5119391094379141756">Chrome বেছে নিন</translation>
+<translation id="5121618895923301719">আপনি আগে থেকেই এই প্রোডাক্টটি ট্র্যাক করছেন। এই পৃষ্ঠাটি <ph name="BEGIN_LINK" />মোবাইল বুকমার্কে<ph name="END_LINK" /> সেভ করা আছে।</translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT}টি দুর্বল পাসওয়ার্ড}one{{COUNT}টি দুর্বল পাসওয়ার্ড}other{{COUNT}টি দুর্বল পাসওয়ার্ড}}</translation>
 <translation id="5149188072385105201">পাসওয়ার্ড যোগ করুন...</translation>
@@ -591,6 +592,7 @@
 <translation id="5386314158584363703">আপনার ফলো করা সাইট এখানে দেখতে পাবেন</translation>
 <translation id="5388358297987318779">ছবি খুলুন</translation>
 <translation id="5407969256130905701">পরিবর্তনগুলি বাতিল করুন</translation>
+<translation id="5414763847370083940">কোনও সাইটে দাম কমলে সেই সম্পর্কে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="5416022985862681400">গত ৭ দিনে</translation>
 <translation id="5423269318075950257">দাম ট্র্যাক করুন</translation>
 <translation id="543338862236136125">পাসওয়ার্ড এডিট করুন</translation>
@@ -1134,6 +1136,7 @@
 <translation id="952704832371081537">বাতিল করুন</translation>
 <translation id="953008885340860025">Chrome থেকে সাইন-আউট হয়ে গেছেন</translation>
 <translation id="959066944189734975">আপনি <ph name="CHANNEL_NAME" /> ফলো করছেন</translation>
+<translation id="973493300226275298">অনলাইন স্টোর জুড়ে প্রোডাক্টের দাম ট্র্যাক করুন। দাম কমে গেলে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">শুধুমাত্র নির্দিষ্ট অ্যাকাউন্টের মাধ্যমেই আপনার সংস্থা সাইন-ইন করার অনুমতি দেবে। অনুমোদন করা নেই এমন অ্যাকাউন্ট লুকানো আছে।</translation>
 <translation id="984509647832111802">সিঙ্ক কাজ করছে না।</translation>

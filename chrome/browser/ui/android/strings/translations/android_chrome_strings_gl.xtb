@@ -226,6 +226,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2248941474044011069">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google</translation>
 <translation id="2249635629516220541">Personaliza a información que usan os sitios para mostrarche anuncios</translation>
 <translation id="2259659629660284697">Exportar contrasinais…</translation>
+<translation id="2276231040576210443">Sempre podes escoller na <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" /> o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="2276696007612801991">Inicia sesión na túa Conta de Google para comprobar os teus contrasinais</translation>
 <translation id="2278052315791335171">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Enderezo de facturación</translation>
@@ -1242,6 +1243,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7682724950699840886">Sigue estes consellos: asegúrate de que hai espazo suficiente no dispositivo e proba a exportar os contrasinais de novo.</translation>
 <translation id="7686086654630106285">Máis información sobre os anuncios suxeridos polos sitios</translation>
 <translation id="768618399695552958">Precárganse algunhas das páxinas que visitas. As páxinas poden precargarse a través dos nosos servidores se están vinculadas a un sitio de Google.</translation>
+<translation id="7691043218961417207">Descubre contido para seguir</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7709094866268987903">Os intereses que quites mostraranse aquí</translation>
@@ -1492,6 +1494,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="8972098258593396643">Queres gardar a descarga no cartafol predeterminado?</translation>
 <translation id="8987641763863173640">Xestionar configuración da vista previa dos vídeos</translation>
+<translation id="8987736167266086032">Continúa onde o deixaches</translation>
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8993760627012879038">Abrir unha nova pestana no modo de incógnito</translation>
 <translation id="8996847606757455498">Escoller outro provedor</translation>

@@ -4,6 +4,7 @@
 <translation id="1047130070405668746">Odaberite Chromium</translation>
 <translation id="1091252999271033193">To znači da će Chromium svaki put zahtijevati web-lokaciju za mobilne uređaje.</translation>
 <translation id="1185134272377778587">O pregledniku Chromium</translation>
+<translation id="1256849392437386613">Da biste uključili opciju Praćenje cijene, u postavkama uređaja dopustite obavijesti Chromiuma</translation>
 <translation id="1257458525759135959">Da bi se slike spremale, dodirnite Postavke kako biste dopustili Chromiumu da dodaje vašim fotografijama</translation>
 <translation id="1289216811211435351">Prelazak na Chromium</translation>
 <translation id="1361748954329991663">Chromium je zastario. Ako u <ph name="BEGIN_LINK" />trgovini aplikacija<ph name="END_LINK" /> nema dostupnih ažuriranja, postoji mogućnost da vaš uređaj više ne podržava nove verzije Chromiuma.</translation>
@@ -71,6 +72,7 @@
 <translation id="5573014823074921752">Savjet za Chromium. Za više opcija za kartice dodirnite i držite gumb Prikaži kartice na alatnoj traci pri dnu ili vrhu zaslona.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše zaporke</translation>
 <translation id="5777187867430702742">Chromiumova stranica</translation>
+<translation id="5918064849477363478">Obavijesti Chromiuma isključene su u postavkama uređaja. Najprije morate omogućiti obavijesti.</translation>
 <translation id="5945387852661427312">Prijavljujete se računom kojim upravlja <ph name="DOMAIN" /> i njegovom administratoru dajete kontrolu nad svojim podacima u Chromiumu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite s Chromiuma, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>
 <translation id="5983312940147103417">Poboljšavanje Chromiuma</translation>
 <translation id="6062449165341879460">Vaša organizacija <ph name="DOMAIN" /> imat će pristup vašim podacima, oznakama, povijesti, zaporkama i drugim postavkama Chromiuma koje pohranjujete na ovom računu. Kad se odjavite, vaši će se podaci izbrisati s ovog uređaja.  No vaši će podaci ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija može postaviti i korisnička pravila koja se odnose na taj račun i koja mogu promijeniti Chromiumovo ponašanje.</translation>

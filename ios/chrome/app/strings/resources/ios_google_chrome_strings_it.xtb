@@ -113,6 +113,7 @@
 <translation id="7780154209050837198">Accedi con il tuo Account Google a Chrome per usare al meglio questo browser.</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
 <translation id="7939179037291298976">Dalle Impostazioni dell'iPhone, apri "Opzioni password" e seleziona "Chrome"</translation>
+<translation id="7975131781538454817">Le notifiche di Chrome sono disattivate nelle impostazioni del dispositivo. Prima dovrai consentire le notifiche.</translation>
 <translation id="8022947259858476807">Usa Chrome per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
 <translation id="81358522153858150">Ora Chrome supporta i criteri relativi agli utenti per il tuo account gestito</translation>
 <translation id="8160472928944011082">Impossibile aggiornare Chrome</translation>
@@ -142,6 +143,7 @@ Aspetti da considerare:
   • Se Chrome si arresta in modo anomalo, i dettagli relativi a questo evento potrebbero includere alcune informazioni personali.
 
   • Se attivi la sincronizzazione, le metriche potrebbero includere anche informazioni relative agli URL che visiti.<ph name="END_INDENT" /></translation>
+<translation id="9101160735177453133">Per attivare "Monitora prezzo" consenti le notifiche di Chrome nelle impostazioni del dispositivo</translation>
 <translation id="9103442491611662960">È attiva la protezione standard per questo profilo Chrome</translation>
 <translation id="9112744793181547300">Impostare Chrome come browser predefinito?</translation>
 <translation id="9122931302567044771">Ciò significa che Chrome richiederà ogni volta il sito desktop.</translation>

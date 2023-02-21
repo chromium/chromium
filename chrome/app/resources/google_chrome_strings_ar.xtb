@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">‏لمحة عن ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;فتح في Chrome</translation>
 <translation id="1203500561924088507">شكرًا على التثبيت. عليك إعادة تشغيل المتصفِّح قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">‏يمكنك الاستفادة إلى أقصى حدّ من Chrome</translation>
 <translation id="1278833599417554002">‏إعادة تشغيل متصفِّح Chrome لتحديثه</translation>
 <translation id="1302523850133262269">‏يُرجى الانتظار لحين تثبيت Chrome لآخر تحديثات النظام.</translation>
 <translation id="1335640173511558774">‏يطلب <ph name="MANAGER" /> منك قراءة بنود الخدمة التالية وقبولها قبل استخدام هذا الجهاز، مع العلم بأنّ هذه البنود لا توسِّع نطاق بنود نظام التشغيل ChromeOS Flex من Google ولا تعدلِّها ولا تفرض قيودًا عليها.</translation>
@@ -258,6 +257,7 @@
 <translation id="6003112304606738118">جارٍ التنزيل… الساعات المتبقّية: <ph name="HOURS" /></translation>
 <translation id="6010556343189461180">‏للحصول على تحديثات Google Chrome في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل macOS 10.15 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{‏سيتم الآن إغلاق متصفِّح Chrome.}=1{‏سيتم إغلاق متصفِّح Chrome بعد ثانية واحدة.}two{‏سيتم إغلاق متصفِّح Chrome ثانيتَين.}few{‏سيتم إغلاق متصفِّح Chrome بعد # ثوانٍ.}many{‏سيتم إغلاق متصفِّح Chrome بعد # ثانيةً.}other{‏سيتم إغلاق متصفِّح Chrome بعد # ثانية.}}</translation>
+<translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6070348360322141662">‏لمزيد من الأمان، سيشفِّر Google Chrome بياناتك</translation>
 <translation id="608006075545470555">إضافة ملف شخصي للعمل على هذا المتصفِّح</translation>

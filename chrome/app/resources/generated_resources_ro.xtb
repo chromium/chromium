@@ -4447,7 +4447,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4977942889532008999">Confirmați accesul</translation>
 <translation id="4980805016576257426">Această extensie conține programe malware.</translation>
 <translation id="4981449534399733132">Pentru a șterge datele de navigare de pe toate dispozitivele sincronizate și din Contul Google, <ph name="BEGIN_LINK" />conectează-te<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Reia de unde ai rămas, pe orice dispozitiv</translation>
 <translation id="4986706507552097681">Poți să alegi oricând ce să sincronizezi în setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4986728572522335985">Vor fi șterse toate datele de pe cheia de securitate, inclusiv codul său PIN</translation>
 <translation id="4988526792673242964">Pagini</translation>
@@ -4564,7 +4563,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5097349930204431044">Site-urile pe care le accesezi pot stabili lucrurile care te interesează, apoi îți sugerează anunțuri pe măsură ce navighezi</translation>
 <translation id="5097649414558628673">Instrument: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Dă automat clic la oprirea cursorului</translation>
-<translation id="5101683448725092498">Fă backup conținutului</translation>
 <translation id="5101839224773798795">Se dă clic automat când cursorul se oprește</translation>
 <translation id="5106350808162641062">Elimină</translation>
 <translation id="510695978163689362">Contul <ph name="USER_EMAIL" /> este supravegheat prin Family Link. Poți să adaugi conturi de la școală ca să accesezi resurse pentru școală cu supraveghere parentală.</translation>
@@ -5130,7 +5128,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5623842676595125836">Jurnal</translation>
 <translation id="5624120631404540903">Gestionați parolele</translation>
 <translation id="5625225435499354052">Editează în Google Pay</translation>
-<translation id="5625631605902707678">Pe toate dispozitivele</translation>
 <translation id="5626134646977739690">Nume:</translation>
 <translation id="5627086634964711283">Stabilește și ce pagină se afișează când dai clic pe butonul Pagina principală.</translation>
 <translation id="5627676517703583263">Navighează inteligent folosind Chrome</translation>
@@ -5242,7 +5239,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Aceste date sau dispozitivul nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}=1{Acest fișier sau dispozitivul nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}few{Aceste fișiere nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}other{Aceste fișiere nu respectă unele dintre politicile de securitate ale organizației. Consultă administratorul pentru a afla ce trebuie remediat.}}</translation>
 <translation id="5736796278325406685">Introdu un nume de utilizator valid</translation>
 <translation id="5738093759615225354">Ai nevoie de această cheie de acces pentru a te conecta la computer</translation>
-<translation id="5738329404678738022">Stochează marcajele și multe altele folosind sincronizarea</translation>
 <translation id="5739017626473506901">Conectează-te pentru a ajuta utilizatorul <ph name="USER_NAME" /> să adauge un cont de la școală</translation>
 <translation id="5739235828260127894">Se așteaptă confirmarea. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Foarte mare</translation>
@@ -5264,7 +5260,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5757375109985023827">Selectează o filă de previzualizat</translation>
 <translation id="5758631781033351321">Aici vei vedea lista de lectură</translation>
 <translation id="5759728514498647443">Documentele pe care le trimiți prin <ph name="APP_NAME" /> pentru a fi printate pot fi citite de <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Conectează-te pentru mai multe beneficii</translation>
 <translation id="5762787084360227629">Introdu informații despre Contul Google</translation>
 <translation id="5763751966069581670">Nu s-au găsit dispozitive USB</translation>
 <translation id="5764483294734785780">Sal&amp;vează conținutul audio ca...</translation>
@@ -7809,7 +7804,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8059417245945632445">&amp;Inspectați dispozitivele</translation>
 <translation id="8059456211585183827">Nu există imprimante de salvat.</translation>
 <translation id="8061091456562007989">Revino la setările inițiale</translation>
-<translation id="8061965471006133016">Protecție suplimentară pentru parole și multe altele</translation>
 <translation id="8061970399284390013">Verificarea ortografiei și a gramaticii</translation>
 <translation id="8061991877177392872">Se pare că ai configurat deja Voice Match cu Asistentul pe alt dispozitiv. Aceste înregistrări anterioare au fost folosite pentru a crea un model vocal pe acest dispozitiv.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{O coală de hârtie}few{{COUNT} coli de hârtie}other{{COUNT} de coli de hârtie}}</translation>

@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">A ChromeOS névjegye</translation>
 <translation id="1154147086299354128">&amp;Megnyitás Chrome-ban</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
-<translation id="1236866257838264361">Kihozhatja a legtöbbet a Chrome-ból</translation>
 <translation id="1278833599417554002">Indítsa újra a Chrome frissítéshez</translation>
 <translation id="1302523850133262269">Kérjük, várjon, amíg a Chrome telepíti a legutóbbi rendszerfrissítéseket.</translation>
 <translation id="1335640173511558774">A(z) <ph name="MANAGER" /> megköveteli, hogy olvassa el, majd fogadja el a következő Általános Szerződési Feltételeket, mielőtt használná ezt az eszközt. Ezek a feltételek nem bővítik, módosítják vagy korlátozzák a Google ChromeOS Flex Általános Szerződési Feltételeit.</translation>
@@ -254,6 +253,7 @@
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
 <translation id="6010556343189461180">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a macOS 10.15-ös vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 10.14 fut.</translation>
 <translation id="6022388122721048220">{0,plural, =0{A Chrome most bezárul.}=1{A Chrome 1 másodperc múlva bezárul.}other{A Chrome # másodperc múlva bezárul.}}</translation>
+<translation id="6022659036123304283">Tegye személyessé a Chrome-ot</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6070348360322141662">A nagyobb biztonság érdekében a Google Chrome titkosítja az Ön adatait</translation>
 <translation id="608006075545470555">Munkaprofil hozzáadása a böngészőhöz</translation>

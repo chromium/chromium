@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">ChromeOS အကြောင်း</translation>
 <translation id="1154147086299354128">&amp;Chrome တွင် ဖွင့်ရန်</translation>
 <translation id="1203500561924088507">ထည့်သွင်းသည့်အတွက် ကျေးဇူးတင်ပါသည်။ <ph name="BUNDLE_NAME" /> အသုံးမပြုမီ သင့်ဘရောင်ဇာကို ပြန်စရမည်။</translation>
-<translation id="1236866257838264361">Chrome ကို အကောင်းဆုံး အသုံးချနိုင်သည်</translation>
 <translation id="1278833599417554002">&amp;Chrome အပ်ဒိတ်လုပ်ရန် ပြန်ဖွင့်ပါ</translation>
 <translation id="1302523850133262269">​​ကျေးဇူးပြုပြီး Chrome က စနစ်၏ နောက်ဆုံး မွမ်းမံမှုများကို တပ်ဆင်ပေးနေတာကို စောင့်ပါ။</translation>
 <translation id="1335640173511558774">ဤစက်ကိုမသုံးမီ အောက်ပါ ‘ဝန်ဆောင်မှုစည်းမျဉ်းများ’ ကို ဖတ်ရှုပြီး လက်ခံရန် <ph name="MANAGER" /> က သတ်မှတ်ထားသည်။ ဤစည်းမျဉ်းများက ‘Google ChromeOS Flex စည်းမျဉ်းများ’ ကို ထပ်ထည့်ခြင်း၊ မွမ်းမံခြင်း သို့မဟုတ် ကန့်သတ်ခြင်း မရှိပါ။</translation>
@@ -262,6 +261,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6003112304606738118">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="HOURS" /> နာရီ ကျန်သည်</translation>
 <translation id="6010556343189461180">နောက်ပိုင်းထွက်မည့် Google Chrome အပ်ဒိတ်များ ရယူရန် macOS 10.15 နှင့်အထက် လိုအပ်ပါမည်။ ဤကွန်ပျူတာက macOS 10.14 အသုံးပြုနေသည်။</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome ကို ယခုပိတ်ပါမည်။}=1{Chrome ကို ၁ စက္ကန့်အကြာတွင် ပိတ်ပါမည်။}other{Chrome ကို # စက္ကန့်အကြာတွင် ပိတ်ပါမည်။}}</translation>
+<translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6070348360322141662">လုံခြုံရေး ပိုမိုတင်းကြပ်စေရန်အတွက် Google Chrome သည် သင်၏ ဒေတာများကို အသွင်ဝှက်ထားပါမည်</translation>
 <translation id="608006075545470555">ဤဘရောင်ဇာတွင် အလုပ်ပရိုဖိုင်ထည့်ခြင်း</translation>

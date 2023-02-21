@@ -561,6 +561,7 @@
 <translation id="5118713593561876160">علایق</translation>
 <translation id="5118764316110575523">خاموش</translation>
 <translation id="5119391094379141756">‏Chrome را انتخاب کنید</translation>
+<translation id="5121618895923301719">ازقبل این محصول را پیگیری می‌کنید. این صفحه در <ph name="BEGIN_LINK" />نشانک‌های دستگاه همراه<ph name="END_LINK" /> ذخیره شده است.</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} گذرواژه ضعیف}one{{COUNT} گذرواژه ضعیف}other{{COUNT} گذرواژه ضعیف}}</translation>
 <translation id="5149188072385105201">افزودن گذرواژه…</translation>
@@ -591,6 +592,7 @@
 <translation id="5386314158584363703">سایت‌هایی را که دنبال کرده‌اید اینجا خواهید دید</translation>
 <translation id="5388358297987318779">بازکردن تصویر</translation>
 <translation id="5407969256130905701">صرف‌نظر کردن از تغییرات</translation>
+<translation id="5414763847370083940">اگر قیمت در سایتی کاهش پیدا کند، هشداری دریافت می‌کنید.</translation>
 <translation id="5416022985862681400">۷ روز گذشته</translation>
 <translation id="5423269318075950257">پیگیری قیمت</translation>
 <translation id="543338862236136125">ویرایش گذرواژه</translation>
@@ -1133,6 +1135,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="952704832371081537">لغو</translation>
 <translation id="953008885340860025">‏Chrome از سیستم خارج شده است</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
+<translation id="973493300226275298">قیمت محصول موردنظرتان را در فروشگاه‌های آنلاین ردیابی کنید. وقتی قیمت کاهش پیدا کند، هشداری دریافت می‌کنید.</translation>
 <translation id="980712131080209571">ج</translation>
 <translation id="981498610235328462">سازمانتان فقط ورود به سیستم با حساب‌های خاصی را مجاز کرده است. حساب‌هایی که مجاز نیستند پنهان می‌شوند.</translation>
 <translation id="984509647832111802">همگام‌سازی کار نمی‌کند.</translation>

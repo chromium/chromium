@@ -84,6 +84,7 @@
 <translation id="1178821169867863726">12 x 16 इंच</translation>
 <translation id="1181037720776840403">हटाएं</translation>
 <translation id="1186201132766001848">पासवर्ड जांचें</translation>
+<translation id="1195073053842921378">इस डिवाइस से यह पता मिटा दिया जाएगा</translation>
 <translation id="1195558154361252544">जिन साइट को आप फ़ॉलो करते हैं उन्हें छोड़कर सभी साइट के लिए सूचनाएं अपने आप बंद हो गई हैं</translation>
 <translation id="1197088940767939838">नारंगी</translation>
 <translation id="1201402288615127009">अगला</translation>
@@ -2018,7 +2019,6 @@
 <translation id="5992691462791905444">इंजीनियरिंग ज़ी-फ़ोल्ड</translation>
 <translation id="5992805036496113940">आपको विज्ञापन दिखाने के लिए इस्तेमाल की गई जानकारी देखें</translation>
 <translation id="5995727681868049093">Google खाते में अपनी जानकारी, निजता, और सुरक्षा को मैनेज करें</translation>
-<translation id="5996887213716993070"><ph name="FIELD" /> को खाली नहीं छोड़ा जा सकता</translation>
 <translation id="5997247540087773573">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google Password Manager आपको यह सुझाव देता है कि आप तुरंत इस पासवर्ड को बदलें और सेव किए गए पासवर्ड की जांच करें. ऐसा करने से, आपके खाते सुरक्षित रहेंगे.</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' के लिए <ph name="RESULT_COUNT" /> नतीजे मिले हैं</translation>
 <translation id="6005765687956866568">फ़ॉर्म में ऑटोमैटिक भरी गई जानकारी मिटा दी गई है</translation>

@@ -3963,6 +3963,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4522890784888918985">Tài khoản con không được hỗ trợ</translation>
 <translation id="4523876148417776526">Chưa tìm nạp được danh sách trang web XML.</translation>
 <translation id="4524832533047962394">Chế độ đăng ký đã cung cấp không được phiên bản hệ điều hành này hỗ trợ. Vui lòng đảm bảo bạn đang chạy phiên bản mới nhất.</translation>
+<translation id="4526051299161934899">Các nhóm thẻ đã lưu bị ẩn</translation>
 <translation id="4526853756266614740">Chọn một hình ảnh để áp dụng ngay giao diện</translation>
 <translation id="452750746583162491">Xem lại các dữ liệu đã đồng bộ hóa của bạn</translation>
 <translation id="4527929807707405172">Bật chế độ cuộn ngược. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
@@ -4287,6 +4288,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4824037980212326045">Sao lưu và khôi phục Linux</translation>
 <translation id="4824958205181053313">Bạn muốn hủy đồng bộ hóa?</translation>
 <translation id="4825532258163983651">Không thể xoá mã xác thực</translation>
+<translation id="4827283332383516812">Xoá thẻ</translation>
 <translation id="4827675678516992122">Không thể kết nối</translation>
 <translation id="4827784381479890589">Tính năng kiểm tra lỗi chính tả nâng cao trong trình duyệt Chrome (văn bản sẽ được gửi đến Google để đưa ra các đề xuất chính tả)</translation>
 <translation id="4827904420700932487">Tạo mã QR cho Hình ảnh này</translation>
@@ -4462,7 +4464,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4977942889532008999">Xác nhận truy cập</translation>
 <translation id="4980805016576257426">Tiện ích này có chứa phần mềm độc hại.</translation>
 <translation id="4981449534399733132">Để xóa dữ liệu duyệt web khỏi tất cả các thiết bị đã đồng bộ hóa và Tài khoản Google của bạn, hãy <ph name="BEGIN_LINK" />đăng nhập<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Tiếp tục công việc dang dở trên mọi thiết bị</translation>
 <translation id="4986706507552097681">Bạn có thể chọn nội dung muốn đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="4986728572522335985">Thao tác này sẽ xóa toàn bộ dữ liệu trên khóa bảo mật, bao gồm cả mã PIN của khóa</translation>
 <translation id="4988526792673242964">Trang</translation>
@@ -4579,7 +4580,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5097349930204431044">Các trang web bạn truy cập có thể xác định sở thích của bạn để đề xuất quảng cáo khi bạn tiếp tục duyệt web</translation>
 <translation id="5097649414558628673">Công cụ: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Tự động nhấp khi con trỏ dừng lại</translation>
-<translation id="5101683448725092498">Sao lưu dữ liệu</translation>
 <translation id="5101839224773798795">Tự động nhấp chuột khi con trỏ dừng lại</translation>
 <translation id="5106350808162641062">Xoá</translation>
 <translation id="510695978163689362">Tài khoản <ph name="USER_EMAIL" /> do Family Link giám sát. Bạn có thể thêm các tài khoản trường học để truy cập vào tài nguyên của trường học dưới sự giám sát của cha mẹ.</translation>
@@ -5145,7 +5145,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5623842676595125836">Nhật ký</translation>
 <translation id="5624120631404540903">Quản lý mật khẩu</translation>
 <translation id="5625225435499354052">Chỉnh sửa trong Google Pay</translation>
-<translation id="5625631605902707678">Trên nhiều thiết bị</translation>
 <translation id="5626134646977739690">Tên:</translation>
 <translation id="5627086634964711283">Tiện ích cũng điều khiển trang nào sẽ hiển thị khi bạn nhấp vào nút Trang chủ.</translation>
 <translation id="5627676517703583263">Duyệt web thông minh bằng Chrome</translation>
@@ -5257,7 +5256,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Dữ liệu này hoặc thiết bị của bạn không đáp ứng một số chính sách bảo mật của tổ chức. Hãy trao đổi với quản trị viên của bạn để biết những vấn đề cần khắc phục.}=1{Tệp này hoặc thiết bị của bạn không đáp ứng một số chính sách bảo mật của tổ chức. Hãy trao đổi với quản trị viên của bạn để biết những vấn đề cần khắc phục.}other{Những tệp này không đáp ứng một số chính sách bảo mật của tổ chức. Hãy trao đổi với quản trị viên của bạn để biết những vấn đề cần khắc phục.}}</translation>
 <translation id="5736796278325406685">Vui lòng nhập tên người dùng hợp lệ</translation>
 <translation id="5738093759615225354">Bạn cần mã xác thực này để đăng nhập vào máy tính của mình</translation>
-<translation id="5738329404678738022">Lưu trữ dấu trang và các nội dung khác bằng tính năng đồng bộ hoá</translation>
 <translation id="5739017626473506901">Đăng nhập để giúp <ph name="USER_NAME" /> thêm tài khoản trường học</translation>
 <translation id="5739235828260127894">Đang chờ xác minh. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Rất lớn</translation>
@@ -5279,7 +5277,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5757375109985023827">Chọn một thẻ để xem trước</translation>
 <translation id="5758631781033351321">Bạn sẽ thấy danh sách đọc ở đây</translation>
 <translation id="5759728514498647443">Tài liệu bạn gửi để in qua <ph name="APP_NAME" /> có thể đọc được bằng <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Đăng nhập để nhận nhiều lợi ích hơn</translation>
 <translation id="5762787084360227629">Nhập thông tin về Tài khoản Google</translation>
 <translation id="5763751966069581670">Không tìm thấy thiết bị USB nào</translation>
 <translation id="5764483294734785780">Lư&amp;u âm thanh thành...</translation>
@@ -5315,6 +5312,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5792295754950501287">Thao tác khác cho <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Vui lòng nhấn vào nút nguồn</translation>
 <translation id="5792874008054171483">Thao tác khác cho <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Phương thức thanh toán này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="5793339252089865437">Nếu tải bản cập nhật này xuống qua mạng di động, thì bạn có thể phải trả phí phát sinh.</translation>
 <translation id="5793420564274426163">Xác nhận ghép nối</translation>
 <translation id="5793430094159150686">Mật khẩu của bạn đã thay đổi. Để khôi phục dữ liệu cục bộ, bạn cần nhập mật khẩu cũ của mình.</translation>
@@ -7293,6 +7291,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7609148976235050828">Vui lòng kết nối với Internet và thử lại.</translation>
 <translation id="7612401678989660900">Cho phép truy cập đối với các ứng dụng và trang web có quyền sử dụng micrô</translation>
 <translation id="7612655942094160088">Các tính năng trên điện thoại đã kết nối bật.</translation>
+<translation id="7612989789287281429">Đang đăng nhập…</translation>
 <translation id="7614260613810441905">Hỏi khi một trang web muốn chỉnh sửa các tệp hoặc thư mục trên thiết bị (khuyên dùng)</translation>
 <translation id="761530003705945209">Sao lưu vào Google Drive. Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Nội dung sao lưu của bạn bao gồm các dữ liệu ứng dụng. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của bạn.</translation>
 <translation id="7615365294369022248">Đã xảy ra lỗi khi thêm một tài khoản</translation>
@@ -7822,7 +7821,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8059417245945632445">&amp;Kiểm tra thiết bị</translation>
 <translation id="8059456211585183827">Hiện không có máy in nào để bạn lưu.</translation>
 <translation id="8061091456562007989">Chuyển lại</translation>
-<translation id="8061965471006133016">Tăng cường khả năng bảo vệ mật khẩu và nhiều lợi ích khác</translation>
 <translation id="8061970399284390013">Kiểm tra chính tả và ngữ pháp</translation>
 <translation id="8061991877177392872">Có vẻ như bạn đã thiết lập Voice Match với Trợ lý trên một thiết bị khác. Trợ lý đã dùng những bản ghi âm trước đây để tạo một mẫu giọng nói trên thiết bị này.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 tờ giấy}other{{COUNT} tờ giấy}}</translation>
@@ -8510,6 +8508,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="869884720829132584">Menu ứng dụng</translation>
 <translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8699188901396699995">Tệp PPD cho <ph name="PRINTER_NAME" /></translation>
+<translation id="8702278591052316269">Trình đơn chứa các nhóm thẻ đã lưu bị ẩn</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> của bạn đã bị khóa.</translation>
 <translation id="8703346390800944767">Bỏ qua quảng cáo</translation>
 <translation id="8705331520020532516">Số Sê-ri</translation>

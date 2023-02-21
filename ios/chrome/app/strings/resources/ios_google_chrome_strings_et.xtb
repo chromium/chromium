@@ -113,6 +113,7 @@
 <translation id="7780154209050837198">Chrome'i kasutamiseks parimal moel logige Chrome'i sisse oma Google'i kontoga.</translation>
 <translation id="7855730255114109580">Google Chrome on ajakohane</translation>
 <translation id="7939179037291298976">Avage oma iPhone'i seadetes valik „Password Options” ja tehke valik „Chrome“.</translation>
+<translation id="7975131781538454817">Chrome'i märguanded on teie seadme seadetes välja lülitatud. Peate esmalt märguanded lubama.</translation>
 <translation id="8022947259858476807">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chrome'i</translation>
 <translation id="81358522153858150">Chrome toetab nüüd hallatud konto puhul kasutajareegleid</translation>
 <translation id="8160472928944011082">Chrome'i ei saa värskendada</translation>
@@ -142,6 +143,7 @@ Olulised aspektid
   • Kui Chrome jookseb kokku, võivad krahhi üksikasjad isiklikku teavet sisaldada.
 
   • Kui lülitate sünkroonimise sisse, võivad mõõdikud sisaldada ka teavet teie külastatavate URL-ide kohta.<ph name="END_INDENT" /></translation>
+<translation id="9101160735177453133">Hindade jälgimise sisselülitamiseks lubage seadme seadetes Chrome'i märguanded</translation>
 <translation id="9103442491611662960">Saate selle Chrome'i profiili jaoks standardse turvakaitse</translation>
 <translation id="9112744793181547300">Kas määrata Chrome vaikebrauseriks?</translation>
 <translation id="9122931302567044771">See tähendab, et Chrome taotleb iga kord töölauasaiti.</translation>

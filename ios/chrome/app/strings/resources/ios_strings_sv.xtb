@@ -314,6 +314,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Länken har kopierats</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">Det gick inte att spara ändringen.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> av <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3268451620468152448">Öppna flikar</translation>
 <translation id="3272527697863656322">Avbryt</translation>
@@ -336,6 +337,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3448016392200048164">Delad vy</translation>
 <translation id="345565170154308620">Hantera lösenord …</translation>
+<translation id="3464194322481586217">Det gick inte att bevaka priset.</translation>
 <translation id="3469166899695866866">Vill du avbryta nedladdningen?</translation>
 <translation id="3470502288861289375">Kopierar ...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{för {COUNT} webbplats eller app}other{för {COUNT} webbplatser och appar}}</translation>
@@ -761,6 +763,7 @@ Din data krypterades med lösenfrasen den <ph name="TIME" />. Ange den om du vil
 <translation id="6464397691496239022">Webbplatser får förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen.
 
 Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av cookies och till exempel anpassa annonser.</translation>
+<translation id="6476253015009698798">Prisbevakning är inte tillgänglig för den här sidan.</translation>
 <translation id="6476800141292307438">Översätter sidan till <ph name="LANGUAGE" />. Alternativ finns längst ned på skärmen.</translation>
 <translation id="648164694371393720">Autentiseringsfel</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> objekt har tagits bort</translation>
@@ -812,6 +815,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6780034285637185932">Postnummer</translation>
 <translation id="6781260999953472352">Vill du aktivera synkronisering?</translation>
 <translation id="6785453220513215166">Skickar en felrapport ...</translation>
+<translation id="6790502149545262384">Snart visas artiklar från <ph name="CHANNEL_NAME" /> när du öppnar en ny flik.</translation>
 <translation id="6797885426782475225">Röstsökning</translation>
 <translation id="6801927553864092214">Öppna en inkognitoflik om du vill surfa privat</translation>
 <translation id="6807889908376551050">Visa alla ...</translation>
@@ -1121,6 +1125,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Logga in igen</translation>
 <translation id="9157836665414082580">Visa inte dialogrutor</translation>
+<translation id="9162432979321511934">Aktivera Autofyll lösenord</translation>
 <translation id="9177438225260810839">Sök på öppna flikar</translation>
 <translation id="9188680907066685419">Logga ut från hanterat konto</translation>
 <translation id="9193147658040604536">Dra hit för att fästa fliken</translation>

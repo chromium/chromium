@@ -1502,6 +1502,9 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
       Si no la estableces, se activarán las cookies de terceros, pero los usuarios podrán cambiar esta configuración.</translation>
 <translation id="2386362615870139244">Permitir bloqueos de activación de pantalla</translation>
 <translation id="2387469539700985783">Esta política no afecta el informe que crea Android.</translation>
+<translation id="2388701318721126001">Si inhabilitas esta política, no se podrá seleccionar la imagen de fondo de pantalla de <ph name="PRODUCT_OS_NAME" /> del usuario de un álbum de Google Fotos.
+
+Si habilitas esta política o no la estableces, el usuario podrá elegir una imagen de Google Fotos como fondo de pantalla.</translation>
 <translation id="2393862222659066027">Abrir una lista de URLs y restablecer la última sesión</translation>
 <translation id="2394429297128584919">No permitir que las páginas envíen solicitudes XHR síncronas cuando el usuario las abandona</translation>
 <translation id="2394674739523870144">Si estableces la política como una lista de strings, estas se unen con espacios y se transfieren de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de la línea de comandos. Si un parámetro contiene <ph name="URL_PLACEHOLDER" />, se reemplazará <ph name="URL_PLACEHOLDER" /> por la URL de la página que se abrirá. Si ningún parámetro contiene <ph name="URL_PLACEHOLDER" />, se agregará la dirección URL al final de la línea de comandos.
@@ -2867,6 +2870,7 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
 <translation id="3608206578291537084">Habilitar la canalización de informes encriptados</translation>
 <translation id="3608281460204780443">Mostrar el ícono de Chrome Web Store en el selector <ph name="PRODUCT_OS_NAME" /> y en la página de la nueva pestaña</translation>
 <translation id="3622463490728773174">Permitir la implementación nueva</translation>
+<translation id="3623332696371971798">Impedir el acceso a Google Fotos desde la app de personalización</translation>
 <translation id="3627678165642179114">Habilita o inhabilita el servicio web de revisión ortográfica.</translation>
 <translation id="3628480121685794414">Permitir impresión simple</translation>
 <translation id="3634125384445314047">Permitir el acceso a las fotos y los videos tomados recientemente del teléfono mediante Phone Hub</translation>
@@ -2904,6 +2908,7 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
 
           Esta es una política temporal que se planea quitar en <ph name="PRODUCT_NAME" /> 107. Es posible que se extienda la fecha límite si las empresas lo necesitan.
           </translation>
+<translation id="3678069907945250643">Permitir el acceso a Google Fotos desde la app de personalización</translation>
 <translation id="3685979383016152590">Si estableces la política, se designará la política de acceso que se utilizará para la configuración de impresoras en lote, lo que permitirá determinar las impresoras de <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> que estarán disponibles para los usuarios.
 
       * <ph name="PRINTERS_BLOCKLIST" /> (valor 0) utiliza <ph name="PRINTERS_BULK_BLOCKLIST" /> para restringir el acceso a las impresoras especificadas.
@@ -7292,6 +7297,7 @@ política mientras se esté ejecutando el navegador.</translation>
       Si se inhabilita esta política o no se establece, es posible que no se puedan ejecutar las Apps de Chrome (en función del estado del lanzamiento de la desactivación).
       En cualquier caso, las Apps de Chrome que están instaladas de manera automática por la política seguirán habilitadas.</translation>
 <translation id="7774768074957326919">Usar la configuración del proxy del sistema</translation>
+<translation id="7775077662962729812">Selección de fondo de pantalla de Google Fotos</translation>
 <translation id="7776848995687565978">Configura una lista de orígenes que concedan una mayor duración en segundo plano a las extensiones que se conectan.</translation>
 <translation id="777734450201217641">Habilita las combinaciones de teclas para las funciones de accesibilidad en la pantalla de acceso.
 

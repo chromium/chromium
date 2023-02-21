@@ -84,6 +84,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1178821169867863726">12 × 16 hüvelyk</translation>
 <translation id="1181037720776840403">Eltávolítás</translation>
 <translation id="1186201132766001848">Jelszavak ellenőrzése</translation>
+<translation id="1195073053842921378">Ez a cím törlődni fog erről az eszközről.</translation>
 <translation id="1195558154361252544">Az Ön által engedélyezett webhelyek kivételével a böngésző automatikusan letiltja az értesítéseket</translation>
 <translation id="1197088940767939838">Narancssárga</translation>
 <translation id="1201402288615127009">Tovább</translation>
@@ -2016,7 +2017,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5992691462791905444">Z-hajtás hellyel kötés, lyukasztás és kapcsok számára</translation>
 <translation id="5992805036496113940">Hirdetések megjelenítéséhez használt információk megtekintése</translation>
 <translation id="5995727681868049093">Kezelheti adatait, az adatvédelmet és a biztonságot a Google-fiókjában</translation>
-<translation id="5996887213716993070">A(z) <ph name="FIELD" /> mező nem maradhat üresen</translation>
 <translation id="5997247540087773573">Kiderült, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonságának megőrzése érdekében a Google Jelszókezelő a jelszó haladéktalan módosítását, majd a mentett jelszavak ellenőrzését javasolja.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> találat a következőre: <ph name="SEARCH_TEXT" /></translation>
 <translation id="6005765687956866568">Az automatikusan kitöltött adatok törölve lettek az űrlapról</translation>

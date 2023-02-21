@@ -4,6 +4,7 @@
 <translation id="1047130070405668746">Selecciona Chromium.</translation>
 <translation id="1091252999271033193">Això vol dir que Chromium sol·licitarà el lloc web per a mòbils cada vegada.</translation>
 <translation id="1185134272377778587">Quant a Chromium</translation>
+<translation id="1256849392437386613">Per activar l'opció Seguiment de preus, permet les notificacions de Chromium a la configuració del dispositiu</translation>
 <translation id="1257458525759135959">Si vols desar imatges, toca Configuració per permetre que Chromium les afegeixi a les teves fotos</translation>
 <translation id="1289216811211435351">Canvia a Chromium</translation>
 <translation id="1361748954329991663">Chromium no està actualitzat. Si no hi ha cap actualització disponible a l'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, pot ser que el teu dispositiu ja no admeti les versions noves de Chromium.</translation>
@@ -71,6 +72,7 @@
 <translation id="5573014823074921752">Consell de Chromium. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
 <translation id="5700709190537129682">Chromium no pot comprovar les teves contrasenyes</translation>
 <translation id="5777187867430702742">Pàgina de Chromium</translation>
+<translation id="5918064849477363478">Les notificacions de Chromium estan desactivades a la configuració del dispositiu. Primer les has de permetre.</translation>
 <translation id="5945387852661427312">Estàs iniciant la sessió amb un compte gestionat per <ph name="DOMAIN" /> i estàs donant a l'administrador el control de les teves dades de Chromium. Les dades passaran a estar vinculades a aquest compte permanentment. Si tanques la sessió de Chromium, se suprimiran les teves dades d'aquest dispositiu, però continuaran emmagatzemades al teu compte de Google.</translation>
 <translation id="5983312940147103417">Millora Chromium</translation>
 <translation id="6062449165341879460">La teva organització (<ph name="DOMAIN" />) tindrà accés a les teves dades, les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració de Chromium que emmagatzemis en aquest compte. Quan tanquis la sessió, les teves dades s'esborraran d'aquest dispositiu,  però continuaran emmagatzemades al teu Compte de Google gestionat i estaran disponibles per a la teva organització. L'organització també pot definir polítiques dels usuaris específiques del compte que poden canviar el comportament de Chromium.</translation>

@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">ChromeOS-н тухай</translation>
 <translation id="1154147086299354128">&amp;Chrome-д нээх</translation>
 <translation id="1203500561924088507">Суулгасанд баярлалаа. Та <ph name="BUNDLE_NAME" />-г ашиглахаасаа өмнө хөтчөө дахин эхлүүлэх ёстой.</translation>
-<translation id="1236866257838264361">Та Chrome-г таатайгаар бүрэн ашиглах боломжтой</translation>
 <translation id="1278833599417554002">&amp;Chrome-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="1302523850133262269">Chrome-оос хамгийн сүүлийн үеийн системийн шинэчлэлтүүдийг суулгаж байгаа тул түр хүлээнэ үү.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь Google ChromeOS Flex-н нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
@@ -262,6 +261,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6003112304606738118">Татаж байна... <ph name="HOURS" /> цаг үлдсэн</translation>
 <translation id="6010556343189461180">Google Chrome-н цаашдын шинэчлэлтийг авахын тулд танд macOS 10.15 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер macOS 10.14 хувилбарыг ашиглаж байна.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome-г одоо хаана.}=1{Chrome-г 1 секундийн дараа хаана.}other{Chrome-г # секундийн дараа хаана.}}</translation>
+<translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6070348360322141662">Таны аюулгүй байдлыг сайжруулахын тулд Google Chrome таны өгөгдлийг шифрлэнэ</translation>
 <translation id="608006075545470555">Энэ хөтчид ажлын профайл нэмэх</translation>

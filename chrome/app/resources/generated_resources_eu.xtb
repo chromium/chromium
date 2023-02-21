@@ -4441,7 +4441,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4977942889532008999">Berretsi sarbidea</translation>
 <translation id="4980805016576257426">Luzapenak malwarea dauka.</translation>
 <translation id="4981449534399733132">Sinkronizatutako gailu guztietako eta zure Google-ko kontuko arakatze-datuak garbitzeko, <ph name="BEGIN_LINK" />hasi saioa<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Berrekin partidari utzitako tokitik edozein gailu erabilita</translation>
 <translation id="4986706507552097681">Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="4986728572522335985">Segurtasun-giltzako datu guztiak ezabatuko dira, baita PINa ere</translation>
 <translation id="4988526792673242964">Orriak</translation>
@@ -4558,7 +4557,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5097349930204431044">Bisitatzen dituzun webguneek zer gustatzen zaizun zehatz dezakete, eta, arakatzen jarraitzen duzunean, iragarkiak iradoki</translation>
 <translation id="5097649414558628673">Tresna: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Sakatu automatikoki kurtsorea gelditzen denean</translation>
-<translation id="5101683448725092498">Egin zure gauzen babeskopiak</translation>
 <translation id="5101839224773798795">Egin klik automatikoki kurtsorea gelditzen denean</translation>
 <translation id="5106350808162641062">Kendu</translation>
 <translation id="510695978163689362">Family Link-ek kudeatzen du <ph name="USER_EMAIL" />. Ikastetxeko kontuak gehi ditzakezu gurasoen gainbegiratzea duten ikastetxeko baliabideak atzitzeko.</translation>
@@ -5122,7 +5120,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5623842676595125836">Erregistroa</translation>
 <translation id="5624120631404540903">Kudeatu pasahitzak</translation>
 <translation id="5625225435499354052">Editatu Google Pay-n</translation>
-<translation id="5625631605902707678">Gailu guztietan</translation>
 <translation id="5626134646977739690">Izena:</translation>
 <translation id="5627086634964711283">Omnibox-eko Hasiera botoia sakatzean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="5627676517703583263">Arakatu sarea modu adimendunean Chrome-rekin</translation>
@@ -5234,7 +5231,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Datuek edo gailuak ez dituzte gordetzen erakundearen segurtasun-gidalerro batzuk. Galdetu administratzaileari ea zer konpondu behar den.}=1{Fitxategiak edo gailuak ez ditu gordetzen erakundearen segurtasun-gidalerro batzuk. Galdetu administratzaileari ea zer konpondu behar den.}other{Fitxategiek ez dituzte gordetzen erakundearen segurtasun-gidalerro batzuk. Galdetu administratzaileari ea zer konpondu behar den.}}</translation>
 <translation id="5736796278325406685">Idatzi balio duen erabiltzaile-izen bat</translation>
 <translation id="5738093759615225354">Sarbide-gako hau behar duzu ordenagailuan saioa hasteko</translation>
-<translation id="5738329404678738022">Gorde laster-markak eta beste gauza asko sinkronizazioa erabilita</translation>
 <translation id="5739017626473506901">Hasi saioa <ph name="USER_NAME" /> erabiltzaileak ikastetxeko kontua gehi dezan</translation>
 <translation id="5739235828260127894">Egiaztapenaren zain. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Oso handia</translation>
@@ -5256,7 +5252,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5757375109985023827">Hautatu fitxa bat haren aurrebista ikusteko</translation>
 <translation id="5758631781033351321">Irakurketa-zerrenda aurkituko duzu hemen</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> aplikazioaren bidez inprimatzera bidaltzen dituzun dokumentuak <ph name="APP_NAME" /> aplikazioak irakur ditzake.</translation>
-<translation id="5760508342220592715">Hasi saioa abantaila gehiago lortzeko</translation>
 <translation id="5762787084360227629">Idatzi Google-ko kontuari buruzko informazioa</translation>
 <translation id="5763751966069581670">Ez da aurkitu USB bidezko gailurik</translation>
 <translation id="5764483294734785780">Go&amp;rde audioa honela…</translation>
@@ -7793,7 +7788,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8059417245945632445">&amp;Aztertu gailuak</translation>
 <translation id="8059456211585183827">Ez dago inprimagailurik gordetzeko.</translation>
 <translation id="8061091456562007989">Leheneratu</translation>
-<translation id="8061965471006133016">Pasahitzetarako eta beste gauza batzuetarako babes gehigarria</translation>
 <translation id="8061970399284390013">Ortografia- eta gramatika-zuzentzailea</translation>
 <translation id="8061991877177392872">Voice Match konfiguratuta daukazu beste gailu batean Laguntzailea zerbitzuaren bidez. Lehendik zeneuzkan grabaketa horiekin ahots-eredu bat sortu da gailu honetan.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 orri}other{{COUNT} orri}}</translation>

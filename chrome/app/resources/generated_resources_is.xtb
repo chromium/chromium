@@ -380,6 +380,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1339009753652684748">Opnaðu hjálparann með því að segja „Ok Google“. Veldu „Kveikt (mælt með)“ til að spara rafhlöðuna. Hjálparinn svarar aðeins þegar tækið er í sambandi eða í hleðslu.</translation>
 <translation id="13392265090583506">A11y</translation>
 <translation id="1340527397989195812">Afrita efni tækisins með forritinu Skrár.</translation>
+<translation id="1341701348342335220">Vel gert!</translation>
 <translation id="1341871421050612057">Ekki er hægt að samstilla við <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Veita Linux-forritum heimild til að opna USB-tæki. Linux man ekki eftir USB-tæki þegar það hefur verið fjarlægt.</translation>
 <translation id="1343920184519992513">Haltu áfram þar sem frá var horfið og opnaðu ákveðinn hóp síðna</translation>
@@ -3640,6 +3641,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4232375817808480934">Stilla Kerberos</translation>
 <translation id="4235965441080806197">Hætta við innskráningu</translation>
 <translation id="4236163961381003811">Sjá fleiri viðbætur</translation>
+<translation id="4237282663517880406">Sýna Google Drive-tillögur</translation>
 <translation id="4241182343707213132">Endurræsa til að uppfæra forrit fyrirtækisins</translation>
 <translation id="4242145785130247982">Ekki er leyfilegt að nota mörg biðlaravottorð</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
@@ -4456,7 +4458,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4977942889532008999">Staðfesta aðgang</translation>
 <translation id="4980805016576257426">Þessi viðbót inniheldur spilliforrit.</translation>
 <translation id="4981449534399733132">Til að hreinsa vafragögn úr öllum samstilltum tækjum og af Google reikningnum þínum skaltu <ph name="BEGIN_LINK" />skrá þig inn<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Haltu áfram þaðan sem frá var horfið í hvaða tæki sem er</translation>
 <translation id="4986706507552097681">Þú getur alltaf valið hvað á að samstilla í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4986728572522335985">Þetta eyðir öllum gögnum á öryggislyklinum, þar á meðal PIN-númerinu</translation>
 <translation id="4988526792673242964">Síður</translation>
@@ -4573,7 +4574,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5097349930204431044">Vefsvæði sem þú heimsækir geta lagt mat á hvað höfðar til þín og í kjölfarið birt tillögur að auglýsingum á meðan þú heldur áfram að skoða</translation>
 <translation id="5097649414558628673">Verkfæri: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Smella sjálfkrafa þegar bendill stöðvast</translation>
-<translation id="5101683448725092498">Taktu afrit af efninu þínu</translation>
 <translation id="5101839224773798795">Smella sjálfkrafa þegar bendillinn stoppar</translation>
 <translation id="5106350808162641062">Fjarlægja</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> er undir eftirliti Family Link. Þú getur bætt við skólareikningum til að nálgast skólagögn með foreldraeftirliti.</translation>
@@ -5139,7 +5139,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5623842676595125836">Notkunarskrá</translation>
 <translation id="5624120631404540903">Stjórna aðgangsorðum</translation>
 <translation id="5625225435499354052">Breyta í Google Pay</translation>
-<translation id="5625631605902707678">Á milli tækja</translation>
 <translation id="5626134646977739690">Nafn:</translation>
 <translation id="5627086634964711283">Hún stýrir því einnig hvaða síða birtist þegar þú smellir á heimahnappinn.</translation>
 <translation id="5627676517703583263">Betri vefskoðun með Chrome</translation>
@@ -5251,7 +5250,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Þessi gögn eða tækið þitt stenst ekki tilteknar öryggisreglur fyrirtækisins. Hafðu samband við stjórnandann til að fá upplýsingar um hvað þarf að lagfæra.}=1{Þetta skrá eða tækið þitt stenst ekki tilteknar öryggisreglur fyrirtækisins. Hafðu samband við stjórnandann til að fá upplýsingar um hvað þarf að lagfæra.}one{Þessar skrár standast ekki tilteknar öryggisreglur fyrirtækisins. Hafðu samband við stjórnandann til að fá upplýsingar um hvað þarf að lagfæra.}other{Þessar skrár standast ekki tilteknar öryggisreglur fyrirtækisins. Hafðu samband við stjórnandann til að fá upplýsingar um hvað þarf að lagfæra.}}</translation>
 <translation id="5736796278325406685">Sláðu inn gilt notendanafn</translation>
 <translation id="5738093759615225354">Þú þarft þennan aðgangslykil til að skrá þig inn í tölvuna þína</translation>
-<translation id="5738329404678738022">Vistaðu bókamerki og fleira með samstillingu</translation>
 <translation id="5739017626473506901">Skráðu þig inn til að hjálpa <ph name="USER_NAME" /> að bæta við skólareikningi</translation>
 <translation id="5739235828260127894">Bíður eftir staðfestingu. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Mjög stórt</translation>
@@ -5273,7 +5271,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5757375109985023827">Veldu flipa til að forskoða</translation>
 <translation id="5758631781033351321">Þú finnur leslistann þinn hér</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> getur lesið skjöl sem þú sendir til prentunar í gegnum <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Skráðu þig inn til að fá fleiri fríðindi</translation>
 <translation id="5762787084360227629">Sláðu inn upplýsingar um Google reikning</translation>
 <translation id="5763751966069581670">Engin USB-tæki fundust</translation>
 <translation id="5764483294734785780">&amp;Vista hljóð sem...</translation>
@@ -7813,7 +7810,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8059417245945632445">Kanna tæk&amp;i</translation>
 <translation id="8059456211585183827">Engir tiltækir prentarar til að vista.</translation>
 <translation id="8061091456562007989">Breyta til baka</translation>
-<translation id="8061965471006133016">Aukin vernd fyrir aðgangsorð og fleira</translation>
 <translation id="8061970399284390013">Athugun á stafsetningu og málfræði</translation>
 <translation id="8061991877177392872">Þú virðist þegar hafa sett upp Voice Match fyrir Hjálparann í öðru tæki. Þessar eldri upptökur voru notaðar til að búa til raddlíkan í tækinu.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 blaðsíða}one{{COUNT} blaðsíða}other{{COUNT} blaðsíður}}</translation>

@@ -314,6 +314,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link kopyalandı</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">Dəyişiklik yaddaşda saxlanmadı.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> təklifdən <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3268451620468152448">Panelləri Açın</translation>
 <translation id="3272527697863656322">Ləğv edin</translation>
@@ -336,6 +337,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
 <translation id="3448016392200048164">Bölünmüş Görüntü</translation>
 <translation id="345565170154308620">Parolları idarə edin...</translation>
+<translation id="3464194322481586217">Qiyməti izləmək mümkün olmadı.</translation>
 <translation id="3469166899695866866">Endirmə dayandırılsın?</translation>
 <translation id="3470502288861289375">Kopyalanır...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} sayt və ya tətbiq üçün}other{{COUNT} sayt və ya tətbiq üçün}}</translation>
@@ -561,6 +563,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5118713593561876160">Maraqlar</translation>
 <translation id="5118764316110575523">Deaktiv</translation>
 <translation id="5119391094379141756">Chrome seçin</translation>
+<translation id="5121618895923301719">Artıq bu məhsulu izləyirsiniz. Bu səhifə <ph name="BEGIN_LINK" />Mobil Əlfəcinlərdə<ph name="END_LINK" /> yadda saxlandı.</translation>
 <translation id="5132942445612118989">Bütün cihazlarda parol, tarixçə və s. sinxronizasiya edin</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} zəif parol}other{{COUNT} zəif parol}}</translation>
 <translation id="5149188072385105201">Parol Əlavə edin...</translation>
@@ -591,6 +594,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5386314158584363703">İzlədiyiniz saytları burada tapa bilərsiniz</translation>
 <translation id="5388358297987318779">Şəkli Açın</translation>
 <translation id="5407969256130905701">Dəyişiklikləri ləğv edin</translation>
+<translation id="5414763847370083940">Hər hansı saytda qiymət düşərsə, bildiriş alacaqsınız.</translation>
 <translation id="5416022985862681400">Son 7 Gün</translation>
 <translation id="5423269318075950257">Qiyməti izləyin</translation>
 <translation id="543338862236136125">Parolu redaktə edin</translation>
@@ -761,6 +765,7 @@ Datanız <ph name="TIME" /> tarixində sinxronizasiya parol sözü ilə şifrəl
 <translation id="6464397691496239022">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər.
 
 Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərinizdən istifadə edə bilmir (məsələn, reklamları fərdiləşdirmək üçün).</translation>
+<translation id="6476253015009698798">Bu səhifədə qiymətləri izləmək mümkün deyil.</translation>
 <translation id="6476800141292307438">Səhifə <ph name="LANGUAGE" /> dilinə tərcümə edilir. Seçimlər ekranın aşağı hissəsində əlçatandır.</translation>
 <translation id="648164694371393720">Doğrulama Xətası</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> element silindi</translation>
@@ -812,6 +817,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6780034285637185932">Poçt İndeksi</translation>
 <translation id="6781260999953472352">Sinxronizasiya aktiv edilsin?</translation>
 <translation id="6785453220513215166">Qəza haqqında hesabat göndərilir...</translation>
+<translation id="6790502149545262384">Tezliklə yeni tab açdığınız zaman <ph name="CHANNEL_NAME" /> saytından hekayələri görəcəksiniz.</translation>
 <translation id="6797885426782475225">Səsli Axtarış</translation>
 <translation id="6801927553864092214">Məxfi axtarış etmək üçün Anonim tab açın</translation>
 <translation id="6807889908376551050">Hamısını göstərin...</translation>
@@ -1121,6 +1127,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9148126808321036104">Yenidən daxil olun</translation>
 <translation id="9157836665414082580">Dialoqların qarşısını alın</translation>
+<translation id="9162432979321511934">Parol Avto Doldurmasını aktiv edin</translation>
 <translation id="9177438225260810839">Açıq Tabları axtarın</translation>
 <translation id="9188680907066685419">İdarə olunan hesabdan çıxın</translation>
 <translation id="9193147658040604536">Tabı Sancmaq üçün bura sürüşdürün</translation>
@@ -1133,6 +1140,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="952704832371081537">Ləğv edin</translation>
 <translation id="953008885340860025">Chrome'dan çıxılıb</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> kanalını izləyirsiniz</translation>
+<translation id="973493300226275298">Onlayn mağazalarda məhsulun qiymətini izləyin. Qiymət düşəndə bildiriş alacaqsınız.</translation>
 <translation id="980712131080209571">Y</translation>
 <translation id="981498610235328462">Təşkilatınız yalnız müəyyən hesablarla daxil olmağa icazə verir. İcazə verilməyən hesablar gizlədilib.</translation>
 <translation id="984509647832111802">Sinxronlaşdırma işləmir.</translation>

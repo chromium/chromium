@@ -226,6 +226,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2248941474044011069">Paroolid krüpteeritakse teie seadmes, enne kui need salvestatakse Google'i paroolihaldurisse</translation>
 <translation id="2249635629516220541">Kohandage teavet, mida saidid teile reklaamide kuvamiseks kasutavad</translation>
 <translation id="2259659629660284697">Paroolide eksportimine …</translation>
+<translation id="2276231040576210443">Jaotises <ph name="BEGIN_LINK1" />Seaded<ph name="END_LINK1" /> saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="2276696007612801991">Paroolide kontrollimiseks logige sisse oma Google'i kontole</translation>
 <translation id="2278052315791335171">Selle parooli kustutamisel ei kustutata teie kontot saidil <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Arveldusaadress</translation>
@@ -1242,6 +1243,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7682724950699840886">Järgige neid nõuandeid: veenduge, et seadmes oleks piisavalt ruumi, seejärel proovige uuesti eksportida.</translation>
 <translation id="7686086654630106285">Lisateave saidi soovitatud reklaamide kohta</translation>
 <translation id="768618399695552958">Mõned teie külastatavad lehed on eellaaditud. Kui lehed on lingitud Google'i saidilt, võidakse need eellaadida Google'i serverite kaudu.</translation>
+<translation id="7691043218961417207">Avastage sisu, mida jälgida</translation>
 <translation id="7698359219371678927">Looge meil rakenduses <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Kasuta mobiilset andmesidet</translation>
 <translation id="7709094866268987903">Eemaldatud huvid kuvatakse siin</translation>
@@ -1492,6 +1494,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8970887620466824814">Midagi läks valesti.</translation>
 <translation id="8972098258593396643">Kas soovite alla laadida vaikekausta?</translation>
 <translation id="8987641763863173640">Videoeelvaate seadete haldamine</translation>
+<translation id="8987736167266086032">Jätkake poolelijäänud kohast</translation>
 <translation id="8989968390305463310">Teie sirvimisajalugu mõjutab kuvatavaid reklaame ja huvisid vastavalt allolevatele prognoosidele. Teie privaatsuse kaitsmiseks kustutab Chrome automaatselt teie huvisid jooksvalt iga kuu. Huvisid võidakse värskendada, kui te neid ei eemalda.</translation>
 <translation id="8993760627012879038">Uue vahelehe avamine inkognito režiimis</translation>
 <translation id="8996847606757455498">Valige teine teenusepakkuja</translation>

@@ -513,7 +513,7 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1455119378540982311">Ukuran jendela preset</translation>
 <translation id="1457907785077086338">Warna badge aplikasi</translation>
 <translation id="146000042969587795">Bingkai ini diblokir karena berisi sejumlah konten tidak aman.</translation>
-<translation id="1461041542809785877">Kinerja</translation>
+<translation id="1461041542809785877">Performa</translation>
 <translation id="1461177659295855031">Pindahkan ke folder Kolom Bookmark</translation>
 <translation id="146219525117638703">Status ONC</translation>
 <translation id="146220085323579959">Internet terputus. Periksa koneksi internet Anda dan coba lagi.</translation>
@@ -4457,7 +4457,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4977942889532008999">Konfirmasi Akses</translation>
 <translation id="4980805016576257426">Ekstensi ini berisi software perusak.</translation>
 <translation id="4981449534399733132">Untuk menghapus data browsing dari semua perangkat yang disinkronkan dan dari Akun Google, <ph name="BEGIN_LINK" />login<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Lanjutkan pekerjaan Anda di perangkat mana pun</translation>
 <translation id="4986706507552097681">Anda dapat memilih jenis data yang akan disinkronkan di setelan kapan saja. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="4986728572522335985">Tindakan ini akan menghapus semua data di kunci keamanan, termasuk PIN-nya</translation>
 <translation id="4988526792673242964">Halaman</translation>
@@ -4574,7 +4573,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5097349930204431044">Situs yang Anda buka dapat menentukan hal-hal yang Anda sukai, lalu menyarankan iklan saat Anda melanjutkan penjelajahan</translation>
 <translation id="5097649414558628673">Alat: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klik secara otomatis saat kursor berhenti</translation>
-<translation id="5101683448725092498">Cadangkan data Anda</translation>
 <translation id="5101839224773798795">Klik secara otomatis saat kursor berhenti</translation>
 <translation id="5106350808162641062">Hapus</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> diawasi oleh Family Link. Kamu bisa menambahkan akun sekolah untuk mengakses materi sekolah dengan pengawasan orang tua.</translation>
@@ -5140,7 +5138,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Kelola sandi</translation>
 <translation id="5625225435499354052">Edit di Google Pay</translation>
-<translation id="5625631605902707678">Di seluruh perangkat</translation>
 <translation id="5626134646977739690">Nama:</translation>
 <translation id="5627086634964711283">Juga mengontrol apa yang ditampilkan halaman saat Anda mengklik tombol Beranda.</translation>
 <translation id="5627676517703583263">Akses cerdas menggunakan Chrome</translation>
@@ -5252,7 +5249,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Data ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}=1{File ini atau perangkat Anda tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}other{File ini tidak memenuhi beberapa kebijakan keamanan organisasi Anda. Hubungi admin Anda untuk mengetahui hal yang perlu diperbaiki.}}</translation>
 <translation id="5736796278325406685">Masukkan nama pengguna yang valid</translation>
 <translation id="5738093759615225354">Anda memerlukan kunci sandi ini untuk login ke komputer Anda</translation>
-<translation id="5738329404678738022">Simpan bookmark Anda dan yang lainnya dengan sinkronisasi</translation>
 <translation id="5739017626473506901">Login untuk membantu <ph name="USER_NAME" /> menambahkan akun sekolah</translation>
 <translation id="5739235828260127894">Menunggu verifikasi. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Sangat besar</translation>
@@ -5274,7 +5270,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5757375109985023827">Pilih tab untuk dipratinjau</translation>
 <translation id="5758631781033351321">Daftar bacaan Anda akan ditampilkan di sini</translation>
 <translation id="5759728514498647443">Dokumen yang Anda kirim untuk dicetak melalui <ph name="APP_NAME" /> dapat dibaca oleh <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Login untuk mendapatkan manfaat lainnya</translation>
 <translation id="5762787084360227629">Masukkan info Akun Google</translation>
 <translation id="5763751966069581670">Tidak ada perangkat USB yang ditemukan</translation>
 <translation id="5764483294734785780">Sim&amp;pan audio sebagai...</translation>
@@ -7813,7 +7808,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8059417245945632445">&amp;Periksa perangkat</translation>
 <translation id="8059456211585183827">Tidak ada printer yang tersedia untuk disimpan.</translation>
 <translation id="8061091456562007989">Kembalikan</translation>
-<translation id="8061965471006133016">Perlindungan ekstra untuk sandi Anda dan lainnya</translation>
 <translation id="8061970399284390013">Pemeriksaan ejaan dan tata bahasa</translation>
 <translation id="8061991877177392872">Sepertinya Anda sudah menyiapkan Voice Match dengan Asisten Anda di perangkat lain. Rekaman sebelumnya tersebut digunakan untuk membuat model suara di perangkat ini.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 lembar kertas}other{{COUNT} lembar kertas}}</translation>

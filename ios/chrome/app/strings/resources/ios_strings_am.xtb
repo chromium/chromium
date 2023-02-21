@@ -561,6 +561,7 @@
 <translation id="5118713593561876160">ዝንባሌዎች</translation>
 <translation id="5118764316110575523">ጠፍቷል</translation>
 <translation id="5119391094379141756">Chromeን ይምረጡ</translation>
+<translation id="5121618895923301719">ይህን ምርት አስቀድመው እየተከታተሉት ነው። ይህ ገጽ በ<ph name="BEGIN_LINK" />ተንቀሳቃሽ እልባቶች<ph name="END_LINK" /> ውስጥ ተቀምጧል።</translation>
 <translation id="5132942445612118989">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ደካማ የይለፍ ቃል}one{{COUNT} ደካማ የይለፍ ቃል}other{{COUNT} ደካማ የይለፍ ቃላት}}</translation>
 <translation id="5149188072385105201">የይለፍ ቃል አክል…</translation>
@@ -591,6 +592,7 @@
 <translation id="5386314158584363703">የሚከተሏቸውን ጣቢያዎች እዚህ ያገኛሉ</translation>
 <translation id="5388358297987318779">ምስል ክፈት</translation>
 <translation id="5407969256130905701">ለውጦችን አስወግድ</translation>
+<translation id="5414763847370083940">በማንኛውም ጣቢያ ላይ ዋጋው ከቀነሰ ማንቂያ ያገኛሉ።</translation>
 <translation id="5416022985862681400">ባለፉት 7 ቀኖች</translation>
 <translation id="5423269318075950257">ዋጋ ይከታተሉ</translation>
 <translation id="543338862236136125">የይለፍ ቃል አርትዕ</translation>
@@ -1133,6 +1135,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="952704832371081537">ይቅር</translation>
 <translation id="953008885340860025">Chrome ዘግቶ ወጥቷል</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" />ን እየተከተሉ ነው</translation>
+<translation id="973493300226275298">በመላው የመስመር ላይ መደብሮች ላይ የአንድን ምርት ዋጋ ይከታተሉ። ዋጋው በሚቀንበት ጊዜ ማንቂያዎች ይደርሱዎታል።</translation>
 <translation id="980712131080209571">አ</translation>
 <translation id="981498610235328462">በተወሰኑ መለያዎች አማካኝነት ብቻ እንዲገቡ ድርጅትዎ ይፈቅድልዎታል። ያልተፈቀዱ መለያዎች ተደብቀዋል።</translation>
 <translation id="984509647832111802">ስምረት እየሠራ አይደለም።</translation>

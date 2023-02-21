@@ -226,6 +226,7 @@ Si eliminas tu historial de navegación (entero o de un sitio en concreto), tamb
 <translation id="2248941474044011069">Tus contraseñas se cifran en tu dispositivo antes de guardarse en el Gestor de contraseñas de Google</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
 <translation id="2259659629660284697">Exportar contraseñas…</translation>
+<translation id="2276231040576210443">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK1" />ajustes<ph name="END_LINK1" />. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="2276696007612801991">Inicia sesión en tu cuenta de Google para comprobar tus contraseñas</translation>
 <translation id="2278052315791335171">Al eliminar esta contraseña, no se eliminará tu cuenta de <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
@@ -1493,6 +1494,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="8972098258593396643">¿Quieres descargarlo en la carpeta predeterminada?</translation>
 <translation id="8987641763863173640">Gestionar los ajustes de vista previa de vídeo</translation>
+<translation id="8987736167266086032">Continúa donde lo dejaste</translation>
 <translation id="8989968390305463310">Tu historial de navegación influye en los anuncios que ves y en los intereses que se estiman abajo. Para proteger tu privacidad, Chrome elimina automáticamente tus intereses cada mes. Los intereses se actualizan a menos que los elimines.</translation>
 <translation id="8993760627012879038">Abre una nueva pestaña en modo Incógnito</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>

@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">关于 ChromeOS</translation>
 <translation id="1154147086299354128">在 Chrome 中打开(&amp;O)</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="1236866257838264361">您可以充分利用 Chrome</translation>
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="1302523850133262269">Chrome正在安装最新的系统更新，请稍候。</translation>
 <translation id="1335640173511558774">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Google ChromeOS Flex 条款。</translation>
@@ -253,6 +252,7 @@
 <translation id="6003112304606738118">正在下载…还需 <ph name="HOURS" /> 小时</translation>
 <translation id="6010556343189461180">若要接收后续 Google Chrome 更新，您需使用 macOS 10.15 或更高版本。该计算机目前使用的是 macOS 10.14。</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome 将立即关闭。}=1{Chrome 将在 1 秒后关闭。}other{Chrome 将在 # 秒后关闭。}}</translation>
+<translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6070348360322141662">为了提高安全性，Google Chrome 将对您的数据进行加密</translation>
 <translation id="608006075545470555">向此浏览器添加工作资料</translation>

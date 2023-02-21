@@ -561,6 +561,7 @@
 <translation id="5118713593561876160">興趣喜好</translation>
 <translation id="5118764316110575523">關閉</translation>
 <translation id="5119391094379141756">選取 [Chrome]</translation>
+<translation id="5121618895923301719">你已追蹤這項產品，這個頁面會儲存在<ph name="BEGIN_LINK" />行動裝置的書籤<ph name="END_LINK" />中。</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} 組密碼的強度太低}other{{COUNT} 組密碼的強度太低}}</translation>
 <translation id="5149188072385105201">新增密碼…</translation>
@@ -591,6 +592,7 @@
 <translation id="5386314158584363703">此處會顯示你已追蹤的網站</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
+<translation id="5414763847370083940">如果產品在任何網站上降價，系統會透過快訊通知你。</translation>
 <translation id="5416022985862681400">過去 7 天</translation>
 <translation id="5423269318075950257">追蹤價格</translation>
 <translation id="543338862236136125">修改密碼</translation>
@@ -1133,6 +1135,7 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="953008885340860025">你已登出 Chrome</translation>
 <translation id="959066944189734975">你正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
+<translation id="973493300226275298">追蹤產品在多個網路商店中的價格。如果產品降價，系統會透過快訊通知你。</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">貴機構規定你只能使用特定帳戶登入。系統已隱藏不適用的帳戶。</translation>
 <translation id="984509647832111802">同步功能無法正常運作。</translation>

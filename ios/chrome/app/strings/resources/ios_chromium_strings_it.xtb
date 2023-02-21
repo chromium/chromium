@@ -4,6 +4,7 @@
 <translation id="1047130070405668746">Seleziona Chromium</translation>
 <translation id="1091252999271033193">Ciò significa che Chromium richiederà ogni volta il sito per dispositivi mobili.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
+<translation id="1256849392437386613">Per attivare "Monitora prezzo" consenti le notifiche di Chromium nelle impostazioni del dispositivo</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
 <translation id="1361748954329991663">Chromium non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chromium.</translation>
@@ -71,6 +72,7 @@
 <translation id="5573014823074921752">Suggerimento per Chromium. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
 <translation id="5700709190537129682">Chromium non può controllare le tue password</translation>
 <translation id="5777187867430702742">Pagina di Chromium</translation>
+<translation id="5918064849477363478">Le notifiche di Chromium sono disattivate nelle impostazioni del dispositivo. Prima dovrai consentire le notifiche.</translation>
 <translation id="5945387852661427312">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chromium. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chromium, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="5983312940147103417">Migliora Chromium</translation>
 <translation id="6062449165341879460">La tua organizzazione <ph name="DOMAIN" /> avrà accesso ai dati, ai preferiti, alla cronologia, alle password e ad altre impostazioni di Chromium che hai memorizzato in questo account. Quando esci, i dati verranno cancellati da questo dispositivo.  Tuttavia, i tuoi dati rimarranno memorizzati nel tuo Account Google gestito e saranno disponibili per la tua organizzazione. La tua organizzazione può anche impostare criteri specifici per l'account in grado di modificare il comportamento di Chromium.</translation>

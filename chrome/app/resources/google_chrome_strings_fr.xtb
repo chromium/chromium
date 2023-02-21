@@ -14,7 +14,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1152920704813762236">À propos de Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Ouvrir dans Chrome</translation>
 <translation id="1203500561924088507">Merci d'avoir installé notre produit. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Profitez pleinement de Chrome</translation>
 <translation id="1278833599417554002">Relancer et mettre à jour &amp;Chrome</translation>
 <translation id="1302523850133262269">Veuillez patienter pendant que Chrome installe les dernières mises à jour du système.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> exige que vous lisiez et acceptiez les conditions d'utilisation suivantes pour utiliser cet appareil. Celles-ci n'étendent, ne modifient ni ne restreignent les conditions d'utilisation de Google ChromeOS Flex.</translation>
@@ -254,12 +253,14 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Connexion au réseau</translation>
 <translation id="5924017743176219022">Connexion à Internet…</translation>
+<translation id="5932997892801542621">Lorsque vous saisissez du texte dans la barre d'adresse ou dans le champ de recherche, Chrome envoie ce que vous saisissez à Google Drive pour obtenir des suggestions d'éléments. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="5940385492829620908">Votre contenu Web, vos favoris et toutes vos données Chrome sont conservés ici.</translation>
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5941830788786076944">Définir Google Chrome comme navigateur par défaut</translation>
 <translation id="6003112304606738118">Téléchargement… <ph name="HOURS" /> heure(s) restante(s)</translation>
 <translation id="6010556343189461180">Vous devez disposer de macOS 10.15 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. Or, c'est la version macOS 10.14 qui est installée sur cet ordinateur.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome va se fermer.}=1{Chrome va se fermer dans 1 seconde.}one{Chrome va se fermer dans # seconde.}other{Chrome va se fermer dans # secondes.}}</translation>
+<translation id="6022659036123304283">Personnalisez Chrome</translation>
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6070348360322141662">Pour plus de sécurité, vos données seront chiffrées dans Google Chrome</translation>
 <translation id="608006075545470555">Ajouter un profil professionnel à ce navigateur</translation>

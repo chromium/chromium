@@ -226,6 +226,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="2248941474044011069">Parollaringiz Google Parollar menejeriga saqlanishidan oldin qurilmangizda shifrlangan</translation>
 <translation id="2249635629516220541">Saytlar reklamalarni koʻrsatish uchun foydalanadigan maʼlumotlarni boshqaring</translation>
 <translation id="2259659629660284697">Parollarni eksport qilish…</translation>
+<translation id="2276231040576210443">Nimani sinxronlashni istalgan vaqtda <ph name="BEGIN_LINK1" />sozlamalar<ph name="END_LINK1" /> orqali tanlash mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="2276696007612801991">Parollaringizni tekshirish uchun Google hisobingizga kiring</translation>
 <translation id="2278052315791335171">Bu parol olib tashlangani bilan <ph name="SITE" /> hisobingiz oʻchib ketmaydi</translation>
 <translation id="2286841657746966508">To‘lov manzili</translation>
@@ -1224,6 +1225,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7596558890252710462">Operatsion tizim</translation>
 <translation id="7605594153474022051">Sinxronizatsiya ishlamayapti</translation>
 <translation id="7612619742409846846">Siz bu hisobdan kirgansiz</translation>
+<translation id="7612989789287281429">Hisobingizga kirmoqdasiz…</translation>
 <translation id="7616551326690708776">Belgilsh uchun andoza tanlang.</translation>
 <translation id="7619072057915878432">Tarmoqdagi nosozliklar tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="7626032353295482388">Chrome brauzeriga xush kelibsiz!</translation>
@@ -1493,6 +1495,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8970887620466824814">Xatolik yuz berdi.</translation>
 <translation id="8972098258593396643">Yuklanma standart jildga saqlansinmi?</translation>
 <translation id="8987641763863173640">Video bilan tanishish sozlamalarini boshqarish</translation>
+<translation id="8987736167266086032">Ishni kelgan joyidan davom ettiring</translation>
 <translation id="8989968390305463310">Ochgan saytlaringiz tarixi chiqadigan reklama va quyidagi qiziqishlaringizga taʼsir qiladi. Maxfiylikni himoya qilish maqsadida Chrome har oyda qiziqishlaringizni avtomatik oʻchiradi. Qiziqishlar ularni olib tashlamaguningizga qadar yangilanishi mumkin.</translation>
 <translation id="8993760627012879038">Yangi varaqni inkognito rejimida ochish</translation>
 <translation id="8996847606757455498">Boshqa provayderni tanlang</translation>

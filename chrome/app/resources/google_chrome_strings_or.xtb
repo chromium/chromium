@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">ChromeOS ବିଷୟରେ</translation>
 <translation id="1154147086299354128">&amp;Chromeରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="1203500561924088507">ଇନଷ୍ଟଲ କରିଥିବା ଯୋଗୁଁ ଧନ୍ୟବାଦ। ଆପଣ <ph name="BUNDLE_NAME" /> ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଆପଣଙ୍କ ବ୍ରାଉଜରକୁ ରିଷ୍ଟାର୍ଟ କରିବା ଆବଶ୍ୟକ।</translation>
-<translation id="1236866257838264361">ଆପଣ Chromeରୁ ସବୁଠୁ ଅଧିକ ମଜା ନେଇପାରିବେ</translation>
 <translation id="1278833599417554002">&amp;Chrome ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1302523850133262269">Chrome ନବୀନତମ ସିଷ୍ଟମ୍ ଅପ୍‌ଡେଟ୍‌ଗୁଡ଼ିକ ଇନ୍‌ଷ୍ଟଲ୍ କରୁଛି, ଦୟାକରି ଅପେକ୍ଷା କରନ୍ତୁ।</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> ପାଇଁ ଆପଣଙ୍କୁ ଏହି ଡିଭାଇସକୁ ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ନିମ୍ନୋକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀକୁ ପଢ଼ି ସେଗୁଡ଼ିକୁ ଗ୍ରହଣ କରିବାର ଆବଶ୍ୟକତା ଅଛି। ଏହି ସର୍ତ୍ତାବଳୀ Google ChromeOS Flexର ସର୍ତ୍ତାବଳୀକୁ ବିସ୍ତାର, ପରିବର୍ତ୍ତନ କିମ୍ବା ସୀମିତ କରେ ନାହିଁ।</translation>
@@ -262,6 +261,7 @@
 <translation id="6003112304606738118">ଡାଉନଲୋଡ ହେଉଛି… <ph name="HOURS" /> ଘଣ୍ଟା ବାକି ଅଛି</translation>
 <translation id="6010556343189461180">ଭବିଷ୍ୟତରେ Google Chromeର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ ଆପଣ macOS 10.15 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ macOS 10.14 ସଂସ୍କରଣ ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="6022388122721048220">{0,plural, =0{ବର୍ତ୍ତମାନ Chrome ବନ୍ଦ ହୋଇଯିବ।}=1{1 ସେକେଣ୍ଡରେ Chrome ବନ୍ଦ ହୋଇଯିବ।}other{# ସେକେଣ୍ଡରେ Chrome ବନ୍ଦ ହୋଇଯିବ।}}</translation>
+<translation id="6022659036123304283">Chromeକୁ ନିଜ ପସନ୍ଦରେ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6040143037577758943">ବନ୍ଦ</translation>
 <translation id="6070348360322141662">ଅତିରିକ୍ତ ସୁରକ୍ଷା ପାଇଁ, Google Chrome ଆପଣଙ୍କର ଡାଟା ଏନକ୍ରିପ୍ଟ କରିବ</translation>
 <translation id="608006075545470555">ଏହି ବ୍ରାଉଜରରେ ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରନ୍ତୁ</translation>

@@ -226,6 +226,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2248941474044011069">Jūsu paroles tiek šifrētas jūsu ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
 <translation id="2249635629516220541">Varat pielāgot informāciju, kas vietnēs tiek izmantota reklāmu rādīšanai</translation>
 <translation id="2259659629660284697">Paroļu eksportēšana…</translation>
+<translation id="2276231040576210443">Jūs jebkurā laikā <ph name="BEGIN_LINK1" />iestatījumos<ph name="END_LINK1" /> varat izvēlēties, ko sinhronizēt. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="2276696007612801991">Lai pārbaudītu paroles, pierakstieties Google kontā</translation>
 <translation id="2278052315791335171">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Norēķinu adrese</translation>
@@ -1242,6 +1243,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7682724950699840886">Ņemiet vērā šos ieteikumus: atbrīvojiet ierīcē vietu un mēģiniet eksportēt vēlreiz.</translation>
 <translation id="7686086654630106285">Vairāk par vietnēs ieteiktajām reklāmām</translation>
 <translation id="768618399695552958">Dažas no jūsu apmeklētajām lapām ir ielādētas iepriekš. Lapas var tikt ielādētas iepriekš, izmantojot Google serverus, ja novirzīšana tiek veikta no Google vietnes.</translation>
+<translation id="7691043218961417207">Izpētiet saturu, kam sekot</translation>
 <translation id="7698359219371678927">Izveidojiet e-pasta ziņojumu lietotnē <ph name="APP_NAME" />.</translation>
 <translation id="7707922173985738739">Izmantot mobilos datus</translation>
 <translation id="7709094866268987903">Šeit būs redzamas jūsu noņemtās intereses.</translation>
@@ -1492,6 +1494,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8970887620466824814">Radās kļūda.</translation>
 <translation id="8972098258593396643">Vai lejupielādēt noklusējuma mapē?</translation>
 <translation id="8987641763863173640">Pārvaldiet video priekšskatīšanas iestatījumus</translation>
+<translation id="8987736167266086032">Turpiniet darbu no vietas, kur to pārtraucāt</translation>
 <translation id="8989968390305463310">Pārlūkošanas vēsture ietekmē to, kādas reklāmas jums tiek rādītas, un tālāk redzamās aptuveni noteiktās intereses. Lai aizsargātu jūsu konfidencialitāti, Chrome automātiski katru mēnesi pakāpeniski dzēš jūsu intereses. Intereses var tikt atjaunotas, ja vien nenoņemat tās.</translation>
 <translation id="8993760627012879038">Atvērt jaunu cilni inkognito režīmā</translation>
 <translation id="8996847606757455498">Izvēlēties citu nodrošinātāju</translation>

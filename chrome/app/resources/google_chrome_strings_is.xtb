@@ -15,7 +15,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1152920704813762236">Um ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Opna í Chrome</translation>
 <translation id="1203500561924088507">Takk fyrir að setja upp. Þú þarft að endurræsa vafrann áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Þú getur nýtt Chrome til fulls</translation>
 <translation id="1278833599417554002">Endurræstu til að uppfæra &amp;Chrome</translation>
 <translation id="1302523850133262269">Bíddu á meðan Chrome setur upp nýjustu kerfisuppfærslurnar.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> krefst þess að þú lesir og samþykkir eftirfarandi þjónustuskilmála áður en þú notar þetta tæki. Þessir skilmálar auka ekki við, breyta eða takmarka skilmála Google ChromeOS Flex.</translation>
@@ -254,12 +253,14 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – innskráning á net</translation>
 <translation id="5924017743176219022">Tengist internetinu…</translation>
+<translation id="5932997892801542621">Þegar þú skrifar í veffangastikuna eða leitarreitinn sendir Chrome það sem þú skrifar á Google Drive til að fá tillögur að atriðum. Slökkt er á þessu í huliðsstillingu.</translation>
 <translation id="5940385492829620908">Hér er vefefnið þitt, bókamerkin og annað dót úr Chrome.</translation>
 <translation id="5941711191222866238">Minnka</translation>
 <translation id="5941830788786076944">Gera Google Chrome að sjálfgefnum vafra</translation>
 <translation id="6003112304606738118">Sækir... <ph name="HOURS" /> klst. eftir</translation>
 <translation id="6010556343189461180">Til að fá frekari uppfærslur á Google Chrome þarftu macOS 10.15 eða nýrri útgáfu. Þessi tölva notar macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome lokast núna.}=1{Chrome lokast eftir 1 sekúndu.}one{Chrome lokast eftir # sekúndu.}other{Chrome lokast eftir # sekúndur.}}</translation>
+<translation id="6022659036123304283">Gerðu Chrome að þínu</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6070348360322141662">Google Chrome dulkóðar gögnin þín til að auka öryggið</translation>
 <translation id="608006075545470555">Bæta vinnusniði við þennan vafra</translation>

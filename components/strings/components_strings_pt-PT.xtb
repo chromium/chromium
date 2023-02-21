@@ -208,7 +208,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">A página quer instalar um controlador de serviço.</translation>
 <translation id="1432581352905426595">Gerir motores de pesquisa</translation>
-<translation id="1435940442311036198">Usar uma chave de acesso num dispositivo diferente</translation>
+<translation id="1435940442311036198">Usar uma token de acesso num dispositivo diferente</translation>
 <translation id="1436185428532214179">Pode solicitar a edição de ficheiros e pastas no seu dispositivo</translation>
 <translation id="1442386063175183758">Dobra simétrica à direita</translation>
 <translation id="1442987760062738829">Perfurar</translation>
@@ -1938,7 +1938,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5764920692828389743">Enviar para <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para ver os métodos de fornecimento e os requisitos, selecione um endereço</translation>
 <translation id="57689295674415555">O número do cartão virtual não foi preenchido?</translation>
-<translation id="5772086939108830423">Usar uma chave de acesso num dispositivo diferente</translation>
+<translation id="5772086939108830423">Usar uma token de acesso num dispositivo diferente</translation>
 <translation id="5776313857861697733">Prioridade</translation>
 <translation id="5776574724412881956">Cartão virtual não preenchido? Clique nos detalhes do cartão virtual para os copiar para a área de transferência. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5781136890105823427">Experiência ativada</translation>
@@ -2019,7 +2019,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5992691462791905444">Dobra em Z vertical com margem superior</translation>
 <translation id="5992805036496113940">Veja as informações usadas para lhe mostrar anúncios</translation>
 <translation id="5995727681868049093">Faça a gestão das suas informações, privacidade e segurança na Conta Google</translation>
-<translation id="5996887213716993070">O campo <ph name="FIELD" /> não pode ficar vazio</translation>
 <translation id="5997247540087773573">A palavra-passe que acabou de usar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de Palavras-passe da Google recomenda que a altere agora e verifique as suas palavras-passe guardadas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram limpas do formulário</translation>

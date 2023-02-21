@@ -159,6 +159,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="21133533946938348">Ichki oynani qadab qo‘yish</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p ko‘chirildi</translation>
 <translation id="2122754583996902531">Bu brauzer nazorat ostida. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">Narxga oid bildirishnomalar yoqilsinmi?</translation>
 <translation id="2139867232736819575">Nusxalangan matnni qidirish</translation>
 <translation id="214201757571129614">Kirish...</translation>
 <translation id="2149973817440762519">Xatcho‘p tahriri</translation>
@@ -250,6 +251,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="2797029671965852011">Tarixni koʻrsatish</translation>
 <translation id="2800683595868705743">Sahifalarni tezkor almashtirish funksiyasini o‘chirib qo‘yish</translation>
 <translation id="2815198996063984598">2. Standart brauzer ilovasi ustiga bosing</translation>
+<translation id="2822917246944009066">Varaq mahkamlandi</translation>
 <translation id="2830972654601096923">Manzillarni boshqarish...</translation>
 <translation id="2834399722155632105">3. Parol sozlamalarini bosing</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -897,6 +899,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7431991332293347422">Moslashtirilgan qidiruv, reklama va boshqa tashriflar tarixi parametrlarini tanlang</translation>
 <translation id="7435356471928173109">Administrator tomonidan faolsizlantirilgan</translation>
 <translation id="7438481509621345350">Endi yangi varaq ochilganda <ph name="CHANNEL_NAME" /> hikoyalari chiqadi.</translation>
+<translation id="7446583256109515732">Varaq olib tashlandi</translation>
 <translation id="7454057999980797137">Hudud</translation>
 <translation id="7459628154744868585">Kuchaytirilgan himoya yoniq</translation>
 <translation id="746684838091935575">3. Chrome brauzerini tanlang</translation>
@@ -1128,6 +1131,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="9148126808321036104">Qaytadan kiring</translation>
 <translation id="9157836665414082580">Muloqot oynalarini bloklash</translation>
 <translation id="9162432979321511934">Parollar avtomatik kiritilishini yoqish</translation>
+<translation id="9165320910061267720">Narx tushishiga oid bildirishnomalar olish uchun iOS sozlamalari orqali bildirishnomalarni yoqishingiz kerak.</translation>
 <translation id="9177438225260810839">Ochiq varaqlar ichidan qidirish</translation>
 <translation id="9188680907066685419">Boshqariladigan hisobdan chiqish</translation>
 <translation id="9193147658040604536">Varaqni mahkamlash uchun tashlang</translation>

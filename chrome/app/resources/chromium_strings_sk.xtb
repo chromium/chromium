@@ -16,7 +16,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
 <translation id="1396446129537741364">Prehliadač Chromium sa snaží zobraziť heslá.</translation>
 <translation id="1414495520565016063">Ste prihlásený/-á do prehliadača Chromium.</translation>
-<translation id="1493803763272692301">Môžete naplno využívať Chromium</translation>
 <translation id="1524282610922162960">Zdieľajte kartu prehliadača Chromium</translation>
 <translation id="1553461853655228091">Chromium potrebuje povolenie použiť fotoaparát, aby mohol vytvoriť 3D mapu vášho okolia</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia}=1{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia. Vaše okno inkognito sa neotvorí.}few{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia. Vaše # okná inkognito sa neotvoria.}many{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia. Your # Incognito windows won't reopen.}other{Správca požaduje nové spustenie prehliadača Chromium, aby sa použila aktualizácia. Vašich # okien inkognito sa neotvorí.}}</translation>

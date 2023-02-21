@@ -356,6 +356,7 @@
 <translation id="3971140002794351170">ম’বাইলৰ প্ৰ’ফাইল ডাউনল’ড কৰক, <ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ইংৰাজী (যুক্তৰাজ্য)</translation>
 <translation id="3975895378829046965">বাংলা ফ’নেটিক</translation>
+<translation id="3999574733850440202">শেহতীয়াকৈ খোলা Microsoft ফাইলসমূহ OneDriveলৈ স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="4002066346123236978">শিৰোনাম</translation>
 <translation id="4017788180641807848">Workman কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাষ্ট্ৰ)</translation>
 <translation id="4019998208269143058">ক্ষিপ্ৰতাৰে এক্সেছ কৰিব পৰা ফাইলত পিন কৰক</translation>
@@ -881,6 +882,7 @@
 <translation id="8116072619078571545">বৰফৰ সৈতে পানী</translation>
 <translation id="8128733386027980860">Dvorak কীব’ৰ্ডৰ সৈতে ইংৰাজী (যুক্তৰাজ্য)</translation>
 <translation id="8137331602592933310">আপোনাৰ সৈতে "<ph name="FILENAME" />" শ্বেয়াৰ কৰা হৈছে। আপুনি ইয়াৰ গৰাকী নহয় বাবে আপুনি এইটো মচিব নোৱাৰে।</translation>
+<translation id="8138705869659070104">ডিভাইচ ছেটআপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>
 <translation id="813913629614996137">আৰম্ভ কৰা হৈছে…</translation>
 <translation id="8147028810663464959">বৰ্ণৰ প্ৰস্থ পূৰ্ণ</translation>
 <translation id="8151638057146502721">কনফিগাৰ</translation>
@@ -906,6 +908,7 @@
 <translation id="8300849813060516376">OTASP বিফল হৈছে</translation>
 <translation id="8312871300878166382">ফ’ল্ডাৰত পে’ষ্ট কৰক</translation>
 <translation id="8329978297633540474">সাধাৰণ পাঠ</translation>
+<translation id="8332007959299458842">শেহতীয়াকৈ খোলা Microsoft ফাইলসমূহ Google Driveলৈ স্থানান্তৰ কৰা হৈছে</translation>
 <translation id="8335587457941836791">শ্বেল্‌ফৰ পৰা আনপিন কৰক</translation>
 <translation id="8335837413233998004">বেলাৰুছিয়ান</translation>
 <translation id="8336153091935557858">কালি <ph name="YESTERDAY_DAYTIME" /></translation>

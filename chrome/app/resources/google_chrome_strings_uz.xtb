@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">ChromeOS haqida</translation>
 <translation id="1154147086299354128">Chrome brauzerida &amp;ochish</translation>
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
-<translation id="1236866257838264361">Chrome barcha imkoniyatlaridan foydalanishingiz mumkin</translation>
 <translation id="1278833599417554002">&amp;Chrome brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="1302523850133262269">Chrome so‘nggi tizim yangilanishlarini o‘rnatguncha kutib turing.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromeOS Flex shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
@@ -259,6 +258,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6003112304606738118">Yuklab olinmoqda... <ph name="HOURS" /> soat qoldi</translation>
 <translation id="6010556343189461180">Google Chrome yangilanishlari macOS 10.15 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome hozir yopiladi.}=1{Chrome 1 soniyadan keyin yopiladi.}other{Chrome # soniyadan keyin yopiladi.}}</translation>
+<translation id="6022659036123304283">Shaxsiy Chrome brauzeringiz</translation>
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6070348360322141662">Xavfsizlik himoyasini oshirish maqsadida Google Chrome ma’lumotlaringizni shifrlaydi</translation>
 <translation id="608006075545470555">Bu brauzerga ish profilini kiritish</translation>

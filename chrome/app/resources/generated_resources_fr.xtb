@@ -378,6 +378,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1339009753652684748">Accédez à l'Assistant en disant "Hey Google". Pour économiser la batterie, sélectionnez "Activé (recommandé)". L'Assistant ne répondra que lorsque votre appareil sera branché ou en charge.</translation>
 <translation id="13392265090583506">Paramètres d'accessibilité</translation>
 <translation id="1340527397989195812">Sauvegardez du contenu multimédia en provenance de l'appareil à l'aide de l'application Fichiers.</translation>
+<translation id="1341701348342335220">Félicitations !</translation>
 <translation id="1341871421050612057">Synchronisation avec <ph name="USERNAME" /> impossible</translation>
 <translation id="1343865611738742294">Autoriser les applications Linux à accéder aux périphériques USB. Dès qu'un périphérique est déconnecté, il est effacé de la mémoire de Linux.</translation>
 <translation id="1343920184519992513">Reprendre là où vous en étiez et ouvrir un ensemble de pages spécifiques</translation>
@@ -3625,6 +3626,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4232375817808480934">Configurer Kerberos</translation>
 <translation id="4235965441080806197">Annuler la connexion</translation>
 <translation id="4236163961381003811">Découvrir plus d'extensions</translation>
+<translation id="4237282663517880406">Afficher les suggestions Google Drive</translation>
 <translation id="4241182343707213132">Redémarrer pour mettre à jour les applis de votre organisation</translation>
 <translation id="4242145785130247982">Plusieurs certificats client ne sont pas compatibles</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -4440,7 +4442,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4977942889532008999">Confirmer l'accès</translation>
 <translation id="4980805016576257426">Cette extension contient des logiciels malveillants.</translation>
 <translation id="4981449534399733132">Pour effacer les données de navigation sur tous vos appareils synchronisés et dans votre compte Google, <ph name="BEGIN_LINK" />connectez-vous<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Reprenez là où vous en étiez sur n'importe quel appareil</translation>
 <translation id="4986706507552097681">Vous avez toujours la possibilité de sélectionner les éléments à synchroniser dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4986728572522335985">Cette opération supprimera toutes les données stockées sur la clé de sécurité, y compris son code</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -4557,7 +4558,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5097349930204431044">Les sites que vous consultez peuvent déterminer vos centres d'intérêt, puis vous suggérer des annonces durant votre navigation</translation>
 <translation id="5097649414558628673">Outil : <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Clic automatique à l'arrêt du curseur</translation>
-<translation id="5101683448725092498">Sauvegarder vos contenus</translation>
 <translation id="5101839224773798795">Cliquer automatiquement en cas d'arrêt du curseur</translation>
 <translation id="5106350808162641062">Supprimer</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> est supervisé par Family Link. Vous pouvez ajouter des comptes scolaires pour lui permettre d'accéder à des ressources scolaires avec supervision parentale.</translation>
@@ -5124,7 +5124,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5623842676595125836">Journal</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
 <translation id="5625225435499354052">Modifier dans Google Pay</translation>
-<translation id="5625631605902707678">Tous les appareils</translation>
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5627086634964711283">Elle contrôle également la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="5627676517703583263">Naviguez intelligemment avec Chrome</translation>
@@ -5236,7 +5235,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Votre appareil ou ces données ne respectent pas certaines règles de sécurité de votre organisation. Contactez votre administrateur pour savoir ce qui doit être corrigé.}=1{Ce fichier ou votre appareil ne respecte pas certaines règles de sécurité de votre organisation. Contactez votre administrateur pour savoir ce qui doit être corrigé.}one{Ce fichier ne respecte pas certaines règles de sécurité de votre organisation. Contactez votre administrateur pour savoir ce qui doit être corrigé.}other{Ces fichiers ne respectent pas certaines règles de sécurité de votre organisation. Contactez votre administrateur pour savoir ce qui doit être corrigé.}}</translation>
 <translation id="5736796278325406685">Veuillez saisir un nom d'utilisateur valide</translation>
 <translation id="5738093759615225354">Vous avez besoin de cette clé d'accès pour vous connecter à votre ordinateur</translation>
-<translation id="5738329404678738022">Enregistrez vos favoris etc. avec la synchronisation</translation>
 <translation id="5739017626473506901">Connectez-vous pour aider <ph name="USER_NAME" /> à ajouter un compte scolaire</translation>
 <translation id="5739235828260127894">En attente de validation. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Très grande</translation>
@@ -5258,7 +5256,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5757375109985023827">Sélectionnez un onglet à prévisualiser</translation>
 <translation id="5758631781033351321">Votre liste de lecture s'affichera ici</translation>
 <translation id="5759728514498647443">Les documents envoyés pour impression via "<ph name="APP_NAME" />" sont lisibles avec "<ph name="APP_NAME" />"</translation>
-<translation id="5760508342220592715">Connectez-vous pour profiter d'autres avantages</translation>
 <translation id="5762787084360227629">Saisir les infos du compte Google</translation>
 <translation id="5763751966069581670">Aucun appareil USB détecté</translation>
 <translation id="5764483294734785780">En&amp;registrer le fichier audio sous...</translation>
@@ -7022,7 +7019,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7380622428988553498">Le nom de l'appareil comporte des caractères non valides</translation>
 <translation id="7380768571499464492">L'imprimante "<ph name="PRINTER_NAME" />" a bien été mise à jour</translation>
 <translation id="7382085868019811559">Legacy Browser Support (LBS) autorise l'ouverture d'URL spécifiques dans un navigateur secondaire qui prend en charge les anciennes fonctionnalités nécessaires pour exécuter ces sites correctement.</translation>
-<translation id="738322632977123193">Impossible d'importer. Utilisez une image enregistrée dans l'un des formats suivants : .jpg, .gif, .png, .bmp, .tif ou .webp.</translation>
+<translation id="738322632977123193">Impossible d'importer. Utilisez une image dans l'un de ces formats : .jpg, .gif, .png, .bmp, .tif ou .webp.</translation>
 <translation id="73843634555824551">Saisies et claviers</translation>
 <translation id="7384687527486377545">Répétition automatique du clavier</translation>
 <translation id="7385490373498027129">L'ensemble des fichiers et des données locales de tous les utilisateurs sur cet appareil (<ph name="DEVICE_TYPE" />) seront supprimés définitivement.</translation>
@@ -7799,7 +7796,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8059417245945632445">&amp;Inspecter les appareils</translation>
 <translation id="8059456211585183827">Aucune imprimante ne peut être enregistrée.</translation>
 <translation id="8061091456562007989">Rétablir les anciens paramètres</translation>
-<translation id="8061965471006133016">Protection renforcée pour vos mots de passe et plus</translation>
 <translation id="8061970399284390013">Vérification de l'orthographe et de la grammaire</translation>
 <translation id="8061991877177392872">Apparemment, vous avez déjà configuré Voice Match avec l'Assistant sur un autre appareil. Ces enregistrements précédents ont été utilisés pour créer une empreinte vocale sur cet appareil.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 feuille de papier}one{{COUNT} feuille de papier}other{{COUNT} feuilles de papier}}</translation>

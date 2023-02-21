@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Tietoa Chrome-käyttöjärjestelmästä</translation>
 <translation id="1154147086299354128">Avaa Chr&amp;omessa</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
-<translation id="1236866257838264361">Saat eniten irti Chromesta</translation>
 <translation id="1278833599417554002">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="1302523850133262269">Odota hetki, Chrome asentaa uusimpia järjestelmäpäivityksiä.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Google ChromeOS Flexin ehtoja.</translation>
@@ -247,12 +246,14 @@
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon</translation>
 <translation id="5924017743176219022">Muodostetaan internetyhteyttä…</translation>
+<translation id="5932997892801542621">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin Google Driveen, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="5940385492829620908">Tämä on verkkosi, kirjanmerkkiesi ja muun Chrome-sisältösi koti.</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5941830788786076944">Tee Google Chromesta oletusselain</translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
 <translation id="6010556343189461180">Sinulla on oltava macOS 10.15 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome suljetaan nyt.}=1{Chrome suljetaan 1 sekunnin kuluttua.}other{Chrome suljetaan # sekunnin kuluttua.}}</translation>
+<translation id="6022659036123304283">Tee Chromesta näköisesi</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6070348360322141662">Google Chrome lisää suojausta salaamalla tietosi</translation>
 <translation id="608006075545470555">Lisää työprofiili tähän selaimeen</translation>

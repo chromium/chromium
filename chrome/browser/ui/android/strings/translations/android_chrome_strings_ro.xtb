@@ -226,6 +226,7 @@ Când ștergi istoricul de navigare (în întregime sau pentru un anumit site), 
 <translation id="2248941474044011069">Parolele tale sunt criptate pe dispozitiv înainte să se salveze în Managerul de parole Google</translation>
 <translation id="2249635629516220541">Personalizează informațiile folosite de site-uri pentru a-ți afișa anunțuri</translation>
 <translation id="2259659629660284697">Exportă parolele…</translation>
+<translation id="2276231040576210443">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK1" />setări<ph name="END_LINK1" />. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="2276696007612801991">Conectează-te la contul Google pentru a verifica parolele</translation>
 <translation id="2278052315791335171">Prin ștergerea acestei parole, nu va fi șters și contul de pe <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa de facturare</translation>
@@ -1493,6 +1494,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8970887620466824814">A apărut o eroare.</translation>
 <translation id="8972098258593396643">Descarci în dosarul prestabilit?</translation>
 <translation id="8987641763863173640">Gestionează setările pentru previzualizarea videoclipurilor</translation>
+<translation id="8987736167266086032">Reia de unde ai rămas</translation>
 <translation id="8989968390305463310">Istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge automat categoriile de interese în permanență, în fiecare lună. Categoriile de interese se pot actualiza dacă nu le elimini.</translation>
 <translation id="8993760627012879038">Deschide o filă nouă în modul incognito</translation>
 <translation id="8996847606757455498">Alege alt furnizor</translation>

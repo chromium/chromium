@@ -15,7 +15,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1152920704813762236">Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Otvoriť v Chrome</translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
-<translation id="1236866257838264361">Môžete naplno využívať Chrome</translation>
 <translation id="1278833599417554002">Znova spustiť a aktualizovať Chrome</translation>
 <translation id="1302523850133262269">Počkajte, kým Chrome nainštaluje najnovšie aktualizácie systému.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> vyžaduje, aby ste si pred používaním tohto zariadenia prečítali nasledujúce zmluvné podmienky a vyjadrili s nimi súhlas. Tieto zmluvné podmienky nerozširujú, neupravujú ani neobmedzujú zmluvné podmienky systému Google Chrome OS Flex.</translation>
@@ -260,6 +259,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6003112304606738118">Sťahuje sa… Zostávajúci čas: <ph name="HOURS" /> h</translation>
 <translation id="6010556343189461180">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 10.15 alebo novší. V tomto počítači používate macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome sa teraz zavrie.}=1{Chrome sa zavrie o 1 sekundu.}few{Chrome sa zavrie o # sekundy.}many{Chrome sa zavrie o # sekundy.}other{Chrome sa zavrie o # sekúnd.}}</translation>
+<translation id="6022659036123304283">Upravte si Chrome podľa seba</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6070348360322141662">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Google Chrome šifrované</translation>
 <translation id="608006075545470555">Pridanie pracovného profilu do tohto prehliadača</translation>

@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Про ОС Chrome</translation>
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
-<translation id="1236866257838264361">Користуйтеся всіма можливостями Chrome</translation>
 <translation id="1278833599417554002">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
 <translation id="1335640173511558774">Перш ніж використовувати цей пристрій, потрібно прочитати й прийняти наведені нижче Умови використання домену <ph name="MANAGER" />. Вони не розширюють, не змінюють і не обмежують Умови використання ОС Google Chrome Flex.</translation>
@@ -247,12 +246,14 @@
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вхід у мережу</translation>
 <translation id="5924017743176219022">Підключення до Інтернету…</translation>
+<translation id="5932997892801542621">Коли ви вводите текст в адресному рядку або вікні пошуку, Chrome надсилає його на Google Диск, щоб надати вам підказки щодо файлів. В анонімному режимі цю функцію вимкнено.</translation>
 <translation id="5940385492829620908">Тут містяться ваші веб-сторінки, закладки та інші дані Chrome.</translation>
 <translation id="5941711191222866238">Згорнути</translation>
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
 <translation id="6010556343189461180">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система macOS 10.15 або новішої версії. На цьому комп’ютері встановлено macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome зараз закриється.}=1{Chrome закриється через 1 секунду.}one{Chrome закриється через # секунду.}few{Chrome закриється через # секунди.}many{Chrome закриється через # секунд.}other{Chrome закриється через # секунди.}}</translation>
+<translation id="6022659036123304283">Ваш персональний Chrome</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6070348360322141662">Щоб підвищити безпеку, Google Chrome шифруватиме ваші дані</translation>
 <translation id="608006075545470555">Додати робочий профіль у цей веб-переглядач</translation>

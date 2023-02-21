@@ -159,6 +159,7 @@
 <translation id="21133533946938348">ట్యాబ్‌ను పిన్ చేయి</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> అంశాలు తరలించబడ్డాయి</translation>
 <translation id="2122754583996902531">మీ బ్రౌజర్ మేనేజ్ చేయబడుతుంది. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">ప్రైస్ అలర్ట్‌లను ఆన్ చేయాలా?</translation>
 <translation id="2139867232736819575">మీరు కాపీ చేసిన వచనం కోసం వెతకండి</translation>
 <translation id="214201757571129614">సైన్ ఇన్ చేయండి…</translation>
 <translation id="2149973817440762519">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
@@ -250,6 +251,7 @@
 <translation id="2797029671965852011">హిస్టరీని చూడండి</translation>
 <translation id="2800683595868705743">ట్యాబ్ స్విచర్ నుండి నిష్క్రమించండి</translation>
 <translation id="2815198996063984598">2. ఆటోమేటిక్ బ్రౌజర్ యాప్‌ను ట్యాప్ చేయండి</translation>
+<translation id="2822917246944009066">ట్యాబ్ పిన్ చేయబడింది</translation>
 <translation id="2830972654601096923">అడ్రస్‌లను మేనేజ్ చేయండి...</translation>
 <translation id="2834399722155632105">3. పాస్‌వర్డ్ ఆప్షన్‌లను ట్యాప్ చేయండి</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -314,6 +316,7 @@
 <translation id="3227137524299004712">మైక్రోఫోన్</translation>
 <translation id="3240426699337459095">లింక్ కాపీ చేయబడింది</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">మీ మార్పు సేవ్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="NUM_SUGGESTIONS" />లో <ph name="INDEX" /></translation>
 <translation id="3268451620468152448">ఓపెన్ ట్యాబ్‌లు</translation>
 <translation id="3272527697863656322">రద్దు చేయండి</translation>
@@ -336,6 +339,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> నిమి</translation>
 <translation id="3448016392200048164">విభజన వీక్షణ</translation>
 <translation id="345565170154308620">పాస్‌వర్డ్‌లను మేనేజ్ చేయండి...</translation>
+<translation id="3464194322481586217">ధరను ట్రాక్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="3469166899695866866">డౌన్‌లోడ్‌ను ఆపివేయాలా?</translation>
 <translation id="3470502288861289375">కాపీ చేస్తోంది...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} సైట్ లేదా యాప్ కోసం}other{{COUNT} సైట్‌లు, యాప్‌ల కోసం}}</translation>
@@ -763,6 +767,7 @@
 <translation id="6464397691496239022">సైట్‌లు మీ బ్రౌజింగ్ అనుభవాన్ని మెరుగుపరచడానికి కుక్కీలను ఉపయోగిస్తాయి, ఉదాహరణకు, మిమ్మల్ని సైన్ ఇన్ చేసి ఉంచడం లేదా మీ షాపింగ్ కార్ట్‌లోని ఐటెమ్‌లను గుర్తు చేయడం లాంటివి.
 
 వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం లాంటివి.</translation>
+<translation id="6476253015009698798">ఈ పేజీకి ధర ట్రాకింగ్ అందుబాటులో లేదు.</translation>
 <translation id="6476800141292307438">పేజీని <ph name="LANGUAGE" />లోకి అనువదిస్తోంది. స్క్రీన్ దిగువ భాగానికి దగ్గర్లో ఎంపికలు అందుబాటులో ఉంటాయి.</translation>
 <translation id="648164694371393720">ప్రామాణీకరణ ఎర్రర్</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> అంశాలు తొలగించబడ్డాయి</translation>
@@ -814,6 +819,7 @@
 <translation id="6780034285637185932">జిప్ కోడ్</translation>
 <translation id="6781260999953472352">సింక్‌ను ఆన్ చేయాలా?</translation>
 <translation id="6785453220513215166">క్రాష్ రిపోర్ట్‌ను పంపుతోంది...</translation>
+<translation id="6790502149545262384">త్వరలో, మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీరు <ph name="CHANNEL_NAME" /> నుండి కథనాలను చూస్తారు.</translation>
 <translation id="6797885426782475225">వాయిస్ శోధన</translation>
 <translation id="6801927553864092214">ప్రైవేట్‌గా బ్రౌజ్ చేయడానికి, అజ్ఞాత ట్యాబ్‌ను తెరవండి</translation>
 <translation id="6807889908376551050">అన్నీ చూపు...</translation>
@@ -893,6 +899,7 @@
 <translation id="7431991332293347422">సెర్చ్‌లు మరియు మరిన్నింటిని వ్యక్తిగతీకరించడానికి మీ బ్రౌజింగ్ హిస్టరీ ఎలా ఉపయోగించబడుతుందో నియంత్రించండి</translation>
 <translation id="7435356471928173109">మీ అడ్మినిస్ట్రేటర్ ఆఫ్ చేశారు</translation>
 <translation id="7438481509621345350">మీరు కొత్త ట్యాబ్‌ను తెరిచినప్పుడు మీకు ఇప్పుడు <ph name="CHANNEL_NAME" /> నుండి స్టోరీలు కనిపిస్తాయి.</translation>
+<translation id="7446583256109515732">ట్యాబ్ పిన్ తీసివేయబడింది</translation>
 <translation id="7454057999980797137">రాష్ట్రం / దేశం</translation>
 <translation id="7459628154744868585">మెరుగైన రక్షణ ఆన్‌లో ఉంది</translation>
 <translation id="746684838091935575">3. Chromeను ఎంచుకోండి</translation>
@@ -1123,6 +1130,8 @@
 <translation id="9137526406337347448">Google సేవలు</translation>
 <translation id="9148126808321036104">మళ్ళీ సైన్ ఇన్ చేయండి</translation>
 <translation id="9157836665414082580">డైలాగ్‌లను కుదించు</translation>
+<translation id="9162432979321511934">పాస్‌వర్డ్‌లను ఆటోఫిల్ చేసే ఆప్షన్‌ను ఆన్ చేయండి</translation>
+<translation id="9165320910061267720">ధర తగ్గుదల అలర్ట్‌ల నోటిఫికేషన్‌లను పొందడానికి, మీరు మీ iOS సెట్టింగ్‌లలో నోటిఫికేషన్‌లను ఆన్ చేయాలి.</translation>
 <translation id="9177438225260810839">తెరిచి ఉన్న ట్యాబ్‌లలో సెర్చ్ చేయండి</translation>
 <translation id="9188680907066685419">నిర్వహిత ఖాతా నుండి సైన్ అవుట్ చేయండి</translation>
 <translation id="9193147658040604536">ట్యాబ్‌ను పిన్ చేయడానికి ఇక్కడకు లాగండి</translation>

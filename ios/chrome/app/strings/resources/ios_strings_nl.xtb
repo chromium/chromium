@@ -561,6 +561,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5118713593561876160">Interesses</translation>
 <translation id="5118764316110575523">Uit</translation>
 <translation id="5119391094379141756">Selecteer Chrome</translation>
+<translation id="5121618895923301719">Je volgt dit product al. Deze pagina is opgeslagen in <ph name="BEGIN_LINK" />Mobiele bookmarks<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} zwak wachtwoord}other{{COUNT} zwakke wachtwoorden}}</translation>
 <translation id="5149188072385105201">Wachtwoord toevoegen...</translation>
@@ -591,6 +592,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5386314158584363703">Hier komen je gevolgde sites te staan</translation>
 <translation id="5388358297987318779">Afbeelding openen</translation>
 <translation id="5407969256130905701">Wijzigingen niet opslaan</translation>
+<translation id="5414763847370083940">Je krijgt een melding als de prijs op een site daalt.</translation>
 <translation id="5416022985862681400">Afgelopen 7 dagen</translation>
 <translation id="5423269318075950257">Prijs volgen</translation>
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
@@ -1133,6 +1135,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="952704832371081537">Annuleren</translation>
 <translation id="953008885340860025">Chrome is uitgelogd</translation>
 <translation id="959066944189734975">Je volgt <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Volg de prijs van een product in online winkels. Je krijgt meldingen als de prijs daalt.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Je organisatie vereist dat je alleen met bepaalde accounts inlogt. Niet-toegestane accounts zijn verborgen.</translation>
 <translation id="984509647832111802">Synchronisatie werkt niet.</translation>

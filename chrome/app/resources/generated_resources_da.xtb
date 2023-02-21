@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
 <translation id="1059944192885972544">Der blev fundet <ph name="NUM" /> faner for "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="1060292118287751956">Fastlægger frekvensen for skærmopdateringer</translation>
+<translation id="1060570945511946595">Administrer billetter</translation>
 <translation id="1061130374843955397">Velkommen til din <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Opret QR-kode for dette link</translation>
 <translation id="1061904396131502319">Det er snart tid til en pause</translation>
@@ -1127,6 +1128,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1975841812214822307">Fjern...</translation>
 <translation id="1976150099241323601">Log ind på sikkerhedsenhed</translation>
 <translation id="1977965994116744507">Flyt din telefon tættere på din <ph name="DEVICE_TYPE" /> for at låse den op.</translation>
+<translation id="1978666928180318515">Fjern Bruschetta</translation>
 <translation id="1979095679518582070">Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.</translation>
 <translation id="1979280758666859181">Du er ved at skifte til en kanal med en ældre version af <ph name="PRODUCT_NAME" />. Kanalskiftet træder i kraft, når kanalversionen matcher den version, der i øjeblikket er installeret på din enhed.</translation>
 <translation id="197989455406964291">KDC understøtter ikke krypteringstypen</translation>
@@ -1933,6 +1935,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2672142220933875349">Ugyldig CRX-fil. Udpakning mislykkedes.</translation>
 <translation id="2673135533890720193">Læse din browserhistorik</translation>
 <translation id="2674764818721168631">Fra</translation>
+<translation id="2675570801872027281">Der opstod en fejl under fjernelse af Bruschetta. Prøv igen.</translation>
 <translation id="2676492189600898281">Giv feedback om Autofyld</translation>
 <translation id="2678063897982469759">Genaktiver</translation>
 <translation id="2678100101831051676">Det var ikke muligt at caste.</translation>
@@ -2931,6 +2934,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3593965109698325041">Begrænsninger for certifikatnavn</translation>
 <translation id="3596012367874587041">Appindstillinger</translation>
 <translation id="3596414637720633074">Bloker tredjepartscookies i inkognito</translation>
+<translation id="3598010454707842106">Klik på "Tilpas Chrome"</translation>
 <translation id="3599221874935822507">Hævet</translation>
 <translation id="3600051066689725006">Oplysninger om webanmodning</translation>
 <translation id="360180734785106144">Tilbyde nye funktioner, efterhånden som de bliver tilgængelige</translation>
@@ -3929,6 +3933,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4497145443434063861">Computer og Chromecast er på forskellige Wi-Fi-netværk (f.eks. 2,4 GHz
     i forhold til 5 GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> er gået ned</translation>
+<translation id="4500647907053779331">&amp;Oversæt markeret tekst til <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">Ikon for udråbstegn</translation>
 <translation id="4501530680793980440">Bekræft fjernelse</translation>
 <translation id="4502423230170890588">Fjern fra denne enhed</translation>
@@ -4458,7 +4463,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4977942889532008999">Bekræft adgang</translation>
 <translation id="4980805016576257426">Denne udvidelse indeholder malware.</translation>
 <translation id="4981449534399733132"><ph name="BEGIN_LINK" />Log ind<ph name="END_LINK" /> for at rydde browserdata fra alle dine synkroniserede enheder og din Google-konto.</translation>
-<translation id="4982111327868342436">Fortsæt, hvor du slap, på en hvilken som helst enhed</translation>
 <translation id="4986706507552097681">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4986728572522335985">Denne handling sletter alle data på sikkerhedsnøglen, bl.a. pinkoden</translation>
 <translation id="4988526792673242964">Sider</translation>
@@ -4575,7 +4579,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5097349930204431044">De websites, du besøger, kan foretage en vurdering af, hvad du kan lide, og derefter foreslå annoncer, når du fortsætter med at browse</translation>
 <translation id="5097649414558628673">Værktøj: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klik automatisk, når markøren stopper</translation>
-<translation id="5101683448725092498">Sikkerhedskopiér dit indhold</translation>
 <translation id="5101839224773798795">Klik automatisk, når markøren stopper</translation>
 <translation id="5106350808162641062">Fjern</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> forældrestyres af Family Link. Du kan tilføje skolekonti for at få adgang til skoleressourcer med en forældrestyret konto.</translation>
@@ -5141,7 +5144,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Administrer adgangskoder</translation>
 <translation id="5625225435499354052">Rediger i Google Pay</translation>
-<translation id="5625631605902707678">På alle enheder</translation>
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5627086634964711283">Den styrer også, hvilken side der vises, når du klikker på knappen Startside.</translation>
 <translation id="5627676517703583263">Smart browsing med Chrome</translation>
@@ -5253,7 +5255,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Disse data eller din enhed overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}=1{Denne fil eller din enhed overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}one{Denne fil overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}other{Disse filer overholder ikke alle din organisations sikkerhedspolitikker. Spørg din administrator, hvad der skal rettes.}}</translation>
 <translation id="5736796278325406685">Angiv et gyldigt brugernavn</translation>
 <translation id="5738093759615225354">Du skal bruge denne adgangsnøgle for at logge ind på din computer</translation>
-<translation id="5738329404678738022">Gem dine bogmærker og meget mere ved hjælp af synkronisering</translation>
 <translation id="5739017626473506901">Log ind for at hjælpe <ph name="USER_NAME" /> med at tilføje en skolekonto</translation>
 <translation id="5739235828260127894">Venter på bekræftelse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Meget stor</translation>
@@ -5275,7 +5276,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5757375109985023827">Vælg en fane for at se en forhåndsvisning</translation>
 <translation id="5758631781033351321">Her finder du din læseliste</translation>
 <translation id="5759728514498647443">De dokumenter, du sender til udskrift via <ph name="APP_NAME" />, kan læses af <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Log ind for at få flere fordele</translation>
 <translation id="5762787084360227629">Angiv Google-kontooplysninger</translation>
 <translation id="5763751966069581670">Der blev ikke fundet nogen USB-enheder</translation>
 <translation id="5764483294734785780">&amp;Gem lyd som...</translation>
@@ -5746,6 +5746,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="617213288191670920">Der er ikke tilføjet nogle sprog</translation>
 <translation id="6173623053897475761">Angiv din pinkode igen</translation>
 <translation id="6175314957787328458">Microsoft-domæne-GUID</translation>
+<translation id="6177412385419165772">Fjerner...</translation>
 <translation id="6178664161104547336">Vælg et certifikat</translation>
 <translation id="6178682841350631965">Dine logindata er opdateret</translation>
 <translation id="6180510783007738939">Linjeværktøj</translation>
@@ -6224,6 +6225,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6619801788773578757">Tilføj terminalapp</translation>
 <translation id="6619990499523117484">Bekræft din pinkode</translation>
 <translation id="6620254580880484313">Containernavn</translation>
+<translation id="6620927550847360014">Vil du fjerne Bruschetta fra din <ph name="DEVICE_TYPE" />?</translation>
 <translation id="6621391692573306628">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på begge enheder</translation>
 <translation id="6622980291894852883">Fortsæt blokering af billeder</translation>
 <translation id="6624036901798307345">I tablettilstand skal du trykke på knappen til faneoptælling på værktøjslinjen for at åbne den nye fanelinje, der viser miniaturebilleder af hver fane.</translation>
@@ -6441,6 +6443,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6818547713623251698">Se din telefons billeder, mediefiler, notifikationer og apps</translation>
 <translation id="6818802132960437751">Indbygget virusbeskyttelse</translation>
 <translation id="6818920801736417483">Vil du gemme adgangskoderne?</translation>
+<translation id="6820079682647046800">Kerberos-godkendelse mislykkedes</translation>
 <translation id="6823174134746916417">Tryk-hurtigt-for-at-klikke på touchplade</translation>
 <translation id="6824564591481349393">Kopier mailadress&amp;e</translation>
 <translation id="6824584962142919697">&amp;Inspect elements (Undersøg elementer)</translation>
@@ -6595,6 +6598,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6955698182324067397">Du aktiverer ChromeOS-fejlretningsfunktioner, som konfigurerer sshd daemon og aktiverer systemgenstart via USB-drev.</translation>
 <translation id="6955893174999506273">Tildel 1 kontakt mere</translation>
 <translation id="6957044667612803194">Denne sikkerhedsnøgle understøtter ikke pinkoder</translation>
+<translation id="6960133692707095572">Besøg uden billet</translation>
 <translation id="6960507406838246615">Kræver Linux-opdatering</translation>
 <translation id="6960648667961844909">Talefilerne på <ph name="LANGUAGE" /> kunne ikke downloades. Downloaden forsøges senere. Tale sendes til behandling hos Google, indtil downloaden er fuldført.</translation>
 <translation id="696103774840402661">Alle filer og lokale data for alle brugere på denne <ph name="DEVICE_TYPE" /> er blevet slettet permanent.</translation>
@@ -7815,7 +7819,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8059417245945632445">&amp;Inspicer enheder</translation>
 <translation id="8059456211585183827">Der er ingen printere, som kan gemmes.</translation>
 <translation id="8061091456562007989">Skift tilbage</translation>
-<translation id="8061965471006133016">Ekstra beskyttelse af dine adgangskoder og meget mere</translation>
 <translation id="8061970399284390013">Grammatik- og stavekontrol</translation>
 <translation id="8061991877177392872">Det ser ud til, at du allerede har konfigureret Voice Match med Google-assistenten på en anden enhed. Disse tidligere optagelser blev brugt til at oprette en stemmemodel på denne enhed.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 ark papir}one{{COUNT} ark papir}other{{COUNT} ark papir}}</translation>
@@ -8056,6 +8059,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8272443605911821513">Administrer dine udvidelser ved at klikke på Udvidelser i menuen "Flere værktøjer".</translation>
 <translation id="8272786333453048167">Tillad igen</translation>
 <translation id="8273905181216423293">Download nu</translation>
+<translation id="827488840488530039">Den side, du forsøger at besøge, kunne ikke verificere dine Kerberos-billetter</translation>
 <translation id="8274921654076766238">Forstørrelse følger indtastningen på tastaturet</translation>
 <translation id="8274924778568117936">Undgå at slukke eller lukke din <ph name="DEVICE_TYPE" />, før opdateringen er færdig. Din <ph name="DEVICE_TYPE" /> genstarter, når installationen er fuldført.</translation>
 <translation id="8275038454117074363">Importer</translation>

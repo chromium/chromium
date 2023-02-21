@@ -226,6 +226,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2248941474044011069">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangskodeadministrator</translation>
 <translation id="2249635629516220541">Tilpas de oplysninger, som websites kan bruge til at vise dig annoncer</translation>
 <translation id="2259659629660284697">Eksportér adgangskoder…</translation>
+<translation id="2276231040576210443">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK1" />indstillingerne<ph name="END_LINK1" />. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="2276696007612801991">Log ind på din Google-konto for at tjekke dine adgangskoder</translation>
 <translation id="2278052315791335171">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Faktureringsadresse</translation>
@@ -1493,6 +1494,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8970887620466824814">Noget gik galt.</translation>
 <translation id="8972098258593396643">Vil du downloade til standardmappen?</translation>
 <translation id="8987641763863173640">Administrer indstillinger for forhåndsvisning af video</translation>
+<translation id="8987736167266086032">Fortsæt, hvor du slap</translation>
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8993760627012879038">Åbn en ny fane i inkognitotilstand</translation>
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>

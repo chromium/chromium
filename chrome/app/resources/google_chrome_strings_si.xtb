@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">ChromeOS ගැන</translation>
 <translation id="1154147086299354128">&amp;Chrome තුළ විවෘත කරන්න</translation>
 <translation id="1203500561924088507">ස්ථාපනය කිරීම වෙනුවෙන් ස්තුතියි. ඔබ <ph name="BUNDLE_NAME" /> භාවිත කිරීමට පෙර ඔබගේ බ්‍රවුසරය යළි ඇරඹිය යුතුය.</translation>
-<translation id="1236866257838264361">ඔබට Chrome වෙතින් උපරිමය භුක්ති විඳිය හැක</translation>
 <translation id="1278833599417554002">&amp;Chrome යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="1302523850133262269">කරුණාකර Chrome නවතම පද්ධති යාවත්කාලීන ස්ථාපනය කරන අතරතුර රැඳී සිටින්න.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> හට ඔබ මෙම උපාංගය භාවිත කිරීමට පෙර පහත සේවා නියම කියවා පිළිගැනීමට අවශ්‍යයි. මෙම නියම Google ChromeOS Flex නියම පුළුල් කිරීම, වෙනස් කිරීම හෝ සීමා කිරීම නොකරයි.</translation>
@@ -261,6 +260,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="6003112304606738118">බාගනිමින්... පැය <ph name="HOURS" />ක් ඉතිරිව ඇත</translation>
 <translation id="6010556343189461180">අනාගත Google Chrome යාවත්කාලීන ලබා ගැනීම සඳහා, ඔබට macOS 10.15 හෝ පසු අනුවාදයක් අවශ්‍ය වනු ඇත. මෙම පරිගණකය macOS 10.14 භාවිතා කරයි.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome දැන් වැසෙනු ඇත.}=1{Chrome තත්පර 1කින් වැසෙනු ඇත.}one{Chrome තත්පර #කින් වැසෙනු ඇත.}other{Chrome තත්පර #කින් වැසෙනු ඇත.}}</translation>
+<translation id="6022659036123304283">Chrome ඔබේම කර ගන්න</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6070348360322141662">අමතර ආරක්ෂාව සඳහා, Google Chrome ඔබේ දත්ත සංකේතනය කරනු ඇත</translation>
 <translation id="608006075545470555">මෙම බ්‍රව්සරයට කාර්යාල පැතිකඩ එක් කරන්න</translation>

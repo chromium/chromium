@@ -84,6 +84,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1178821169867863726">12 x 16 inch</translation>
 <translation id="1181037720776840403">Xóa</translation>
 <translation id="1186201132766001848">Kiểm tra mật khẩu</translation>
+<translation id="1195073053842921378">Địa chỉ này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="1195558154361252544">Đã tự động chặn thông báo đối với mọi trang web, ngoại trừ những trang web bạn cho phép</translation>
 <translation id="1197088940767939838">Màu cam</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
@@ -2018,7 +2019,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5992691462791905444">Gấp kiểu chữ Z kỹ thuật</translation>
 <translation id="5992805036496113940">Xem thông tin được dùng để hiển thị quảng cáo cho bạn</translation>
 <translation id="5995727681868049093">Quản lý thông tin, quyền riêng tư và chế độ bảo mật cho Tài khoản Google của bạn</translation>
-<translation id="5996887213716993070">Không được để trống <ph name="FIELD" /></translation>
 <translation id="5997247540087773573">Mật khẩu bạn vừa sử dụng đã bị lộ trong một sự cố rò rỉ dữ liệu. Để bảo mật tài khoản, Trình quản lý mật khẩu khuyên bạn nên thay đổi mật khẩu này ngay và kiểm tra các mật khẩu bạn đã lưu.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> kết quả cho '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6005765687956866568">Thông tin tự động điền đã bị xoá khỏi biểu mẫu</translation>

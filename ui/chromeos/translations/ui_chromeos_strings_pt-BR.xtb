@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Próxima</translation>
 <translation id="1209796539517632982">Servidores de nome automáticos</translation>
 <translation id="1210831758834677569">Laosiano</translation>
+<translation id="1221555006497674479">Pouco armazenamento: <ph name="REMAINING_PERCENTAGE" />% restante do seu armazenamento no drive compartilhado de <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Fazer upload</translation>
 <translation id="1249250836236328755">Gênero</translation>
 <translation id="1254593899333212300">Conexão direta à Internet</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinês (pinyin)</translation>
 <translation id="1646019627374511909">Disponibilizando <ph name="NUMBER_OF_ITEMS" /> arquivos off-line</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
+<translation id="1661207570040737402">Você usou todo o armazenamento no drive compartilhado do Google Workspace.</translation>
 <translation id="1661867754829461514">PIN ausente</translation>
 <translation id="166439687370499867">A alteração das configurações de rede compartilhada não é permitida</translation>
 <translation id="1665611772925418501">Não foi possível modificar o arquivo.</translation>
@@ -354,6 +356,7 @@
 <translation id="3971140002794351170">Download do perfil móvel. Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglês (Reino Unido)</translation>
 <translation id="3975895378829046965">Bengali (fonético)</translation>
+<translation id="3999574733850440202">Os arquivos da Microsoft abertos recentemente foram movidos para o OneDrive</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4017788180641807848">Inglês (EUA) com teclado Workman</translation>
 <translation id="4019998208269143058">Fixar nos arquivos de acesso rápido</translation>
@@ -880,6 +883,7 @@
 <translation id="8116072619078571545">Água com gelo</translation>
 <translation id="8128733386027980860">Inglês (Reino Unido) com teclado Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" foi compartilhado com você. Não é possível excluí-lo porque você não é o proprietário dele.</translation>
+<translation id="8138705869659070104">Ativar após a configuração do dispositivo</translation>
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8147028810663464959">A largura de caractere é inteira</translation>
 <translation id="8151638057146502721">Configurar</translation>
@@ -905,6 +909,7 @@
 <translation id="8300849813060516376">Falha no OTASP</translation>
 <translation id="8312871300878166382">Colar na pasta</translation>
 <translation id="8329978297633540474">Texto sem formatação</translation>
+<translation id="8332007959299458842">Os arquivos da Microsoft abertos recentemente foram movidos para o Google Drive</translation>
 <translation id="8335587457941836791">Desafixar da estante</translation>
 <translation id="8335837413233998004">Bielorrusso</translation>
 <translation id="8336153091935557858">Ontem <ph name="YESTERDAY_DAYTIME" /></translation>

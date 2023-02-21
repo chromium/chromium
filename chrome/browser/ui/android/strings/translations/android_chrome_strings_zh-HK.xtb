@@ -226,6 +226,7 @@
 <translation id="2248941474044011069">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資料</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
+<translation id="2276231040576210443">您隨時可在<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查密碼</translation>
 <translation id="2278052315791335171">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
@@ -1493,6 +1494,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
 <translation id="8987641763863173640">管理影片預覽設定</translation>
+<translation id="8987736167266086032">從上次離開的地方繼續瀏覽</translation>
 <translation id="8989968390305463310">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="8993760627012879038">在無痕模式中開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>

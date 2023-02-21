@@ -159,6 +159,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="21133533946938348">Fixar Separador</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> itens movidos</translation>
 <translation id="2122754583996902531">O seu navegador é gerido. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">Ativar os alertas de preços?</translation>
 <translation id="2139867232736819575">Pesquisar o texto que copiou</translation>
 <translation id="214201757571129614">Iniciar sessão…</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -250,6 +251,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2797029671965852011">Mostrar histórico</translation>
 <translation id="2800683595868705743">Sair do Comutador de separadores</translation>
 <translation id="2815198996063984598">2. Toque em App de navegador predefinida.</translation>
+<translation id="2822917246944009066">Separador afixado</translation>
 <translation id="2830972654601096923">Gerir endereços…</translation>
 <translation id="2834399722155632105">3. Toque em Opções de palavras-passe</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -897,6 +899,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7431991332293347422">Controle a forma como o histórico de navegação é utilizado para personalizar a Pesquisa e muito mais.</translation>
 <translation id="7435356471928173109">Desativada pelo seu administrador.</translation>
 <translation id="7438481509621345350">Vão ser apresentadas notícias de <ph name="CHANNEL_NAME" /> quando abrir um novo separador.</translation>
+<translation id="7446583256109515732">Separador desafixado</translation>
 <translation id="7454057999980797137">Distrito/concelho</translation>
 <translation id="7459628154744868585">A Proteção melhorada está ativada</translation>
 <translation id="746684838091935575">3. Selecione o Chrome.</translation>
@@ -1128,6 +1131,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
 <translation id="9157836665414082580">Supr. caixas diálogo</translation>
 <translation id="9162432979321511934">Ative o Preenchimento automático de palavras-passe</translation>
+<translation id="9165320910061267720">Para receber notificações de alertas de descida do preço, tem de ativar as notificações nas definições do iOS.</translation>
 <translation id="9177438225260810839">Procurar nos separadores abertos</translation>
 <translation id="9188680907066685419">Terminar sessão na conta gerida</translation>
 <translation id="9193147658040604536">Arrastar para aqui para fixar o separador</translation>

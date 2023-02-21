@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">다음</translation>
 <translation id="1209796539517632982">자동 네임서버</translation>
 <translation id="1210831758834677569">라오어</translation>
+<translation id="1221555006497674479">저장용량 부족. 공유 드라이브 저장용량 <ph name="TOTAL_SPACE" /> 중 <ph name="REMAINING_PERCENTAGE" />% 남았습니다.</translation>
 <translation id="1243314992276662751">업로드</translation>
 <translation id="1249250836236328755">장르</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">중국어(병음)</translation>
 <translation id="1646019627374511909">파일 <ph name="NUMBER_OF_ITEMS" />개를 오프라인에서 사용하도록 설정 중</translation>
 <translation id="164969095109328410">Chrome 기기</translation>
+<translation id="1661207570040737402">공유 드라이브의 Google Workspace 스토리지를 모두 사용했습니다.</translation>
 <translation id="1661867754829461514">PIN이 없습니다.</translation>
 <translation id="166439687370499867">공유 네트워크 설정 변경은 허용되지 않습니다</translation>
 <translation id="1665611772925418501">파일을 수정하지 못했습니다.</translation>
@@ -880,6 +882,7 @@
 <translation id="8116072619078571545">얼음물</translation>
 <translation id="8128733386027980860">영어(영국, 드보락 키보드)</translation>
 <translation id="8137331602592933310">다른 사용자가 '<ph name="FILENAME" />'을(를) 나와 공유했습니다. 내가 소유자가 아니므로 삭제할 수 없습니다.</translation>
+<translation id="8138705869659070104">기기 설정 후 활성화</translation>
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8147028810663464959">문자 폭을 최대로 설정</translation>
 <translation id="8151638057146502721">구성</translation>

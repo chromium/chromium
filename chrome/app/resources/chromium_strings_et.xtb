@@ -14,7 +14,6 @@
 <translation id="1315551408014407711">Uue Chromiumi profiili seadistamine</translation>
 <translation id="1396446129537741364">Chromium püüab paroole kuvada.</translation>
 <translation id="1414495520565016063">Olete Chromiumi sisse logitud.</translation>
-<translation id="1493803763272692301">Kasutage Chromiumi kõiki funktsioone</translation>
 <translation id="1524282610922162960">Chromiumi vahekaardi jagamine</translation>
 <translation id="1553461853655228091">Chromium vajab luba teie kaamerale juurdepääsemiseks, et luua teid ümbritsevast 3D-kaart</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti}=1{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie inkognito akent ei avata uuesti.}other{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie # inkognito akent ei avata uuesti.}}</translation>
@@ -31,6 +30,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="185970820835152459">Saate oma sisselogitud Google'i kontosid hallata. Teie Google'i kontosid kasutatakse Chromiumi brauseris, Play poes, Gmailis ja mujal. Kui soovite lisada konto kellegi teise (näiteks pereliikme) jaoks, lisage selle asemel oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="1863308913976887472">Saidid võivad talletada Chromiumisse teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
 <translation id="1881322772814446296">Logite sisse hallatud kontoga ja annate selle administraatorile üle Chromiumi profiili juhtimise. Teie Chromiumi andmed, näiteks rakendused, järjehoidjad, ajalugu, paroolid ja muud seaded seotakse jäädavalt kasutajaga <ph name="USER_NAME" />. Saate need andmed kustutada Google'i kontode juhtpaneeli kaudu, kuid te ei saa neid seostada teise kontoga. Võite olemasolevate Chrome'i andmete eraldi hoidmiseks luua aga uue profiili. <ph name="LEARN_MORE" /></translation>
+<translation id="1906696617298807388">Kui sisestate aadressiribale või otsingukasti teksti, saadab Chromium sisestatud teksti üksusesoovituste hankimiseks Google Drive’i. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="1911763535808217981">Kui selle välja lülitate, saate Google'i saitidele (nt Gmaili) sisse logida ilma Chromiumisse sisse logimata</translation>
 <translation id="1929939181775079593">Chromium ei reageeri. Kas soovite kohe taaskäivitada?</translation>
 <translation id="193439633299369377">Chromium OS tuleb värskenduse rakendamiseks taaskäivitada.</translation>

@@ -2029,7 +2029,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Usuń 1 nieobsługiwaną aplikację}few{Usuń # nieobsługiwane aplikacje}many{Usuń # nieobsługiwanych aplikacji}other{Usuń # nieobsługiwanej aplikacji}}</translation>
 <translation id="2776560192867872731">Zmień nazwę urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Usuń ten kontener</translation>
-<translation id="2777525873368474674">Wklej link do zdjęcia</translation>
+<translation id="2777525873368474674">Wklej link do obrazu</translation>
 <translation id="2778471504622896352">Dodaj aplikacje zdalne do Menu z aplikacjami w ChromeOS</translation>
 <translation id="2781120507965857989">Włącz synchronizację, aby mieć dostęp do zakładek, haseł, historii i innych danych na tym urządzeniu i na pozostałych zsynchronizowanych urządzeniach. Google może korzystać z Twojej historii, żeby personalizować wyniki wyszukiwania i działanie innych usług Google.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -4433,7 +4433,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4977942889532008999">Potwierdź dostęp</translation>
 <translation id="4980805016576257426">To rozszerzenie zawiera złośliwe oprogramowanie.</translation>
 <translation id="4981449534399733132">Aby wyczyścić dane przeglądania ze wszystkich zsynchronizowanych urządzeń i z konta Google, <ph name="BEGIN_LINK" />zaloguj się<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Wznów od tego samego miejsca na dowolnym urządzeniu</translation>
 <translation id="4986706507552097681">W ustawieniach możesz wybrać, co chcesz synchronizować. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="4986728572522335985">Spowoduje to usunięcie z klucza bezpieczeństwa wszystkich danych, w tym kodu PIN</translation>
 <translation id="4988526792673242964">Strony</translation>
@@ -4550,7 +4549,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5097349930204431044">Odwiedzane witryny mogą określać, czym się interesujesz, a potem sugerować reklamy w trakcie przeglądania</translation>
 <translation id="5097649414558628673">Narzędzie: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Klikaj automatycznie, kiedy kursor się zatrzymuje</translation>
-<translation id="5101683448725092498">Utwórz kopię zapasową swoich danych</translation>
 <translation id="5101839224773798795">Automatyczne kliknięcie po zatrzymaniu kursora</translation>
 <translation id="5106350808162641062">Usuń</translation>
 <translation id="510695978163689362">Użytkownik <ph name="USER_EMAIL" /> jest nadzorowany przez Family Link. Możesz dodać konta szkolne umożliwiające dostęp do zasobów szkolnych pod nadzorem rodzicielskim.</translation>
@@ -5115,7 +5113,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5623842676595125836">Dziennik</translation>
 <translation id="5624120631404540903">Zarządzaj hasłami</translation>
 <translation id="5625225435499354052">Edytuj w Google Pay</translation>
-<translation id="5625631605902707678">Na różnych urządzeniach</translation>
 <translation id="5626134646977739690">Nazwa:</translation>
 <translation id="5627086634964711283">Kontroluje także to, jaka strona wyświetla się po kliknięciu przycisku strony głównej.</translation>
 <translation id="5627676517703583263">Przeglądaj inteligentnie z Chrome</translation>
@@ -5227,7 +5224,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Te dane lub Twoje urządzenie nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}=1{Ten plik lub Twoje urządzenie nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}few{Te pliki nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}many{Te pliki nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}other{Te pliki nie są zgodne z niektórymi zasadami bezpieczeństwa obowiązującymi w Twojej organizacji. Zapytaj administratora, co trzeba poprawić.}}</translation>
 <translation id="5736796278325406685">Wpisz prawidłową nazwę użytkownika</translation>
 <translation id="5738093759615225354">Ten klucz jest potrzebny do zalogowania się na komputerze</translation>
-<translation id="5738329404678738022">Zapisuj m.in. swoje zakładki dzięki synchronizacji</translation>
 <translation id="5739017626473506901">Zaloguj się, by pomóc użytkownikowi <ph name="USER_NAME" /> w dodawaniu konta szkolnego</translation>
 <translation id="5739235828260127894">Czekam na weryfikację. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Bardzo duży</translation>
@@ -5249,7 +5245,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5757375109985023827">Wybierz kartę, aby zobaczyć jej podgląd</translation>
 <translation id="5758631781033351321">Znajdziesz tu swoją listę Do przeczytania</translation>
 <translation id="5759728514498647443">Dokumenty wysłane do drukowania z aplikacji <ph name="APP_NAME" /> można odczytać w aplikacji <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Zaloguj się, aby otrzymać dodatkowe korzyści</translation>
 <translation id="5762787084360227629">Wpisz informacje o koncie Google</translation>
 <translation id="5763751966069581670">Nie znaleziono urządzeń USB</translation>
 <translation id="5764483294734785780">Za&amp;pisz element audio jako...</translation>
@@ -7794,7 +7789,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8059417245945632445">&amp;Sprawdź urządzenia</translation>
 <translation id="8059456211585183827">Nie ma dostępnych drukarek do zapisania.</translation>
 <translation id="8061091456562007989">Cofnij zmiany</translation>
-<translation id="8061965471006133016">Dodatkowa ochrona haseł i inne funkcje</translation>
 <translation id="8061970399284390013">Sprawdzanie pisowni i gramatyki</translation>
 <translation id="8061991877177392872">Wygląda na to, że Asystent zna już Twój głos z innego urządzenia, na którym masz ustawioną funkcję Voice Match. Zapisane tam nagrania zostały użyte do utworzenia modelu głosu na tym urządzeniu.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 kartka}few{{COUNT} kartki}many{{COUNT} kartek}other{{COUNT} kartki}}</translation>

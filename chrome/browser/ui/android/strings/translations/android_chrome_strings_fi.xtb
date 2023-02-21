@@ -226,6 +226,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2248941474044011069">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon</translation>
 <translation id="2249635629516220541">Valitse, mitä tietoja sivustot käyttävät mainosten näyttämiseen</translation>
 <translation id="2259659629660284697">Vie salasanat…</translation>
+<translation id="2276231040576210443">Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK1" />asetuksista<ph name="END_LINK1" />. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="2276696007612801991">Kirjaudu Google-tilillesi tarkistaaksesi salasanasi</translation>
 <translation id="2278052315791335171">Vaikka poistat salasanan, tiliäsi (<ph name="SITE" />) ei poisteta</translation>
 <translation id="2286841657746966508">Laskutusosoite</translation>
@@ -1242,6 +1243,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7682724950699840886">Kokeile seuraavia keinoja: varmista, että laitteellasi on tarpeeksi tilaa, yritä viedä uudelleen.</translation>
 <translation id="7686086654630106285">Lisätietoja sivuston ehdottamista mainoksista</translation>
 <translation id="768618399695552958">Jotkin avaamistasi sivuista ovat esiladattuja. Sivut on mahdollisesti esiladattu Googlen palvelimien kautta, kun niihin on linkitetty Googlen sivustolta.</translation>
+<translation id="7691043218961417207">Tutustu seurattavaan sisältöön</translation>
 <translation id="7698359219371678927">Luo sähköposti sovelluksessa <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Käytä mobiilidataa</translation>
 <translation id="7709094866268987903">Poistamasi kiinnostuksen kohteet näkyvät täällä</translation>
@@ -1492,6 +1494,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="8972098258593396643">Ladataanko tiedosto oletuskansioon?</translation>
 <translation id="8987641763863173640">Muuta videoesikatselun asetuksia</translation>
+<translation id="8987736167266086032">Jatka siitä, mihin jäit</translation>
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8993760627012879038">Avaa uusi välilehti incognito-tilassa</translation>
 <translation id="8996847606757455498">Valitse toinen palvelu</translation>

@@ -159,6 +159,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="21133533946938348">Pripni zavihek</translation>
 <translation id="2116625576999540962">Št. premaknjenih elementov: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Vaš brskalnik je upravljan. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">Želite vklopiti opozorila o ceni?</translation>
 <translation id="2139867232736819575">Iskanje besedila, ki ste ga kopirali</translation>
 <translation id="214201757571129614">Prijava …</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
@@ -250,6 +251,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2797029671965852011">Prikaz zgodovine</translation>
 <translation id="2800683595868705743">Leave Tab Switcher</translation>
 <translation id="2815198996063984598">2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.</translation>
+<translation id="2822917246944009066">Zavihek je pripet.</translation>
 <translation id="2830972654601096923">Upravljanje naslovov ...</translation>
 <translation id="2834399722155632105">3. Dotaknite se »Password Options« (Možnosti gesla).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -897,6 +899,7 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="7431991332293347422">Nadziranje, kako se zgodovina brskanja uporabi za prilagajanje Iskanja Google in drugega</translation>
 <translation id="7435356471928173109">Izklopil skrbnik</translation>
 <translation id="7438481509621345350">Poslej bodo prikazane novice s spletnega mesta <ph name="CHANNEL_NAME" />, ko boste odprli nov zavihek.</translation>
+<translation id="7446583256109515732">Zavihek je odpet.</translation>
 <translation id="7454057999980797137">Regija</translation>
 <translation id="7459628154744868585">Izboljšana zaščita je vklopljena</translation>
 <translation id="746684838091935575">3. Izberite Chrome.</translation>
@@ -1128,6 +1131,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9148126808321036104">Prijavite se znova</translation>
 <translation id="9157836665414082580">Onemogoči pogovorna okna</translation>
 <translation id="9162432979321511934">Vklopite AutoFill Passwords (Samodejno izpolnjevanje gesel).</translation>
+<translation id="9165320910061267720">Če želite prejemati obvestila z opozorili o znižanju cen, morate vklopiti obvestila v nastavitvah sistema iOS.</translation>
 <translation id="9177438225260810839">Iskanje po odprtih zavihkih</translation>
 <translation id="9188680907066685419">Odjava iz upravljanega računa</translation>
 <translation id="9193147658040604536">Povlecite sem, če želite pripeti zavihek</translation>

@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Om ChromeOS</translation>
 <translation id="1154147086299354128">Åbn i Chr&amp;ome</translation>
 <translation id="1203500561924088507">Tak for installationen. Du skal genstarte browseren, før du bruger <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Få mest muligt ud af Chrome</translation>
 <translation id="1278833599417554002">Genstart og opdater &amp;Chrome</translation>
 <translation id="1302523850133262269">Vent, mens Chrome installerer de nyeste systemopdateringer.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> kræver, at du læser og accepterer følgende servicevilkår, inden du bruger denne enhed. Disse vilkår udvider, ændrer eller begrænser på ingen måde vilkårene for Google ChromeOS Flex.</translation>
@@ -254,6 +253,7 @@
 <translation id="6003112304606738118">Downloader… Der er <ph name="HOURS" /> timer tilbage</translation>
 <translation id="6010556343189461180">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have macOS 10.15 eller nyere. Denne computer anvender macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome lukker nu.}=1{Chrome lukker om 1 sekund.}one{Chrome lukker om # sekund.}other{Chrome lukker om # sekunder.}}</translation>
+<translation id="6022659036123304283">Gør Chrome til din egen</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6070348360322141662">Som et ekstra sikkerhedsniveau krypterer Google Chrome dine data</translation>
 <translation id="608006075545470555">Føj arbejdsprofilen til denne browser</translation>

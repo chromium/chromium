@@ -561,6 +561,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5118713593561876160">관심분야</translation>
 <translation id="5118764316110575523">사용 안함</translation>
 <translation id="5119391094379141756">Chrome을 선택합니다.</translation>
+<translation id="5121618895923301719">이미 추적 중인 제품입니다. 이 페이지는 <ph name="BEGIN_LINK" />모바일 북마크<ph name="END_LINK" />에 저장됩니다.</translation>
 <translation id="5132942445612118989">모든 기기의 비밀번호, 방문 기록 등 동기화</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{취약한 비밀번호 {COUNT}개}other{취약한 비밀번호 {COUNT}개}}</translation>
 <translation id="5149188072385105201">비밀번호 추가...</translation>
@@ -591,6 +592,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5386314158584363703">여기에 내가 팔로우한 사이트가 표시됩니다</translation>
 <translation id="5388358297987318779">이미지 열기</translation>
 <translation id="5407969256130905701">변경사항 취소</translation>
+<translation id="5414763847370083940">가격이 인하된 사이트가 있으면 알림이 전송됩니다</translation>
 <translation id="5416022985862681400">지난 7일</translation>
 <translation id="5423269318075950257">가격 추적</translation>
 <translation id="543338862236136125">비밀번호 수정</translation>
@@ -1133,6 +1135,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="952704832371081537">취소</translation>
 <translation id="953008885340860025">Chrome에서 로그아웃됨</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> 채널을 팔로우 중입니다</translation>
+<translation id="973493300226275298">온라인 상점에서 제품 가격을 추적해 보세요. 가격이 인하되면 알림이 전송됩니다.</translation>
 <translation id="980712131080209571">새로운 기능</translation>
 <translation id="981498610235328462">조직에서 특정 계정으로만 로그인하도록 허용합니다. 허용되지 않는 계정은 숨겨져 있습니다.</translation>
 <translation id="984509647832111802">동기화가 작동하지 않습니다.</translation>

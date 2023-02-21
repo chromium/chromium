@@ -226,6 +226,7 @@ Kada izbrišete historiju pregledanja, cijelu ili samo za određene web lokacije
 <translation id="2248941474044011069">Lozinke se šifriraju na uređaju prije nego što se sačuvaju u Googleovom Upravitelju lozinki</translation>
 <translation id="2249635629516220541">Prilagodite informacije koje web lokacije koriste da vam prikazuju oglase</translation>
 <translation id="2259659629660284697">Izvoz lozinki…</translation>
+<translation id="2276231040576210443">Uvijek možete odabrati šta želite sinhronizirati u <ph name="BEGIN_LINK1" />postavkama<ph name="END_LINK1" />. Google može personalizirati Pretraživanje i druge usluge na osnovu vaše historije.</translation>
 <translation id="2276696007612801991">Prijavite se na svoj Google račun da provjerite lozinke</translation>
 <translation id="2278052315791335171">Brisanjem ove lozinke se neće izbrisati vaš račun na web lokaciji <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa za naplatu</translation>
@@ -1493,6 +1494,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8970887620466824814">Nešto nije uredu.</translation>
 <translation id="8972098258593396643">Preuzeti u zadani folder?</translation>
 <translation id="8987641763863173640">Upravljajte postavkama pregleda videozapisa</translation>
+<translation id="8987736167266086032">Nastavite tamo gdje ste stali</translation>
 <translation id="8989968390305463310">Vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše vaša interesovanja na mjesečnoj osnovi. Interesovanja se mogu osvježiti ukoliko ih ne uklonite.</translation>
 <translation id="8993760627012879038">Otvori novu karticu u anonimnom načinu rada</translation>
 <translation id="8996847606757455498">Odaberite drugog pružaoca</translation>

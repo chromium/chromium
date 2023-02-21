@@ -379,6 +379,7 @@
 <translation id="1339009753652684748">Кажете „Ok Google“ за достъп до Асистент. С цел икономия на батерия изберете „Включено (препоръчително)“. Асистент ще отговаря само когато устройството ви е включено в електрическата мрежа или се зарежда.</translation>
 <translation id="13392265090583506">Настройки за достъпност</translation>
 <translation id="1340527397989195812">Създаване на резервно копие на носителя от устройството с помощта на приложението Файлове.</translation>
+<translation id="1341701348342335220">Браво!</translation>
 <translation id="1341871421050612057">Синхронизирането с(ъс) <ph name="USERNAME" /> не е възможно</translation>
 <translation id="1343865611738742294">Разрешаване на приложенията за Linux да осъществяват достъп до USB устройства. Linux няма да запомни дадено USB устройство, след като бъде премахнато.</translation>
 <translation id="1343920184519992513">Продължаване оттам, откъдето сте прекъснали, и отваряне на определен набор от страници</translation>
@@ -3636,6 +3637,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4232375817808480934">Конфигуриране на Kerberos</translation>
 <translation id="4235965441080806197">Анулиране на влизането</translation>
 <translation id="4236163961381003811">Откриване на още разширения</translation>
+<translation id="4237282663517880406">Показване на предложения от Google Диск</translation>
 <translation id="4241182343707213132">Рестартирайте, за да актуализирате приложенията на организацията си</translation>
 <translation id="4242145785130247982">Не се поддържа използването на няколко клиентски сертификата</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
@@ -4452,7 +4454,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4977942889532008999">Потвърждаване на достъпа</translation>
 <translation id="4980805016576257426">Това разширение съдържа злонамерен софтуер.</translation>
 <translation id="4981449534399733132">За да изчистите данните за сърфирането от всичките си синхронизирани устройства и от профила си в Google, <ph name="BEGIN_LINK" />влезте в него<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Продължавайте оттам, откъдето сте прекъснали – на което и да е устройство</translation>
 <translation id="4986706507552097681">Винаги можете да изберете какво да се синхронизира от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="4986728572522335985">Това ще изтрие всички данни на ключа за сигурност, включително ПИН кода му</translation>
 <translation id="4988526792673242964">Страници</translation>
@@ -4569,7 +4570,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5097349930204431044">Посещаваните от вас сайтове могат да определят какво харесвате и след това да предлагат реклами, докато продължавате да сърфирате</translation>
 <translation id="5097649414558628673">Инструмент: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Автоматично кликване при спиране на курсора</translation>
-<translation id="5101683448725092498">Създавайте резервни копия на нещата си</translation>
 <translation id="5101839224773798795">Автоматично кликване при спиране на курсора</translation>
 <translation id="5106350808162641062">Премахване</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> се контролира чрез Family Link. Можете да добавите училищни профили за достъп до училищни ресурси с родителски контрол.</translation>
@@ -5136,7 +5136,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5623842676595125836">Регистрационен файл</translation>
 <translation id="5624120631404540903">Управление на паролите</translation>
 <translation id="5625225435499354052">Редактиране в Google Pay</translation>
-<translation id="5625631605902707678">Безпроблемно преминаване между устройства</translation>
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5627086634964711283">То също контролира коя страница се показва при кликване върху бутона „Начална страница“.</translation>
 <translation id="5627676517703583263">Сърфирайте интелигентно с Chrome</translation>
@@ -5248,7 +5247,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Тези данни или устройството ви не спазват някои от правилата за сигурност на организацията ви. Попитайте администратора си какво трябва да се коригира.}=1{Този файл или устройството ви не спазват някои от правилата за сигурност на организацията ви. Попитайте администратора си какво трябва да се коригира.}other{Тези файлове не спазват някои от правилата за сигурност на организацията ви. Попитайте администратора си какво трябва да се коригира.}}</translation>
 <translation id="5736796278325406685">Моля, въведете валидно потребителско име</translation>
 <translation id="5738093759615225354">Този код за достъп ви е необходим, за да влезете в профила си на компютъра си</translation>
-<translation id="5738329404678738022">Съхранявайте отметки и др., като включите синхронизирането</translation>
 <translation id="5739017626473506901">Влезте в профила си, за да помогнете на <ph name="USER_NAME" /> да добави профил от учебно заведение</translation>
 <translation id="5739235828260127894">Чака се потвърждение. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Много голям</translation>
@@ -5270,7 +5268,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5757375109985023827">Изберете раздел за визуализиране</translation>
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>
 <translation id="5759728514498647443"><ph name="APP_NAME" /> може да чете документите, които изпращате за отпечатване чрез <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Влезте в профила си за още предимства</translation>
 <translation id="5762787084360227629">Въвеждане на данни за профил в Google</translation>
 <translation id="5763751966069581670">Няма намерени USB устройства</translation>
 <translation id="5764483294734785780">&amp;Запазване на аудиоклипа като...</translation>
@@ -7809,7 +7806,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8059417245945632445">&amp;Инспектиране на устройствата</translation>
 <translation id="8059456211585183827">Няма налични принтери за запазване.</translation>
 <translation id="8061091456562007989">Възстановяване на настройките</translation>
-<translation id="8061965471006133016">Допълнителна защита за паролите ви и др.</translation>
 <translation id="8061970399284390013">Проверка на правописа и граматиката</translation>
 <translation id="8061991877177392872">Изглежда, че вече сте настроили Voice Match за Асистент на друго устройство. Предишните записи бяха използвани за създаване на гласов модел на това устройство.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 лист хартия}other{{COUNT} листа хартия}}</translation>

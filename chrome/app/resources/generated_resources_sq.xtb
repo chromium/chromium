@@ -377,6 +377,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1339009753652684748">Hap "Asistentin" kur thua "Ok Google". Për të kursyer baterinë, zgjidh "Aktive (rekomandohet)". "Asistenti" yt do të përgjigjet vetëm kur pajisja jote të jetë e lidhur ose në karikim.</translation>
 <translation id="13392265090583506">Qasshmëria</translation>
 <translation id="1340527397989195812">Rezervo median nga pajisja duke përdorur aplikacionin "Skedarët".</translation>
+<translation id="1341701348342335220">Shumë mirë!</translation>
 <translation id="1341871421050612057">Nuk mund të sinkronizohet me <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Jepu autorizim aplikacioneve të Linux që të kenë qasje në pajisjet USB. Linux nuk do ta kujtojë një pajisje USB pasi ajo të hiqet.</translation>
 <translation id="1343920184519992513">Vazhdo aty ku e ke lënë dhe hap një grup specifik faqesh</translation>
@@ -3622,6 +3623,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4232375817808480934">Konfiguro Kerberos</translation>
 <translation id="4235965441080806197">Anulo identifikimin</translation>
 <translation id="4236163961381003811">Zbulo më shumë shtesa</translation>
+<translation id="4237282663517880406">Shfaq sugjerimet e "Diskut të Google"</translation>
 <translation id="4241182343707213132">Rinise për të përditësuar aplikacionet e organizatës</translation>
 <translation id="4242145785130247982">Nuk mbështeten shumë certifikata të klientëve</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
@@ -4437,7 +4439,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4977942889532008999">Konfirmo qasjen</translation>
 <translation id="4980805016576257426">Kjo shtesë përmban një softuer keqdashës.</translation>
 <translation id="4981449534399733132">Për të pastruar të dhënat e shfletimit nga të gjitha pajisjet e tua të sinkronizuara dhe nga "Llogaria e Google", <ph name="BEGIN_LINK" />identifikohu<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Vazhdo aty ku e ke lënë në çdo pajisje</translation>
 <translation id="4986706507552097681">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4986728572522335985">Kjo do të fshijë të gjitha të dhënat në çelësin e sigurisë, duke përfshirë kodin e tij PIN</translation>
 <translation id="4988526792673242964">Faqet</translation>
@@ -4554,7 +4555,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5097349930204431044">Sajtet që viziton mund të përcaktojnë se çfarë të pëlqen dhe më pas të sugjerojnë reklama ndërkohë që ti vazhdon të shfletosh</translation>
 <translation id="5097649414558628673">Vegla: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Kliko automatikisht kur të ndalojë kursori</translation>
-<translation id="5101683448725092498">Rezervo gjërat e tua</translation>
 <translation id="5101839224773798795">Kliko automatikisht kur kursori ndalon</translation>
 <translation id="5106350808162641062">Hiq</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> mbikëqyret nga Family Link. Mund të shtosh llogari të shkollës për të pasur qasje te burimet e shkollës me mbikëqyrjen e prindërve.</translation>
@@ -5120,7 +5120,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5623842676595125836">Ditari</translation>
 <translation id="5624120631404540903">Menaxho fjalëkalimet</translation>
 <translation id="5625225435499354052">Modifiko në Google Pay</translation>
-<translation id="5625631605902707678">Mes pajisjeve</translation>
 <translation id="5626134646977739690">Emri:</translation>
 <translation id="5627086634964711283">Kontrollon po ashtu se cila faqe shfaqet kur klikon te butoni "Kreu".</translation>
 <translation id="5627676517703583263">Shfleto në mënyrë inteligjente me Chrome</translation>
@@ -5232,7 +5231,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Pajisja jote ose këto të dhëna nuk respektojnë disa nga politikat e sigurisë të organizatës sate. Kontakto me administratorin për gjërat që duhet të rregullohen.}=1{Ky skedar ose pajisja jote nuk respekton disa nga politikat e sigurisë të organizatës sate. Kontakto me administratorin për gjërat që duhet të rregullohen.}other{Këta skedarë nuk respektojnë disa nga politikat e sigurisë të organizatës sate. Kontakto me administratorin për gjërat që duhet të rregullohen.}}</translation>
 <translation id="5736796278325406685">Fut një emër të vlefshëm përdoruesi</translation>
 <translation id="5738093759615225354">Të duhet ky çelës kalimi për t'u identifikuar në kompjuterin tënd</translation>
-<translation id="5738329404678738022">Ruaj faqeshënuesit dhe më shumë me sinkronizimin</translation>
 <translation id="5739017626473506901">Identifikohu për të ndihmuar që <ph name="USER_NAME" /> të shtojë një llogari të shkollës</translation>
 <translation id="5739235828260127894">Në pritje të verifikimit. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Shumë të mëdha</translation>
@@ -5254,7 +5252,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5757375109985023827">Zgjidh një skedë për ta shikuar paraprakisht</translation>
 <translation id="5758631781033351321">Këtu do të gjesh listën tënde të leximit</translation>
 <translation id="5759728514498647443">Dokumentet që dërgon për printim nëpërmjet <ph name="APP_NAME" /> mund të lexohen nga <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Identifikohu për më shumë përfitime</translation>
 <translation id="5762787084360227629">Fut të dhënat e "Llogarisë së Google"</translation>
 <translation id="5763751966069581670">Nuk u gjet asnjë pajisje USB</translation>
 <translation id="5764483294734785780">Ru&amp;aje audion si...</translation>
@@ -7791,7 +7788,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8059417245945632445">&amp;Inspekto pajisjet</translation>
 <translation id="8059456211585183827">Nuk disponohen printerë për ruajtje.</translation>
 <translation id="8061091456562007989">Ndryshoje përsëri</translation>
-<translation id="8061965471006133016">Më shumë mbrojtje për fjalëkalimet e tua etj.</translation>
 <translation id="8061970399284390013">Kontrolli drejtshkrimor dhe gramatikor</translation>
 <translation id="8061991877177392872">Me sa duket e ke konfiguruar tashmë Voice Match me "Asistentin" tënd në një pajisje tjetër. Këto regjistrime të mëparshme janë përdorur për të krijuar një model zanor në këtë pajisje.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 fletë letre}other{{COUNT} fletë letre}}</translation>

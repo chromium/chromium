@@ -159,6 +159,7 @@
 <translation id="21133533946938348">Закачи картицу</translation>
 <translation id="2116625576999540962">Број премештених ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="2122754583996902531">Прегледачем се управља. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">Желите да укључите обавештења о цени?</translation>
 <translation id="2139867232736819575">Потражите текст који сте копирали</translation>
 <translation id="214201757571129614">Пријавите се…</translation>
 <translation id="2149973817440762519">Измените обележивач</translation>
@@ -250,6 +251,7 @@
 <translation id="2797029671965852011">Прикажи историју</translation>
 <translation id="2800683595868705743">Изађи из пребацивача картица</translation>
 <translation id="2815198996063984598">2. Додирните Подразумевана апликација за прегледање</translation>
+<translation id="2822917246944009066">Картица је закачена</translation>
 <translation id="2830972654601096923">Управљајте адресама...</translation>
 <translation id="2834399722155632105">3. Додирните Опције лозинки</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -561,6 +563,7 @@
 <translation id="5118713593561876160">Интересовања</translation>
 <translation id="5118764316110575523">Искључено</translation>
 <translation id="5119391094379141756">Изаберите Chrome</translation>
+<translation id="5121618895923301719">Већ пратите овај производ. Ова страница је сачувана у <ph name="BEGIN_LINK" />Мобилним обележивачима<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Синхронизујте лозинке, историју и други садржај на свим уређајима</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}few{{COUNT} слабе лозинке}other{{COUNT} слабих лозинки}}</translation>
 <translation id="5149188072385105201">Додајте лозинку...</translation>
@@ -591,6 +594,7 @@
 <translation id="5386314158584363703">Овде ћете пронаћи сајтове које пратите</translation>
 <translation id="5388358297987318779">Отвори слику</translation>
 <translation id="5407969256130905701">Одбаци промене</translation>
+<translation id="5414763847370083940">Добићете обавештење ако се цена снизи на било ком сајту.</translation>
 <translation id="5416022985862681400">Последњих 7 дана</translation>
 <translation id="5423269318075950257">Пратите цену</translation>
 <translation id="543338862236136125">Измените лозинку</translation>
@@ -891,6 +895,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7431991332293347422">Контролишите како се историја прегледања користи за персонализовање Претраге и других услуга</translation>
 <translation id="7435356471928173109">Искључио је администратор</translation>
 <translation id="7438481509621345350">Сада ћете видети приче са <ph name="CHANNEL_NAME" /> када отворите нову картицу.</translation>
+<translation id="7446583256109515732">Картица је откачена</translation>
 <translation id="7454057999980797137">Држава/земља</translation>
 <translation id="7459628154744868585">Побољшана заштита је укључена</translation>
 <translation id="746684838091935575">3. Изаберите Chrome</translation>
@@ -1121,6 +1126,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9148126808321036104">Пријави ме поново</translation>
 <translation id="9157836665414082580">Спречи дијалоге</translation>
+<translation id="9165320910061267720">Да бисте добијали обавештења о снижењима, треба да укључите обавештења у iOS подешавањима.</translation>
 <translation id="9177438225260810839">Претражите отворене картице</translation>
 <translation id="9188680907066685419">Одјавите се са налога којим се управља</translation>
 <translation id="9193147658040604536">Превуците овде да бисте закачили картицу</translation>
@@ -1133,6 +1139,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="952704832371081537">Откажи</translation>
 <translation id="953008885340860025">Одјављени сте из Chrome-а</translation>
 <translation id="959066944189734975">Пратите <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Пратите цену производа у различитим онлајн продавницама. Добијаћете обавештења када цена падне.</translation>
 <translation id="980712131080209571">Н</translation>
 <translation id="981498610235328462">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени.</translation>
 <translation id="984509647832111802">Синхронизација не ради.</translation>

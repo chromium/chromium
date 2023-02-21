@@ -4,6 +4,7 @@
 <translation id="1047130070405668746">Chromium을 선택합니다.</translation>
 <translation id="1091252999271033193">Chromium에서 모바일 사이트를 매번 요청함을 의미합니다</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
+<translation id="1256849392437386613">'가격 추적'을 사용 설정하려면 기기 설정에서 Chromium 알림을 허용하세요</translation>
 <translation id="1257458525759135959">이미지를 저장하려면 '설정'을 탭하여 Chromium에 사진 추가 권한을 부여하세요.</translation>
 <translation id="1289216811211435351">Chromium으로 전환</translation>
 <translation id="1361748954329991663">Chromium이 이전 버전입니다. <ph name="BEGIN_LINK" />앱 스토어<ph name="END_LINK" />에 사용 가능한 업데이트가 없으면 기기에서 더 이상 Chromium의 새 버전을 지원하지 않는 것일 수 있습니다.</translation>
@@ -71,6 +72,7 @@
 <translation id="5573014823074921752">Chromium 도움말. 더 많은 탭 옵션을 보려면 화면 하단이나 상단에 있는 툴바에서 탭 표시 버튼을 길게 터치하세요.</translation>
 <translation id="5700709190537129682">Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="5777187867430702742">Chromium 페이지</translation>
+<translation id="5918064849477363478">기기 설정에서 Chromium 알림이 사용 중지되어 있습니다. 먼저 알림을 허용해야 합니다.</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chromium 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chromium에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="5983312940147103417">Chromium 개선에 참여</translation>
 <translation id="6062449165341879460"><ph name="DOMAIN" /> 조직에서 이 계정에 저장하는 Chromium 데이터, 북마크, 방문 기록, 비밀번호, 기타 설정에 액세스할 수 있습니다. 로그아웃하면 데이터가 기기에서 삭제됩니다.  하지만 데이터는 관리 Google 계정에 계속 저장되어 조직에서 사용할 수 있습니다. 조직에서 관련 계정에 적용되는 사용자 정책을 설정하여 Chromium의 동작을 변경할 수도 있습니다.</translation>

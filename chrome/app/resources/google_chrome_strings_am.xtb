@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">ስለChromeOS</translation>
 <translation id="1154147086299354128">&amp;በChrome ውስጥ ክፈት</translation>
 <translation id="1203500561924088507">ሰለተጫኑ እናመሰግናለን። <ph name="BUNDLE_NAME" />ን ከመጠቀምዎ በፊት አሳሽዎን እንደገና ማስጀመር አለብዎት።</translation>
-<translation id="1236866257838264361">ከChrome ማግኘት የሚችሉትን ሁሉ በማግኘት መደሰት ይችላሉ</translation>
 <translation id="1278833599417554002">&amp;Chromeን ለማዘመን ዳግም ያስነሱት</translation>
 <translation id="1302523850133262269">እባክዎ Chrome የቅርብ ጊዜዎቹን ዝማኔዎች እስኪጭን ድረስ ይጠብቁ።</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> ይህን መሣሪያ ከመጠቀምዎ በፊት የሚከተለውን የአገልግሎት ውል እንዲያነብቡ እና እንዲቀበሉ ይፈለጋል። ይህ ውል የGoogle ChromeOS Flex ውሉን አያስፋፋውም፣ አይቀይረውም ወይም አይገድበውም።</translation>
@@ -261,6 +260,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6003112304606738118">በማውረድ ላይ... <ph name="HOURS" /> ሰዓት(ታት) ይቀራል(ሉ)</translation>
 <translation id="6010556343189461180">የወደፊት የGoogle Chrome ዝማኔዎችን ለማግኘት macOS 10.15 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር macOS 10.14 እየተጠቀመ ነው።</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome አሁን ይዘጋል።}=1{Chrome በ1 ሰከንድ ውስጥ ይዘጋል።}one{Chrome በ# ሰከንድ ውስጥ ይዘጋል።}other{Chrome በ# ሰከንዶች ውስጥ ይዘጋል።}}</translation>
+<translation id="6022659036123304283">Chromeን የራስዎ ያድርጉት</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6070348360322141662">ለተጨማሪ ደህንነት ሲባል Google Chrome ውሂብዎን ያመሰጥረዋል</translation>
 <translation id="608006075545470555">የስራ መገለጫ ወደዚህ አሳሽ ያክሉ</translation>

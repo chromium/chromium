@@ -14,7 +14,6 @@
 <translation id="1315551408014407711">Configura el teu perfil de Chromium nou</translation>
 <translation id="1396446129537741364">Chromium està provant de mostrar les contrasenyes.</translation>
 <translation id="1414495520565016063">Teniu la sessió iniciada a Chromium.</translation>
-<translation id="1493803763272692301">Pots treure el màxim profit de Chromium</translation>
 <translation id="1524282610922162960">Comparteix una pestanya de Chromium</translation>
 <translation id="1553461853655228091">Chromium necessita permís per accedir a la càmera i poder crear un mapa 3D del teu entorn</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{L'administrador necessita que reiniciïs Chromium per aplicar una actualització}=1{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. La finestra d'incògnit no es tornarà a obrir.}other{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>

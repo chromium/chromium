@@ -226,6 +226,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2248941474044011069">Le tue password vengono criptate sul dispositivo prima di essere salvate in Gestore delle password di Google</translation>
 <translation id="2249635629516220541">Personalizza le informazioni usate dai siti per mostrarti annunci</translation>
 <translation id="2259659629660284697">Esporta password…</translation>
+<translation id="2276231040576210443">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK1" />impostazioni<ph name="END_LINK1" />. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="2276696007612801991">Accedi al tuo Account Google per controllare le tue password</translation>
 <translation id="2278052315791335171">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Indirizzo di fatturazione</translation>
@@ -1242,6 +1243,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7682724950699840886">Prova i seguenti suggerimenti: assicurati di avere spazio sufficiente sul dispositivo e prova a esportare di nuovo.</translation>
 <translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dal sito</translation>
 <translation id="768618399695552958">Alcune delle pagine che visiti sono precaricate. Le pagine potrebbero essere precaricate tramite i server di Google quando il sito che vi rimanda è un sito Google.</translation>
+<translation id="7691043218961417207">Esplora i contenuti da seguire</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Verranno utilizzati i dati mobili</translation>
 <translation id="7709094866268987903">Gli interessi che rimuovi verranno visualizzati qui</translation>
@@ -1492,6 +1494,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8972098258593396643">Scaricare nella cartella predefinita?</translation>
 <translation id="8987641763863173640">Gestisci le impostazioni di anteprima video</translation>
+<translation id="8987736167266086032">Riprendi da dove eri rimasto</translation>
 <translation id="8989968390305463310">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="8993760627012879038">Apri nuova scheda in mod. di navigaz. in incognito</translation>
 <translation id="8996847606757455498">Scegli un altro fornitore</translation>

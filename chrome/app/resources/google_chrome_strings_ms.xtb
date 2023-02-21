@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Perihal Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Buka dalam Chrome</translation>
 <translation id="1203500561924088507">Terima kasih kerana memasang. Anda perlu memulakan semula penyemak imbas anda sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Anda boleh memanfaatkan Chrome sepenuhnya</translation>
 <translation id="1278833599417554002">Lancarkan semula untuk mengemas kini &amp;Chrome</translation>
 <translation id="1302523850133262269">Sila tunggu sementara Chrome memasang kemas kini sistem terkini.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> menghendaki anda membaca dan menerima Syarat Perkhidmatan berikut sebelum menggunakan peranti ini. Syarat ini tidak memperluas, mengubah suai atau mengehadkan Syarat Chrome OS Flex.</translation>
@@ -254,6 +253,7 @@
 <translation id="6003112304606738118">Memuat turun… <ph name="HOURS" /> jam lagi</translation>
 <translation id="6010556343189461180">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan macOS 10.15 atau yang lebih baharu. Komputer ini menggunakan macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome akan ditutup sekarang.}=1{Chrome akan ditutup dalam masa 1 saat.}other{Chrome akan ditutup dalam masa # saat.}}</translation>
+<translation id="6022659036123304283">Peribadikan Chrome anda</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6070348360322141662">Untuk keselamatan tambahan, Google Chrome akan menyulitkan data anda</translation>
 <translation id="608006075545470555">Tambahkan Profil Kerja pada penyemak imbas ini</translation>

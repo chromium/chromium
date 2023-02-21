@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
 <translation id="1210831758834677569">Лаоская</translation>
+<translation id="1221555006497674479">У вашым сховішчы абагуленага дыска мала месца. Застаецца <ph name="REMAINING_PERCENTAGE" />% з <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Запампаваць</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Кітайская (піньінь)</translation>
 <translation id="1646019627374511909">Ідзе адкрыццё пазасеткавага доступу да файлаў (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Прылада Chrome</translation>
+<translation id="1661207570040737402">Вы выкарысталі ўвесь даступны вам аб'ём сховішча абагуленага дыска Google Workspace.</translation>
 <translation id="1661867754829461514">Не ўказаны PIN-код</translation>
 <translation id="166439687370499867">Забаронена змяняць налады агульнай сеткі</translation>
 <translation id="1665611772925418501">Не ўдалося мадыфікаваць файл.</translation>
@@ -879,6 +881,7 @@
 <translation id="8116072619078571545">Ледзяная вада</translation>
 <translation id="8128733386027980860">Англійская (Вялікабрытанія) з раскладкай Дворака</translation>
 <translation id="8137331602592933310">Файл "<ph name="FILENAME" />" абагулены з вамі. Вы не можаце выдаліць гэты файл, бо не з'яўляецеся яго ўладальнікам.</translation>
+<translation id="8138705869659070104">Спачатку наладзьце прыладу</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
 <translation id="8147028810663464959">Шырыня сімвалаў – поўная</translation>
 <translation id="8151638057146502721">Наладзіць</translation>

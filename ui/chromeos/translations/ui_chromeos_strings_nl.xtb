@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1209796539517632982">Automatische naamservers</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1221555006497674479">Weinig opslagruimte, nog <ph name="REMAINING_PERCENTAGE" />% over van je <ph name="TOTAL_SPACE" /> aan gedeelde Drive-opslag.</translation>
 <translation id="1243314992276662751">Uploaden</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Rechtstreekse internetverbinding</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinees (Pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> bestanden offline beschikbaar maken</translation>
 <translation id="164969095109328410">Chrome-apparaat</translation>
+<translation id="1661207570040737402">Je hebt geen Google Workspace-opslag meer over in je gedeelde Drive.</translation>
 <translation id="1661867754829461514">Pincode ontbreekt</translation>
 <translation id="166439687370499867">Het wijzigen van gedeelde netwerkconfiguraties is niet toegestaan</translation>
 <translation id="1665611772925418501">Het bestand kan niet worden aangepast.</translation>
@@ -881,6 +883,7 @@
 <translation id="8116072619078571545">IJswater</translation>
 <translation id="8128733386027980860">Engels (VK) met Dvorak-toetsenbord</translation>
 <translation id="8137331602592933310">'<ph name="FILENAME" />' is met je gedeeld. Je kunt dit niet verwijderen omdat jij niet de eigenaar bent.</translation>
+<translation id="8138705869659070104">Activeren na apparaatinstelling</translation>
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8147028810663464959">Karakterbreedte: volledig (vol)</translation>
 <translation id="8151638057146502721">Configureren</translation>

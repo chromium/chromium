@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">Protocole HTTPS</translation>
 <translation id="1059944192885972544"><ph name="NUM" /> onglets trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="1060292118287751956">Détermine la fréquence à laquelle l'écran est actualisé</translation>
+<translation id="1060570945511946595">Gérer les tickets</translation>
 <translation id="1061130374843955397">Bienvenue sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Créer un code QR pour ce lien</translation>
 <translation id="1061904396131502319">C'est bientôt le moment de prendre une pause</translation>
@@ -1115,6 +1116,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1975841812214822307">Supprimer...</translation>
 <translation id="1976150099241323601">Connexion au dispositif de sécurité</translation>
 <translation id="1977965994116744507">Rapprochez votre téléphone de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
+<translation id="1978666928180318515">Supprimer Bruschetta</translation>
 <translation id="1979095679518582070">La désactivation de cette fonctionnalité n'empêche pas cet appareil d'envoyer les données nécessaires aux services essentiels, comme les mises à jour du système et la sécurité.</translation>
 <translation id="1979280758666859181">Vous passez à un canal ayant une ancienne version de <ph name="PRODUCT_NAME" />. Le changement de canal sera appliqué lorsque la version du canal correspondra à la version actuellement installée sur votre appareil.</translation>
 <translation id="197989455406964291">KDC ne prend pas en charge ce type de chiffrement</translation>
@@ -1919,6 +1921,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2672142220933875349">Mauvais fichier crx, échec du déballage.</translation>
 <translation id="2673135533890720193">Consulter votre historique de navigation</translation>
 <translation id="2674764818721168631">Désactivé</translation>
+<translation id="2675570801872027281">Erreur lors de la suppression de Bruschetta. Veuillez réessayer.</translation>
 <translation id="2676492189600898281">Fournir des commentaires sur le remplissage automatique</translation>
 <translation id="2678063897982469759">Réactiver</translation>
 <translation id="2678100101831051676">Diffusion impossible.</translation>
@@ -2917,6 +2920,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3593965109698325041">Contraintes de nom de certificat</translation>
 <translation id="3596012367874587041">Paramètres de l'application</translation>
 <translation id="3596414637720633074">Bloquer les témoins tiers en navigation privée</translation>
+<translation id="3598010454707842106">Cliquez sur « Personnaliser Chrome »</translation>
 <translation id="3599221874935822507">Surélevé</translation>
 <translation id="3600051066689725006">Renseignements sur la demande Web</translation>
 <translation id="360180734785106144">Proposer de nouvelles fonctionnalités lorsqu'elles sont accessibles</translation>
@@ -3914,6 +3918,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4495419450179050807">Ne pas afficher sur cette page</translation>
 <translation id="4497145443434063861">L'ordinateur et le Chromecast sont sur des réseaux Wi-Fi différents (par exemple, 2,4 GHz et 5 GHz)</translation>
 <translation id="4500114933761911433">Le plugiciel <ph name="PLUGIN_NAME" /> a planté</translation>
+<translation id="4500647907053779331">&amp;Traduire la sélection en <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">Icône représentant un point d'exclamation</translation>
 <translation id="4501530680793980440">Confirmation de la désinstallation</translation>
 <translation id="4502423230170890588">Supprimer de cet appareil</translation>
@@ -3944,6 +3949,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4522890784888918985">Les comptes d'enfants ne sont pas pris en charge</translation>
 <translation id="4523876148417776526">Les listes de sites XML n'ont pas encore été récupérées.</translation>
 <translation id="4524832533047962394">Le mode d'inscription fourni n'est pas compatible avec cette version du système d'exploitation. Veuillez vous assurer que vous utilisez la version la plus récente.</translation>
+<translation id="4526051299161934899">Groupes d'onglets enregistrés masqués</translation>
 <translation id="4526853756266614740">Choisir une image pour appliquer le thème instantanément</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4527929807707405172">Activer le défilement inversé. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -4443,7 +4449,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4977942889532008999">Confirmation d'accès</translation>
 <translation id="4980805016576257426">Cette extension contient un logiciel malveillant.</translation>
 <translation id="4981449534399733132">Pour effacer les données de navigation de tous vos appareils synchronisés et de votre compte Google, <ph name="BEGIN_LINK" />connectez-vous<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Reprenez là où vous vous étiez arrêté sur n'importe quel appareil</translation>
 <translation id="4986706507552097681">Vous pouvez toujours choisir les éléments à synchroniser dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4986728572522335985">Cette action effacera toutes les données contenues sur la clé de sécurité, y compris son NIP</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -4560,7 +4565,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5097349930204431044">Les sites que vous visitez peuvent déterminer ce que vous aimez, puis suggérer des annonces pendant que vous continuez à naviguer</translation>
 <translation id="5097649414558628673">Outil : <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Cliquer automatiquement lorsque le curseur s'arrête</translation>
-<translation id="5101683448725092498">Sauvegardez vos données</translation>
 <translation id="5101839224773798795">Cliquer automatiquement lorsque le curseur s'arrête</translation>
 <translation id="5106350808162641062">Retirer</translation>
 <translation id="510695978163689362">Le compte <ph name="USER_EMAIL" /> est supervisé par Family Link. Vous pouvez ajouter des comptes scolaires pour lui permettre d'accéder à des ressources scolaires avec supervision parentale.</translation>
@@ -5126,7 +5130,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5623842676595125836">Journal</translation>
 <translation id="5624120631404540903">Gérer les mots de passe</translation>
 <translation id="5625225435499354052">Modifier dans Google Pay</translation>
-<translation id="5625631605902707678">Sur tous les appareils</translation>
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5627086634964711283">Elle définit également la page qui s'affiche lorsque vous cliquez sur le bouton Accueil.</translation>
 <translation id="5627676517703583263">Naviguez intelligemment avec Chrome</translation>
@@ -5238,7 +5241,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Cette donnée ou votre appareil ne respecte pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.}=1{Ce fichier ou votre appareil ne respecte pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.}one{Ce fichier ne respecte pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.}other{Ces fichiers ne respectent pas certaines des politiques de sécurité de votre organisation. Vérifiez auprès de votre administrateur ce qui doit être corrigé.}}</translation>
 <translation id="5736796278325406685">Veuillez entrer un nom d'utilisateur valide</translation>
 <translation id="5738093759615225354">Vous avez besoin de cette clé d'accès pour vous connecter à votre ordinateur</translation>
-<translation id="5738329404678738022">Stockez vos favoris et plus encore avec la synchronisation</translation>
 <translation id="5739017626473506901">Connectez-vous pour aider <ph name="USER_NAME" /> à ajouter un compte scolaire</translation>
 <translation id="5739235828260127894">En attente de vérification. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Très grand</translation>
@@ -5260,7 +5262,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5757375109985023827">Sélectionner un onglet pour consulter l'aperçu</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
 <translation id="5759728514498647443">Les documents que vous envoyez à l'impression au moyen de <ph name="APP_NAME" /> peuvent être lus par <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Connectez-vous pour découvrir d'autres avantages</translation>
 <translation id="5762787084360227629">Entrer les renseignements à propos de votre compte Google</translation>
 <translation id="5763751966069581670">Aucun appareil USB trouvé</translation>
 <translation id="5764483294734785780">En&amp;registrer le fichier audio sous...</translation>
@@ -5731,6 +5732,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="617213288191670920">Aucune langue ajoutée</translation>
 <translation id="6173623053897475761">Entrer à nouveau votre NIP</translation>
 <translation id="6175314957787328458">GUID de domaine Microsoft</translation>
+<translation id="6177412385419165772">Suppression en cours...</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
 <translation id="6178682841350631965">Vos données de connexion ont été mises à jour</translation>
 <translation id="6180510783007738939">Ligne</translation>
@@ -6209,6 +6211,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6619801788773578757">Ajouter une application de kiosque</translation>
 <translation id="6619990499523117484">Confirmez votre NIP</translation>
 <translation id="6620254580880484313">Nom du conteneur</translation>
+<translation id="6620927550847360014">Supprimer Bruschetta de votre <ph name="DEVICE_TYPE" />?</translation>
 <translation id="6621391692573306628">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur les deux appareils</translation>
 <translation id="6622980291894852883">Continuer à bloquer les images</translation>
 <translation id="6624036901798307345">En mode tablette, touchez le bouton de la barre d'outils du compteur d'onglets pour ouvrir la nouvelle bande d'onglets qui affiche les miniatures de chaque onglet.</translation>
@@ -6426,6 +6429,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6818547713623251698">Affichez les photos, les fichiers multimédias, les notifications et les applications de votre téléphone</translation>
 <translation id="6818802132960437751">Protection antivirus intégrée</translation>
 <translation id="6818920801736417483">Enregistrer les mots de passe?</translation>
+<translation id="6820079682647046800">L'authentification Kerberos a échoué</translation>
 <translation id="6823174134746916417">Toucher pour cliquer sur le pavé tactile</translation>
 <translation id="6824564591481349393">Copier l'adresse de courri&amp;el</translation>
 <translation id="6824584962142919697">&amp;Inspecter des éléments</translation>
@@ -6580,6 +6584,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6955698182324067397">Vous activez les fonctionnalités de débogage de Chrome OS qui vont installer le programme d'arrière-plan SSHD et activer le démarrage à partir de clés USB.</translation>
 <translation id="6955893174999506273">Attribuer un autre commutateur</translation>
 <translation id="6957044667612803194">Cette clé de sécurité ne prend pas en charge les NIP</translation>
+<translation id="6960133692707095572">Accéder sans ticket</translation>
 <translation id="6960507406838246615">La mise à jour de Linux est requise</translation>
 <translation id="6960648667961844909">Impossible de télécharger les fichiers vocaux en <ph name="LANGUAGE" />. Une tentative de téléchargement aura lieu ultérieurement. Le fichier vocal est envoyé à Google aux fins de traitement jusqu'à la fin du téléchargement.</translation>
 <translation id="696103774840402661">Tous les fichiers et toutes les données locales associés à tous les utilisateurs sur cet appareil <ph name="DEVICE_TYPE" /> ont été supprimés définitivement.</translation>
@@ -7800,7 +7805,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8059417245945632445">&amp;Inspecter les appareils</translation>
 <translation id="8059456211585183827">Il n'y a aucune imprimante à enregistrer.</translation>
 <translation id="8061091456562007989">Rétablir</translation>
-<translation id="8061965471006133016">Protection supplémentaire pour vos mots de passe et plus encore</translation>
 <translation id="8061970399284390013">Vérification de l'orthographe et de la grammaire</translation>
 <translation id="8061991877177392872">On dirait que vous avez déjà configuré Voice Match avec votre Assistant sur un autre appareil. Ces enregistrements précédents ont été utilisés pour créer un modèle vocal sur cet appareil.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 feuille de papier}one{{COUNT} feuille de papier}other{{COUNT} feuilles de papier}}</translation>
@@ -8041,6 +8045,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8272443605911821513">Pour gérer les extensions, cliquer sur « Extensions » dans le menu « Autres outils ».</translation>
 <translation id="8272786333453048167">Autoriser de nouveau</translation>
 <translation id="8273905181216423293">Télécharger maintenant</translation>
+<translation id="827488840488530039">La page à laquelle vous souhaitez accéder n'a pas pu vérifier vos tickets Kerberos</translation>
 <translation id="8274921654076766238">La loupe suit les actions au clavier</translation>
 <translation id="8274924778568117936">N'éteignez pas votre <ph name="DEVICE_TYPE" /> et ne le fermez pas tant que la mise à jour n'est pas terminée. Votre <ph name="DEVICE_TYPE" /> redémarrera une fois l'installation terminée.</translation>
 <translation id="8275038454117074363">Importer</translation>
@@ -8487,6 +8492,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="869884720829132584">Menu Applications</translation>
 <translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8699188901396699995">PPD pour <ph name="PRINTER_NAME" /></translation>
+<translation id="8702278591052316269">Menu contenant des groupes d'onglets enregistrés masqués</translation>
 <translation id="8702825062053163569">Votre <ph name="DEVICE_TYPE" /> a été verrouillé.</translation>
 <translation id="8703346390800944767">Ignorer l'annonce</translation>
 <translation id="8705331520020532516">Numéro de série</translation>

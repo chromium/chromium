@@ -15,7 +15,6 @@
 <translation id="1152920704813762236">ChromeOS 정보</translation>
 <translation id="1154147086299354128">Chrome에서 열기(&amp;O)</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
-<translation id="1236866257838264361">Chrome을 최대한 활용하세요</translation>
 <translation id="1278833599417554002">다시 실행하여 Chrome 업데이트</translation>
 <translation id="1302523850133262269">Chrome에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" />에서는 기기를 사용하기 전에 다음 서비스 약관을 읽고 이에 동의하도록 하고 있습니다. 이 약관은 Google ChromeOS Flex 약관을 확대하거나 수정 또는 제한하지 않습니다.</translation>
@@ -262,6 +261,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6003112304606738118">다운로드 중... <ph name="HOURS" />시간 남음</translation>
 <translation id="6010556343189461180">향후 Chrome 업데이트를 받으려면 macOS 10.15 이상이 필요합니다. 이 컴퓨터에서는 macOS 10.14를 사용 중입니다.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome이 지금 닫힙니다.}=1{Chrome이 1초 후에 닫힙니다.}other{Chrome이 #초 후에 닫힙니다.}}</translation>
+<translation id="6022659036123304283">나만의 Chrome 만들기</translation>
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터를 암호화합니다.</translation>
 <translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>

@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1209796539517632982">Servidores de nomes automáticos</translation>
 <translation id="1210831758834677569">Laosiano</translation>
+<translation id="1221555006497674479">Tes pouco espazo de almacenamento: quédache un <ph name="REMAINING_PERCENTAGE" /> % do almacenamento da unidade compartida (<ph name="TOTAL_SPACE" />).</translation>
 <translation id="1243314992276662751">Cargar</translation>
 <translation id="1249250836236328755">Xénero</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinés (pinyin)</translation>
 <translation id="1646019627374511909">Activando acceso sen conexión a <ph name="NUMBER_OF_ITEMS" /> ficheiros</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
+<translation id="1661207570040737402">Tes ocupado todo o espazo de almacenamento de Google Workspace para a unidade compartida.</translation>
 <translation id="1661867754829461514">Non se atopa o PIN</translation>
 <translation id="166439687370499867">Non se permite cambiar a configuración da rede compartida</translation>
 <translation id="1665611772925418501">Non se puido modificar o ficheiro.</translation>
@@ -879,6 +881,7 @@
 <translation id="8116072619078571545">Auga xeada</translation>
 <translation id="8128733386027980860">Inglés (Reino Unido) con teclado Dvorak</translation>
 <translation id="8137331602592933310">Compartiuse "<ph name="FILENAME" />" contigo. Non podes eliminalo porque non es o propietario.</translation>
+<translation id="8138705869659070104">Activar tras a configuración</translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8147028810663464959">A largura do carácter é completa</translation>
 <translation id="8151638057146502721">Configurar</translation>

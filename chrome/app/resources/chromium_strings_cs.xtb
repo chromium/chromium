@@ -16,7 +16,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1315551408014407711">Nastavení nového profilu Chromium</translation>
 <translation id="1396446129537741364">Chromium se pokouší zobrazit hesla.</translation>
 <translation id="1414495520565016063">Jste přihlášeni do prohlížeče Chromium.</translation>
-<translation id="1493803763272692301">Prohlížeč Chromium můžete využít na maximum</translation>
 <translation id="1524282610922162960">Sdílet kartu prohlížeče Chromium</translation>
 <translation id="1553461853655228091">Prohlížeč Chromium potřebuje oprávnění k přístupu k fotoaparátu, aby mohl vytvořit 3D mapu vašeho okolí</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali}=1{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. Anonymní okno se neotevře znovu.}few{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymní okna se neotevřou znovu.}many{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymního okna se neotevře znovu.}other{Váš administrátor vyžaduje, abyste kvůli použití této aktualizace Chromium restartovali. # anonymních oken se neotevře znovu.}}</translation>

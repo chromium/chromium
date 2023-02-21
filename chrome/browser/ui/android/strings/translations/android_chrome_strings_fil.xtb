@@ -226,6 +226,7 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2248941474044011069">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager</translation>
 <translation id="2249635629516220541">I-customize ang impormasyong ginagamit ng mga site para magpakita sa iyo ng mga ad</translation>
 <translation id="2259659629660284697">I-export ang mga password…</translation>
+<translation id="2276231040576210443">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK1" />mga setting<ph name="END_LINK1" />. Puwedeng i-personalize ng Google ang Search at iba pang mga serbisyo batay sa iyong history.</translation>
 <translation id="2276696007612801991">Mag-sign in sa iyong Google account para masuri ang mga password mo</translation>
 <translation id="2278052315791335171">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
@@ -1224,6 +1225,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7596558890252710462">Operating system</translation>
 <translation id="7605594153474022051">Hindi gumagana ang pag-sync</translation>
 <translation id="7612619742409846846">Naka-sign in sa Google bilang</translation>
+<translation id="7612989789287281429">Sina-sign in ka…</translation>
 <translation id="7616551326690708776">Pumili ng template para sa iyong highlight.</translation>
 <translation id="7619072057915878432">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga problema sa network.</translation>
 <translation id="7626032353295482388">Welcome sa Chrome</translation>
@@ -1493,6 +1495,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8972098258593396643">I-download sa default na folder?</translation>
 <translation id="8987641763863173640">Pamahalaan ang Mga Setting ng Preview ng Video</translation>
+<translation id="8987736167266086032">Bumalik kung saan ka tumigil</translation>
 <translation id="8989968390305463310">Naaapektuhan ng iyong history ng pag-browse ang mga ad na nakikita mo at mga interes tulad ng tinatantya sa ibaba. Para protektahan ang iyong privacy, awtomatikong ide-delete ng Chrome ang mga interes mo sa rolling na paraan bawat buwan. Puwedeng ma-refresh ang mga interes maliban na lang kung alisin mo ang mga ito.</translation>
 <translation id="8993760627012879038">Magbukas ng bagong tab sa Incognito mode</translation>
 <translation id="8996847606757455498">Pumili ng ibang provider</translation>

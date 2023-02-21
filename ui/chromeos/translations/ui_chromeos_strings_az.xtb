@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Növbəti</translation>
 <translation id="1209796539517632982">Avtomatik ad serverləri</translation>
 <translation id="1210831758834677569">Laos</translation>
+<translation id="1221555006497674479">Yaddaş azdır, <ph name="TOTAL_SPACE" /> ümumi ortaq disk yaddaşından <ph name="REMAINING_PERCENTAGE" />% qalıb</translation>
 <translation id="1243314992276662751">Yükləyin</translation>
 <translation id="1249250836236328755">Janr</translation>
 <translation id="1254593899333212300">Birbaşa İnternet bağlantısı</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Çin dili (Pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fayl oflayn əlçatan edilir</translation>
 <translation id="164969095109328410">Chrome cihazı</translation>
+<translation id="1661207570040737402">Ortaq Disk üzrə bütün Google Workspace yaddaşını istifadə etmisiniz.</translation>
 <translation id="1661867754829461514">PIN çatışmır</translation>
 <translation id="166439687370499867">Paylaşılmış şəbəkə konfiqurasiyalarının dəyişdirilməsinə icazə verilmir</translation>
 <translation id="1665611772925418501">Fayl dəyişdirilə bilməz.</translation>
@@ -354,6 +356,7 @@
 <translation id="3971140002794351170">Mobil profili endirin, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">İngilis (BK)</translation>
 <translation id="3975895378829046965">Banqla Fonetikası</translation>
+<translation id="3999574733850440202">Bu yaxınlarda açılmış Microsoft faylları OneDrive-a köçürülüb</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4017788180641807848">Workman klaviaturası ilə İngilis dili (ABŞ)</translation>
 <translation id="4019998208269143058">Sürətli fayllara əlavə edin</translation>
@@ -877,6 +880,7 @@
 <translation id="8116072619078571545">Buzlu su</translation>
 <translation id="8128733386027980860">Dvorak klaviaturası ilə İngilis dili (BK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" Sizinlə paylaşılıb. Onun sahibi olmadığınız üçün onu silə bilməzsiniz.</translation>
+<translation id="8138705869659070104">Cihazı ayarlayıb, aktiv edin</translation>
 <translation id="813913629614996137">Başladılır...</translation>
 <translation id="8147028810663464959">Simvol eni Tamdır</translation>
 <translation id="8151638057146502721">Konfiqurasiya edin</translation>
@@ -902,6 +906,7 @@
 <translation id="8300849813060516376">OTASP uğursuz oldu</translation>
 <translation id="8312871300878166382">Qovluğa yerləşdirin</translation>
 <translation id="8329978297633540474">Tam mətn</translation>
+<translation id="8332007959299458842">Bu yaxınlarda açılmış Microsoft faylları Google Diskə köçürülüb</translation>
 <translation id="8335587457941836791">Buferdən çıxarın</translation>
 <translation id="8335837413233998004">Belarus</translation>
 <translation id="8336153091935557858">Dünən <ph name="YESTERDAY_DAYTIME" /></translation>

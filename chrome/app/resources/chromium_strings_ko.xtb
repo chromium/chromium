@@ -16,7 +16,6 @@
 <translation id="1315551408014407711">새 Chromium 프로필 설정</translation>
 <translation id="1396446129537741364">Chromium이 비밀번호를 표시하려고 합니다.</translation>
 <translation id="1414495520565016063">Chromium에 로그인했습니다.</translation>
-<translation id="1493803763272692301">Chromium을 최대한 활용하세요</translation>
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
 <translation id="1553461853655228091">Chromium에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>

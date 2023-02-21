@@ -561,6 +561,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5118713593561876160">Interessen</translation>
 <translation id="5118764316110575523">Aus</translation>
 <translation id="5119391094379141756">Wähle Chrome aus</translation>
+<translation id="5121618895923301719">Du beobachtest dieses Produkt bereits. Diese Seite ist in den <ph name="BEGIN_LINK" />mobilen Lesezeichen<ph name="END_LINK" /> gespeichert.</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} schwaches Passwort}other{{COUNT} schwache Passwörter}}</translation>
 <translation id="5149188072385105201">Passwort hinzufügen</translation>
@@ -591,6 +592,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5386314158584363703">Hier findest du Seiten, denen du folgst</translation>
 <translation id="5388358297987318779">Bild öffnen</translation>
 <translation id="5407969256130905701">Änderungen verwerfen</translation>
+<translation id="5414763847370083940">Du wirst benachrichtigt, wenn der Preis auf einer Website sinkt.</translation>
 <translation id="5416022985862681400">Letzte 7 Tage</translation>
 <translation id="5423269318075950257">Preis beobachten</translation>
 <translation id="543338862236136125">Passwort ändern</translation>
@@ -1133,6 +1135,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="952704832371081537">Abbrechen</translation>
 <translation id="953008885340860025">Von Chrome abgemeldet</translation>
 <translation id="959066944189734975">Du folgst <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Du kannst den Preis eines Produkts in Onlineshops beobachten. Du wirst benachrichtigt, wenn der Preis sinkt.</translation>
 <translation id="980712131080209571">Neu</translation>
 <translation id="981498610235328462">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu. Unzulässige Konten sind ausgeblendet.</translation>
 <translation id="984509647832111802">Synchronisierung funktioniert nicht.</translation>

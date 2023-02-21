@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
 <translation id="1209796539517632982">ເຊີບເວີ​ຊື່​ອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="1210831758834677569">ພາສາລາວ</translation>
+<translation id="1221555006497674479">ບ່ອນຈັດເກັບຂໍ້ມູນຍັງເຫຼືອໜ້ອຍພຽງ <ph name="REMAINING_PERCENTAGE" />% ຂອງບ່ອນຈັດເກັບຂໍ້ມູນ Drive <ph name="TOTAL_SPACE" /> ຂອງທ່ານ.</translation>
 <translation id="1243314992276662751">ອັບ​ໂຫຼດ</translation>
 <translation id="1249250836236328755">ປະເພດ</translation>
 <translation id="1254593899333212300">ການເຊື່ອມຕໍ່ອິນເຕີເນັດໂດຍກົງ</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">ພາສາຈີນພິນອິນ</translation>
 <translation id="1646019627374511909">ກຳລັງເຮັດໃຫ້ <ph name="NUMBER_OF_ITEMS" /> ໄຟລ໌ເປັນໄຟລ໌ອອບລາຍ</translation>
 <translation id="164969095109328410">ອຸປະກອນ Chrome</translation>
+<translation id="1661207570040737402">ທ່ານໃຊ້ບ່ອນຈັດເກັບຂໍ້ມູນ Google Workspace ໃນໄດຣຟ໌ທີ່ແບ່ງປັນຂອງທ່ານໝົດແລ້ວ.</translation>
 <translation id="1661867754829461514">PIN ຂາດຫາຍໄປ</translation>
 <translation id="166439687370499867">ບໍ່ອະນຸຍາດໃຫ້ປ່ຽນການກຳນົດຄ່າເຄືອຂ່າຍທີ່ໃຊ້ຮ່ວມກັນ</translation>
 <translation id="1665611772925418501">ບໍ່​ສາ​ມາດ​ດັດແປງໄຟລ​໌​ນີ້ໄດ້​.</translation>
@@ -879,6 +881,7 @@
 <translation id="8116072619078571545">ນໍ້າກ້ອນ</translation>
 <translation id="8128733386027980860">ພາສາອັງກິດ (ສະຫະລາດຊະອານາຈັກ) ທີ່ໃຊ້ແປ້ນພິມ Dvorak</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ໄດ້ຖືກແຊຣ໌ກັບທ່ານ. ທ່ານບໍ່ສາມາດລຶບມັນໄດ້ ເພາະວ່າທ່ານບໍ່ເປັນເຈົ້າຂອງມັນ.</translation>
+<translation id="8138705869659070104">ເປີດໃຊ້ຫຼັງຈາກຕິດຕັ້ງອຸປະກອນ</translation>
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
 <translation id="8147028810663464959">ຄວາມກວ້າງຕົວອັກສອນເຕັມແລ້ວ</translation>
 <translation id="8151638057146502721">ປັບ​ຕັ້ງ​ຄ່າ</translation>

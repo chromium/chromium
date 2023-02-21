@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">Informazioni su ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Apri in Chrome</translation>
 <translation id="1203500561924088507">L'installazione è terminata. Dovrai riavviare il browser per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Puoi goderti al meglio l'esperienza di Chrome</translation>
 <translation id="1278833599417554002">Riavvia per aggiornare &amp;Chrome</translation>
 <translation id="1302523850133262269">Attendi mentre Chrome installa gli aggiornamenti di sistema più recenti.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google ChromeOS Flex.</translation>
@@ -246,12 +245,14 @@
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Accesso rete</translation>
 <translation id="5924017743176219022">Connessione a Internet in corso…</translation>
+<translation id="5932997892801542621">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti a Google Drive per ricevere suggerimenti sugli elementi. Questa opzione è disattivata in incognito.</translation>
 <translation id="5940385492829620908">Il tuoi siti web, i tuoi segnalibri e gli altri contenuti Chrome sempre disponibili e aggiornati qui.</translation>
 <translation id="5941711191222866238">Riduci a icona</translation>
 <translation id="5941830788786076944">Imposta Google Chrome come browser predefinito</translation>
 <translation id="6003112304606738118">Download in corso… Ore rimanenti: <ph name="HOURS" /></translation>
 <translation id="6010556343189461180">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere macOS 10.15 o versioni successive. Su questo computer è installato macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome verrà chiuso adesso.}=1{Chrome verrà chiuso tra 1 secondo.}other{Chrome verrà chiuso tra # secondi.}}</translation>
+<translation id="6022659036123304283">Personalizza il tuo Chrome</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6070348360322141662">Per maggiore sicurezza, Google Chrome cripterà i tuoi dati</translation>
 <translation id="608006075545470555">Aggiungi profilo di lavoro a questo browser</translation>

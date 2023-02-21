@@ -226,6 +226,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="2248941474044011069">Las contraseñas se encriptan en tu dispositivo antes de guardarse en el Administrador de contraseñas de Google</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
 <translation id="2259659629660284697">Exportar contraseñas…</translation>
+<translation id="2276231040576210443">En la <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />, puedes elegir los datos para sincronizar en cualquier momento. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="2276696007612801991">Para verificar las contraseñas, accede a tu Cuenta de Google</translation>
 <translation id="2278052315791335171">Si borras esta contraseña, no se quitará tu cuenta de <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
@@ -1242,6 +1243,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7682724950699840886">Intenta las siguientes sugerencias: Antes de exportar las contraseñas nuevamente, asegúrate de que haya espacio suficiente en tu dispositivo.</translation>
 <translation id="7686086654630106285">Obtén más información sobre los anuncios sugeridos por sitios</translation>
 <translation id="768618399695552958">Algunas de las páginas que visitas están precargadas. Las páginas pueden precargarse por medio de servidores de Google cuando están vinculadas desde un sitio de Google.</translation>
+<translation id="7691043218961417207">Explorar contenido para seguir</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Usa los datos móviles.</translation>
 <translation id="7709094866268987903">Los intereses que quitaste aparecerán aquí.</translation>
@@ -1492,6 +1494,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8972098258593396643">¿Deseas descargarlo a la carpeta predeterminada?</translation>
 <translation id="8987641763863173640">Administra la configuración de la vista previa de videos.</translation>
+<translation id="8987736167266086032">Retoma la sesión desde donde la dejaste</translation>
 <translation id="8989968390305463310">Tu historial de navegación afecta los anuncios que ves y los intereses como se estima a continuación. Para proteger tu privacidad, Chrome borra tus intereses automáticamente de manera continua todos los meses. Los intereses se pueden actualizar a no ser que los quites.</translation>
 <translation id="8993760627012879038">Abrir ventana nueva en modo de navegación incógnito</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>

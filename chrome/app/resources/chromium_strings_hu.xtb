@@ -14,7 +14,6 @@
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
 <translation id="1396446129537741364">A Chromium megpróbálja megjeleníteni a jelszavakat.</translation>
 <translation id="1414495520565016063">Bejelentkezett a Chromiumba.</translation>
-<translation id="1493803763272692301">Kihozhatja a legtöbbet a Chromiumból</translation>
 <translation id="1524282610922162960">Chromium-lap megosztása</translation>
 <translation id="1553461853655228091">A Chromiumnak engedélyre van szüksége a kamerájához való hozzáféréshez annak érdekében, hogy 3D-s térképet készíthessen az Ön környezetéről.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához.}=1{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chromiumot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>

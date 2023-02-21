@@ -84,6 +84,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1178821169867863726">12 x 16 pol.</translation>
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1186201132766001848">Verificar senhas</translation>
+<translation id="1195073053842921378">O endereço vai ser excluído deste dispositivo</translation>
 <translation id="1195558154361252544">As notificações são bloqueadas automaticamente para todos os sites, exceto para aqueles que têm permissão</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1201402288615127009">Próxima</translation>
@@ -2018,7 +2019,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5992691462791905444">Dobra sanfona</translation>
 <translation id="5992805036496113940">Consultar informações usadas para mostrar anúncios</translation>
 <translation id="5995727681868049093">Gerenciar suas informações, sua privacidade e sua segurança na Conta do Google.</translation>
-<translation id="5996887213716993070">O campo <ph name="FIELD" /> é obrigatório</translation>
 <translation id="5997247540087773573">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas do Google recomenda que você a mude e revise as senhas salvas.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6005765687956866568">As informações preenchidas automaticamente foram removidas do formulário</translation>

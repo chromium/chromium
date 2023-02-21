@@ -561,6 +561,7 @@
 <translation id="5118713593561876160">ຄວາມສົນໃຈ</translation>
 <translation id="5118764316110575523">ປິດ</translation>
 <translation id="5119391094379141756">ເລືອກ Chrome</translation>
+<translation id="5121618895923301719">ທ່ານກຳລັງຕິດຕາມສິນຄ້ານີ້ຢູ່ກ່ອນແລ້ວ. ໜ້ານີ້ຖືກບັນທຶກໃນ <ph name="BEGIN_LINK" />ບຸກມາກໂທລະສັບມືຖື<ph name="END_LINK" /> ແລ້ວ.</translation>
 <translation id="5132942445612118989">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ, ປະຫວັດຂອງທ່ານ ແລະ ອື່ນໆອີກຢູ່ໃນທຸກອຸປະກອນ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ລະຫັດຜ່ານງ່າຍ}other{{COUNT} ລະຫັດຜ່ານງ່າຍ}}</translation>
 <translation id="5149188072385105201">ເພີ່ມລະຫັດຜ່ານ...</translation>
@@ -591,6 +592,7 @@
 <translation id="5386314158584363703">ທ່ານຈະພົບເວັບໄຊທີ່ທ່ານຕິດຕາມຢູ່ບ່ອນນີ້</translation>
 <translation id="5388358297987318779">ຮູບເປີດ</translation>
 <translation id="5407969256130905701">ຍົກເລີກການປ່ຽນແປງ</translation>
+<translation id="5414763847370083940">ທ່ານຈະໄດ້ຮັບແຈ້ງເຕືອນຫາກລາຄາຫຼຸດລົງຢູ່ເວັບໄຊໃດກໍຕາມ.</translation>
 <translation id="5416022985862681400">7 ມື້ຫຼ້າສຸດ</translation>
 <translation id="5423269318075950257">ຕິດຕາມລາຄາ</translation>
 <translation id="543338862236136125">ແກ້ໄຂລະຫັດຜ່ານ</translation>
@@ -1133,6 +1135,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="952704832371081537">ຍົກເລີກ</translation>
 <translation id="953008885340860025">ອອກຈາກລະບົບ Chrome ແລ້ວ</translation>
 <translation id="959066944189734975">ທ່ານກຳລັງຕິດຕາມ <ph name="CHANNEL_NAME" /> ຢູ່</translation>
+<translation id="973493300226275298">ຕິດຕາມລາຄາຜະລິດຕະພັນໃນທົ່ວຮ້ານຄ້າອອນລາຍ. ທ່ານຈະໄດ້ຮັບແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງ.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">ອົງການຂອງທ່ານອະນຸຍາດໃຫ້ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີບາງຢ່າງເທົ່ານັ້ນ. ບັນຊີທີ່ບໍ່ໄດ້ຮັບອະນຸຍາດແມ່ນຖືກເຊື່ອງໄວ້.</translation>
 <translation id="984509647832111802">ການຊິ້ງຂໍ້ມູນບໍ່ເຮັດວຽກ.</translation>

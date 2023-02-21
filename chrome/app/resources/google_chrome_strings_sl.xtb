@@ -15,7 +15,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1152920704813762236">O sistemu Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Odpri v Chromu</translation>
 <translation id="1203500561924088507">Hvala, ker ste se odločili za namestitev. Preden uporabite <ph name="BUNDLE_NAME" />, morate znova zagnati brskalnik.</translation>
-<translation id="1236866257838264361">Kar najbolje lahko izkoristite Chrome</translation>
 <translation id="1278833599417554002">Znova zaženite, če želite posodobiti &amp;Chrome</translation>
 <translation id="1302523850133262269">Počakajte, da Chrome namesti najnovejše sistemske posodobitve.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> zahteva, da preberete in sprejmete pogoje storitve, preden začnete uporabljati napravo. Ti pogoji ne dopolnjujejo, spreminjajo ali omejujejo pogojev za Google ChromeOS Flex.</translation>
@@ -262,6 +261,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6003112304606738118">Prenašanje … Še <ph name="HOURS" /> h.</translation>
 <translation id="6010556343189461180">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete macOS 10.15 ali novejšega. V tem računalniku je nameščen macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome se bo zdaj zaprl.}=1{Chrome se bo zaprl čez 1 sekundo.}one{Chrome se bo zaprl čez # sekundo.}two{Chrome se bo zaprl čez # sekundi.}few{Chrome se bo zaprl čez # sekunde.}other{Chrome se bo zaprl čez # sekund.}}</translation>
+<translation id="6022659036123304283">Prilagodite si Chrome</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6070348360322141662">Zaradi večje varnosti bo Google Chrome šifriral vaše podatke</translation>
 <translation id="608006075545470555">Dodajanje delovnega profila v ta brskalnik</translation>

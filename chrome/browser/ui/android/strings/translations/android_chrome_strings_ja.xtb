@@ -226,6 +226,7 @@
 <translation id="2248941474044011069">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します</translation>
 <translation id="2249635629516220541">サイトが広告表示に使用する情報をカスタマイズします</translation>
 <translation id="2259659629660284697">パスワードをエクスポート…</translation>
+<translation id="2276231040576210443">同期する項目はいつでも [<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="2276696007612801991">パスワードを確認するには、Google アカウントにログインしてください</translation>
 <translation id="2278052315791335171">このパスワードを削除しても、<ph name="SITE" /> のアカウントは削除されません</translation>
 <translation id="2286841657746966508">請求先住所</translation>
@@ -1493,6 +1494,7 @@
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>
 <translation id="8987641763863173640">動画プレビューの設定を管理します</translation>
+<translation id="8987736167266086032">同じところから再開</translation>
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>
 <translation id="8996847606757455498">別のプロバイダを選択</translation>

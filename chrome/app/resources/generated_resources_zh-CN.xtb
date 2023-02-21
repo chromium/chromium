@@ -4431,7 +4431,6 @@
 <translation id="4977942889532008999">确认访问</translation>
 <translation id="4980805016576257426">此扩展程序包含恶意软件。</translation>
 <translation id="4981449534399733132">要想清除您的所有已同步设备中的浏览数据以及您的 Google 帐号中的浏览数据，请<ph name="BEGIN_LINK" />登录<ph name="END_LINK" />。</translation>
-<translation id="4982111327868342436">让您能在任何设备上从上次停下的地方继续</translation>
 <translation id="4986706507552097681">您始终可在“设置”中选择要同步的内容。Google 可能会根据您的历史记录在 Google 搜索和其他服务中为您提供个性化的体验。</translation>
 <translation id="4986728572522335985">安全密钥上的所有数据（包括它的 PIN 码）都会被删除</translation>
 <translation id="4988526792673242964">页面</translation>
@@ -4548,7 +4547,6 @@
 <translation id="5097349930204431044">您访问的网站能推测您的喜好，然后在您继续浏览时向您展示建议的广告</translation>
 <translation id="5097649414558628673">工具：<ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">光标停止移动时自动点击</translation>
-<translation id="5101683448725092498">备份您的资料</translation>
 <translation id="5101839224773798795">光标停止时自动点击</translation>
 <translation id="5106350808162641062">移除</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> 由 Family Link 监管。您可添加学校帐号，以便在家长监管下访问学校资源。</translation>
@@ -5112,7 +5110,6 @@
 <translation id="5623842676595125836">日志</translation>
 <translation id="5624120631404540903">管理密码</translation>
 <translation id="5625225435499354052">在 Google Pay 中修改</translation>
-<translation id="5625631605902707678">在所有设备上</translation>
 <translation id="5626134646977739690">名字：</translation>
 <translation id="5627086634964711283">它还能够控制您点击“主页”按钮后系统显示的页面。</translation>
 <translation id="5627676517703583263">使用 Chrome 进行智能浏览</translation>
@@ -5224,7 +5221,6 @@
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{这些数据或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}=1{此文件或您的设备不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}other{这些文件不符合贵组织的某些安全政策。请与您的管理员联系，了解需要修正哪些方面。}}</translation>
 <translation id="5736796278325406685">请输入有效的用户名</translation>
 <translation id="5738093759615225354">您需要使用此通行密钥才能登录计算机</translation>
-<translation id="5738329404678738022">借助同步功能存储书签和其他数据</translation>
 <translation id="5739017626473506901">请登录以帮助<ph name="USER_NAME" />添加学校帐号</translation>
 <translation id="5739235828260127894">正在等待验证。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">特大</translation>
@@ -5246,7 +5242,6 @@
 <translation id="5757375109985023827">选择一个标签页即可预览</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="5759728514498647443">您通过“<ph name="APP_NAME" />”发送以进行打印的文档可由“<ph name="APP_NAME" />”读取。</translation>
-<translation id="5760508342220592715">登录后可获享更多好处</translation>
 <translation id="5762787084360227629">输入 Google 帐号信息</translation>
 <translation id="5763751966069581670">未找到任何 USB 设备</translation>
 <translation id="5764483294734785780">音频另存为(&amp;V)...</translation>
@@ -7784,7 +7779,6 @@
 <translation id="8059417245945632445">检查设备(&amp;I)</translation>
 <translation id="8059456211585183827">没有可保存的打印机。</translation>
 <translation id="8061091456562007989">改回原来的设置</translation>
-<translation id="8061965471006133016">为您的密码和其他数据提供额外的保护</translation>
 <translation id="8061970399284390013">拼写和语法检查</translation>
 <translation id="8061991877177392872">您似乎已在另一部设备上为 Google 助理设置了 Voice Match。这些先前的语音录音用来在此设备上创建语音模型。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 张纸}other{{COUNT} 张纸}}</translation>

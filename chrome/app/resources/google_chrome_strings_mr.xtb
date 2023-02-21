@@ -14,7 +14,6 @@
 <translation id="1152920704813762236">ChromeOS बद्दल</translation>
 <translation id="1154147086299354128">Chrome मध्‍ये &amp;उघडा</translation>
 <translation id="1203500561924088507">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा ब्राउझर रीस्टार्ट करणे आवश्यक आहे.</translation>
-<translation id="1236866257838264361">तुम्ही Chrome चा पुरेपूर आनंद घेऊ शकता</translation>
 <translation id="1278833599417554002">&amp;Chrome अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="1302523850133262269">कृपया Chrome नवीनतम सिस्टम अपडेट इंस्टॉल करताना प्रतीक्षा करा.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> नुसार तुम्ही हे डिव्हाइस वापरण्यापूर्वी खालील सेवा अटी वाचणे आणि स्वीकारणे आवश्यक आहे. या अटी Google ChromeOS Flex अटींचा विस्तार करत नाहीत, त्यामध्ये सुधारणा करत नाहीत किंवा त्या मर्यादित करत नाहीत.</translation>
@@ -253,12 +252,14 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन</translation>
 <translation id="5924017743176219022">इंटरनेटशी कनेक्ट करत आहे...</translation>
+<translation id="5932997892801542621">तुम्ही अ‍ॅड्रेस बार किंवा सर्च बॉक्समध्ये टाइप करता, तेव्हा आयटमसंबंधित सूचना मिळवण्यासाठी, Chrome तुम्ही जे टाइप करता ते Google Drive ला पाठवते. हे गुप्त मोड मध्ये बंद आहे.</translation>
 <translation id="5940385492829620908">तुमचे वेब, बुकमार्क आणि अन्य Chrome आशय येथे थेट आहे.</translation>
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5941830788786076944">Google Chromeला डीफॉल्ट ब्राउझर बनवा</translation>
 <translation id="6003112304606738118">डाउनलोड करत आहे... <ph name="HOURS" /> तास शिल्लक आहे(आहेत)</translation>
 <translation id="6010556343189461180">भविष्यातील Google Chrome अपडेट मिळवण्यासाठी, तुमच्याकडे macOS 10.15 किंवा त्यानंतरची आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर macOS 10.14 वापरत आहे.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome will close now.}=1{Chrome एका सेकंदामध्ये बंद होईल.}other{Chrome # सेकंदांमध्ये बंद होईल.}}</translation>
+<translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6070348360322141662">अतिरिक्त सुरक्षिततेसाठी, Google Chrome तुमचा डेटा एंक्रिप्ट करेल</translation>
 <translation id="608006075545470555">या ब्राउझरवर कार्य प्रोफाइल जोडा</translation>

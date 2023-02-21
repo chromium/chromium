@@ -159,6 +159,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="21133533946938348">Speld oortjie vas</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items is geskuif</translation>
 <translation id="2122754583996902531">Jou blaaier word bestuur. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">Skakel pryskennisgewings aan?</translation>
 <translation id="2139867232736819575">Soek vir teks wat jy gekopieer het</translation>
 <translation id="214201757571129614">Meld aan …</translation>
 <translation id="2149973817440762519">Wysig boekmerk</translation>
@@ -250,6 +251,7 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="2797029671965852011">Wys geskiedenis</translation>
 <translation id="2800683595868705743">Verlaat oortjiewisselaar</translation>
 <translation id="2815198996063984598">2. Tik op Verstekblaaierprogram.</translation>
+<translation id="2822917246944009066">Oortjie is vasgespeld</translation>
 <translation id="2830972654601096923">Bestuur adresse …</translation>
 <translation id="2834399722155632105">3. Tik op Wagwoordopsies</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -314,6 +316,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3240426699337459095">Skakel gekopieer</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">Jou verandering kon nie gestoor word nie.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> van <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3268451620468152448">Maak oortjies oop</translation>
 <translation id="3272527697863656322">Kanselleer</translation>
@@ -336,6 +339,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3448016392200048164">Deelaansig</translation>
 <translation id="345565170154308620">Bestuur wagwoorde …</translation>
+<translation id="3464194322481586217">Kon nie die prys naspoor nie.</translation>
 <translation id="3469166899695866866">Stop aflaai?</translation>
 <translation id="3470502288861289375">Kopieer tans …</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{vir {COUNT} werf of app}other{vir {COUNT} werwe en apps}}</translation>
@@ -763,6 +767,7 @@ Jou data is op <ph name="TIME" /> met jou sinkroniseringwagfrase geënkripteer.<
 <translation id="6464397691496239022">Werwe kan webkoekies gebruik om jou blaai-ervaring beter te maak, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou.
 
 Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te personaliseer nie.</translation>
+<translation id="6476253015009698798">Prysnasporing is nie vir hierdie bladsy beskikbaar nie.</translation>
 <translation id="6476800141292307438">Vertaal tans die bladsy in <ph name="LANGUAGE" />. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="648164694371393720">Stawingfout</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> items uitgevee</translation>
@@ -814,6 +819,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6780034285637185932">Poskode</translation>
 <translation id="6781260999953472352">Skakel sinkronisering aan?</translation>
 <translation id="6785453220513215166">Stuur tans omvalverslag …</translation>
+<translation id="6790502149545262384">Jy sal binnekort stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy ’n nuwe oortjie oopmaak.</translation>
 <translation id="6797885426782475225">Stemsoektog</translation>
 <translation id="6801927553864092214">Maak 'n Incognito-oortjie oop om privaat te blaai</translation>
 <translation id="6807889908376551050">Wys alles …</translation>
@@ -893,6 +899,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="7431991332293347422">Beheer hoe jou blaaigeskiedenis gebruik word om Search en meer te personaliseer</translation>
 <translation id="7435356471928173109">Afgeskakel deur jou administrateur</translation>
 <translation id="7438481509621345350">Jy sal nou stories van <ph name="CHANNEL_NAME" /> af sien wanneer jy 'n nuwe oortjie oopmaak.</translation>
+<translation id="7446583256109515732">Oortjie is ontspeld</translation>
 <translation id="7454057999980797137">Staat / Distrik</translation>
 <translation id="7459628154744868585">Verbeterde Beskerming is aan</translation>
 <translation id="746684838091935575">3. Kies Chrome</translation>
@@ -1123,6 +1130,8 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9137526406337347448">Google-dienste</translation>
 <translation id="9148126808321036104">Meld weer aan …</translation>
 <translation id="9157836665414082580">Onderdruk dialoë</translation>
+<translation id="9162432979321511934">Skakel Outovulwagwoorde aan</translation>
+<translation id="9165320910061267720">Jy sal kennisgewings in jou iOS-instellings moet aanskakel as jy kennisgewings vir prysdalingopletberigte wil ontvang.</translation>
 <translation id="9177438225260810839">Deursoek oop oortjies</translation>
 <translation id="9188680907066685419">Meld af uit bestuurde rekening</translation>
 <translation id="9193147658040604536">Sleep oortjie hierheen om vas te speld</translation>

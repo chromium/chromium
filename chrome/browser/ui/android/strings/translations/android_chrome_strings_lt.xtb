@@ -226,6 +226,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="2248941474044011069">Jūsų slaptažodžiai šifruojami įrenginyje prieš išsaugant juos „Google“ slaptažodžių tvarkytuvėje</translation>
 <translation id="2249635629516220541">Tinkinkite informaciją, pagal kurią svetainės rodo jums skelbimus</translation>
 <translation id="2259659629660284697">Eksportuoti slaptažodžius…</translation>
+<translation id="2276231040576210443">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje <ph name="BEGIN_LINK1" />„Nustatymai“<ph name="END_LINK1" />. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="2276696007612801991">Prisijunkite prie „Google“ paskyros, kad patikrintumėte slaptažodžius</translation>
 <translation id="2278052315791335171">Ištrynus šį slaptažodį jūsų paskyra svetainėje <ph name="SITE" /> nebus ištrinta</translation>
 <translation id="2286841657746966508">Atsiskaitymo adresas</translation>
@@ -1493,6 +1494,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="8972098258593396643">Atsisiųsti į numatytąjį aplanką?</translation>
 <translation id="8987641763863173640">Tvarkykite vaizdo įrašų peržiūros nustatymus</translation>
+<translation id="8987736167266086032">Pradėkite ten, kur baigėte</translation>
 <translation id="8989968390305463310">Naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį automatiškai ištrina jūsų pomėgius. Pomėgiai gali būti atnaujinami, kol jų nepašalinate.</translation>
 <translation id="8993760627012879038">Atidaryti naują skirtuką inkognito režimu</translation>
 <translation id="8996847606757455498">Pasirinkti kitą teikėją</translation>

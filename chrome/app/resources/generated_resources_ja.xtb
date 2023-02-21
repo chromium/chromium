@@ -3604,7 +3604,7 @@
 <translation id="4211904048067111541">Android アプリでの使用を停止する</translation>
 <translation id="42126664696688958">エクスポート</translation>
 <translation id="42137655013211669">このリソースへのアクセスはサーバーにより禁止されています。</translation>
-<translation id="4214192212360095377">今だけオフにする</translation>
+<translation id="4214192212360095377">今すぐオフにする</translation>
 <translation id="4217558091331485702">開く前にスキャンする</translation>
 <translation id="4217571870635786043">音声入力</translation>
 <translation id="4218081191298393750">スピーカー アイコンをクリックしてこのタブをミュートする</translation>
@@ -4433,7 +4433,6 @@
 <translation id="4977942889532008999">アクセスの確認</translation>
 <translation id="4980805016576257426">この拡張機能には不正なソフトウェアが含まれています。</translation>
 <translation id="4981449534399733132">同期しているすべてのデバイスと Google アカウントから閲覧データを削除するには、<ph name="BEGIN_LINK" />ログイン<ph name="END_LINK" />してください。</translation>
-<translation id="4982111327868342436">どのデバイスでも作業を続けられます</translation>
 <translation id="4986706507552097681">同期する項目はいつでも [設定] で選択できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="4986728572522335985">セキュリティ キーに保存されているすべてのデータ（PIN を含む）が削除されます</translation>
 <translation id="4988526792673242964">ページ</translation>
@@ -4550,7 +4549,6 @@
 <translation id="5097349930204431044">アクセスしたサイトはユーザーの興味 / 関心を判断し、それ以降にアクセスするサイトで広告を提案できます</translation>
 <translation id="5097649414558628673">ツール: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">カーソルの停止時に自動的にクリックする</translation>
-<translation id="5101683448725092498">データをバックアップする</translation>
 <translation id="5101839224773798795">カーソルの停止時に自動的にクリックする</translation>
 <translation id="5106350808162641062">削除</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> はファミリー リンクによって管理されています。保護者の管理の下で学校のリソースにアクセスするための学校用アカウントを追加できます。</translation>
@@ -5114,7 +5112,6 @@
 <translation id="5623842676595125836">ログ</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
 <translation id="5625225435499354052">Google Pay で編集</translation>
-<translation id="5625631605902707678">どのデバイスでも</translation>
 <translation id="5626134646977739690">名前:</translation>
 <translation id="5627086634964711283">この拡張機能では、ホーム ボタンのクリック時に表示されるページも制御されます。</translation>
 <translation id="5627676517703583263">Chrome で賢くブラウジング</translation>
@@ -5226,7 +5223,6 @@
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{このデータまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}=1{このファイルまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}other{これらのファイルは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}}</translation>
 <translation id="5736796278325406685">有効なユーザー名を入力してください</translation>
 <translation id="5738093759615225354">パソコンにログインするには、このパスキーが必要です</translation>
-<translation id="5738329404678738022">同期することでブックマークやその他のデータを保存できます</translation>
 <translation id="5739017626473506901">ログインして、<ph name="USER_NAME" /> さんの学校アカウントの追加を許可してください</translation>
 <translation id="5739235828260127894">確認を待っています。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">極大</translation>
@@ -5248,7 +5244,6 @@
 <translation id="5757375109985023827">プレビューするタブを選択します</translation>
 <translation id="5758631781033351321">リーディング リストはここに表示されます</translation>
 <translation id="5759728514498647443">「<ph name="APP_NAME" />」を使用して印刷に送信したドキュメントは「<ph name="APP_NAME" />」で読めます。</translation>
-<translation id="5760508342220592715">ログインによるさまざまなメリット</translation>
 <translation id="5762787084360227629">Google アカウントの情報を入力</translation>
 <translation id="5763751966069581670">USB デバイスが見つかりませんでした</translation>
 <translation id="5764483294734785780">名前を付けてオーディオを保存(&amp;V)...</translation>
@@ -7783,7 +7778,6 @@
 <translation id="8059417245945632445">デバイスを検証(&amp;I)</translation>
 <translation id="8059456211585183827">保存できるプリンタはありません。</translation>
 <translation id="8061091456562007989">元に戻す</translation>
-<translation id="8061965471006133016">パスワードなどのデータ保護を強化</translation>
 <translation id="8061970399284390013">スペルと文法のチェック</translation>
 <translation id="8061991877177392872">アシスタントの Voice Match は、すでに別のデバイスで設定されたようです。このデバイスの音声モデルは、登録済みの音声を使って作成されています。</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 枚}other{{COUNT} 枚}}</translation>

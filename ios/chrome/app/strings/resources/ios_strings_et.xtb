@@ -561,6 +561,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5118713593561876160">Huvid</translation>
 <translation id="5118764316110575523">Väljas</translation>
 <translation id="5119391094379141756">Valige Chrome</translation>
+<translation id="5121618895923301719">Jälgite juba seda toodet. Leht salvestati <ph name="BEGIN_LINK" />mobiili järjehoidjatesse<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Teie paroolide, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} nõrk parool}other{{COUNT} nõrka parooli}}</translation>
 <translation id="5149188072385105201">Parooli lisamine …</translation>
@@ -591,6 +592,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5386314158584363703">Leiate oma jälgitavad saidid siit</translation>
 <translation id="5388358297987318779">Ava kujutis</translation>
 <translation id="5407969256130905701">Loobu muudatustest</translation>
+<translation id="5414763847370083940">Saate teavituse, kui hind mis tahes saidil langeb.</translation>
 <translation id="5416022985862681400">Viimased 7 päeva</translation>
 <translation id="5423269318075950257">Hindade jälgimine</translation>
 <translation id="543338862236136125">Muuda parooli</translation>
@@ -1133,6 +1135,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="952704832371081537">Tühista</translation>
 <translation id="953008885340860025">Olete Chrome'ist välja logitud</translation>
 <translation id="959066944189734975">Jälgite kanalit <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Jälgige toote hinda veebipoodides. Saate teavitusi, kui hind langeb.</translation>
 <translation id="980712131080209571">Uus</translation>
 <translation id="981498610235328462">Teie organisatsioon lubab sisse logida vaid teatud kontodega. Kontod, mis pole lubatud, on peidetud.</translation>
 <translation id="984509647832111802">Sünkroonimine ei tööta.</translation>

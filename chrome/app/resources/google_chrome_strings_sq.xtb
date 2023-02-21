@@ -15,7 +15,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1152920704813762236">Rreth ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Hape në Chrome</translation>
 <translation id="1203500561924088507">Faleminderit që e instalove. Duhet të rinisësh shfletuesin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
-<translation id="1236866257838264361">Mund të përfitosh në maksimum nga Chrome</translation>
 <translation id="1278833599417554002">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="1302523850133262269">Prit ndërsa Chrome instalon përditësimet më të fundit të sistemit.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se ta përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë apo kufizojnë kushtet e Google Chrome OS Flex.</translation>
@@ -254,12 +253,14 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - identifikimi në rrjet</translation>
 <translation id="5924017743176219022">Po lidhet me internetin...</translation>
+<translation id="5932997892801542621">Kur shkruan në shiritin e adresës ose në kutinë e kërkimit, Chrome i dërgon ato që shkruan te "Disku i Google" për të marrë sugjerime për artikujt. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="5940385492829620908">Këtu janë materialet e tua të uebit, të faqeshënuesve dhe të tjera nga Chrome.</translation>
 <translation id="5941711191222866238">Minimizo</translation>
 <translation id="5941830788786076944">Bëje Google Chrome shfletuesin e parazgjedhur</translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>
 <translation id="6010556343189461180">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet macOS 10.15 ose një version i mëvonshëm. Ky kompjuter përdor macOS 10.14.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome do të mbyllet tani.}=1{Chrome do të mbyllet pas 1 sekonde.}other{Chrome do të mbyllet pas # sekondash.}}</translation>
+<translation id="6022659036123304283">Bëje Chrome shfletuesin tënd</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
 <translation id="608006075545470555">Shto profilin e punës në këtë shfletues</translation>

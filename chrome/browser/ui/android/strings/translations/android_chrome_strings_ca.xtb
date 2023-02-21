@@ -226,6 +226,7 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="2248941474044011069">Les contrasenyes s'encripten al dispositiu abans de desar-les al gestor de contrasenyes de Google</translation>
 <translation id="2249635629516220541">Personalitza la informació que utilitzen els llocs web per mostrar-te anuncis</translation>
 <translation id="2259659629660284697">Exporta les contrasenyes…</translation>
+<translation id="2276231040576210443">Sempre pots anar a la <ph name="BEGIN_LINK1" />configuració<ph name="END_LINK1" /> per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="2276696007612801991">Inicia la sessió al teu Compte de Google per comprovar les contrasenyes</translation>
 <translation id="2278052315791335171">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adreça de facturació</translation>
@@ -1493,6 +1494,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8970887620466824814">S'ha produït un error.</translation>
 <translation id="8972098258593396643">Vols baixar el fitxer a la carpeta predeterminada?</translation>
 <translation id="8987641763863173640">Gestiona la configuració de la previsualització de vídeos</translation>
+<translation id="8987736167266086032">Continua des d'on ho vas deixar</translation>
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
 <translation id="8993760627012879038">Obre una pestanya nova en mode d'incògnit</translation>
 <translation id="8996847606757455498">Tria un altre proveïdor</translation>

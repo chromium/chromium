@@ -226,6 +226,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2248941474044011069">Aðgangsorðin þín eru dulkóðuð í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google</translation>
 <translation id="2249635629516220541">Sérsníddu upplýsingarnar sem vefsvæði nota til að birta þér auglýsingar</translation>
 <translation id="2259659629660284697">Flytja út aðgangsorð…</translation>
+<translation id="2276231040576210443">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK1" />stillingunum<ph name="END_LINK1" />. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="2276696007612801991">Skráðu þig inn á Google reikninginn þinn til að athuga aðgangsorðin þín</translation>
 <translation id="2278052315791335171">Reikningnum þínum á <ph name="SITE" /> verður ekki eytt þó að þessu aðgangsorði verði eytt</translation>
 <translation id="2286841657746966508">Heimilisfang greiðanda</translation>
@@ -1242,6 +1243,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7682724950699840886">Prófaðu eftirfarandi: Gakktu úr skugga um að nóg pláss sé á tækinu og reyndu að flytja út aftur.</translation>
 <translation id="7686086654630106285">Nánar um auglýsingar sem vefsvæði leggja til</translation>
 <translation id="768618399695552958">Sumar síður sem þú opnar eru forhlaðnar. Síður kunna að forhlaðast í gegnum netþjóna Google þegar þær eru tengdar Google vefsvæði.</translation>
+<translation id="7691043218961417207">Skoðaðu efni til að fylgja</translation>
 <translation id="7698359219371678927">Skrifa tölvupóst í <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Nota farsímagögn</translation>
 <translation id="7709094866268987903">Áhugamál sem þú fjarlægðir birtast hér</translation>
@@ -1492,6 +1494,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8970887620466824814">Eitthvað fór úrskeiðis.</translation>
 <translation id="8972098258593396643">Hlaða niður í sjálfgefna möppu?</translation>
 <translation id="8987641763863173640">Stjórna stillingum forskoðunar myndskeiða</translation>
+<translation id="8987736167266086032">Haltu áfram þaðan sem frá var horfið</translation>
 <translation id="8989968390305463310">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="8993760627012879038">Opna nýjan flipa í huliðsstillingu</translation>
 <translation id="8996847606757455498">Velja aðra veitu</translation>

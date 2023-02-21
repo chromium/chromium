@@ -159,6 +159,7 @@
 <translation id="21133533946938348">টেব পিন কৰক</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টা বস্তু স্থানান্তৰ কৰা হ’ল</translation>
 <translation id="2122754583996902531">আপোনাৰ ব্ৰাউজাৰটো পৰিচালিত। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">মূল্য সম্পৰ্কীয় সতৰ্কবাৰ্তাৰ সুবিধাটো অন কৰিবনে?</translation>
 <translation id="2139867232736819575">আপুনি প্ৰতিলিপি কৰা পাঠৰ সন্ধান কৰক</translation>
 <translation id="214201757571129614">ছাইন ইন কৰক…</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা কৰক</translation>
@@ -250,6 +251,7 @@
 <translation id="2797029671965852011">ইতিহাস দেখুৱাওক</translation>
 <translation id="2800683595868705743">টেব সলনি কৰোঁতা এৰক</translation>
 <translation id="2815198996063984598">২) ডিফ’ল্ট ব্ৰাউজাৰ এপত টিপক</translation>
+<translation id="2822917246944009066">টেবটো পিন কৰা হ’ল</translation>
 <translation id="2830972654601096923">ঠিকনা পৰিচালনা কৰক...</translation>
 <translation id="2834399722155632105">৩) পাছৱৰ্ডৰ বিকল্পসমূহত টিপক</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -314,6 +316,7 @@
 <translation id="3227137524299004712">মাইক্ৰ’ফ’ন</translation>
 <translation id="3240426699337459095">লিংকটোৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="3244271242291266297">মাহ</translation>
+<translation id="3245744387817103524">আপুনি কৰা সালসলনি ছেভ কৰিব পৰা নগ’ল।</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />ৰ <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3268451620468152448">খুলি ৰখা টেব</translation>
 <translation id="3272527697863656322">বাতিল কৰক</translation>
@@ -336,6 +339,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3448016392200048164">স্প্লিট ভিউ ম’ড</translation>
 <translation id="345565170154308620">পাছৱৰ্ডসমূহ পৰিচালনা কৰক...</translation>
+<translation id="3464194322481586217">মূল্যটো ট্ৰেক কৰিব পৰা নগ’ল।</translation>
 <translation id="3469166899695866866">ডাউনল’ড কৰা বন্ধ কৰিবনে?</translation>
 <translation id="3470502288861289375">প্ৰতিলিপি কৰি থকা হৈছে…</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} টা ছাইট আৰু এপৰ বাবে}one{{COUNT} টা ছাইট আৰু এপৰ বাবে}other{{COUNT} টা ছাইট আৰু এপৰ বাবে}}</translation>
@@ -763,6 +767,7 @@
 <translation id="6464397691496239022">ছাইটসমূহে আপোনাৰ ব্ৰাউজিঙৰ অভিজ্ঞতা উন্নত কৰিবলৈ কুকিসমূহ ব্যৱহাৰ কৰিব পাৰে, উদাহৰণস্বৰূপে, আপোনাক ছাইন ইন কৰি ৰাখিবলৈ অথবা আপোনাৰ শ্বপিং কার্টত থকা বস্তুবোৰ মনত ৰাখিবলৈ।
 
 বিভিন্ন ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কার্যকলাপ চাবলৈ ছাইটসমূহে কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে, উদাহৰণস্বৰূপে, বিজ্ঞাপন ব্যক্তিগতকৰণ কৰিবলৈ।</translation>
+<translation id="6476253015009698798">এই পৃষ্ঠাখনৰ বাবে মূল্য ট্ৰেক কৰাৰ সুবিধাটো উপলব্ধ নহয়।</translation>
 <translation id="6476800141292307438">এই পৃষ্ঠাটো <ph name="LANGUAGE" />লৈ অনুবাদ কৰি থকা হৈছে। বিকল্পসমূহ স্ক্রীণখনৰ একেবাৰে তলৰ কাষত আছে।</translation>
 <translation id="648164694371393720">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ কৰাত আসোঁৱাহ হৈছে</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> টা সমল মচা হ’ল</translation>
@@ -814,6 +819,7 @@
 <translation id="6780034285637185932">পিন ক’ড</translation>
 <translation id="6781260999953472352">ছিংক অন কৰিবনে?</translation>
 <translation id="6785453220513215166">ক্ৰেশ্ব প্ৰতিবেদন পঠিয়াই থকা হৈছে…</translation>
+<translation id="6790502149545262384">শীঘ্ৰেই, আপুনি এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
 <translation id="6797885426782475225">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান</translation>
 <translation id="6801927553864092214">ব্যক্তিগতভাৱে ব্ৰাউজ কৰিবলৈ কোনো ইনক’গনিট’ টেব খোলক</translation>
 <translation id="6807889908376551050">সকলো দেখুৱাওক...</translation>
@@ -893,6 +899,7 @@
 <translation id="7431991332293347422">আপোনাক Search আৰু অন্য সেৱাসমূহত ব্যক্তিগতকৰণ কৰা অভিজ্ঞতা প্ৰদান কৰিবলৈ কেনেকৈ আপোনাৰ ব্ৰাউজিংৰ ইতিহাস ব্যৱহাৰ কৰা হয় সেয়া নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="7435356471928173109">আপোনাৰ প্ৰশাসকে অফ কৰিছে</translation>
 <translation id="7438481509621345350">আপুনি এতিয়া এটা নতুন টেব খুলিলে <ph name="CHANNEL_NAME" />ৰ পৰা কাহিনী দেখা পাব।</translation>
+<translation id="7446583256109515732">টেবটো আনপিন কৰা হ’ল</translation>
 <translation id="7454057999980797137">ৰাজ্য / দেশ</translation>
 <translation id="7459628154744868585">বৰ্ধিত সুৰক্ষা অন কৰা আছে</translation>
 <translation id="746684838091935575">৩) Chrome বাছনি কৰক</translation>
@@ -1123,6 +1130,8 @@
 <translation id="9137526406337347448">Google সেৱা</translation>
 <translation id="9148126808321036104">আকৌ ছাইন ইন কৰক</translation>
 <translation id="9157836665414082580">ডায়ল'গ লুকুৱাওক</translation>
+<translation id="9162432979321511934">পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱা সুবিধাটো অন কৰক</translation>
+<translation id="9165320910061267720">মূল্য কমাৰ সতৰ্কবাৰ্তা সম্পৰ্কীয় জাননী পাবলৈ, আপুনি আপোনাৰ iOS ছেটিঙত জাননী পোৱাৰ সুবিধাটো অন কৰিব লাগিব।</translation>
 <translation id="9177438225260810839">খোলা থকা টেবত সন্ধান কৰক</translation>
 <translation id="9188680907066685419">পৰিচালিত একাউণ্টৰ পৰা ছাইন আউট হওক</translation>
 <translation id="9193147658040604536">টেব পিন কৰিবলৈ ইয়ালৈ টানি আনক</translation>

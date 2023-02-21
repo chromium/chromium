@@ -15,7 +15,6 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1152920704813762236">Apie „Chrome“ OS</translation>
 <translation id="1154147086299354128">&amp;Atidaryti naudojant „Chrome“</translation>
 <translation id="1203500561924088507">Dėkojame už diegimą. Turite iš naujo paleisti naršyklę, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
-<translation id="1236866257838264361">Galite mėgautis visomis „Chrome“ galimybėmis</translation>
 <translation id="1278833599417554002">Paleisti iš naujo atnaujinant „&amp;Chrome“</translation>
 <translation id="1302523850133262269">Palaukite, kol „Chrome“ įdiegs naujausius sistemos naujinius.</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> reikia, kad prieš naudodami šį įrenginį perskaitytumėte toliau pateiktas paslaugų teikimo sąlygas. Šios sąlygos neišplečia, nepakeičia ir neapriboja „ChromeOS Flex“ sąlygų.</translation>
@@ -262,6 +261,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6003112304606738118">Atsisiunčiama… Liko <ph name="HOURS" /> val.</translation>
 <translation id="6010556343189461180">Jei norite gauti būsimus „Google Chrome“ naujinius, jums reikės 10.15 ar naujesnės „macOS“ versijos. Šiame kompiuteryje naudojama 10.14 versijos „macOS“.</translation>
 <translation id="6022388122721048220">{0,plural, =0{Dabar „Chrome“ bus uždaryta.}=1{„Chrome“ bus uždaryta po vienos sekundės.}one{„Chrome“ bus uždaryta po # sekundės.}few{„Chrome“ bus uždaryta po # sekundžių.}many{„Chrome“ bus uždaryta po # sekundės.}other{„Chrome“ bus uždaryta po # sekundžių.}}</translation>
+<translation id="6022659036123304283">Suasmeninkite „Chrome“</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6070348360322141662">Kad būtų papildomai užtikrintas saugumas, „Google Chrome“ užšifruos duomenis</translation>
 <translation id="608006075545470555">Darbo profilio pridėjimas prie šios naršyklės</translation>

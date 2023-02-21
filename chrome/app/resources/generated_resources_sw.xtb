@@ -379,6 +379,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1339009753652684748">Fikia programu yako ya Mratibu unaposema "Ok Google." Ili kuokoa betri, chagua “Washa (Inapendekezwa.)” Programu yako ya Mratibu itafanya kazi tu wakati kifaa chako kimechomekwa kwenye plagi ya umeme au kinachaji.</translation>
 <translation id="13392265090583506">Ufikivu</translation>
 <translation id="1340527397989195812">Hifadhi nakala rudufu ya maudhui kutoka kwenye kifaa ukitumia programu ya Faili.</translation>
+<translation id="1341701348342335220">Vizuri sana!</translation>
 <translation id="1341871421050612057">Huwezi kusawazisha ukitumia <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Zipe programu za Linux ruhusa ya kufikia vifaa vya USB. Linux haitakumbuka kifaa cha USB baada ya kukiondoa.</translation>
 <translation id="1343920184519992513">Endelea pale ulipoishia na ufungue kurasa kadhaa mahususi.</translation>
@@ -3634,6 +3635,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4232375817808480934">Weka Mipangilio ya Kerberos</translation>
 <translation id="4235965441080806197">Ghairi kuingia katika akaunti</translation>
 <translation id="4236163961381003811">Gundua viendelezi zaidi</translation>
+<translation id="4237282663517880406">Onyesha mapendekezo ya Hifadhi ya Google</translation>
 <translation id="4241182343707213132">Zima kisha uwashe ili usasishe programu za shirika lako</translation>
 <translation id="4242145785130247982">Vyeti vingi vya kiteja havitumiki</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
@@ -4450,7 +4452,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4977942889532008999">Thibitisha Idhini ya kufikia</translation>
 <translation id="4980805016576257426">Kiendelezi kina programu hasidi.</translation>
 <translation id="4981449534399733132">Ili ufute data ya kuvinjari kwenye vifaa vyako vyote vilivyosawazishwa na Akaunti yako ya Google, <ph name="BEGIN_LINK" />ingia katika akaunti<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Endelea ulipoachia ukitumia kifaa chochote</translation>
 <translation id="4986706507552097681">Unaweza kuchagua unachotaka kusawazisha wakati wowote kwenye mipangilio. Google inaweza kuweka mapendeleo kwenye huduma ya Tafuta na huduma nyinginezo kulingana na historia yako.</translation>
 <translation id="4986728572522335985">Hatua hii itafuta data yote kwenye ufunguo wa usalama, ikiwa ni pamoja na PIN</translation>
 <translation id="4988526792673242964">Kurasa</translation>
@@ -4567,7 +4568,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5097349930204431044">Tovuti unazotembelea zinaweza kubainisha unachopenda na kisha kupendekeza matangazo kadiri unavyoendelea kuvinjari</translation>
 <translation id="5097649414558628673">Zana: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Bofya kiotomatiki kiteuzi kinaposimama</translation>
-<translation id="5101683448725092498">Hifadhi nakala ya vipengee vyako</translation>
 <translation id="5101839224773798795">Bofya kiotomatiki kiteuzi kinaposimama</translation>
 <translation id="5106350808162641062">Ondoa</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> inadhibitiwa kwa kutumia Family Link. Unaweza kuongeza akaunti za shule zitakazotumiwa kufikia nyenzo za shule kwa usimamizi wa wazazi.</translation>
@@ -5133,7 +5133,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5623842676595125836">Kumbukumbu</translation>
 <translation id="5624120631404540903">Dhibiti manenosiri</translation>
 <translation id="5625225435499354052">Badilisha kwenye Google Pay</translation>
-<translation id="5625631605902707678">Kwenye vifaa mbalimbali</translation>
 <translation id="5626134646977739690">Jina:</translation>
 <translation id="5627086634964711283">Pia inadhibiti ukurasa unaoonyeshwa unapobofya kitufe cha Mwanzo.</translation>
 <translation id="5627676517703583263">Vinjari kwa njia mahiri kwa kutumia Chrome</translation>
@@ -5245,7 +5244,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Data hii au kifaa chako hakitimizi baadhi ya sera za usalama. Wasiliana na msimamizi wako ili ufahamu unachotakiwa kurekebisha.}=1{Faili hii au kifaa chako hakitimizi baadhi ya sera za usalama za shirika lako. Wasiliana na msimamizi wako ili ufahamu unachotakiwa kurekebisha.}other{Faili hizi hazitimizi baadhi ya sera za usalama za shirika lako. Wasiliana na msimamizi wako ili ufahamu unachotakiwa kurekebisha.}}</translation>
 <translation id="5736796278325406685">Tafadhali andika jina sahihi la mtumiaji</translation>
 <translation id="5738093759615225354">Unahitaji nenosiri hili ili uingie katika akaunti kwenye kompyuta yako</translation>
-<translation id="5738329404678738022">Hifadhi alamisho zako na zaidi ukitumia usawazishaji</translation>
 <translation id="5739017626473506901">Ingia katika akaunti ili umsaidie <ph name="USER_NAME" /> aweke akaunti ya shuleni</translation>
 <translation id="5739235828260127894">Inasubiri uthibitishaji. <ph name="LINK_BEGIN" />Pata maelezo zaidi.<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Kubwa sana</translation>
@@ -5267,7 +5265,6 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5757375109985023827">Chagua kichupo cha kukagua kwanza</translation>
 <translation id="5758631781033351321">Utapata orodha yako ya kusoma hapa</translation>
 <translation id="5759728514498647443">Hati unazotuma zichapishwe kupitia <ph name="APP_NAME" /> zinaweza kusomwa na <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Ingia katika akaunti ili upate manufaa zaidi</translation>
 <translation id="5762787084360227629">Weka maelezo ya Akaunti ya Google</translation>
 <translation id="5763751966069581670">Hakuna vifaa vya USB</translation>
 <translation id="5764483294734785780">&amp;Hifadhi audio kama</translation>
@@ -7807,7 +7804,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8059417245945632445">Kagua vifaa</translation>
 <translation id="8059456211585183827">Hakuna printa unazoweza kuhifadhi.</translation>
 <translation id="8061091456562007989">Ibadilishe iwe ilivyokuwa</translation>
-<translation id="8061965471006133016">Ulinzi wa ziada wa manenosiri yako na zaidi</translation>
 <translation id="8061970399284390013">Ukaguzi wa tahajia na sarufi</translation>
 <translation id="8061991877177392872">Inaonekana kuwa tayari umeweka mipangilio ya Voice Match kwa kutumia programu ya Mratibu wa Google kwenye kifaa kingine. Rekodi hizi za awali zilitumika kutengeneza muundo wa sauti kwenye kifaa hiki.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{Karatasi moja}other{Karatasi {COUNT}}}</translation>

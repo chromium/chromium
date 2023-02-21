@@ -561,6 +561,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5118713593561876160">Diddordebau</translation>
 <translation id="5118764316110575523">Diffodd</translation>
 <translation id="5119391094379141756">Dewiswch Chrome</translation>
+<translation id="5121618895923301719">Rydych yn olrhain y cynnyrch hwn yn barod. Mae'r dudalen hon wedi'i chadw yn <ph name="BEGIN_LINK" />Nodau Tudalen Dyfais Symudol<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Cysonwch eich cyfrineiriau, hanes a mwy ar bob dyfais</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} Cyfrinair Gwan}zero{{COUNT} Cyfrinair Gwan}two{{COUNT} Gyfrinair Gwan}few{{COUNT} Cyfrinair Gwan}many{{COUNT} Cyfrinair Gwan}other{{COUNT} Cyfrinair Gwan}}</translation>
 <translation id="5149188072385105201">Ychwanegu Cyfrinair...</translation>
@@ -591,6 +592,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5386314158584363703">Byddwch yn gweld eich gwefannau a ddilynir yma</translation>
 <translation id="5388358297987318779">Agor Llun</translation>
 <translation id="5407969256130905701">Cael Gwared ar Newidiadau?</translation>
+<translation id="5414763847370083940">Byddwch yn cael rhybudd os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="5416022985862681400">Y 7 diwrnod diwethaf</translation>
 <translation id="5423269318075950257">Dilyn y Pris</translation>
 <translation id="543338862236136125">Golygu cyfrinair</translation>
@@ -1133,6 +1135,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="952704832371081537">Canslo</translation>
 <translation id="953008885340860025">Mae Chrome wedi'i Allgofnodi</translation>
 <translation id="959066944189734975">Rydych yn dilyn <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Olrhain pris cynnyrch ar draws siopau ar-lein. Byddwch yn cael rhybudd pan fydd y pris yn gostwng.</translation>
 <translation id="980712131080209571">G</translation>
 <translation id="981498610235328462">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig Mae cyfrifon na chaniateir yn cael eu cuddio.</translation>
 <translation id="984509647832111802">Nid yw Cysoni'n Gweithio.</translation>

@@ -226,6 +226,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2248941474044011069">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google</translation>
 <translation id="2249635629516220541">Personnaliser les infos utilisées par les sites pour vous présenter des annonces</translation>
 <translation id="2259659629660284697">Exporter les mots de passe…</translation>
+<translation id="2276231040576210443">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK1" />paramètres<ph name="END_LINK1" />. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2276696007612801991">Connectez-vous à votre compte Google pour vérifier vos mots de passe</translation>
 <translation id="2278052315791335171">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresse de facturation</translation>
@@ -1242,6 +1243,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7682724950699840886">Essayez l'astuce suivante°: assurez-vous de disposer de suffisamment d'espace sur votre appareil, puis tentez à nouveau d'exporter les mots de passe.</translation>
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
 <translation id="768618399695552958">Certaines pages que vous consultez sont préchargées. Elles peuvent l'être via les serveurs de Google lorsqu'elles sont liées à partir d'un site Google.</translation>
+<translation id="7691043218961417207">Découvrir des contenus à suivre</translation>
 <translation id="7698359219371678927">Créer un e-mail dans <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Utilisera les données mobiles</translation>
 <translation id="7709094866268987903">Les centres d'intérêt que vous supprimez s'afficheront ici</translation>
@@ -1492,6 +1494,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8970887620466824814">Un problème est survenu</translation>
 <translation id="8972098258593396643">Télécharger dans le dossier par défaut ?</translation>
 <translation id="8987641763863173640">Gérez les paramètres de l'aperçu vidéo</translation>
+<translation id="8987736167266086032">Reprenez là où vous vous étiez arrêté</translation>
 <translation id="8989968390305463310">Votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime automatiquement vos centres d'intérêt tous les mois. Les centres d'intérêt peuvent s'actualiser, sauf si vous les supprimez.</translation>
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode navigation privée</translation>
 <translation id="8996847606757455498">Sélectionner un autre fournisseur</translation>

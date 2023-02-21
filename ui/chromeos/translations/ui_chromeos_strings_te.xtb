@@ -356,6 +356,7 @@
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> నుండి <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3973925058222872294">ఇంగ్లీష్ (UK)</translation>
 <translation id="3975895378829046965">బంగ్లా ఫొనెటిక్</translation>
+<translation id="3999574733850440202">ఇటీవల తెరిచిన Microsoft ఫైల్స్ OneDriveకు తరలించబడ్డాయి</translation>
 <translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="4017788180641807848">వర్క్‌మాన్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="4019998208269143058">క్విక్ ఫైల్స్‌కు పిన్ చేయండి</translation>
@@ -882,6 +883,7 @@
 <translation id="8116072619078571545">చల్లటి నీరు</translation>
 <translation id="8128733386027980860">డ్వోరక్ కీబోర్డ్‌తో ఇంగ్లీష్ (UK)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" మీతో షేర్ చేయబడింది. మీకు ఇది స్వంతం కానందున మీరు దీన్ని తొలగించలేరు.</translation>
+<translation id="8138705869659070104">పరికరాన్ని సెటప్ చేసిన తర్వాత యాక్టివేట్ చేయండి</translation>
 <translation id="813913629614996137">ప్రారంభిస్తోంది...</translation>
 <translation id="8147028810663464959">అక్షరం వెడల్పు నిండింది</translation>
 <translation id="8151638057146502721">కాన్ఫిగర్ చేయి</translation>
@@ -907,6 +909,7 @@
 <translation id="8300849813060516376">OTASP విఫలమైంది</translation>
 <translation id="8312871300878166382">ఫోల్డర్‌లోకి పేస్ట్ చేయండి</translation>
 <translation id="8329978297633540474">సాదా వచనం</translation>
+<translation id="8332007959299458842">ఇటీవల తెరిచిన Microsoft ఫైల్స్ Google Driveకు తరలించబడ్డాయి</translation>
 <translation id="8335587457941836791">అర నుండి అన్‌పిన్ చేయండి</translation>
 <translation id="8335837413233998004">బెలారుసియన్</translation>
 <translation id="8336153091935557858">నిన్న <ph name="YESTERDAY_DAYTIME" /></translation>

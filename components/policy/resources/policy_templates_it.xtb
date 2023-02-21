@@ -794,6 +794,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, i controlli o le funzionalità di luminosità automatica dello schermo dell'utente rimangono invariati.
 
       Nota: i valori del criterio devono essere specificati in percentuali da 0 a 100.</translation>
+<translation id="1733092875104864334">Non consentire la raccolta di log di testo WebRTC dai servizi Google</translation>
 <translation id="1733768596873041559">Reindirizza all'IdP SAML per impostazione predefinita (prima della versione 99 di <ph name="PRODUCT_NAME" /> è necessaria la conferma dell'utente)</translation>
 <translation id="1733939382419067578">La configurazione del criterio consente di impostare un elenco di pattern URL che specificano i siti che possono mostrare notifiche.
 
@@ -1338,6 +1339,7 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 
       Se questo criterio non viene impostato, tutti i plug-in che corrispondono ai pattern in "DisabledPlugins" verranno disattivati e bloccati e l'utente non potrà attivarli.</translation>
 <translation id="2236488539271255289">Non consentire ai siti di impostare i dati locali</translation>
+<translation id="2236593201136596376">Consenti la raccolta di log di testo WebRTC dai servizi Google</translation>
 <translation id="2241498944622759244">Questa funzionalità non è mai stata lanciata, pertanto il criterio è obsoleto. Se è impostato su true o non è impostato, <ph name="PRODUCT_NAME" /> suggerisce pagine correlate alla pagina corrente.
       Questi suggerimenti vengono recuperati da remoto dai server di Google.
 
@@ -1482,6 +1484,9 @@ Il salvaschermo del dispositivo mostra le immagini a cui fa riferimento il crite
       Se il criterio non viene impostato, i cookie di terze parti vengono attivati, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="2386362615870139244">Consenti Wakelock dello schermo</translation>
 <translation id="2387469539700985783">Questo criterio non influisce sui report generati da Android.</translation>
+<translation id="2388701318721126001">Se questo criterio viene disattivato, non è possibile selezionare l'immagine di sfondo dell'utente <ph name="PRODUCT_OS_NAME" /> da un album di Google Foto.
+
+L'utente può scegliere un'immagine di Google Foto come sfondo se questo criterio viene attivato o se non viene configurato.</translation>
 <translation id="2393862222659066027">Apri un elenco di URL e ripristina l'ultima sessione</translation>
 <translation id="2394429297128584919">Non consentire alle pagine di inviare richieste XHR sincrone durante la chiusura delle pagine</translation>
 <translation id="2394674739523870144">Se per questo criterio viene impostato un elenco di stringhe, queste ultime vengono unite usando degli spazi e passate da <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> sotto forma di parametri della riga di comando. Se un parametro contiene <ph name="URL_PLACEHOLDER" />, il valore <ph name="URL_PLACEHOLDER" /> viene sostituito con l'URL della pagina da aprire. Se nessun parametro contiene <ph name="URL_PLACEHOLDER" />, l'URL viene aggiunto alla fine della riga di comando.
@@ -2842,6 +2847,7 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="3608206578291537084">Abilita la Pipeline di reporting criptato</translation>
 <translation id="3608281460204780443">Visualizza l'icona di Chrome Web Store in Avvio app di <ph name="PRODUCT_OS_NAME" /> e nella pagina Nuova scheda</translation>
 <translation id="3622463490728773174">Consenti nuova implementazione</translation>
+<translation id="3623332696371971798">Impedisci l'accesso a Google Foto dall'app di personalizzazione</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
 <translation id="3634125384445314047">Consenti l'accesso tramite Phone Hub a foto e video recenti acquisiti sul telefono.</translation>
@@ -2879,6 +2885,7 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 
           Si tratta di un criterio temporaneo di cui è prevista la rimozione in <ph name="PRODUCT_NAME" /> 107. Questo termine ultimo potrebbe essere esteso nel caso in cui le aziende dovessero averne bisogno.
           </translation>
+<translation id="3678069907945250643">Consenti l'accesso a Google Foto dall'app di personalizzazione</translation>
 <translation id="3685979383016152590">La configurazione del criterio consente di determinare quale criterio di accesso applicare per la configurazione collettiva delle stampanti, al fine di stabilire quali stampanti del criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> mettere a disposizione degli utenti.
 
       * Per l'opzione <ph name="PRINTERS_BLOCKLIST" /> (valore 0) viene usato il valore <ph name="PRINTERS_BULK_BLOCKLIST" /> per limitare l'accesso alle stampanti specificate.
@@ -7169,6 +7176,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se questo criterio viene disattivato o se non viene configurato, potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.
       In ogni caso, continueranno a essere consentite le app di Chrome con installazione forzata in base al criterio.</translation>
 <translation id="7774768074957326919">Utilizza le impostazioni proxy di sistema</translation>
+<translation id="7775077662962729812">Selezione di sfondi da Google Foto</translation>
 <translation id="7776848995687565978">Configura un elenco di origini che concedono una durata estesa in background alle estensioni che si connettono.</translation>
 <translation id="777734450201217641">Consente di attivare le scorciatoie delle funzioni di accessibilità nella schermata di accesso.
 
@@ -7996,6 +8004,7 @@ Il rollback alla versione 106 o precedente di <ph name="PRODUCT_OS_NAME" /> non 
 
           Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti JIT di JavaScript viene attivato per il sito.</translation>
 <translation id="8543108307976719751">Impedisci le connessioni di accesso remoto a questo computer</translation>
+<translation id="8543639085146778837">Consenti la raccolta di log di testo WebRTC dai servizi Google</translation>
 <translation id="8543975123557636331">Attiva l'output audio</translation>
 <translation id="8544375438507658205">Renderer HTML predefinito per <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8544465954173828789">Consente la sincronizzazione di messaggi SMS dal telefono al Chromebook</translation>
@@ -8499,6 +8508,9 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 
       Il valore della norma deve essere specificato in millisecondi. I valori sono limitati a un intervallo compreso tra 30 secondi e 24 ore.</translation>
 <translation id="9040042535845939426">Imposta lo stato di Schermata sulla privacy nella schermata di accesso</translation>
+<translation id="9046248916118130378">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_NAME" /> può raccogliere log di testo WebRTC dai servizi Google, ad esempio Google Meet, e caricarli su Google. Questi log contengono informazioni diagnostiche utili per il debug dei problemi relativi a riunioni audio e video in <ph name="PRODUCT_NAME" />, ad esempio metadati di testo che descrivono gli stream WebRTC in entrata e in uscita, le voci di log specifiche di WebRTC e informazioni di sistema aggiuntive. Questi log non contengono l'audio o i video delle riunioni.
+Se il criterio viene impostato su Disattivato, il caricamento di questi log su Google non viene eseguito. I log si accumuleranno comunque localmente sul dispositivo dell'utente.
+Se il criterio non viene configurato, per impostazione predefinita <ph name="PRODUCT_NAME" /> può raccogliere e caricare i log.</translation>
 <translation id="9050853837490399534">Questa norma consente di stabilire se il dispositivo debba essere aggiornato a una build di correzione rapida.
 
       Se il valore della norma viene impostato su un token associato a una build di correzione rapida, il dispositivo verrà aggiornato alla build di correzione rapida corrispondente se l'aggiornamento non è bloccato da un'altra norma.

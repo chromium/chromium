@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">關於 Chrome OS</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
-<translation id="1236866257838264361">你可以充分運用 Chrome 的所有功能</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
 <translation id="1335640173511558774">根據 <ph name="MANAGER" /> 的規定，您必須先詳閱並接受下列《服務條款》，才能使用這部裝置。這些條款不會擴充、修改或限制《Google ChromeOS Flex 條款》。</translation>
@@ -256,6 +255,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6010556343189461180">如果之後要更新 Google Chrome，必須使用 macOS 10.15 以上版本。這部電腦目前的版本為 macOS 10.14。</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome 即將關閉。}=1{Chrome 將於 1 秒後關閉。}other{Chrome 將於 # 秒後關閉。}}</translation>
+<translation id="6022659036123304283">打造專屬的 Chrome</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6070348360322141662">為了提升安全性，Google Chrome 會將你的資料加密保護</translation>
 <translation id="608006075545470555">在這個瀏覽器中新增工作資料夾</translation>

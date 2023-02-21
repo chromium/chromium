@@ -84,6 +84,7 @@
 <translation id="1178821169867863726">12 po x 16 po</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1186201132766001848">Vérifier les mots de passe</translation>
+<translation id="1195073053842921378">Cette adresse sera supprimée de cet appareil</translation>
 <translation id="1195558154361252544">Les notifications sont automatiquement bloquées pour tous les sites, sauf ceux que vous autorisez</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1201402288615127009">Suivant</translation>
@@ -2018,7 +2019,6 @@
 <translation id="5992691462791905444">Technique de pli en Z</translation>
 <translation id="5992805036496113940">Afficher les renseignements utilisés pour la présentation des publicités</translation>
 <translation id="5995727681868049093">Gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
-<translation id="5996887213716993070"><ph name="FIELD" /> ne peut être vide</translation>
 <translation id="5997247540087773573">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Pour sécuriser vos comptes, le gestionnaire de mots de passe de Google vous recommande de le changer maintenant et de vérifier vos mots de passe enregistrés.</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="6005765687956866568">Les renseignements remplis automatiquement ont été effacés du formulaire</translation>

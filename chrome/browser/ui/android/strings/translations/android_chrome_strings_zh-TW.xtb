@@ -227,6 +227,7 @@
 <translation id="2248941474044011069">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資訊</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
+<translation id="2276231040576210443">你隨時可以前往<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查你的密碼</translation>
 <translation id="2278052315791335171">刪除這組密碼並不會刪除你的 <ph name="SITE" /> 帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
@@ -1492,6 +1493,7 @@
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
 <translation id="8987641763863173640">管理影片預覽設定</translation>
+<translation id="8987736167266086032">接續上次進度</translation>
 <translation id="8989968390305463310">你的瀏覽記錄會影響你所看到的廣告，以及系統推測的下列興趣喜好。為保護個人隱私，Chrome 每個月都會自動刪除你的興趣喜好。系統會重新整理這項資訊，除非你自行予以移除。</translation>
 <translation id="8993760627012879038">在無痕模式下開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>

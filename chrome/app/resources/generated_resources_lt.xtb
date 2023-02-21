@@ -4460,7 +4460,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="4977942889532008999">Patvirtinti prieigą</translation>
 <translation id="4980805016576257426">Šiame plėtinyje yra kenkėjiškų programų.</translation>
 <translation id="4981449534399733132">Norėdami išvalyti naršymo duomenis iš sinchronizuotų įrenginių ir „Google“ paskyros, <ph name="BEGIN_LINK" />prisijunkite<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Tęskite nuo ten, kur baigėte, bet kuriame įrenginyje</translation>
 <translation id="4986706507552097681">Bet kada galite pasirinkti, ką norite sinchronizuoti, skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="4986728572522335985">Taip bus ištrinti visi saugos rakte išsaugoti duomenys, įskaitant jo PIN kodą</translation>
 <translation id="4988526792673242964">Psl.</translation>
@@ -4577,7 +4576,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5097349930204431044">Svetainės, kuriose lankotės, gali nustatyti, kas jums patinka, ir siūlyti skelbimus jums toliau naršant</translation>
 <translation id="5097649414558628673">Įrankis: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatiškai spustelėti žymekliui sustojus</translation>
-<translation id="5101683448725092498">Atsarginės turinio kopijos kūrimas</translation>
 <translation id="5101839224773798795">Automatiškai spustelėti sustojus žymekliui</translation>
 <translation id="5106350808162641062">Pašalinti</translation>
 <translation id="510695978163689362">Paskyra <ph name="USER_EMAIL" /> prižiūrima naudojant „Family Link“. Galite pridėti mokyklos paskyrų, kad būtų galima pasiekti mokyklos išteklius naudojant tėvų priežiūros funkciją.</translation>
@@ -5144,7 +5142,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5623842676595125836">Žurnalas</translation>
 <translation id="5624120631404540903">Tvarkyti slaptažodžius</translation>
 <translation id="5625225435499354052">Redaguoti sistemoje „Google Pay“</translation>
-<translation id="5625631605902707678">Skirtinguose įrenginiuose</translation>
 <translation id="5626134646977739690">Pavadinimas:</translation>
 <translation id="5627086634964711283">Ji taip pat kontroliuoja, koks puslapis rodomas, kai spustelėjate pagrindinio puslapio mygtuką.</translation>
 <translation id="5627676517703583263">Naršykite išmaniai naudodami „Chrome“</translation>
@@ -5256,7 +5253,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Šie duomenys arba įrenginys neatitinka tam tikrų organizacijos saugos politikos nuostatų. Susisiekite su administratoriumi ir sužinokite, ką reikia pataisyti.}=1{Šis failas arba įrenginys neatitinka tam tikrų organizacijos saugos politikos nuostatų. Susisiekite su administratoriumi ir sužinokite, ką reikia pataisyti.}one{Šie failai neatitinka kai kurių organizacijos saugos politikos nuostatų. Susisiekite su administratoriumi ir sužinokite, ką reikia pataisyti.}few{Šie failai neatitinka kai kurių organizacijos saugos politikos nuostatų. Susisiekite su administratoriumi ir sužinokite, ką reikia pataisyti.}many{Šie failai neatitinka kai kurių organizacijos saugos politikos nuostatų. Susisiekite su administratoriumi ir sužinokite, ką reikia pataisyti.}other{Šie failai neatitinka kai kurių organizacijos saugos politikos nuostatų. Susisiekite su administratoriumi ir sužinokite, ką reikia pataisyti.}}</translation>
 <translation id="5736796278325406685">Įveskite tinkamą naudotojo vardą</translation>
 <translation id="5738093759615225354">Jums reikia šio slaptažodžio, kad galėtumėte prisijungti prie kompiuterio</translation>
-<translation id="5738329404678738022">Saugokite žymes ir atlikite daugiau veiksmų naudodami sinchronizavimą</translation>
 <translation id="5739017626473506901">Prisijunkite, kad padėtumėte <ph name="USER_NAME" /> pridėti mokyklos paskyrą</translation>
 <translation id="5739235828260127894">Laukiama patvirtinimo. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Labai didelis</translation>
@@ -5278,7 +5274,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5757375109985023827">Pasirinkite norimą peržiūrėti skirtuką</translation>
 <translation id="5758631781033351321">Čia rasite skaitymo sąrašą</translation>
 <translation id="5759728514498647443">Dokumentus, kuriuos siunčiate spausdinti naudodami „<ph name="APP_NAME" />“, gali skaityti „<ph name="APP_NAME" />“.</translation>
-<translation id="5760508342220592715">Daugiau privilegijų prisijungus</translation>
 <translation id="5762787084360227629">Įvesti „Google“ paskyros informaciją</translation>
 <translation id="5763751966069581670">Nerasta jokių USB įrenginių</translation>
 <translation id="5764483294734785780">Iš&amp;saugoti garso įrašą kaip...</translation>
@@ -7823,7 +7818,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8059417245945632445">&amp;Tikrinti įrenginius</translation>
 <translation id="8059456211585183827">Nėra galimų išsaugoti spausdintuvų.</translation>
 <translation id="8061091456562007989">Grąžinti ankstesnį variantą</translation>
-<translation id="8061965471006133016">Papildoma slaptažodžių apsauga ir dar daugiau</translation>
 <translation id="8061970399284390013">Rašybos ir gramatikos tikrinimas</translation>
 <translation id="8061991877177392872">Panašu, kad jau esate nustatę „Voice Match“ naudodami Padėjėją kitame įrenginyje. Ankstesni įrašai buvo naudojami kuriant balso modelį šiame įrenginyje.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 popieriaus lapas}one{{COUNT} popieriaus lapas}few{{COUNT} popieriaus lapai}many{{COUNT} popieriaus lapo}other{{COUNT} popieriaus lapų}}</translation>

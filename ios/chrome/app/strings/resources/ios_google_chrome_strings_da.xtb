@@ -113,6 +113,7 @@
 <translation id="7780154209050837198">Log ind i Chrome med din Google-konto for at få mest muligt ud af Chrome.</translation>
 <translation id="7855730255114109580">Google Chrome er opdateret</translation>
 <translation id="7939179037291298976">Gå til Indstillinger på din iPhone, åbn "Indstillinger til adgangskode", og vælg "Chrome"</translation>
+<translation id="7975131781538454817">Chrome-notifikationer er deaktiveret i enhedsindstillingerne. Du skal først tillade notifikationer.</translation>
 <translation id="8022947259858476807">Brug som standard Chrome til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
 <translation id="81358522153858150">Chrome understøtter nu brugerpolitikker for din administrerede konto</translation>
 <translation id="8160472928944011082">Chrome kan ikke opdateres</translation>
@@ -142,6 +143,7 @@ Ting, du skal overveje:
   • Hvis Chrome oplever nedbrud, kan oplysningerne om nedbruddet omfatte visse personlige oplysninger.
 
   • Hvis du aktiverer synkronisering, kan metrics også omfatte oplysninger om de webadresser, du besøger.<ph name="END_INDENT" /></translation>
+<translation id="9101160735177453133">Hvis du vil aktivere "Hold øje med prisudviklingen", skal du tillade Chrome-notifikationer i enhedsindstillingerne</translation>
 <translation id="9103442491611662960">Du får standardbeskyttelse til denne Chrome-profil</translation>
 <translation id="9112744793181547300">Vil du angive Chrome som standard?</translation>
 <translation id="9122931302567044771">Det betyder, at Chrome anmoder om computerwebsitet hver gang.</translation>

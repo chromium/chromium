@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">अगला</translation>
 <translation id="1209796539517632982">स्वचालित नाम सर्वर</translation>
 <translation id="1210831758834677569">लाओ</translation>
+<translation id="1221555006497674479">आपके <ph name="TOTAL_SPACE" /> की शेयर की गई ड्राइव में सिर्फ़ <ph name="REMAINING_PERCENTAGE" />% स्टोरेज बचा है.</translation>
 <translation id="1243314992276662751">अपलोड करें</translation>
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इंटरनेट कनेक्‍शन</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">चाइनीज़ पिनयिन</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> फ़ाइलों को ऑफ़लाइन इस्तेमाल करने के लिए डाउनलोड किया जा रहा है</translation>
 <translation id="164969095109328410">Chrome डिवाइस</translation>
+<translation id="1661207570040737402">आपने Google Workspace के साथ शेयर की गई अपनी ड्राइव के स्टोरेज का इस्तेमाल कर लिया है.</translation>
 <translation id="1661867754829461514">पिन गुम</translation>
 <translation id="166439687370499867">शेयर किए गए नेटवर्क कॉन्फ़िगरेशन बदलने की अनुमति नहीं है</translation>
 <translation id="1665611772925418501">फ़ाइल को संशोधित नहीं किया जा सका.</translation>
@@ -354,6 +356,7 @@
 <translation id="3971140002794351170">मोबाइल प्रोफ़ाइल डाउनलोड करें. यह <ph name="NETWORK_PROVIDER_NAME" /> के <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
 <translation id="3973925058222872294">अंग्रेज़ी (यूके)</translation>
 <translation id="3975895378829046965">बांग्ला फ़ोनेटिक</translation>
+<translation id="3999574733850440202">हाल ही में खोली गई Microsoft फ़ाइलों को OneDrive में भेज दिया गया है</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4017788180641807848">वर्कमैन कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
 <translation id="4019998208269143058">क्विक फ़ाइलों में पिन करें</translation>
@@ -880,6 +883,7 @@
 <translation id="8116072619078571545">ठंडा पानी</translation>
 <translation id="8128733386027980860">ड्वोराक कीबोर्ड के साथ अंग्रेज़ी (यूके)</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" को आपके साथ शेयर किया गया है. आप इसे नहीं मिटा सकते क्योंकि आप इसके मालिक नहीं हैं.</translation>
+<translation id="8138705869659070104">डिवाइस सेटअप के बाद चालू करें</translation>
 <translation id="813913629614996137">शुरू हो रहा है...</translation>
 <translation id="8147028810663464959">वर्ण की चौड़ाई 'सबसे ज़्यादा' पर सेट है</translation>
 <translation id="8151638057146502721">कॉन्फ़िगर करें</translation>
@@ -905,6 +909,7 @@
 <translation id="8300849813060516376">OTASP विफल</translation>
 <translation id="8312871300878166382">फ़ोल्डर में चिपकाएं</translation>
 <translation id="8329978297633540474">सादा लेख</translation>
+<translation id="8332007959299458842">हाल ही में खोली गई Microsoft फ़ाइलों को Google Drive में भेज दिया गया है</translation>
 <translation id="8335587457941836791">अलमारी से टैब बड़ी करें</translation>
 <translation id="8335837413233998004">बेलारशियन</translation>
 <translation id="8336153091935557858">कल <ph name="YESTERDAY_DAYTIME" /></translation>

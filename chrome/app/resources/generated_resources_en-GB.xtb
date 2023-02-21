@@ -1639,6 +1639,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2408018932941436077">Saving card</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
 <translation id="2409268599591722235">Let's go</translation>
+<translation id="2409709393952490731">Use a phone or tablet</translation>
 <translation id="2410079346590497630">Build details</translation>
 <translation id="2410298923485357543">Use natural voice when device is online</translation>
 <translation id="2410754283952462441">Choose an account</translation>
@@ -3787,6 +3788,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4369215744064167350">Website request approved</translation>
 <translation id="4369735607080757018">Limited types of data are shared between sites to measure the performance of their ads, such as the time of day that an ad was shown to you</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
+<translation id="4374805630006466253">Use a different phone or tablet</translation>
 <translation id="4374831787438678295">Linux installer</translation>
 <translation id="4375035964737468845">Open downloaded files</translation>
 <translation id="4376226992615520204">Location turned off</translation>
@@ -4464,7 +4466,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4977942889532008999">Confirm Access</translation>
 <translation id="4980805016576257426">This extension contains malware.</translation>
 <translation id="4981449534399733132">To clear browsing data from all of your synced devices and your Google Account, <ph name="BEGIN_LINK" />sign in<ph name="END_LINK" />.</translation>
-<translation id="4982111327868342436">Pick up where you left off on any device</translation>
 <translation id="4986706507552097681">You can always choose what to sync in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="4986728572522335985">This will delete all data on the security key, including its PIN</translation>
 <translation id="4988526792673242964">Pages</translation>
@@ -4581,7 +4582,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5097349930204431044">Sites that you visit can determine what you like and then suggest ads as you continue browsing</translation>
 <translation id="5097649414558628673">Tool: <ph name="PRINT_NAME" /></translation>
 <translation id="5097874180538493929">Automatically click when the cursor stops</translation>
-<translation id="5101683448725092498">Back up your stuff</translation>
 <translation id="5101839224773798795">Automatically click when the cursor stops</translation>
 <translation id="5106350808162641062">Remove</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> is supervised by Family Link. You can add school accounts to access school resources with parental supervision.</translation>
@@ -5147,7 +5147,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5623842676595125836">Log</translation>
 <translation id="5624120631404540903">Manage passwords</translation>
 <translation id="5625225435499354052">Edit in Google Pay</translation>
-<translation id="5625631605902707678">Across devices</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5627086634964711283">It also controls what page is shown when you click the Home button.</translation>
 <translation id="5627676517703583263">Browse smart with Chrome</translation>
@@ -5259,7 +5258,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{This data or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}=1{This file or your device doesn’t meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}other{These files don't meet some of your organisation’s security policies. Check with your admin on what needs to be fixed.}}</translation>
 <translation id="5736796278325406685">Please enter a valid username</translation>
 <translation id="5738093759615225354">You need this passkey to sign in to your computer</translation>
-<translation id="5738329404678738022">Store your bookmarks and more with Sync</translation>
 <translation id="5739017626473506901">Sign in to help <ph name="USER_NAME" /> add a school account</translation>
 <translation id="5739235828260127894">Waiting for verification. <ph name="LINK_BEGIN" />Find out more<ph name="LINK_END" /></translation>
 <translation id="5739458112391494395">Very large</translation>
@@ -5281,7 +5279,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5757375109985023827">Select a tab to preview</translation>
 <translation id="5758631781033351321">You'll find your reading list here</translation>
 <translation id="5759728514498647443">Documents that you send to print via <ph name="APP_NAME" /> can be read by <ph name="APP_NAME" />.</translation>
-<translation id="5760508342220592715">Sign in for more benefits</translation>
 <translation id="5762787084360227629">Enter Google Account info</translation>
 <translation id="5763751966069581670">No USB devices found</translation>
 <translation id="5764483294734785780">Sa&amp;ve audio as...</translation>
@@ -7826,7 +7823,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8059417245945632445">&amp;Inspect devices</translation>
 <translation id="8059456211585183827">There are no printers available to save.</translation>
 <translation id="8061091456562007989">Change it back</translation>
-<translation id="8061965471006133016">Extra protection to your passwords and more</translation>
 <translation id="8061970399284390013">Spelling and grammar check</translation>
 <translation id="8061991877177392872">It looks as though you've already set up Voice Match with your Assistant on another device. These previous recordings were used to make a voice model on this device.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 sheet of paper}other{{COUNT} sheets of paper}}</translation>

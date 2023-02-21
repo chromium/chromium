@@ -13,7 +13,6 @@
 <translation id="1152920704813762236">ChromeOS について</translation>
 <translation id="1154147086299354128">Chrome で開く(&amp;O)</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
-<translation id="1236866257838264361">Chrome を最大限に活用できます</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="1302523850133262269">Chrome は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google ChromeOS Flex 利用規約を拡張、変更、制限するものではありません。</translation>
@@ -253,6 +252,7 @@
 <translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>
 <translation id="6010556343189461180">今後、Google Chrome のアップデートを受信するには、macOS 10.15 以降が必要となります。このコンピュータでは macOS 10.14 が実行されています。</translation>
 <translation id="6022388122721048220">{0,plural, =0{Chrome は今すぐ終了します。}=1{Chrome は 1 秒後に終了します。}other{Chrome は # 秒後に終了します。}}</translation>
+<translation id="6022659036123304283">Chrome を独自にカスタマイズ</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6070348360322141662">セキュリティ強化のため、データは Google Chrome で暗号化されます</translation>
 <translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>

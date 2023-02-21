@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Susunod</translation>
 <translation id="1209796539517632982">Mga awtomatikong server ng pangalan</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1221555006497674479">Paubos na ang storage, <ph name="REMAINING_PERCENTAGE" />% na lang ang natitira sa <ph name="TOTAL_SPACE" /> na storage ng iyong shared drive.</translation>
 <translation id="1243314992276662751">I-upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direktang koneksyon ng Internet</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinese Pinyin</translation>
 <translation id="1646019627374511909">Ginagawang available offline ang <ph name="NUMBER_OF_ITEMS" /> (na) file</translation>
 <translation id="164969095109328410">Chrome device</translation>
+<translation id="1661207570040737402">Nagamit mo na ang lahat ng iyong storage ng Shared Drive sa Google Workspace.</translation>
 <translation id="1661867754829461514">Nawawala ang PIN</translation>
 <translation id="166439687370499867">Hindi pinapayagan ang pagbago sa mga nakabahaging configuration ng network</translation>
 <translation id="1665611772925418501">Hindi mababago ang file.</translation>
@@ -880,6 +882,7 @@
 <translation id="8116072619078571545">Tubig na may yelo</translation>
 <translation id="8128733386027980860">English (UK) na may Dvorak keyboard</translation>
 <translation id="8137331602592933310">Ibinahagi sa iyo ang "<ph name="FILENAME" />." Hindi mo ito matatanggal dahil hindi mo ito pagmamay-ari.</translation>
+<translation id="8138705869659070104">I-activate matapos ang setup</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
 <translation id="8147028810663464959">Puno na ang lapad ng character</translation>
 <translation id="8151638057146502721">I-configure</translation>
