@@ -31,9 +31,12 @@ std::unique_ptr<{{type.id}}> {{type.id}}::Parse(const base::Value& value, ErrorR
   std::unique_ptr<{{type.id}}> result(new {{type.id}}());
   errors->Push();
   errors->SetName("{{type.id}}");
+  {% if type.properties %}
+  const base::Value::Dict& dict = value.GetDict();
+  {% endif %}
   {% for property in type.properties %}
     {% set value_name = property.name | camelcase_to_hacker_style + "_value" %}
-  const base::Value* {{value_name}} = value.FindKey("{{property.name}}");
+  const base::Value* {{value_name}} = dict.Find("{{property.name}}");
   if ({{value_name}}) {
     errors->SetName("{{property.name}}");
     {% if property.optional %}
