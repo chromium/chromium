@@ -1408,8 +1408,6 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
 
       base::SysUTF8ToNSString(policy::key::kNTPContentSuggestionsEnabled) : @NO,
 
-      base::SysUTF8ToNSString(policy::key::kPasswordManagerEnabled) : @NO,
-
       base::SysUTF8ToNSString(policy::key::kTranslateEnabled) : @NO,
 
       // 2 = Enhanced safe browsing protection
@@ -1510,6 +1508,13 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
         base::SysUTF8ToNSString(policy::key::kAllowChromeDataInBackups);
     [testing_policies addEntriesFromDictionary:@{allow_backups_key : @NO}];
     [allowed_experimental_policies addObject:allow_backups_key];
+  }
+
+  if ([defaults boolForKey:@"DisablePasswordManagerPolicy"]) {
+    NSString* password_manager_key =
+        base::SysUTF8ToNSString(policy::key::kPasswordManagerEnabled);
+    [testing_policies addEntriesFromDictionary:@{password_manager_key : @NO}];
+    [allowed_experimental_policies addObject:password_manager_key];
   }
 
   // If any experimental policy was allowed, set the EnableExperimentalPolicies
