@@ -534,7 +534,8 @@ void CSSToggleInference::Rebuild() {
           element_roles_.insert(toggle_root, CSSToggleRole::kCheckbox);
           // TODO(dbaron): We should only set parent_role here when
           // there are multiple checkbox siblings with few non-checkbox
-          // siblings!
+          // siblings!  (Once we do this we can probably remove the
+          // tabs_ish_elements.Contains(parent) test below.)
           parent_role = CSSToggleRole::kCheckboxGroup;
         }
 
@@ -543,7 +544,8 @@ void CSSToggleInference::Rebuild() {
         // order to ensure that hash map processing order doesn't affect
         // the result).
         if (parent_role != CSSToggleRole::kNone && parent &&
-            !accordion_ish_elements.Contains(parent)) {
+            !accordion_ish_elements.Contains(parent) &&
+            !tabs_ish_elements.Contains(parent)) {
           auto parent_add_result = element_roles_.insert(parent, parent_role);
           // prefer checkbox group to radio group if some children
           // lead to either
