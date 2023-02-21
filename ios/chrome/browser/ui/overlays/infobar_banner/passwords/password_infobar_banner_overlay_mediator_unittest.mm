@@ -82,63 +82,7 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest, SetUpConsumer) {
               consumer.buttonText);
   EXPECT_NSEQ(title, consumer.titleText);
   EXPECT_NSEQ(subtitle, consumer.subtitleText);
-
   EXPECT_TRUE(consumer.presentsModal);
-}
-
-// Tests that a PasswordInfobarBannerOverlayMediator correctly sets up its
-// consumer's icon with legacy assets.
-TEST_F(PasswordInfobarBannerOverlayMediatorTest,
-       SetUpConsumerIconNotUseSymbols) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kUseSFSymbols);
-
-  // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
-  std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> passed_delegate =
-      MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername, kPassword);
-  InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
-                     std::move(passed_delegate));
-  // Package the infobar into an OverlayRequest, then create a mediator that
-  // uses this request in order to set up a fake consumer.
-  std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
-      PasswordInfobarBannerOverlayRequestConfig>(&infobar);
-  PasswordInfobarBannerOverlayMediator* mediator =
-      [[PasswordInfobarBannerOverlayMediator alloc]
-          initWithRequest:request.get()];
-  FakeInfobarBannerConsumer* consumer =
-      [[FakeInfobarBannerConsumer alloc] init];
-  mediator.consumer = consumer;
-
-  // Verify that the infobar icon was set up properly.
-  EXPECT_NSEQ([UIImage imageNamed:@"password_key"], consumer.iconImage);
-}
-
-// Tests that a PasswordInfobarBannerOverlayMediator correctly sets up its
-// consumer's icon with SF symbol.
-TEST_F(PasswordInfobarBannerOverlayMediatorTest, SetUpConsumerIconUseSymbols) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kUseSFSymbols},
-      /*disabled_features=*/{
-          password_manager::features::kIOSShowPasswordStorageInSaveInfobar});
-
-  // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
-  std::unique_ptr<IOSChromeSavePasswordInfoBarDelegate> passed_delegate =
-      MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername, kPassword);
-  InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
-                     std::move(passed_delegate));
-  // Package the infobar into an OverlayRequest, then create a mediator that
-  // uses this request in order to set up a fake consumer.
-  std::unique_ptr<OverlayRequest> request = OverlayRequest::CreateWithConfig<
-      PasswordInfobarBannerOverlayRequestConfig>(&infobar);
-  PasswordInfobarBannerOverlayMediator* mediator =
-      [[PasswordInfobarBannerOverlayMediator alloc]
-          initWithRequest:request.get()];
-  FakeInfobarBannerConsumer* consumer =
-      [[FakeInfobarBannerConsumer alloc] init];
-  mediator.consumer = consumer;
-
-  // Verify that the infobar icon was set up properly.
   EXPECT_NSEQ(
       CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize),
       consumer.iconImage);
@@ -147,11 +91,8 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest, SetUpConsumerIconUseSymbols) {
 TEST_F(PasswordInfobarBannerOverlayMediatorTest,
        SetUpConsumerWithLocalStorage) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kUseSFSymbols,
-                            password_manager::features::
-                                kIOSShowPasswordStorageInSaveInfobar},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSShowPasswordStorageInSaveInfobar);
 
   // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
   InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
@@ -190,11 +131,8 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
 TEST_F(PasswordInfobarBannerOverlayMediatorTest,
        SetUpConsumerWithAccountStorage) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kUseSFSymbols,
-                            password_manager::features::
-                                kIOSShowPasswordStorageInSaveInfobar},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kIOSShowPasswordStorageInSaveInfobar);
 
   // Create an InfoBarIOS with a IOSChromeSavePasswordInfoBarDelegate.
   InfoBarIOS infobar(InfobarType::kInfobarTypePasswordSave,
