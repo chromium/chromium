@@ -264645,16 +264645,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "24658fcbb8b2f7366ccd91bb977cd3be4719da28",
-     []
-    ],
-    "mtime.json": [
-     "9e6b268c357c24b113ae363db36beb76cb116c89",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -299309,43 +299299,11 @@
      ],
      "image-set": {
       "image-set-computed.sub-expected.txt": [
-       "78e0027cb8765b6d52250a4a0700b59c112c12b2",
-       []
-      ],
-      "image-set-computed.sub.html.ini": [
-       "f98353bade16d7c70dcaff09ac065b2ec1a928c5",
-       []
-      ],
-      "image-set-conic-gradient-rendering.html.ini": [
-       "95d9cf7bd8d5a0a27d177bc66e8c7c684deabb3d",
-       []
-      ],
-      "image-set-linear-gradient-rendering.html.ini": [
-       "b58c2976a5926a55ad3f1b4c57155c33405f8b0e",
+       "dfc5f32b1eb39996c178765b273c0c6a496dc9c7",
        []
       ],
       "image-set-parsing-expected.txt": [
-       "d2f52d3a8f54a0348c315c04a131391304492c8d",
-       []
-      ],
-      "image-set-parsing.html.ini": [
-       "936aabcf464f334c39966c22ce9863502b5fb42e",
-       []
-      ],
-      "image-set-radial-gradient-rendering.html.ini": [
-       "3fcaf7fed895cbcb82a8a8a3082a86283464619e",
-       []
-      ],
-      "image-set-repeating-conic-gradient-rendering.html.ini": [
-       "f18e1ef9a009dd1d0eb1c76f73654ab469925435",
-       []
-      ],
-      "image-set-repeating-linear-gradient-rendering.html.ini": [
-       "be70642abe0de6d1f01e5cea728d0475998f7177",
-       []
-      ],
-      "image-set-repeating-radial-gradient-rendering.html.ini": [
-       "cfb95cb1d12971431322dce97fd519cbf8c3d8b1",
+       "52390b2af587cee70e05b57e9800bf3e21c8bd3b",
        []
       ],
       "image-set-resolution-001-ref.html": [
@@ -370882,7 +370840,7 @@
       []
      ],
      "mock-direct-sockets.js": [
-      "0752850c8a383353c39320da4dc0d3b3df257129",
+      "e2e02453f7f4d446c528051fc44974878150b809",
       []
      ],
      "mock-facedetection.js": [
@@ -659100,7 +659058,7 @@
      },
      "get_active_element": {
       "get.py": [
-       "2b79ebd58485156573d5369372bfe6a8a1587a9f",
+       "1d2960c88c5f587bf2dea86f5b97ad1e5fae9b5c",
        [
         null,
         {}
