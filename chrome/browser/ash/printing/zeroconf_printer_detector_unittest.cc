@@ -64,6 +64,7 @@ enum class ServiceType {
   kIppE,    // IPP-Everywhere
   kIppsE,   // IPPS-Everywhere
   kSocket,  // Socket
+  kLpd,     // LPD
 };
 
 // This corresponds to MakeServiceDescription() below. Given the same name (and
@@ -96,6 +97,9 @@ PrinterDetector::DetectedPrinter MakeExpectedPrinter(const std::string& name,
     case ServiceType::kSocket:
       scheme = "socket";
       rp = "";
+      break;
+    case ServiceType::kLpd:
+      scheme = "lpd";
       break;
   }
   printer.SetUri(base::StringPrintf("%s://%s.local:%d/%s", scheme.c_str(),
@@ -159,6 +163,9 @@ class ZeroconfPrinterDetectorTest : public testing::Test {
     auto socket_lister = std::make_unique<FakeServiceDiscoveryDeviceLister>(
         runner, ZeroconfPrinterDetector::kSocketServiceName);
     socket_lister_ = socket_lister.get();
+    auto lpd_lister = std::make_unique<FakeServiceDiscoveryDeviceLister>(
+        runner, ZeroconfPrinterDetector::kLpdServiceName);
+    lpd_lister_ = lpd_lister.get();
 
     listers_[ZeroconfPrinterDetector::kIppServiceName] = std::move(ipp_lister);
     listers_[ZeroconfPrinterDetector::kIppsServiceName] =
@@ -169,6 +176,7 @@ class ZeroconfPrinterDetectorTest : public testing::Test {
         std::move(ippse_lister);
     listers_[ZeroconfPrinterDetector::kSocketServiceName] =
         std::move(socket_lister);
+    listers_[ZeroconfPrinterDetector::kLpdServiceName] = std::move(lpd_lister);
   }
   ~ZeroconfPrinterDetectorTest() override = default;
 
@@ -187,6 +195,7 @@ class ZeroconfPrinterDetectorTest : public testing::Test {
     ippe_lister_->SetDelegate(detector_.get());
     ippse_lister_->SetDelegate(detector_.get());
     socket_lister_->SetDelegate(detector_.get());
+    lpd_lister_->SetDelegate(detector_.get());
   }
 
   // Expect that the most up-to-date results from the detector match those
@@ -278,6 +287,7 @@ class ZeroconfPrinterDetectorTest : public testing::Test {
   FakeServiceDiscoveryDeviceLister* ippe_lister_;
   FakeServiceDiscoveryDeviceLister* ippse_lister_;
   FakeServiceDiscoveryDeviceLister* socket_lister_;
+  FakeServiceDiscoveryDeviceLister* lpd_lister_;
 
   // Detector under test.
   std::unique_ptr<ZeroconfPrinterDetector> detector_;
@@ -332,6 +342,14 @@ TEST_F(ZeroconfPrinterDetectorTest, SingleSocketPrinter) {
   CreateDetector();
   CompleteTasks();
   ExpectPrintersAre({MakeExpectedPrinter("Printer5", ServiceType::kSocket)});
+}
+
+TEST_F(ZeroconfPrinterDetectorTest, SingleLpdPrinter) {
+  lpd_lister_->Announce(MakeServiceDescription(
+      "Printer6", ZeroconfPrinterDetector::kLpdServiceName));
+  CreateDetector();
+  CompleteTasks();
+  ExpectPrintersAre({MakeExpectedPrinter("Printer6", ServiceType::kLpd)});
 }
 
 // Test that an announce after the detector creation shows up as a printer.
@@ -401,6 +419,17 @@ TEST_F(ZeroconfPrinterDetectorTest, StableIds) {
   ASSERT_EQ(1U, printers_found_callbacks_.back().size());
   // Id should be the same.
   ASSERT_EQ(id, printers_found_callbacks_.back()[0].printer.id());
+
+  // Remove it as a socket printer, add it as an LPD printer.
+  socket_lister_->Remove("Printer1");
+  CompleteTasks();
+  ASSERT_TRUE(printers_found_callbacks_.back().empty());
+  lpd_lister_->Announce(MakeServiceDescription(
+      "Printer1", ZeroconfPrinterDetector::kLpdServiceName));
+  CompleteTasks();
+  ASSERT_EQ(1U, printers_found_callbacks_.back().size());
+  // Id should be the same.
+  ASSERT_EQ(id, printers_found_callbacks_.back()[0].printer.id());
 }
 
 // Test a basic removal.
@@ -432,9 +461,9 @@ TEST_F(ZeroconfPrinterDetectorTest, Removal) {
 
 // Test that, when the same printer appears in multiple services, we
 // use the highest priority one.  Priorities, from highest to lowest
-// are IPPS-E, IPP-E, IPPS, IPP.
+// are IPPS-E, IPP-E, IPPS, IPP, Socket, LPD.
 TEST_F(ZeroconfPrinterDetectorTest, ServiceTypePriorities) {
-  // Advertise on all 4 services.
+  // Advertise on all services.
   ipp_lister_->Announce(MakeServiceDescription(
       "Printer5", ZeroconfPrinterDetector::kIppServiceName));
   ipps_lister_->Announce(MakeServiceDescription(
@@ -445,6 +474,8 @@ TEST_F(ZeroconfPrinterDetectorTest, ServiceTypePriorities) {
       "Printer5", ZeroconfPrinterDetector::kIppsEverywhereServiceName));
   socket_lister_->Announce(MakeServiceDescription(
       "Printer5", ZeroconfPrinterDetector::kSocketServiceName));
+  lpd_lister_->Announce(MakeServiceDescription(
+      "Printer5", ZeroconfPrinterDetector::kLpdServiceName));
   CreateDetector();
   CompleteTasks();
   // IPPS-E is highest priority.
@@ -466,10 +497,15 @@ TEST_F(ZeroconfPrinterDetectorTest, ServiceTypePriorities) {
 
   ipp_lister_->Remove("Printer5");
   CompleteTasks();
-  // Socket is only remaining entry.
+  // Socket is highest remaining entry.
   ExpectPrintersAre({MakeExpectedPrinter("Printer5", ServiceType::kSocket)});
 
   socket_lister_->Remove("Printer5");
+  CompleteTasks();
+  // LPD is only remaining entry.
+  ExpectPrintersAre({MakeExpectedPrinter("Printer5", ServiceType::kLpd)});
+
+  lpd_lister_->Remove("Printer5");
   CompleteTasks();
   // No entries left.
   ExpectPrintersEmpty();
@@ -497,6 +533,10 @@ TEST_F(ZeroconfPrinterDetectorTest, CacheFlushes) {
       "Printer10", ZeroconfPrinterDetector::kSocketServiceName));
   socket_lister_->Announce(MakeServiceDescription(
       "Printer11", ZeroconfPrinterDetector::kSocketServiceName));
+  lpd_lister_->Announce(MakeServiceDescription(
+      "Printer11", ZeroconfPrinterDetector::kLpdServiceName));
+  lpd_lister_->Announce(MakeServiceDescription(
+      "Printer12", ZeroconfPrinterDetector::kLpdServiceName));
 
   CreateDetector();
   CompleteTasks();
@@ -505,7 +545,8 @@ TEST_F(ZeroconfPrinterDetectorTest, CacheFlushes) {
                      MakeExpectedPrinter("Printer8", ServiceType::kIppE),
                      MakeExpectedPrinter("Printer9", ServiceType::kIppsE),
                      MakeExpectedPrinter("Printer10", ServiceType::kIppsE),
-                     MakeExpectedPrinter("Printer11", ServiceType::kSocket)});
+                     MakeExpectedPrinter("Printer11", ServiceType::kSocket),
+                     MakeExpectedPrinter("Printer12", ServiceType::kLpd)});
 
   ipps_lister_->Clear();
 
@@ -518,15 +559,15 @@ TEST_F(ZeroconfPrinterDetectorTest, CacheFlushes) {
 
   // Just for kicks, announce something new at this point.
   ipps_lister_->Announce(MakeServiceDescription(
-      "Printer12", ZeroconfPrinterDetector::kIppsServiceName));
+      "Printer13", ZeroconfPrinterDetector::kIppsServiceName));
   CompleteTasks();
-  ExpectPrintersAre({MakeExpectedPrinter("Printer12", ServiceType::kIpps)});
+  ExpectPrintersAre({MakeExpectedPrinter("Printer13", ServiceType::kIpps)});
 
   // Clear out the IPPS lister, which will clear all printers too.
   ipps_lister_->Clear();
   CompleteTasks();
 
-  // With the IPPS lister cleared, Printer12 should disappear.
+  // With the IPPS lister cleared, Printer13 should disappear.
   ExpectPrintersEmpty();
   EXPECT_TRUE(ippe_lister_->discovery_started());
 }
@@ -545,6 +586,8 @@ TEST_F(ZeroconfPrinterDetectorTest, GeneralMixedTraffic) {
       "Printer15", ZeroconfPrinterDetector::kIppsServiceName));
   socket_lister_->Announce(MakeServiceDescription(
       "Printer16", ZeroconfPrinterDetector::kSocketServiceName));
+  lpd_lister_->Announce(MakeServiceDescription(
+      "Printer17", ZeroconfPrinterDetector::kLpdServiceName));
 
   CreateDetector();
   CompleteTasks();
@@ -552,19 +595,21 @@ TEST_F(ZeroconfPrinterDetectorTest, GeneralMixedTraffic) {
                      MakeExpectedPrinter("Printer13", ServiceType::kIpps),
                      MakeExpectedPrinter("Printer14", ServiceType::kIppsE),
                      MakeExpectedPrinter("Printer15", ServiceType::kIpps),
-                     MakeExpectedPrinter("Printer16", ServiceType::kSocket)});
+                     MakeExpectedPrinter("Printer16", ServiceType::kSocket),
+                     MakeExpectedPrinter("Printer17", ServiceType::kLpd)});
 
   ippe_lister_->Announce(MakeServiceDescription(
       "Printer13", ZeroconfPrinterDetector::kIppEverywhereServiceName));
   ipp_lister_->Announce(MakeServiceDescription(
-      "Printer17", ZeroconfPrinterDetector::kIppServiceName));
+      "Printer18", ZeroconfPrinterDetector::kIppServiceName));
   CompleteTasks();
   ExpectPrintersAre({MakeExpectedPrinter("Printer12", ServiceType::kIpps),
                      MakeExpectedPrinter("Printer13", ServiceType::kIppE),
                      MakeExpectedPrinter("Printer14", ServiceType::kIppsE),
                      MakeExpectedPrinter("Printer15", ServiceType::kIpps),
                      MakeExpectedPrinter("Printer16", ServiceType::kSocket),
-                     MakeExpectedPrinter("Printer17", ServiceType::kIpp)});
+                     MakeExpectedPrinter("Printer17", ServiceType::kLpd),
+                     MakeExpectedPrinter("Printer18", ServiceType::kIpp)});
 
   ipp_lister_->Remove("NonexistantPrinter");
   ipps_lister_->Remove("Printer12");

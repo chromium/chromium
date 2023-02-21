@@ -26,6 +26,7 @@ class ZeroconfPrinterDetector
   static const char kIppEverywhereServiceName[];
   static const char kIppsEverywhereServiceName[];
   static const char kSocketServiceName[];
+  static const char kLpdServiceName[];
 
   ~ZeroconfPrinterDetector() override = default;
 

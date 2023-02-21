@@ -27,6 +27,7 @@ const char ZeroconfPrinterDetector::kIppServiceName[] = "_ipp._tcp.local";
 const char ZeroconfPrinterDetector::kIppsServiceName[] = "_ipps._tcp.local";
 const char ZeroconfPrinterDetector::kSocketServiceName[] =
     "_pdl-datastream._tcp.local";
+const char ZeroconfPrinterDetector::kLpdServiceName[] = "_printer._tcp.local";
 
 // IppEverywhere printers are also required to advertise these services.
 const char ZeroconfPrinterDetector::kIppEverywhereServiceName[] =
@@ -36,12 +37,13 @@ const char ZeroconfPrinterDetector::kIppsEverywhereServiceName[] =
 
 // These service names are ordered in priority. In other words, earlier
 // service types in this list will be used preferentially over later ones.
-constexpr std::array<const char*, 5> kServiceNames = {
+constexpr std::array<const char*, 6> kServiceNames = {
     ZeroconfPrinterDetector::kIppsEverywhereServiceName,
     ZeroconfPrinterDetector::kIppEverywhereServiceName,
     ZeroconfPrinterDetector::kIppsServiceName,
     ZeroconfPrinterDetector::kIppServiceName,
     ZeroconfPrinterDetector::kSocketServiceName,
+    ZeroconfPrinterDetector::kLpdServiceName,
 };
 
 namespace {
@@ -186,6 +188,8 @@ bool ConvertToPrinter(const std::string& service_type,
     // If the "rp" key is present in a Socket TXT record, the key/value MUST
     // be ignored.
     rp.clear();
+  } else if (service_type == ZeroconfPrinterDetector::kLpdServiceName) {
+    uri.SetScheme("lpd");
   } else {
     // Since we only register for these services, we should never get back
     // a service other than the ones above.
