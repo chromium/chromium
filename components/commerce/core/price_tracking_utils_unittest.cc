@@ -521,6 +521,26 @@ TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_NonemptyTitleKept) {
   EXPECT_EQ(title, meta.shopping_specifics().title());
 }
 
+// Make sure the previous price is cleared if we're no longer receiving it from
+// the backend.
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_PreviousPriceCleared) {
+  ProductInfo new_info;
+
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_shopping_specifics()
+      ->mutable_previous_price()
+      ->set_currency_code("us");
+  meta.mutable_shopping_specifics()
+      ->mutable_previous_price()
+      ->set_amount_micros(1234L);
+
+  EXPECT_TRUE(meta.shopping_specifics().has_previous_price());
+
+  EXPECT_TRUE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  EXPECT_FALSE(meta.shopping_specifics().has_previous_price());
+}
+
 TEST_F(PriceTrackingUtilsTest, MaybeEnableEmailNotifications) {
   // Verify the initial pref values.
   ASSERT_EQ(false, pref_service_->GetBoolean(kPriceEmailNotificationsEnabled));

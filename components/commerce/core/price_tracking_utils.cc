@@ -316,6 +316,10 @@ bool PopulateOrUpdateBookmarkMetaIfNeeded(
     specifics->mutable_previous_price()->set_amount_micros(
         info.previous_amount_micros.value());
     changed = true;
+  } else if (!info.previous_amount_micros.has_value() &&
+             specifics->has_previous_price()) {
+    specifics->clear_previous_price();
+    changed = true;
   }
 
   if (specifics->offer_id() != info.offer_id) {
