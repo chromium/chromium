@@ -28,18 +28,19 @@ NO_COMPILE_LINES = [
 ]
 
 EXTENSIONS_TO_COMMENTS = {
-    'h': '//',
     'cc': '//',
-    'nc': '//',
-    'mm': '//',
-    'js': '//',
-    'py': '#',
     'gn': '#',
     'gni': '#',
+    'h': '//',
+    'js': '//',
+    'mm': '//',
     'mojom': '//',
+    'nc': '//',
+    'proto': '//',
+    'py': '#',
+    'swift': '//',
     'ts': '//',
     'typemap': '#',
-    "swift": "//",
 }
 
 
