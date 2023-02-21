@@ -98,8 +98,8 @@ std::string FormatValueForDisplay(const base::Value& value) {
 }
 
 std::string FormatJsonForDisplay(const std::string& json) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
   if (!value)
-    value = std::make_unique<base::Value>(json);
+    value.emplace(json);
   return FormatValueForDisplay(*value);
 }

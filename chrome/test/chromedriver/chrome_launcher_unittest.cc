@@ -113,8 +113,7 @@ TEST(ProcessExtensions, SingleExtensionWithBgPage) {
   std::string manifest_txt;
   ASSERT_TRUE(base::ReadFileToString(
       temp_ext_path.AppendASCII("manifest.json"), &manifest_txt));
-  std::unique_ptr<base::Value> manifest =
-      base::JSONReader::ReadDeprecated(manifest_txt);
+  absl::optional<base::Value> manifest = base::JSONReader::Read(manifest_txt);
   ASSERT_TRUE(manifest);
   base::Value::Dict* manifest_dict = manifest->GetIfDict();
   ASSERT_TRUE(manifest_dict);

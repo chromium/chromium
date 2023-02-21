@@ -11,9 +11,9 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
+#include "base/test/values_test_util.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/capabilities.h"
@@ -217,11 +217,8 @@ namespace {
 
 Status ProcessCapabilitiesJson(const std::string& params_json,
                                base::Value::Dict& result_capabilities) {
-  std::unique_ptr<base::Value> params =
-      base::JSONReader::ReadDeprecated(params_json);
-  if (!params || !params->is_dict())
-    return Status(kUnknownError);
-  return ProcessCapabilities(params->GetDict(), result_capabilities);
+  base::Value::Dict params = base::test::ParseJsonDict(params_json);
+  return ProcessCapabilities(params, result_capabilities);
 }
 
 }  // namespace
@@ -566,8 +563,8 @@ TEST(SessionCommandsTest, ConfigureSession_allSet) {
   MockChrome* chrome = new MockChrome(binfo);
   Session session("id", std::unique_ptr<Chrome>(chrome));
 
-  base::Value value = base::JSONReader::Read(
-                          R"({
+  base::Value::Dict params_in = base::test::ParseJsonDict(
+      R"({
         "capabilities": {
           "alwaysMatch": { },
           "firstMatch": [ {
@@ -588,16 +585,13 @@ TEST(SessionCommandsTest, ConfigureSession_allSet) {
             "unhandledPromptBehavior": "accept"
           } ]
         }
-      })")
-                          .value();
-  base::Value::Dict* params_in = value.GetIfDict();
-  ASSERT_TRUE(params_in);
+      })");
 
   const base::Value::Dict* desired_caps_out = nullptr;
   base::Value::Dict merged_out;
   Capabilities capabilities_out;
   Status status = internal::ConfigureSession(
-      &session, *params_in, desired_caps_out, merged_out, &capabilities_out);
+      &session, params_in, desired_caps_out, merged_out, &capabilities_out);
   ASSERT_EQ(kOk, status.code()) << status.message();
   // Verify out parameters have been set
   ASSERT_NE(desired_caps_out, nullptr);
@@ -616,22 +610,19 @@ TEST(SessionCommandsTest, ConfigureSession_defaults) {
   MockChrome* chrome = new MockChrome(binfo);
   Session session("id", std::unique_ptr<Chrome>(chrome));
 
-  base::Value value = base::JSONReader::Read(
-                          R"({
+  base::Value::Dict params_in = base::test::ParseJsonDict(
+      R"({
         "capabilities": {
           "alwaysMatch": { },
           "firstMatch": [ { } ]
         }
-      })")
-                          .value();
-  const base::Value::Dict* params_in = value.GetIfDict();
-  ASSERT_TRUE(params_in);
+      })");
   const base::Value::Dict* desired_caps_out = nullptr;
   base::Value::Dict merged_out;
   Capabilities capabilities_out;
 
   Status status = internal::ConfigureSession(
-      &session, *params_in, desired_caps_out, merged_out, &capabilities_out);
+      &session, params_in, desired_caps_out, merged_out, &capabilities_out);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_NE(desired_caps_out, nullptr);
   // Testing specific values could be fragile, but want to verify they are set
@@ -649,24 +640,21 @@ TEST(SessionCommandsTest, ConfigureSession_legacyDefault) {
   MockChrome* chrome = new MockChrome(binfo);
   Session session("id", std::unique_ptr<Chrome>(chrome));
 
-  base::Value value = base::JSONReader::Read(
-                          R"({
+  base::Value::Dict params_in = base::test::ParseJsonDict(
+      R"({
         "desiredCapabilities": {
           "browserName": "chrome",
           "goog:chromeOptions": {
              "w3c": false
           }
         }
-      })")
-                          .value();
-  const base::Value::Dict* params_in = value.GetIfDict();
-  ASSERT_TRUE(params_in);
+      })");
   const base::Value::Dict* desired_caps_out = nullptr;
   base::Value::Dict merged_out;
   Capabilities capabilities_out;
 
   Status status = internal::ConfigureSession(
-      &session, *params_in, desired_caps_out, merged_out, &capabilities_out);
+      &session, params_in, desired_caps_out, merged_out, &capabilities_out);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_NE(desired_caps_out, nullptr);
   // legacy values:

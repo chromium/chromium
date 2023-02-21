@@ -1165,8 +1165,8 @@ void HttpHandler::HandleCommand(
   }
 
   if (request.data.length()) {
-    std::unique_ptr<base::Value> parsed_body =
-        base::JSONReader::ReadDeprecated(request.data);
+    absl::optional<base::Value> parsed_body =
+        base::JSONReader::Read(request.data);
     base::Value::Dict* body_params =
         parsed_body ? parsed_body->GetIfDict() : nullptr;
     if (!body_params) {
