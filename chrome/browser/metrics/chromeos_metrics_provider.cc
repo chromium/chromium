@@ -127,6 +127,9 @@ void ChromeOSMetricsProvider::Init() {
 void ChromeOSMetricsProvider::OnDidCreateMetricsLog() {
   cros_system_profile_provider_->OnDidCreateMetricsLog();
   if (base::FeatureList::IsEnabled(metrics::features::kEmitHistogramsEarlier)) {
+    if (!arc::StabilityMetricsManager::Get()) {
+      return;
+    }
     // Not guaranteed to result in emitting hisotograms when called early on
     // browser startup.
     arc::StabilityMetricsManager::Get()->RecordMetricsToUMA();
