@@ -269,6 +269,9 @@ class WizardController : public OobeUI::Observer {
     return GetAutoEnrollmentController();
   }
 
+  // Returns whether the screen id belongs to the `ErrorScreen`
+  static bool IsErrorScreen(OobeScreenId);
+
  private:
   // Create BaseScreen instances. These are owned by `screen_manager_`.
   std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>>
