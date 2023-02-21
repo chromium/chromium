@@ -433,8 +433,7 @@ void ResetAuthentication() {
 
   gIsMockAuthenticationDisabled = NO;
   _tearDownHandler = nil;
-  _originalOrientation =
-      [[GREY_REMOTE_CLASS_IN_APP(UIDevice) currentDevice] orientation];
+  _originalOrientation = [[XCUIDevice sharedDevice] orientation];
 }
 
 // Returns the method name, e.g. "testSomething" of the test that is currently

@@ -73,8 +73,7 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 // Tests that navigating to a page and then backgrounding and foregrounding, an
 // NTP page is opened. Then, switching to the last tab and then back to the NTP
 // does not show the Return to Recent Tab tile.
-// TODO(crbug.com/1416228): reenable this test.
-- (void)FLAKY_testWarmStartOpenStartSurface {
+- (void)testWarmStartOpenStartSurface {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -112,9 +111,7 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 // Tests that navigating to a page and restarting upon cold start, an NTP page
 // is opened with the Return to Recent Tab tile. Then, removing that last tab
 // also removes the tile while that NTP is still being shown.
-// TODO(crbug.com/1416561): Test fails due to rotation in TearDown. Reenable
-// this test.
-- (void)FLAKY_testRemoveRecentTabRemovesReturnToRecenTabTile {
+- (void)testRemoveRecentTabRemovesReturnToRecenTabTile {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
@@ -151,9 +148,7 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
 
 // Tests that the Return To Recent Tab tile is removed after opening the tab
 // grid (i.e. switching away from the Start Surface).
-// TODO(crbug.com/1416561): Test fails due to rotation in TearDown. Reenable
-// this test.
-- (void)FLAKY_testReturnToRecenTabTileRemovedAfterOpeningTabGrid {
+- (void)testReturnToRecenTabTileRemovedAfterOpeningTabGrid {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   const GURL destinationUrl = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:destinationUrl];
