@@ -61,9 +61,6 @@ BASE_DECLARE_FEATURE(kEnableFullscreenAPI);
 // should be used instead of directly checking this feature.
 BASE_DECLARE_FEATURE(kUseLoadSimulatedRequestForOfflinePage);
 
-// Feature flag that enable web page detected intents annotations.
-BASE_DECLARE_FEATURE(kEnableWebPageAnnotations);
-
 // Feature flag that enables getting more of the surrounding text when the user
 // long presses at a certain location.
 BASE_DECLARE_FEATURE(kLongPressSurroundingText);

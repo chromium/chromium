@@ -8,6 +8,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -139,6 +140,12 @@ NSTextCheckingResult* MakeNSTextCheckingResultEmail(NSString* email,
   NSString* mailto_email = [kMailtoPrefixUrl stringByAppendingString:email];
   NSURL* email_url = [[NSURL alloc] initWithString:mailto_email];
   return [NSTextCheckingResult linkCheckingResultWithRange:range URL:email_url];
+}
+
+bool WebPageAnnotationsEnabled() {
+  return base::FeatureList::IsEnabled(web::features::kEnableEmails) ||
+         base::FeatureList::IsEnabled(web::features::kEnablePhoneNumbers) ||
+         base::FeatureList::IsEnabled(web::features::kOneTapForMaps);
 }
 
 }  // namespace annotations

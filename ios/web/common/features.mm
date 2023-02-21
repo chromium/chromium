@@ -61,10 +61,6 @@ BASE_FEATURE(kUseLoadSimulatedRequestForOfflinePage,
              "UseLoadSimulatedRequestForErrorPageNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableWebPageAnnotations,
-             "EnableWebPageAnnotations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLongPressSurroundingText,
              "LongPressSurroundingText",
              base::FEATURE_ENABLED_BY_DEFAULT);

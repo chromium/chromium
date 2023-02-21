@@ -109,6 +109,7 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
+#import "ios/web/annotations/annotations_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 
@@ -162,8 +163,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(web::features::kEnableWebPageAnnotations) &&
-      !is_off_the_record) {
+  if (web::annotations::WebPageAnnotationsEnabled()) {
     AnnotationsTabHelper::CreateForWebState(web_state);
   }
 

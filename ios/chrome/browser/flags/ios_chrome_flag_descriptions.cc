@@ -350,11 +350,6 @@ const char kEnableRefineDataSourceReloadReportingDescription[] =
     "Enable refining data source reload reporting when having a very short "
     "attention log";
 
-const char kEnableWebPageAnnotationsName[] = "Enable Web Page Intent Detection";
-const char kEnableWebPageAnnotationsDescription[] =
-    "Prototype to detect and highlight data with possible intent in a web "
-    "page.";
-
 const char kEnableSuggestionsScrollingOnIPadName[] =
     "Enable omnibox suggestions scrolling on iPad";
 const char kEnableSuggestionsScrollingOnIPadDescription[] =

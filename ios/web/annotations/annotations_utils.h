@@ -37,6 +37,10 @@ base::Value::Dict ConvertMatchToAnnotation(NSString* source,
                                            NSString* data,
                                            NSString* type);
 
+// Checks whether to activate the web page annotations or not, depending on the
+// experiences enabled (emails, phone numbers or maps).
+bool WebPageAnnotationsEnabled();
+
 }  // namespace annotations
 }  // namespace web
 
