@@ -13,6 +13,8 @@ source_set("credential_provider_promo") {
     "credential_provider_promo_mediator.mm",
     "credential_provider_promo_metrics.h",
     "credential_provider_promo_metrics.mm",
+    "credential_provider_promo_scene_agent.h",
+    "credential_provider_promo_scene_agent.mm",
   ]
   deps = [
     ":credential_provider_promo_ui",
@@ -29,6 +31,7 @@ source_set("credential_provider_promo") {
     "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/browser/ui/util",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",

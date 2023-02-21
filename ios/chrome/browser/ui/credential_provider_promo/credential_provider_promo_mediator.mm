@@ -35,9 +35,6 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 // The PrefService used by this mediator.
 @property(nonatomic, assign) PrefService* prefService;
 
-// Local state is used to check promo trigger requirements.
-@property(nonatomic, assign) PrefService* localState;
-
 // Indicates whether the 'first step' or 'learn more' version of the promo is
 // being presented.
 @property(nonatomic, assign) CredentialProviderPromoContext promoContext;
@@ -50,12 +47,10 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 @implementation CredentialProviderPromoMediator
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService
-                           localState:(PrefService*)localState {
+                          prefService:(PrefService*)prefService {
   if (self = [super init]) {
     _prefService = prefService;
     _promosManager = promosManager;
-    _localState = localState;
   }
   return self;
 }
@@ -65,7 +60,7 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
                                         promoSeen:
                                             (BOOL)promoSeenInCurrentSession {
   BOOL impressionLimitMet =
-      self.localState->GetBoolean(
+      GetApplicationContext()->GetLocalState()->GetBoolean(
           prefs::kIosCredentialProviderPromoStopPromo) ||
       (promoSeenInCurrentSession &&
        trigger != CredentialProviderPromoTrigger::RemindMeLater);
@@ -97,6 +92,14 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
       break;
     case CredentialProviderPromoTrigger::RemindMeLater:
       source = [self promoOriginalSource];
+
+      // Reset the state. This case `RemindMeLater` implicitly means it is
+      // presented from and would be deregistered by the Promo Manager
+      // internally.
+      GetApplicationContext()->GetLocalState()->SetBoolean(
+          prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager,
+          false);
+
       [self setAnimation];
       break;
   }
@@ -118,6 +121,9 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   // TODO(crbug.com/1392116): register the promo with a 24 hour delay.
   self.promosManager->RegisterPromoForSingleDisplay(
       promos_manager::Promo::CredentialProviderExtension);
+
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kIosCredentialProviderPromoHasRegisteredWithPromoManager, true);
 }
 
 - (IOSCredentialProviderPromoSource)promoOriginalSource {

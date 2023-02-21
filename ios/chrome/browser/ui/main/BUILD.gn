@@ -197,6 +197,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/blocking_overlay",
     "//ios/chrome/browser/ui/browser_view",
     "//ios/chrome/browser/ui/commands:commands",
+    "//ios/chrome/browser/ui/credential_provider_promo",
     "//ios/chrome/browser/ui/default_promo",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/first_run",

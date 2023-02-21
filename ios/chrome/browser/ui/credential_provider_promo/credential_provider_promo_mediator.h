@@ -25,7 +25,6 @@ class PromosManager;
 // PromosManager, presenter, and PrefService.
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                           prefService:(PrefService*)prefService
-                           localState:(PrefService*)localState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

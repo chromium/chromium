@@ -101,6 +101,11 @@ const char kIosBookmarkSigninPromoDisplayedCount[] =
 const char kIosCredentialProviderPromoStopPromo[] =
     "ios.credential_provider_promo.stop_promo";
 
+// Boolean to represent if the Credential Provider Promo has registered with
+// Promo Manager.
+const char kIosCredentialProviderPromoHasRegisteredWithPromoManager[] =
+    "ios.credential_provider_promo.has_registered_with_promo_manager";
+
 // The time when the DiscoverFeed was last refreshed while the feed was visible
 // to the user.
 const char kIosDiscoverFeedLastRefreshTime[] =

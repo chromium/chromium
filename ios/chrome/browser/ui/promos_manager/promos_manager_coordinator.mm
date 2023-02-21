@@ -156,11 +156,6 @@
   auto bannered_provider_it = _banneredViewProviderPromos.find(promo);
   auto alert_provider_it = _alertProviderPromos.find(promo);
 
-  DCHECK(handler_it == _displayHandlerPromos.end() ||
-         provider_it == _viewProviderPromos.end() ||
-         bannered_provider_it == _banneredViewProviderPromos.end() ||
-         alert_provider_it == _alertProviderPromos.end());
-
   id<PromosManagerCommands> promosManagerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PromosManagerCommands);
 
@@ -302,10 +297,11 @@
       [alertProvider promoWasDisplayed];
     }
   } else {
-    // Early return (and avoid calling NOTREACHED) when promos are
-    // forced for display (via Experimental Settings toggle) but not properly
-    // enabled (via chrome://flags). This is a niche edge case—likely to only
-    // occur during local, manual testing.
+    // Deregister the promo in edge cases :
+    // 1. when promos are forced for display (via Experimental Settings toggle)
+    // but not properly enabled (via chrome://flags).
+    // 2. when the promo's flag is disabled but was registered before and hasn't
+    // been displayed yet.
     absl::optional<promos_manager::Promo> maybeForcedPromo =
         promos_manager::PromoForName(base::SysNSStringToUTF8(
             experimental_flags::GetForcedPromoToDisplay()));
