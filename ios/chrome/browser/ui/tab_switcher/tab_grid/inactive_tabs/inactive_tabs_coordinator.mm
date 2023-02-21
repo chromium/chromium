@@ -9,6 +9,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,6 +27,9 @@ const NSTimeInterval kDuration = 0.2;
 
 // The view controller displaying the inactive tabs.
 @property(nonatomic, strong) InactiveTabsViewController* viewController;
+
+// The mediator handling the inactive tabs.
+@property(nonatomic, strong) InactiveTabsMediator* mediator;
 
 // The mutually exclusive constraints for placing `viewController`.
 @property(nonatomic, strong) NSLayoutConstraint* hiddenConstraint;
@@ -46,9 +50,17 @@ const NSTimeInterval kDuration = 0.2;
 - (void)start {
   [super start];
 
+  // Create the view controller.
   self.viewController = [[InactiveTabsViewController alloc] init];
   self.viewController.delegate = self;
   self.viewController.gridViewController.delegate = self;
+
+  // Create the mediator.
+  self.mediator = [[InactiveTabsMediator alloc]
+      initWithConsumer:self.viewController.gridViewController];
+  self.mediator.inactiveBrowser = self.browser;
+
+  // Add the view controller to the hierarchy.
   UIView* baseView = self.baseViewController.view;
   UIView* view = self.viewController.view;
   view.translatesAutoresizingMaskIntoConstraints = NO;
