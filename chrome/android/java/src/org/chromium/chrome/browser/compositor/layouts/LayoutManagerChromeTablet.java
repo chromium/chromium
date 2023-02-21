@@ -157,7 +157,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 && mTabSwitcherLayout == null
                 && TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mHost.getContext())) {
             try {
-                if (!mStartSurfaceSupplier.hasValue()) {
+                if (!mStartSurfaceSupplier.hasValue() && !mTabSwitcherSupplier.hasValue()) {
                     final ViewGroup containerView = mCreateStartSurfaceCallable.call();
                     createOverviewLayout(mStartSurfaceSupplier.get(), mTabSwitcherSupplier.get(),
                             mJankTracker, mScrimCoordinator, containerView);

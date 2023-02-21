@@ -314,6 +314,32 @@ public class TabSwitcherTabletTest {
         assertNotNull("TabSwitcher view should be inflated", tabSwitcherViewHolder);
     }
 
+    @Test
+    @MediumTest
+    @CommandLineFlags.
+    Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true/delay_creation/true"})
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
+    public void testGridTabSwitcherV1DelayCreate_RefactorEnabled() {
+        Layout layout =
+                sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
+        assertNull("StartSurface layout should not be initialized", layout);
+        ViewStub tabSwitcherStub = (ViewStub) sActivityTestRule.getActivity().findViewById(
+                R.id.grid_tab_switcher_view_holder_stub);
+        assertTrue("TabSwitcher view stub should not be inflated",
+                tabSwitcherStub.getParent() != null);
+
+        // Click tab switcher button
+        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
+
+        layout =
+                sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
+        assertTrue("OverviewLayout should be TabSwitcherAndStartSurfaceLayout layout",
+                layout instanceof TabSwitcherAndStartSurfaceLayout);
+        ViewGroup tabSwitcherViewHolder =
+                sActivityTestRule.getActivity().findViewById(R.id.grid_tab_switcher_view_holder);
+        assertNotNull("TabSwitcher view should be inflated", tabSwitcherViewHolder);
+    }
+
     protected void clickIncognitoToggleButton() {
         final CallbackHelper tabModelSelectedCallback = new CallbackHelper();
         TabModelSelectorObserver observer = new TabModelSelectorObserver() {
