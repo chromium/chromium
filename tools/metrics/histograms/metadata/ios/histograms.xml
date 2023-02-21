@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.CredentialProviderExtension.Promo.{Impression}"
+<histogram name="IOS.CredentialProviderExtension.Promo.Impression{IsReminder}"
     enum="IOSCredentialProviderPromoSource" expires_after="2023-09-01">
   <owner>huitingyu@google.com</owner>
   <owner>hiramahmood@google.com</owner>
@@ -411,35 +411,33 @@ chromium-metrics-reviews@google.com.
     The impression count for the credential provider extention promo
     corresponding to a source of the promo.
   </summary>
-  <token key="Impression">
-    <variant name="Impression" summary="impression of promo"/>
-    <variant name="Impression.IsReminder"
+  <token key="IsReminder">
+    <variant name="" summary="default impression of promo"/>
+    <variant name=".IsReminder"
         summary="impression of promo shown as reminder"/>
   </token>
 </histogram>
 
-<histogram name="IOS.CredentialProviderExtension.Promo.{PromoSource}"
+<histogram
+    name="IOS.CredentialProviderExtension.Promo.{PromoSource}{IsReminder}"
     enum="IOSCredentialProviderPromoAction" expires_after="2023-09-01">
   <owner>huitingyu@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
-    The action taken in the credential provider extention promo displayed from
-    the user event as PromoSource specifies.
+    The action taken in the credential provider extention promo displayed for
+    the user event {PromoSource}. If the promo is as a reminder, the histogram
+    name is suffixed with &quot;IsReminder&quot;.
   </summary>
   <token key="PromoSource">
     <variant name="OnPasswordCopied" summary="the user copies the password"/>
-    <variant name="OnPasswordCopied.IsReminder"
-        summary="the user copies the password, the promo is displayed as
-                 reminder"/>
     <variant name="OnPasswordSaved" summary="the user saves the password"/>
-    <variant name="OnPasswordSaved.IsReminder"
-        summary="the user saves the password, the promo is displayed as
-                 reminder"/>
     <variant name="OnSuccessfulLoginWithAutofilledPassword"
         summary="the user logs in with autofilled password"/>
-    <variant name="OnSuccessfulLoginWithAutofilledPassword.IsReminder"
-        summary="the user logs in with autofilled password, the promo is
-                 displayed as reminder"/>
+  </token>
+  <token key="IsReminder">
+    <variant name="" summary="default impression of promo"/>
+    <variant name=".IsReminder"
+        summary="impression of promo shown as reminder"/>
   </token>
 </histogram>
 
