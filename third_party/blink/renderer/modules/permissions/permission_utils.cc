@@ -97,7 +97,7 @@ String PermissionNameToString(PermissionName name) {
     case PermissionName::NFC:
       return "nfc";
     case PermissionName::STORAGE_ACCESS:
-      return "storage_access";
+      return "storage-access";
     case PermissionName::WINDOW_MANAGEMENT:
       if (RuntimeEnabledFeatures::WindowManagementPermissionAliasEnabled()) {
         return "window-management";
