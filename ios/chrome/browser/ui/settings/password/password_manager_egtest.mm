@@ -2855,11 +2855,10 @@ id<GREYMatcher> EditDoneButton() {
   OpenPasswordManager();
   OpenSettingsSubmenu();
 
-  [EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kPasswordSettingsAccountStorageSwitchTableViewId),
-                     grey_notVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPasswordSettingsAccountStorageSwitchTableViewId)]
+      assertWithMatcher:grey_nil()];
 }
 
 - (void)testAccountStorageSwitchShownIfSignedInAndFlagEnabled {
@@ -2875,32 +2874,32 @@ id<GREYMatcher> EditDoneButton() {
                     chrome_test_util::TableViewSwitchCell(
                         kPasswordSettingsAccountStorageSwitchTableViewId,
                         /*is_toggled_on=*/YES)];
+  [accountStorageSwitch assertWithMatcher:grey_sufficientlyVisible()];
   // The toggle text must contain the signed-in account.
-  [EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(
-              grey_descendant(grey_accessibilityID(
-                  kPasswordSettingsAccountStorageSwitchTableViewId)),
-              ElementWithAccessibilityLabelSubstring(fakeIdentity.userEmail),
-              nil)];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSStringF(
+                                   IDS_IOS_ACCOUNT_STORAGE_OPT_IN_SUBLABEL,
+                                   base::SysNSStringToUTF16(
+                                       fakeIdentity.userEmail)))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 
   [accountStorageSwitch performAction:TurnTableViewSwitchOn(NO)];
 
-  [EarlGrey selectElementWithMatcher:
-                chrome_test_util::TableViewSwitchCell(
-                    kPasswordSettingsAccountStorageSwitchTableViewId,
-                    /*is_toggled_on=*/NO)];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TableViewSwitchCell(
+                     kPasswordSettingsAccountStorageSwitchTableViewId,
+                     /*is_toggled_on=*/NO)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testAccountStorageSwitchHiddenIfSignedOut {
   OpenPasswordManager();
   OpenSettingsSubmenu();
 
-  [EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kPasswordSettingsAccountStorageSwitchTableViewId),
-                     grey_notVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPasswordSettingsAccountStorageSwitchTableViewId)]
+      assertWithMatcher:grey_nil()];
 }
 
 - (void)testAccountStorageSwitchHiddenIfSyncing {
@@ -2912,11 +2911,10 @@ id<GREYMatcher> EditDoneButton() {
   OpenPasswordManager();
   OpenSettingsSubmenu();
 
-  [EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityID(
-                         kPasswordSettingsAccountStorageSwitchTableViewId),
-                     grey_notVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPasswordSettingsAccountStorageSwitchTableViewId)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end
