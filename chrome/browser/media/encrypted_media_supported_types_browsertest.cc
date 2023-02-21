@@ -603,6 +603,7 @@ class EncryptedMediaSupportedTypesWidevineHwSecureForceClearLeadSupportTest
   EncryptedMediaSupportedTypesWidevineHwSecureForceClearLeadSupportTest() {
     enabled_features_.push_back({media::kHardwareSecureDecryption,
                                  {{"force_support_clear_lead", "true"}}});
+    EnableFeature(media::kHardwareSecureDecryptionExperiment);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
