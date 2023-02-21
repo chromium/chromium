@@ -950,7 +950,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldRecordAuthErrorAndAttemptDeviceRegistration) {
+       ShouldRetryDeviceRegistrationWhenAuthErrorResolved) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kVaultKey = {1, 2, 3};
   const int kLastKeyVersion = 1;
@@ -970,7 +970,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       "Sync.TrustedVaultDeviceRegistrationState",
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
-          kAttemptingRegistrationWithPersistentAuthError,
+          kAttemptingRegistrationWithNewKeyPair,
       /*expected_bucket_count=*/1);
 
   Mock::VerifyAndClearExpectations(connection());
@@ -989,7 +989,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // The second attempt should NOT have logged the histogram, following the
   // histogram's definition that it should be logged once.
   histogram_tester2.ExpectTotalCount("Sync.TrustedVaultDeviceRegistrationState",
-                                     /*count=*/0);
+                                     /*expected_count=*/0);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,

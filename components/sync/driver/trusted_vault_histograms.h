@@ -27,7 +27,9 @@ enum class TrustedVaultDeviceRegistrationStateForUMA {
   kThrottledClientSide = 2,
   kAttemptingRegistrationWithNewKeyPair = 3,
   kAttemptingRegistrationWithExistingKeyPair = 4,
-  kAttemptingRegistrationWithPersistentAuthError = 5,
+  // Deprecated, replaced with more detailed
+  // TrustedVaultDeviceRegistrationOutcomeForUMA.
+  kDeprecatedAttemptingRegistrationWithPersistentAuthError = 5,
   kAlreadyRegisteredV1 = 6,
   kMaxValue = kAlreadyRegisteredV1,
 };

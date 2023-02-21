@@ -103051,7 +103051,7 @@ Full version information for the fingerprint enum values:
   <int value="4" label="Attempting registration with preexisting keys"/>
   <int value="5"
       label="Attempting registration while having persistent authentication
-             error"/>
+             error (deprecated)"/>
   <int value="6" label="Already registered V1"/>
 </enum>
 

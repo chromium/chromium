@@ -30,8 +30,9 @@ syncer::TrustedVaultDeviceRegistrationStateForUMA CWVConvertTrustedVaultState(
       return syncer::TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithExistingKeyPair;
     case CWVTrustedVaultStateAttemptingRegistrationWithPersistentAuthError:
+      // TODO(crbug.com/1418027): remove CWV version of this bucket.
       return syncer::TrustedVaultDeviceRegistrationStateForUMA::
-          kAttemptingRegistrationWithPersistentAuthError;
+          kDeprecatedAttemptingRegistrationWithPersistentAuthError;
     case CWVTrustedVaultStateAlreadyRegisteredV1:
       return syncer::TrustedVaultDeviceRegistrationStateForUMA::
           kAlreadyRegisteredV1;

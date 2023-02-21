@@ -875,10 +875,6 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   }
 
   DCHECK(ongoing_device_registration_request_);
-  if (has_persistent_auth_error_) {
-    return TrustedVaultDeviceRegistrationStateForUMA::
-        kAttemptingRegistrationWithPersistentAuthError;
-  }
 
   return had_generated_key_pair ? TrustedVaultDeviceRegistrationStateForUMA::
                                       kAttemptingRegistrationWithExistingKeyPair
