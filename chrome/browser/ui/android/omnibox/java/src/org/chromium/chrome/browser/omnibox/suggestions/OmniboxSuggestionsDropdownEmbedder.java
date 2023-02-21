@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.ui.base.WindowDelegate;
 
@@ -19,10 +18,9 @@ public interface OmniboxSuggestionsDropdownEmbedder {
 
     /**
      * Return the view that the omnibox suggestions should be aligned horizontally to.  The
-     * view must be a descendant of {@link #getAnchorView()}. If null, the suggestions will
-     * be aligned to the start of {@link #getAnchorView()}.
+     * view must be a descendant of {@link #getAnchorView()} or the anchor view itself.
      */
-    @Nullable
+    @NonNull
     View getAlignmentView();
 
     /** Return the delegate used to interact with the Window. */

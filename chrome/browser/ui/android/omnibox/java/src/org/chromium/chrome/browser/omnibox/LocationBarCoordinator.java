@@ -417,7 +417,7 @@ public class LocationBarCoordinator implements LocationBar, NativeInitObserver,
 
     @Override
     public View getAlignmentView() {
-        return isTablet() ? mLocationBarLayout : null;
+        return isTablet() ? mLocationBarLayout : mAutocompleteAnchorView;
     }
 
     // AutocompleteDelegate implementation.

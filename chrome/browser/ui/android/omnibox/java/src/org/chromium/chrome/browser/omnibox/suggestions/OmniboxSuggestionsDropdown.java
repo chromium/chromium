@@ -633,17 +633,13 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         };
 
         mAlignmentView = mEmbedder.getAlignmentView();
-        if (mAlignmentView != null) {
-            mAlignmentViewLayoutListener = new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(View v, int left, int top, int right, int bottom,
-                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                    adjustSidePadding();
-                }
-            };
-        } else {
-            mAlignmentViewLayoutListener = null;
-        }
+        mAlignmentViewLayoutListener = new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                    int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                adjustSidePadding();
+            }
+        };
     }
 
     public void emitWindowContentChanged() {
