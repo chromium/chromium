@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -266,8 +265,7 @@ EncryptedReportingUploadProvider::EncryptedReportingUploadProvider(
           report_successful_upload_cb,
           encryption_key_attached_cb,
           std::move(upload_client_builder_cb),
-          base::ThreadPool::CreateSequencedTaskRunner(
-              {base::TaskPriority::BEST_EFFORT, base::MayBlock()}))) {
+          base::SequencedTaskRunner::GetCurrentDefault())) {
   helper_->PostNewUploadClientRequest();
 }
 

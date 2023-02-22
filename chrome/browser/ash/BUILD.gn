@@ -3390,7 +3390,6 @@ source_set("ash") {
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
-    "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
     "//chrome/browser/safe_browsing",
