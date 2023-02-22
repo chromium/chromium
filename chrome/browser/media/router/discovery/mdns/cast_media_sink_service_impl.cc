@@ -621,6 +621,7 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
   DCHECK(socket);
   CastAnalytics::RecordCastChannelConnectResult(
       MediaRouterChannelConnectResults::SUCCESS);
+  CastAnalytics::RecordDeviceNameLength(cast_sink.sink().name().size());
   CastSinkExtraData& extra_data = cast_sink.cast_data();
   // Manually set device capabilities for sinks discovered via DIAL as DIAL
   // discovery does not provide capability info.

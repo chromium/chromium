@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FeedbackUiBrowserProxy, FeedbackUiBrowserProxyImpl, FeedbackUiElement} from 'chrome://cast-feedback/cast_feedback_ui.js';
+import {FeedbackEvent, FeedbackUiBrowserProxy, FeedbackUiBrowserProxyImpl, FeedbackUiElement} from 'chrome://cast-feedback/cast_feedback_ui.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 class TestFeedbackUiBrowserProxy extends TestBrowserProxy implements
@@ -13,7 +13,14 @@ class TestFeedbackUiBrowserProxy extends TestBrowserProxy implements
   resolver: PromiseResolver<void> = new PromiseResolver();
 
   constructor() {
-    super(['sendFeedback']);
+    super(['recordEvent', 'sendFeedback']);
+  }
+
+  recordEvent(event: FeedbackEvent) {
+    this.methodCalled('recordEvent', event);
+    if (event === FeedbackEvent.SUCCEEDED || event === FeedbackEvent.FAILED) {
+      this.resolver.resolve();
+    }
   }
 
   sendFeedback(info: chrome.feedbackPrivate.FeedbackInfo) {
@@ -59,6 +66,14 @@ suite('Suite', function() {
     submit();
     await browserProxy.resolver.promise;
     assertEquals(2, browserProxy.getCallCount('sendFeedback'));
+    assertDeepEquals(
+        [
+          FeedbackEvent.OPENED,
+          FeedbackEvent.SENDING,
+          FeedbackEvent.RESENDING,
+          FeedbackEvent.SUCCEEDED,
+        ],
+        browserProxy.getArgs('recordEvent'));
     assertTrue(ui.feedbackSent);
     assertTrue(
         browserProxy.getArgs('sendFeedback')[0].description.indexOf(
@@ -73,6 +88,15 @@ suite('Suite', function() {
     submit();
     await browserProxy.resolver.promise;
     assertEquals(3, browserProxy.getCallCount('sendFeedback'));
+    assertDeepEquals(
+        [
+          FeedbackEvent.OPENED,
+          FeedbackEvent.SENDING,
+          FeedbackEvent.RESENDING,
+          FeedbackEvent.RESENDING,
+          FeedbackEvent.FAILED,
+        ],
+        browserProxy.getArgs('recordEvent'));
     assertFalse(ui.feedbackSent);
   });
 });
