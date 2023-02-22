@@ -646,6 +646,7 @@ class RasterDecoderImpl final : public RasterDecoder,
       size_t row_bytes);
   void DoReadbackARGBImagePixelsINTERNAL(GLint src_x,
                                          GLint src_y,
+                                         GLint plane_index,
                                          GLuint dst_width,
                                          GLuint dst_height,
                                          GLuint row_bytes,
@@ -2102,6 +2103,7 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
 void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     GLint src_x,
     GLint src_y,
+    GLint plane_index,
     GLuint dst_width,
     GLuint dst_height,
     GLuint row_bytes,

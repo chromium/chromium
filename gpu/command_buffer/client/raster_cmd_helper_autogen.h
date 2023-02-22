@@ -233,6 +233,7 @@ void WritePixelsINTERNALImmediate(GLint x_offset,
 
 void ReadbackARGBImagePixelsINTERNALImmediate(GLint src_x,
                                               GLint src_y,
+                                              GLint plane_index,
                                               GLuint dst_width,
                                               GLuint dst_height,
                                               GLuint row_bytes,
@@ -249,9 +250,9 @@ void ReadbackARGBImagePixelsINTERNALImmediate(GLint src_x,
       GetImmediateCmdSpaceTotalSize<
           raster::cmds::ReadbackARGBImagePixelsINTERNALImmediate>(size);
   if (c) {
-    c->Init(src_x, src_y, dst_width, dst_height, row_bytes, dst_sk_color_type,
-            dst_sk_alpha_type, shm_id, shm_offset, color_space_offset,
-            pixels_offset, mailbox);
+    c->Init(src_x, src_y, plane_index, dst_width, dst_height, row_bytes,
+            dst_sk_color_type, dst_sk_alpha_type, shm_id, shm_offset,
+            color_space_offset, pixels_offset, mailbox);
   }
 }
 

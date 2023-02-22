@@ -1433,6 +1433,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
     GLuint dst_row_bytes,
     int src_x,
     int src_y,
+    int plane_index,
     base::OnceCallback<void(bool)> readback_done,
     void* dst_pixels) {
   DCHECK_GE(dst_row_bytes, dst_info.minRowBytes());
@@ -1499,9 +1500,9 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
   }
 
   helper_->ReadbackARGBImagePixelsINTERNALImmediate(
-      src_x, src_y, dst_info.width(), dst_info.height(), dst_row_bytes,
-      dst_info.colorType(), dst_info.alphaType(), shm_id, shm_offset,
-      color_space_offset, pixels_offset, source_mailbox.name);
+      src_x, src_y, plane_index, dst_info.width(), dst_info.height(),
+      dst_row_bytes, dst_info.colorType(), dst_info.alphaType(), shm_id,
+      shm_offset, color_space_offset, pixels_offset, source_mailbox.name);
 
   if (is_async) {
     EndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);
@@ -1600,9 +1601,10 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
     return;
   }
 
-  ReadbackImagePixelsINTERNAL(
-      source_mailbox, dst_info, dst_row_bytes, source_starting_point.x(),
-      source_starting_point.y(), std::move(readback_done), out);
+  ReadbackImagePixelsINTERNAL(source_mailbox, dst_info, dst_row_bytes,
+                              source_starting_point.x(),
+                              source_starting_point.y(), /*plane_index=*/0,
+                              std::move(readback_done), out);
 }
 
 void RasterImplementation::ReadbackImagePixels(
@@ -1615,8 +1617,8 @@ void RasterImplementation::ReadbackImagePixels(
     void* dst_pixels) {
   TRACE_EVENT0("gpu", "RasterImplementation::ReadbackImagePixels");
   ReadbackImagePixelsINTERNAL(source_mailbox, dst_info, dst_row_bytes, src_x,
-                              src_y, base::OnceCallback<void(bool)>(),
-                              dst_pixels);
+                              src_y, plane_index,
+                              base::OnceCallback<void(bool)>(), dst_pixels);
 }
 
 void RasterImplementation::ReadbackYUVPixelsAsync(
