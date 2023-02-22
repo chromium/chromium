@@ -130,7 +130,8 @@ class MediaNotificationService
       mojo::PendingReceiver<global_media_controls::mojom::DeviceListHost>
           host_receiver,
       mojo::PendingRemote<global_media_controls::mojom::DeviceListClient>
-          client_remote);
+          client_remote,
+      absl::optional<std::string> session_id);
 
   // True if there are cast notifications associated with |web_contents|.
   bool HasCastNotificationsForWebContents(

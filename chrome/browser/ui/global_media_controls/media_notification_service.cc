@@ -290,14 +290,16 @@ void MediaNotificationService::GetDeviceListHostForSession(
     mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
     mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
   CreateCastDeviceListHost(CreateCastDialogControllerForSession(session_id),
-                           std::move(host_receiver), std::move(client_remote));
+                           std::move(host_receiver), std::move(client_remote),
+                           session_id);
 }
 
 void MediaNotificationService::GetDeviceListHostForPresentation(
     mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
     mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
   CreateCastDeviceListHost(CreateCastDialogControllerForPresentationRequest(),
-                           std::move(host_receiver), std::move(client_remote));
+                           std::move(host_receiver), std::move(client_remote),
+                           absl::nullopt);
 }
 
 std::unique_ptr<media_router::CastDialogController>
@@ -358,18 +360,23 @@ MediaNotificationService::CreateCastDialogControllerForPresentationRequest() {
 void MediaNotificationService::CreateCastDeviceListHost(
     std::unique_ptr<media_router::CastDialogController> dialog_controller,
     mojo::PendingReceiver<mojom::DeviceListHost> host_receiver,
-    mojo::PendingRemote<mojom::DeviceListClient> client_remote) {
+    mojo::PendingRemote<mojom::DeviceListClient> client_remote,
+    absl::optional<std::string> session_id) {
   if (!dialog_controller) {
     // We discard the PendingReceiver/Remote here, and if they have disconnect
     // handlers set, those get called.
     return;
   }
+  auto media_remoting_callback_ =
+      session_id.has_value()
+          ? base::BindRepeating(
+                &MediaNotificationService::OnMediaRemotingRequested,
+                weak_ptr_factory_.GetWeakPtr(), session_id.value())
+          : base::DoNothing();
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<CastDeviceListHost>(
-          std::move(dialog_controller), std::move(client_remote),
-          base::BindRepeating(
-              &MediaNotificationService::OnMediaRemotingRequested,
-              weak_ptr_factory_.GetWeakPtr())),
+      std::make_unique<CastDeviceListHost>(std::move(dialog_controller),
+                                           std::move(client_remote),
+                                           std::move(media_remoting_callback_)),
       std::move(host_receiver));
 }
 

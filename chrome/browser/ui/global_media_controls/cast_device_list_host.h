@@ -19,8 +19,7 @@
 class CastDeviceListHost : public global_media_controls::mojom::DeviceListHost,
                            media_router::CastDialogController::Observer {
  public:
-  using MediaRemotingCallback =
-      base::RepeatingCallback<void(const std::string& sink_id)>;
+  using MediaRemotingCallback = base::RepeatingCallback<void()>;
 
   CastDeviceListHost(
       std::unique_ptr<media_router::CastDialogController> dialog_controller,

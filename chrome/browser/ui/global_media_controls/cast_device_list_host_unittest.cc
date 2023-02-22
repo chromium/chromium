@@ -75,7 +75,7 @@ class CastDeviceListHostTest : public testing::Test {
                             base::Unretained(this)));
   }
 
-  MOCK_METHOD(void, OnMediaRemotingRequested, (const std::string& sink_id));
+  MOCK_METHOD(void, OnMediaRemotingRequested, ());
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -126,7 +126,7 @@ TEST_F(CastDeviceListHostTest, StartRemotePlayback) {
   EXPECT_CALL(
       *dialog_controller_,
       StartCasting(sink.id, media_router::MediaCastMode::REMOTE_PLAYBACK));
-  EXPECT_CALL(*this, OnMediaRemotingRequested(sink.id));
+  EXPECT_CALL(*this, OnMediaRemotingRequested());
   host_->SelectDevice(sink.id);
 }
 

@@ -147,7 +147,7 @@ void CastDeviceListHost::StartCasting(const media_router::UIMediaSink& sink) {
   }
   cast_controller_->StartCasting(sink.id, cast_mode.value());
   if (cast_mode.value() == media_router::MediaCastMode::REMOTE_PLAYBACK) {
-    media_remoting_callback_.Run(sink.id);
+    media_remoting_callback_.Run();
   }
   // TODO(crbug.com/1411139): Call RecordStartCastingMetrics() here.
 }
