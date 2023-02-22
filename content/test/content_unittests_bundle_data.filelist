@@ -76,6 +76,7 @@
 //content/test/data/attribution_reporting/interop/rate_limit_max_source_registration_reporting_origin_endpoints.json
 //content/test/data/attribution_reporting/interop/same_destination_site.json
 //content/test/data/attribution_reporting/interop/same_reporting_origin.json
+//content/test/data/attribution_reporting/interop/source_deactivation.json
 //content/test/data/attribution_reporting/interop/source_priority.json
 //content/test/data/attribution_reporting/interop/source_storage_limit.json
 //content/test/data/attribution_reporting/interop/success_debug_aggregatable.json
