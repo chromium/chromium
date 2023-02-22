@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.ui.searchactivityutils;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
@@ -77,14 +77,14 @@ public class SearchActivityPreferencesManagerTest {
             return null;
         })
                 .when(mTemplateUrlServiceMock)
-                .registerLoadListener(anyObject());
+                .registerLoadListener(any());
 
         doAnswer(invocation -> {
             mTemplateUrlServiceObserver = (TemplateUrlServiceObserver) invocation.getArguments()[0];
             return null;
         })
                 .when(mTemplateUrlServiceMock)
-                .addObserver(anyObject());
+                .addObserver(any());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SearchActivityPreferencesManager.resetForTesting();
@@ -311,8 +311,8 @@ public class SearchActivityPreferencesManagerTest {
         // Signal the Manager that Native Libraries are ready.
         doReturn(true).when(mLibraryLoaderMock).isInitialized();
         SearchActivityPreferencesManager.onNativeLibraryReady();
-        verify(mTemplateUrlServiceMock, times(1)).registerLoadListener(anyObject());
-        verify(mTemplateUrlServiceMock, times(1)).addObserver(anyObject());
+        verify(mTemplateUrlServiceMock, times(1)).registerLoadListener(any());
+        verify(mTemplateUrlServiceMock, times(1)).addObserver(any());
         Assert.assertNotNull(mTemplateUrlServiceLoadListener);
         Assert.assertNotNull(mTemplateUrlServiceObserver);
         reset(mTemplateUrlServiceMock);
