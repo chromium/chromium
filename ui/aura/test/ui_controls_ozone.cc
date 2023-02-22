@@ -235,9 +235,9 @@ bool UIControlsOzone::SendTouchEventsNotifyWhenDone(int action,
   int64_t display_id = display::kInvalidDisplayId;
   if (!ScreenDIPToHostPixels(&host_location, &display_id))
     return false;
-  bool has_move = action & ui_controls::MOVE;
-  bool has_release = action & ui_controls::RELEASE;
-  if (action & ui_controls::PRESS) {
+  bool has_move = action & ui_controls::kTouchMove;
+  bool has_release = action & ui_controls::kTouchRelease;
+  if (action & ui_controls::kTouchPress) {
     PostTouchEvent(
         ui::ET_TOUCH_PRESSED, host_location, id, display_id,
         (has_move || has_release) ? base::OnceClosure() : std::move(task));

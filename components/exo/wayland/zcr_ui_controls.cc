@@ -77,8 +77,8 @@ void ResetPointerAndTouch(UiControlsState* state) {
   uint32_t touch_ids_down = env->env_controller()->touch_ids_down();
   for (uint32_t touch_id = 0; touch_id < 32; ++touch_id) {
     if (touch_ids_down & (1 << touch_id)) {
-      ui_controls::SendTouchEvents(ui_controls::TouchType::RELEASE, touch_id, 0,
-                                   0);
+      ui_controls::SendTouchEvents(ui_controls::TouchType::kTouchRelease,
+                                   touch_id, 0, 0);
     }
   }
 }

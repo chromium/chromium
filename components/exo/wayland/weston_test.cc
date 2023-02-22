@@ -73,11 +73,11 @@ constexpr uint32_t kWestonTestVersion = 1;
 int WaylandToUIControlsTouchType(int type) {
   switch (type) {
     case WL_TOUCH_DOWN:
-      return ui_controls::PRESS;
+      return ui_controls::kTouchPress;
     case WL_TOUCH_UP:
-      return ui_controls::RELEASE;
+      return ui_controls::kTouchRelease;
     default:
-      return ui_controls::MOVE;
+      return ui_controls::kTouchMove;
   }
 }
 

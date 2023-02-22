@@ -630,7 +630,7 @@ bool SendTouchEventsImpl(int action, int num, int x, int y) {
     return false;
 
   // Injecting the touch move on screen
-  if (action & MOVE) {
+  if (action & kTouchMove) {
     for (int i = 0; i < num; i++) {
       POINTER_TOUCH_INFO& contact = pointer_touch_info[i];
       contact.pointerInfo.ptPixelLocation.y = y + 10;
@@ -643,7 +643,7 @@ bool SendTouchEventsImpl(int action, int num, int x, int y) {
   }
 
   // Injecting the touch up on screen
-  if (action & RELEASE) {
+  if (action & kTouchRelease) {
     for (int i = 0; i < num; i++) {
       POINTER_TOUCH_INFO& contact = pointer_touch_info[i];
       contact.pointerInfo.ptPixelLocation.y = y + 10;
