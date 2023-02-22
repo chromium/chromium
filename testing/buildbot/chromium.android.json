@@ -25831,6 +25831,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],
+        "ci_only": true,
         "isolate_profile_data": true,
         "merge": {
           "args": [
