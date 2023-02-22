@@ -6897,7 +6897,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7380622428988553498">Cihaz adı geçersiz karakterler içeriyor</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> güncellendi</translation>
 <translation id="7382085868019811559">Eski Tarayıcı Desteği (LBS) aracılığıyla belirli URL kalıpları, bu siteleri düzgün bir şekilde çalıştırmak için gereken eski özelliklerin desteklendiği alternatif bir tarayıcıda açılabilir.</translation>
-<translation id="738322632977123193">Yüklenemiyor. Şu biçimlerden birinde bir resim kullanın: .jpg, .gif, .png, .bmp, .tif, or .webp</translation>
+<translation id="738322632977123193">Yüklenemiyor. Şu biçimlerden birinde bir resim kullanın: .jpg, .gif, .png, .bmp, .tif veya .webp</translation>
 <translation id="73843634555824551">Giriş ve klavyeler</translation>
 <translation id="7384687527486377545">Klavye otomatik tekrarı</translation>
 <translation id="7385490373498027129">Bu <ph name="DEVICE_TYPE" /> üzerindeki tüm kullanıcıların dosyaları ve yerel verileri kalıcı olarak silinecek.</translation>

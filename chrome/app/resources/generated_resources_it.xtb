@@ -6895,7 +6895,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> è stata aggiornata</translation>
 <translation id="7382085868019811559">La funzionalità Supporto dei browser precedenti (LBS) consente di aprire pattern URL specifici in un browser alternativo che supporta le funzionalità precedenti necessarie per eseguire correttamente i siti in questione.</translation>
-<translation id="738322632977123193">Caricamento non riuscito. Utilizza un'immagine in uno dei seguenti formati: .jpg, .gif, .png, .bmp, .tif o .webp</translation>
+<translation id="738322632977123193">Caricamento non riuscito. Utilizza un'immagine in uno di questi formati: .jpg, .gif, .png, .bmp, .tif o .webp</translation>
 <translation id="73843634555824551">Metodi di immissione e tastiere</translation>
 <translation id="7384687527486377545">Ripetizione automatica tastiera</translation>
 <translation id="7385490373498027129">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> verranno eliminati in modo permanente.</translation>
@@ -7640,7 +7640,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8048728378294435881">Esegui il backup dei tuoi dati e usali su qualsiasi dispositivo</translation>
 <translation id="8048977114738515028">Crea un collegamento sul desktop del dispositivo per accedere direttamente al profilo</translation>
 <translation id="8049029041626250638">Collega una tastiera o un mouse. Se usi dispositivi Bluetooth, assicurati che siano pronti per essere accoppiati.</translation>
-<translation id="8049122382261047457">Cerca in qualsiasi immagine con Google Lens</translation>
+<translation id="8049122382261047457">Cerca qualsiasi immagine con Google Lens</translation>
 <translation id="8049705080247101012">Google ha contrassegnato l'estensione "<ph name="EXTENSION_NAME" />" come dannosa ed è stata impedita l'installazione</translation>
 <translation id="8049948037269924837">Scorrimento invertito del touchpad</translation>
 <translation id="8050038245906040378">Firma codice commerciale Microsoft</translation>

@@ -1999,7 +1999,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Supprimer 1 appli non compatible}one{Supprimer # appli non compatible}other{Supprimer # applis non compatibles}}</translation>
 <translation id="2776560192867872731">Modifier le nom de l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Supprimer ce conteneur</translation>
-<translation id="2777525873368474674">Coller le lien de l'image</translation>
+<translation id="2777525873368474674">Collez le lien de l'image</translation>
 <translation id="2778471504622896352">Ajouter des applications distantes au lanceur d'applications ChromeOS</translation>
 <translation id="2781120507965857989">Activez la synchronisation pour retrouver vos favoris, vos mots de passe, votre historique et plus encore, sur cet appareil et tous ceux que vous synchroniserez. Google pourra utiliser votre historique pour personnaliser la recherche et d'autres de ses services.</translation>
 <translation id="2781692009645368755">Google Pay</translation>

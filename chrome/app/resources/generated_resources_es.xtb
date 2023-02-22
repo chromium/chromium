@@ -1999,7 +1999,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Quitar 1 aplicación no admitida}other{Quitar # aplicaciones no admitidas}}</translation>
 <translation id="2776560192867872731">Cambia el nombre del dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Eliminar este contenedor</translation>
-<translation id="2777525873368474674">Pegar enlace de imagen</translation>
+<translation id="2777525873368474674">Pega el enlace de la imagen</translation>
 <translation id="2778471504622896352">Añadir aplicaciones remotas al menú de aplicaciones de ChromeOS</translation>
 <translation id="2781120507965857989">Activa la sincronización para acceder a tus marcadores, tus contraseñas, tu historial y otras opciones desde este dispositivo y desde cualquier otro dispositivo en el que tengas la sincronización activada. Google puede usar tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -7643,7 +7643,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8048728378294435881">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo</translation>
 <translation id="8048977114738515028">Crea un acceso directo en el escritorio de tu dispositivo para acceder directamente a este perfil</translation>
 <translation id="8049029041626250638">Conecta un teclado o un ratón. Si usas dispositivos Bluetooth, asegúrate de que estén listos para emparejarse.</translation>
-<translation id="8049122382261047457">Buscar cualquier imagen con Google Lens</translation>
+<translation id="8049122382261047457">Busca cualquier imagen con Google Lens</translation>
 <translation id="8049705080247101012">Google ha marcado "<ph name="EXTENSION_NAME" />" como extensión maliciosa, por lo que ha evitado que se instale</translation>
 <translation id="8049948037269924837">Desplazamiento inverso del panel táctil</translation>
 <translation id="8050038245906040378">Firma de código comercial de Microsoft</translation>
