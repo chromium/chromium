@@ -258,24 +258,24 @@ ReadAnythingFontModel::~ReadAnythingFontModel() = default;
 ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
   ColorInfo kDefaultColors = {
-      u"Default", IDS_READ_ANYTHING_DEFAULT_PNG, kColorReadAnythingForeground,
+      u"Default", IDS_READING_MODE_DEFAULT_PNG, kColorReadAnythingForeground,
       kColorReadAnythingBackground, kColorReadAnythingSeparator};
 
   ColorInfo kLightColors = {
-      u"Light", IDS_READ_ANYTHING_LIGHT_PNG, kColorReadAnythingForegroundLight,
+      u"Light", IDS_READING_MODE_LIGHT_PNG, kColorReadAnythingForegroundLight,
       kColorReadAnythingBackgroundLight, kColorReadAnythingSeparatorLight};
 
   ColorInfo kDarkColors = {
-      u"Dark", IDS_READ_ANYTHING_DARK_PNG, kColorReadAnythingForegroundDark,
+      u"Dark", IDS_READING_MODE_DARK_PNG, kColorReadAnythingForegroundDark,
       kColorReadAnythingBackgroundDark, kColorReadAnythingSeparatorDark};
 
-  ColorInfo kYellowColors = {u"Yellow", IDS_READ_ANYTHING_YELLOW_PNG,
+  ColorInfo kYellowColors = {u"Yellow", IDS_READING_MODE_YELLOW_PNG,
                              kColorReadAnythingForegroundYellow,
                              kColorReadAnythingBackgroundYellow,
                              kColorReadAnythingSeparatorYellow};
 
   ColorInfo kBlueColors = {
-      u"Blue", IDS_READ_ANYTHING_BLUE_PNG, kColorReadAnythingForegroundBlue,
+      u"Blue", IDS_READING_MODE_BLUE_PNG, kColorReadAnythingForegroundBlue,
       kColorReadAnythingBackgroundBlue, kColorReadAnythingSeparatorBlue};
 
   colors_choices_.emplace_back(kDefaultColors);
@@ -322,15 +322,15 @@ ReadAnythingLineSpacingModel::ReadAnythingLineSpacingModel() {
   // Define the line spacing options available to the user.
   LineSpacingInfo kStandard = {
       LineSpacing::kStandard,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_STANDARD),
       kReadAnythingLineSpacingStandardIcon};
   LineSpacingInfo kLoose = {
       LineSpacing::kLoose,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_LOOSE),
       kReadAnythingLineSpacingLooseIcon};
   LineSpacingInfo kVeryLoose = {
       LineSpacing::kVeryLoose,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_VERY_LOOSE),
       kReadAnythingLineSpacingVeryLooseIcon};
 
   lines_choices_.emplace_back(kStandard);
@@ -377,15 +377,15 @@ ReadAnythingLineSpacingModel::~ReadAnythingLineSpacingModel() = default;
 ReadAnythingLetterSpacingModel::ReadAnythingLetterSpacingModel() {
   LetterSpacingInfo kStandard = {
       LetterSpacing::kStandard,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_STANDARD),
       kReadAnythingLetterSpacingStandardIcon};
   LetterSpacingInfo kWide = {
       LetterSpacing::kWide,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_WIDE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_WIDE),
       kReadAnythingLetterSpacingWideIcon};
   LetterSpacingInfo kVeryWide = {
       LetterSpacing::kVeryWide,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_WIDE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_SPACING_COMBOBOX_VERY_WIDE),
       kReadAnythingLetterSpacingVeryWideIcon};
 
   letters_choices_.emplace_back(kStandard);

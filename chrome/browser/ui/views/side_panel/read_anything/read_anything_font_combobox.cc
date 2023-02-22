@@ -41,7 +41,7 @@ ReadAnythingFontCombobox::ReadAnythingFontCombobox(
     : Combobox(std::move(delegate->GetFontComboboxModel())),
       delegate_(std::move(delegate)) {
   SetTooltipTextAndAccessibleName(
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_FONT_NAME_COMBOBOX_LABEL));
+      l10n_util::GetStringUTF16(IDS_READING_MODE_FONT_NAME_COMBOBOX_LABEL));
   SetCallback(
       base::BindRepeating(&ReadAnythingFontCombobox::FontNameChangedCallback,
                           weak_pointer_factory_.GetWeakPtr()));

@@ -570,8 +570,8 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE" desc="The name of the Inspect Background Page command in the packaged app content area context menu">
             Inspect &amp;background page
           </message>
-          <message name="IDS_CONTENT_CONTEXT_READ_ANYTHING" desc="Context menu menuitem to open page in Read Anything view">
-           Open in Reader
+          <message name="IDS_CONTENT_CONTEXT_READING_MODE" desc="Context menu menuitem to open page in reading mode view" translateable="false">
+           Open in reading mode
           </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="The name of the Reload command in the content area context menu">
             &amp;Reload
@@ -837,8 +837,8 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_INSPECTBACKGROUNDPAGE" desc="In Title Case: The name of the Inspect Background Page command in the packaged app content area context menu">
             Inspect &amp;Background Page
           </message>
-          <message name="IDS_CONTENT_CONTEXT_READ_ANYTHING" desc="Context menu menuitem to open page in Read Anything view">
-           Open in Reader
+          <message name="IDS_CONTENT_CONTEXT_READING_MODE" desc="Context menu menuitem to open page in reading mode view" translateable="false">
+           Open in Reading Mode
           </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="In Title Case: The name of the Reload command in the content area context menu">
             &amp;Reload
@@ -7468,45 +7468,52 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Your administrator has disabled this feature.
       </message>
 
-      <!-- Read Anything strings -->
+      <!-- Reading mode strings -->
       <!-- TODO(crbug.com/1266555): Add final strings and make them translateable. -->
-      <message name="IDS_READ_ANYTHING_TITLE" desc="Title of the Read Anything feature, which gives users an accessible reading experience." translateable="false">
-        Read anything
-      </message>
-      <message name="IDS_READ_ANYTHING_TOOLBAR_LABEL" desc="Accessibility label for the text formatting toolbar of the Read Anything feature." translateable="false">
+      <if expr="use_titlecase">
+        <message name="IDS_READING_MODE_TITLE" desc="Title of the reading mode feature, which gives users an accessible reading experience." translateable="false">
+          Reading Mode
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_READING_MODE_TITLE" desc="Title of the reading mode feature, which gives users an accessible reading experience." translateable="false">
+          Reading mode
+        </message>
+      </if>
+      <message name="IDS_READING_MODE_TOOLBAR_LABEL" desc="Accessibility label for the text formatting toolbar of the reading mode feature." translateable="false">
         Text formatting
       </message>
-      <message name="IDS_READ_ANYTHING_FONT_NAME_COMBOBOX_LABEL" desc="Accessibility label for the font name combobox of the Read Anything feature." translateable="false">
+      <message name="IDS_READING_MODE_FONT_NAME_COMBOBOX_LABEL" desc="Accessibility label for the font name combobox of the reading mode feature." translateable="false">
         Font
       </message>
-      <message name="IDS_READ_ANYTHING_DECREASE_FONT_SIZE_BUTTON_LABEL" desc="Accessibility label for the decrease font size button of the Read Anything feature." translateable="false">
+      <message name="IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL" desc="Accessibility label for the decrease font size button of the reading mode feature." translateable="false">
         Decrease font-size
       </message>
-      <message name="IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL" desc="Accessibility label for the increase font size button of the Read Anything feature." translateable="false">
+      <message name="IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL" desc="Accessibility label for the increase font size button of the reading mode feature." translateable="false">
         Increase font-size
       </message>
-      <message name="IDS_READ_ANYTHING_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the Read Anything feature." translateable="false">
+      <message name="IDS_READING_MODE_COLORS_COMBOBOX_LABEL" desc="Accessibility label for the colors combobox of the reading mode feature." translateable="false">
         Theme
       </message>
-      <message name="IDS_READ_ANYTHING_LINE_SPACING_COMBOBOX_LABEL" desc="Accessibility label for the line height combobox of the Read Anything feature." translateable="false">
+      <message name="IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL" desc="Accessibility label for the line height combobox of the reading mode feature." translateable="false">
         Line height
       </message>
-      <message name="IDS_READ_ANYTHING_LETTER_SPACING_COMBOBOX_LABEL" desc="Accessibility label for the letter spacing combobox of the Read Anything feature." translateable="false">
+      <message name="IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL" desc="Accessibility label for the letter spacing combobox of the reading mode feature." translateable="false">
         Letter spacing
       </message>
-      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_STANDARD" desc="Combobox option for setting letter and line spacing of text in the Read Anything feature. Standard means that leters/lines are spaced in the browser's default manner." translateable="false">
+      <message name="IDS_READING_MODE_SPACING_COMBOBOX_STANDARD" desc="Combobox option for setting letter and line spacing of text in the reading mode feature. Standard means that leters/lines are spaced in the browser's default manner." translateable="false">
         Standard
       </message>
-      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE" desc="Combobox option for setting line spacing of text in the Read Anything feature. Loose means that lines are spaced far apart." translateable="false">
+      <message name="IDS_READING_MODE_SPACING_COMBOBOX_LOOSE" desc="Combobox option for setting line spacing of text in the reading mode feature. Loose means that lines are spaced far apart." translateable="false">
         Loose
       </message>
-      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE" desc="Combobox option for setting line spacing of text in the Read Anything feature. Very loose means that lines are spaced very far apart." translateable="false">
+      <message name="IDS_READING_MODE_SPACING_COMBOBOX_VERY_LOOSE" desc="Combobox option for setting line spacing of text in the reading mode feature. Very loose means that lines are spaced very far apart." translateable="false">
         Very loose
       </message>
-      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_WIDE" desc="Combobox option for setting letter spacing of text in the Read Anything feature. Wide means that letters are spaced far apart." translateable="false">
+      <message name="IDS_READING_MODE_SPACING_COMBOBOX_WIDE" desc="Combobox option for setting letter spacing of text in the reading mode feature. Wide means that letters are spaced far apart." translateable="false">
         Wide
       </message>
-      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_WIDE" desc="Combobox option for setting letter spacing of text in the Read Anything feature. Very wide means that letters are spaced very far apart." translateable="false">
+      <message name="IDS_READING_MODE_SPACING_COMBOBOX_VERY_WIDE" desc="Combobox option for setting letter spacing of text in the reading mode feature. Very wide means that letters are spaced very far apart." translateable="false">
         Very wide
       </message>
 

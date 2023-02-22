@@ -2717,19 +2717,19 @@ IN_PROC_BROWSER_TEST_F(ContextMenuWithProfileLinksBrowserTest,
 
 #endif
 
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenReadAnything) {
-  // Open in Reader is not an option when text is unselected.
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenReadingMode) {
+  // Open in reading mode is not an option when text is unselected.
   std::unique_ptr<TestRenderViewContextMenu> menu1 =
       CreateContextMenuMediaTypeNone(GURL("http://www.google.com/"),
                                      GURL("http://www.google.com/"));
-  ASSERT_FALSE(menu1->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+  ASSERT_FALSE(menu1->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 
-  // Open in Reader is an option when non-editable text is selected.
+  // Open in reading mode is an option when non-editable text is selected.
   std::unique_ptr<TestRenderViewContextMenu> menu2 =
       CreateContextMenuForTextInWebContents(u"selection text");
-  ASSERT_TRUE(menu2->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+  ASSERT_TRUE(menu2->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 
-  // Open in Reader is an option when editable text is selected.
+  // Open in reading mode is an option when editable text is selected.
   content::ContextMenuParams params;
   params.is_editable = true;
   std::unique_ptr<TestRenderViewContextMenu> menu3 =
@@ -2739,7 +2739,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenReadAnything) {
                                                        ->GetPrimaryMainFrame(),
                                                   params);
   menu3->Init();
-  ASSERT_TRUE(menu3->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING));
+  ASSERT_TRUE(menu3->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
 }
 
 }  // namespace

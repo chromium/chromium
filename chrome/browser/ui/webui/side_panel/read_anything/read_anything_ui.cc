@@ -28,7 +28,7 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIReadAnythingSidePanelHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"readAnythingTabTitle", IDS_READ_ANYTHING_TITLE},
+      {"readAnythingTabTitle", IDS_READING_MODE_TITLE},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

@@ -59,21 +59,21 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
                           weak_pointer_factory_.GetWeakPtr()),
       kTextDecreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
-          IDS_READ_ANYTHING_DECREASE_FONT_SIZE_BUTTON_LABEL));
+          IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL));
 
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       kTextIncreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
-          IDS_READ_ANYTHING_INCREASE_FONT_SIZE_BUTTON_LABEL));
+          IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL));
 
   // Create theme selection menubutton.
   auto colors_button = std::make_unique<ReadAnythingMenuButton>(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeColorsCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       kPaletteIcon,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_COLORS_COMBOBOX_LABEL),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_COLORS_COMBOBOX_LABEL),
       delegate_->GetColorsModel());
 
   // Create line spacing menubutton.
@@ -81,7 +81,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLineSpacingCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       kLineSpacingIcon,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_LINE_SPACING_COMBOBOX_LABEL),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL),
       delegate_->GetLineSpacingModel());
 
   // Create letter spacing menubutton.
@@ -89,8 +89,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLetterSpacingCallback,
                           weak_pointer_factory_.GetWeakPtr()),
       kLetterSpacingIcon,
-      l10n_util::GetStringUTF16(
-          IDS_READ_ANYTHING_LETTER_SPACING_COMBOBOX_LABEL),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL),
       delegate_->GetLetterSpacingModel());
 
   // Add all views as children.
@@ -219,7 +218,7 @@ std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
 void ReadAnythingToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
   node_data->SetDescription(
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TOOLBAR_LABEL));
+      l10n_util::GetStringUTF16(IDS_READING_MODE_TOOLBAR_LABEL));
 }
 
 BEGIN_METADATA(ReadAnythingToolbarView, views::View)

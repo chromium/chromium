@@ -92,7 +92,7 @@ void ReadAnythingCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
-      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_TITLE),
+      l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
       ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
       base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
                           base::Unretained(this)));
@@ -152,7 +152,7 @@ std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
       std::make_unique<BubbleContentsWrapperT<ReadAnythingUI>>(
           /* webui_url= */ GURL(chrome::kChromeUIReadAnythingSidePanelURL),
           /* browser_context= */ browser->profile(),
-          /* task_manager_string_id= */ IDS_READ_ANYTHING_TITLE,
+          /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
           /* webui_resizes_host= */ false,
           /* esc_closes_ui= */ false));
 

@@ -450,7 +450,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 115},
        {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 116},
        {IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 117},
-       {IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING, 118},
+       {IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, 118},
        {IDC_FOLLOW, 119},
        {IDC_UNFOLLOW, 120},
        {IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_FIRST, 121},
@@ -1963,8 +1963,8 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 }
 
 void RenderViewContextMenu::AppendReadAnythingItem() {
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING,
-                                  IDS_CONTENT_CONTEXT_READ_ANYTHING);
+  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+                                  IDS_CONTENT_CONTEXT_READING_MODE);
   menu_model_.SetIsNewFeatureAt(menu_model_.GetItemCount() - 1, true);
 }
 
@@ -2545,7 +2545,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_ROUTE_MEDIA:
       return IsRouteMediaEnabled();
 
-    case IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING:
+    case IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE:
       return true;
 
     case IDC_CONTENT_CONTEXT_ADD_A_NOTE:
@@ -2760,7 +2760,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       ExecSearchLensForImage(/*is_image_translate=*/true);
       break;
 
-    case IDC_CONTENT_CONTEXT_OPEN_IN_READ_ANYTHING:
+    case IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE:
       ExecOpenInReadAnything();
       break;
 
