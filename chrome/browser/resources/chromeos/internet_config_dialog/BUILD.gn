@@ -28,7 +28,10 @@ if (optimize_webui) {
 
     deps = [
       ":preprocess_generated",
-      "../../../../../ui/webui/resources/cr_elements:build_ts",
+      "//ash/webui/common/resources:css_wrapper_files",
+      "//ash/webui/common/resources:html_wrapper_files",
+      "//ash/webui/common/resources:preprocess",
+      "//ui/webui/resources/cr_elements:build_ts",
     ]
   }
 }
