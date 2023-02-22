@@ -444,17 +444,9 @@ TEST_F(P2PSocketUdpTest, ThrottleAfterLimitAfterReceive) {
   base::RunLoop().RunUntilIdle();
 }
 
-// The fake clock mechanism used for this test doesn't work in component builds.
-// See: https://bugs.chromium.org/p/webrtc/issues/detail?id=6490
-#if defined(COMPONENT_BUILD)
-#define MAYBE_ThrottlingStopsAtExpectedTimes \
-  DISABLED_ThrottlingStopsAtExpectedTimes
-#else
-#define MAYBE_ThrottlingStopsAtExpectedTimes ThrottlingStopsAtExpectedTimes
-#endif
 // Test that once the limit is hit, the throttling stops at the expected time,
 // allowing packets to be sent again.
-TEST_F(P2PSocketUdpTest, MAYBE_ThrottlingStopsAtExpectedTimes) {
+TEST_F(P2PSocketUdpTest, ThrottlingStopsAtExpectedTimes) {
   EXPECT_CALL(*fake_client_.get(), SendComplete(_)).Times(12);
 
   rtc::PacketOptions options;
