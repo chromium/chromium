@@ -422,7 +422,6 @@ component("keyboard_hook") {
   }
 
   if (use_ozone) {
-    public += [ "ozone/keyboard_hook_ozone.h" ]
     sources += [ "ozone/keyboard_hook_ozone.cc" ]
     deps += [
       "//ui/base:features",

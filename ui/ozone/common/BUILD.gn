@@ -9,6 +9,8 @@ assert(use_ozone)
 
 source_set("common") {
   sources = [
+    "base_keyboard_hook.cc",
+    "base_keyboard_hook.h",
     "bitmap_cursor.cc",
     "bitmap_cursor.h",
     "bitmap_cursor_factory.cc",

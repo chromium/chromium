@@ -175,8 +175,6 @@ component("ozone_base") {
 
 source_set("platform") {
   sources = [
-    "common/base_keyboard_hook.cc",
-    "common/base_keyboard_hook.h",
     "common/stub_client_native_pixmap_factory.cc",
     "common/stub_client_native_pixmap_factory.h",
     "platform_constructor_list.h",
