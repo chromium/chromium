@@ -228,6 +228,11 @@ class WorkerThreadDelegate : public WorkerThread::Delegate {
       TransactionWithRegisteredTaskSource transaction_with_task_source) {
     CheckedAutoLock auto_lock(lock_);
     auto sort_key = transaction_with_task_source.task_source->GetSortKey();
+    // When moving |task_source| into |priority_queue_|, it may be destroyed
+    // on another thread as soon as |lock_| is released, since we're no longer
+    // holding a reference to it. To prevent UAF, release |transaction| before
+    // moving |task_source|. Ref. crbug.com/1412008
+    transaction_with_task_source.transaction.Release();
     priority_queue_.Push(std::move(transaction_with_task_source.task_source),
                          sort_key);
     if (!worker_awake_ && CanRunNextTaskSource()) {

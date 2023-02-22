@@ -41,6 +41,7 @@ class BASE_EXPORT CheckedLockImpl {
   void Release() UNLOCK_FUNCTION(lock_);
 
   void AssertAcquired() const;
+  void AssertNotHeld() const;
 
   std::unique_ptr<ConditionVariable> CreateConditionVariable();
 

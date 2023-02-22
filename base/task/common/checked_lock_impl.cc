@@ -174,6 +174,10 @@ void CheckedLockImpl::AssertAcquired() const {
   lock_.AssertAcquired();
 }
 
+void CheckedLockImpl::AssertNotHeld() const {
+  lock_.AssertNotHeld();
+}
+
 std::unique_ptr<ConditionVariable> CheckedLockImpl::CreateConditionVariable() {
   return std::make_unique<ConditionVariable>(&lock_);
 }
