@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_SCHEDULED_TASK_HANDLER_REBOOT_NOTIFICATIONS_SCHEDULER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -16,6 +17,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+
+namespace base {
+class Clock;
+class TickClock;
+}  // namespace base
 
 namespace policy {
 
@@ -57,10 +63,6 @@ class RebootNotificationsScheduler
   // Resets timers and closes notification and dialog if open.
   void ResetState();
 
-  // Grace time applies if the reboot is scheduled in less then an hour from the
-  // last device reboot.
-  bool ShouldApplyGraceTime(const base::Time& reboot_time) const;
-
   // SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;
 
@@ -86,12 +88,6 @@ class RebootNotificationsScheduler
 
   // Returns prefs for active profile or nullptr.
   virtual PrefService* GetPrefsForActiveProfile() const;
-
-  // Returns current time.
-  virtual const base::Time GetCurrentTime() const;
-
-  // Returns time since last reboot.
-  virtual const base::TimeDelta GetSystemUptime() const;
 
   // Returns delay from now until |reboot_time|.
   base::TimeDelta GetRebootDelay(const base::Time& reboot_time) const;
@@ -122,6 +118,8 @@ class RebootNotificationsScheduler
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       observation_{this};
+
+  base::raw_ptr<const base::Clock> clock_;
 
   base::WeakPtrFactory<RebootNotificationsScheduler> weak_ptr_factory_{this};
 };

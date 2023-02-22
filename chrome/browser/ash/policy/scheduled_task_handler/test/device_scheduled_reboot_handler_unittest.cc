@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/test/bind.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -39,7 +40,7 @@ namespace {
 constexpr char kRebootTaskTimeFieldName[] = "reboot_time";
 constexpr base::TimeDelta kExternalRebootDelay = base::Seconds(100);
 constexpr char kESTTimeZoneID[] = "America/New_York";
-}
+}  // namespace
 using ::testing::_;
 #define EXPECT_ERROR_LOG(matcher)                                \
   if (DLOG_IS_ON(ERROR)) {                                       \
@@ -50,13 +51,11 @@ using ::testing::_;
 class DeviceScheduledRebootHandlerForTest
     : public DeviceScheduledRebootHandler {
  public:
-  DeviceScheduledRebootHandlerForTest(
-      ash::CrosSettings* cros_settings,
-      std::unique_ptr<ScheduledTaskExecutor> task_executor,
-      std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler)
-      : DeviceScheduledRebootHandler(cros_settings,
-                                     std::move(task_executor),
-                                     std::move(notifications_scheduler)) {}
+  using DeviceScheduledRebootHandler::GetBootTimeCallback;
+
+  template <class... Args>
+  explicit DeviceScheduledRebootHandlerForTest(Args... args)
+      : DeviceScheduledRebootHandler(std::forward<Args>(args)...) {}
 
   DeviceScheduledRebootHandlerForTest(
       const DeviceScheduledRebootHandlerForTest&) = delete;
@@ -96,7 +95,8 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         mock_user_manager_(new ash::MockUserManager),
-        user_manager_enabler_(base::WrapUnique(mock_user_manager_)) {
+        user_manager_enabler_(base::WrapUnique(mock_user_manager_)),
+        start_time_(task_environment_.GetMockClock()->Now()) {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
                             base::Unretained(&wake_lock_provider_)));
@@ -117,7 +117,10 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
     device_scheduled_reboot_handler_ =
         std::make_unique<DeviceScheduledRebootHandlerForTest>(
             ash::CrosSettings::Get(), std::move(task_executor),
-            std::move(notifications_scheduler));
+            std::move(notifications_scheduler),
+            /*get_boot_time_callback=*/base::BindLambdaForTesting([this]() {
+              return start_time_;
+            }));
     // Set 0 delay for tests.
     device_scheduled_reboot_handler_->SetRebootDelayForTest(base::TimeDelta());
   }
@@ -202,6 +205,7 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
   device::TestWakeLockProvider wake_lock_provider_;
   FakeRebootNotificationsScheduler* notifications_scheduler_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  const base::Time start_time_;
 };
 
 TEST_F(DeviceScheduledRebootHandlerTest,
@@ -440,12 +444,17 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 
   // Set device uptime to 10 minutes and schedule reboot in 30 minutes. Apply
   // grace time - reboot should not occur.
-  notifications_scheduler_->SetUptime(base::Minutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   base::TimeDelta delay_from_now = base::Minutes(30);
   auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
       scheduled_task_executor_->GetTimeZone(),
       scheduled_task_executor_->GetCurrentTime(), delay_from_now,
       ScheduledTaskExecutor::Frequency::kDaily, kRebootTaskTimeFieldName);
+  int expected_scheduled_reboots = 0;
+  int expected_reboot_requests = 0;
+  // Fast forward without an actual time so that the timer task is triggered.
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 
   // Set a new scheduled reboot, fast forward to right before the
   // expected reboot and then verify reboot timer has not yet expired.
@@ -453,8 +462,6 @@ TEST_F(DeviceScheduledRebootHandlerTest,
   cros_settings_.device_settings()->Set(
       ash::kDeviceScheduledReboot,
       std::move(policy_and_next_reboot_time.first));
-  int expected_scheduled_reboots = 0;
-  int expected_reboot_requests = 0;
   task_environment_.FastForwardBy(delay_from_now - small_delay);
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 
@@ -522,7 +529,7 @@ TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
 
   // Set device uptime to 10 minutes and enable kiosk mode. We don't apply grace
   // period to kiosks, so reboot should occur.
-  notifications_scheduler_->SetUptime(base::Minutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   EXPECT_CALL(*mock_user_manager_, IsLoggedInAsKioskApp())
       .WillRepeatedly(testing::Return(true));
 
@@ -562,7 +569,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 
   // Set device uptime to 10 minutes and schedule reboot in 30 minutes. Apply
   // grace time - reboot should not occur.
-  notifications_scheduler_->SetUptime(base::Minutes(10));
+  task_environment_.FastForwardBy(base::Minutes(10));
   base::TimeDelta delay_from_now = base::Minutes(30);
   auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
       scheduled_task_executor_->GetTimeZone(),
@@ -648,7 +655,8 @@ class ScheduledRebootTimerFailureTest : public testing::Test {
  public:
   ScheduledRebootTimerFailureTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        start_time_(task_environment_.GetMockClock()->Now()) {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
                             base::Unretained(&wake_lock_provider_)));
@@ -666,7 +674,10 @@ class ScheduledRebootTimerFailureTest : public testing::Test {
     device_scheduled_reboot_handler_ =
         std::make_unique<DeviceScheduledRebootHandlerForTest>(
             ash::CrosSettings::Get(), std::move(task_executor),
-            std::move(notifications_scheduler));
+            std::move(notifications_scheduler),
+            /*get_boot_time_callback=*/base::BindLambdaForTesting([this]() {
+              return start_time_;
+            }));
   }
 
   ~ScheduledRebootTimerFailureTest() override {
@@ -685,6 +696,7 @@ class ScheduledRebootTimerFailureTest : public testing::Test {
   device::TestWakeLockProvider wake_lock_provider_;
   FakeRebootNotificationsScheduler* notifications_scheduler_;
   base::test::MockLog log_;
+  const base::Time start_time_;
 };
 
 TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
@@ -739,7 +751,8 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
  public:
   ScheduledRebootDelayedServiceTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        start_time_(task_environment_.GetMockClock()->Now()) {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
                             base::Unretained(&wake_lock_provider_)));
@@ -755,7 +768,10 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
     device_scheduled_reboot_handler_ =
         std::make_unique<DeviceScheduledRebootHandlerForTest>(
             ash::CrosSettings::Get(), std::move(task_executor),
-            std::move(notifications_scheduler));
+            std::move(notifications_scheduler),
+            /*get_boot_time_callback=*/base::BindLambdaForTesting([this]() {
+              return start_time_;
+            }));
   }
 
   ~ScheduledRebootDelayedServiceTest() override {
@@ -772,6 +788,7 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
   FakeRebootNotificationsScheduler* notifications_scheduler_;
   DelayedFakePowerManagerClient* power_manager_;
   device::TestWakeLockProvider wake_lock_provider_;
+  const base::Time start_time_;
 };
 
 TEST_F(ScheduledRebootDelayedServiceTest, SimulateServiceIsAvailableLaterTest) {

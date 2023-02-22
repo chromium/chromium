@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/system/sys_info.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
@@ -20,7 +19,6 @@ namespace policy {
 namespace {
 constexpr base::TimeDelta kNotificationDelay = base::Hours(1);
 constexpr base::TimeDelta kDialogDelay = base::Minutes(5);
-constexpr base::TimeDelta kGraceTime = base::Hours(1);
 }  // namespace
 
 RebootNotificationsScheduler* RebootNotificationsScheduler::instance = nullptr;
@@ -32,7 +30,9 @@ RebootNotificationsScheduler::RebootNotificationsScheduler()
 RebootNotificationsScheduler::RebootNotificationsScheduler(
     const base::Clock* clock,
     const base::TickClock* tick_clock)
-    : notification_timer_(clock, tick_clock), dialog_timer_(clock, tick_clock) {
+    : notification_timer_(clock, tick_clock),
+      dialog_timer_(clock, tick_clock),
+      clock_(clock) {
   DCHECK(!RebootNotificationsScheduler::Get());
   RebootNotificationsScheduler::SetInstance(this);
   if (session_manager::SessionManager::Get())
@@ -68,9 +68,6 @@ void RebootNotificationsScheduler::SchedulePendingRebootNotifications(
     base::OnceClosure reboot_callback,
     const base::Time& reboot_time) {
   ResetState();
-  if (ShouldApplyGraceTime(reboot_time)) {
-    return;
-  }
 
   reboot_time_ = reboot_time;
   reboot_callback_ = std::move(reboot_callback);
@@ -139,12 +136,6 @@ void RebootNotificationsScheduler::ResetState() {
   reboot_callback_.Reset();
 }
 
-bool RebootNotificationsScheduler::ShouldApplyGraceTime(
-    const base::Time& reboot_time) const {
-  base::TimeDelta delay = GetRebootDelay(reboot_time);
-  return ((delay + GetSystemUptime()) <= kGraceTime);
-}
-
 void RebootNotificationsScheduler::MaybeShowPendingRebootNotification() {
   notification_controller_.MaybeShowPendingRebootNotification(
       reboot_time_,
@@ -176,17 +167,9 @@ void RebootNotificationsScheduler::SetInstance(
   RebootNotificationsScheduler::instance = reboot_notifications_scheduler;
 }
 
-const base::Time RebootNotificationsScheduler::GetCurrentTime() const {
-  return base::Time::Now();
-}
-
-const base::TimeDelta RebootNotificationsScheduler::GetSystemUptime() const {
-  return base::SysInfo::Uptime();
-}
-
 base::TimeDelta RebootNotificationsScheduler::GetRebootDelay(
     const base::Time& reboot_time) const {
-  return (reboot_time - GetCurrentTime());
+  return reboot_time - clock_->Now();
 }
 
 void RebootNotificationsScheduler::CloseNotifications() {

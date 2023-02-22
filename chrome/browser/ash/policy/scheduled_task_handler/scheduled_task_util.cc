@@ -18,6 +18,8 @@
 namespace policy {
 namespace {
 
+constexpr base::TimeDelta kDefaultGracePeriod = base::Hours(1);
+
 ScheduledTaskExecutor::Frequency GetFrequency(const std::string& frequency) {
   if (frequency == "DAILY")
     return ScheduledTaskExecutor::Frequency::kDaily;
@@ -265,6 +267,13 @@ base::TimeDelta GenerateRandomDelay(int max_delay_in_seconds) {
   int64_t random_delay =
       static_cast<int64_t>(base::RandGenerator(max_delay_in_ms));
   return base::Milliseconds(random_delay);
+}
+
+bool ShouldSkipRebootDueToGracePeriod(base::Time boot_time,
+                                      base::Time reboot_time) {
+  // Skip reboot if reboot scheduled within [boot time, boot time + grace time]
+  // interval.
+  return boot_time + kDefaultGracePeriod >= reboot_time;
 }
 
 }  // namespace scheduled_task_util
