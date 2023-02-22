@@ -251,7 +251,7 @@ void NoStatePrefetchContents::SetPreloadingFailureReason(FinalStatus status) {
 void NoStatePrefetchContents::StartPrerendering(
     const gfx::Rect& bounds,
     SessionStorageNamespace* session_storage_namespace,
-    content::PreloadingAttempt* attempt) {
+    base::WeakPtr<content::PreloadingAttempt> attempt) {
   DCHECK(browser_context_);
   DCHECK(!bounds.IsEmpty());
   DCHECK(!prerendering_has_started_);
@@ -266,10 +266,9 @@ void NoStatePrefetchContents::StartPrerendering(
   load_start_time_ = base::TimeTicks::Now();
 
   prerendering_has_started_ = true;
-  if (attempt)
-    attempt_ = attempt->GetWeakPtr();
+  attempt_ = std::move(attempt);
   SetPreloadingTriggeringOutcome(
-      attempt, content::PreloadingTriggeringOutcome::kRunning);
+      attempt_.get(), content::PreloadingTriggeringOutcome::kRunning);
 
   no_state_prefetch_contents_ = CreateWebContents(session_storage_namespace);
   content::WebContentsObserver::Observe(no_state_prefetch_contents_.get());

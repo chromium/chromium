@@ -121,7 +121,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   virtual void StartPrerendering(
       const gfx::Rect& bounds,
       content::SessionStorageNamespace* session_storage_namespace,
-      content::PreloadingAttempt* preloading_attempt);
+      base::WeakPtr<content::PreloadingAttempt> preloading_attempt);
 
   // Verifies that the prerendering is not using too many resources, and kills
   // it if not.
@@ -277,7 +277,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // Store the PreloadingAttempt for this NoStatePrefetch attempt. We store
   // WeakPtr as it is possible that the PreloadingAttempt is deleted before the
   // NoStatePrefetch is deleted.
-  base::WeakPtr<content::PreloadingAttempt> attempt_;
+  base::WeakPtr<content::PreloadingAttempt> attempt_ = nullptr;
 
   // The referrer.
   const content::Referrer referrer_;

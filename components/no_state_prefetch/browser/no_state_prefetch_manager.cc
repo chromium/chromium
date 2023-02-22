@@ -253,7 +253,7 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
   }
   return StartPrefetchingWithPreconnectFallback(
       origin, url, referrer, initiator_origin, gfx::Rect(size),
-      session_storage_namespace, attempt);
+      session_storage_namespace, attempt ? attempt->GetWeakPtr() : nullptr);
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
@@ -264,7 +264,7 @@ NoStatePrefetchManager::StartPrefetchingFromOmnibox(
     PreloadingAttempt* attempt) {
   return StartPrefetchingWithPreconnectFallback(
       ORIGIN_OMNIBOX, url, content::Referrer(), absl::nullopt, gfx::Rect(size),
-      session_storage_namespace, attempt);
+      session_storage_namespace, attempt ? attempt->GetWeakPtr() : nullptr);
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
@@ -548,14 +548,15 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     const absl::optional<url::Origin>& initiator_origin,
     const gfx::Rect& bounds,
     SessionStorageNamespace* session_storage_namespace,
-    PreloadingAttempt* attempt) {
+    base::WeakPtr<content::PreloadingAttempt> attempt) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line && command_line->HasSwitch(switches::kSingleProcess)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url_arg, origin,
                                                   FINAL_STATUS_SINGLE_PROCESS);
-    SetPreloadingEligibility(attempt, PreloadingEligibility::kSingleProcess);
+    SetPreloadingEligibility(attempt.get(),
+                             PreloadingEligibility::kSingleProcess);
     return nullptr;
   }
 
@@ -564,7 +565,8 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   if (origin == ORIGIN_LINK_REL_NEXT) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url_arg, origin, FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED);
-    SetPreloadingEligibility(attempt, PreloadingEligibility::kLinkRelNext);
+    SetPreloadingEligibility(attempt.get(),
+                             PreloadingEligibility::kLinkRelNext);
     return nullptr;
   }
 
@@ -572,7 +574,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   if (IsLowEndDevice()) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url_arg, origin,
                                                   FINAL_STATUS_LOW_END_DEVICE);
-    SetPreloadingEligibility(attempt, PreloadingEligibility::kLowMemory);
+    SetPreloadingEligibility(attempt.get(), PreloadingEligibility::kLowMemory);
     return nullptr;
   }
 
@@ -587,7 +589,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   if (delegate_->GetCookieSettings()->ShouldBlockThirdPartyCookies()) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url, origin, FINAL_STATUS_BLOCK_THIRD_PARTY_COOKIES);
-    SetPreloadingEligibility(attempt,
+    SetPreloadingEligibility(attempt.get(),
                              PreloadingEligibility::kThirdPartyCookies);
     return nullptr;
   }
@@ -595,7 +597,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   if (!IsPredictionEnabled(origin)) {
     FinalStatus final_status = FINAL_STATUS_PRERENDERING_DISABLED;
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin, final_status);
-    SetPreloadingEligibility(attempt,
+    SetPreloadingEligibility(attempt.get(),
                              PreloadingEligibility::kPreloadingDisabled);
     return nullptr;
   }
@@ -608,7 +610,8 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url, origin, FINAL_STATUS_RATE_LIMIT_EXCEEDED);
     SetPreloadingEligibility(
-        attempt, PreloadingEligibility::kPreloadingInvokedWithinTimelimit);
+        attempt.get(),
+        PreloadingEligibility::kPreloadingInvokedWithinTimelimit);
     return nullptr;
   }
 
@@ -616,7 +619,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   // status as holdback, so we can analyze via UKM.
   if (origin == ORIGIN_GWS_PRERENDER &&
       base::FeatureList::IsEnabled(kGWSPrefetchHoldback)) {
-    SetPreloadingEligibility(attempt,
+    SetPreloadingEligibility(attempt.get(),
                              PreloadingEligibility::kPreloadingDisabled);
     // Set the holdback status on the prefetch entry.
     SetPrefetchFinalStatusForUrl(url, FINAL_STATUS_GWS_HOLDBACK);
@@ -630,7 +633,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   if (origin == ORIGIN_NAVIGATION_PREDICTOR &&
       base::FeatureList::IsEnabled(kNavigationPredictorPrefetchHoldback)) {
     // Set the holdback status on the prefetch entry.
-    SetPreloadingEligibility(attempt,
+    SetPreloadingEligibility(attempt.get(),
                              PreloadingEligibility::kPreloadingDisabled);
     SetPrefetchFinalStatusForUrl(url,
                                  FINAL_STATUS_NAVIGATION_PREDICTOR_HOLDBACK);
@@ -640,7 +643,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   }
 
   // NoStatePrefetch is now eligible to be triggered.
-  SetPreloadingEligibility(attempt, PreloadingEligibility::kEligible);
+  SetPreloadingEligibility(attempt.get(), PreloadingEligibility::kEligible);
 
   // Check for the holdback status and set it.
   if (base::FeatureList::IsEnabled(features::kNoStatePrefetchHoldback)) {
@@ -659,7 +662,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
           FindNoStatePrefetchData(url, session_storage_namespace)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
                                                   FINAL_STATUS_DUPLICATE);
-    SetPreloadingTriggeringOutcome(attempt,
+    SetPreloadingTriggeringOutcome(attempt.get(),
                                    PreloadingTriggeringOutcome::kDuplicate);
     return base::WrapUnique(
         new NoStatePrefetchHandle(preexisting_prefetch_data));
@@ -672,7 +675,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
       prefetch_age < base::Minutes(net::HttpCache::kPrefetchReuseMins)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
                                                   FINAL_STATUS_DUPLICATE);
-    SetPreloadingTriggeringOutcome(attempt,
+    SetPreloadingTriggeringOutcome(attempt.get(),
                                    PreloadingTriggeringOutcome::kDuplicate);
     return nullptr;
   }
