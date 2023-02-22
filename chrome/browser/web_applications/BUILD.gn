@@ -324,17 +324,6 @@ source_set("web_applications") {
     ]
   }
 
-  if (is_win || is_mac || is_linux) {
-    sources += [
-      "os_integration/url_handler_manager_impl.cc",
-      "os_integration/url_handler_manager_impl.h",
-      "url_handler_launch_params.cc",
-      "url_handler_launch_params.h",
-      "url_handler_prefs.cc",
-      "url_handler_prefs.h",
-    ]
-  }
-
   if (!is_android && !is_chromeos) {
     sources += [
       "policy/web_app_settings_policy_handler.cc",
@@ -681,13 +670,6 @@ source_set("web_applications_unit_tests") {
       "os_integration/web_app_file_handler_registration_linux_unittest.cc",
       "os_integration/web_app_run_on_os_login_linux_unittest.cc",
       "os_integration/web_app_shortcut_linux_unittest.cc",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    sources += [
-      "os_integration/url_handler_manager_impl_unittest.cc",
-      "url_handler_prefs_unittest.cc",
     ]
   }
 

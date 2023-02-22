@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
-#include "chrome/browser/web_applications/os_integration/url_handler_manager_impl.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
@@ -282,14 +281,11 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
         profile, icon_manager_.get(), file_handler_manager.get(),
         protocol_handler_manager.get());
 
-    std::unique_ptr<UrlHandlerManager> url_handler_manager;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    url_handler_manager = std::make_unique<UrlHandlerManagerImpl>(profile);
-#endif
-
+    // TODO(crbug.com/1072058): Remove UrlHandlerManager from
+    // OsIntegrationManager.
     os_integration_manager_ = std::make_unique<OsIntegrationManager>(
         profile, std::move(shortcut_manager), std::move(file_handler_manager),
-        std::move(protocol_handler_manager), std::move(url_handler_manager));
+        std::move(protocol_handler_manager), /*url_handler_manager=*/nullptr);
   }
 
   command_manager_ = std::make_unique<WebAppCommandManager>(profile, this);

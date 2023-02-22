@@ -459,7 +459,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/web_applications/url_handler_prefs.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #endif
 
@@ -785,6 +784,11 @@ const char kPluginsLastInternalDirectory[] = "plugins.last_internal_directory";
 const char kPluginsPluginsList[] = "plugins.plugins_list";
 const char kPluginsShowDetails[] = "plugins.show_details";
 
+// Deprecated 02/2023.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+const char kWebAppsUrlHandlerInfo[] = "web_apps.url_handler_info";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -861,6 +865,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kEventSequenceResetCounter, 0);
   registry->RegisterInt64Pref(kEventSequenceLastSystemUptime, 0);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 02/2023.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  registry->RegisterDictionaryPref(kWebAppsUrlHandlerInfo);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1271,10 +1280,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ThirdPartyConflictsManager::RegisterLocalStatePrefs(registry);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  web_app::url_handler_prefs::RegisterLocalStatePrefs(registry);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   RegisterDefaultBrowserPromptPrefs(registry);
@@ -1808,6 +1813,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kEventSequenceLastSystemUptime);
   local_state->ClearPref(kEventSequenceResetCounter);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 02/2023
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  local_state->ClearPref(kWebAppsUrlHandlerInfo);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
