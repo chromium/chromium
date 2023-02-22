@@ -2649,6 +2649,9 @@ extern const char kImmersiveFullscreenDescription[];
 extern const char kMacSyscallSandboxName[];
 extern const char kMacSyscallSandboxDescription[];
 
+extern const char kRetryGetVideoCaptureDeviceInfosName[];
+extern const char kRetryGetVideoCaptureDeviceInfosDescription[];
+
 extern const char kScreenTimeName[];
 extern const char kScreenTimeDescription[];
 

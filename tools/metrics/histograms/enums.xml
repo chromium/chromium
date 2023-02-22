@@ -61753,6 +61753,7 @@ from previous Chrome versions.
   <int value="-22311932"
       label="QuickIntensiveWakeUpThrottlingAfterLoading:disabled"/>
   <int value="-21771427" label="HistoryClustersPersistedClusters:disabled"/>
+  <int value="-21693450" label="RetryGetVideoCaptureDeviceInfos:disabled"/>
   <int value="-20597579" label="UseMultiloginEndpoint:enabled"/>
   <int value="-20438829" label="SyncUSSAutofillProfile:enabled"/>
   <int value="-20329017" label="EduCoexistence:disabled"/>
@@ -64079,6 +64080,7 @@ from previous Chrome versions.
   <int value="1302342960"
       label="AutofillParseVcnCardOnFileStandaloneCvcFields:disabled"/>
   <int value="1302421166" label="NativeNotifications:disabled"/>
+  <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>

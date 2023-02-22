@@ -4858,6 +4858,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kTouchTextEditingRedesign)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
+    {"enable-retry-capture-device-enumeration-on-crash",
+     flag_descriptions::kRetryGetVideoCaptureDeviceInfosName,
+     flag_descriptions::kRetryGetVideoCaptureDeviceInfosDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kRetryGetVideoCaptureDeviceInfos)},
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
     {"enable-immersive-fullscreen-toolbar",
      flag_descriptions::kImmersiveFullscreenName,
      flag_descriptions::kImmersiveFullscreenDescription, kOsMac,

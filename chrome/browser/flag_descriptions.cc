@@ -4624,6 +4624,13 @@ const char kMacSyscallSandboxName[] = "Mac Syscall Filtering Sandbox";
 const char kMacSyscallSandboxDescription[] =
     "Controls whether the macOS sandbox filters syscalls.";
 
+const char kRetryGetVideoCaptureDeviceInfosName[] =
+    "Retry capture device enumeration on crash";
+const char kRetryGetVideoCaptureDeviceInfosDescription[] =
+    "Enables retries when enumerating the available video capture devices "
+    "after a crash. The capture service is restarted without loading external "
+    "DAL plugins which could have caused the crash.";
+
 const char kScreenTimeName[] = "Screen Time";
 const char kScreenTimeDescription[] =
     "Integrate with the macOS Screen Time system. Only enabled on macOS 12.1 "

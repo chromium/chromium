@@ -3020,6 +3020,11 @@
     "expiry_milestone": 100
   },
   {
+     "name": "enable-retry-capture-device-enumeration-on-crash",
+     "owners": [ "orphis", "toprice" ],
+     "expiry_milestone": 118
+  },
+  {
     "name": "enable-rgb-keyboard",
     "owners": [ "jimmyxgong", "zentaro", "michaelcheco", "cros-peripherals@google.com"],
     "expiry_milestone": 118
