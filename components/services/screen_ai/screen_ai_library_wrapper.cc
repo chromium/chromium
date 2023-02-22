@@ -60,6 +60,18 @@ void CheckLibraryIsLoaded(base::ScopedNativeLibrary& library) {
 
 ScreenAILibraryWrapper::ScreenAILibraryWrapper() = default;
 
+template <typename T>
+bool ScreenAILibraryWrapper::LoadFunction(T& function_variable,
+                                          const char* function_name) {
+  function_variable =
+      reinterpret_cast<T>(library_.GetFunctionPointer(function_name));
+  if (function_variable == nullptr) {
+    VLOG(0) << "Could not load function: " << function_name;
+    return false;
+  }
+  return true;
+}
+
 bool ScreenAILibraryWrapper::Init(const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
   CheckLibraryIsLoaded(library_);
@@ -80,48 +92,45 @@ bool ScreenAILibraryWrapper::Init(const base::FilePath& library_path) {
   }
 #endif
 
-// Loads a library function with name N, type T, and puts it in variable V.
-// If the function is not loaded, returns false.
-#define LOAD_FUNCTION(V, T, N)                             \
-  V = reinterpret_cast<T>(library_.GetFunctionPointer(N)); \
-  if (V == nullptr) {                                      \
-    VLOG(0) << "Could not load function: " << N;           \
-    return false;                                          \
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  set_logger_ =
-      reinterpret_cast<SetLoggerFn>(library_.GetFunctionPointer("SetLogger"));
+  if (!LoadFunction(set_logger_, "SetLogger")) {
+    return false;
+  }
   DCHECK(set_logger_);
 #endif
 
   // General functions.
-  LOAD_FUNCTION(get_library_version_, GetLibraryVersionFn, "GetLibraryVersion");
-  LOAD_FUNCTION(enable_debug_mode_, EnableDebugModeFn, "EnableDebugMode");
-  LOAD_FUNCTION(read_buffered_int32_array_, ReadBufferedInt32ArrayFn,
-                "ReadBufferedInt32Array");
-  LOAD_FUNCTION(read_buffered_char_array_, ReadBufferedCharArrayFn,
-                "ReadBufferedCharArray");
+  if (!LoadFunction(get_library_version_, "GetLibraryVersion") ||
+      !LoadFunction(get_library_version_, "GetLibraryVersion") ||
+      !LoadFunction(enable_debug_mode_, "EnableDebugMode") ||
+      !LoadFunction(read_buffered_int32_array_, "ReadBufferedInt32Array") ||
+      !LoadFunction(read_buffered_char_array_, "ReadBufferedCharArray")) {
+    return false;
+  }
 
   // Layout Extraction functions.
   if (features::IsLayoutExtractionEnabled()) {
-    LOAD_FUNCTION(init_layout_extraction_, InitLayoutExtractionFn,
-                  "InitLayoutExtraction");
-    LOAD_FUNCTION(extract_layout_, ExtractLayoutFn, "ExtractLayout");
+    if (!LoadFunction(init_layout_extraction_, "InitLayoutExtraction") ||
+        !LoadFunction(extract_layout_, "ExtractLayout")) {
+      return false;
+    }
   }
 
   // OCR functions.
   if (features::IsPdfOcrEnabled()) {
-    LOAD_FUNCTION(init_ocr_, InitOCRFn, "InitOCR");
-    LOAD_FUNCTION(perform_ocr_, PerformOcrFn, "PerformOCR");
+    if (!LoadFunction(init_ocr_, "InitOCR") ||
+        !LoadFunction(perform_ocr_, "PerformOCR")) {
+      return false;
+    }
   }
 
   // Main Content Extraction functions.
   if (features::IsReadAnythingWithScreen2xEnabled()) {
-    LOAD_FUNCTION(init_main_content_extraction_, InitMainContentExtractionFn,
-                  "InitMainContentExtraction");
-    LOAD_FUNCTION(extract_main_content_, ExtractMainContentFn,
-                  "ExtractMainContent");
+    if (!LoadFunction(init_main_content_extraction_,
+                      "InitMainContentExtraction") ||
+        !LoadFunction(extract_main_content_, "ExtractMainContent")) {
+      return false;
+    }
   }
 
   return true;
