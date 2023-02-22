@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 82 tests; 76 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 84 tests; 76 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set('example.jpg' 1x)" should set the property value
@@ -10,12 +10,6 @@ PASS e.style['background-image'] = "image-set(url(example.png) 1dpcm, 'example.p
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1dpcm, 'example.png' 2x)" should set the property value
 PASS e.style['background-image'] = "image-set('example.jpeg' 222dpi, url(example.png) 3.5x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set('example.jpeg' 222dpi, url(example.png) 3.5x)" should set the property value
-FAIL e.style['background-image'] = "image-set(url(\"example.png\") 1x type(\"image/png\"))" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 1x type(\"image/png\"))" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "image-set(url(example.png) type('image/png'))" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "-webkit-image-set(url(example.png) type('image/png'))" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "image-set(url(example.png) type('image/png') 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['background-image'] = "-webkit-image-set(url(example.png) type('image/png') 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
 PASS e.style['background-image'] = "image-set(none, url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set(none, url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "image-set()" should not set the property value
@@ -26,14 +20,6 @@ PASS e.style['background-image'] = "image-set(url(example.png) -20x)" should not
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) -20x)" should not set the property value
 PASS e.style['background-image'] = "image-set('example.jpeg' 92pid url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set('example.jpeg' 92pid url(example.png) 1x)" should not set the property value
-PASS e.style['background-image'] = "image-set(url(example.png) type(image/png))" should not set the property value
-PASS e.style['background-image'] = "-webkit-image-set(url(example.png) type(image/png))" should not set the property value
-PASS e.style['background-image'] = "image-set(url(example.png) type('image/png') type('image/png'))" should not set the property value
-PASS e.style['background-image'] = "-webkit-image-set(url(example.png) type('image/png') type('image/png'))" should not set the property value
-PASS e.style['background-image'] = "image-set(url(example.png) 1xtype('image/png'))" should not set the property value
-PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1xtype('image/png'))" should not set the property value
-PASS e.style['background-image'] = "image-set(type('image/png') url(example.png) 1x)" should not set the property value
-PASS e.style['background-image'] = "-webkit-image-set(type('image/png') url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "image-set(url(example.png) 1x url(example.jpeg))" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x url(example.jpeg))" should not set the property value
 PASS e.style['background-image'] = "image-set(url(example.png) 1x 2x)" should not set the property value
@@ -82,5 +68,21 @@ PASS e.style['cursor'] = "image-set(linear-gradient(black, white) 1x)" should no
 PASS e.style['cursor'] = "-webkit-image-set(linear-gradient(black, white) 1x)" should not set the property value
 PASS e.style['background-image'] = "image-set(linear-gradient(red) 1x)" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set(linear-gradient(red) 1x)" should not set the property value
+FAIL e.style['background-image'] = "image-set(url(\"example.png\") 1x type(\"image/png\"))" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 1x type(\"image/png\"))" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-image'] = "image-set(url(example.png) type('image/png'))" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-image'] = "-webkit-image-set(url(example.png) type('image/png'))" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-image'] = "image-set(url(example.png) type('image/png') 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-image'] = "-webkit-image-set(url(example.png) type('image/png') 1x)" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-image'] = "image-set(url(example.png) 1x type('image/jpeg'))" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['background-image'] = "-webkit-image-set(url(example.png) 1x type('image/jpeg'))" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['background-image'] = "image-set(url(example.png) type(image/png))" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(example.png) type(image/png))" should not set the property value
+PASS e.style['background-image'] = "image-set(url(example.png) type('image/png') type('image/png'))" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(example.png) type('image/png') type('image/png'))" should not set the property value
+PASS e.style['background-image'] = "image-set(url(example.png) 1xtype('image/png'))" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1xtype('image/png'))" should not set the property value
+PASS e.style['background-image'] = "image-set(type('image/png') url(example.png) 1x)" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(type('image/png') url(example.png) 1x)" should not set the property value
 Harness: the test ran to completion.
 
