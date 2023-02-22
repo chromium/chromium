@@ -82579,6 +82579,13 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Wrong prediction"/>
 </enum>
 
+<enum name="PredictorConfusionMatrix">
+  <int value="0" label="TruePositive"/>
+  <int value="1" label="FalsePositive"/>
+  <int value="2" label="TrueNegative"/>
+  <int value="3" label="FalseNegative"/>
+</enum>
+
 <enum name="PreferredAppsFileIOAction">
   <int value="0" label="Write to file (success)"/>
   <int value="1" label="Write to file (failed)"/>

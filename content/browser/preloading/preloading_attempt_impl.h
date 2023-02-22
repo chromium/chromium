@@ -54,6 +54,8 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // predicate URL logic. It also records `time_to_next_navigation_`.
   void SetIsAccurateTriggering(const GURL& navigated_url);
 
+  bool IsAccurateTriggering() const { return is_accurate_triggering_; }
+
   explicit PreloadingAttemptImpl(PreloadingPredictor predictor,
                                  PreloadingType preloading_type,
                                  ukm::SourceId triggered_primary_page_source_id,
@@ -63,6 +65,8 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   // Called by the `PreloadingDataImpl` that owns this attempt, to check the
   // validity of `predictor_type_`.
   PreloadingPredictor predictor_type() const { return predictor_type_; }
+
+  PreloadingType preloading_type() const { return preloading_type_; }
 
  private:
   friend class test::PreloadingAttemptAccessor;

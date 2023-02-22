@@ -5,9 +5,12 @@
 #include "content/browser/preloading/preloading_data_impl.h"
 #include <limits>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_prediction.h"
@@ -212,13 +215,42 @@ void PreloadingDataImpl::WebContentsDestroyed() {
   web_contents()->RemoveUserData(UserDataKey());
 }
 
+void PreloadingDataImpl::RecordPreloadingAttemptPrecisionToUMA(
+    const PreloadingAttemptImpl& attempt) {
+  bool is_true_positive = attempt.IsAccurateTriggering();
+  const auto uma_attempt_precision = base::StrCat(
+      {"Preloading.", PreloadingTypeToString(attempt.preloading_type()),
+       ".Attempt.", attempt.predictor_type().name(), ".Precision"});
+
+  base::UmaHistogramEnumeration(uma_attempt_precision,
+                                is_true_positive
+                                    ? PredictorConfusionMatrix::kTruePositive
+                                    : PredictorConfusionMatrix::kFalsePositive);
+}
+
+void PreloadingDataImpl::RecordPredictionPrecisionToUMA(
+    const PreloadingPrediction& prediction) {
+  bool is_true_positive = prediction.IsAccuratePrediction();
+  const auto uma_predictor_precision =
+      base::StrCat({"Preloading.Predictor.", prediction.predictor_type().name(),
+                    ".Precision"});
+  base::UmaHistogramEnumeration(uma_predictor_precision,
+                                is_true_positive
+                                    ? PredictorConfusionMatrix::kTruePositive
+                                    : PredictorConfusionMatrix::kFalsePositive);
+}
+
 void PreloadingDataImpl::SetIsAccurateTriggeringAndPrediction(
     const GURL& navigated_url) {
-  for (auto& attempt : preloading_attempts_)
+  for (auto& attempt : preloading_attempts_) {
     attempt->SetIsAccurateTriggering(navigated_url);
+    RecordPreloadingAttemptPrecisionToUMA(*attempt);
+  }
 
-  for (auto& prediction : preloading_predictions_)
+  for (auto& prediction : preloading_predictions_) {
     prediction->SetIsAccuratePrediction(navigated_url);
+    RecordPredictionPrecisionToUMA(*prediction);
+  }
 }
 
 void PreloadingDataImpl::RecordMetricsForPreloadingAttempts(
