@@ -1183,6 +1183,8 @@ static_library("browser") {
     "policy/messaging_layer/public/report_client.h",
     "policy/messaging_layer/upload/dm_server_uploader.cc",
     "policy/messaging_layer/upload/dm_server_uploader.h",
+    "policy/messaging_layer/upload/encrypted_reporting_client.cc",
+    "policy/messaging_layer/upload/encrypted_reporting_client.h",
     "policy/messaging_layer/upload/event_upload_size_controller.cc",
     "policy/messaging_layer/upload/event_upload_size_controller.h",
     "policy/messaging_layer/upload/file_upload_impl.cc",

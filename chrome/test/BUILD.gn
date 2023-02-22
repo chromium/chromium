@@ -5549,6 +5549,7 @@ test("unit_tests") {
     "../browser/policy/messaging_layer/public/report_client_test_util.h",
     "../browser/policy/messaging_layer/public/report_client_unittest.cc",
     "../browser/policy/messaging_layer/upload/dm_server_uploader_unittest.cc",
+    "../browser/policy/messaging_layer/upload/encrypted_reporting_client_unittest.cc",
     "../browser/policy/messaging_layer/upload/event_upload_size_controller_unittest.cc",
     "../browser/policy/messaging_layer/upload/file_upload_impl_unittest.cc",
     "../browser/policy/messaging_layer/upload/file_upload_job_unittest.cc",
