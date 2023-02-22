@@ -164,6 +164,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium_fuzz_coverage",
+)
+
+build_recipe(
     name = "recipe:chromium_codesearch",
 )
 

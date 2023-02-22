@@ -255,6 +255,18 @@ coverage_builder(
     use_javascript_coverage = True,
 )
 
+# Experimental builder. Does not export_coverage_to_zoss.
+coverage_builder(
+    name = "linux-fuzz-coverage",
+    executable = "recipe:chromium_fuzz_coverage",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "linux-fuzz",
+            short_name = "lnx-fuzz",
+        ),
+    ],
+)
+
 coverage_builder(
     name = "linux-code-coverage",
     builder_spec = builder_config.builder_spec(
