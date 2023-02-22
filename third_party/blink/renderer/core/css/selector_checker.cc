@@ -2237,8 +2237,7 @@ const StyleScopeActivations& SelectorChecker::EnsureActivations(
           ? &EnsureActivations(context, *style_scope.Parent())
           : MakeGarbageCollected<StyleScopeActivations>(
                 1, StyleScopeActivation{nullptr /* scope */,
-                                        std::numeric_limits<unsigned>::max(),
-                                        false});
+                                        std::numeric_limits<unsigned>::max()});
   const StyleScopeActivations* activations =
       CalculateActivations(context.style_scope_frame->element_, style_scope,
                            *outer_activations, context.style_scope_frame);
@@ -2291,38 +2290,30 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
     }
 
     // The activations of the parent element are still active for this element,
-    // unless the activation was limited.
+    // unless this element is a scoping limit.
     if (parent_activations) {
       for (const StyleScopeActivation& activation : *parent_activations) {
-        if (!activation.limit) {
-          activations->push_back(StyleScopeActivation{
-              activation.root, activation.proximity + 1, false});
+        if (!ElementIsScopingLimit(style_scope, activation, element)) {
+          activations->push_back(
+              StyleScopeActivation{activation.root, activation.proximity + 1});
         }
       }
     }
 
     // Check if we need to add a new activation for this element.
-    for (const StyleScopeActivation& activation : outer_activations) {
-      if (style_scope.From()
-              ? MatchesWithScope(element, *style_scope.From(), activation.root)
-              : style_scope.HasImplicitRoot(&element)) {
-        activations->push_back(StyleScopeActivation{&element, 0, false});
+    for (const StyleScopeActivation& outer_activation : outer_activations) {
+      if (style_scope.From() ? MatchesWithScope(element, *style_scope.From(),
+                                                outer_activation.root)
+                             : style_scope.HasImplicitRoot(&element)) {
+        StyleScopeActivation activation{&element, 0};
+        // It's possible for a newly created activation to be immediately
+        // limited (e.g. @scope (.x) to (.x)).
+        if (!ElementIsScopingLimit(style_scope, activation, element)) {
+          activations->push_back(activation);
+        }
         break;
       }
       // TODO(crbug.com/1280240): Break if we don't depend on :scope.
-    }
-
-    if (style_scope.To()) {
-      DCHECK(style_scope.From());
-      for (StyleScopeActivation& activation : *activations) {
-        DCHECK(!activation.limit);
-        if (MatchesWithScope(element, *style_scope.To(),
-                             activation.root.Get())) {
-          // TODO(crbug.com/1280240): If we don't depend on :scope, just set all
-          // to limit=true.
-          activation.limit = true;
-        }
-      }
     }
   }
 
@@ -2348,6 +2339,16 @@ bool SelectorChecker::MatchesWithScope(Element& element,
     }
   }
   return false;
+}
+
+bool SelectorChecker::ElementIsScopingLimit(
+    const StyleScope& style_scope,
+    const StyleScopeActivation& activation,
+    Element& element) const {
+  if (!style_scope.To()) {
+    return false;
+  }
+  return MatchesWithScope(element, *style_scope.To(), activation.root.Get());
 }
 
 bool SelectorChecker::CheckInStyleScope(const SelectorCheckingContext& context,

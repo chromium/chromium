@@ -40,10 +40,6 @@ struct CORE_EXPORT StyleScopeActivation {
   // The distance to the root, in terms of number of inclusive ancestors
   // between some subject element and the root.
   unsigned proximity = 0;
-  // True if some subject element matches <scope-end>.
-  //
-  // https://drafts.csswg.org/css-cascade-6/#typedef-scope-end
-  bool limit = false;
 };
 
 using StyleScopeActivations = HeapVector<StyleScopeActivation>;
