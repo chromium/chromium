@@ -106,6 +106,32 @@ class TestCopyExistingBaselines(BaseTestCase):
                     'flag-specific/disable-site-isolation-trials/failures/expected/image-expected.txt'
                 )), 'original test-linux-trusty result')
 
+    def test_copy_baseline_successor_to_predecessor(self):
+        self._write(
+            self.baseline_path(
+                'platform/test-win-win10/failures/expected/image-expected.txt'
+            ), 'original test-win-win10 result')
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'platform/test-linux-precise/failures/expected/image-expected.txt'
+                )))
+
+        self.command.execute(
+            self.options(port_name='test-linux-trusty',
+                         test='failures/expected/image.html'), [], self.tool)
+
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'platform/test-linux-trusty/failures/expected/image-expected.txt'
+                )))
+        self.assertEqual(
+            self._read(
+                self.baseline_path(
+                    'platform/test-linux-precise/failures/expected/image-expected.txt'
+                )), 'original test-win-win10 result')
+
     def test_copy_virtual_baseline_for_flag_specific(self):
         self._write(
             self.baseline_path(
