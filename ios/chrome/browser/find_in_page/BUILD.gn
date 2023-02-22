@@ -66,8 +66,9 @@ source_set("eg2_tests") {
   ]
   testonly = true
   sources = [
-    "find_in_page_egtest.h",
     "find_in_page_egtest.mm",
+    "find_in_page_egtest_util.h",
+    "find_in_page_egtest_util.mm",
   ]
   deps = [
     ":eg_test_support+eg2",
