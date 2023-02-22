@@ -62321,6 +62321,8 @@ from previous Chrome versions.
       label="enable-ambient-authentication-in-guest-session"/>
   <int value="308972768" label="AccessibilityFormControlsAXMode:enabled"/>
   <int value="309795366" label="ScrollUnification:disabled"/>
+  <int value="309861115"
+      label="AutofillEnableNewCardArtAndNetworkImages:enabled"/>
   <int value="310143091"
       label="AutofillImportNonFocusableCreditCardForms:enabled"/>
   <int value="310183389" label="AutofillFillIbanFields:enabled"/>
@@ -64718,6 +64720,8 @@ from previous Chrome versions.
   <int value="1692847616" label="ArcEnableWebAppShare:enabled"/>
   <int value="1693094211" label="FilesNG:disabled"/>
   <int value="1693658048" label="AppsShortcutDefaultOff:enabled"/>
+  <int value="1693685694"
+      label="AutofillEnableNewCardArtAndNetworkImages:disabled"/>
   <int value="1694663094" label="RobustAudioDeviceSelectLogic:disabled"/>
   <int value="1694766748"
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:enabled"/>

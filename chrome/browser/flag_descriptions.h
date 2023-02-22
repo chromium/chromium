@@ -225,6 +225,9 @@ extern const char kAutofillEnableCardProductNameDescription[];
 extern const char kAutofillEnableCvcForVcnYellowPathName[];
 extern const char kAutofillEnableCvcForVcnYellowPathDescription[];
 
+extern const char kAutofillEnableNewCardArtAndNetworkImagesName[];
+extern const char kAutofillEnableNewCardArtAndNetworkImagesDescription[];
+
 extern const char kAutofillEnableOfferNotificationForPromoCodesName[];
 extern const char kAutofillEnableOfferNotificationForPromoCodesDescription[];
 

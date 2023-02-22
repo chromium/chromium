@@ -394,6 +394,11 @@ const char kAutofillEnableCvcForVcnYellowPathDescription[] =
     "for CVC authentication, CVC authentication will be offered as one of the "
     "challenge options.";
 
+const char kAutofillEnableNewCardArtAndNetworkImagesName[] =
+    "Enable showing new card art and network images";
+const char kAutofillEnableNewCardArtAndNetworkImagesDescription[] =
+    "When enabled, new and larger card art and network icons will be shown.";
+
 const char kAutofillEnableOfferNotificationForPromoCodesName[] =
     "Extend Autofill offers and rewards notification to promo code offers";
 const char kAutofillEnableOfferNotificationForPromoCodesDescription[] =

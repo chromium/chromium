@@ -485,6 +485,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "autofill-enable-new-card-art-and-network-images",
+    "owners": ["alexandertekle@google.com", "vishwasuppoor@google.com"],
+    "expiry_milestone": 122
+  },
+  {
       "name": "autofill-enable-new-card-unmask-prompt-view",
       "owners": [ "eic", "bling-flags@google.com" ],
       "expiry_milestone": 109
