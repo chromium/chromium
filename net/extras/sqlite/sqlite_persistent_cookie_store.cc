@@ -1102,10 +1102,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     if (!db()->Execute("DROP TABLE cookies_old"))
       return absl::nullopt;
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   if (cur_version == 10) {
@@ -1144,10 +1146,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
 
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   if (cur_version == 11) {
@@ -1163,10 +1167,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
 
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   if (cur_version == 12) {
@@ -1184,10 +1190,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
 
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   if (cur_version == 13) {
@@ -1242,10 +1250,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     }
 #endif
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   if (cur_version == 14) {
@@ -1278,10 +1288,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
 
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   if (cur_version == 15) {
@@ -1314,10 +1326,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
 
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   if (cur_version == 16) {
@@ -1352,10 +1366,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
 
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   if (cur_version == 17) {
@@ -1391,10 +1407,12 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
       return absl::nullopt;
 
     ++cur_version;
-    meta_table()->SetVersionNumber(cur_version);
-    meta_table()->SetCompatibleVersionNumber(
-        std::min(cur_version, kCompatibleVersionNumber));
-    transaction.Commit();
+    if (!meta_table()->SetVersionNumber(cur_version) ||
+        !meta_table()->SetCompatibleVersionNumber(
+            std::min(cur_version, kCompatibleVersionNumber)) ||
+        !transaction.Commit()) {
+      return absl::nullopt;
+    }
   }
 
   // Put future migration cases here.
