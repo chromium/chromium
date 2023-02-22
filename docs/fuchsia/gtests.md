@@ -153,6 +153,13 @@ and need to be explicitly added as described in
 At a minimum, `test_manager` is required in order to run tests. This is already
 available when using a combined repo as in option (1).
 
+<!-- TODO(crbug.com/1408597): Remove this paragraph when the packages for fakes
+     are subpackaged with the tests.
+-->
+Another required package is
+`//src/developer/build_info/testing:fake-build-info`, which is not available in
+Core by default.
+
 Other useful packages include:
 * `intl_property_manager` - avoids many warnings when the test shard tries
   to launch it.
@@ -185,7 +192,7 @@ The following makes all
 [additional required packages](#additional-required-packages) available to the
 Chromium tests.
 ```bash
-$ fx set core.qemu-x64 --auto-dir --release  --with //src/testing/fidl/intl_property_manager --with //src/media/audio/audio_core
+$ fx set core.qemu-x64 --auto-dir --release --with //src/developer/build_info/testing:fake-build-info --with //src/testing/fidl/intl_property_manager --with //src/media/audio/audio_core
 ```
 
 ##### Chromium-only repo: packages in base
@@ -211,7 +218,7 @@ equivalent to the command line in [Combined repo](#combined-repo). It adds all
 It also adds `//sdk/lib/sys/cpp` to base packages to enable `base_unittests`'s
 `TestComponentContextForProcessTest.ProvideSystemService` test to pass.
 ```bash
-$ fx set core.qemu-x64 --auto-dir --release  --with-base //src/sys/test_manager --with-base //src/testing/fidl/intl_property_manager --with-base //src/media/audio/audio_core --with-base //sdk/lib/sys/cpp
+$ fx set core.qemu-x64 --auto-dir --release  --with-base //src/sys/test_manager  --with-base //src/developer/build_info/testing:fake-build-info --with-base //src/testing/fidl/intl_property_manager --with-base //src/media/audio/audio_core --with-base //sdk/lib/sys/cpp
 ```
 
 ### Other Products
