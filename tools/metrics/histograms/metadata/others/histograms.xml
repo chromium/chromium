@@ -4446,7 +4446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crashpad.IntermediateDump.Reader.InvalidKeySize"
-    enum="CrashpadIntermediateDumpKey" expires_after="2023-04-01">
+    enum="CrashpadIntermediateDumpKey" expires_after="2024-02-20">
   <owner>justincohen@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>
@@ -4455,7 +4455,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crashpad.IntermediateDump.Reader.MissingKey"
-    enum="CrashpadIntermediateDumpKey" expires_after="2023-04-01">
+    enum="CrashpadIntermediateDumpKey" expires_after="2024-02-20">
   <owner>justincohen@chromium.org</owner>
   <owner>crashpad-dev@chromium.org</owner>
   <summary>Records key id when id is missing in an intermediate dump.</summary>
