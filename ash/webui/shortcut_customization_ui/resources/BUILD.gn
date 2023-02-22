@@ -44,6 +44,7 @@ web_component_files = [
   "js/accelerator_view.ts",
   "js/input_key.ts",
   "js/search/search_box.ts",
+  "js/search/search_result_row.ts",
   "js/shortcut_customization_app.ts",
   "js/shortcut_input.ts",
   "js/shortcuts_page.ts",

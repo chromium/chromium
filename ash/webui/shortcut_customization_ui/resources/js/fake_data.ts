@@ -324,6 +324,9 @@ export const fakeSearchResults: MojoSearchResult[] = [
   },
 ];
 
+export const SnapWindowLeftSearchResult: MojoSearchResult =
+    fakeSearchResults[0];
+
 // The following code is used to add fake accelerator entries for each icon.
 // When useFakeProvider is true, this will display all available icons for
 // the purposes of debugging.

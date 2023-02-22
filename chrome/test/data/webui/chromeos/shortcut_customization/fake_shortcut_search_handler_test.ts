@@ -28,7 +28,7 @@ suite('fakeShortcutSearchHandlerTest', function() {
     const expectedList: MojoSearchResult[] = [];
     handler.setFakeSearchResult(expectedList);
     return handler.search().then((result) => {
-      assertDeepEquals(expectedList, result);
+      assertDeepEquals(expectedList, result.results);
     });
   });
 
@@ -38,7 +38,7 @@ suite('fakeShortcutSearchHandlerTest', function() {
     assertTrue(!!handler);
     handler.setFakeSearchResult(fakeSearchResults);
     return handler.search().then((result) => {
-      assertDeepEquals(fakeSearchResults, result);
+      assertDeepEquals(fakeSearchResults, result.results);
     });
   });
 });

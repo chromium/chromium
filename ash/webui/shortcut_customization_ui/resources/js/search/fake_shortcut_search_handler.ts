@@ -31,6 +31,6 @@ export class FakeShortcutSearchHandler implements
    * Sets the value that will be returned when calling search().
    */
   setFakeSearchResult(results: MojoSearchResult[]): void {
-    this.methods.setResult('search', results);
+    this.methods.setResult('search', {results});
   }
 }
