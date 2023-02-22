@@ -28,7 +28,7 @@ sync_pb::PasswordSpecificsData_PasswordIssues CreateSpecificsDataIssues(
   sync_pb::PasswordSpecificsData_PasswordIssues remote_issues;
   for (auto type : issue_types) {
     sync_pb::PasswordSpecificsData_PasswordIssues_PasswordIssue remote_issue;
-    remote_issue.set_date_first_detection_microseconds(
+    remote_issue.set_date_first_detection_windows_epoch_micros(
         base::Time::FromTimeT(kIssuesCreationTime)
             .ToDeltaSinceWindowsEpoch()
             .InMicroseconds());
