@@ -124,6 +124,10 @@
 # Fuchsia emulators don't support video
 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_Video* [ Skip ]
 
+# Pixel_MediaRecorderFromVideoElement fails when protected memory is used.
+crbug.com/1417006 [ fuchsia fuchsia-board-astro ] Pixel_MediaRecorderFromVideoElement [ Skip ]
+crbug.com/1417006 [ fuchsia fuchsia-board-sherlock ] Pixel_MediaRecorderFromVideoElement [ Skip ]
+
 # Tests running with SwiftShader are skipped on platforms where SwiftShader
 # isn't supported.
 [ mac ] Pixel_Canvas2DRedBox_SwiftShader [ Skip ]
@@ -378,7 +382,6 @@ crbug.com/1382332 [ linux nvidia-0x2184 passthrough debug angle-vulkan ] Pixel_M
 # Pixel_MediaRecorderFromVideoElement flakes on several Linux/Lacros FYI bots
 crbug.com/1382332 [ linux release renderer-skia-vulkan intel-0x9bc5 ] Pixel_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/1382332 [ display-server-wayland intel-0x9bc5 linux no-clang-coverage release renderer-skia-gl ] Pixel_MediaRecorderFromVideoElement [ RetryOnFailure ]
-
 
 # Flakes on Pixel 4, Nexus 5X, and Samsung A13 due to video stream being offset vertically by 1 pixel.
 crbug.com/1410332 [ android android-chromium renderer-skia-gl ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
