@@ -6,7 +6,7 @@
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 suite('cr-radio-button', function() {
@@ -18,34 +18,46 @@ suite('cr-radio-button', function() {
     document.body.appendChild(radioButton);
   });
 
+  function assertStyle(element: Element, name: string, expected: string) {
+    const actual = getComputedStyle(element).getPropertyValue(name).trim();
+    assertEquals(expected, actual);
+  }
+
+  function assertNotStyle(element: Element, name: string, not: string) {
+    const actual = getComputedStyle(element).getPropertyValue(name).trim();
+    assertNotEquals(not, actual);
+  }
+
   function assertChecked() {
     assertTrue(radioButton.hasAttribute('checked'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-checked'));
-    assertTrue(
-        getComputedStyle(radioButton.shadowRoot!.querySelector('.disc')!)
-            .backgroundColor !== 'rgba(0, 0, 0, 0)');
+    assertNotStyle(
+        radioButton.shadowRoot!.querySelector('.disc')!, 'background-color',
+        'rgba(0, 0, 0, 0)');
   }
 
   function assertNotChecked() {
     assertFalse(radioButton.hasAttribute('checked'));
     assertEquals('false', radioButton.$.button.getAttribute('aria-checked'));
-    assertEquals(
-        'rgba(0, 0, 0, 0)',
-        getComputedStyle(radioButton.shadowRoot!.querySelector('.disc')!)
-            .backgroundColor);
+    assertStyle(
+        radioButton.shadowRoot!.querySelector('.disc')!, 'background-color',
+        'rgba(0, 0, 0, 0)');
+    assertStyle(
+        radioButton.shadowRoot!.querySelector('.disc')!, 'background-color',
+        'rgba(0, 0, 0, 0)');
   }
 
   function assertDisabled() {
     assertTrue(radioButton.hasAttribute('disabled'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-disabled'));
-    assertEquals('none', getComputedStyle(radioButton).pointerEvents);
-    assertTrue('1' !== getComputedStyle(radioButton).opacity);
+    assertStyle(radioButton, 'pointer-events', 'none');
+    assertNotStyle(radioButton, 'opacity', '1');
   }
 
   function assertNotDisabled() {
     assertFalse(radioButton.hasAttribute('disabled'));
     assertEquals('false', radioButton.$.button.getAttribute('aria-disabled'));
-    assertEquals('1', getComputedStyle(radioButton).opacity);
+    assertStyle(radioButton, 'opacity', '1');
   }
 
   // Setting selection by mouse/keyboard is cr-radio-group's job, so
@@ -77,5 +89,33 @@ suite('cr-radio-button', function() {
         new CustomEvent('up', {bubbles: true, composed: true}));
     assertFalse(
         radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
+  });
+
+  test('Label Hidden', function() {
+    // Having no label set hides label.
+    assertStyle(
+        radioButton.shadowRoot!.querySelector('#label')!, 'display', 'none');
+
+    // Setting label shows label.
+    radioButton.label = 'foo';
+    assertNotStyle(
+        radioButton.shadowRoot!.querySelector('#label')!, 'display', 'none');
+    assertNotStyle(
+        radioButton.shadowRoot!.querySelector('#label')!, 'clip',
+        'rect(0px, 0px, 0px, 0px)');
+    assertEquals(radioButton.$.button.getAttribute('aria-labelledby'), 'label');
+    assertEquals(
+        radioButton.shadowRoot!.querySelector('#label')!.textContent!.trim(),
+        'foo');
+
+    // Setting hideLabelText true clips label from screen reader.
+    radioButton.hideLabelText = true;
+    assertStyle(
+        radioButton.shadowRoot!.querySelector('#label')!, 'clip',
+        'rect(0px, 0px, 0px, 0px)');
+    assertEquals(radioButton.$.button.getAttribute('aria-labelledby'), 'label');
+    assertEquals(
+        radioButton.shadowRoot!.querySelector('#label')!.textContent!.trim(),
+        'foo');
   });
 });

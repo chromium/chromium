@@ -39,6 +39,12 @@
         }
       }
 
+      @media (forced-colors: active) {
+        :host {
+          --cr-radio-button-checked-color: SelectedItem;
+        }
+      }
+
       :host([disabled]) {
         opacity: var(--cr-disabled-opacity);
         /* Disable pointer events for this whole element, as outer on-click gets
@@ -57,6 +63,13 @@
 
       #label {
         color: inherit;
+      }
+
+      /* Visually hide the label but allow the screen reader to pick it up. */
+      :host([hide-label-text]) #label {
+        clip: rect(0,0,0,0);
+        display: block;
+        position: fixed;
       }
 
       .disc-border,

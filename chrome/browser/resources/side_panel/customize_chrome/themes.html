@@ -12,7 +12,7 @@
     --cr-icon-button-margin-start: -8px;
   }
 
-  h1 {
+  h2 {
     color: var(--cr-primary-text-color);
     font-size: 14px;
     font-weight: 500;
@@ -86,12 +86,20 @@
     padding-top: calc(100% - 4px);
     width: calc(100% - 4px);
   }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    :host-context(.focus-outline-visible) .tile:focus {
+      /* Set outline to hcm (high contrast mode) value. */
+      outline: var(--cr-focus-outline-hcm);
+    }
+  }
 </style>
 <div id="headerContainer">
   <cr-icon-button on-click="onBackClick_" id="backButton"
       class="icon-arrow-back" title="$i18n{backButton}">
   </cr-icon-button>
-  <h1 id="header">[[header_]]</h1>
+  <h2 id="header">[[header_]]</h2>
 </div>
 <div id="refreshDailyToggleContainer">
   <div id="refreshDailyToggleTitle">$i18n{refreshDaily}</div>
@@ -104,7 +112,7 @@
   <template is="dom-repeat" id="themesRepeat" items="[[themes_]]">
     <div class="tile theme" tabindex="0" role="button"
         on-click="onSelectTheme_" title$="[[item.attribution1]]"
-        aria-checked$="[[isThemeSelected_(item.attribution1, theme_)]]">
+        aria-current$="[[getThemeCheckedStatus_(item.imageUrl.url, theme_)]]">
       <customize-chrome-check-mark-wrapper
           checked="[[isThemeSelected_(item.imageUrl.url, theme_)]]">
         <div class="image-container">

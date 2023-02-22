@@ -48,6 +48,12 @@ export const CrRadioButtonMixin = dedupingMixin(
               observer: 'onFocusableChanged_',
             },
 
+            hideLabelText: {
+              type: Boolean,
+              value: false,
+              reflectToAttribute: true,
+            },
+
             label: {
               type: String,
               value: '',  // Allows hidden$= binding to run without being set.
@@ -72,6 +78,7 @@ export const CrRadioButtonMixin = dedupingMixin(
         checked: boolean;
         disabled: boolean;
         focusable: boolean;
+        hideLabelText: boolean;
         label: string;
         name: string;
         private buttonTabIndex_: number;
@@ -146,6 +153,7 @@ export interface CrRadioButtonMixinInterface {
   checked: boolean;
   disabled: boolean;
   focusable: boolean;
+  hideLabelText: boolean;
   label: string;
   name: string;
 

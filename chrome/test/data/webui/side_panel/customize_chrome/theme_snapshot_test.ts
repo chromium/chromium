@@ -7,12 +7,11 @@ import 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
 
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {ThemeSnapshotElement} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
+import {CustomizeThemeType, ThemeSnapshotElement} from 'chrome://customize-chrome-side-panel.top-chrome/theme_snapshot.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {$$, assertStyle, createBackgroundImage, createTheme, installMock} from './test_support.js';
-
 
 suite('ThemeSnapshotTest', () => {
   let themeSnapshotElement: ThemeSnapshotElement;
@@ -45,6 +44,7 @@ suite('ThemeSnapshotTest', () => {
     createThemeSnapshotElement();
     const theme = createTheme();
     theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+    theme.backgroundImage.title = 'foo';
 
     // Act.
     callbackRouterRemote.setTheme(theme);
@@ -52,10 +52,22 @@ suite('ThemeSnapshotTest', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
-    const selector =
-        themeSnapshotElement.shadowRoot!.querySelector('iron-pages');
-    assertTrue(!!selector);
-    assertEquals('customTheme', selector.selected);
+    const shownPages =
+        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
+    assertTrue(!!shownPages);
+    assertEquals(shownPages.length, 1);
+    assertEquals(
+        shownPages[0]!.getAttribute('theme-type'),
+        CustomizeThemeType.CUSTOM_THEME);
+    assertEquals(
+        $$<HTMLImageElement>(
+            themeSnapshotElement, '.theme-snapshot #customThemeImage')!
+            .getAttribute('aria-labelledby'),
+        'customThemeTitle');
+    assertEquals(
+        'foo',
+        $$(themeSnapshotElement,
+           '.theme-snapshot #customThemeTitle')!.textContent!.trim());
     assertEquals(
         'chrome://theme/foo',
         $$<HTMLImageElement>(themeSnapshotElement, '.theme-snapshot img')!.src);
@@ -73,10 +85,22 @@ suite('ThemeSnapshotTest', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
-    const selector =
-        themeSnapshotElement.shadowRoot!.querySelector('iron-pages');
-    assertTrue(!!selector);
-    assertEquals('classicChrome', selector.selected);
+    const shownPages =
+        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
+    assertTrue(!!shownPages);
+    assertEquals(shownPages.length, 1);
+    assertEquals(
+        shownPages[0]!.getAttribute('theme-type'),
+        CustomizeThemeType.CLASSIC_CHROME);
+    assertEquals(
+        $$<HTMLImageElement>(
+            themeSnapshotElement,
+            '.theme-snapshot #miniNewTabPage')!.getAttribute('aria-labelledby'),
+        'classicChromeThemeTitle');
+    assertEquals(
+        'Classic Chrome',
+        $$(themeSnapshotElement,
+           '.theme-snapshot #classicChromeThemeTitle')!.textContent!.trim());
     assertStyle(
         $$(themeSnapshotElement, '.theme-snapshot #classicChrome')!,
         'background-color', 'rgb(20, 83, 154)');
@@ -95,9 +119,20 @@ suite('ThemeSnapshotTest', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('updateTheme'));
-    const selector =
-        themeSnapshotElement.shadowRoot!.querySelector('iron-pages');
-    assertTrue(!!selector);
-    assertEquals('uploadedImage', selector.selected);
+    const shownPages =
+        themeSnapshotElement.shadowRoot!.querySelectorAll('.iron-selected');
+    assertTrue(!!shownPages);
+    assertEquals(shownPages.length, 1);
+    assertEquals(
+        shownPages[0]!.getAttribute('theme-type'),
+        CustomizeThemeType.UPLOADED_IMAGE);
+    assertEquals(
+        $$(themeSnapshotElement, '.theme-snapshot #uploadedThemeImage')!
+            .getAttribute('aria-labelledby'),
+        'uploadedThemeTitle');
+    assertEquals(
+        'Uploaded image',
+        $$(themeSnapshotElement,
+           '.theme-snapshot #uploadedThemeTitle')!.textContent!.trim());
   });
 });

@@ -44,20 +44,20 @@
 <iron-pages selected="[[page_]]" attr-for-selected="page-name">
   <div page-name="overview" id="overviewPage">
     <div id="appearance" class="section">
-      <h1 class="header">$i18n{appearanceHeader}</h1>
+      <h2 class="header">$i18n{appearanceHeader}</h2>
       <customize-chrome-appearance on-edit-theme-click="onEditThemeClick_"
         id="appearanceElement">
       </customize-chrome-appearance>
     </div>
     <hr class="horizontal-rule">
     <div id="shortcuts" class="section">
-      <h1 class="header">$i18n{shortcutsHeader}</h1>
+      <h2 class="header">$i18n{shortcutsHeader}</h2>
       <customize-chrome-shortcuts></customize-chrome-shortcuts>
     </div>
     <template is="dom-if" if="[[modulesEnabled_]]">
       <hr class="horizontal-rule">
       <div id="modules" class="section">
-        <h1 class="header">$i18n{cardsHeader}</h1>
+        <h2 class="header">$i18n{cardsHeader}</h2>
         <customize-chrome-cards></customize-chrome-cards>
       </div>
     </template>

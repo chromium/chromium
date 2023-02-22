@@ -60,12 +60,18 @@
     <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
       selected="[[shortcutsRadioSelection_]]"
       on-selected-changed="onShortcutsRadioSelectionChanged_">
-      <cr-radio-button id="customLinksButton" name="customLinksOption">
+      <cr-radio-button id="customLinksButton"
+          name="customLinksOption"
+          label="$i18n{myShortcuts}"
+          hide-label-text>
       </cr-radio-button>
       <customize-chrome-button-label label="$i18n{myShortcuts}"
           label-description="$i18n{shortcutsCurated}">
       </customize-chrome-button-label>
-      <cr-radio-button id="mostVisitedButton" name="mostVisitedOption">
+      <cr-radio-button id="mostVisitedButton"
+          name="mostVisitedOption"
+          label="$i18n{mostVisited}"
+          hide-label-text>
       </cr-radio-button>
       <customize-chrome-button-label label="$i18n{mostVisited}"
           label-description="$i18n{shortcutsSuggested}">

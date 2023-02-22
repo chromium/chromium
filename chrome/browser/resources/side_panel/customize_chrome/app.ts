@@ -118,19 +118,23 @@ export class AppElement extends PolymerElement {
 
   private onEditThemeClick_() {
     this.page_ = CustomizeChromePage.CATEGORIES;
+    this.$.categoriesPage.focusOnBackButton();
   }
 
   private onCollectionSelect_(event: CustomEvent<BackgroundCollection>) {
     this.selectedCollection_ = event.detail;
     this.page_ = CustomizeChromePage.THEMES;
+    this.$.themesPage.focusOnBackButton();
   }
 
   private onLocalImageUpload_() {
     this.page_ = CustomizeChromePage.OVERVIEW;
+    this.$.appearanceElement.focusOnThemeButton();
   }
 
   private onChromeColorsSelect_() {
     this.page_ = CustomizeChromePage.CHROME_COLORS;
+    this.$.chromeColorsPage.focusOnBackButton();
   }
 }
 

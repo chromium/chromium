@@ -145,6 +145,14 @@ export class CategoriesElement extends PolymerElement {
         this.selectedCategory_.collectionId === id;
   }
 
+  private boolToString_(value: boolean): string {
+    return value ? 'true' : 'false';
+  }
+
+  private getCollectionCheckedStatus_(id: string): string {
+    return this.boolToString_(this.isCollectionSelected_(id));
+  }
+
   private onClassicChromeClick_() {
     this.pageHandler_.setDefaultColor();
     this.pageHandler_.removeBackgroundImage();

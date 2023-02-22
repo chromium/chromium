@@ -88,6 +88,10 @@ export class ThemesElement extends PolymerElement {
     this.callbackRouter_.removeListener(this.setThemeListenerId_);
   }
 
+  focusOnBackButton() {
+    this.$.backButton.focus();
+  }
+
   private onCollectionChange_() {
     this.header_ = '';
     this.themes_ = [];
@@ -142,6 +146,10 @@ export class ThemesElement extends PolymerElement {
         this.theme_.backgroundImage &&
         this.theme_.backgroundImage.url.url === url &&
         !this.isRefreshToggleChecked_;
+  }
+
+  private getThemeCheckedStatus_(url: string): string {
+    return this.isThemeSelected_(url) ? 'true' : 'false';
   }
 }
 

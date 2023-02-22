@@ -382,7 +382,7 @@
            button in container to enforce solid background color. -->
       <div id="customizeButtonContainer">
         <cr-button id="customizeButton" on-click="onCustomizeClick_"
-            title="$i18n{customizeThisPage}">
+            title="$i18n{customizeThisPage}" aria-pressed="[[showCustomize_]]">
           <div id="customizeIcon"></div>
           <div id="customizeText" hidden$="[[showBackgroundImage_]]">
             $i18n{customizeButton}

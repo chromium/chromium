@@ -108,6 +108,10 @@ export class ChromeColorsElement extends PolymerElement {
         this.setThemeListenerId_!);
   }
 
+  focusOnBackButton() {
+    this.$.backButton.focus();
+  }
+
   private computeIsDefaultColorSelected_(): boolean {
     return this.selectedColor_.type === ColorType.DEFAULT;
   }
@@ -144,6 +148,14 @@ export class ChromeColorsElement extends PolymerElement {
   private isChromeColorSelected_(color: SkColor): boolean {
     return this.selectedColor_.type === ColorType.CHROME &&
         this.selectedColor_.chromeColor!.value === color.value;
+  }
+
+  private boolToString_(value: boolean): string {
+    return value ? 'true' : 'false';
+  }
+
+  private getChromeColorCheckedStatus_(color: SkColor): string {
+    return this.boolToString_(this.isChromeColorSelected_(color));
   }
 
   private onBackClick_() {
