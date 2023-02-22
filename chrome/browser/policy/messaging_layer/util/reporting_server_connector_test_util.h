@@ -5,13 +5,17 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_REPORTING_SERVER_CONNECTOR_TEST_UTIL_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UTIL_REPORTING_SERVER_CONNECTOR_TEST_UTIL_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 
 namespace reporting {
+
+class EncryptedReportingClient;
 
 class ReportingServerConnector::TestEnvironment {
  public:
@@ -21,6 +25,9 @@ class ReportingServerConnector::TestEnvironment {
   ~TestEnvironment();
 
   ::policy::MockCloudPolicyClient* client() const;
+
+  void SetEncryptedReportingClient(
+      std::unique_ptr<EncryptedReportingClient> encrypted_reporting_client);
 
  private:
   std::unique_ptr<::policy::CloudPolicyStore> store_;

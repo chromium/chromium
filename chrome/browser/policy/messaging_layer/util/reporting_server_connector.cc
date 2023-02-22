@@ -4,8 +4,10 @@
 
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -48,6 +51,10 @@ using ::policy::CloudPolicyClient;
 using ::policy::CloudPolicyCore;
 
 namespace reporting {
+
+BASE_FEATURE(kEnableEncryptedReportingClientForUpload,
+             "EnableEncryptedReportingClientForUpload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Gets the size of payload as a JSON string.
 static int GetPayloadSize(const base::Value::Dict& payload) {
@@ -146,7 +153,9 @@ class PayloadSizeUmaReporter {
 // static
 base::Time PayloadSizeUmaReporter::last_reported_time_{base::Time::UnixEpoch()};
 
-ReportingServerConnector::ReportingServerConnector() = default;
+ReportingServerConnector::ReportingServerConnector()
+    : encrypted_reporting_client_(
+          std::make_unique<EncryptedReportingClient>()) {}
 
 ReportingServerConnector::~ReportingServerConnector() {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
@@ -185,6 +194,20 @@ void ReportingServerConnector::OnCoreDestruction(CloudPolicyCore* core) {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
   core->RemoveObserver(this);
   core_ = nullptr;
+}
+
+void ReportingServerConnector::UploadEncryptedReportInternal(
+    base::Value::Dict merging_payload,
+    absl::optional<base::Value::Dict> context,
+    ResponseCallbackInternal callback) {
+  if (base::FeatureList::IsEnabled(kEnableEncryptedReportingClientForUpload)) {
+    encrypted_reporting_client_->UploadReport(
+        std::move(merging_payload), std::move(context), client_->dm_token(),
+        client_->client_id(), std::move(callback));
+    return;
+  }
+  client_->UploadEncryptedReport(std::move(merging_payload), std::move(context),
+                                 std::move(callback));
 }
 
 // static
@@ -226,7 +249,7 @@ void ReportingServerConnector::UploadEncryptedReport(
   if (PayloadSizeComputationRateLimiterForUma::Get().ShouldDo()) {
     request_payload_size = GetPayloadSize(merging_payload);
   }
-  connector->client_->UploadEncryptedReport(
+  connector->UploadEncryptedReportInternal(
       std::move(merging_payload), std::move(context),
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           [](ResponseCallback callback,
