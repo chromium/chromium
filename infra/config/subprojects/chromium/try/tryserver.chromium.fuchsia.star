@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/consoles.star", "consoles")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
@@ -17,7 +17,6 @@ try_.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     compilator_cores = 8,
-    compilator_goma_jobs = goma.jobs.J150,
     compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
@@ -52,7 +51,6 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-arm64-chrome-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.orchestrator_builder(
@@ -76,7 +74,6 @@ try_.compilator_builder(
     branch_selector = branches.selector.FUCHSIA_BRANCHES,
     # TODO(crbug.com/1298110): Set to True once compilator bots are moved
     ssd = None,
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 
@@ -161,7 +158,6 @@ try_.builder(
     mirrors = [
         "ci/fuchsia-x64-chrome-rel",
     ],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
@@ -175,7 +171,6 @@ try_.builder(
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
     },
-    goma_backend = goma.backend.RBE_PROD,
     main_list_view = "try",
 )
 

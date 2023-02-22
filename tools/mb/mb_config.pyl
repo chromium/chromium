@@ -1139,9 +1139,9 @@
 
     'tryserver.chromium.fuchsia': {
       'fuchsia-arm64-cast-receiver-rel': 'release_trybot_fuchsia_arm64_cast_receiver_reclient',
-      'fuchsia-arm64-chrome-rel': 'release_trybot_fuchsia_arm64',
-      'fuchsia-arm64-rel': 'release_trybot_fuchsia_arm64',
-      'fuchsia-arm64-rel-orchestrator': 'release_trybot_fuchsia_arm64',
+      'fuchsia-arm64-chrome-rel': 'release_trybot_fuchsia_arm64_reclient',
+      'fuchsia-arm64-rel': 'release_trybot_fuchsia_arm64_reclient',
+      'fuchsia-arm64-rel-orchestrator': 'release_trybot_fuchsia_arm64_reclient',
       'fuchsia-binary-size': 'release_fuchsia_arm64_binary_size_reclient',
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage_reclient',
       'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
@@ -1149,8 +1149,8 @@
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64_reclient',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia_reclient',
       'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver_reclient',
-      'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_chrome',
-      'fuchsia-x64-rel': 'release_trybot_fuchsia',
+      'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_chrome_reclient',
+      'fuchsia-x64-rel': 'release_trybot_fuchsia_reclient',
       'fuchsia-x64-workstation': 'release_trybot_fuchsia_chrome',
     },
 
@@ -3573,16 +3573,12 @@
       'release_trybot_reclient', 'extended_tracing',
     ],
 
-    'release_trybot_fuchsia': [
-      'release_trybot', 'fuchsia',
-    ],
-
-    'release_trybot_fuchsia_arm64': [
-      'release_trybot', 'fuchsia', 'arm64', 'arm64_host',
-    ],
-
     'release_trybot_fuchsia_arm64_cast_receiver_reclient': [
       'release_trybot_reclient', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
+    ],
+
+    'release_trybot_fuchsia_arm64_reclient': [
+      'release_trybot_reclient', 'fuchsia', 'arm64', 'arm64_host',
     ],
 
     'release_trybot_fuchsia_cast_receiver_reclient': [
@@ -3591,6 +3587,14 @@
 
     'release_trybot_fuchsia_chrome': [
       'release_trybot', 'fuchsia', 'fuchsia_chrome'
+    ],
+
+    'release_trybot_fuchsia_chrome_reclient': [
+      'release_trybot_reclient', 'fuchsia', 'fuchsia_chrome'
+    ],
+
+    'release_trybot_fuchsia_reclient': [
+      'release_trybot_reclient', 'fuchsia',
     ],
 
     'release_trybot_fuchsia_reclient_cxx17_no_werror': [
