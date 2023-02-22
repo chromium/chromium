@@ -227,13 +227,6 @@ class ReadAnythingAppController
   // nodes of the selection.
   std::set<ui::AXNodeID> display_node_ids_;
 
-  // Selection information.
-  bool has_selection_ = false;
-  ui::AXNodeID start_node_id_ = ui::kInvalidAXNodeID;
-  ui::AXNodeID end_node_id_ = ui::kInvalidAXNodeID;
-  int32_t start_offset_ = -1;
-  int32_t end_offset_ = -1;
-
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
