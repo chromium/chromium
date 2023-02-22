@@ -3320,6 +3320,7 @@ static_library("browser") {
       "//chrome/browser/password_edit_dialog/android",
       "//chrome/browser/password_entry_edit/android",
       "//chrome/browser/password_manager:password_manager_buildflags",
+      "//chrome/browser/page_info:page_info_buildflags",
       "//chrome/browser/password_manager/android:backend_public",
       "//chrome/browser/password_manager/android:jni_headers",
       "//chrome/browser/payments/android:jni_headers",
