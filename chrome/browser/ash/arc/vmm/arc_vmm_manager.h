@@ -22,6 +22,8 @@ class ArcVmmManager : public KeyedService {
   // Returns singleton instance for the given BrowserContext, or nullptr if
   // the browser |context| is not allowed to use ARC.
   static ArcVmmManager* GetForBrowserContext(content::BrowserContext* context);
+  static ArcVmmManager* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcVmmManager(content::BrowserContext* context, ArcBridgeService* bridge);
 

@@ -46,6 +46,12 @@ ArcVmmManager* ArcVmmManager::GetForBrowserContext(
   return ArcVmmManagerFactory::GetForBrowserContext(context);
 }
 
+// static
+ArcVmmManager* ArcVmmManager::GetForBrowserContextForTesting(
+    content::BrowserContext* context) {
+  return ArcVmmManagerFactory::GetForBrowserContextForTesting(context);
+}
+
 ArcVmmManager::ArcVmmManager(content::BrowserContext* context,
                              ArcBridgeService* bridge) {
   if (base::FeatureList::IsEnabled(kVmmSwapKeyboardShortcut)) {

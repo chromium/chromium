@@ -4958,6 +4958,7 @@ source_set("unit_tests") {
     "arc/tracing/arc_value_event_unittest.cc",
     "arc/tts/arc_tts_service_unittest.cc",
     "arc/user_session/arc_user_session_service_unittest.cc",
+    "arc/vmm/arc_vmm_manager_unittest.cc",
     "arc/vmm/arc_vmm_swap_scheduler_unittest.cc",
     "arc/wallpaper/arc_wallpaper_service_unittest.cc",
     "assistant/assistant_util_unittest.cc",
