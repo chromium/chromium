@@ -6438,8 +6438,10 @@ TEST_F(WebFrameTest, DISABLED_PositionForPointTest) {
   EXPECT_EQ(64, ComputeOffset(layout_object, 1000, 1000));
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/1090246): Fix these tests on Fuchsia and re-enable.
+// TODO(crbug.com/1317375): Build these tests on all platforms.
 #define MAYBE_SelectRangeStaysHorizontallyAlignedWhenMoved \
   DISABLED_SelectRangeStaysHorizontallyAlignedWhenMoved
 #define MAYBE_MoveCaretStaysHorizontallyAlignedWhenMoved \
@@ -6450,8 +6452,6 @@ TEST_F(WebFrameTest, DISABLED_PositionForPointTest) {
 #define MAYBE_MoveCaretStaysHorizontallyAlignedWhenMoved \
   MoveCaretStaysHorizontallyAlignedWhenMoved
 #endif
-// TODO(crbug.com/1317375): Build these tests on all platforms.
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebFrameTest, MAYBE_SelectRangeStaysHorizontallyAlignedWhenMoved) {
   RegisterMockedHttpURLLoad("move_caret.html");
 
@@ -6534,7 +6534,6 @@ TEST_F(WebFrameTest, MAYBE_MoveCaretStaysHorizontallyAlignedWhenMoved) {
   EXPECT_EQ(start_rect, initial_start_rect);
   EXPECT_EQ(end_rect, initial_end_rect);
 }
-#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 class CompositedSelectionBoundsTest
     : public WebFrameTest,
