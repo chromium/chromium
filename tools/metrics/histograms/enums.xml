@@ -107935,6 +107935,16 @@ others/histograms.xml -->
   </int>
 </enum>
 
+<enum name="WebauthnOptInPromoNotOfferedReason">
+  <int value="0" label="Unknown"/>
+  <int value="1"
+      label="A virtual card was authenticated, and we do not offer FIDO
+             opt-in for virtual cards"/>
+  <int value="2" label="Unmask details denote we should not offer FIDO opt-in"/>
+  <int value="3" label="Card authorization token is empty"/>
+  <int value="4" label="Blocked by strike database"/>
+</enum>
+
 <enum name="WebBluetoothConnectGATTOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Device no longer in range"/>

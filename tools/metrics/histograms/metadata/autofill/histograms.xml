@@ -784,6 +784,19 @@ chromium-metrics-reviews@google.com.
       variants="AutofillCreditCardWebauthnOptInOrigin"/>
 </histogram>
 
+<histogram name="Autofill.BetterAuth.OptInPromoNotOfferedReason"
+    enum="WebauthnOptInPromoNotOfferedReason" expires_after="2023-07-01">
+  <owner>vinnypersky@google.com</owner>
+  <owner>shgar@google.com</owner>
+  <summary>
+    Records when the Better Auth (FIDO) opt-in promo could have been offered on
+    Desktop, but wasn't. Logged at the time of the promo not being shown. This
+    metric can only be logged from the checkout flow, as we do not block opting
+    in to FIDO from the settings page. It logs the enum reason of what caused
+    the promo to not be shown.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.BetterAuth.OptInPromoShown{AutofillCreditCardWebauthnOptInOrigin}"
     enum="BooleanHit" expires_after="2023-07-01">

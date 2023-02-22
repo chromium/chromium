@@ -86,6 +86,12 @@ void LogWebauthnOptChangeCalled(bool request_to_opt_in,
   base::UmaHistogramEnumeration(histogram_name, metric);
 }
 
+void LogWebauthnOptInPromoNotOfferedReason(
+    WebauthnOptInPromoNotOfferedReason reason) {
+  base::UmaHistogramEnumeration(
+      "Autofill.BetterAuth.OptInPromoNotOfferedReason", reason);
+}
+
 void LogWebauthnOptInPromoShown(bool is_checkout_flow) {
   std::string suffix =
       is_checkout_flow ? "FromCheckoutFlow" : "FromSettingsPage";

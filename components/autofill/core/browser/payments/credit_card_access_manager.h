@@ -176,6 +176,11 @@ class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
     unmask_details_request_in_progress_ = unmask_details_request_in_progress;
   }
 
+  bool ShouldOfferFidoOptInDialogForTesting(
+      const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response) {
+    return ShouldOfferFidoOptInDialog(response);
+  }
+
  private:
   // TODO(crbug.com/1249665): Remove FRIEND and change everything to _ForTesting
   // or public.

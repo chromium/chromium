@@ -317,6 +317,12 @@ class CreditCardAccessManagerTest : public testing::Test {
   }
 
 #if !BUILDFLAG(IS_IOS)
+  void AddMaxStrikes() {
+    auto* strike_database =
+        GetFIDOAuthenticator()->GetOrCreateFidoAuthenticationStrikeDatabase();
+    strike_database->AddStrikes(strike_database->GetMaxStrikesLimit());
+  }
+
   void ClearStrikes() {
     return GetFIDOAuthenticator()
         ->GetOrCreateFidoAuthenticationStrikeDatabase()
@@ -1688,6 +1694,117 @@ TEST_F(CreditCardAccessManagerTest,
           kDeclinedAfterAccepting,
       1);
 }
+
+// Params of the CreditCardAccessManagerBetterAuthOptInLogTest:
+// -- bool is_virtual_card;
+// -- bool unmask_details_offer_fido_opt_in;
+// -- bool card_authorization_token_present;
+// -- bool max_strikes_limit_reached;
+class CreditCardAccessManagerBetterAuthOptInLogTest
+    : public CreditCardAccessManagerTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+ public:
+  CreditCardAccessManagerBetterAuthOptInLogTest() = default;
+  ~CreditCardAccessManagerBetterAuthOptInLogTest() override = default;
+
+  void SetUp() override {
+    CreditCardAccessManagerTest::SetUp();
+
+    if (MaxStrikesLimitReached()) {
+      AddMaxStrikes();
+    } else {
+      ClearStrikes();
+    }
+
+    CreateServerCard(kTestGUID, kTestNumber);
+    GetFIDOAuthenticator()->SetUserVerifiable(true);
+    SetUserOptedIn(false);
+    payments_client_->AllowFidoRegistration(
+        /*offer_fido_opt_in=*/UnmaskDetailsOfferFidoOptIn());
+  }
+
+  bool IsVirtualCard() { return std::get<0>(GetParam()); }
+  bool UnmaskDetailsOfferFidoOptIn() { return std::get<1>(GetParam()); }
+  bool CardAuthorizationTokenPresent() { return std::get<2>(GetParam()); }
+  bool MaxStrikesLimitReached() { return std::get<3>(GetParam()); }
+  bool ShouldOfferFidoOptIn() {
+    return !IsVirtualCard() && UnmaskDetailsOfferFidoOptIn() &&
+           CardAuthorizationTokenPresent() && !MaxStrikesLimitReached();
+  }
+
+  const std::string GetFidoOptInNotOfferedHistogram() {
+    return fido_opt_in_not_offered_histogram;
+  }
+
+ private:
+  const std::string fido_opt_in_not_offered_histogram =
+      "Autofill.BetterAuth.OptInPromoNotOfferedReason";
+};
+
+// Ensures that the correct metrics are logged when the FIDO opt-in dialog is
+// not shown on Desktop.
+TEST_P(CreditCardAccessManagerBetterAuthOptInLogTest,
+       FidoOptInNotShown_Desktop) {
+  base::HistogramTester histogram_tester;
+
+  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
+  if (IsVirtualCard()) {
+    card->set_record_type(CreditCard::VIRTUAL_CARD);
+  }
+
+  credit_card_access_manager_->PrepareToFetchCreditCard();
+  credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
+
+  EXPECT_EQ(
+      credit_card_access_manager_->ShouldOfferFidoOptInDialogForTesting(
+          CreditCardCvcAuthenticator::CvcAuthenticationResponse()
+              .with_did_succeed(true)
+              .with_card(card)
+              .with_card_authorization_token(CardAuthorizationTokenPresent()
+                                                 ? "card_authorization_token"
+                                                 : "")
+              .with_cvc(u"123")),
+      ShouldOfferFidoOptIn());
+
+  if (IsVirtualCard()) {
+    histogram_tester.ExpectUniqueSample(
+        GetFidoOptInNotOfferedHistogram(),
+        /*sample=*/
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::kVirtualCard,
+        /*expected_bucket_count=*/1);
+  } else if (!UnmaskDetailsOfferFidoOptIn()) {
+    histogram_tester.ExpectUniqueSample(
+        GetFidoOptInNotOfferedHistogram(),
+        /*sample=*/
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::
+            kUnmaskDetailsOfferFidoOptInFalse,
+        /*expected_bucket_count=*/1);
+  } else if (!CardAuthorizationTokenPresent()) {
+    histogram_tester.ExpectUniqueSample(
+        GetFidoOptInNotOfferedHistogram(),
+        /*sample=*/
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::
+            kCardAuthorizationTokenEmpty,
+        /*expected_bucket_count=*/1);
+  } else if (MaxStrikesLimitReached()) {
+    histogram_tester.ExpectUniqueSample(
+        GetFidoOptInNotOfferedHistogram(),
+        /*sample=*/
+        autofill_metrics::WebauthnOptInPromoNotOfferedReason::
+            kBlockedByStrikeDatabase,
+        /*expected_bucket_count=*/1);
+  } else {
+    histogram_tester.ExpectTotalCount(GetFidoOptInNotOfferedHistogram(),
+                                      /*expected_count=*/0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CreditCardAccessManagerBetterAuthOptInLogTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 // Ensures that the correct number of strikes are added when the user fails to
 // complete user-verification for an opt-in attempt.
