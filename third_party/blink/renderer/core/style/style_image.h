@@ -73,6 +73,9 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   // All underlying resources this <image> references has finished loading.
   virtual bool IsLoaded() const { return true; }
 
+  // At least one underlying resource is still loading.
+  virtual bool IsLoading() const { return false; }
+
   // Any underlying resources this <image> references failed to load.
   virtual bool ErrorOccurred() const { return false; }
 

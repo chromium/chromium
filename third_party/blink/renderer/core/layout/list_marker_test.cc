@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 namespace blink {
 
@@ -43,6 +44,26 @@ class ListMarkerTest : public RenderingTest {
     GetDocument().body()->appendChild(sheet);
   }
 };
+
+TEST_F(ListMarkerTest, FallbackToTextWhenImagesDisable) {
+  GetDocument().Fetcher()->SetImagesEnabled(false);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #decimal {
+          list-style-type:decimal;
+          list-style-image:url("data:image/gif;base64,R0lGODdhCQAJAKEAAO6C7v8A/6Ag8AAAACwAAAAACQAJAAACFISPaWLhLhh4UNIQG81zswiGIlgAADs=");
+      }
+    </style>
+
+    <ul>
+      <li id="decimal">decimal</li>
+    </ul>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  LayoutObject* object = GetMarker("decimal")->SlowFirstChild();
+  EXPECT_TRUE(object->IsText());
+}
 
 TEST_F(ListMarkerTest, AddCounterStyle) {
   GetDocument().body()->setInnerHTML(R"HTML(

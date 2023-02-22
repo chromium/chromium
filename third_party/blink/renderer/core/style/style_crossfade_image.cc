@@ -50,6 +50,11 @@ bool StyleCrossfadeImage::CanRender() const {
          (!to_image_ || to_image_->CanRender());
 }
 
+bool StyleCrossfadeImage::IsLoading() const {
+  return (from_image_ && from_image_->IsLoading()) ||
+         (to_image_ && to_image_->IsLoading());
+}
+
 bool StyleCrossfadeImage::IsLoaded() const {
   return (!from_image_ || from_image_->IsLoaded()) &&
          (!to_image_ || to_image_->IsLoaded());

@@ -62,6 +62,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   bool CanRender() const override;
   bool IsLoaded() const override;
+  bool IsLoading() const override;
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;
 

@@ -68,6 +68,10 @@ bool StyleImageSet::IsLoaded() const {
   return best_fit_image_->IsLoaded();
 }
 
+bool StyleImageSet::IsLoading() const {
+  return best_fit_image_->IsLoading();
+}
+
 bool StyleImageSet::ErrorOccurred() const {
   return best_fit_image_->ErrorOccurred();
 }

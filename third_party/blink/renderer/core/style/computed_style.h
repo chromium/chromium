@@ -2422,7 +2422,8 @@ class ComputedStyle : public ComputedStyleBase,
 
   bool GeneratesMarkerImage() const {
     return Display() == EDisplay::kListItem && ListStyleImage() &&
-           !ListStyleImage()->ErrorOccurred();
+           !ListStyleImage()->ErrorOccurred() &&
+           (ListStyleImage()->IsLoading() || ListStyleImage()->IsLoaded());
   }
 
   LogicalSize LogicalAspectRatio() const {

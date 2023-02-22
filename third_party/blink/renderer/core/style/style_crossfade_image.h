@@ -29,6 +29,7 @@ class StyleCrossfadeImage final : public StyleImage {
                              bool allow_visited_style) const override;
 
   bool CanRender() const override;
+  bool IsLoading() const override;
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;

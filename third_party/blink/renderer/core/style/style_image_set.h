@@ -52,6 +52,7 @@ class StyleImageSet final : public StyleImage {
   WrappedImagePtr Data() const override;
 
   bool CanRender() const override;
+  bool IsLoading() const override;
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String& failing_url) const override;
