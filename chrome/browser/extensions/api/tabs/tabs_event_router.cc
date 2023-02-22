@@ -273,7 +273,9 @@ void TabsEventRouter::TabGroupedStateChanged(
 
 void TabsEventRouter::OnZoomControllerDestroyed(
     zoom::ZoomController* zoom_controller) {
-  zoom_scoped_observations_.RemoveObservation(zoom_controller);
+  if (zoom_scoped_observations_.IsObservingSource(zoom_controller)) {
+    zoom_scoped_observations_.RemoveObservation(zoom_controller);
+  }
 }
 
 void TabsEventRouter::OnZoomChanged(
@@ -610,8 +612,10 @@ void TabsEventRouter::RegisterForTabNotifications(WebContents* contents) {
 }
 
 void TabsEventRouter::UnregisterForTabNotifications(WebContents* contents) {
-  zoom_scoped_observations_.RemoveObservation(
-      ZoomController::FromWebContents(contents));
+  if (auto* zoom_controller = ZoomController::FromWebContents(contents);
+      zoom_scoped_observations_.IsObservingSource(zoom_controller)) {
+    zoom_scoped_observations_.RemoveObservation(zoom_controller);
+  }
   favicon_scoped_observations_.RemoveObservation(
       favicon::ContentFaviconDriver::FromWebContents(contents));
 
