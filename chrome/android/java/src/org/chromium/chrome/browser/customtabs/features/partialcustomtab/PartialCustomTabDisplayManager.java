@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Handler;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -52,6 +53,7 @@ public class PartialCustomTabDisplayManager
     private final int mSideSheetPosition;
     private final int mSideSheetAnimation;
     private final PartialCustomTabVersionCompat mVersionCompat;
+    private final SparseBooleanArray mLastMaximizeState = new SparseBooleanArray();
 
     // Simple factory interface creating a new SizeStrategy. Facilitates testing.
     interface SizeStrategyCreator {
@@ -111,11 +113,11 @@ public class PartialCustomTabDisplayManager
     public void onConfigurationChanged(Configuration newConfig) {
         int type = calculatePartialCustomTabType();
         if (type != mCurrentPartialCustomTabType) {
-            boolean startMaximized = false;
             if (mStrategy != null) {
-                startMaximized = mStrategy.isMaximized();
+                mLastMaximizeState.put(mStrategy.getStrategyType(), mStrategy.isMaximized());
                 mStrategy.destroy();
             }
+            boolean startMaximized = mLastMaximizeState.get(type, false);
             mStrategy = mSizeStrategyCreator.createForType(
                     type, startMaximized, mSideSheetPosition, mSideSheetAnimation);
             mCurrentPartialCustomTabType = type;

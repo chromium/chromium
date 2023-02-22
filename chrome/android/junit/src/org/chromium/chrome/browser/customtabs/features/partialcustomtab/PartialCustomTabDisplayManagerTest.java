@@ -278,26 +278,30 @@ public class PartialCustomTabDisplayManagerTest {
         int height = attrs.height;
         int width = attrs.width;
 
-        var sideSheetStrategy =
-                (PartialCustomTabSideSheetStrategy) displayManager.getSizeStrategyForTesting();
-        sideSheetStrategy.toggleMaximize(true);
+        var sideSheetStrategy = displayManager.getSizeStrategyForTesting();
+        ((PartialCustomTabSideSheetStrategy) sideSheetStrategy).toggleMaximize(true);
+
         assertTrue("Should be in maximized state.", sideSheetStrategy.isMaximized());
 
         mPCCTTestRule.configPortraitMode();
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
         PartialCustomTabTestRule.waitForAnimationToFinish();
 
-        // Strategy is now set to bottom sheet. Verify it starts in expanded state.
-        var bottomSheetStrategy =
-                (PartialCustomTabBottomSheetStrategy) displayManager.getSizeStrategyForTesting();
-        assertTrue("Bottom sheet must start in expanded state.", bottomSheetStrategy.isMaximized());
+        // Strategy is now set to bottom sheet. Verify it starts in initial-height mode regardless
+        // of the previous strategy state.
+        var bottomSheetStrategy = displayManager.getSizeStrategyForTesting();
+        assertFalse(
+                "Bottom sheet must start in initial height.", bottomSheetStrategy.isMaximized());
 
         mPCCTTestRule.configLandscapeMode();
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
 
-        sideSheetStrategy =
-                (PartialCustomTabSideSheetStrategy) displayManager.getSizeStrategyForTesting();
-        sideSheetStrategy.toggleMaximize(true);
+        sideSheetStrategy = displayManager.getSizeStrategyForTesting();
+
+        // When coming back to SideSheet strategy, the last state should be restored.
+        assertTrue("Side sheet must start in minimized state.", sideSheetStrategy.isMaximized());
+
+        ((PartialCustomTabSideSheetStrategy) sideSheetStrategy).toggleMaximize(true);
         PartialCustomTabTestRule.waitForAnimationToFinish();
 
         attrs = mPCCTTestRule.getWindowAttributes();
