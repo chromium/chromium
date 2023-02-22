@@ -226,10 +226,15 @@ component("gl") {
 
     if (is_linux || is_chromeos || use_ozone) {
       sources += [
-        "gl_image_gl_texture.cc",
-        "gl_image_gl_texture.h",
         "gl_image_native_pixmap.cc",
         "gl_image_native_pixmap.h",
+      ]
+    }
+
+    if (is_linux || is_chromeos) {
+      sources += [
+        "gl_image_gl_texture.cc",
+        "gl_image_gl_texture.h",
       ]
     }
 
