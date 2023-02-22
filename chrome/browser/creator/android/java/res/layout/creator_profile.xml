@@ -16,8 +16,7 @@
       android:orientation="vertical"
       android:layout_weight="1"
       android:layout_width="@dimen/creator_profile_container_width"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="@dimen/creator_profile_container_margin" >
+      android:layout_height="wrap_content" >
     <TextView
         android:id="@+id/creator_name"
         android:layout_width="wrap_content"

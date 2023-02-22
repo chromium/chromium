@@ -18,7 +18,6 @@ found in the LICENSE file.
 
     <!-- Profile dimensions -->
     <dimen name="creator_profile_container_width">0dp</dimen>
-    <dimen name="creator_profile_container_margin">5dp</dimen>
     <dimen name="creator_profile_text_padding">10dp</dimen>
 
     <!-- Bottomsheet toolbar dimensions: container -->
