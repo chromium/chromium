@@ -3895,6 +3895,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PasswordManager.{Store}LoginDatabaseEncryptionStatus"
+    enum="LoginDatabaseEncryptionStatus" expires_after="2023-06-30">
+  <owner>derinel@google.com</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    The encryption status of the login database in the password manager's
+    {Store} after initialization. Recorded only once per profile when the
+    database is initialized.
+  </summary>
+  <token key="Store">
+    <variant name="AccountStore." summary="account-scoped store"/>
+    <variant name="ProfileStore." summary="profile-scoped store"/>
+  </token>
+</histogram>
+
 <histogram
     name="PasswordManager.{Store}PasswordNotes.CountCredentialsWithNonEmptyNotes"
     units="count" expires_after="2023-01-01">

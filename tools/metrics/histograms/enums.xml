@@ -65564,6 +65564,14 @@ from previous Chrome versions.
   <int value="2147448086" label="OmniboxUniformRowHeight:enabled"/>
 </enum>
 
+<enum name="LoginDatabaseEncryptionStatus">
+  <int value="0" label="No issues"/>
+  <int value="1"
+      label="Encryption is available but invalid entries exist in the
+             database"/>
+  <int value="2" label="Encryption is not available"/>
+</enum>
+
 <enum name="LoginDatabaseInitError">
   <int value="0" label="Init success"/>
   <int value="1" label="Can't open file"/>
