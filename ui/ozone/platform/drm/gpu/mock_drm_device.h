@@ -30,6 +30,11 @@
 
 namespace ui {
 
+template <class Object>
+Object* DrmAllocator(size_t num_of_objects = 1) {
+  return static_cast<Object*>(drmMalloc(num_of_objects * sizeof(Object)));
+}
+
 // DRM Object Base IDs:
 constexpr uint32_t kPlaneOffset = 100;
 constexpr uint32_t kCrtcIdBase = 200;
