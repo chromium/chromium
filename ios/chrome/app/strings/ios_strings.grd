@@ -2597,7 +2597,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Cancel
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT" desc="Footer text of an account address profile when it is viewed in settings. [iOS only]">
-          This address is saved in your Google Account(<ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>). You can use this address across Google products on any device.
+          This address is saved in your Google Account (<ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>). You can use this address across Google products on any device.
       </message>
       <message name="IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR" desc="Error shown when the address is edited in settings and one of the required fields is empty. [iOS only]">
           {count, plural,
@@ -2609,8 +2609,8 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE" desc="Title of the confirmation shown to the user when an account address is deleted. [iOS only]">
           {count, plural,
-          =1 {This address will be deleted from your Google Account(<ph name="USER_EMAIL">{email}<ex>janedoe@google.com</ex></ph>) and from this device.}
-          other {These addresses will be deleted from your Google Account(<ph name="USER_EMAIL">{email}<ex>janedoe@google.com</ex></ph>) and from this device.}}
+          =1 {This address will be deleted from your Google Account (<ph name="USER_EMAIL">{email}<ex>janedoe@google.com</ex></ph>) and from this device.}
+          other {These addresses will be deleted from your Google Account (<ph name="USER_EMAIL">{email}<ex>janedoe@google.com</ex></ph>) and from this device.}}
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_SYNC_ADDRESS_CONFIRMATION_TITLE" desc="Title of the confirmation shown to the user when a sync address is deleted. [iOS only]">
           {count, plural,
