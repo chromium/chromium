@@ -462,6 +462,11 @@ class DeviceActivityClientTest : public testing::Test {
 
     system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
+    // ActivateDate VPD field is read from machine statistics in downstream
+    // dependency.
+    statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
+                                             kFakeFirstActivateDate);
+
     SetUpDeviceActivityClient(
         {
             features::kDeviceActiveClientDailyCheckMembership,
@@ -469,8 +474,6 @@ class DeviceActivityClientTest : public testing::Test {
             features::kDeviceActiveClient28DayActiveCheckMembership,
             features::kDeviceActiveClientChurnCohortCheckIn,
             features::kDeviceActiveClientChurnCohortCheckMembership,
-            features::kDeviceActiveClientChurnObservationCheckIn,
-            features::kDeviceActiveClientChurnObservationCheckMembership,
         },
         GetPsmNonMemberTestCase(),
         GetPrivateComputingRegressionTestCase(
@@ -522,10 +525,6 @@ class DeviceActivityClientTest : public testing::Test {
         pc_test_case.get_response());
     client_test_interface()->SetSaveLastPingDatesStatusResponse(
         pc_test_case.save_response());
-
-    // Set the ActiveDate key in machine statistics as kFakeFirstActivateDate.
-    statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
-                                             kFakeFirstActivateDate);
 
     // Initialize the churn active status to a default value of 0.
     churn_active_status_ = std::make_unique<ChurnActiveStatus>(0);
@@ -658,7 +657,7 @@ class DeviceActivityClientTest : public testing::Test {
 };
 
 TEST_F(DeviceActivityClientTest, ValidateActiveUseCases) {
-  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 4);
+  EXPECT_EQ(static_cast<int>(device_activity_client_->GetUseCases().size()), 3);
 }
 
 TEST_F(DeviceActivityClientTest,
