@@ -54,6 +54,8 @@ dist_dex("webapk_runtime_library") {
   proguard_enabled = true
   proguard_configs = [ "runtime_library.proguard.flags" ]
   output = "$target_out_dir/$runtime_library_dex_asset_name"
+  package_name = "webapk_runtime_library"
+  version_code = runtime_library_version
 }
 
 android_assets("runtime_library_assets") {
