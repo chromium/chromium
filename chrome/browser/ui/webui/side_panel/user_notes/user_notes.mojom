@@ -101,9 +101,12 @@ interface UserNotesPage {
   // Called when the URL of the current tab has changed.
   // This could be triggered by either switching tab or navigating to
   // a new URL.
-  CurrentTabUrlChanged();
+  CurrentTabUrlChanged(bool start_note_creation);
 
   // Called when the kUserNotesSortByNewest pref has changed so that the UI can
   // match this sort order if it doesn't already.
   SortByNewestPrefChanged(bool sort_by_newest);
+
+  // Called when the user triggers for the note creation flow to start.
+  StartNoteCreation();
 };

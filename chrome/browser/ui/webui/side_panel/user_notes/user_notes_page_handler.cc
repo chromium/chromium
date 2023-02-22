@@ -100,6 +100,7 @@ UserNotesPageHandler::UserNotesPageHandler(
     mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
     Profile* profile,
     Browser* browser,
+    bool start_creation_flow,
     UserNotesSidePanelUI* user_notes_ui)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
@@ -117,6 +118,9 @@ UserNotesPageHandler::UserNotesPageHandler(
   browser_->tab_strip_model()->AddObserver(this);
   Observe(browser_->tab_strip_model()->GetActiveWebContents());
   UpdateCurrentTabUrl();
+  if (start_creation_flow) {
+    StartNoteCreation(false);
+  }
 }
 
 UserNotesPageHandler::~UserNotesPageHandler() {
@@ -245,6 +249,14 @@ void UserNotesPageHandler::OnSortByNewestPrefChanged() {
   }
 }
 
+void UserNotesPageHandler::StartNoteCreation(bool wait_for_tab_change) {
+  if (wait_for_tab_change) {
+    start_creation_after_tab_change_ = true;
+  } else {
+    page_->StartNoteCreation();
+  }
+}
+
 void UserNotesPageHandler::OnPowersChanged() {
   page_->NotesChanged();
 }
@@ -269,6 +281,7 @@ void UserNotesPageHandler::UpdateCurrentTabUrl() {
       browser_->tab_strip_model()->GetActiveWebContents();
   if (web_contents && current_tab_url_ != web_contents->GetLastCommittedURL()) {
     current_tab_url_ = web_contents->GetLastCommittedURL();
-    page_->CurrentTabUrlChanged();
+    page_->CurrentTabUrlChanged(start_creation_after_tab_change_);
+    start_creation_after_tab_change_ = false;
   }
 }

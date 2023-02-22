@@ -49,12 +49,18 @@ export class UserNotesAppElement extends PolymerElement {
         reflectToAttribute: true,
         value: false,
       },
+
+      startNoteCreation_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private notes_: Array<(Note | null)>;
   private overviews_: NoteOverview[];
   private viewingOverviews_: boolean;
+  private startNoteCreation_: boolean;
   private userNotesApi_: UserNotesApiProxy =
       UserNotesApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -71,9 +77,18 @@ export class UserNotesAppElement extends PolymerElement {
             this.updateNotes_();
           }
         }),
-        callbackRouter.currentTabUrlChanged.addListener(() => {
-          this.viewingOverviews_ = false;
-          this.updateNotes_();
+        callbackRouter.currentTabUrlChanged.addListener(
+            async (startNoteCreation: boolean) => {
+              this.viewingOverviews_ = false;
+              await this.updateNotes_();
+              this.startNoteCreation_ = startNoteCreation;
+            }),
+        callbackRouter.startNoteCreation.addListener(async () => {
+          if (this.viewingOverviews_) {
+            await this.updateNotes_();
+            this.viewingOverviews_ = false;
+          }
+          this.startNoteCreation_ = true;
         }),
     );
     if (this.viewingOverviews_) {

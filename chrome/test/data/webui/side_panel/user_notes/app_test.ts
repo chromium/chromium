@@ -82,7 +82,7 @@ suite('UserNotesAppTest', () => {
     let notesElements = queryNotes();
     assertEquals(notesElements.length, 3);
     testProxy.setNotes([]);
-    testProxy.getCallbackRouterRemote().currentTabUrlChanged();
+    testProxy.getCallbackRouterRemote().currentTabUrlChanged(false);
     await flushTasks();
     notesElements = queryNotes();
     assertEquals(notesElements.length, 1);
@@ -132,7 +132,7 @@ suite('UserNotesAppTest', () => {
     const [url, _clickModifiers] =
         await testProxy.whenCalled('noteOverviewSelected');
     assertEquals(noteOverview.overview.url, url);
-    testProxy.getCallbackRouterRemote().currentTabUrlChanged();
+    testProxy.getCallbackRouterRemote().currentTabUrlChanged(false);
     await flushTasks();
     // Verify notes are found and note overviews are not.
     notesListElement =

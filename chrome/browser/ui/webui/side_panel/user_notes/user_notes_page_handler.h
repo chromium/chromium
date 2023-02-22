@@ -34,6 +34,7 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
       mojo::PendingRemote<side_panel::mojom::UserNotesPage> page,
       Profile* profile,
       Browser* browser,
+      bool start_creation_flow,
       UserNotesSidePanelUI* user_notes_ui);
   UserNotesPageHandler(const UserNotesPageHandler&) = delete;
   UserNotesPageHandler& operator=(const UserNotesPageHandler&) = delete;
@@ -59,6 +60,8 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   void SetSortOrder(bool sort_by_newest) override;
 
   void OnSortByNewestPrefChanged();
+
+  void StartNoteCreation(bool wait_for_tab_change);
 
   void SetCurrentTabUrlForTesting(GURL url) { current_tab_url_ = url; }
 
@@ -86,6 +89,7 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   const raw_ptr<power_bookmarks::PowerBookmarkService> service_;
   const raw_ptr<Browser> browser_;
   raw_ptr<UserNotesSidePanelUI> user_notes_ui_ = nullptr;
+  bool start_creation_after_tab_change_ = false;
   GURL current_tab_url_;
 };
 

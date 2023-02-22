@@ -1299,7 +1299,12 @@ bool TabStripModel::IsContextMenuCommandEnabled(
 
     case CommandAddNote: {
       DCHECK(UserNotesController::IsUserNotesSupported(profile()));
-      return GetIndicesForCommand(context_index).size() == 1;
+      std::vector<int> indices = GetIndicesForCommand(context_index);
+      if (indices.size() != 1) {
+        return false;
+      }
+      content::WebContents* web_contents = GetWebContentsAt(indices[0]);
+      return UserNotesController::IsUserNotesSupported(web_contents);
     }
 
     case CommandAddToReadLater:
@@ -1471,7 +1476,9 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     case CommandAddNote: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
       DCHECK(indices.size() == 1);
-      UserNotesController::SwitchTabsAndAddNote(this, indices.front());
+      Browser* browser =
+          chrome::FindBrowserWithWebContents(GetWebContentsAt(indices.front()));
+      UserNotesController::InitiateNoteCreationForTab(browser, indices.front());
       break;
     }
 

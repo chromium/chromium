@@ -42,6 +42,12 @@ export class UserNotesListElement extends PolymerElement {
         value: () => [],
       },
 
+      startNoteCreation: {
+        type: Boolean,
+        notify: true,
+        value: false,
+      },
+
       activeSortIndex_: {
         type: Number,
         observer: 'onActiveSortIndexChanged_',
@@ -60,6 +66,7 @@ export class UserNotesListElement extends PolymerElement {
   }
 
   notes: Array<(Note | null)>;
+  startNoteCreation: boolean;
   private activeSortIndex_: number;
   private sortTypes_: string[];
   private userNotesApi_: UserNotesApiProxy =

@@ -41,6 +41,13 @@ export class UserNoteElement extends PolymerElement {
         observer: 'onNoteChanged_',
       },
 
+      startNoteCreation: {
+        type: Boolean,
+        notify: true,
+        observer: 'startNoteCreation_',
+        value: false,
+      },
+
       editing_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -65,6 +72,7 @@ export class UserNoteElement extends PolymerElement {
   }
 
   note: Note|null;
+  startNoteCreation: boolean;
   private characterCounter_: string;
   private editing_: boolean;
   private noteContent_: string;
@@ -76,6 +84,16 @@ export class UserNoteElement extends PolymerElement {
   override ready() {
     super.ready();
     this.editing_ = this.note === null;
+  }
+
+  private startNoteCreation_() {
+    // Focus the persistent entry point note if creation is triggered.
+    if (this.note === null && this.startNoteCreation) {
+      setTimeout(() => {
+        this.$.noteContent.focus();
+      }, 0);
+      this.startNoteCreation = false;
+    }
   }
 
   private onNoteContentInput_() {

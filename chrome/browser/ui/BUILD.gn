@@ -1838,6 +1838,7 @@ static_library("ui") {
       "//components/paint_preview/buildflags",
       "//components/password_manager/content/common",
       "//components/performance_manager:site_data_proto",
+      "//components/power_bookmarks/core:features",
       "//components/reading_list/features:flags",
       "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//components/safety_check",

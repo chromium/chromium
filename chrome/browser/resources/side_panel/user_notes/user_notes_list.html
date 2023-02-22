@@ -62,7 +62,8 @@
 </div>
 <template id="notesList" is="dom-repeat" items="[[notes]]"
     sort="sortByModificationTime_">
-  <user-note note="[[item]]"></user-note>
+  <user-note note="[[item]]" start-note-creation="{{startNoteCreation}}">
+  </user-note>
 </template>
 
 <cr-action-menu id="sortMenu">

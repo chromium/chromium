@@ -91,5 +91,18 @@ void UserNotesSidePanelUI::CreatePageHandler(
   }
   user_notes_page_handler_ = std::make_unique<UserNotesPageHandler>(
       std::move(receiver), std::move(page), Profile::FromWebUI(web_ui()),
-      browser_, this);
+      browser_, start_creation_flow_, this);
+  start_creation_flow_ = false;
+}
+
+base::WeakPtr<UserNotesSidePanelUI> UserNotesSidePanelUI::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void UserNotesSidePanelUI::StartNoteCreation(bool wait_for_tab_change) {
+  if (user_notes_page_handler_) {
+    user_notes_page_handler_->StartNoteCreation(wait_for_tab_change);
+  } else {
+    start_creation_flow_ = true;
+  }
 }

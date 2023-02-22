@@ -207,11 +207,7 @@ void UserNoteService::OnAddNoteRequested(content::RenderFrameHost* frame,
 
 void UserNoteService::OnWebHighlightFocused(const base::UnguessableToken& id,
                                             content::RenderFrameHost* rfh) {
-  DCHECK(IsUserNotesEnabled());
-  DCHECK(rfh);
-  UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(rfh);
-  DCHECK(ui);
-  ui->FocusNote(id);
+  // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
 }
 
 void UserNoteService::OnNoteSelected(const base::UnguessableToken& id,
@@ -368,7 +364,7 @@ void UserNoteService::InitializeNewNoteForCreation(
         // partial note will be finalized or deleted, respectively.
         if (UserNotesUI* ui =
                 service->delegate_->GetUICoordinatorForFrame(frame)) {
-          ui->StartNoteCreation(&instance);
+          // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
         }
       },
       // SafeRef is safe for the service since it owns the manager which owns
@@ -435,14 +431,14 @@ void UserNoteService::OnNoteMetadataFetchedForNavigation(
     // the callback stack. Since InvalidateIfVisible() is cheap enough, always
     // calling it here is considered an acceptable fix for now.
     TRACE_EVENT_INSTANT("browser", "Invalidate UI");
-    ui->InvalidateIfVisible();
+    // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
 
     if (!metadata_snapshot.IsEmpty()) {
       // TODO(crbug.com/1313967): For now, automatically activate User Notes UI
       // when the user navigates to a page with notes. Before launch though,
       // this should be changed to a popup / notification that the user must
       // interact with to launch the notes UI.
-      ui->Show();
+      // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
     }
   }
 
@@ -545,7 +541,7 @@ void UserNoteService::OnFrameChangesApplied(base::UnguessableToken change_id) {
     UserNotesUI* ui = delegate_->GetUICoordinatorForFrame(rfh);
     DCHECK(ui);
     TRACE_EVENT_INSTANT("browser", "Invalidate UI");
-    ui->InvalidateIfVisible();
+    // TODO(crbug.com/1408767): Remove this during notes backend cleanup.
   } else if (!rfh) {
     // The frame for these changes was deleted or navigated away; the frame was
     // removed before new note instances were added. Normally the model will be

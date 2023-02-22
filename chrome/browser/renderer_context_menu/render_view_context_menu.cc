@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -150,7 +151,6 @@
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/url_formatter/url_formatter.h"
-#include "components/user_notes/browser/user_note_manager.h"
 #include "components/user_notes/user_notes_features.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -3411,14 +3411,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 bool RenderViewContextMenu::IsAddANoteEnabled() const {
   DCHECK(user_notes::IsUserNotesEnabled());
 
-  RenderFrameHost* render_frame_host = GetRenderFrameHost();
-  if (!render_frame_host)
-    return false;
-
-  if (!render_frame_host->IsInPrimaryMainFrame())
-    return false;
-
-  return user_notes::UserNoteManager::GetForPage(render_frame_host->GetPage());
+  return UserNotesController::IsUserNotesSupported(source_web_contents_);
 }
 
 // Returns true if the item was appended.
@@ -3719,20 +3712,11 @@ void RenderViewContextMenu::ExecSearchLensForImage(bool is_image_translate) {
 }
 
 void RenderViewContextMenu::ExecAddANote() {
-  RenderFrameHost* render_frame_host = GetRenderFrameHost();
-  if (!render_frame_host)
+  Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents_);
+  if (!browser) {
     return;
-
-  DCHECK(render_frame_host->IsInPrimaryMainFrame());
-
-  auto* notes_manager =
-      user_notes::UserNoteManager::GetForPage(render_frame_host->GetPage());
-  if (!notes_manager)
-    return;
-
-  bool has_text_selection = !params().selection_text.empty();
-
-  notes_manager->OnAddNoteRequested(render_frame_host, has_text_selection);
+  }
+  UserNotesController::InitiateNoteCreationForCurrentTab(browser);
 }
 
 void RenderViewContextMenu::ExecRegionSearch(

@@ -5,5 +5,7 @@
 </template>
 <template is="dom-if" if="[[!viewingOverviews_]]" restamp>
   <user-notes-list id="pageNotesList" notes="[[notes_]]"
-      on-all-notes-click="onAllNotesClick_"></user-notes-list>
+      on-all-notes-click="onAllNotesClick_"
+      start-note-creation="{{startNoteCreation_}}">
+  </user-notes-list>
 </template>

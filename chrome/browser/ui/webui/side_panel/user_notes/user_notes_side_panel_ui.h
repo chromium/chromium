@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_USER_NOTES_USER_NOTES_SIDE_PANEL_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_USER_NOTES_USER_NOTES_SIDE_PANEL_UI_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/side_panel/user_notes/user_notes.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,6 +28,11 @@ class UserNotesSidePanelUI
       mojo::PendingReceiver<side_panel::mojom::UserNotesPageHandlerFactory>
           factory);
 
+  // Gets a weak pointer to this object.
+  base::WeakPtr<UserNotesSidePanelUI> GetWeakPtr();
+
+  void StartNoteCreation(bool wait_for_tab_change);
+
   void set_browser(Browser* browser) { browser_ = browser; }
 
  private:
@@ -44,6 +50,10 @@ class UserNotesSidePanelUI
       user_notes_page_factory_receiver_{this};
 
   raw_ptr<Browser> browser_ = nullptr;
+  bool start_creation_flow_ = false;
+
+  // Used for `GetWeakPtr()`.
+  base::WeakPtrFactory<UserNotesSidePanelUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

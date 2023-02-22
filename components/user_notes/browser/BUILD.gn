@@ -36,7 +36,6 @@ source_set("unit_tests") {
     "user_note_base_test.h",
     "user_note_instance_unittest.cc",
     "user_note_manager_unittest.cc",
-    "user_note_service_unittest.cc",
     "user_note_utils_unittest.cc",
   ]
 
