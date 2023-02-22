@@ -18,6 +18,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/version_info/version_info.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -121,8 +122,9 @@ int64_t GetLatestCreationTime(base::FilePath& latest_crash_report) {
 bool GetReportsFromDatabase(
     std::vector<crashpad::CrashReportDatabase::Report>& pending_reports,
     std::vector<crashpad::CrashReportDatabase::Report>& completed_reports) {
-  crashpad::CrashReportDatabase* database =
-      crash_reporter::internal::GetCrashReportDatabase();
+  std::unique_ptr<crashpad::CrashReportDatabase> database =
+      crashpad::CrashReportDatabase::InitializeWithoutCreating(
+          crash_reporter::GetCrashpadDatabasePath());
   // `database` could be null if it has not been initialized yet.
   if (!database) {
     return false;
@@ -160,7 +162,6 @@ std::vector<crashpad::CrashReportDatabase::Report> GetNewReports() {
   if (!GetReportsFromDatabase(pending_reports, completed_reports)) {
     return reports;
   }
-
   // Get reports that have not been sent (<= latest_creation_time)
   CopyNewReports(pending_reports, latest_creation_time, reports);
   CopyNewReports(completed_reports, latest_creation_time, reports);
