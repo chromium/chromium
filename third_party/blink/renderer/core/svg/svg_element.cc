@@ -1079,9 +1079,10 @@ scoped_refptr<const ComputedStyle> SVGElement::CustomStyleForLayoutObject(
   StyleRequest style_request;
   style_request.parent_override = style;
   style_request.layout_parent_override = style;
+  style_request.styled_element = this;
   StyleRecalcContext corresponding_recalc_context(style_recalc_context);
   corresponding_recalc_context.old_style =
-      PostStyleUpdateScope::GetOldStyle(*corresponding_element);
+      PostStyleUpdateScope::GetOldStyle(*this);
   return GetDocument().GetStyleResolver().ResolveStyle(
       corresponding_element, corresponding_recalc_context, style_request);
 }

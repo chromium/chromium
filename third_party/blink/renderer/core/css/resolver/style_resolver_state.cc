@@ -42,6 +42,19 @@ bool CanCacheBaseStyle(const StyleRequest& style_request) {
           style_request.matching_behavior == kMatchAllRules);
 }
 
+Element* ComputeStyledElement(const StyleRequest& style_request,
+                              Element& element) {
+  Element* styled_element = style_request.styled_element;
+  if (!styled_element) {
+    styled_element = &element;
+  }
+  if (style_request.IsPseudoStyleRequest()) {
+    styled_element = styled_element->GetNestedPseudoElement(
+        style_request.pseudo_id, style_request.pseudo_argument);
+  }
+  return styled_element;
+}
+
 }  // namespace
 
 StyleResolverState::StyleResolverState(
@@ -57,12 +70,10 @@ StyleResolverState::StyleResolverState(
                                       : nullptr),
       pseudo_request_type_(style_request.type),
       font_builder_(&document),
-      pseudo_element_(
-          element.GetNestedPseudoElement(style_request.pseudo_id,
-                                         style_request.pseudo_argument)),
-      element_style_resources_(GetElement(),
-                               document.DevicePixelRatio(),
-                               pseudo_element_),
+      styled_element_(ComputeStyledElement(style_request, element)),
+      element_style_resources_(
+          GetStyledElement() ? *GetStyledElement() : GetElement(),
+          document.DevicePixelRatio()),
       element_type_(style_request.IsPseudoStyleRequest()
                         ? ElementType::kPseudoElement
                         : ElementType::kElement),
@@ -227,16 +238,11 @@ CSSParserMode StyleResolverState::GetParserMode() const {
 }
 
 Element* StyleResolverState::GetAnimatingElement() const {
-  if (element_type_ == ElementType::kElement) {
-    return &GetElement();
-  }
-  DCHECK_EQ(ElementType::kPseudoElement, element_type_);
-  return pseudo_element_;
+  return styled_element_;
 }
 
 PseudoElement* StyleResolverState::GetPseudoElement() const {
-  return element_type_ == ElementType::kPseudoElement ? pseudo_element_
-                                                      : nullptr;
+  return DynamicTo<PseudoElement>(styled_element_);
 }
 
 const CSSValue& StyleResolverState::ResolveLightDarkPair(

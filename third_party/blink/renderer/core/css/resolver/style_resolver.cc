@@ -1865,9 +1865,12 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
 
   // TODO(crbug.com/1276575) : This assert is currently hit for nested ::marker
   // pseudo elements.
-  DCHECK(animating_element == &element ||
-         DynamicTo<PseudoElement>(animating_element)->OriginatingElement() ==
-             &element);
+  DCHECK(
+      animating_element == &element ||
+      (animating_element->IsSVGElement() &&
+       To<SVGElement>(animating_element)->CorrespondingElement() == &element) ||
+      DynamicTo<PseudoElement>(animating_element)->OriginatingElement() ==
+          &element);
 
   if (!IsAnimationStyleChange(*animating_element) ||
       !state.StyleBuilder().BaseData()) {

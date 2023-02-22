@@ -663,6 +663,7 @@ crbug.com/785246 external/wpt/svg/linking/reftests/use-descendant-combinator-003
 crbug.com/674797 external/wpt/svg/painting/reftests/marker-path-022.svg [ Failure ]
 crbug.com/674797 external/wpt/svg/painting/reftests/marker-path-023.svg [ Failure ]
 crbug.com/1368167 external/wpt/svg/struct/reftests/currentScale-change-repaint.html [ Failure ]
+crbug.com/1418360 external/wpt/svg/styling/use-element-web-animations.html [ Failure ]
 
 crbug.com/699040 external/wpt/svg/text/reftests/text-xml-space-001.svg [ Failure ]
 
