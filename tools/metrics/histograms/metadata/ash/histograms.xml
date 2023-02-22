@@ -3842,6 +3842,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.OSAuth.Login.ConfiguredAuthFactors.{AuthFactor}"
+    enum="Boolean" expires_after="2024-03-01">
+  <owner>anastasiian@chromium.org</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Whether the logged in user has {AuthFactor} auth factor configured. Recorded
+    upon successful login.
+  </summary>
+  <token key="AuthFactor">
+    <variant name="CryptohomePin"/>
+    <variant name="GaiaPassword"/>
+    <variant name="Recovery"/>
+    <variant name="SmartCard"/>
+  </token>
+</histogram>
+
 <histogram
     name="Ash.OSAuth.{AuthenticationSurface}.NbPasswordAttempts.{AuthenticationOutcome}"
     units="attempts" expires_after="2023-06-18">

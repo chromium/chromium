@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_METRICS_RECORDER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_METRICS_RECORDER_H_
 
+#include <vector>
+
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 
@@ -88,6 +91,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
   // `num_login_attempts` is 0.
   void OnExistingUserLoginExit(AuthenticationOutcome exit_type,
                                int num_login_attempts) const;
+
+  // Report which auth factors the user has configured.
+  void RecordUserAuthFactors(
+      const std::vector<cryptohome::AuthFactorType>& auth_factors) const;
 
  private:
   friend class ChromeBrowserMainPartsAsh;

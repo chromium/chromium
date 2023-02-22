@@ -4,7 +4,10 @@
 
 #include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 
+#include <vector>
+
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -176,6 +179,29 @@ TEST_F(AuthMetricsRecorderTest, OnExistingUserLoginExitWithNoFailure) {
       "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", 1);
   histogram_tester.ExpectBucketCount(
       "Ash.OSAuth.Lock.NbPasswordAttempts.UntilSuccess", zero_attempts, 1);
+}
+
+TEST_F(AuthMetricsRecorderTest, RecordUserAuthFactors) {
+  base::HistogramTester histogram_tester;
+
+  std::vector<cryptohome::AuthFactorType> factors{
+      cryptohome::AuthFactorType::kPassword, cryptohome::AuthFactorType::kPin,
+      cryptohome::AuthFactorType::kRecovery};
+  recorder_->OnAuthenticationSurfaceChange(
+      AuthMetricsRecorder::AuthenticationSurface::kLogin);
+  recorder_->RecordUserAuthFactors(factors);
+
+  // The following factors are recorded with `true`.
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.GaiaPassword", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.CryptohomePin", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.Recovery", 1, 1);
+
+  // The following factors are recorded with `false`.
+  histogram_tester.ExpectBucketCount(
+      "Ash.OSAuth.Login.ConfiguredAuthFactors.SmartCard", 0, 1);
 }
 
 }  // namespace ash
