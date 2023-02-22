@@ -53939,6 +53939,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="16" label="Third-party Content App"/>
   <int value="17" label="Save to Files"/>
   <int value="18" label="Markup"/>
+  <int value="19" label="Add to Home"/>
 </enum>
 
 <enum name="IOSShareExtensionReceivedEntrySource">

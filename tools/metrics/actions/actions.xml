@@ -20658,6 +20658,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileShareMenuAddToHome">
+  <owner>gambard@chromium.org</owner>
+  <description>User added current page to device home screen.</description>
+</action>
+
 <action name="MobileShareMenuBookmark">
   <owner>gambard@chromium.org</owner>
   <description>User shared to the device's bookmarks.</description>
