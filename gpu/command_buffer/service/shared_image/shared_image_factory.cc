@@ -313,7 +313,6 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SkAlphaType alpha_type,
                                            gpu::SurfaceHandle surface_handle,
                                            uint32_t usage) {
-  DCHECK(format.is_single_plane());
   auto* factory = GetFactoryByUsage(usage, format, size,
                                     /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   if (!factory) {
@@ -329,7 +328,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     DVLOG(1) << "CreateSharedImage[" << backing->GetName()
              << "] size=" << size.ToString()
              << " usage=" << CreateLabelForSharedImageUsage(usage)
-             << " resource_format=" << format.ToString();
+             << " format=" << format.ToString();
   }
   return RegisterBacking(std::move(backing));
 }
@@ -342,7 +341,12 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SkAlphaType alpha_type,
                                            uint32_t usage,
                                            base::span<const uint8_t> data) {
-  DCHECK(format.is_single_plane());
+  if (!format.is_single_plane()) {
+    // Pixel upload path only supports single-planar formats.
+    LOG(ERROR) << "Invalid format " << format.ToString();
+    return false;
+  }
+
   SharedImageBackingFactory* factory = nullptr;
   if (backing_factory_for_testing_) {
     factory = backing_factory_for_testing_;
@@ -362,7 +366,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
     DVLOG(1) << "CreateSharedImagePixels[" << backing->GetName()
              << "] with pixels size=" << size.ToString()
              << " usage=" << CreateLabelForSharedImageUsage(usage)
-             << " resource_format=" << format.ToString();
+             << " format=" << format.ToString();
 
     backing->OnWriteSucceeded();
   }
@@ -378,15 +382,20 @@ bool SharedImageFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
-  // Only use this for new multi-planar path for now. All legacy multi-planar
-  // and single planar GMBs can go through CreateSharedImage() that takes
-  // BufferPlane parameter.
-  DCHECK(format.is_multi_plane());
+  if (!format.is_multi_plane()) {
+    // Only use this for new multi-planar path for now. All legacy multi-planar
+    // and single planar GMBs can go through CreateSharedImage() that takes
+    // BufferPlane parameter.
+    LOG(ERROR) << "Invalid format " << format.ToString();
+    return false;
+  }
 
-  // Since client GMB code still operates on BufferFormat the SharedImageFormat
-  // received here must have an equivalent BufferFormat or something has gone
-  // wrong.
-  DCHECK(HasEquivalentBufferFormat(format));
+  if (!viz::HasEquivalentBufferFormat(format)) {
+    // Client GMB code still operates on BufferFormat so the SharedImageFormat
+    // received here must have an equivalent BufferFormat.
+    LOG(ERROR) << "Invalid format " << format.ToString();
+    return false;
+  }
 
   gfx::GpuMemoryBufferType gmb_type = buffer_handle.type;
 

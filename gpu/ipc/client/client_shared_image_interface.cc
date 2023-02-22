@@ -5,6 +5,7 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 
 #include "build/build_config.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "ui/gfx/gpu_fence.h"
@@ -97,6 +98,8 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
+  // Pixel upload path only supports single-planar formats.
+  DCHECK(format.is_single_plane());
   DCHECK(gpu::IsValidClientUsage(usage));
   return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,
@@ -112,6 +115,7 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     uint32_t usage,
     gfx::GpuMemoryBufferHandle buffer_handle) {
   DCHECK(gpu::IsValidClientUsage(usage));
+  DCHECK(viz::HasEquivalentBufferFormat(format));
   DCHECK(format.is_multi_plane());
   return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
                                               surface_origin, alpha_type, usage,

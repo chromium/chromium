@@ -20,14 +20,6 @@ int BitsPerPixel(viz::SharedImageFormat format) {
   return viz::BitsPerPixel(format.resource_format());
 }
 
-bool HasEquivalentBufferFormat(viz::SharedImageFormat format) {
-  return format.is_single_plane() ||
-         format == viz::MultiPlaneFormat::kYVU_420 ||
-         format == viz::MultiPlaneFormat::kYUV_420_BIPLANAR ||
-         format == viz::MultiPlaneFormat::kYUVA_420_TRIPLANAR ||
-         format == viz::MultiPlaneFormat::kP010;
-}
-
 gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     return viz::BufferFormat(format.resource_format());
