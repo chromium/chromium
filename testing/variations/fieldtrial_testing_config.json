@@ -4666,6 +4666,7 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IPH_PriceNotificationsWhileBrowsing",
+                        "OptimizationGuidePushNotifications",
                         "ShoppingList",
                         "kSmartSortingPriceTrackingDestination"
                     ]
