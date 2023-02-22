@@ -1962,7 +1962,7 @@
     },
     {
       name: "MachineLearningNeuralNetwork",
-      status: "test",
+      status: {"Win": "experimental", "default": "test"},
       base_feature: "none",
     },
     {
