@@ -4872,28 +4872,6 @@
             ]
         }
     ],
-    "ExtensionTelemetryStudyPersistence": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "NumberOfWritesInInterval": "1"
-                    },
-                    "enable_features": [
-                        "SafeBrowsingExtensionTelemetryPersistence"
-                    ]
-                }
-            ]
-        }
-    ],
     "FastPairPowerConsumption": [
         {
             "platforms": [
