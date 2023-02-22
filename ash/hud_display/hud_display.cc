@@ -147,8 +147,11 @@ void HUDDisplayView::Toggle() {
   params.bounds = gfx::Rect(kHUDWidth, kHUDHeightWithGraph);
   auto* widget = CreateViewTreeHostWidget(std::move(params));
   widget->GetLayer()->SetName("HUDDisplayView");
-  static_cast<ViewTreeHostRootView*>(widget->GetRootView())
-      ->SetIsOverlayCandidate(g_hud_overlay_mode);
+
+  ViewTreeHostRootView* root_view =
+      static_cast<ViewTreeHostRootView*>(widget->GetRootView());
+  root_view->SetIsOverlayCandidate(g_hud_overlay_mode);
+  root_view->Init(widget->GetNativeView());
   widget->Show();
 
   g_hud_widget = widget;
