@@ -24,6 +24,7 @@ aggregate_vector_icons("views_vector_icons") {
 
   sources = [
     "checkbox_active.icon",
+    "checkbox_active_cr2023.icon",
     "checkbox_normal.icon",
     "close.icon",
     "drag_general_selection.icon",

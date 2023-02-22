@@ -1,0 +1,29 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug/1399913): Remove this file and move code into checkbox_active.icon once CR2023 is live.
+
+CANVAS_DIMENSIONS, 16,
+
+MOVE_TO, 12.996f, 14,
+H_LINE_TO, 3.004f,
+CUBIC_TO, 2.449f, 14, 2, 13.551f, 2, 12.996f,
+V_LINE_TO, 3.004f,
+CUBIC_TO, 2, 2.449f, 2.449f, 2, 3.004f, 2,
+R_H_LINE_TO, 9.993f,
+CUBIC_TO, 13.551f, 2, 14, 2.449f, 14, 3.004f,
+R_V_LINE_TO, 9.993f,
+CUBIC_TO, 14, 13.551f, 13.551f, 14, 12.996f, 14,
+CLOSE,
+
+MOVE_TO, 12.19f, 4.12f,
+LINE_TO, 6.18f, 10.13f,
+LINE_TO, 4.06f, 8.01f,
+LINE_TO, 3, 9.07f,
+R_LINE_TO, 2.12f, 2.12f,
+R_LINE_TO, 0.71f, 0.71f,
+R_LINE_TO, 0.35f, 0.35f,
+R_LINE_TO, 7.07f, -7.07f,
+R_LINE_TO, -1.06f, -1.06f,
+CLOSE
