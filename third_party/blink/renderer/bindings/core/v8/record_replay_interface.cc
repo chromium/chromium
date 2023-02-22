@@ -483,7 +483,6 @@ function Pause_getAllFrames() {
     const id = (index++).toString();
     return createProtocolFrame(id, frame);
   });
-
   return {
     frames: frames.map(f => f.frameId),
     data: { frames },
@@ -528,6 +527,7 @@ function Graphics_getDevicePixelRatio() {
 
 /**
  * NOTE: this is not a guarantee, since `toString()` can be overridden.
+ * NOTE2: v8 debugger has `CalculateNativeAccessorFlags` but is expensive and cached and annoying.
  */
 function isProbablyNativeFunction(f) {
   return isNativeFunctionDescription(f.toString());
@@ -920,7 +920,7 @@ function createPauseObject(rrpId, level) {
 
   let preview;
   if (level != "none") {
-    preview = new ProtocolObjectPreview(cdpObj, level).fill();
+    preview = new ProtocolObjectPreview(rrpId, cdpObj, level).fill();
   }
 
   return { objectId: rrpId, persistentId, className, preview };
@@ -1009,7 +1009,8 @@ const MaxItems = {
   "full": 1000,
 };
 
-function ProtocolObjectPreview(obj, level) {
+function ProtocolObjectPreview(rrpId, obj, level) {
+  this.rrpId = rrpId;
   this.cdpObj = obj;
   this.level = level;
   this.overflow = false;
@@ -1083,7 +1084,7 @@ ProtocolObjectPreview.prototype = {
 
   fill() {
     // NOTE: we could also use "Runtime.evaluate" with `{ generatePreview: true }`
-    // WARNING: this CDP call can cause `UpdateLayout` which calls divergences
+    // WARNING: this CDP call can cause `UpdateLayout` which (as of now) can cause crashes.
     const cdpProperties = sendMessage("Runtime.getProperties", {
       objectId: this.cdpObj.objectId,
       ownProperties: true,
@@ -1112,13 +1113,17 @@ ProtocolObjectPreview.prototype = {
     const dontRecurse = this.level === "noProperties";
     const addedProps = new Set();
     let proto = this.raw;
+    let i = 0;
     do {
-      const propKeys = [...Object.getOwnPropertyNames(proto), ...Object.getOwnPropertySymbols(proto)];
+      const propKeys = [...Object.getOwnPropertySymbols(proto), ...Object.getOwnPropertyNames(proto)];
       
       // TODO: allow all getters - https://linear.app/replay/issue/RUN-1016#comment-90c46ba7
       const allowedGetters = new Set(['type', 'fromElement', 'target', 'isTrusted']);
 
       for (const propKey of propKeys) {
+        if (++i > MaxItems[this.level]) {
+          break;
+        }
         if (propKey === "__proto__" || addedProps.has(propKey)) {
           continue;
         }
