@@ -153,9 +153,12 @@ def main(argv):
 
     for dep in args.raw_deps:
       if dep not in dep_to_path_mappings:
-        assert not (dep.startswith("//ui/webui/resources")
-                    and dep.endswith(':build_ts'))
-        # Dependencies outside of ui/webui/resources are not inferred yet.
+        assert not dep.startswith("//ui/webui/resources"), \
+            f'Missing path mapping for \'{dep}\'. Update ' \
+            '//tools/typescript/path_mappings.py accordingly.'
+
+        # Path mappings outside of //ui/webui/resources are not inferred from
+        # |args.deps| yet.
         continue
 
       mappings = dep_to_path_mappings[dep]
