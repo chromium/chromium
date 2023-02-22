@@ -75,25 +75,22 @@ class BASE_EXPORT LockImpl {
   static bool PriorityInheritanceAvailable();
 #endif
 
-  void LockInternalWithTracking();
+  void LockInternal();
   NativeHandle native_handle_;
 };
 
 void LockImpl::Lock() {
-  // The ScopedLockAcquireActivity in LockInternalWithTracking() (not inlined
-  // here because of circular includes) is relatively expensive and so its
-  // actions can become significant due to the very large number of locks that
-  // tend to be used throughout the build. It is also not needed unless the lock
-  // is contended.
-  //
-  // To avoid this cost in the vast majority of the calls, simply "try" the lock
-  // first and only do the (tracked) blocking call if that fails. |Try()| is
+  // Try the lock first to acquire it cheaply if it's not contended. Try() is
   // cheap on platforms with futex-type locks, as it doesn't call into the
-  // kernel.
-  if (LIKELY(Try()))
+  // kernel. Not marked LIKELY(), as:
+  // 1. We don't know how much contention the lock would experience
+  // 2. This may lead to weird-looking code layout when inlined into a caller
+  // with (UN)LIKELY() annotations.
+  if (Try()) {
     return;
+  }
 
-  LockInternalWithTracking();
+  LockInternal();
 }
 
 #if BUILDFLAG(IS_WIN)

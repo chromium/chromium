@@ -13,11 +13,9 @@
 #include <tuple>
 
 #include "base/containers/queue.h"
-#include "base/debug/activity_tracker.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/process/process_handle.h"
@@ -33,40 +31,18 @@ namespace core {
 
 namespace {
 
-std::atomic<uint64_t>* MaybeGetExtendedCrashAnnotation() {
-  base::debug::GlobalActivityTracker* activity_tracker =
-      base::debug::GlobalActivityTracker::Get();
-  if (!activity_tracker)
-    return nullptr;
-
-  static std::atomic<uint64_t>* sum = activity_tracker->process_data().SetUint(
-      "channel_win_total_outgoing_messages", 0u);
-
-  return sum;
-}
-
 class ChannelWinMessageQueue {
  public:
-  explicit ChannelWinMessageQueue()
-      : queue_size_sum_(MaybeGetExtendedCrashAnnotation()) {}
-  ~ChannelWinMessageQueue() {
-    if (queue_size_sum_) {
-      queue_size_sum_->fetch_sub(queue_.size(), std::memory_order_relaxed);
-    }
-  }
+  ChannelWinMessageQueue() = default;
+  ~ChannelWinMessageQueue() = default;
 
   void Append(Channel::MessagePtr message) {
     queue_.emplace_back(std::move(message));
-    if (queue_size_sum_)
-      ++(*queue_size_sum_);
   }
 
   Channel::Message* GetFirst() const { return queue_.front().get(); }
 
   Channel::MessagePtr TakeFirst() {
-    if (queue_size_sum_)
-      --(*queue_size_sum_);
-
     Channel::MessagePtr message = std::move(queue_.front());
     queue_.pop_front();
     return message;
@@ -76,7 +52,6 @@ class ChannelWinMessageQueue {
 
  private:
   base::circular_deque<Channel::MessagePtr> queue_;
-  raw_ptr<std::atomic<uint64_t>> queue_size_sum_ = nullptr;
 };
 
 class ChannelWin : public Channel,

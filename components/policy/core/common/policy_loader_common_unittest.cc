@@ -5,7 +5,6 @@
 #include "components/policy/core/common/policy_loader_common.h"
 #include <algorithm>
 
-#include "base/debug/activity_tracker.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"

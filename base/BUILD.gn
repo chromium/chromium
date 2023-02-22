@@ -308,7 +308,6 @@ component("base") {
     "cxx20_is_constant_evaluated.h",
     "cxx20_to_address.h",
     "dcheck_is_on.h",
-    "debug/activity_tracker.h",
     "debug/alias.cc",
     "debug/alias.h",
     "debug/asan_invalid_access.cc",

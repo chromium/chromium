@@ -5,6 +5,10 @@
 #ifndef SQL_INTERNAL_API_TOKEN_H_
 #define SQL_INTERNAL_API_TOKEN_H_
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace sql {
 
 namespace test {

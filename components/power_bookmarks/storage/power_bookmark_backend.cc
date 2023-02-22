@@ -4,6 +4,7 @@
 
 #include "components/power_bookmarks/storage/power_bookmark_backend.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/power_bookmarks/common/power_bookmark_metrics.h"
 #include "components/power_bookmarks/common/search_params.h"
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"

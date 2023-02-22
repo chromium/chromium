@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/debug/activity_tracker.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/condition_variable.h"
@@ -235,9 +234,6 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
   DCHECK(count) << "Cannot wait on no events";
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);
-  // Record an event (the first) that this thread is blocking upon.
-  debug::ScopedEventWaitActivity event_activity(raw_waitables[0]);
-
   // We need to acquire the locks in a globally consistent order. Thus we sort
   // the array of waitables by address. We actually sort a pairs so that we can
   // map back to the original index values later.

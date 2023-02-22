@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/debug/activity_tracker.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1046,13 +1045,6 @@ ResultCode SandboxWin::StartSandboxedProcess(
     else
       DLOG(ERROR) << "Failed to launch process. Error: " << result;
     return result;
-  }
-
-  base::debug::GlobalActivityTracker* tracker =
-      base::debug::GlobalActivityTracker::Get();
-  if (tracker) {
-    tracker->RecordProcessLaunch(target.process_id(),
-                                 cmd_line.GetCommandLineString());
   }
 
   delegate->PostSpawnTarget(target.process_handle());

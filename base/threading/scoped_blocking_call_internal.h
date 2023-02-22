@@ -6,7 +6,6 @@
 #define BASE_THREADING_SCOPED_BLOCKING_CALL_INTERNAL_H_
 
 #include "base/base_export.h"
-#include "base/debug/activity_tracker.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -176,9 +175,8 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
     kBaseSyncPrimitives,
   };
 
-  explicit UncheckedScopedBlockingCall(const Location& from_here,
-                                       BlockingType blocking_type,
-                                       BlockingCallType blocking_call_type);
+  UncheckedScopedBlockingCall(BlockingType blocking_type,
+                              BlockingCallType blocking_call_type);
 
   UncheckedScopedBlockingCall(const UncheckedScopedBlockingCall&) = delete;
   UncheckedScopedBlockingCall& operator=(const UncheckedScopedBlockingCall&) =
@@ -195,8 +193,6 @@ class BASE_EXPORT UncheckedScopedBlockingCall {
   // Whether the BlockingType of the current thread was WILL_BLOCK after this
   // ScopedBlockingCall was instantiated.
   const bool is_will_block_;
-
-  base::debug::ScopedActivity scoped_activity_;
 
   // Non-nullopt for non-nested blocking calls of type MAY_BLOCK on foreground
   // threads which we monitor for I/O jank.
