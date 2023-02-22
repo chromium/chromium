@@ -397,7 +397,6 @@ public abstract class ChromeFeatureList {
     public static final String OSK_RESIZES_VISUAL_VIEWPORT = "OSKResizesVisualViewportByDefault";
     public static final String OVERLAY_NEW_LAYOUT = "OverlayNewLayout";
     public static final String PAGE_ANNOTATIONS_SERVICE = "PageAnnotationsService";
-    public static final String PAGE_INFO_ABOUT_THIS_SITE_NEW_ICON = "PageInfoAboutThisSiteNewIcon";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_EN = "PageInfoAboutThisSiteEn";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO =
             "PageInfoAboutThisSiteMoreInfo";

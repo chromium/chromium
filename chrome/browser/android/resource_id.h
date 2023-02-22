@@ -12,7 +12,6 @@
 // NOLINT(build/header_guard)
 // no-include-guard-because-multiply-included
 
-#include "chrome/browser/page_info/page_info_buildflags.h"
 #include "chrome/browser/password_manager/password_manager_buildflags.h"
 
 // LINK_RESOURCE_ID is used for IDs that come from a .grd file.
@@ -108,13 +107,3 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_ADDRESS,
 // We use PNG files for the following images.
 LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_BACK, R.drawable.cvc_icon)
 LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX, R.drawable.cvc_icon_amex)
-
-// About this site resources
-// Page insights logo is used for Google branded builds only.
-#if BUILDFLAG(PAGE_INFO_USE_INTERNAL_ANDROID_RESOURCES)
-DECLARE_RESOURCE_ID(IDR_ANDROID_ABOUT_THIS_SITE_LOGO_24DP,
-                    R.drawable.ic_page_insights_logo_24dp)
-#else
-DECLARE_RESOURCE_ID(IDR_ANDROID_ABOUT_THIS_SITE_LOGO_24DP,
-                    R.drawable.ic_info_outline_grey_24dp)
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_ANDROID)

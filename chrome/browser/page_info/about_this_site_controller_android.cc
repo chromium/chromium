@@ -6,8 +6,6 @@
 
 #include <jni.h>
 #include "base/android/jni_array.h"
-#include "chrome/browser/android/android_theme_resources.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,12 +21,6 @@ static jboolean JNI_PageInfoAboutThisSiteController_IsFeatureEnabled(
     JNIEnv* env) {
   return page_info::IsAboutThisSiteFeatureEnabled(
       g_browser_process->GetApplicationLocale());
-}
-
-static jint JNI_PageInfoAboutThisSiteController_GetJavaDrawableIconId(
-    JNIEnv* env) {
-  return ResourceMapper::MapToJavaDrawableId(
-      IDR_ANDROID_ABOUT_THIS_SITE_LOGO_24DP);
 }
 
 static base::android::ScopedJavaLocalRef<jbyteArray>
