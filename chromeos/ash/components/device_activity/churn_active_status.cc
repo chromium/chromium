@@ -134,6 +134,9 @@ ChurnActiveStatus::UpdateValue(base::Time ts) {
   // Check if new_months_from_inception is greater than previous
   // months_from_inception which was stored in |value_|.
   if (new_months_from_inception <= previous_months_from_inception) {
+    LOG(ERROR) << "Failed to update churn active status value_. "
+               << "New months from inception is smaller than the previous "
+                  "number of months from inception.";
     return absl::nullopt;
   }
 
