@@ -83,6 +83,9 @@ TEST(PrintMediaL10N, LocalizeDuplicateNames) {
       {"prc_3_125x176mm", "iso_b6_125x176mm"},
       {"prc_5_110x220mm", "iso_dl_110x220mm"},
       {"iso_id-3_88x125mm", "iso_b7_88x125mm"},
+      {"na_letter_8.5x11in", "na_card-letter_8.5x11in"},
+      {"na_letter_8.5x11in", "na_letter.fb_8.5x11in"},
+      {"na_letter_8.5x11in", "na_card-letter.fb_8.5x11in"},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -110,6 +113,8 @@ TEST(PrintMediaL10N, LocalizeSelfDescribingSizes) {
        MediaSizeGroup::kSizeNamed},
       {"oe_photo-8x10-tab_8x10.5in", u"Photo 8x10 Tab (8 x 10.5 in)",
        MediaSizeGroup::kSizeNamed},
+      {"na_card-letter_8.5x11in", u"Letter", MediaSizeGroup::kSizeNamed},
+      {"na_letter.fb_8.5x11in", u"Letter", MediaSizeGroup::kSizeNamed},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -119,13 +124,15 @@ TEST(PrintMediaL10N, LocalizeSelfDescribingSizes) {
 
 // Verifies that paper sizes are returned in the expected order of groups.
 TEST(PrintMediaL10N, SortGroupsOrdered) {
-  PaperWithSizeInfo mm = {MediaSizeInfo{u"mm", MediaSizeGroup::kSizeMm},
-                          Paper{"metric", "mm", gfx::Size()}};
-  PaperWithSizeInfo in = {MediaSizeInfo{u"in", MediaSizeGroup::kSizeIn},
-                          Paper{"inches", "in", gfx::Size()}};
-  PaperWithSizeInfo named = {
-      MediaSizeInfo{u"named", MediaSizeGroup::kSizeNamed},
-      Paper{"named size", "named", gfx::Size()}};
+  PaperWithSizeInfo mm = {
+      MediaSizeInfo{u"mm", MediaSizeGroup::kSizeMm, /*registered_size=*/false},
+      Paper{"metric", "mm", gfx::Size()}};
+  PaperWithSizeInfo in = {
+      MediaSizeInfo{u"in", MediaSizeGroup::kSizeIn, /*registered_size=*/false},
+      Paper{"inches", "in", gfx::Size()}};
+  PaperWithSizeInfo named = {MediaSizeInfo{u"named", MediaSizeGroup::kSizeNamed,
+                                           /*registered_size=*/false},
+                             Paper{"named size", "named", gfx::Size()}};
 
   std::vector<PaperWithSizeInfo> papers = {mm, named, in};
   std::vector<PaperWithSizeInfo> expected = {in, mm, named};
@@ -137,13 +144,17 @@ TEST(PrintMediaL10N, SortGroupsOrdered) {
 
 // Verifies that inch paper sizes are sorted by width, height, name.
 TEST(PrintMediaL10N, SortInchSizes) {
-  PaperWithSizeInfo p1 = {MediaSizeInfo{u"1x3", MediaSizeGroup::kSizeIn},
-                          Paper{"1x3", "in", gfx::Size(1, 3)}};
-  PaperWithSizeInfo p2 = {MediaSizeInfo{u"2x1", MediaSizeGroup::kSizeIn},
-                          Paper{"2x1", "in", gfx::Size(2, 1)}};
-  PaperWithSizeInfo p3 = {MediaSizeInfo{u"2x2", MediaSizeGroup::kSizeIn},
-                          Paper{"2x2", "in", gfx::Size(2, 2)}};
-  PaperWithSizeInfo p4 = {MediaSizeInfo{u"2x2 B", MediaSizeGroup::kSizeIn},
+  PaperWithSizeInfo p1 = {
+      MediaSizeInfo{u"1x3", MediaSizeGroup::kSizeIn, /*registered_size=*/false},
+      Paper{"1x3", "in", gfx::Size(1, 3)}};
+  PaperWithSizeInfo p2 = {
+      MediaSizeInfo{u"2x1", MediaSizeGroup::kSizeIn, /*registered_size=*/false},
+      Paper{"2x1", "in", gfx::Size(2, 1)}};
+  PaperWithSizeInfo p3 = {
+      MediaSizeInfo{u"2x2", MediaSizeGroup::kSizeIn, /*registered_size=*/false},
+      Paper{"2x2", "in", gfx::Size(2, 2)}};
+  PaperWithSizeInfo p4 = {MediaSizeInfo{u"2x2 B", MediaSizeGroup::kSizeIn,
+                                        /*registered_size=*/false},
                           Paper{"2x2 B", "in", gfx::Size(2, 2)}};
 
   std::vector<PaperWithSizeInfo> papers = {p4, p1, p2, p3};
@@ -156,13 +167,17 @@ TEST(PrintMediaL10N, SortInchSizes) {
 
 // Verifies that mm paper sizes are sorted by width, height, name.
 TEST(PrintMediaL10N, SortMmSizes) {
-  PaperWithSizeInfo p1 = {MediaSizeInfo{u"1x3", MediaSizeGroup::kSizeMm},
-                          Paper{"1x3", "mm", gfx::Size(1, 3)}};
-  PaperWithSizeInfo p2 = {MediaSizeInfo{u"2x1", MediaSizeGroup::kSizeMm},
-                          Paper{"2x1", "mm", gfx::Size(2, 1)}};
-  PaperWithSizeInfo p3 = {MediaSizeInfo{u"2x2", MediaSizeGroup::kSizeMm},
-                          Paper{"2x2", "mm", gfx::Size(2, 2)}};
-  PaperWithSizeInfo p4 = {MediaSizeInfo{u"2x2 B", MediaSizeGroup::kSizeMm},
+  PaperWithSizeInfo p1 = {
+      MediaSizeInfo{u"1x3", MediaSizeGroup::kSizeMm, /*registered_size=*/false},
+      Paper{"1x3", "mm", gfx::Size(1, 3)}};
+  PaperWithSizeInfo p2 = {
+      MediaSizeInfo{u"2x1", MediaSizeGroup::kSizeMm, /*registered_size=*/false},
+      Paper{"2x1", "mm", gfx::Size(2, 1)}};
+  PaperWithSizeInfo p3 = {
+      MediaSizeInfo{u"2x2", MediaSizeGroup::kSizeMm, /*registered_size=*/false},
+      Paper{"2x2", "mm", gfx::Size(2, 2)}};
+  PaperWithSizeInfo p4 = {MediaSizeInfo{u"2x2 B", MediaSizeGroup::kSizeMm,
+                                        /*registered_size=*/false},
                           Paper{"2x2 B", "mm", gfx::Size(2, 2)}};
 
   std::vector<PaperWithSizeInfo> papers = {p4, p1, p2, p3};
@@ -175,13 +190,17 @@ TEST(PrintMediaL10N, SortMmSizes) {
 
 // Verifies that named paper sizes are sorted by name, width, height.
 TEST(PrintMediaL10N, SortNamedSizes) {
-  PaperWithSizeInfo p1 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed},
+  PaperWithSizeInfo p1 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed,
+                                        /*registered_size=*/false},
                           Paper{"AAA", "name", gfx::Size(50, 50)}};
-  PaperWithSizeInfo p2 = {MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed},
+  PaperWithSizeInfo p2 = {MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed,
+                                        /*registered_size=*/false},
                           Paper{"BBB", "name1", gfx::Size(1, 3)}};
-  PaperWithSizeInfo p3 = {MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed},
+  PaperWithSizeInfo p3 = {MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed,
+                                        /*registered_size=*/false},
                           Paper{"BBB", "name2", gfx::Size(2, 2)}};
-  PaperWithSizeInfo p4 = {MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed},
+  PaperWithSizeInfo p4 = {MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed,
+                                        /*registered_size=*/false},
                           Paper{"BBB", "name3", gfx::Size(2, 3)}};
 
   std::vector<PaperWithSizeInfo> papers = {p4, p1, p2, p3};
@@ -193,18 +212,53 @@ TEST(PrintMediaL10N, SortNamedSizes) {
 }
 
 TEST(PrintMediaL10N, RemoveBorderlessSizes) {
-  PaperWithSizeInfo p1 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed},
+  PaperWithSizeInfo p1 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed,
+                                        /*registered_size=*/false},
                           Paper{"AAA", "oe_aaa.fb_8x10in", gfx::Size(8, 10)}};
   PaperWithSizeInfo p2 = {MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed},
                           Paper{"BBB", "oe_bbb_4x6in", gfx::Size(4, 6)}};
   PaperWithSizeInfo p3 = {
       MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeNamed},
       Paper{"BBB", "oe_bbb.borderless_4x6in", gfx::Size(4, 6)}};
-  PaperWithSizeInfo p4 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed},
+  PaperWithSizeInfo p4 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed,
+                                        /*registered_size=*/false},
                           Paper{"AAA", "oe_aaa.8x10in", gfx::Size(8, 10)}};
 
   std::vector<PaperWithSizeInfo> papers = {p1, p2, p3, p4};
   std::vector<PaperWithSizeInfo> expected = {p4, p2};
+  SortPaperDisplayNames(papers);
+  ASSERT_EQ(papers.size(), expected.size());
+  for (size_t i = 0; i < expected.size(); i++) {
+    VerifyPaperSizeMatch(papers[i], expected[i]);
+  }
+}
+
+// Verifies that PWG registered size names sort above unregistered names with
+// the same dimensions.
+TEST(PrintMediaL10N, SortNonstandardSizes) {
+  PaperWithSizeInfo p1 = {
+      MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed,
+                    /*registered_size=*/false},
+      Paper{"AAA", "na_card-letter_8.5x11in", gfx::Size(9, 11)}};
+  PaperWithSizeInfo p2 = {
+      MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed,
+                    /*registered_size=*/false},
+      Paper{"AAA", "na_card-letter_8x9in", gfx::Size(8, 11)}};
+  PaperWithSizeInfo p3 = {
+      MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeIn, /*registered_size=*/false},
+      Paper{"AAA", "oe_aaa.8x10in", gfx::Size(8, 10)}};
+  PaperWithSizeInfo p4 = {MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeNamed,
+                                        /*registered_size=*/true},
+                          Paper{"AAA", "na_letter_8.5x11in", gfx::Size(9, 11)}};
+  PaperWithSizeInfo p5 = {
+      MediaSizeInfo{u"BBB", MediaSizeGroup::kSizeIn, /*registered_size=*/true},
+      Paper{"BBB", "na_govt-letter_8x10in", gfx::Size(8, 10)}};
+  PaperWithSizeInfo p6 = {
+      MediaSizeInfo{u"AAA", MediaSizeGroup::kSizeIn, /*registered_size=*/true},
+      Paper{"AAA", "na_govt-letter_8x10in", gfx::Size(8, 10)}};
+
+  std::vector<PaperWithSizeInfo> papers = {p1, p2, p3, p4, p5, p6};
+  std::vector<PaperWithSizeInfo> expected = {p6, p5, p3, p4, p2, p1};
   SortPaperDisplayNames(papers);
   ASSERT_EQ(papers.size(), expected.size());
   for (size_t i = 0; i < expected.size(); i++) {
