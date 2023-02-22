@@ -556,8 +556,8 @@ chrome.fileManagerPrivate.FileWatchEvent;
  *   arcRemovableMediaAccessEnabled: boolean,
  *   folderShortcuts: !Array<string>,
  *   trashEnabled: boolean,
- *   officeFileMovedOneDrive: boolean,
- *   officeFileMovedGoogleDrive: boolean,
+ *   officeFileMovedOneDrive: number,
+ *   officeFileMovedGoogleDrive: number,
  * }}
  */
 chrome.fileManagerPrivate.Preferences;
