@@ -27,6 +27,9 @@ BASE_FEATURE(kUseWinOSMemoryPressureSignals,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+const base::TimeDelta SystemMemoryPressureEvaluator::kRenotifyVotePeriod =
+    base::Seconds(5);
+
 // static
 std::unique_ptr<SystemMemoryPressureEvaluator>
 SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
