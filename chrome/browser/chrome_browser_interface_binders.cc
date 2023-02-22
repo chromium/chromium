@@ -140,6 +140,7 @@
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
+#include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -973,25 +974,12 @@ void PopulateChromeWebUIFrameBinders(
   if (history_clusters_service &&
       history_clusters_service->IsJourneysEnabled()) {
     if (base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys)) {
-      if (base::FeatureList::IsEnabled(
-              ntp_features::kNtpHistoryClustersModule)) {
-        RegisterWebUIControllerInterfaceBinder<
-            history_clusters::mojom::PageHandler, HistoryUI, NewTabPageUI,
-            HistoryClustersSidePanelUI>(map);
-      } else {
-        RegisterWebUIControllerInterfaceBinder<
-            history_clusters::mojom::PageHandler, HistoryUI,
-            HistoryClustersSidePanelUI>(map);
-      }
+      RegisterWebUIControllerInterfaceBinder<
+          history_clusters::mojom::PageHandler, HistoryUI,
+          HistoryClustersSidePanelUI>(map);
     } else {
-      if (base::FeatureList::IsEnabled(
-              ntp_features::kNtpHistoryClustersModule)) {
-        RegisterWebUIControllerInterfaceBinder<
-            history_clusters::mojom::PageHandler, NewTabPageUI, HistoryUI>(map);
-      } else {
-        RegisterWebUIControllerInterfaceBinder<
-            history_clusters::mojom::PageHandler, HistoryUI>(map);
-      }
+      RegisterWebUIControllerInterfaceBinder<
+          history_clusters::mojom::PageHandler, HistoryUI>(map);
     }
   }
 
@@ -1050,6 +1038,11 @@ void PopulateChromeWebUIFrameBinders(
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {
     RegisterWebUIControllerInterfaceBinder<ntp::feed::mojom::FeedHandler,
                                            NewTabPageUI>(map);
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
+    RegisterWebUIControllerInterfaceBinder<
+        ntp::history_clusters::mojom::PageHandler, NewTabPageUI>(map);
   }
 
   RegisterWebUIControllerInterfaceBinder<

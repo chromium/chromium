@@ -13,6 +13,7 @@
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
 
 namespace history_clusters {

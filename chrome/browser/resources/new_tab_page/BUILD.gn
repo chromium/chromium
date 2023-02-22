@@ -54,17 +54,21 @@ build_webui("build") {
     "//chrome/browser/cart:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/feed:mojo_bindings_ts__generator",
+    "//chrome/browser/new_tab_page/modules/history_clusters:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_ts__generator",
     "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_ts__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
+    "//components/history_clusters/public/mojom:mojo_bindings_ts__generator",
   ]
   mojo_files = [
     "$root_gen_dir/chrome/browser/cart/chrome_cart.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/feed/feed.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.ts",
+    "$root_gen_dir/components/history_clusters/public/mojom/history_cluster_types.mojom-webui.ts",
   ]
 
   if (!is_official_build) {
@@ -84,7 +88,6 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
-    "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
     "//ui/webui/resources/cr_components/omnibox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
@@ -102,7 +105,6 @@ build_webui("build") {
     optimize_webui_excludes = [
                                 "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
                                 "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
-                                "chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js",
                                 "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
                                 "chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js",
                                 "chrome://resources/js/browser_command/browser_command.mojom-webui.js",

@@ -42,6 +42,8 @@ if (optimize_webui) {
     "chrome_cart.mojom-webui.js",
     "drive.mojom-webui.js",
     "feed.mojom-webui.js",
+    "history_cluster_types.mojom-webui.js",
+    "history_clusters.mojom-webui.js",
     "new_tab_page.mojom-webui.js",
     "photos.mojom-webui.js",
     "recipes.mojom-webui.js",

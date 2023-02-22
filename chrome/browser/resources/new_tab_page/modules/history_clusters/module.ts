@@ -4,10 +4,9 @@
 
 import '../module_header.js';
 
-import {Cluster} from 'chrome://resources/cr_components/history_clusters/history_cluster_types.mojom-webui.js';
-import {QueryResult} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Cluster} from '../../history_cluster_types.mojom-webui.js';
 import {I18nMixin} from '../../i18n_setup.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
@@ -39,27 +38,14 @@ customElements.define(
     HistoryClustersModuleElement.is, HistoryClustersModuleElement);
 
 async function createElement(): Promise<HTMLElement|null> {
-  const fetchClusters: Promise<Cluster[]> = new Promise(resolve => {
-    const callbackRouter =
-        HistoryClustersProxyImpl.getInstance().callbackRouter;
-    const listenerId = callbackRouter.onClustersQueryResult.addListener(
-        (result: QueryResult) => {
-          callbackRouter.removeListener(listenerId);
-          resolve(result.clusters);
-        });
-
-    // TODO(crbug.com/1409691): Replace this call with a more suitable one
-    // that does not require superfluous parameters.
-    HistoryClustersProxyImpl.getInstance().handler.startQueryClusters(
-        '', false);
-  });
-  const clusters = await fetchClusters;
-  if (clusters.length === 0) {
+  const data =
+      await HistoryClustersProxyImpl.getInstance().handler.getCluster();
+  if (!data.cluster) {
     return null;
   }
 
   const element = new HistoryClustersModuleElement();
-  element.cluster = clusters[0];
+  element.cluster = data.cluster!;
   return element;
 }
 
