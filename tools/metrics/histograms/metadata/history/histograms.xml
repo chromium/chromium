@@ -857,6 +857,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="History.Clusters.Backend.FilterClusterProcessor.NumClusters.{Segment}{Source}"
+    units="ms" expires_after="2023-08-08">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the number of clusters {Segment} each time {Source} invokes the
+    clustering backend with a functional filtering configuration. Note that the
+    max count is limited to the size of the initial batch sent to the clustering
+    backend.
+  </summary>
+  <token key="Segment">
+    <variant name="PostFilter" summary="after applying the filtering criteria"/>
+    <variant name="PreFilter" summary="before applying the filtering criteria"/>
+  </token>
+  <token key="Source" variants="ClusteringRequestSource"/>
+</histogram>
+
+<histogram
     name="History.Clusters.Backend.GetMostRecentClusters.{Segment}{Source}"
     units="ms" expires_after="2023-10-01">
   <owner>manukh@chromium.org</owner>

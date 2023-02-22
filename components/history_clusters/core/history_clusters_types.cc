@@ -7,6 +7,8 @@
 namespace history_clusters {
 
 QueryClustersFilterParams::QueryClustersFilterParams() = default;
+QueryClustersFilterParams::QueryClustersFilterParams(
+    const QueryClustersFilterParams&) = default;
 QueryClustersFilterParams::~QueryClustersFilterParams() = default;
 
 IncompleteVisitContextAnnotations::IncompleteVisitContextAnnotations() =

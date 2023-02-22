@@ -29,6 +29,7 @@ enum class ClusteringRequestSource {
 
 struct QueryClustersFilterParams {
   QueryClustersFilterParams();
+  QueryClustersFilterParams(const QueryClustersFilterParams&);
   ~QueryClustersFilterParams();
 
   // The maximum number of clusters to return. If less than 0, no max will be
