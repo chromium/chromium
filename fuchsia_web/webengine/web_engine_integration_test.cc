@@ -53,11 +53,16 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
  protected:
   WebEngineIntegrationTest() = default;
 
+  ~WebEngineIntegrationTest() override {
+    // We're about to shut down the realm; unbind to unhook the error handler.
+    frame_.Unbind();
+    context_.Unbind();
+  }
+
   void StartWebEngine(base::CommandLine command_line) override {
-    context_provider_.emplace(
-        ContextProviderForTest::Create(std::move(command_line)));
+    context_provider_.emplace(command_line);
     context_provider_->ptr().set_error_handler(
-        [](zx_status_t status) { ADD_FAILURE(); });
+        [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
   }
 
   fuchsia::web::ContextProvider* GetContextProvider() override {
@@ -279,7 +284,8 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   // Create a second frame, without remote debugging enabled. The remote
   // debugging service should still report a single Frame is present.
   fuchsia::web::FramePtr web_frame2;
-  web_frame2.set_error_handler([](zx_status_t) { ADD_FAILURE(); });
+  web_frame2.set_error_handler(
+      [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
   context()->CreateFrame(web_frame2.NewRequest());
 
   devtools_list = GetDevToolsListFromPort(remote_debugging_port);

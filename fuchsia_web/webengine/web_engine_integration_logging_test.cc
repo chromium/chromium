@@ -47,11 +47,16 @@ class WebEngineIntegrationLoggingTest : public WebEngineIntegrationTestBase {
       : isolated_archivist_(
             *filtered_service_directory().outgoing_directory()) {}
 
+  ~WebEngineIntegrationLoggingTest() override {
+    // We're about to shut down the realm; unbind to unhook the error handler.
+    frame_.Unbind();
+    context_.Unbind();
+  }
+
   void StartWebEngine(base::CommandLine command_line) override {
-    context_provider_.emplace(
-        ContextProviderForTest::Create(std::move(command_line)));
+    context_provider_.emplace(command_line);
     context_provider_->ptr().set_error_handler(
-        [](zx_status_t status) { ADD_FAILURE(); });
+        [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
   }
 
   fuchsia::web::ContextProvider* GetContextProvider() override {

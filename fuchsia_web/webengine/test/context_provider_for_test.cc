@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/run_loop.h"
 #include "fuchsia_web/common/test/fake_feedback_service.h"
 #include "fuchsia_web/common/test/test_realm_support.h"
 
@@ -54,41 +55,28 @@ namespace {
 
 }  // namespace
 
-// static
-ContextProviderForTest ContextProviderForTest::Create(
-    const base::CommandLine& command_line) {
-  auto realm_root = BuildRealm(command_line);
+ContextProviderForTest::ContextProviderForTest(
+    const base::CommandLine& command_line)
+    : realm_root_(BuildRealm(command_line)) {
   ::fuchsia::web::ContextProviderPtr context_provider;
   zx_status_t status =
-      realm_root.component().Connect(context_provider.NewRequest());
+      realm_root_.component().Connect(context_provider_.NewRequest());
   ZX_CHECK(status == ZX_OK, status) << "Connect to ContextProvider";
-  return ContextProviderForTest(std::move(realm_root),
-                                std::move(context_provider));
 }
 
-ContextProviderForTest::ContextProviderForTest(
-    ContextProviderForTest&&) noexcept = default;
-ContextProviderForTest& ContextProviderForTest::operator=(
-    ContextProviderForTest&&) noexcept = default;
-ContextProviderForTest::~ContextProviderForTest() = default;
-
-ContextProviderForTest::ContextProviderForTest(
-    ::component_testing::RealmRoot realm_root,
-    ::fuchsia::web::ContextProviderPtr context_provider)
-    : realm_root_(std::move(realm_root)),
-      context_provider_(std::move(context_provider)) {}
-
-// static
-ContextProviderForDebugTest ContextProviderForDebugTest::Create(
-    const base::CommandLine& command_line) {
-  return ContextProviderForDebugTest(
-      ContextProviderForTest::Create(command_line));
+ContextProviderForTest::~ContextProviderForTest() {
+  // We're about to shut down the realm; unbind to unhook the error handler.
+  context_provider_.Unbind();
+  base::RunLoop run_loop;
+  realm_root_.Teardown(
+      [quit = run_loop.QuitClosure()](auto result) { quit.Run(); });
+  run_loop.Run();
 }
 
 ContextProviderForDebugTest::ContextProviderForDebugTest(
-    ContextProviderForDebugTest&&) noexcept = default;
-ContextProviderForDebugTest& ContextProviderForDebugTest::operator=(
-    ContextProviderForDebugTest&&) noexcept = default;
+    const base::CommandLine& command_line)
+    : context_provider_(command_line) {}
+
 ContextProviderForDebugTest::~ContextProviderForDebugTest() = default;
 
 void ContextProviderForDebugTest::ConnectToDebug(
@@ -97,7 +85,3 @@ void ContextProviderForDebugTest::ConnectToDebug(
       std::move(debug_request));
   ZX_CHECK(status == ZX_OK, status) << "Connect to Debug";
 }
-
-ContextProviderForDebugTest::ContextProviderForDebugTest(
-    ContextProviderForTest context_provider)
-    : context_provider_(std::move(context_provider)) {}

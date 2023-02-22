@@ -16,10 +16,11 @@
 // system log.
 class ContextProviderForTest {
  public:
-  static ContextProviderForTest Create(const base::CommandLine& command_line);
+  explicit ContextProviderForTest(const base::CommandLine& command_line);
 
-  ContextProviderForTest(ContextProviderForTest&&) noexcept;
-  ContextProviderForTest& operator=(ContextProviderForTest&&) noexcept;
+  ContextProviderForTest(const ContextProviderForTest&) = delete;
+  ContextProviderForTest& operator=(const ContextProviderForTest&) = delete;
+
   ~ContextProviderForTest();
 
   ::fuchsia::web::ContextProviderPtr& ptr() { return context_provider_; }
@@ -27,9 +28,6 @@ class ContextProviderForTest {
   ::component_testing::RealmRoot& realm_root() { return realm_root_; }
 
  private:
-  ContextProviderForTest(::component_testing::RealmRoot realm_root,
-                         ::fuchsia::web::ContextProviderPtr context_provider);
-
   ::component_testing::RealmRoot realm_root_;
   ::fuchsia::web::ContextProviderPtr context_provider_;
 };
@@ -38,12 +36,8 @@ class ContextProviderForTest {
 // WebEngine's fuchsia::web::Debug interface.
 class ContextProviderForDebugTest {
  public:
-  static ContextProviderForDebugTest Create(
-      const base::CommandLine& command_line);
+  explicit ContextProviderForDebugTest(const base::CommandLine& command_line);
 
-  ContextProviderForDebugTest(ContextProviderForDebugTest&&) noexcept;
-  ContextProviderForDebugTest& operator=(
-      ContextProviderForDebugTest&&) noexcept;
   ~ContextProviderForDebugTest();
 
   ::fuchsia::web::ContextProviderPtr& ptr() { return context_provider_.ptr(); }
@@ -53,8 +47,6 @@ class ContextProviderForDebugTest {
       ::fidl::InterfaceRequest<::fuchsia::web::Debug> debug_request);
 
  private:
-  explicit ContextProviderForDebugTest(ContextProviderForTest context_provider);
-
   ContextProviderForTest context_provider_;
 };
 
