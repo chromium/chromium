@@ -212,6 +212,9 @@ std::vector<std::string> DIPSStorage::GetSitesThatUsedStorage() const {
 std::vector<std::string> DIPSStorage::GetSitesToClear() const {
   std::vector<std::string> sites_to_clear;
   switch (dips::kTriggeringAction.Get()) {
+    case DIPSTriggeringAction::kNone: {
+      return {};
+    }
     case DIPSTriggeringAction::kStorage: {
       sites_to_clear = GetSitesThatUsedStorage();
       break;

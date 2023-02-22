@@ -15,7 +15,7 @@ BASE_FEATURE(kFeature, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Set whether DIPS persists its database to disk.
 const base::FeatureParam<bool> kPersistedDatabaseEnabled{
-    &kFeature, "persist_database", true};
+    &kFeature, "persist_database", false};
 
 // Set whether DIPS performs deletion.
 const base::FeatureParam<bool> kDeletionEnabled{&kFeature, "delete", false};
@@ -45,11 +45,12 @@ const base::FeatureParam<base::TimeDelta> kInteractionTtl{
 // command-line flags.
 constexpr base::FeatureParam<DIPSTriggeringAction>::Option
     kTriggeringActionOptions[] = {
+        {DIPSTriggeringAction::kNone, "none"},
         {DIPSTriggeringAction::kStorage, "storage"},
         {DIPSTriggeringAction::kBounce, "bounce"},
         {DIPSTriggeringAction::kStatefulBounce, "stateful_bounce"}};
 const base::FeatureParam<DIPSTriggeringAction> kTriggeringAction{
-    &kFeature, "triggering_action", DIPSTriggeringAction::kBounce,
+    &kFeature, "triggering_action", DIPSTriggeringAction::kNone,
     &kTriggeringActionOptions};
 
 }  // namespace dips

@@ -123,7 +123,7 @@ inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
                   rhs.stateful_bounce_times, rhs.bounce_times);
 }
 
-enum class DIPSTriggeringAction { kStorage, kBounce, kStatefulBounce };
+enum class DIPSTriggeringAction { kNone, kStorage, kBounce, kStatefulBounce };
 
 // Return the number of seconds in `td`, clamped to [0, 10].
 // i.e. 11 linearly-sized buckets.

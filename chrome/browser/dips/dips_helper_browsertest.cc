@@ -147,7 +147,11 @@ class DIPSTabHelperBrowserTest : public PlatformBrowserTest,
   void SetUp() override {
     if (IsPersistentStorageEnabled()) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          dips::kFeature, {{"persist_database", "true"}});
+          dips::kFeature,
+          {{"persist_database", "true"}, {"triggering_action", "bounce"}});
+    } else {
+      scoped_feature_list_.InitAndEnableFeatureWithParameters(
+          dips::kFeature, {{"triggering_action", "bounce"}});
     }
     PlatformBrowserTest::SetUp();
   }
