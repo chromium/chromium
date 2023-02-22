@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/frame_utils.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -32,12 +34,6 @@ constexpr gfx::Insets kTopButtonInsets = gfx::Insets::TLBR(4, 4, 2, 4);
 constexpr gfx::Insets kRightButtonInsets = gfx::Insets::TLBR(4, 2, 4, 4);
 constexpr gfx::Insets kBottomButtonInsets = gfx::Insets::TLBR(2, 4, 4, 4);
 
-// TODO(shidi): Button name needs to be internationalized.
-const std::u16string kLeftButtonName = u"Split Left";
-const std::u16string kTopButtonName = u"Split Top";
-const std::u16string kRightButtonName = u"Split Right";
-const std::u16string kBottomButtonName = u"Split Bottom";
-
 // Change to secondary hover color when the other button on the same
 // `SplitButtonView` is hovered.
 constexpr SkColor kSplitButtonSecondaryHoverColor =
@@ -46,6 +42,59 @@ constexpr SkColor kSplitButtonSecondaryHoverColor =
 bool IsHoveredOrPressedState(views::Button::ButtonState button_state) {
   return button_state == views::Button::STATE_PRESSED ||
          button_state == views::Button::STATE_HOVERED;
+}
+
+// Gets the string for the direction (top/bottom/left/right) of the split
+// button. Used in various tooltips or a11y names.
+std::u16string GetDirectionString(bool left_top, bool portrait_mode) {
+  int message_id;
+  if (left_top) {
+    message_id =
+        portrait_mode ? IDS_MULTITASK_MENU_TOP : IDS_MULTITASK_MENU_LEFT;
+  } else {
+    // Right or bottom.
+    message_id =
+        portrait_mode ? IDS_MULTITASK_MENU_BOTTOM : IDS_MULTITASK_MENU_RIGHT;
+  }
+  return l10n_util::GetStringUTF16(message_id);
+}
+
+std::u16string GetTooltipName(SplitButtonView::SplitButtonType type,
+                              bool left_top,
+                              bool portrait_mode) {
+  int template_id;
+  switch (type) {
+    case SplitButtonView::SplitButtonType::kHalfButtons:
+      template_id = IDS_MULTITASK_MENU_HALF_BUTTON_TOOLTIP_NAME;
+      break;
+    case SplitButtonView::SplitButtonType::kPartialButtons:
+      // Left/top button is always the larger one.
+      template_id = left_top
+                        ? IDS_MULTITASK_MENU_PARTIAL_BUTTON_LARGE_TOOLTIP_NAME
+                        : IDS_MULTITASK_MENU_PARTIAL_BUTTON_SMALL_TOOLTIP_NAME;
+      return l10n_util::GetStringUTF16(template_id);
+  }
+  return l10n_util::GetStringFUTF16(
+      template_id, GetDirectionString(left_top, portrait_mode));
+}
+
+std::u16string GetA11yName(SplitButtonView::SplitButtonType type,
+                           bool left_top,
+                           bool portrait_mode) {
+  int template_id;
+  switch (type) {
+    case SplitButtonView::SplitButtonType::kHalfButtons:
+      template_id = IDS_MULTITASK_MENU_HALF_BUTTON_ACCESSIBLE_NAME;
+      break;
+    case SplitButtonView::SplitButtonType::kPartialButtons:
+      // Left/top button is always the larger one.
+      template_id =
+          left_top ? IDS_MULTITASK_MENU_PARTIAL_BUTTON_LARGE_ACCESSIBLE_NAME
+                   : IDS_MULTITASK_MENU_PARTIAL_BUTTON_SMALL_ACCESSIBLE_NAME;
+      break;
+  }
+  return l10n_util::GetStringFUTF16(
+      template_id, GetDirectionString(left_top, portrait_mode));
 }
 
 }  // namespace
@@ -57,7 +106,8 @@ class SplitButtonView::SplitButton : public views::Button {
  public:
   SplitButton(views::Button::PressedCallback pressed_callback,
               base::RepeatingClosure hovered_pressed_callback,
-              const std::u16string& name,
+              const std::u16string& tooltip_name,
+              const std::u16string& a11y_name,
               const gfx::Insets& insets)
       : views::Button(std::move(pressed_callback)),
         button_color_(kMultitaskButtonDefaultColor),
@@ -68,12 +118,13 @@ class SplitButtonView::SplitButton : public views::Button {
     // ring matches the parent border.
     views::InstallRoundRectHighlightPathGenerator(
         this, insets - kPreferredInsets, kMultitaskBaseButtonBorderRadius);
-    SetTooltipText(name);
+    SetTooltipText(tooltip_name);
+    SetAccessibleName(a11y_name);
   }
 
   SplitButton(const SplitButton&) = delete;
   SplitButton& operator=(const SplitButton&) = delete;
-  ~SplitButton() override {}
+  ~SplitButton() override = default;
 
   void set_button_color(SkColor color) { button_color_ = color; }
 
@@ -138,11 +189,13 @@ SplitButtonView::SplitButtonView(SplitButtonType type,
 
   left_top_button_ = AddChildView(std::make_unique<SplitButton>(
       on_left_top_press, on_hover_pressed,
-      is_portrait_mode ? kTopButtonName : kLeftButtonName,
+      GetTooltipName(type, /*left_top=*/true, is_portrait_mode),
+      GetA11yName(type, /*left_top=*/true, is_portrait_mode),
       is_portrait_mode ? kTopButtonInsets : kLeftButtonInsets));
   right_bottom_button_ = AddChildView(std::make_unique<SplitButton>(
       on_right_bottom_press, on_hover_pressed,
-      is_portrait_mode ? kBottomButtonName : kRightButtonName,
+      GetTooltipName(type, /*left_top=*/false, is_portrait_mode),
+      GetA11yName(type, /*left_top=*/false, is_portrait_mode),
       is_portrait_mode ? kBottomButtonInsets : kRightButtonInsets));
 
   const int left_top_width = type_ == SplitButtonType::kHalfButtons

@@ -302,7 +302,7 @@
       </message>
 
       <!-- Multitask Menu -->
-      <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title and and accessible name of the half button on the multitask menu.">
+      <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu.">
         Half
       </message>
       <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_NAME" desc="Title and and accessible name of the partial button on the multitask menu.">
@@ -319,6 +319,36 @@
       </message>
       <message name="IDS_MULTITASK_MENU_EXIT_FLOAT_BUTTON_NAME" desc="Title and and accessible name of the float button on the multitask menu, when the window is in float state.">
         Exit float
+      </message>
+      <message name="IDS_MULTITASK_MENU_HALF_BUTTON_TOOLTIP_NAME" desc="Tooltip for the half button on the multitask menu.">
+        Dock on <ph name="DIRECTION">$1<ex>left</ex></ph>
+      </message>
+      <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_LARGE_TOOLTIP_NAME" desc="Tooltip for the partial button's large side on the multitask menu.">
+        Dock on larger side
+      </message>
+      <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_SMALL_TOOLTIP_NAME" desc="Tooltip for the partial button's small side on the multitask menu.">
+        Dock on smaller side
+      </message>
+      <message name="IDS_MULTITASK_MENU_HALF_BUTTON_ACCESSIBLE_NAME" desc="A11y name for the half button on the multitask menu.">
+        Dock window on the <ph name="DIRECTION">$1<ex>left</ex></ph> half of the screen
+      </message>
+      <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_LARGE_ACCESSIBLE_NAME" desc="A11y name for the partial button's large side on the multitask menu.">
+        Dock window on the <ph name="DIRECTION">$1<ex>left</ex></ph> larger portion of the screen
+      </message>
+      <message name="IDS_MULTITASK_MENU_PARTIAL_BUTTON_SMALL_ACCESSIBLE_NAME" desc="A11y name for the partial button's small side on the multitask menu.">
+        Dock window on the <ph name="DIRECTION">$1<ex>left</ex></ph> smaller portion of the screen
+      </message>
+      <message name="IDS_MULTITASK_MENU_LEFT" desc="A11y name and tooltip to describe left side of the screen.">
+        left
+      </message>
+      <message name="IDS_MULTITASK_MENU_RIGHT" desc="A11y name and tooltip to describe right side of the screen.">
+        right
+      </message>
+      <message name="IDS_MULTITASK_MENU_TOP" desc="A11y name and tooltip to describe top side of the screen.">
+        top
+      </message>
+      <message name="IDS_MULTITASK_MENU_BOTTOM" desc="A11y name and tooltip to describe bottom side of the screen.">
+        bottom
       </message>
       <message name="IDS_MULTITASK_MENU_NUDGE_TEXT" desc="Text that is shown when the clamshell multitask menu nudge is displayed.">
         Keep hovering for more layout options
