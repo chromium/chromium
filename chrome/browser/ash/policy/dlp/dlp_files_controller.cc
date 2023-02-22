@@ -497,6 +497,64 @@ bool IsInLocalFileSystem(const base::FilePath& file_path) {
   return false;
 }
 
+// Converts files paths to file system URLs.
+std::vector<storage::FileSystemURL> ConvertFilePathsToFileSystemUrls(
+    const std::vector<base::FilePath>& files_paths) {
+  std::vector<storage::FileSystemURL> file_system_urls;
+
+  auto* file_system_context = GetFileSystemContext();
+  if (!file_system_context) {
+    return file_system_urls;
+  }
+
+  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
+
+  for (const auto& file_path : files_paths) {
+    GURL gurl;
+    if (file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+            profile, file_path, file_manager::util::GetFileManagerURL(),
+            &gurl)) {
+      file_system_urls.push_back(
+          file_system_context->CrackURLInFirstPartyContext(gurl));
+    }
+  }
+
+  return file_system_urls;
+}
+
+// Converts DataTransferEndpoint object to DlpFileDestination.
+DlpFilesController::DlpFileDestination DTEndpointToFileDestination(
+    const ui::DataTransferEndpoint* endpoint) {
+  DCHECK(endpoint);
+
+  switch (endpoint->type()) {
+    case ui::EndpointType::kUrl:
+      DCHECK(endpoint->GetURL());
+      return DlpFilesController::DlpFileDestination(endpoint->GetURL()->spec());
+
+    case ui::EndpointType::kArc:
+      return DlpFilesController::DlpFileDestination(
+          DlpRulesManager::Component::kArc);
+
+    case ui::EndpointType::kCrostini:
+      return DlpFilesController::DlpFileDestination(
+          DlpRulesManager::Component::kCrostini);
+
+    case ui::EndpointType::kPluginVm:
+      return DlpFilesController::DlpFileDestination(
+          DlpRulesManager::Component::kPluginVm);
+
+    case ui::EndpointType::kLacros:
+    case ui::EndpointType::kDefault:
+    case ui::EndpointType::kClipboardHistory:
+    case ui::EndpointType::kBorealis:
+    case ui::EndpointType::kUnknownVm:
+      return DlpFilesController::DlpFileDestination(
+          DlpRulesManager::Component::kUnknownComponent);
+  }
+}
+
 }  // namespace
 
 DlpFilesController::DlpFileMetadata::DlpFileMetadata(
@@ -735,28 +793,22 @@ void DlpFilesController::FilterDisallowedUploads(
     return;
   }
 
-  auto* file_system_context = GetFileSystemContext();
-  if (!file_system_context) {
+  std::vector<base::FilePath> files_paths;
+  for (const auto& file : selected_files) {
+    files_paths.push_back(file.local_path.empty() ? file.file_path
+                                                  : file.local_path);
+  }
+
+  std::vector<storage::FileSystemURL> file_system_urls =
+      ConvertFilePathsToFileSystemUrls(files_paths);
+
+  if (file_system_urls.empty()) {
     std::move(result_callback).Run(std::move(selected_files));
     return;
   }
 
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(profile);
-
-  std::vector<storage::FileSystemURL> file_system_urls;
-  for (const auto& file : selected_files) {
-    GURL gurl;
-    auto file_path = file.local_path.empty() ? file.file_path : file.local_path;
-    if (file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-            profile, file_path, file_manager::util::GetFileManagerURL(),
-            &gurl)) {
-      file_system_urls.push_back(
-          file_system_context->CrackURLInFirstPartyContext(gurl));
-    }
-  }
-
-  if (file_system_urls.empty()) {
+  auto* file_system_context = GetFileSystemContext();
+  if (!file_system_context) {
     std::move(result_callback).Run(std::move(selected_files));
     return;
   }
@@ -777,7 +829,7 @@ void DlpFilesController::FilterDisallowedUploads(
 void DlpFilesController::CheckIfDownloadAllowed(
     const DlpFileDestination& download_src,
     const base::FilePath& file_path,
-    CheckIfDownloadAllowedCallback result_callback) {
+    CheckIfDlpAllowedCallback result_callback) {
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
 
@@ -800,8 +852,8 @@ void DlpFilesController::CheckIfDownloadAllowed(
   IsFilesTransferRestricted(
       {std::move(file_info)}, DlpFileDestination(file_path.value()),
       FileAction::kDownload,
-      base::BindOnce(
-          [](CheckIfDownloadAllowedCallback result_callback,
+      base::BindOnce(  // TODO(b/270015718): Unify to ReturnIfActionAllowed.
+          [](CheckIfDlpAllowedCallback result_callback,
              const std::vector<FileDaemonInfo>& restricted_files) {
             bool is_allowed = restricted_files.empty();
             if (!is_allowed) {
@@ -844,7 +896,7 @@ bool DlpFilesController::ShouldPromptBeforeDownload(
 void DlpFilesController::CheckIfLaunchAllowed(
     const apps::AppUpdate& app_update,
     apps::IntentPtr intent,
-    CheckIfLaunchAllowedCallback result_callback) {
+    CheckIfDlpAllowedCallback result_callback) {
   if (intent->files.empty()) {
     std::move(result_callback).Run(/*is_allowed=*/true);
     return;
@@ -1077,6 +1129,46 @@ bool DlpFilesController::IsDlpPolicyMatched(const FileDaemonInfo& file) {
   return restricted;
 }
 
+void DlpFilesController::CheckIfDropAllowed(
+    const std::vector<ui::FileInfo>& dropped_files,
+    const ui::DataTransferEndpoint* data_dst,
+    CheckIfDlpAllowedCallback result_callback) {
+  std::vector<base::FilePath> files_paths;
+  for (const auto& file : dropped_files) {
+    if (!IsInLocalFileSystem(file.path)) {
+      continue;
+    }
+    files_paths.push_back(file.path);
+  }
+
+  std::vector<storage::FileSystemURL> files_urls =
+      ConvertFilePathsToFileSystemUrls(files_paths);
+  if (files_urls.empty()) {
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+
+  DlpFileDestination destination = DTEndpointToFileDestination(data_dst);
+
+  auto* file_system_context = GetFileSystemContext();
+  if (!file_system_context) {
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+
+  auto* roots_recursion_delegate = new RootsRecursionDelegate(
+      file_system_context, std::move(files_urls),
+      base::BindOnce(&DlpFilesController::ContinueCheckIfDropAllowed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(destination),
+                     std::move(result_callback)));
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RootsRecursionDelegate::Run,
+                     // base::Unretained() is safe since |recursion_delegate|
+                     // will delete itself after all the files list if ready.
+                     base::Unretained(roots_recursion_delegate)));
+}
+
 void DlpFilesController::SetWarnNotifierForTesting(
     std::unique_ptr<DlpWarnNotifier> warn_notifier) {
   DCHECK(warn_notifier);
@@ -1248,8 +1340,9 @@ void DlpFilesController::ReturnDlpMetadata(
   std::move(result_callback).Run(std::move(result));
 }
 
+// TODO(b/270015718): Unify to ReturnIfActionAllowed.
 void DlpFilesController::LaunchIfAllowed(
-    CheckIfLaunchAllowedCallback result_callback,
+    CheckIfDlpAllowedCallback result_callback,
     ::dlp::CheckFilesTransferResponse response) {
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to get check files transfer, error: "
@@ -1265,6 +1358,25 @@ void DlpFilesController::LaunchIfAllowed(
         l10n_util::GetPluralStringFUTF16(
             IDS_POLICY_DLP_FILES_OPEN_BLOCK_MESSAGE,
             response.files_paths().size()));
+    std::move(result_callback).Run(/*is_allowed=*/false);
+    return;
+  }
+  std::move(result_callback).Run(/*is_allowed=*/true);
+}
+
+// TODO(b/270015718): Unify to ReturnIfActionAllowed.
+void DlpFilesController::ReturnIfDropAllowed(
+    CheckIfDlpAllowedCallback result_callback,
+    ::dlp::CheckFilesTransferResponse response) {
+  if (response.has_error_message()) {
+    LOG(ERROR) << "Failed to get check files transfer, error: "
+               << response.error_message();
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+
+  if (!response.files_paths().empty()) {
+    // TODO(b/269609831): Show correct notification here.
     std::move(result_callback).Run(/*is_allowed=*/false);
     return;
   }
@@ -1393,6 +1505,37 @@ void DlpFilesController::ContinueFilterDisallowedUploads(
       std::move(selected_files), std::move(result_callback));
   chromeos::DlpClient::Get()->CheckFilesTransfer(
       request, std::move(return_uploads_callback));
+}
+
+void DlpFilesController::ContinueCheckIfDropAllowed(
+    const DlpFileDestination& destination,
+    CheckIfDlpAllowedCallback result_callback,
+    std::vector<storage::FileSystemURL> dropped_files) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    std::move(result_callback).Run(/*is_allowed=*/true);
+    return;
+  }
+
+  ::dlp::CheckFilesTransferRequest request;
+  for (const auto& file : dropped_files) {
+    request.add_files_paths(file.path().value());
+  }
+  if (destination.component.has_value()) {
+    request.set_destination_component(
+        MapPolicyComponentToProto(destination.component.value()));
+  } else {
+    DCHECK(destination.url_or_path.has_value());
+    request.set_destination_url(destination.url_or_path.value());
+  }
+  request.set_file_action(::dlp::FileAction::MOVE);
+
+  auto return_drop_allowed_cb = base::BindOnce(
+      &DlpFilesController::ReturnIfDropAllowed, weak_ptr_factory_.GetWeakPtr(),
+      std::move(result_callback));
+  chromeos::DlpClient::Get()->CheckFilesTransfer(
+      request, std::move(return_drop_allowed_cb));
 }
 
 }  // namespace policy

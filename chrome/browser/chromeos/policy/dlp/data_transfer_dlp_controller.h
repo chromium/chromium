@@ -115,6 +115,11 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
                         bool is_clipboard_event,
                         const DlpRulesManager::RuleMetadata& rule_metadata);
 
+  void ContinueDropIfAllowed(const ui::OSExchangeData* drag_data,
+                             const ui::DataTransferEndpoint* data_dst,
+                             base::OnceClosure drop_cb,
+                             bool is_allowed);
+
   // The solution for the issue of sending multiple reporting events for a
   // single user action. When a user triggers a paste (for instance by pressing
   // ctrl+V) clipboard API receives multiple mojo calls. For each call we check

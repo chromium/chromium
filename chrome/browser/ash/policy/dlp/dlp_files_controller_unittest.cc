@@ -211,8 +211,8 @@ struct DlpFilesUrlDestinationTestInfo {
 
 using MockIsFilesTransferRestrictedCallback = testing::StrictMock<
     base::MockCallback<DlpFilesController::IsFilesTransferRestrictedCallback>>;
-using MockCheckIfDownloadAllowedCallback = testing::StrictMock<
-    base::MockCallback<DlpFilesController::CheckIfDownloadAllowedCallback>>;
+using MockCheckIfDlpAllowedCallback = testing::StrictMock<
+    base::MockCallback<DlpFilesController::CheckIfDlpAllowedCallback>>;
 using MockGetFilesSources =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void(
         ::dlp::GetFilesSourcesRequest,
@@ -1073,7 +1073,7 @@ TEST_F(DlpFilesControllerTest, GetBlockedComponents) {
 TEST_F(DlpFilesControllerTest, DownloadToLocalAllowed) {
   NotificationDisplayServiceTester display_service_tester(profile_.get());
 
-  MockCheckIfDownloadAllowedCallback cb;
+  MockCheckIfDlpAllowedCallback cb;
   EXPECT_CALL(cb, Run(/*is_allowed=*/true)).Times(1);
 
   files_controller_->CheckIfDownloadAllowed(
@@ -1406,6 +1406,92 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnMixedCalls) {
   EXPECT_THAT(events[0], IsDlpPolicyEvent(event));
 }
 
+TEST_F(DlpFilesControllerTest, CheckIfDropAllowed_ErrorResponse) {
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  ASSERT_TRUE(mount_points);
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      my_files_dir_));
+  base::ScopedClosureRunner external_mount_points_revoker(
+      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
+                     base::Unretained(mount_points)));
+
+  base::FilePath file_path1 = my_files_dir_.AppendASCII(kFilePath1);
+  ASSERT_TRUE(CreateDummyFile(file_path1));
+  auto file_url1 = CreateFileSystemURL(file_path1.value());
+
+  // Set CheckFilesTransferResponse to return an error.
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_path1.value());
+  check_files_transfer_response.set_error_message("Did not receive a reply.");
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  std::vector<ui::FileInfo> dropped_files{ui::FileInfo(file_path1, file_path1)};
+  const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
+
+  base::test::TestFuture<bool> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->CheckIfDropAllowed(std::move(dropped_files), &data_dst,
+                                        future.GetCallback());
+
+  ASSERT_EQ(true, future.Get());
+}
+
+// Tests dropping a mix of an external file and a local directory.
+TEST_F(DlpFilesControllerTest, CheckIfDropAllowed) {
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  ASSERT_TRUE(mount_points);
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      my_files_dir_));
+  base::ScopedClosureRunner external_mount_points_revoker(
+      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
+                     base::Unretained(mount_points)));
+
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+  base::FilePath file_path1 = external_dir.GetPath().AppendASCII(kFilePath1);
+  ASSERT_TRUE(CreateDummyFile(file_path1));
+  auto file_url1 = CreateFileSystemURL(file_path1.value());
+
+  base::ScopedTempDir sub_dir1;
+  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
+  base::FilePath file_path2 = sub_dir1.GetPath().AppendASCII(kFilePath2);
+  ASSERT_TRUE(CreateDummyFile(file_path2));
+  auto file_url2 = CreateFileSystemURL(file_path2.value());
+
+  // Set CheckFilesTransfer response to restrict the local file.
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_path2.value());
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  std::vector<ui::FileInfo> dropped_files{
+      ui::FileInfo(file_path1, file_path1),
+      ui::FileInfo(sub_dir1.GetPath(), sub_dir1.GetPath())};
+  const ui::DataTransferEndpoint data_dst((GURL(kExampleUrl1)));
+
+  base::test::TestFuture<bool> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->CheckIfDropAllowed(dropped_files, &data_dst,
+                                        future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(false, future.Take());
+
+  // Validate that only the local file was sent to the daemon.
+  ::dlp::CheckFilesTransferRequest request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  ASSERT_EQ(request.files_paths().size(), 1);
+  EXPECT_EQ(request.files_paths()[0], file_path2.value());
+}
+
 class DlpFilesTestWithMounts : public DlpFilesControllerTest {
  public:
   DlpFilesTestWithMounts(const DlpFilesTestWithMounts&) = delete;
@@ -1587,7 +1673,7 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
 TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
   auto [mount_name, path, expected_component] = GetParam();
 
-  MockCheckIfDownloadAllowedCallback cb;
+  MockCheckIfDlpAllowedCallback cb;
   EXPECT_CALL(cb, Run(/*is_allowed=*/false)).Times(1);
 
   EXPECT_CALL(*rules_manager_,
@@ -1794,7 +1880,7 @@ TEST_P(DlpFilesWarningDialogChoiceTest, FileDownloadWarned) {
 
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
 
-  MockCheckIfDownloadAllowedCallback cb;
+  MockCheckIfDlpAllowedCallback cb;
   EXPECT_CALL(cb, Run(/*is_allowed=*/choice_result)).Times(1);
 
   EXPECT_CALL(
@@ -2620,6 +2706,77 @@ TEST_P(DlpFilesAppLaunchTest, IsLaunchBlocked_Empty) {
         EXPECT_TRUE(files_controller_->IsLaunchBlocked(
             update, std::move(app_service_intent)));
       }));
+}
+
+class DlpFilesDnDTest
+    : public DlpFilesControllerTest,
+      public ::testing::WithParamInterface<
+          std::pair<ui::DataTransferEndpoint, ::dlp::DlpComponent>> {
+ public:
+  DlpFilesDnDTest(const DlpFilesDnDTest&) = delete;
+  DlpFilesDnDTest& operator=(const DlpFilesDnDTest&) = delete;
+
+ protected:
+  DlpFilesDnDTest() = default;
+
+  ~DlpFilesDnDTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    DlpFiles,
+    DlpFilesDnDTest,
+    ::testing::Values(
+        std::make_tuple(ui::DataTransferEndpoint(ui::EndpointType::kArc),
+                        ::dlp::DlpComponent::ARC),
+        std::make_tuple(ui::DataTransferEndpoint(ui::EndpointType::kCrostini),
+                        ::dlp::DlpComponent::CROSTINI),
+        std::make_tuple(ui::DataTransferEndpoint(ui::EndpointType::kPluginVm),
+                        ::dlp::DlpComponent::PLUGIN_VM)));
+
+// Tests dropping a mix of an external file and a local directory.
+TEST_P(DlpFilesDnDTest, CheckIfDropAllowed) {
+  storage::ExternalMountPoints* mount_points =
+      storage::ExternalMountPoints::GetSystemInstance();
+  ASSERT_TRUE(mount_points);
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      my_files_dir_));
+  base::ScopedClosureRunner external_mount_points_revoker(
+      base::BindOnce(&storage::ExternalMountPoints::RevokeAllFileSystems,
+                     base::Unretained(mount_points)));
+
+  base::ScopedTempDir sub_dir1;
+  ASSERT_TRUE(sub_dir1.CreateUniqueTempDirUnderPath(my_files_dir_));
+  base::FilePath file_path1 = sub_dir1.GetPath().AppendASCII(kFilePath1);
+  ASSERT_TRUE(CreateDummyFile(file_path1));
+  auto file_url1 = CreateFileSystemURL(file_path1.value());
+
+  // Set CheckFilesTransfer response to restrict the local file.
+  ::dlp::CheckFilesTransferResponse check_files_transfer_response;
+  check_files_transfer_response.add_files_paths(file_path1.value());
+  ASSERT_TRUE(chromeos::DlpClient::Get()->IsAlive());
+  chromeos::DlpClient::Get()->GetTestInterface()->SetCheckFilesTransferResponse(
+      check_files_transfer_response);
+
+  std::vector<ui::FileInfo> dropped_files{ui::FileInfo(file_path1, file_path1)};
+  auto [data_dst, expected_component] = GetParam();
+
+  base::test::TestFuture<bool> future;
+  ASSERT_TRUE(files_controller_);
+  files_controller_->CheckIfDropAllowed(dropped_files, &data_dst,
+                                        future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(false, future.Take());
+
+  // Validate that only the local file was sent to the daemon.
+  ::dlp::CheckFilesTransferRequest request =
+      chromeos::DlpClient::Get()
+          ->GetTestInterface()
+          ->GetLastCheckFilesTransferRequest();
+  ASSERT_EQ(request.files_paths().size(), 1);
+  EXPECT_EQ(request.files_paths()[0], file_path1.value());
+  ASSERT_TRUE(request.has_destination_component());
+  EXPECT_EQ(request.destination_component(), expected_component);
 }
 
 }  // namespace policy
