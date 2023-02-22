@@ -2344,7 +2344,7 @@ chromium-metrics-reviews@google.com.
   <token key="EmeApi" variants="EmeApi"/>
 </histogram>
 
-<histogram name="Media.EME.MediaFoundationService.Crash"
+<histogram name="Media.EME.MediaFoundationService.Crash2"
     enum="BooleanAfterPowerOrDisplayChange" expires_after="2023-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -2356,7 +2356,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Media.EME.MediaFoundationService.ErrorAfterPowerOrDisplayChange"
+    name="Media.EME.MediaFoundationService.ErrorAfterPowerOrDisplayChange2"
     enum="Hresult" expires_after="2023-05-07">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
@@ -2367,7 +2367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Media.EME.MediaFoundationService.ErrorNotAfterPowerOrDisplayChange"
+    name="Media.EME.MediaFoundationService.ErrorNotAfterPowerOrDisplayChange2"
     enum="Hresult" expires_after="2023-07-30">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
