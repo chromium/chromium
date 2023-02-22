@@ -323,6 +323,7 @@ RendererWebAudioDeviceImpl::CreateSinkAndGetDeviceStatus() {
   // If sink status is not OK, reset `sink_` and `silent_sink_suspender_`
   // because this instance will be destroyed.
   if (status != media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+    sink_->Stop();
     sink_ = nullptr;
     silent_sink_suspender_.reset();
   } else {
