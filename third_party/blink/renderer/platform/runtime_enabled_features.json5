@@ -1837,6 +1837,13 @@
       status: "experimental",
     },
     {
+      // If enabled, and the inner html parser is unable to successfully
+      // parse, it will log histograms of why it failed. The logging is
+      // non-trivial.
+      name: "InnerHTMLParserFastpathLogFailure",
+      status: "experimental",
+    },
+    {
       name: "InputMultipleFieldsUI",
       // No plan to support complex UI for date/time INPUT types on Android.
       status: {"Android": "test", "default": "stable"},

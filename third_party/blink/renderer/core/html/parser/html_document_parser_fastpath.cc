@@ -1330,7 +1330,8 @@ bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
         parser.parse_result() == HtmlFastPathResult::kFailedUnsupportedTag;
   }
   if (parser.parse_result() ==
-      HtmlFastPathResult::kFailedUnsupportedContextTag) {
+          HtmlFastPathResult::kFailedUnsupportedContextTag &&
+      RuntimeEnabledFeatures::InnerHTMLParserFastpathLogFailureEnabled()) {
     const UnsupportedTagType context_tag_type =
         UnsupportedTagTypeValueForNode(context_element);
     // If the context element isn't a valid container but is supported
