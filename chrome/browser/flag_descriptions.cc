@@ -4802,6 +4802,13 @@ const char kArcSwitchToKeyMintOnTName[] = "Switch to KeyMint on ARC-T.";
 const char kArcSwitchToKeyMintOnTDesc[] =
     "Switch from Keymaster to KeyMint on ARC-T.";
 
+const char kArcSyncInstallPriorityName[] =
+    "Enable supporting install priority for synced ARC apps.";
+const char kArcSyncInstallPriorityDescription[] =
+    "Enable supporting install priority for synced ARC apps. Pass install "
+    "priority to Play instead of using default install priority specified "
+    "in Play";
+
 const char kArcUpdateO4CListViaA2C2Name[] = "Update the O4C list via A2C2";
 const char kArcUpdateO4CListViaA2C2Desc[] =
     "When enabled, the O4C list is allowed to be updated via A2C2.";

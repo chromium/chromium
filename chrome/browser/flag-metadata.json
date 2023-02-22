@@ -288,6 +288,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "arc-sync-install-priority",
+    "owners": ["lgcheng"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "arc-update-o4c-list-via-a2c2",
     "owners": [ "toshikikikuchi" ],
     "expiry_milestone": 113

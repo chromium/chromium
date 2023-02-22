@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 56
+// Next MinVersion: 57
 
 module arc.mojom;
 
@@ -87,6 +87,14 @@ struct WindowLayout {
   Rect? bounds;  // Window bounds value.
 };
 
+// ARC package install priority.
+[Extensible]
+enum InstallPriority {
+  [Default] kUndefined = 0,
+  kMedium = 1,
+  kLow = 2,
+};
+
 // Describes ARC package.
 // The list of ArcPackageInfo sent by AppInstance contains all the installed
 // Android packages including ones other than launchable apps (e.g. Google Play
@@ -120,6 +128,8 @@ struct ArcPackageInfo {
   // If the package is pre-installed in the system image. This is true even
   // after the package is updated.
   [MinVersion=55] bool preinstalled;
+
+  [MinVersion=56] InstallPriority priority;
 };
 
 // Describes ARC app shortcut.

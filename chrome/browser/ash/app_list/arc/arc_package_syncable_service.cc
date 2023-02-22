@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_pref_names.h"
@@ -450,6 +451,9 @@ void ArcPackageSyncableService::InstallPackage(const ArcSyncItem* sync_item) {
   package.last_backup_android_id = sync_item->last_backup_android_id;
   package.last_backup_time = sync_item->last_backup_time;
   package.sync = true;
+  if (base::FeatureList::IsEnabled(arc::kSyncInstallPriority)) {
+    package.priority = arc::mojom::InstallPriority::kLow;
+  }
   instance->InstallPackage(package.Clone());
 }
 

@@ -63363,6 +63363,7 @@ from previous Chrome versions.
   <int value="909439558" label="disable-device-discovery"/>
   <int value="909525364" label="ExtensionsCheckup:enabled"/>
   <int value="909685129" label="ReduceUserAgentMinorVersion:disabled"/>
+  <int value="910363543" label="ArcSyncInstallPriority:disabled"/>
   <int value="910725730" label="WebRtcHWVP9Encoding:disabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
@@ -65185,6 +65186,7 @@ from previous Chrome versions.
   <int value="1939884866" label="web-otp-backend"/>
   <int value="1940625534" label="NewOverviewUi:disabled"/>
   <int value="1941845443" label="ScrollableTabStrip:enabled"/>
+  <int value="1942174659" label="ArcSyncInstallPriority:enabled"/>
   <int value="1942271908" label="FeedBottomSyncBanner:disabled"/>
   <int value="1942542793" label="CrosPrivacyHubV0:disabled"/>
   <int value="1942911276" label="enable-grouped-history"/>

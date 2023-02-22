@@ -2750,6 +2750,9 @@ extern const char kArcRtVcpuQuadCoreDesc[];
 extern const char kArcSwitchToKeyMintOnTName[];
 extern const char kArcSwitchToKeyMintOnTDesc[];
 
+extern const char kArcSyncInstallPriorityName[];
+extern const char kArcSyncInstallPriorityDescription[];
+
 extern const char kArcUpdateO4CListViaA2C2Name[];
 extern const char kArcUpdateO4CListViaA2C2Desc[];
 

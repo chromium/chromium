@@ -253,6 +253,12 @@ BASE_FEATURE(kSwitchToKeyMintOnT,
              "ArcSwitchToKeyMintOnT",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, ARC will pass install priority to Play in sync install
+// requests.
+BASE_FEATURE(kSyncInstallPriority,
+             "ArcSyncInstallPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to update the O4C list via A2C2.
 BASE_FEATURE(kArcUpdateO4CListViaA2C2,
              "ArcUpdateO4CListViaA2C2",
