@@ -13,6 +13,7 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
@@ -47,6 +48,12 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
+        if (isAutofillProfileScreen() || isCreditCardScreen()) {
+            RecyclerView recyclerView =
+                    getContentView().findViewById(R.id.fast_checkout_detail_screen_recycler_view);
+            return recyclerView.computeVerticalScrollOffset();
+        }
+
         return 0;
     }
 
