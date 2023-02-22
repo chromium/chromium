@@ -83,8 +83,9 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
   }
 
   private getScreenSaverPreviewClass_(): string {
-    return this.screenSaverPreviewActive_ ? 'preview-button-disabled' :
-                                            'preview-button';
+    return this.screenSaverPreviewActive_ ?
+        'preview-button-disabled secondary' :
+        'preview-button secondary';
   }
 
   private getScreenSaverPreviewText_(): string {
