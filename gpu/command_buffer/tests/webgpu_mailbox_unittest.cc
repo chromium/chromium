@@ -51,12 +51,12 @@ void ToMockUncapturedErrorCallback(WGPUErrorType type,
 }
 
 struct WebGPUMailboxTestParams : WebGPUTest::Options {
-  viz::ResourceFormat format;
+  viz::SharedImageFormat format;
 };
 
 std::ostream& operator<<(std::ostream& os,
                          const WebGPUMailboxTestParams& options) {
-  switch (options.format) {
+  switch (options.format.resource_format()) {
     case viz::ResourceFormat::RGBA_8888:
       os << "RGBA_8888";
       break;
@@ -78,8 +78,8 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
-uint32_t BytesPerTexel(viz::ResourceFormat format) {
-  switch (format) {
+uint32_t BytesPerTexel(viz::SharedImageFormat format) {
+  switch (format.resource_format()) {
     case viz::ResourceFormat::RGBA_8888:
     case viz::ResourceFormat::BGRA_8888:
       return 4;
@@ -107,12 +107,13 @@ class WebGPUMailboxTest
 
     std::vector<WebGPUMailboxTestParams> params;
 
-    for (viz::ResourceFormat format : {
+    for (viz::SharedImageFormat format : {
 // TODO(crbug.com/1241369): Handle additional formats.
 #if !BUILDFLAG(IS_MAC)
-           viz::ResourceFormat::RGBA_8888,
+           viz::SinglePlaneFormat::kRGBA_8888,
 #endif  // !BUILDFLAG(IS_MAC)
-               viz::ResourceFormat::BGRA_8888, viz::ResourceFormat::RGBA_F16,
+               viz::SinglePlaneFormat::kBGRA_8888,
+               viz::SinglePlaneFormat::kRGBA_F16,
          }) {
       WebGPUMailboxTestParams o = options;
       o.format = format;
@@ -311,7 +312,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
                sizeof(mailbox.name));
 
         uint32_t view_format_count = 0u;
-        switch (GetParam().format) {
+        switch (GetParam().format.resource_format()) {
           case viz::ResourceFormat::RGBA_F16:
             break;
           case viz::ResourceFormat::RGBA_8888:
@@ -529,7 +530,7 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
 // itself: we render to it using the Dawn device, then re-associate it to a
 // Dawn texture and read back the values that were written.
 TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
-  SKIP_TEST_IF(GetParam().format == viz::ResourceFormat::RGBA_F16);
+  SKIP_TEST_IF(GetParam().format == viz::SinglePlaneFormat::kRGBA_F16);
 
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
@@ -592,7 +593,7 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     WaitForCompletion(device_);
 
     const void* data = readback_buffer.GetConstMappedRange();
-    switch (GetParam().format) {
+    switch (GetParam().format.resource_format()) {
       case viz::ResourceFormat::RGBA_8888:
         EXPECT_EQ(0xFFFF0000u, *static_cast<const uint32_t*>(data));
         break;
@@ -790,7 +791,7 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   wgpu::TextureDescriptor dst_desc = {};
   dst_desc.size = {1, 1};
   dst_desc.usage = wgpu::TextureUsage::CopyDst;
-  switch (GetParam().format) {
+  switch (GetParam().format.resource_format()) {
     case viz::ResourceFormat::RGBA_8888:
       dst_desc.format = wgpu::TextureFormat::RGBA8Unorm;
       break;

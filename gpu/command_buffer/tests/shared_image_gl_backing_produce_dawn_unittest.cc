@@ -104,7 +104,7 @@ TEST_F(SharedImageGLBackingProduceDawnTest, Basic) {
   // Create the shared image
   SharedImageInterface* sii = gl_context_->GetSharedImageInterface();
   Mailbox gl_mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      viz::SinglePlaneFormat::kRGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_GLES2,
       kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
