@@ -34,6 +34,10 @@ MATCHER_P2(MatchesEntry, url_matcher, title_matcher, "") {
              .MatchAndExplain(arg->Title(), result_listener);
 }
 
+MATCHER_P(HasUrl, expected_url, "") {
+  return arg.URL() == expected_url;
+}
+
 class DualReadingListModelTest : public testing::Test {
  public:
   DualReadingListModelTest() = default;
@@ -511,6 +515,191 @@ TEST_F(DualReadingListModelTest, RemoveCommonEntryByUrlFromSync) {
 
   EXPECT_THAT(dual_model_->GetEntryByURL(kCommonUrl), NotNull());
   EXPECT_THAT(account_model_ptr_->GetEntryByURL(kCommonUrl), IsNull());
+}
+
+TEST_F(DualReadingListModelTest, AddEntryWhenSignedOut) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedOut());
+  const GURL kLocalUrl("http://local_url.com/");
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kLocalUrl)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(dual_model_.get(), kLocalUrl,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
+      kLocalUrl, "local_entry_title", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  EXPECT_THAT(entry, MatchesEntry(kLocalUrl, "local_entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kLocalUrl),
+              MatchesEntry(kLocalUrl, "local_entry_title"));
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+}
+
+TEST_F(DualReadingListModelTest, AddEntryWhenSignedInSyncDisabled) {
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled());
+  const GURL kAccountUrl("http://account_url.com/");
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kAccountUrl)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(dual_model_.get(), kAccountUrl,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
+      kAccountUrl, "account_entry_title", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  EXPECT_THAT(entry, MatchesEntry(kAccountUrl, "account_entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kAccountUrl),
+              MatchesEntry(kAccountUrl, "account_entry_title"));
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(entry->URL()),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+}
+
+TEST_F(DualReadingListModelTest, AddEntryWhenSyncEnabled) {
+  ASSERT_TRUE(ResetStorageAndMimicSyncEnabled());
+  const GURL kSyncableUrl("http://syncable_url.com/");
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kSyncableUrl)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(dual_model_.get(), kSyncableUrl,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
+      kSyncableUrl, "syncable_entry_title", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  EXPECT_THAT(entry, MatchesEntry(kSyncableUrl, "syncable_entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kSyncableUrl),
+              MatchesEntry(kSyncableUrl, "syncable_entry_title"));
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(entry->URL()),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+}
+
+TEST_F(DualReadingListModelTest,
+       AddLocalExistingEntryWhenSignedInSyncDisabled) {
+  const GURL kUrl("http://url.com/");
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      MakeTestEntriesForURLs({kUrl}), /*initial_account_entries=*/{}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kUrl)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(dual_model_.get(), kUrl,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
+      kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
+              MatchesEntry(kUrl, "entry_title"));
+  // Although the entry was originally local only, it has been effectively moved
+  // when the entry got replaced.
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(entry->URL()),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+}
+
+TEST_F(DualReadingListModelTest,
+       AddAccountExistingEntryWhenSignedInSyncDisabled) {
+  const GURL kUrl("http://url.com/");
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries=*/{}, MakeTestEntriesForURLs({kUrl})));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kUrl)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(dual_model_.get(), kUrl,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
+      kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
+              MatchesEntry(kUrl, "entry_title"));
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(entry->URL()),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+}
+
+TEST_F(DualReadingListModelTest,
+       AddCommonExistingEntryWhenSignedInSyncDisabled) {
+  const GURL kUrl("http://url.com/");
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      MakeTestEntriesForURLs({kUrl}), MakeTestEntriesForURLs({kUrl})));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  EXPECT_CALL(observer_, ReadingListWillUpdateEntry(_, _)).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidUpdateEntry(_, _)).Times(0);
+
+  testing::InSequence seq;
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidRemoveEntry(dual_model_.get(), kUrl));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+  EXPECT_CALL(observer_,
+              ReadingListWillAddEntry(dual_model_.get(), HasUrl(kUrl)));
+  EXPECT_CALL(observer_,
+              ReadingListDidAddEntry(dual_model_.get(), kUrl,
+                                     reading_list::ADDED_VIA_CURRENT_APP));
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges(dual_model_.get()));
+
+  scoped_refptr<const ReadingListEntry> entry = &dual_model_->AddOrReplaceEntry(
+      kUrl, "entry_title", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  EXPECT_THAT(entry, MatchesEntry(kUrl, "entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kUrl),
+              MatchesEntry(kUrl, "entry_title"));
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(entry->URL()),
+            StorageStateForTesting::kExistsInAccountModelOnly);
 }
 
 }  // namespace

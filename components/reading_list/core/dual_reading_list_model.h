@@ -97,6 +97,11 @@ class DualReadingListModel : public ReadingListModel,
                                   const GURL& url) override;
   void ReadingListDidRemoveEntry(const ReadingListModel* model,
                                  const GURL& url) override;
+  void ReadingListWillAddEntry(const ReadingListModel* model,
+                               const ReadingListEntry& entry) override;
+  void ReadingListDidAddEntry(const ReadingListModel* model,
+                              const GURL& url,
+                              reading_list::EntrySource source) override;
   void ReadingListDidApplyChanges(ReadingListModel* model) override;
 
   class ScopedReadingListBatchUpdateImpl : public ScopedReadingListBatchUpdate {

@@ -185,8 +185,17 @@ const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
   DCHECK(loaded());
   DCHECK(IsUrlSupported(url));
 
-  // TODO(crbug.com/1402196): Implement.
-  NOTIMPLEMENTED();
+  std::unique_ptr<DualReadingListModel::ScopedReadingListBatchUpdate>
+      scoped_model_batch_updates;
+  if (GetEntryByURL(url)) {
+    scoped_model_batch_updates = BeginBatchUpdates();
+    RemoveEntryByURL(url);
+  }
+
+  if (account_model_->IsTrackingSyncMetadata()) {
+    return account_model_->AddOrReplaceEntry(url, title, source,
+                                             estimated_read_time);
+  }
   return local_or_syncable_model_->AddOrReplaceEntry(url, title, source,
                                                      estimated_read_time);
 }
@@ -311,6 +320,23 @@ void DualReadingListModel::ReadingListDidRemoveEntry(
     const GURL& url) {
   if (!ongoing_remove_entry_by_url_) {
     NotifyObserversWithDidRemoveEntry(url);
+  }
+}
+
+void DualReadingListModel::ReadingListWillAddEntry(
+    const ReadingListModel* model,
+    const ReadingListEntry& entry) {
+  for (auto& observer : observers_) {
+    observer.ReadingListWillAddEntry(this, entry);
+  }
+}
+
+void DualReadingListModel::ReadingListDidAddEntry(
+    const ReadingListModel* model,
+    const GURL& url,
+    reading_list::EntrySource source) {
+  for (auto& observer : observers_) {
+    observer.ReadingListDidAddEntry(this, url, source);
   }
 }
 
