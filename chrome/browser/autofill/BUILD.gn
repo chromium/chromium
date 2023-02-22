@@ -21,6 +21,8 @@ static_library("autofill") {
     "autofill_image_fetcher_impl.h",
     "autofill_offer_manager_factory.cc",
     "autofill_offer_manager_factory.h",
+    "autofill_optimization_guide_factory.cc",
+    "autofill_optimization_guide_factory.h",
     "autofill_popup_controller_utils.cc",
     "autofill_popup_controller_utils.h",
     "iban_manager_factory.cc",

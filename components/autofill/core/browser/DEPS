@@ -81,4 +81,7 @@ specific_include_rules = {
   "autofill_image_fetcher(_unittest)?\.cc": [
     "+components/image_fetcher",
   ],
+  "autofill_optimization_guide(_unittest)?\.cc": [
+    "+components/optimization_guide/core",
+  ],
 }

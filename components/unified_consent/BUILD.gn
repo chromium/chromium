@@ -16,7 +16,6 @@ static_library("unified_consent") {
   deps = [
     "//base",
     "//components/autofill/core/common",
-    "//components/browser_sync",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/identity_manager",
