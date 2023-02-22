@@ -21,9 +21,9 @@ class Status;
 // Tracks execution context creation.
 class FrameTracker : public DevToolsEventListener {
  public:
-  FrameTracker(DevToolsClient* client,
-               WebView* web_view = nullptr,
-               const BrowserInfo* browser_info = nullptr);
+  explicit FrameTracker(DevToolsClient* client,
+                        WebView* web_view = nullptr,
+                        const BrowserInfo* browser_info = nullptr);
 
   FrameTracker(const FrameTracker&) = delete;
   FrameTracker& operator=(const FrameTracker&) = delete;
@@ -31,7 +31,8 @@ class FrameTracker : public DevToolsEventListener {
   ~FrameTracker() override;
 
   Status GetContextIdForFrame(const std::string& frame_id,
-                              std::string* context_id);
+                              std::string* context_id) const;
+  void SetContextIdForFrame(std::string frame_id, std::string context_id);
   WebView* GetTargetForFrame(const std::string& frame_id);
   bool IsKnownFrame(const std::string& frame_id) const;
   void DeleteTargetForFrame(const std::string& frame_id);
