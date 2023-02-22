@@ -280,9 +280,11 @@ bool CreditCardAccessoryController::AllowedForWebContents(
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableManualFallbackForVirtualCards)) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents->GetBrowserContext());
     PersonalDataManager* personal_data_manager =
-        PersonalDataManagerFactory::GetForBrowserContext(
-            web_contents->GetBrowserContext());
+        PersonalDataManagerFactory::GetForProfile(
+            profile->GetOriginalProfile());
     if (personal_data_manager) {
       std::vector<CreditCard*> cards =
           personal_data_manager->GetCreditCardsToSuggest();
