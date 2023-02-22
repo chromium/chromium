@@ -14,14 +14,17 @@
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -229,6 +232,10 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
                                                          kViewCornerRadius)
                     : views::CreateSolidBackground(SK_ColorTRANSPARENT));
 
+  if (AllowReposition()) {
+    SetFocusRing();
+  }
+
   auto on_mouse_pressed_callback = base::BindRepeating(
       &EditFinishView::OnMousePressed, base::Unretained(this));
   auto on_mouse_dragged_callback = base::BindRepeating(
@@ -263,6 +270,20 @@ void EditFinishView::Init(const gfx::Size& parent_size) {
       gfx::Size(AllowReposition() ? width + 2 * kViewMargin : width, height));
   SetPosition(gfx::Point(std::max(0, parent_size.width() - width - kSideMargin),
                          std::max(0, parent_size.height() / 3 - height / 2)));
+}
+
+void EditFinishView::SetFocusRing() {
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  // TODO(b/260868602): Update the name.
+  GetViewAccessibility().OverrideName(GetClassName());
+  views::FocusRing::Install(this);
+  views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                kButtonCornerRadius);
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetHaloInset(kHaloInset);
+  focus_ring->SetHaloThickness(kHaloThickness);
+  focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
 }
 
 int EditFinishView::CalculateWidth() {
@@ -324,7 +345,8 @@ void EditFinishView::OnGestureEvent(ui::GestureEvent* event) {
 bool EditFinishView::OnKeyPressed(const ui::KeyEvent& event) {
   auto target_position = origin();
   if (!AllowReposition() ||
-      !UpdatePositionByArrowKey(event.key_code(), target_position)) {
+      !UpdatePositionByArrowKey(event.key_code(), target_position) ||
+      !HasFocus()) {
     return views::View::OnKeyPressed(event);
   }
 
@@ -334,7 +356,7 @@ bool EditFinishView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool EditFinishView::OnKeyReleased(const ui::KeyEvent& event) {
-  if (!AllowReposition() || !ash::IsArrowKeyEvent(event))
+  if (!AllowReposition() || !ash::IsArrowKeyEvent(event) || !HasFocus())
     return views::View::OnKeyReleased(event);
 
   RecordInputOverlayButtonGroupReposition(
