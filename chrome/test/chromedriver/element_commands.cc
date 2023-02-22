@@ -99,7 +99,9 @@ Status FocusToElement(
     Session* session,
     WebView* web_view,
     const std::string& element_id) {
-  Status status{kOk};
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   bool is_displayed = false;
   bool is_focused = false;
   base::TimeTicks start_time = base::TimeTicks::Now();
@@ -228,12 +230,17 @@ Status ExecuteGetElementShadowRoot(Session* session,
                                    const std::string& element_id,
                                    const base::Value::Dict& params,
                                    std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+
+  if (status.IsError())
+    return status;
+
   base::Value::List args;
   args.Append(CreateElement(element_id));
 
-  Status status = web_view->CallFunction(
-      session->GetCurrentFrameId(),
-      "function(elem) { return elem.shadowRoot; }", args, value);
+  status = web_view->CallFunction(session->GetCurrentFrameId(),
+                                  "function(elem) { return elem.shadowRoot; }",
+                                  args, value);
 
   if (status.IsError()) {
     if (status.message().find("no such shadow root") != std::string::npos) {
@@ -430,8 +437,12 @@ Status ExecuteClearElement(Session* session,
                            const std::string& element_id,
                            const base::Value::Dict& params,
                            std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
+
   std::string tag_name;
-  Status status = GetElementTagName(session, web_view, element_id, &tag_name);
+  status = GetElementTagName(session, web_view, element_id, &tag_name);
   if (status.IsError())
     return status;
   bool is_input_control = false;
@@ -518,6 +529,9 @@ Status ExecuteSendKeysToElement(Session* session,
                                 const std::string& element_id,
                                 const base::Value::Dict& params,
                                 std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   const base::Value::List* key_list;
   base::Value::List key_list_local;
   const base::Value* text = nullptr;
@@ -532,8 +546,8 @@ Status ExecuteSendKeysToElement(Session* session,
   }
 
   bool is_input = false;
-  Status status = IsElementAttributeEqualToIgnoreCase(
-      session, web_view, element_id, "tagName", "input", &is_input);
+  status = IsElementAttributeEqualToIgnoreCase(session, web_view, element_id,
+                                               "tagName", "input", &is_input);
   if (status.IsError())
     return status;
   std::unique_ptr<base::Value> get_element_type;
@@ -711,6 +725,9 @@ Status ExecuteSubmitElement(Session* session,
                             const std::string& element_id,
                             const base::Value::Dict& params,
                             std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
@@ -725,6 +742,9 @@ Status ExecuteGetElementText(Session* session,
                              const std::string& element_id,
                              const base::Value::Dict& params,
                              std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
@@ -739,6 +759,9 @@ Status ExecuteGetElementValue(Session* session,
                               const std::string& element_id,
                               const base::Value::Dict& params,
                               std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
@@ -753,6 +776,9 @@ Status ExecuteGetElementProperty(Session* session,
                                  const std::string& element_id,
                                  const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
 
@@ -773,6 +799,9 @@ Status ExecuteGetElementTagName(Session* session,
                                 const std::string& element_id,
                                 const base::Value::Dict& params,
                                 std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
@@ -787,6 +816,9 @@ Status ExecuteIsElementSelected(Session* session,
                                 const std::string& element_id,
                                 const base::Value::Dict& params,
                                 std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
@@ -801,11 +833,14 @@ Status ExecuteIsElementEnabled(Session* session,
                                const std::string& element_id,
                                const base::Value::Dict& params,
                                std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
 
   bool is_xml = false;
-  Status status = IsDocumentTypeXml(session, web_view, &is_xml);
+  status = IsDocumentTypeXml(session, web_view, &is_xml);
   if (status.IsError())
     return status;
 
@@ -879,6 +914,9 @@ Status ExecuteIsElementDisplayed(Session* session,
                                  const std::string& element_id,
                                  const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
@@ -893,6 +931,9 @@ Status ExecuteGetElementLocation(Session* session,
                                  const std::string& element_id,
                                  const base::Value::Dict& params,
                                  std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
@@ -907,11 +948,14 @@ Status ExecuteGetElementRect(Session* session,
                              const std::string& element_id,
                              const base::Value::Dict& params,
                              std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
 
   std::unique_ptr<base::Value> location;
-  Status status = web_view->CallFunction(
+  status = web_view->CallFunction(
       session->GetCurrentFrameId(),
       webdriver::atoms::asString(webdriver::atoms::GET_LOCATION), args,
       &location);
@@ -980,6 +1024,9 @@ Status ExecuteGetElementSize(Session* session,
                              const std::string& element_id,
                              const base::Value::Dict& params,
                              std::unique_ptr<base::Value>* value) {
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
@@ -1004,6 +1051,9 @@ Status ExecuteGetElementAttribute(Session* session,
                                value);
   }
 
+  Status status = CheckElement(element_id);
+  if (status.IsError())
+    return status;
   base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(*attribute_name);

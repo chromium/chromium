@@ -13,7 +13,7 @@ StubDevToolsClient::StubDevToolsClient() : id_("stub-id") {}
 
 StubDevToolsClient::StubDevToolsClient(const std::string& id) : id_(id) {}
 
-StubDevToolsClient::~StubDevToolsClient() = default;
+StubDevToolsClient::~StubDevToolsClient() {}
 
 const std::string& StubDevToolsClient::GetId() {
   return id_;
@@ -119,12 +119,10 @@ Status StubDevToolsClient::HandleReceivedEvents() {
 
 void StubDevToolsClient::SetDetached() {}
 
-void StubDevToolsClient::SetOwner(WebViewImpl* owner) {
-  owner_ = owner;
-}
+void StubDevToolsClient::SetOwner(WebViewImpl* owner) {}
 
 WebViewImpl* StubDevToolsClient::GetOwner() const {
-  return owner_;
+  return nullptr;
 }
 
 DevToolsClient* StubDevToolsClient::GetRootClient() {

@@ -65,7 +65,6 @@ class StubDevToolsClient : public DevToolsClient {
   std::string session_id_;
   std::string tunnel_session_id_;
   std::list<DevToolsEventListener*> listeners_;
-  base::raw_ptr<WebViewImpl> owner_ = nullptr;
   bool is_connected_ = false;
 };
 
