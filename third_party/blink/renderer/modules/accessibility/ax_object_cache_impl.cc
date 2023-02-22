@@ -3932,7 +3932,8 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
     if (has_plugin_tree_source)
       update.has_tree_data = true;
 
-    bool success = SerializeChanges(*obj, &update);
+    bool success = ax_tree_serializer_->SerializeChanges(obj, &update);
+
     DCHECK(success);
     DCHECK_GT(update.nodes.size(), 0U);
 

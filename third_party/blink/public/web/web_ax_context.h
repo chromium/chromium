@@ -12,6 +12,7 @@
 
 namespace ui {
 class AXMode;
+struct AXTreeUpdate;
 }  // namespace ui
 
 namespace blink {

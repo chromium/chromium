@@ -478,10 +478,6 @@ class MODULES_EXPORT AXObjectCacheImpl
     ax_tree_serializer_->InvalidateSubtree(&obj);
   }
 
-  bool SerializeChanges(AXObject& obj, ui::AXTreeUpdate* update) {
-    return ax_tree_serializer_->SerializeChanges(&obj, update);
-  }
-
   bool IsInClientTree(AXObject& obj) {
     return ax_tree_serializer_->IsInClientTree(&obj);
   }

@@ -733,8 +733,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual ax::mojom::blink::InvalidState GetInvalidState() const {
     return ax::mojom::blink::InvalidState::kNone;
   }
-  // Only used when invalidState() returns InvalidStateOther.
-  virtual String AriaInvalidValue() const { return String(); }
   virtual bool ValueForRange(float* out_value) const { return false; }
   virtual bool MaxValueForRange(float* out_value) const { return false; }
   virtual bool MinValueForRange(float* out_value) const { return false; }
