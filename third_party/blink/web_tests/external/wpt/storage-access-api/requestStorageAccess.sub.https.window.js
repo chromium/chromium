@@ -83,4 +83,19 @@ if (!topLevelDocument && !testPrefix.includes('same-origin')) {
       },
       '[' + testPrefix +
           '] document.requestStorageAccess() should be rejected with a NotAllowedError with denied permission');
+} else {
+  promise_test(
+      async () => {
+        await document.requestStorageAccess();
+      },
+      `[${testPrefix}] document.requestStorageAccess() should resolve without permission grant or user gesture`);
+
+  promise_test(
+      async () => {
+        await test_driver.set_permission(
+            {name: 'storage-access'}, 'denied');
+
+        await document.requestStorageAccess();
+      },
+      `[${testPrefix}] document.requestStorageAccess() should resolve with denied permission`);
 }

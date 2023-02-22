@@ -385,7 +385,8 @@ enum class RequestStorageResult {
   REJECTED_INCORRECT_FRAME = 8,
   REJECTED_INSECURE_CONTEXT = 9,
   APPROVED_PRIMARY_FRAME = 10,
-  kMaxValue = APPROVED_PRIMARY_FRAME,
+  APPROVED_SAMEORIGIN_WITH_PRIMARY_FRAME = 11,
+  kMaxValue = APPROVED_SAMEORIGIN_WITH_PRIMARY_FRAME,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess",
@@ -6083,9 +6084,41 @@ void Document::PermissionServiceConnectionError() {
 bool Document::HasStorageAccess() const {
   DCHECK(GetExecutionContext());
   DCHECK(dom_window_);
-  return TopFrameOrigin() &&
-         !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
-         dom_window_->isSecureContext() && dom_window_->HasStorageAccess();
+  DCHECK(TopFrameOrigin());  // #2
+
+  // This method is a helper that implements most of the steps of
+  // https://privacycg.github.io/storage-access/#dom-document-hasstorageaccess.
+
+  // #3: if doc's origin is opaque, return false.
+  if (!GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
+    return false;
+  }
+
+  // #5: if global is not a secure context, return false.
+  if (!dom_window_->isSecureContext()) {
+    return false;
+  }
+
+  // #6: if doc's browsing context is a top-level browsing context, return true.
+  if (IsInOutermostMainFrame()) {
+    return true;
+  }
+
+  // #7: if the top-level origin of doc's relevant settings object is an opaque
+  // origin, return false.
+  if (TopFrameOrigin()->IsOpaque()) {
+    return false;
+  }
+
+  // #8: if doc's origin is same-origin with the top-level origin of doc's
+  // relevant settings object, return true.
+  if (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
+          &*TopFrameOrigin())) {
+    return true;
+  }
+
+  // #9: return global's `has storage access`.
+  return dom_window_->HasStorageAccess();
 }
 
 // TODO(crbug.com/1401089): Update the method to return the result from
@@ -6104,7 +6137,11 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
       TopFrameOrigin() && GetExecutionContext() &&
       !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
       dom_window_->isSecureContext() &&
-      (IsInOutermostMainFrame() || CookiesEnabled());
+      (IsInOutermostMainFrame() ||
+       (!TopFrameOrigin()->IsOpaque() &&
+        (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
+             &*TopFrameOrigin()) ||
+         CookiesEnabled())));
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
@@ -6337,6 +6374,17 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
         "requestStorageAccess not allowed"));
+    return promise;
+  }
+
+  if (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
+          &*TopFrameOrigin())) {
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::APPROVED_PRIMARY_FRAME);
+
+    // If this frame is same-origin with the outermost frame we no longer need
+    // to make a request and can resolve the promise.
+    resolver->Resolve();
     return promise;
   }
 

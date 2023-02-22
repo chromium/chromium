@@ -1,9 +1,10 @@
 'use strict';
 
 function processQueryParams() {
-  const queryParams = new URL(window.location).searchParams;
+  const url = new URL(window.location);
+  const queryParams = url.searchParams;
   return {
-    expectAccessAllowed: queryParams.get("allowed") != "false",
+    secure: url.protocol === "https:",
     topLevelDocument: queryParams.get("rootdocument") != "false",
     testPrefix: queryParams.get("testCase") || "top-level-context",
   };
