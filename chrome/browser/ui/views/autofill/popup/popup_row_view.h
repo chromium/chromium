@@ -77,12 +77,6 @@ class PopupRowView : public views::View {
   absl::optional<CellType> GetSelectedCell() const { return selected_cell_; }
   void SetSelectedCell(absl::optional<CellType> cell);
 
-  // Show the in-product-help promo anchored to this bubble if applicable. The
-  // in-product-help promo is a bubble anchored to this item to show educational
-  // messages. The promo bubble should only be shown once in one session and has
-  // a limit for how many times it can be shown at most in a period of time.
-  void MaybeShowIphPromo();
-
   // Returns the view representing the content area of the row.
   PopupCellView& GetContentView() { return *content_view_; }
   // Returns the view representing the control area of the row. Can be null.

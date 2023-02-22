@@ -11,23 +11,16 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/feature_engagement/public/feature_list.h"
-#include "components/user_education/common/feature_promo_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/type_conversion.h"
-#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -135,29 +128,6 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
     // Set the selected cell to none in case an invalid choice was made (e.g.
     // selecting a control cell when none exists).
     selected_cell_ = absl::nullopt;
-  }
-}
-
-// TODO(crbug.com/1411172): Move to `PopupViewViews` class.
-void PopupRowView::MaybeShowIphPromo() {
-  if (!controller_) {
-    return;
-  }
-  std::string feature_name =
-      controller_->GetSuggestionAt(strategy_->GetLineNumber()).feature_for_iph;
-  if (feature_name.empty()) {
-    return;
-  }
-
-  if (feature_name == "IPH_AutofillVirtualCardSuggestion") {
-    SetProperty(views::kElementIdentifierKey,
-                kAutofillCreditCardSuggestionEntryElementId);
-    Browser* browser = chrome::FindLastActive();
-    if (!browser) {
-      return;
-    }
-    browser->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
   }
 }
 

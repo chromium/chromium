@@ -17,6 +17,7 @@
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
@@ -52,6 +53,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 using autofill::PopupItemId;
@@ -310,12 +312,29 @@ void PopupViewViews::AxAnnounce(const std::u16string& text) {
 
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
                                                bool visible) {
-  if (visible) {
-    for (RowPointer& row_view : rows_) {
-      if (PopupRowView** row_view_pointer =
-              absl::get_if<PopupRowView*>(&row_view)) {
-        (*row_view_pointer)->MaybeShowIphPromo();
-      }
+  if (!visible || !controller_) {
+    return;
+  }
+
+  Browser* browser = GetBrowser();
+  if (!browser) {
+    return;
+  }
+
+  for (int row = 0; row < controller_->GetLineCount(); ++row) {
+    // Show the in-product-help promo anchored to this bubble.
+    // The in-product-help promo is a bubble anchored to this row item to show
+    // educational messages. The promo bubble should only be shown once in one
+    // session and has a limit for how many times it can be shown at most in a
+    // period of time.
+    if (controller_->GetSuggestionAt(row).feature_for_iph ==
+        "IPH_AutofillVirtualCardSuggestion") {
+      GetPopupRowViewAt(row).SetProperty(
+          views::kElementIdentifierKey,
+          kAutofillCreditCardSuggestionEntryElementId);
+
+      browser->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHAutofillVirtualCardSuggestionFeature);
     }
   }
 }
