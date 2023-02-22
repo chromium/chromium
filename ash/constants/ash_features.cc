@@ -310,12 +310,6 @@ BASE_FEATURE(kBorealisStorageBallooning,
              "BorealisStorageBallooning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable TermsOfServiceURL policy for managed users.
-// https://crbug.com/1221342
-BASE_FEATURE(kManagedTermsOfService,
-             "ManagedTermsOfService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable calendar view from the system tray. Also enables the system
 // tray to show date in the shelf when the screen is sufficiently large.
 BASE_FEATURE(kCalendarView, "CalendarView", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2767,10 +2761,6 @@ bool IsProductivityLauncherImageSearchEnabled() {
 
 bool IsMacAddressRandomizationEnabled() {
   return base::FeatureList::IsEnabled(kMacAddressRandomization);
-}
-
-bool IsManagedTermsOfServiceEnabled() {
-  return base::FeatureList::IsEnabled(kManagedTermsOfService);
 }
 
 bool IsMicMuteNotificationsEnabled() {

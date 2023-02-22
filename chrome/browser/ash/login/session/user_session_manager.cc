@@ -1826,8 +1826,7 @@ bool MaybeStartManagementTransition(Profile* profile) {
 
 bool MaybeShowManagedTermsOfService(Profile* profile) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (features::IsManagedTermsOfServiceEnabled() &&
-      !user_manager->IsCurrentUserNew() &&
+  if (!user_manager->IsCurrentUserNew() &&
       profile->GetPrefs()->IsManagedPreference(::prefs::kTermsOfServiceURL)) {
     LoginDisplayHost::default_host()->GetSigninUI()->ShowTosForExistingUser();
     return true;
