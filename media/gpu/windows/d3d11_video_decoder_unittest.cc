@@ -342,4 +342,16 @@ TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
       false);
 }
 
+TEST_F(D3D11VideoDecoderTest, CanReadWithoutStalling) {
+  CreateDecoder();
+
+  VideoDecoderConfig normal =
+      TestVideoConfig::NormalCodecProfile(VideoCodec::kH264, H264PROFILE_MAIN);
+
+  InitializeDecoder(normal, true);
+
+  // Should be true prior to picture buffers being assigned.
+  EXPECT_TRUE(decoder_->CanReadWithoutStalling());
+}
+
 }  // namespace media

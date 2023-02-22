@@ -547,4 +547,33 @@ TEST_F(MojoVideoDecoderIntegrationTest, ResetDuringDecode_ChunkedWrite) {
   RunUntilIdle();
 }
 
+TEST_F(MojoVideoDecoderIntegrationTest, CanReadWithoutStallingAfterReset) {
+  ASSERT_TRUE(Initialize());
+
+  StrictMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb;
+  StrictMock<base::MockCallback<base::OnceClosure>> reset_cb;
+
+  EXPECT_CALL(*decoder_, DidGetReleaseMailboxCB()).Times(AtLeast(0));
+  EXPECT_CALL(output_cb_, Run(_)).Times(1);
+  EXPECT_CALL(*decoder_, CanReadWithoutStalling())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*decoder_, Decode_(_, _)).Times(1);
+  EXPECT_CALL(*decoder_, Reset_(_));
+
+  EXPECT_TRUE(client_->CanReadWithoutStalling());
+
+  InSequence s;  // Make sure all callbacks are fired in order.
+  EXPECT_CALL(decode_cb, Run(_)).Times(1);
+  EXPECT_CALL(reset_cb, Run());
+
+  client_->Decode(CreateKeyframe(0), decode_cb.Get());
+  RunUntilIdle();
+
+  EXPECT_FALSE(client_->CanReadWithoutStalling());
+  client_->Reset(reset_cb.Get());
+
+  RunUntilIdle();
+  EXPECT_TRUE(client_->CanReadWithoutStalling());
+}
+
 }  // namespace media
