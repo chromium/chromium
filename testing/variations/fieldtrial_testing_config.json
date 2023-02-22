@@ -5236,6 +5236,49 @@
             ]
         }
     ],
+    "GoogleLensCrossPlatformContextMenuStringUpdates": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableSearchImageWithGoogleString_20230215",
+                    "params": {
+                        "use-lens-context-menu-alternate-text": "false",
+                        "useLensContextMenuAlternateText1": "true",
+                        "useLensContextMenuAlternateText2": "false"
+                    },
+                    "enable_features": [
+                        "ContextMenuGoogleLensSearchOptimizations"
+                    ],
+                    "disable_features": [
+                        "EnableLensContextMenuAltText",
+                        "LensSearchOptimizations"
+                    ]
+                },
+                {
+                    "name": "EnableSearchInsideImageWithGoogleString_20230215",
+                    "params": {
+                        "use-lens-context-menu-alternate-text": "true",
+                        "useLensContextMenuAlternateText1": "false",
+                        "useLensContextMenuAlternateText2": "true"
+                    },
+                    "enable_features": [
+                        "ContextMenuGoogleLensSearchOptimizations",
+                        "EnableLensContextMenuAltText",
+                        "LensSearchOptimizations"
+                    ]
+                }
+            ]
+        }
+    ],
     "GoogleLensDesktopImageFormatOptimizations": [
         {
             "platforms": [

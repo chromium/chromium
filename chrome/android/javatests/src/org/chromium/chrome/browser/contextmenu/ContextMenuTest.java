@@ -781,8 +781,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         expectedItems = addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems,
                 new Integer[] {R.id.contextmenu_open_image_in_ephemeral_tab});
         String title = getMenuTitleFromItem(menu, R.id.contextmenu_search_with_google_lens);
-        Assert.assertTrue("Context menu item name should be \'Search image with Google Lens\'.",
-                title.startsWith("Search image with Google Lens"));
+        Assert.assertTrue("Context menu item name should be \'Search image with Google\'.",
+                title.startsWith("Search image with Google"));
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
