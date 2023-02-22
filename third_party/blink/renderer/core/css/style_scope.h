@@ -36,8 +36,11 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   StyleScope* CopyWithParent(const StyleScope*) const;
 
   const CSSSelectorList* From() const { return from_; }
-  const CSSSelectorList* To() const { return to_.Get(); }  // May be nullptr.
-  const StyleScope* Parent() const { return parent_.Get(); }
+  const CSSSelectorList* To() const { return to_; }
+  const StyleScope* Parent() const { return parent_; }
+
+  // https://drafts.csswg.org/css-cascade-6/#implicit-scope
+  bool IsImplicit() const { return contents_; }
 
   // True if this StyleScope has an implicit root at the specified element.
   // This is used to find the roots for prelude-less @scope rules.

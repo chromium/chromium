@@ -17,8 +17,10 @@ StyleScope::StyleScope(CSSSelectorList* from, CSSSelectorList* to)
 StyleScope::StyleScope(StyleSheetContents* contents) : contents_(contents) {}
 
 StyleScope::StyleScope(const StyleScope& other)
-    : from_(other.from_->Copy()),
-      to_(other.to_.Get() ? other.to_->Copy() : nullptr) {}
+    : contents_(other.contents_),
+      from_(other.from_ ? other.from_->Copy() : nullptr),
+      to_(other.to_ ? other.to_->Copy() : nullptr),
+      parent_(other.parent_) {}
 
 StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
   StyleScope* copy = MakeGarbageCollected<StyleScope>(*this);

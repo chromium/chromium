@@ -819,6 +819,7 @@ blink_core_tests_css = [
   "style_recalc_change_test.cc",
   "style_recalc_context_test.cc",
   "style_rule_test.cc",
+  "style_scope_test.cc",
   "style_sheet_contents_test.cc",
   "style_traversal_root_test.cc",
   "threaded/css_parser_threaded_test.cc",
