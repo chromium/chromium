@@ -139,6 +139,12 @@ declare_args() {
       (enable_hevc_parser_and_hw_decoder || is_cast_media_device)
 }
 
+declare_args() {
+  platform_has_optional_hevc_support =
+      enable_platform_hevc &&
+      (is_win || is_chromeos || is_linux || is_mac || is_android)
+}
+
 assert(!enable_platform_ac3_eac3_audio || proprietary_codecs,
        "proprietary_codecs required for enable_platform_ac3_eac3_audio")
 assert(!enable_platform_mpeg_h_audio || proprietary_codecs,

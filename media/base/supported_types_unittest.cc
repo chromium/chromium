@@ -62,7 +62,8 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeBasics) {
       IsSupportedVideoType({VideoCodec::kMPEG4, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
+    !BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
   EXPECT_TRUE(
       IsSupportedVideoType({VideoCodec::kHEVC, VIDEO_CODEC_PROFILE_UNKNOWN,
                             kUnspecifiedLevel, kColorSpace}));
