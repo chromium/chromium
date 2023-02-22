@@ -234,6 +234,10 @@ BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 // notification.
 BASE_DECLARE_FEATURE(kTailoredSecurityDesktopNotice);
 
+// Enable a retry for the tailored security dialogs when the dialog
+// fails to show for a user whose google account has sync turned on.
+BASE_DECLARE_FEATURE(kTailoredSecurityDialogRetryMechanism);
+
 // Controls whether the integration of tailored security settings is enabled.
 BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
 

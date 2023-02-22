@@ -231,6 +231,12 @@ BASE_FEATURE(kTailoredSecurityDesktopNotice,
              "TailoredSecurityDesktopNotice",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kTailoredSecurityDialogRetryMechanism,
+             "TailoredSecurityDialogRetryMechanism",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kTailoredSecurityIntegration,
              "TailoredSecurityIntegration",
 #if BUILDFLAG(IS_IOS)
