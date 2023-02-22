@@ -319,7 +319,15 @@ public class TabSwitcherTabletTest {
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:enable_launch_polish/true/delay_creation/true"})
     @EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
-    public void testGridTabSwitcherV1DelayCreate_RefactorEnabled() {
+    public void testGridTabSwitcherV1DelayCreate_RefactorEnabled() throws ExecutionException {
+        prepareTabs(2, 0);
+        // Verifies that the dialog visibility supplier doesn't crash when closing a Tab without the
+        // grid tab switcher is inflated.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            sActivityTestRule.getActivity().getCurrentTabModel().closeTab(
+                    sActivityTestRule.getActivity().getActivityTab());
+        });
+
         Layout layout =
                 sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
         assertNull("StartSurface layout should not be initialized", layout);
@@ -334,7 +342,7 @@ public class TabSwitcherTabletTest {
         layout =
                 sActivityTestRule.getActivity().getLayoutManager().getTabSwitcherLayoutForTesting();
         assertTrue("OverviewLayout should be TabSwitcherAndStartSurfaceLayout layout",
-                layout instanceof TabSwitcherAndStartSurfaceLayout);
+                layout instanceof TabSwitcherLayout);
         ViewGroup tabSwitcherViewHolder =
                 sActivityTestRule.getActivity().findViewById(R.id.grid_tab_switcher_view_holder);
         assertNotNull("TabSwitcher view should be inflated", tabSwitcherViewHolder);

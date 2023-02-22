@@ -1792,7 +1792,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(this)) {
             dialogVisibilitySupplier = () -> {
                 if (isStartSurfaceRefactorEnabled()) {
-                    assert mTabSwitcherSupplier.get() != null;
+                    // The grid tab switcher is lazily initialized on tablet.
+                    if (!mTabSwitcherSupplier.hasValue()) {
+                        assert isTablet();
+                        return false;
+                    }
                 }
                 // Return true if dialog from either tab switcher or tab strip is visible.
 
