@@ -1914,6 +1914,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openFileDialogDriveHostedNeedsFile").WithBrowser(),
         TestCase("saveFileDialogDriveHostedNeedsFile").WithBrowser(),
         TestCase("openFileDialogDriveCSEGrey").WithBrowser(),
+        TestCase("openFileDialogDriveCSENeedsFile").WithBrowser(),
         TestCase("openFileDialogDriveOfficeFile").WithBrowser(),
         TestCase("openMultiFileDialogDriveOfficeFile")
             .WithBrowser()
