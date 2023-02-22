@@ -273,6 +273,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kRequestFileSystemSyncWorker,
           WebFeature::
               kHTMLPatternRegExpUnicodeSetIncompatibilitiesWithUnicodeMode,
+          WebFeature::kGetDisplayMediaWithPreferCurrentTabTrue,
       }));
   return *opt_in_features;
 }

@@ -553,6 +553,11 @@ ScriptPromise MediaDevices::getDisplayMedia(
     constraints->setSelfBrowserSurface("exclude");
   }
 
+  if (options->hasPreferCurrentTab() && options->preferCurrentTab()) {
+    UseCounter::Count(window,
+                      WebFeature::kGetDisplayMediaWithPreferCurrentTabTrue);
+  }
+
   return SendUserMediaRequest(UserMediaRequestType::kDisplayMedia, resolver,
                               constraints, exception_state);
 }

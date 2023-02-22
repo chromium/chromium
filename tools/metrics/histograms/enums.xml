@@ -42294,6 +42294,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4473" label="CSSColorLabOklab"/>
   <int value="4474" label="CSSColorLchOklch"/>
   <int value="4475" label="CreateNSResolverWithNonElements2"/>
+  <int value="4476" label="GetDisplayMediaWithPreferCurrentTabTrue"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
