@@ -39,7 +39,8 @@ enum class ScreenAILoadLibraryResult {
   kMainContentExtractionFailed = 2,
   kLayoutExtractionFailed = 3,
   kOcrFailed = 4,
-  kMaxValue = kOcrFailed,
+  kFunctionsLoadFailed = 5,
+  kMaxValue = kFunctionsLoadFailed,
 };
 
 std::unique_ptr<ScreenAILibraryWrapper> LoadAndInitializeLibraryInternal(
@@ -50,25 +51,32 @@ std::unique_ptr<ScreenAILibraryWrapper> LoadAndInitializeLibraryInternal(
   std::unique_ptr<ScreenAILibraryWrapper> library =
       std::make_unique<ScreenAILibraryWrapper>();
 
-  // TODO(crbug.com/1413983): Replace CHECK with an UMA and a process
-  // termination similar to below cases when the bug is fixed.
-  CHECK(library->Init(library_path));
+  bool init_ok = true;
 
-  uint32_t version_major;
-  uint32_t version_minor;
-  library->GetLibraryVersion(version_major, version_minor);
-  VLOG(2) << "Screen AI library version: " << version_major << "."
-          << version_minor;
+  if (!library->Init(library_path)) {
+    init_ok = false;
+    base::UmaHistogramEnumeration(
+        "Accessibility.ScreenAI.LoadLibraryResult",
+        ScreenAILoadLibraryResult::kFunctionsLoadFailed);
+  }
+
+  if (init_ok) {
+    uint32_t version_major;
+    uint32_t version_minor;
+    library->GetLibraryVersion(version_major, version_minor);
+    VLOG(2) << "Screen AI library version: " << version_major << "."
+            << version_minor;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  library->SetLogger();
+    library->SetLogger();
 #endif
 
-  if (features::IsScreenAIDebugModeEnabled())
-    library->EnableDebugMode();
+    if (features::IsScreenAIDebugModeEnabled()) {
+      library->EnableDebugMode();
+    }
+  }
 
-  bool init_ok = true;
-  if (features::IsPdfOcrEnabled()) {
+  if (init_ok && features::IsPdfOcrEnabled()) {
     if (!library->InitOCR(library_path.DirName())) {
       init_ok = false;
       base::UmaHistogramEnumeration("Accessibility.ScreenAI.LoadLibraryResult",
@@ -96,6 +104,8 @@ std::unique_ptr<ScreenAILibraryWrapper> LoadAndInitializeLibraryInternal(
 
   if (!init_ok) {
     VLOG(0) << "Screen AI library initialization failed.";
+    // TODO(crbug.com/1278249): Add a function that lets ScreenAIState confirm
+    // that the service is available.
     base::Process::TerminateCurrentProcessImmediately(-1);
   }
 
