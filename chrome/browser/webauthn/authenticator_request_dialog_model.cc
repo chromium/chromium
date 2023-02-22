@@ -1188,21 +1188,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
     }
   }
 
-  for (const auto transport : transports_to_list_if_active) {
-    if (!base::Contains(transport_availability_.available_transports,
-                        transport)) {
-      continue;
-    }
-
-    mechanisms_.emplace_back(
-        Mechanism::Transport(transport), GetTransportDescription(transport),
-        GetTransportShortDescription(transport), GetTransportIcon(transport),
-        base::BindRepeating(
-            &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
-            base::Unretained(this), transport, mechanisms_.size()),
-        priority_transport.has_value() && *priority_transport == transport);
-  }
-
   if (include_add_phone_option) {
     // If there's no other priority mechanism, no phones, no platform
     // credentials, and this is a passkey request, jump directly to showing a QR
@@ -1217,7 +1202,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
           transport_availability_.has_platform_authenticator_credential !=
               device::FidoRequestHandlerBase::RecognizedCredential::
                   kNoRecognizedCredential;
-      is_priority = !base::ranges::any_of(mechanisms_, &Mechanism::priority) &&
+      is_priority = !priority_transport.has_value() &&
+                    !base::ranges::any_of(mechanisms_, &Mechanism::priority) &&
                     paired_phone_names().empty() && is_passkey_request &&
                     !platform_authenticator_could_fulfill_get_assertion;
     }
@@ -1231,6 +1217,21 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
             base::Unretained(this), mechanisms_.size()),
         is_priority);
+  }
+
+  for (const auto transport : transports_to_list_if_active) {
+    if (!base::Contains(transport_availability_.available_transports,
+                        transport)) {
+      continue;
+    }
+
+    mechanisms_.emplace_back(
+        Mechanism::Transport(transport), GetTransportDescription(transport),
+        GetTransportShortDescription(transport), GetTransportIcon(transport),
+        base::BindRepeating(
+            &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
+            base::Unretained(this), transport, mechanisms_.size()),
+        priority_transport.has_value() && *priority_transport == transport);
   }
 
   // At most one mechanism has priority.
