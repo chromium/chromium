@@ -125,10 +125,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // of other considerations. Set based on URL load options.
   const bool should_block_local_request_;
 
-  // True iff |Check()| was called multiple times in between resets and the IP
-  // address space of the transport was not the same each time.
-  bool has_connected_to_mismatched_address_spaces_ = false;
-
   // The target IP address space set on the request. Ignored if `kUnknown`.
   //
   // Copied from `ResourceRequest::target_ip_address_space`.

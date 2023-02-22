@@ -28,9 +28,6 @@ using Result = PrivateNetworkAccessCheckResult;
 constexpr base::StringPiece kCheckResultHistogramName =
     "Security.PrivateNetworkAccess.CheckResult";
 
-constexpr base::StringPiece kMismatchedAddressSpacesHistogramName =
-    "Security.PrivateNetworkAccess.MismatchedAddressSpacesDuringRequest";
-
 constexpr char kNoAcceptChFrame[] = "";
 
 net::IPEndPoint LocalEndpoint() {
@@ -622,64 +619,6 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectResponseAddressSpace) {
   // previous endpoint passed to `Check()`, thanks to `ResetForRedirect()`.
   EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
             Result::kAllowedMissingClientSecurityState);
-}
-
-TEST(PrivateNetworkAccessCheckerTest,
-     RecordsMismatchedAddressSpaceHistogramFalse) {
-  mojom::URLLoaderFactoryParams factory_params;
-
-  base::HistogramTester histogram_tester;
-
-  {
-    PrivateNetworkAccessChecker checker(
-        ResourceRequest(), factory_params.client_security_state.get(),
-        mojom::kURLLoadOptionNone);
-
-    checker.Check(DirectTransport(PublicEndpoint()));
-  }
-
-  histogram_tester.ExpectUniqueSample(kMismatchedAddressSpacesHistogramName,
-                                      false, 1);
-}
-
-TEST(PrivateNetworkAccessCheckerTest,
-     RecordsMismatchedAddressSpaceHistogramTrue) {
-  mojom::URLLoaderFactoryParams factory_params;
-
-  base::HistogramTester histogram_tester;
-
-  {
-    PrivateNetworkAccessChecker checker(
-        ResourceRequest(), factory_params.client_security_state.get(),
-        mojom::kURLLoadOptionNone);
-
-    checker.Check(DirectTransport(PublicEndpoint()));
-    checker.Check(DirectTransport(PrivateEndpoint()));
-    checker.Check(DirectTransport(PublicEndpoint()));
-  }
-
-  histogram_tester.ExpectUniqueSample(kMismatchedAddressSpacesHistogramName,
-                                      true, 1);
-}
-
-TEST(PrivateNetworkAccessCheckerTest,
-     RecordsMismatchedAddressSpaceHistogramResetForRedirect) {
-  mojom::URLLoaderFactoryParams factory_params;
-
-  base::HistogramTester histogram_tester;
-
-  {
-    PrivateNetworkAccessChecker checker(
-        ResourceRequest(), factory_params.client_security_state.get(),
-        mojom::kURLLoadOptionNone);
-
-    checker.Check(DirectTransport(PublicEndpoint()));
-    checker.Reset();
-    checker.Check(DirectTransport(PrivateEndpoint()));
-  }
-
-  histogram_tester.ExpectUniqueSample(kMismatchedAddressSpacesHistogramName,
-                                      false, 1);
 }
 
 }  // namespace

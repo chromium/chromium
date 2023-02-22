@@ -78,11 +78,7 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
   }
 }
 
-PrivateNetworkAccessChecker::~PrivateNetworkAccessChecker() {
-  base::UmaHistogramBoolean(
-      "Security.PrivateNetworkAccess.MismatchedAddressSpacesDuringRequest",
-      has_connected_to_mismatched_address_spaces_);
-}
+PrivateNetworkAccessChecker::~PrivateNetworkAccessChecker() = default;
 
 PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
     const net::TransportInfo& transport_info) {
@@ -156,24 +152,6 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     return Result::kBlockedByLoadOption;
   }
 
-  // `response_address_space_` behaves similarly to `target_address_space_`,
-  // except `kUnknown` is also subject to checks (instead
-  // `response_address_space_ == absl::nullopt` indicates that no check
-  // should be performed).
-  bool is_inconsistent_address_space =
-      response_address_space_.has_value() &&
-      resource_address_space != *response_address_space_;
-
-  // A single response may connect to two different IP address spaces without
-  // a redirect in between. This can happen due to split range requests, where
-  // a single `URLRequest` issues multiple network transactions, or when we
-  // create a new connection after auth credentials have been provided, etc.
-  //
-  // We record this even if there is no client security state or the policy is
-  // `kAllow` in order to estimate the compatibility risk of this check without
-  // having to enable PNA.
-  has_connected_to_mismatched_address_spaces_ |= is_inconsistent_address_space;
-
   if (!client_security_state_) {
     return Result::kAllowedMissingClientSecurityState;
   }
@@ -197,9 +175,19 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     return Result::kBlockedByTargetIpAddressSpace;
   }
 
-  if (is_inconsistent_address_space) {
-    // If the policy is `kPreflightWarn`, the request should not fail just
-    // because of this check - PNA checks are only experimentally turned on
+  // A single response may connect to two different IP address spaces without
+  // a redirect in between. This can happen due to split range requests, where
+  // a single `URLRequest` issues multiple network transactions, or when we
+  // create a new connection after auth credentials have been provided, etc.
+  //
+  // `response_address_space_` behaves similarly to `target_address_space_`,
+  // except `kUnknown` is also subject to checks (instead
+  // `response_address_space_ == absl::nullopt` indicates that no check
+  // should be performed).
+  if (response_address_space_.has_value() &&
+      resource_address_space != *response_address_space_) {
+    // If the policy is `kWarn` or `kPreflightWarn`, the request should not fail
+    // just because of this check - PNA checks are only experimentally turned on
     // for this request. Further checks should not be run, otherwise we might
     // return `kBlockedByPolicyPreflightWarn` and trigger a new preflight to be
     // sent, thus causing https://crbug.com/1279376 all over again.
@@ -209,7 +197,9 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     // Private network access checker should not be applied to these requests.
     if (policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
       return Result::kAllowedByPolicyPreflightWarn;
-    } else if (policy == mojom::PrivateNetworkRequestPolicy::kWarn) {
+    }
+
+    if (policy == mojom::PrivateNetworkRequestPolicy::kWarn) {
       return Result::kAllowedByPolicyWarn;
     }
 
