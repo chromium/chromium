@@ -7545,6 +7545,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Feed
       </message>
 
+      <!-- Google Lens side panel -->
+      <message name="IDS_GOOGLE_LENS_TITLE" desc="Title of the Google Lens side panel">
+        Google Lens
+      </message>
+
       <!--Tooltip strings -->
       <message name="IDS_TOOLTIP_BACK" desc="The tooltip for back button">
         Click to go back, hold to see history
