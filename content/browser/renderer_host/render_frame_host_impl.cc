@@ -4125,11 +4125,14 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
-    const url::Origin& new_frame_creator) {
+    RenderFrameHostImpl* creator_frame) {
   // This method should only be called for *new* frames, that haven't committed
   // a navigation yet.
   DCHECK(!has_committed_any_navigation_);
   DCHECK(GetLastCommittedOrigin().opaque());
+
+  url::Origin creator_origin =
+      creator_frame ? creator_frame->GetLastCommittedOrigin() : url::Origin();
 
   // Calculate and set |new_frame_origin|.
   bool new_frame_should_be_sandboxed =
@@ -4137,13 +4140,29 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       (browsing_context_state_->active_sandbox_flags() &
        network::mojom::WebSandboxFlags::kOrigin);
   url::Origin new_frame_origin = new_frame_should_be_sandboxed
-                                     ? new_frame_creator.DeriveNewOpaqueOrigin()
-                                     : new_frame_creator;
+                                     ? creator_origin.DeriveNewOpaqueOrigin()
+                                     : creator_origin;
   isolation_info_ = ComputeIsolationInfoInternal(
       new_frame_origin, net::IsolationInfo::RequestType::kOther,
       IsCredentialless(),
       /*fenced_frame_nonce_for_navigation=*/absl::nullopt);
   SetLastCommittedOrigin(new_frame_origin);
+
+  if (creator_frame) {
+    // If we're given a parent/opener frame, copy the
+    // RuntimeFeatureStateReadContext.
+    RuntimeFeatureStateDocumentData* document_data =
+        RuntimeFeatureStateDocumentData::GetForCurrentDocument(creator_frame);
+    DCHECK(document_data);
+    RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+        this, document_data->runtime_feature_read_context());
+  } else {
+    // Otherwise create a RuntimeFeatureStateContext. We need to construct a
+    // RuntimeFeatureStateContext because its constructor initializes default
+    // values while the RuntimeFeatureStateReadContext's doesn't.
+    RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+        this, blink::RuntimeFeatureStateContext());
+  }
 
   SetStorageKey(CalculateStorageKey(
       new_frame_origin, base::OptionalToPtr(isolation_info_.nonce())));
@@ -4192,10 +4211,11 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
   owner_->GetRenderFrameHostManager().CreateProxiesForChildFrame(child.get());
 
   // When the child is added, it hasn't committed any navigation yet - its
-  // initial empty document should inherit the origin of its parent (the origin
-  // may change after the first commit). See also https://crbug.com/932067.
-  child->current_frame_host()->SetOriginDependentStateOfNewFrame(
-      GetLastCommittedOrigin());
+  // initial empty document should inherit the origin (the origin may change
+  // after the first commit) and other state (such as the
+  // RuntimeFeatureStateReadContext) from its parent. See also
+  // https://crbug.com/932067.
+  child->current_frame_host()->SetOriginDependentStateOfNewFrame(this);
 
   children_.push_back(std::move(child));
   return children_.back().get();
@@ -12365,6 +12385,9 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   is_fenced_frame_root_originating_from_opaque_url_ =
       navigation_request
           ->is_target_fenced_frame_root_originating_from_opaque_url();
+
+  RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+      this, navigation_request->GetRuntimeFeatureStateContext());
 
   // TODO(https://crbug.com/888079): Once we are able to compute the origin to
   // commit in the browser, `navigation_request->commit_params().storage_key`
