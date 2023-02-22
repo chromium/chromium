@@ -100,8 +100,6 @@ async function deserializeToCdpArg(
         return {unserializableValue: 'NaN'};
       } else if (argumentValue.value === '-0') {
         return {unserializableValue: '-0'};
-      } else if (argumentValue.value === '+Infinity') {
-        return {unserializableValue: '+Infinity'};
       } else if (argumentValue.value === 'Infinity') {
         return {unserializableValue: 'Infinity'};
       } else if (argumentValue.value === '-Infinity') {

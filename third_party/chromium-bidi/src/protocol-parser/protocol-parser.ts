@@ -75,14 +75,8 @@ export namespace CommonDataTypes {
     value: zod.string(),
   });
 
-  // SpecialNumber = "NaN" / "-0" / "+Infinity" / "-Infinity";
-  const SpecialNumberSchema = zod.enum([
-    'NaN',
-    '-0',
-    'Infinity',
-    '+Infinity',
-    '-Infinity',
-  ]);
+  // SpecialNumber = "NaN" / "-0" / "Infinity" / "-Infinity";
+  const SpecialNumberSchema = zod.enum(['NaN', '-0', 'Infinity', '-Infinity']);
 
   //
   // NumberValue = {

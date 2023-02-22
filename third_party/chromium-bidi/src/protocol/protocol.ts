@@ -160,13 +160,8 @@ export namespace CommonDataTypes {
     value: string;
   };
 
-  // SpecialNumber = "NaN" / "-0" / "+Infinity" / "-Infinity";
-  export type SpecialNumber =
-    | 'NaN'
-    | '-0'
-    | 'Infinity'
-    | '+Infinity'
-    | '-Infinity';
+  // SpecialNumber = "NaN" / "-0" / "Infinity" / "-Infinity";
+  export type SpecialNumber = 'NaN' | '-0' | 'Infinity' | '-Infinity';
 
   //
   // NumberValue = {
