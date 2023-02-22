@@ -13,6 +13,8 @@ chrome_java_resources = [
   "java/res/anim/activity_open_enter.xml",
   "java/res/anim/decelerate_quart.xml",
   "java/res/anim/fast_out_slow_in_interpolator.xml",
+  "java/res/anim/slide_in_left.xml",
+  "java/res/anim/slide_in_right.xml",
   "java/res/anim/slide_in_up.xml",
   "java/res/drawable-hdpi/bg_tabstrip_background_tab_outline.9.png",
   "java/res/drawable-hdpi/bg_tabstrip_tab.9.png",

@@ -105,6 +105,21 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final int BACKGROUND_INTERACT_OFF = 2;
 
     /**
+     * Extra that specifies the position of the side sheet. By default it is set to
+     * {@link #ACTIVITY_SIDE_SHEET_POSITION_END}, which is on the right side in left-to-right
+     * layout.
+     */
+    public static final String EXTRA_ACTIVITY_SIDE_SHEET_POSITION =
+            "androidx.browser.customtabs.extra.EXTRA_ACTIVITY_SIDE_SHEET_POSITION";
+
+    /**
+     * Extra that defines the behavior of the opening animation of the side sheet.
+     * It is set to {@link #ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE} by default.
+     */
+    public static final String EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR =
+            "androidx.browser.customtabs.extra.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR";
+
+    /**
      * Extra used to keep the caller alive. Its value is an Intent.
      */
     public static final String EXTRA_KEEP_ALIVE = "android.support.customtabs.extra.KEEP_ALIVE";
@@ -934,6 +949,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (mSecondaryToolbarSwipeUpPendingIntent != null) {
             featureUsage.log(CustomTabsFeature.EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION);
         }
+        if (IntentUtils.safeHasExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_POSITION)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_POSITION);
+        }
+        if (IntentUtils.safeHasExtra(intent, EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR);
+        }
     }
 
     @Override
@@ -1310,5 +1331,23 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public boolean showSideSheetMaximizeButton() {
         return IntentUtils.safeGetBooleanExtra(
                 mIntent, EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION, false);
+    }
+
+    @Override
+    public int getSideSheetSlideInBehavior() {
+        @ActivitySideSheetSlideInBehavior
+        int slideInBehavior = IntentUtils.safeGetIntExtra(mIntent,
+                EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR, ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT);
+        return slideInBehavior == ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT
+                ? ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE
+                : slideInBehavior;
+    }
+
+    @Override
+    public int getSideSheetPosition() {
+        int position = IntentUtils.safeGetIntExtra(
+                mIntent, EXTRA_ACTIVITY_SIDE_SHEET_POSITION, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
+        return position == ACTIVITY_SIDE_SHEET_POSITION_DEFAULT ? ACTIVITY_SIDE_SHEET_POSITION_END
+                                                                : position;
     }
 }

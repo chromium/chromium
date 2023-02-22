@@ -60,6 +60,38 @@ public abstract class BrowserServicesIntentDataProvider {
         int V2_NOTIFICATION_OR_SNACKBAR = 1;
     }
 
+    @IntDef({ACTIVITY_SIDE_SHEET_POSITION_DEFAULT, ACTIVITY_SIDE_SHEET_POSITION_START,
+            ACTIVITY_SIDE_SHEET_POSITION_END})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActivitySideSheetPosition {}
+    /**
+     * Applies the default position for the Custom Tab Activity when it behaves as a
+     * side sheet. Same as {@link #ACTIVITY_SIDE_SHEET_POSITION_END}.
+     */
+    public static final int ACTIVITY_SIDE_SHEET_POSITION_DEFAULT = 0;
+
+    /** Position the side sheet on the start side of the screen. */
+    public static final int ACTIVITY_SIDE_SHEET_POSITION_START = 1;
+
+    /** Position the side sheet on the end side of the screen. */
+    public static final int ACTIVITY_SIDE_SHEET_POSITION_END = 2;
+
+    @IntDef({ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT, ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM,
+            ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActivitySideSheetSlideInBehavior {}
+    /**
+     * Side sheet's default slide-in behavior. Same as
+     * {@link ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE}.
+     */
+    public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT = 0;
+
+    /** Side sheet's slide-in behavior defined for bottom-to-up animation. */
+    public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM = 1;
+
+    /** Side shset's slide-in behavior for side-wise animation. */
+    public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE = 2;
+
     @IntDef({ACTIVITY_HEIGHT_DEFAULT, ACTIVITY_HEIGHT_ADJUSTABLE, ACTIVITY_HEIGHT_FIXED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActivityHeightResizeBehavior {}
@@ -586,5 +618,15 @@ public abstract class BrowserServicesIntentDataProvider {
      */
     public boolean showSideSheetMaximizeButton() {
         return false;
+    }
+
+    /** Return the default behavior. */
+    public int getSideSheetSlideInBehavior() {
+        return ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT;
+    }
+
+    /** Return the default position. */
+    public int getSideSheetPosition() {
+        return ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
     }
 }

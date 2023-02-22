@@ -13,6 +13,10 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_DEFAULT;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_END;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_POSITION_START;
+import static org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
@@ -33,9 +37,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.ui.base.LocalizationUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,6 +52,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabSideSheetStrategyTest {
     private static final float MINIMAL_WIDTH_RATIO = 0.33f;
+    private static final boolean RTL = true;
+    private static final boolean LTR = false;
+    private static final boolean RIGHT = true;
+    private static final boolean LEFT = false;
     private boolean mFullscreen;
 
     @Rule
@@ -58,7 +68,8 @@ public class PartialCustomTabSideSheetStrategyTest {
         PartialCustomTabSideSheetStrategy pcct = new PartialCustomTabSideSheetStrategy(
                 mPCCTTestRule.mActivity, widthPx, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mFullscreenManager, false, true, /*showMaximizedButton=*/true,
-                /*startMaximized=*/false, mPCCTTestRule.mHandleStrategyFactory, 0);
+                /*startMaximized=*/false, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT,
+                ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT, mPCCTTestRule.mHandleStrategyFactory, 0);
         pcct.setMockViewForTesting(mPCCTTestRule.mCoordinatorLayout, mPCCTTestRule.mToolbarView,
                 mPCCTTestRule.mToolbarCoordinator);
         return pcct;
@@ -225,16 +236,70 @@ public class PartialCustomTabSideSheetStrategyTest {
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
 
-        strategy.toggleMaximize();
+        strategy.toggleMaximize(true);
         PartialCustomTabTestRule.waitForAnimationToFinish();
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
 
-        strategy.toggleMaximize();
+        strategy.toggleMaximize(true);
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertEquals(height, getWindowAttributes().height);
         assertEquals(width, getWindowAttributes().width);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+    }
+
+    @Test
+    public void toggleMaximizeNoAnimation() {
+        var strategy = createPcctSideSheetStrategy(2000);
+        int height = getWindowAttributes().height;
+        int width = getWindowAttributes().width;
+        strategy.toggleMaximize(false);
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
+
+        strategy.toggleMaximize(false);
+        assertEquals(height, getWindowAttributes().height);
+        assertEquals(width, getWindowAttributes().width);
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+    }
+
+    @Test
+    public void sheetPosition() {
+        assertPosition(LEFT, RTL, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
+        assertPosition(LEFT, RTL, ACTIVITY_SIDE_SHEET_POSITION_END);
+        assertPosition(RIGHT, RTL, ACTIVITY_SIDE_SHEET_POSITION_START);
+        assertPosition(RIGHT, LTR, ACTIVITY_SIDE_SHEET_POSITION_DEFAULT);
+        assertPosition(RIGHT, LTR, ACTIVITY_SIDE_SHEET_POSITION_END);
+        assertPosition(LEFT, LTR, ACTIVITY_SIDE_SHEET_POSITION_START);
+        LocalizationUtils.setRtlForTesting(false);
+    }
+
+    @Test
+    public void handleCloseAnimation() {
+        var strategy = createPcctSideSheetStrategy(2000);
+        strategy.setSheetOnRightForTesting(true);
+        var invoked = new ObservableSupplierImpl<Boolean>();
+
+        invoked.set(false);
+        assertEquals(0, mPCCTTestRule.getWindowAttributes().x);
+        strategy.handleCloseAnimation(() -> invoked.set(true)); // Slide out to right
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertTrue(invoked.get());
+        assertEquals(DEVICE_WIDTH, mPCCTTestRule.getWindowAttributes().x);
+
+        invoked.set(false);
+        strategy = createPcctSideSheetStrategy(2000);
+        strategy.setSheetOnRightForTesting(false);
+        strategy.setSlideDownAnimationForTesting(true); // Slide down
+        strategy.handleCloseAnimation(() -> invoked.set(true));
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertTrue(invoked.get());
+        assertEquals(DEVICE_HEIGHT, mPCCTTestRule.getWindowAttributes().y);
+    }
+
+    private static void assertPosition(boolean isRightSide, boolean isRtl, int position) {
+        LocalizationUtils.setRtlForTesting(isRtl);
+        String msg = isRightSide ? "Should be on right" : "Should be on left";
+        assertEquals(msg, isRightSide, PartialCustomTabSideSheetStrategy.isSheetOnRight(position));
     }
 
     private void assertTabIsAtFullLandscapeHeight() {

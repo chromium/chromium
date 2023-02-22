@@ -24303,6 +24303,10 @@ metrics consent we also won't be able to send UMA metrics. -->
              EXTRA_SECONDARY_TOOLBAR_SWIPE_UP_ACTION"/>
   <int value="49"
       label="Decoration type EXTRA_ACTIVITY_SIDE_SHEET_DECORATION_TYPE"/>
+  <int value="50"
+      label="Side sheet position EXTRA_ACTIVITY_SIDE_SHEET_POSITION"/>
+  <int value="51"
+      label="Side sheet animation EXTRA_ACTIVITY_SIDE_SHEET_SLIDE_IN_BEHAVIOR"/>
 </enum>
 
 <enum name="CustomTabsParallelRequestStatusOnStart">
