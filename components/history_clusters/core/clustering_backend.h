@@ -7,20 +7,9 @@
 
 #include "base/functional/callback.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/history_clusters_types.h"
 
 namespace history_clusters {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class ClusteringRequestSource {
-  kAllKeywordCacheRefresh = 0,
-  kShortKeywordCacheRefresh = 1,
-  kJourneysPage = 2,
-  kNewTabPage = 3,
-
-  // New values go above here.
-  kMaxValue = kNewTabPage,
-};
 
 // An abstract interface for a swappable clustering backend.
 class ClusteringBackend {

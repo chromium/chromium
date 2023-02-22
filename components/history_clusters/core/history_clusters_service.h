@@ -24,7 +24,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/context_clusterer_history_service_observer.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -44,6 +43,7 @@ class SiteEngagementScoreProvider;
 
 namespace history_clusters {
 
+class ClusteringBackend;
 class HistoryClustersService;
 class HistoryClustersServiceTask;
 
@@ -88,8 +88,6 @@ class HistoryClustersService : public base::SupportsUserData,
   using URLKeywordSet = std::unordered_set<std::string>;
 
   // `url_loader_factory` is allowed to be nullptr, like in unit tests.
-  // In that case, HistoryClustersService will never instantiate a clustering
-  // backend that requires it, such as the RemoteClusteringBackend.
   HistoryClustersService(
       const std::string& application_locale,
       history::HistoryService* history_service,
