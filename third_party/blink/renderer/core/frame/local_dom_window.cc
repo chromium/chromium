@@ -1309,7 +1309,15 @@ void LocalDOMWindow::DispatchMessageEventWithOriginCheck(
     fullscreen_request_token_.Activate();
   }
 
-  DispatchEvent(*event);
+  if (GetFrame() &&
+      GetFrame()->GetPage()->GetPageScheduler()->IsInBackForwardCache()) {
+    // Enqueue the event when the page is in back/forward cache, so that it
+    // would not cause JavaScript execution. The event will be dispatched upon
+    // restore.
+    EnqueueEvent(*event, TaskType::kInternalDefault);
+  } else {
+    DispatchEvent(*event);
+  }
 }
 
 DOMSelection* LocalDOMWindow::getSelection() {
