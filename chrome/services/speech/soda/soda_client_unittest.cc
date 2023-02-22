@@ -94,7 +94,7 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
 
   auto handler = media::WavAudioHandler::Create(buffer);
   ASSERT_TRUE(handler.get());
-  ASSERT_EQ(handler->num_channels(), 1);
+  ASSERT_EQ(handler->GetNumChannels(), 1);
 
   auto config_file_path =
       test_data_dir_.Append(base::FilePath(soda::kSodaResourcePath))
@@ -102,8 +102,8 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
   ASSERT_TRUE(base::PathExists(config_file_path));
 
   speech::soda::chrome::ExtendedSodaConfigMsg config_msg;
-  config_msg.set_channel_count(handler->num_channels());
-  config_msg.set_sample_rate(handler->sample_rate());
+  config_msg.set_channel_count(handler->GetNumChannels());
+  config_msg.set_sample_rate(handler->GetSampleRate());
   config_msg.set_language_pack_directory(
       config_file_path.AsUTF8Unsafe().c_str());
   config_msg.set_simulate_realtime_testonly(false);
@@ -121,14 +121,12 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
   config.soda_config_size = serialized.size();
   config.callback = &OnSodaResponse;
   config.callback_handle = this;
-  soda_client_->Reset(config, handler->sample_rate(), handler->num_channels());
+  soda_client_->Reset(config, handler->GetSampleRate(),
+                      handler->GetNumChannels());
   ASSERT_TRUE(soda_client_->IsInitialized());
 
-  auto bus =
-      media::AudioBus::Create(handler->num_channels(), handler->total_frames());
-
-  size_t bytes_written = 0u;
-  ASSERT_TRUE(handler->CopyTo(bus.get(), 0, &bytes_written));
+  auto bus = media::AudioBus::Create(handler->GetNumChannels(),
+                                     handler->total_frames_for_testing());
 
   std::vector<int16_t> audio_data(bus->frames());
   bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(bus->frames(),
