@@ -277,12 +277,12 @@ def _OptimizeWithR8(options,
     ]
 
     if options.disable_checks:
-      # Info level priority logs are not printed by default.
-      cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'info']
+      cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'none']
     else:
       cmd += ['--map-diagnostics', 'info', 'warning']
-      if not options.warnings_as_errors:
-        cmd += ['--map-diagnostics', 'error', 'warning']
+      # Our stderr filtering relies on all items starting with "Warning:".
+      # Errors will still cause build failures due to fail_on_output=True.
+      cmd += ['--map-diagnostics', 'error', 'warning']
 
     if options.min_api:
       cmd += ['--min-api', options.min_api]
