@@ -47,7 +47,9 @@
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/wayland_utils.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
@@ -413,10 +415,16 @@ class OzonePlatformWayland : public OzonePlatform,
       base::RepeatingCallback<void(KeyEvent* event)> callback,
       absl::optional<base::flat_set<DomCode>> dom_codes,
       gfx::AcceleratedWidget accelerated_widget) override {
+    DCHECK(connection_);
+    auto* seat = connection_->seat();
+    auto* window = connection_->window_manager()->GetWindow(accelerated_widget);
+    if (!seat || !seat->keyboard() || !window) {
+      return nullptr;
+    }
     switch (type) {
       case PlatformKeyboardHookTypes::kModifier:
-        return std::make_unique<BaseKeyboardHook>(std::move(dom_codes),
-                                                  std::move(callback));
+        return seat->keyboard()->CreateKeyboardHook(
+            window, std::move(dom_codes), std::move(callback));
       case PlatformKeyboardHookTypes::kMedia:
         return nullptr;
     }

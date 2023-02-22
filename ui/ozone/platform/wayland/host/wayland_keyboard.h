@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "base/containers/flat_set.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -15,7 +17,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/ozone/keyboard/event_auto_repeat_handler.h"
 #include "ui/events/types/event_type.h"
+#include "ui/ozone/common/base_keyboard_hook.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+
+struct zwp_keyboard_shortcuts_inhibitor_v1;
 
 namespace ui {
 
@@ -52,6 +57,17 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
 
   // Called when it turns out that KeyEvent is not handled.
   void OnUnhandledKeyEvent(const KeyEvent& key_event);
+
+  // Creates a new PlatformKeyboardHook/shortcuts inhibitor for |window|. For
+  // now used only for non-Lacros windows due to divergences between CrOS/Lacros
+  // and Linux Desktop requirements and their actual implementation. See
+  // comments in this function's definition for more context.
+  std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
+      WaylandWindow* window,
+      absl::optional<base::flat_set<DomCode>> dom_codes,
+      PlatformKeyboardHook::KeyEventCallback callback);
+  wl::Object<zwp_keyboard_shortcuts_inhibitor_v1> CreateShortcutsInhibitor(
+      WaylandWindow* window);
 
  private:
   using LayoutEngine =
