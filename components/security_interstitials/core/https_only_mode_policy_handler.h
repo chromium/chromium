@@ -10,9 +10,7 @@
 namespace policy {
 
 // Checks and converts the strings in policy::key::kHttpsOnlyMode to the boolean
-// pref::kHttpsOnlyModeEnabled. This currently only sets the associated pref to
-// `false` if the policy is set to "disallowed". Otherwise, the policy has no
-// effect.
+// pref::kHttpsOnlyModeEnabled.
 class HttpsOnlyModePolicyHandler : public TypeCheckingPolicyHandler {
  public:
   explicit HttpsOnlyModePolicyHandler(const char* const pref_name);
