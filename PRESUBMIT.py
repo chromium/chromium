@@ -185,6 +185,14 @@ _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
         'components/cronet/',
       ),
     ),
+    BanRule(
+      'import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;',
+      (
+       'Do not use VectorDrawableCompat, use getResources().getDrawable() to '
+       'avoid extra indirections. Please also add trace event as the call '
+       'might take more than 20 ms to complete.',
+      ),
+    ),
 )
 
 _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
@@ -259,6 +267,18 @@ _BANNED_JAVA_FUNCTIONS : Sequence[BanRule] = (
        '(e.g. Activities) should call this method. Otherwise, the Profile '
        'should either be passed in explicitly or retreived from an existing '
        'entity with a reference to the Profile (e.g. WebContents).',
+      ),
+      False,
+      excluded_paths=(
+        r'.*Test[A-Z]?.*\.java',
+      ),
+    ),
+    BanRule(
+      r'/(ResourcesCompat|getResources\(\))\.getDrawable\(\)',
+      (
+       'getDrawable() can be expensive. If you have a lot of calls to '
+       'GetDrawable() or your code may introduce janks, please put your calls '
+       'inside a trace().',
       ),
       False,
       excluded_paths=(
