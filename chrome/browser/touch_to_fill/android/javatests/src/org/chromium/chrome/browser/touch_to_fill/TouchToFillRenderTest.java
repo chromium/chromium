@@ -104,7 +104,7 @@ public class TouchToFillRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(6)
+                    .setRevision(7)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 

@@ -108,11 +108,6 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     }
 
     @Override
-    protected int getFooterId() {
-        return R.id.touch_to_fill_footer_item;
-    }
-
-    @Override
     protected RecyclerView getItemList() {
         return getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -130,5 +125,10 @@ class TouchToFillCreditCardView extends TouchToFillViewBase {
     @Override
     protected int listedItemType() {
         return TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
+    }
+
+    @Override
+    protected int footerItemType() {
+        return TouchToFillCreditCardProperties.ItemType.FOOTER;
     }
 }

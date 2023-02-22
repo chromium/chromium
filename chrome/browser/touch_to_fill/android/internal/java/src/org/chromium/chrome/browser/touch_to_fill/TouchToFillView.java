@@ -115,11 +115,6 @@ class TouchToFillView extends TouchToFillViewBase {
     }
 
     @Override
-    protected int getFooterId() {
-        return R.id.touch_to_fill_footer;
-    }
-
-    @Override
     protected RecyclerView getItemList() {
         return getContentView().findViewById(R.id.sheet_item_list);
     }
@@ -142,5 +137,10 @@ class TouchToFillView extends TouchToFillViewBase {
     @Override
     protected int listedItemType() {
         return TouchToFillProperties.ItemType.CREDENTIAL;
+    }
+
+    @Override
+    protected int footerItemType() {
+        return TouchToFillProperties.ItemType.FOOTER;
     }
 }
