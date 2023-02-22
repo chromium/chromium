@@ -14,12 +14,13 @@
 
 namespace blink {
 
+class ContainerNode;
 class Element;
 class StyleScope;
 class SelectorChecker;
 
-// The *activations* for a given StyleScope/element, is a list of active
-// scopes found in the ancestor chain, their roots (Element*), and the
+// The *activations* for a given StyleScope/node, is a list of active
+// scopes found in the ancestor chain, their roots (ContainerNode*), and the
 // proximities to those roots.
 //
 // The idea is that, if we're matching a selector ':scope' within some
@@ -32,11 +33,13 @@ struct CORE_EXPORT StyleScopeActivation {
  public:
   void Trace(blink::Visitor*) const;
 
-  // The root is the element when the activation happened. In other words,
-  // the element that matched <scope-start>.
+  // The root is the node when the activation happened. In other words,
+  // the node that matched <scope-start>. The root is always an Element for
+  // activations produced by @scope, however, it may be a non-element for
+  // the "default activation" (see SelectorChecker::EnsureActivations).
   //
   // https://drafts.csswg.org/css-cascade-6/#typedef-scope-start
-  Member<Element> root;
+  Member<const ContainerNode> root;
   // The distance to the root, in terms of number of inclusive ancestors
   // between some subject element and the root.
   unsigned proximity = 0;
