@@ -11,8 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/path_service.h"
-#include "base/profiler/native_unwinder_android_map_delegate.h"
-#include "base/profiler/native_unwinder_android_memory_regions_map.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_sampling_profiler.h"
@@ -100,42 +98,27 @@ void OtherLibraryCallback(void* arg) {
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
 std::unique_ptr<NativeUnwinderAndroid> CreateNativeUnwinderAndroidForTesting(
     uintptr_t exclude_module_with_base_address) {
-  class NativeUnwinderAndroidMapDelegateForTesting
-      : public NativeUnwinderAndroidMapDelegate {
-   public:
-    explicit NativeUnwinderAndroidMapDelegateForTesting(
-        std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap>
-            memory_regions_map)
-        : memory_regions_map_(std::move(memory_regions_map)) {}
-
-    NativeUnwinderAndroidMemoryRegionsMap* GetMapReference() override {
-      return memory_regions_map_.get();
-    }
-    void ReleaseMapReference() override {}
-
-   private:
-    const std::unique_ptr<NativeUnwinderAndroidMemoryRegionsMap>
-        memory_regions_map_;
-  };
-
   class NativeUnwinderAndroidForTesting : public NativeUnwinderAndroid {
    public:
     explicit NativeUnwinderAndroidForTesting(
-        uintptr_t exclude_module_with_base_address,
-        std::unique_ptr<NativeUnwinderAndroidMapDelegate> map_delegate)
-        : NativeUnwinderAndroid(exclude_module_with_base_address,
-                                map_delegate.get()),
-          map_delegate_(std::move(map_delegate)) {}
+        std::unique_ptr<unwindstack::Maps> memory_regions_map,
+        std::unique_ptr<unwindstack::Memory> process_memory,
+        uintptr_t exclude_module_with_base_address)
+        : NativeUnwinderAndroid(memory_regions_map.get(),
+                                process_memory.get(),
+                                exclude_module_with_base_address),
+          memory_regions_map_(std::move(memory_regions_map)),
+          process_memory_(std::move(process_memory)) {}
     ~NativeUnwinderAndroidForTesting() override = default;
 
    private:
-    std::unique_ptr<NativeUnwinderAndroidMapDelegate> map_delegate_;
+    std::unique_ptr<unwindstack::Maps> memory_regions_map_;
+    std::unique_ptr<unwindstack::Memory> process_memory_;
   };
-
+  auto maps = NativeUnwinderAndroid::CreateMaps();
+  auto memory = NativeUnwinderAndroid::CreateProcessMemory();
   return std::make_unique<NativeUnwinderAndroidForTesting>(
-      exclude_module_with_base_address,
-      std::make_unique<NativeUnwinderAndroidMapDelegateForTesting>(
-          NativeUnwinderAndroid::CreateMemoryRegionsMap()));
+      std::move(maps), std::move(memory), exclude_module_with_base_address);
 }
 
 std::unique_ptr<Unwinder> CreateChromeUnwinderAndroidForTesting(
