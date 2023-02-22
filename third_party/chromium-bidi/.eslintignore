@@ -7,5 +7,5 @@ chromium-bidi.iml
 lib
 logs/
 node_modules/
-wptreport.json
+wptreport*.json
 wpt/

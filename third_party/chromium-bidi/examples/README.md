@@ -23,7 +23,7 @@ The server (CDP-BiDi Mapper) can be run from the project root:
 npm run server
 ```
 
-ChromeDriver and EdgeDriver can be run by:
+Chromedriver and Edgedriver can be run by:
 
 ```sh
 $DRIVER_BINARY_PATH [--port=8080]

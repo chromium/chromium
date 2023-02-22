@@ -11,6 +11,16 @@ on:
 jobs:
   wpt:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - head: headful
+            headless_command_prefix: xvfb-run --auto-servernum
+            wpt_headless_argument: --webdriver-arg="--headless=false"
+          - head: headless
+            headless_command_prefix: ''
+            wpt_headless_argument: --webdriver-arg="--headless=true"
+    name: ${{ matrix.head }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -47,12 +57,15 @@ jobs:
       - name: Run tests
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
+          ${{ matrix.headless_command_prefix }}
           ./wpt/wpt run
-          --webdriver-binary ./runBiDiServer.sh
+          --webdriver-binary runBiDiServer.sh
+          ${{ matrix.wpt_headless_argument }}
           --binary /usr/bin/google-chrome-unstable
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper
+          --metadata wpt-metadata/mapper/${{ matrix.head }}
           --log-wptreport out/wptreport-mapper.json
+          --timeout-multiplier 8
           chromium
           webdriver/tests/bidi/
       - name: Generate HTML test report
@@ -69,23 +82,24 @@ jobs:
           ./wpt/wpt update-expectations
           --product chromium
           --manifest MANIFEST.json
-          --metadata ./wpt-metadata/mapper
+          --metadata wpt-metadata/mapper/${{ matrix.head }}
           out/wptreport-mapper.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-metadata-mapper
-          path: wpt-metadata/mapper
+          name: wpt-metadata-mapper-${{ matrix.head }}
+          path: wpt-metadata/mapper/${{ matrix.head }}
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-mapper-artifacts
+          name: ${{ matrix.head }}-artifacts
           path: |
             out
             logs
+
 env:
   FORCE_COLOR: 3

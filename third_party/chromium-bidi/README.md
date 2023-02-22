@@ -305,7 +305,7 @@ export WPT_BROWSER_PATH="/Applications/Microsoft Edge.app/Contents/MacOS/Microso
 
 https://www.google.com/chrome/dev/
 
-#### 2. Build ChromeDriver BiDi
+#### 2. Build Chromedriver BiDi
 
 Oneshot:
 
@@ -323,10 +323,10 @@ npm run watch
 
 ```sh
 ./wpt/wpt run \
-  --webdriver-binary ./runBiDiServer.sh \
+  --webdriver-binary runBiDiServer.sh \
   --binary "$WPT_BROWSER_PATH" \
-  --manifest ./wpt/MANIFEST.json \
-  --metadata ./wpt-metadata \
+  --manifest wpt/MANIFEST.json \
+  --metadata wpt-metadata \
   chromium \
   webdriver/tests/bidi/
 ```
@@ -337,10 +337,10 @@ npm run watch
 
 ```sh
 ./wpt/wpt run \
-  --webdriver-binary ./runBiDiServer.sh \
+  --webdriver-binary runBiDiServer.sh \
   --binary "$WPT_BROWSER_PATH" \
-  --manifest ./wpt/MANIFEST.json \
-  --metadata ./wpt-metadata \
+  --manifest wpt/MANIFEST.json \
+  --metadata wpt-metadata \
   --log-wptreport wptreport.json \
   chromium \
   webdriver/tests/bidi/
@@ -351,9 +351,9 @@ npm run watch
 ```sh
 ./wpt/wpt update-expectations \
   --product chromium \
-  --manifest ./wpt/MANIFEST.json \
-  --metadata ./wpt-metadata \
-  ./wptreport.json
+  --manifest wpt/MANIFEST.json \
+  --metadata wpt-metadata \
+  wptreport.json
 ```
 
 ## How does it work?

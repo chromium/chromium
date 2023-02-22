@@ -13,8 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        headful-argument: [headful, headless]
-
+        head: [headful, headless]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,7 +38,7 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r tests/requirements.txt
       - name: Run e2e tests
-        run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run e2e-${{ matrix.headful-argument }}
+        run: CHANNEL=chrome-dev xvfb-run --auto-servernum npm run e2e-${{ matrix.head }}
 
 env:
   FORCE_COLOR: 3
