@@ -6,6 +6,7 @@
 #define PRINTING_UNITS_H_
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 
 namespace printing {
 
@@ -29,6 +30,10 @@ constexpr int kPointsPerInch = 72;
 // Length of an inch in CSS's 1px unit.
 // http://dev.w3.org/csswg/css3-values/#the-px-unit
 constexpr int kPixelsPerInch = 96;
+
+#if BUILDFLAG(IS_MAC)
+constexpr int kDefaultMacDpi = 72;
+#endif  // BUILDFLAG(IS_MAC)
 
 // Dpi used to save to PDF or Cloud Print.
 constexpr int kDefaultPdfDpi = 300;

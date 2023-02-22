@@ -121,8 +121,23 @@ void GetResolutionSettings(ppd_file_t* ppd,
     if (res)
       break;
   }
-  if (!res)
+
+  // Some printers, such as Generic-CUPS-BRF-Printer, do not specify a
+  // resolution in their ppd file. Provide a default DPI if no valid DPI is
+  // found.
+#if BUILDFLAG(IS_MAC)
+  constexpr gfx::Size kDefaultMissingDpi(kDefaultMacDpi, kDefaultMacDpi);
+#elif BUILDFLAG(IS_LINUX)
+  constexpr gfx::Size kDefaultMissingDpi(kPixelsPerInch, kPixelsPerInch);
+#else
+  constexpr gfx::Size kDefaultMissingDpi(kDefaultPdfDpi, kDefaultPdfDpi);
+#endif
+
+  if (!res) {
+    dpis->push_back(kDefaultMissingDpi);
+    *default_dpi = kDefaultMissingDpi;
     return;
+  }
   for (int i = 0; i < res->num_choices; i++) {
     char* choice = res->choices[i].choice;
     DCHECK(choice);
@@ -151,6 +166,10 @@ void GetResolutionSettings(ppd_file_t* ppd,
     dpis->push_back({dpi_x, dpi_y});
     if (!strcmp(choice, res->defchoice))
       *default_dpi = dpis->back();
+  }
+  if (dpis->empty()) {
+    dpis->push_back(kDefaultMissingDpi);
+    *default_dpi = kDefaultMissingDpi;
   }
 }
 

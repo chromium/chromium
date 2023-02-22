@@ -13,6 +13,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_utils.h"
+#include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -764,6 +765,16 @@ TEST(PrintBackendCupsHelperTest,
 }
 
 TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoResolution) {
+  // If the PPD does not have a valid resolution, the DPI should still be set to
+  // an OS-dependent default value.
+#if BUILDFLAG(IS_MAC)
+  constexpr gfx::Size kExpectedDpi(kDefaultMacDpi, kDefaultMacDpi);
+#elif BUILDFLAG(IS_LINUX)
+  constexpr gfx::Size kExpectedDpi(kPixelsPerInch, kPixelsPerInch);
+#else
+  constexpr gfx::Size kExpectedDpi(kDefaultPdfDpi, kDefaultPdfDpi);
+#endif
+
   constexpr char kTestPpdData[] =
       R"(*PPD-Adobe: "4.3"
 *OpenUI *Resolution/Resolution: PickOne
@@ -772,12 +783,12 @@ TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoResolution) {
   PrinterSemanticCapsAndDefaults caps;
   EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
                                    kTestPpdData, &caps));
-  EXPECT_TRUE(caps.dpis.empty());
-  EXPECT_TRUE(caps.default_dpi.IsEmpty());
+  EXPECT_EQ(std::vector<gfx::Size>{kExpectedDpi}, caps.dpis);
+  EXPECT_EQ(caps.default_dpi, kExpectedDpi);
   EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
                                    "*PPD-Adobe: \"4.3\"", &caps));
-  EXPECT_TRUE(caps.dpis.empty());
-  EXPECT_TRUE(caps.default_dpi.IsEmpty());
+  EXPECT_EQ(std::vector<gfx::Size>{kExpectedDpi}, caps.dpis);
+  EXPECT_EQ(caps.default_dpi, kExpectedDpi);
 }
 
 TEST(PrintBackendCupsHelperTest, PpdParsingResolutionNoDefaultResolution) {
