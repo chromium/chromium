@@ -5112,6 +5112,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEcheSWACheckAndroidNetworkInfoName,
      flag_descriptions::kEcheSWACheckAndroidNetworkInfoDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEcheSWACheckAndroidNetworkInfo)},
+    {"eche-swa-process-android-accessibility-tree",
+     flag_descriptions::kEcheSWAProcessAndroidAccessibilityTreeName,
+     flag_descriptions::kEcheSWAProcessAndroidAccessibilityTreeDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kEcheSWAProcessAndroidAccessibilityTree)},
     {"eche-swa-debug-mode", flag_descriptions::kEcheSWADebugModeName,
      flag_descriptions::kEcheSWADebugModeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEcheSWADebugMode)},

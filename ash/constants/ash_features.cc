@@ -637,6 +637,12 @@ BASE_FEATURE(kEcheSWACheckAndroidNetworkInfo,
              "EcheSWACheckAndroidNetworkInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows CrOS to process Android
+// accessibility tree information.
+BASE_FEATURE(kEcheSWAProcessAndroidAccessibilityTree,
+             "EcheSWAProcessAndroidAccessibilityTree",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, allows the creation of up to 16 desks (default is 8).
 BASE_FEATURE(kEnable16Desks,
              "Enable16Desks",

@@ -62007,6 +62007,7 @@ from previous Chrome versions.
   <int value="78998551" label="disable-hosted-app-shim-creation"/>
   <int value="79094339" label="VrLaunchIntents:enabled"/>
   <int value="79503461" label="disable-account-consistency"/>
+  <int value="79508722" label="EcheSWAProcessAndroidAccessibilityTree:enabled"/>
   <int value="79595680" label="OmniboxTabSwitchSuggestions:enabled"/>
   <int value="79729295" label="WebBundles:enabled"/>
   <int value="80036427" label="AutofillEnableCardProductName:disabled"/>
@@ -63242,6 +63243,8 @@ from previous Chrome versions.
   <int value="783270752" label="AndroidHistoryManager:enabled"/>
   <int value="783443490" label="ArcInputOverlayBeta:enabled"/>
   <int value="785273919" label="CompositingBasedThrottling:disabled"/>
+  <int value="786070201"
+      label="EcheSWAProcessAndroidAccessibilityTree:disabled"/>
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>
   <int value="787385958" label="RegionalLocalesAsDisplayUI:enabled"/>
   <int value="788130042" label="PrivacySandboxSettings2:enabled"/>
