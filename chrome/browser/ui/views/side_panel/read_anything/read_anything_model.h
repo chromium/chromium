@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/models/combobox_model.h"
@@ -200,6 +201,9 @@ class ReadAnythingModel {
         ui::ColorId separator_color_id,
         read_anything::mojom::LineSpacing line_spacing,
         read_anything::mojom::LetterSpacing letter_spacing) = 0;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    virtual void ScreenAIServiceReady() {}
+#endif
   };
 
   ReadAnythingModel();
@@ -221,6 +225,9 @@ class ReadAnythingModel {
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
                                const ukm::SourceId& ukm_source_id);
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void ScreenAIServiceReady();
+#endif
 
   void SetSelectedFontByIndex(size_t new_index);
   double GetValidFontScale(double font_scale);

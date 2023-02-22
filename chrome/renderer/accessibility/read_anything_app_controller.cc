@@ -646,6 +646,12 @@ void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
   render_frame_->ExecuteJavaScript(base::ASCIIToUTF16(script));
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void ReadAnythingAppController::ScreenAIServiceReady() {
+  distiller_->ScreenAIServiceReady();
+}
+#endif
+
 gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<ReadAnythingAppController>::GetObjectTemplateBuilder(

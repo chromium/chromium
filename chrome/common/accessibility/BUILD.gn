@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(!is_android)
@@ -13,4 +14,8 @@ mojom("mojo_bindings") {
     "//ui/accessibility/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+  enabled_features = []
+  if (enable_screen_ai_service) {
+    enabled_features += [ "enable_screen_ai_service" ]
+  }
 }

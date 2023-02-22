@@ -17,6 +17,7 @@
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 
 class ReadAnythingWebContentsObserver
@@ -184,6 +185,12 @@ ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
 
 void ReadAnythingController::OnUIReady() {
   ui_ready_ = true;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  if (features::IsReadAnythingWithScreen2xEnabled()) {
+    component_ready_observer_.Observe(
+        screen_ai::ScreenAIInstallState::GetInstance());
+  }
+#endif
   NotifyActiveAXTreeIDChanged();
 }
 
@@ -288,6 +295,17 @@ void ReadAnythingController::NotifyActiveAXTreeIDChanged() {
   }
   model_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id);
 }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void ReadAnythingController::StateChanged(
+    screen_ai::ScreenAIInstallState::State state) {
+  DCHECK(features::IsReadAnythingWithScreen2xEnabled());
+  if (state != screen_ai::ScreenAIInstallState::State::kReady) {
+    return;
+  }
+  model_->ScreenAIServiceReady();
+}
+#endif
 
 void ReadAnythingController::ObserveAccessibilityEventsOnActiveTab() {
   content::WebContents* web_contents =

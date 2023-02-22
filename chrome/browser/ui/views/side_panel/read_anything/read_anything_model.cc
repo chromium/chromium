@@ -151,6 +151,14 @@ void ReadAnythingModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   }
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void ReadAnythingModel::ScreenAIServiceReady() {
+  for (Observer& obs : observers_) {
+    obs.ScreenAIServiceReady();
+  }
+}
+#endif
+
 double ReadAnythingModel::GetValidFontScale(double font_scale) {
   if (font_scale < kReadAnythingMinimumFontScale)
     return kReadAnythingMinimumFontScale;

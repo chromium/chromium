@@ -13,8 +13,13 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_page_handler.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "ui/base/models/combobox_model.h"
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
+#endif
 
 class Browser;
 
@@ -32,6 +37,9 @@ class Browser;
 class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
                                public ReadAnythingFontCombobox::Delegate,
                                public ReadAnythingPageHandler::Delegate,
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+                               public screen_ai::ScreenAIInstallState::Observer,
+#endif
                                public TabStripModelObserver {
  public:
   ReadAnythingController(ReadAnythingModel* model, Browser* browser);
@@ -111,6 +119,17 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // Whether the Read Anything feature's UI is ready. This is set to true when
   // the UI is constructed and false when it is destroyed.
   bool ui_ready_ = false;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // screen_ai::ScreenAIInstallState::Observer:
+  void StateChanged(screen_ai::ScreenAIInstallState::State state) override;
+
+  // Observes the install state of ScreenAI. When ScreenAI is ready, notifies
+  // the WebUI.
+  base::ScopedObservation<screen_ai::ScreenAIInstallState,
+                          screen_ai::ScreenAIInstallState::Observer>
+      component_ready_observer_{this};
+#endif
 
   base::WeakPtrFactory<ReadAnythingController> weak_pointer_factory_{this};
 };

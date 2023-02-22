@@ -18,6 +18,7 @@ include_rules = [
   "+components/safety_check",
   "+components/saved_tab_groups",
   "+components/segmentation_platform/content",
+  "+components/services/screen_ai",
   "+components/soda",
   "+components/supervised_user/core/common",
   "+components/tab_groups",

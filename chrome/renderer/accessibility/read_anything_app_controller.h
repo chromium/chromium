@@ -13,6 +13,7 @@
 
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/renderer/accessibility/read_anything_app_model.h"
+#include "components/services/screen_ai/buildflags/buildflags.h"
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -90,6 +91,9 @@ class ReadAnythingAppController
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnThemeChanged(
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  void ScreenAIServiceReady() override;
+#endif
 
   // ui::AXTreeObserver:
   void OnAtomicUpdateFinished(ui::AXTree* tree,

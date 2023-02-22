@@ -100,6 +100,12 @@ void ReadAnythingPageHandler::OnReadAnythingThemeChanged(
                              background_skcolor, line_spacing, letter_spacing));
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+void ReadAnythingPageHandler::ScreenAIServiceReady() {
+  page_->ScreenAIServiceReady();
+}
+#endif
+
 void ReadAnythingPageHandler::OnLinkClicked(const ui::AXTreeID& target_tree_id,
                                             ui::AXNodeID target_node_id) {
   if (delegate_) {
