@@ -45,6 +45,8 @@ namespace proto {
 class WebAppOsIntegrationState;
 class ShortcutMenus;
 }
+class WebApp;
+class WebAppIconManager;
 
 // Represents the info required to create a shortcut for an app.
 struct ShortcutInfo {
@@ -97,6 +99,12 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const base::FilePath& profile_path,
     const std::string& profile_name,
     const proto::WebAppOsIntegrationState& state);
+
+void PopulateFaviconForShortcutInfo(
+    const WebApp* app,
+    WebAppIconManager& icon_manager,
+    std::unique_ptr<ShortcutInfo> shortcut_info_to_populate,
+    base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)> callback);
 
 std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
     const proto::ShortcutMenus& shortcut_menus);
