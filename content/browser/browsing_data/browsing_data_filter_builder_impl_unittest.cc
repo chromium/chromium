@@ -22,11 +22,14 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using CookieDeletionInfo = net::CookieDeletionInfo;
-
 namespace content {
 
 namespace {
+
+using CookieDeletionInfo = net::CookieDeletionInfo;
+
+using testing::IsEmpty;
+using testing::UnorderedElementsAre;
 
 const char kGoogleDomain[] = "google.com";
 // sp.nom.br is an eTLD, so this is a regular valid registrable domain, just
@@ -837,6 +840,33 @@ TEST(BrowsingDataFilterBuilderImplTest, PartitionedPreserveList) {
 
   for (auto test_case : test_cases)
     RunTestCase(test_case, filter);
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, GetOrigins) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+
+  url::Origin a = url::Origin::Create(GURL("https://www.google.com"));
+  url::Origin b = url::Origin::Create(GURL("http://www.example.com"));
+  EXPECT_THAT(builder.GetOrigins(), IsEmpty());
+  builder.AddOrigin(a);
+  EXPECT_THAT(builder.GetOrigins(), UnorderedElementsAre(a));
+  builder.AddOrigin(b);
+  EXPECT_THAT(builder.GetOrigins(), UnorderedElementsAre(a, b));
+}
+
+TEST(BrowsingDataFilterBuilderImplTest, GetRegisterableDomains) {
+  BrowsingDataFilterBuilderImpl builder(
+      BrowsingDataFilterBuilderImpl::Mode::kDelete);
+
+  EXPECT_THAT(builder.GetRegisterableDomains(), IsEmpty());
+  builder.AddRegisterableDomain(std::string(kGoogleDomain));
+  EXPECT_THAT(builder.GetRegisterableDomains(),
+              UnorderedElementsAre(kGoogleDomain));
+
+  builder.AddRegisterableDomain(std::string(kLongETLDDomain));
+  EXPECT_THAT(builder.GetRegisterableDomains(),
+              UnorderedElementsAre(kGoogleDomain, kLongETLDDomain));
 }
 
 }  // namespace content

@@ -6,6 +6,8 @@
 
 #include <initializer_list>
 #include <memory>
+#include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -23,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -38,6 +41,7 @@
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -48,6 +52,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -194,6 +199,29 @@ class MockCookieChecker : public AttributionCookieChecker {
   base::circular_deque<base::OnceCallback<void(bool)>> callbacks_;
 };
 
+class MockAttributionOsLevelManager : public AttributionOsLevelManager {
+ public:
+  ~MockAttributionOsLevelManager() override = default;
+
+  MOCK_METHOD(void,
+              RegisterAttributionSource,
+              (const GURL& registration_url,
+               const url::Origin& top_level_origin,
+               bool is_debug_key_allowed),
+              (override));
+
+  MOCK_METHOD(void,
+              ClearData,
+              (base::Time delete_begin,
+               base::Time delete_end,
+               const std::set<url::Origin>& origins,
+               const std::set<std::string>& domains,
+               BrowsingDataFilterBuilder::Mode mode,
+               bool delete_rate_limit_data,
+               base::OnceClosure done),
+              (override));
+};
+
 }  // namespace
 
 class AttributionManagerImplTest : public testing::Test {
@@ -227,7 +255,7 @@ class AttributionManagerImplTest : public testing::Test {
     CreateAggregationService();
   }
 
-  void CreateManager() {
+  void CreateManager(bool create_os_level_manager = false) {
     CHECK(!attribution_manager_);
 
     auto storage_delegate = std::make_unique<ConfigurableStorageDelegate>();
@@ -248,18 +276,25 @@ class AttributionManagerImplTest : public testing::Test {
     auto report_sender = std::make_unique<MockReportSender>();
     report_sender_ = report_sender.get();
 
+    auto os_level_manager =
+        create_os_level_manager
+            ? std::make_unique<MockAttributionOsLevelManager>()
+            : nullptr;
+    os_level_manager_ = os_level_manager.get();
+
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
         dir_.GetPath(), kMaxPendingEvents, mock_storage_policy_,
         std::move(storage_delegate), std::move(cookie_checker),
         std::move(report_sender),
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetDefaultStoragePartition()),
-        storage_task_runner_);
+        storage_task_runner_, std::move(os_level_manager));
   }
 
   void ShutdownManager() {
     cookie_checker_ = nullptr;
     report_sender_ = nullptr;
+    os_level_manager_ = nullptr;
     attribution_manager_.reset();
   }
 
@@ -320,6 +355,7 @@ class AttributionManagerImplTest : public testing::Test {
   raw_ptr<MockCookieChecker> cookie_checker_;
   raw_ptr<MockReportSender> report_sender_;
   raw_ptr<MockAggregationService> aggregation_service_;
+  raw_ptr<MockAttributionOsLevelManager> os_level_manager_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
 };
 
@@ -952,7 +988,7 @@ TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
 
 // This functionality is tested more thoroughly in the AttributionStorageSql
 // unit tests. Here, just test to make sure the basic control flow is working.
-TEST_F(AttributionManagerImplTest, ClearData) {
+TEST_F(AttributionManagerImplTest, ClearDataFromBrowserOnly) {
   for (bool match_url : {true, false}) {
     base::Time start = base::Time::Now();
     attribution_manager_->HandleSource(
@@ -971,6 +1007,69 @@ TEST_F(AttributionManagerImplTest, ClearData) {
     size_t expected_reports = match_url ? 0u : 1u;
     EXPECT_THAT(StoredReports(), SizeIs(expected_reports));
   }
+}
+
+TEST_F(AttributionManagerImplTest, ClearDataFromBrowserAndOs) {
+  ShutdownManager();
+  CreateManager(/*create_os_level_manager=*/true);
+
+  base::Time start = base::Time::Now();
+  base::Time end = start + base::Minutes(1);
+  auto mode = BrowsingDataFilterBuilder::Mode::kDelete;
+  auto origin = url::Origin::Create(GURL("https://example.test"));
+  std::string domain = "example.test";
+
+  BrowsingDataFilterBuilderImpl filter_builder(mode);
+  filter_builder.AddOrigin(origin);
+  filter_builder.AddRegisterableDomain(domain);
+
+  EXPECT_CALL(*os_level_manager_,
+              ClearData(start, end, std::set<url::Origin>({origin}),
+                        std::set<std::string>({domain}), mode,
+                        /*delete_rate_limit_data=*/true, _))
+      .WillOnce(base::test::RunOnceCallback<6>());
+
+  attribution_manager_->HandleSource(
+      SourceBuilder(start).SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  base::RunLoop run_loop;
+  attribution_manager_->ClearData(
+      start, end,
+      /*filter=*/base::NullCallback(), &filter_builder,
+      /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_THAT(StoredReports(), IsEmpty());
+}
+
+TEST_F(AttributionManagerImplTest, ClearAllDataFromBrowserAndOs) {
+  ShutdownManager();
+  CreateManager(/*create_os_level_manager=*/true);
+
+  base::Time start = base::Time::Now();
+  base::Time end = start + base::Minutes(1);
+
+  EXPECT_CALL(*os_level_manager_,
+              ClearData(start, end, std::set<url::Origin>({}),
+                        std::set<std::string>({}),
+                        BrowsingDataFilterBuilder::Mode::kPreserve,
+                        /*delete_rate_limit_data=*/false, _))
+      .WillOnce(base::test::RunOnceCallback<6>());
+
+  attribution_manager_->HandleSource(
+      SourceBuilder(start).SetExpiry(kImpressionExpiry).Build(), kFrameId);
+  attribution_manager_->HandleTrigger(DefaultTrigger(), kFrameId);
+
+  base::RunLoop run_loop;
+  attribution_manager_->ClearData(start, end,
+                                  /*filter=*/base::NullCallback(),
+                                  /*filter_builder=*/nullptr,
+                                  /*delete_rate_limit_data=*/false,
+                                  run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_THAT(StoredReports(), IsEmpty());
 }
 
 TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {

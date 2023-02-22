@@ -115,7 +115,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
       StoragePartitionImpl* storage_partition,
-      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
+      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner,
+      std::unique_ptr<AttributionOsLevelManager> os_level_manager);
 
   static std::unique_ptr<AttributionManagerImpl> CreateWithNewDbForTesting(
       StoragePartitionImpl* storage_partition,
@@ -198,7 +199,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
       std::unique_ptr<AttributionDataHostManager> data_host_manager,
-      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
+      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner,
+      std::unique_ptr<AttributionOsLevelManager> os_level_manager);
 
   void MaybeEnqueueEvent(SourceOrTriggerRFH event);
   void ProcessEvents();

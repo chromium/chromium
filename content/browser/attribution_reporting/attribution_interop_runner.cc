@@ -41,6 +41,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -402,7 +403,8 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-           base::ThreadPolicy::MUST_USE_FOREGROUND}));
+           base::ThreadPolicy::MUST_USE_FOREGROUND}),
+      /*os_level_manager=*/nullptr);
 
   AttributionEventHandler handler(std::move(manager), raw_fake_cookie_checker,
                                   AttributionReportJsonConverter(time_origin));

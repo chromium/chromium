@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <cmath>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -60,6 +61,7 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/browser_context.h"
@@ -414,12 +416,14 @@ AttributionManagerImpl::CreateForTesting(
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     StoragePartitionImpl* storage_partition,
-    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner) {
+    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner,
+    std::unique_ptr<AttributionOsLevelManager> os_level_manager) {
   return base::WrapUnique(new AttributionManagerImpl(
       storage_partition, user_data_directory, max_pending_events,
       std::move(special_storage_policy), std::move(storage_delegate),
       std::move(cookie_checker), std::move(report_sender),
-      /*data_host_manager=*/nullptr, std::move(storage_task_runner)));
+      /*data_host_manager=*/nullptr, std::move(storage_task_runner),
+      std::move(os_level_manager)));
 }
 
 // static
@@ -456,7 +460,17 @@ AttributionManagerImpl::AttributionManagerImpl(
               base::TaskTraits(base::TaskPriority::BEST_EFFORT,
                                base::MayBlock(),
                                base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-                               base::ThreadPolicy::MUST_USE_FOREGROUND))) {}
+                               base::ThreadPolicy::MUST_USE_FOREGROUND)),
+#if BUILDFLAG(IS_ANDROID)
+          base::FeatureList::IsEnabled(
+              blink::features::kAttributionReportingCrossAppWeb)
+              ? std::make_unique<AttributionOsLevelManagerAndroid>()
+              : nullptr
+#else
+          /*os_level_manager=*/nullptr
+#endif
+      ) {
+}  // namespace content
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
@@ -467,7 +481,8 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionDataHostManager> data_host_manager,
-    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner)
+    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner,
+    std::unique_ptr<AttributionOsLevelManager> os_level_manager)
     : storage_partition_(storage_partition),
       max_pending_events_(max_pending_events),
       storage_task_runner_(std::move(storage_task_runner)),
@@ -482,20 +497,13 @@ AttributionManagerImpl::AttributionManagerImpl(
       data_host_manager_(std::move(data_host_manager)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
-      report_sender_(std::move(report_sender)) {
+      report_sender_(std::move(report_sender)),
+      attribution_os_level_manager_(std::move(os_level_manager)) {
   DCHECK(storage_partition_);
   DCHECK_GT(max_pending_events_, 0u);
   DCHECK(storage_task_runner_);
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAttributionReportingCrossAppWeb)) {
-#if BUILDFLAG(IS_ANDROID)
-    attribution_os_level_manager_ =
-        std::make_unique<AttributionOsLevelManagerAndroid>();
-#endif
-  }
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
@@ -809,6 +817,11 @@ void AttributionManagerImpl::ClearData(
     BrowsingDataFilterBuilder* filter_builder,
     bool delete_rate_limit_data,
     base::OnceClosure done) {
+  const bool should_clear_from_os = attribution_os_level_manager_ != nullptr;
+
+  auto on_done =
+      base::BarrierClosure(should_clear_from_os ? 2 : 1, std::move(done));
+
   // When a clear data task is queued or running, we use a higher priority.
   ++num_pending_clear_data_tasks_;
   storage_task_runner_->UpdatePriority(base::TaskPriority::USER_VISIBLE);
@@ -816,9 +829,30 @@ void AttributionManagerImpl::ClearData(
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter),
                 delete_rate_limit_data)
-      .Then(std::move(done).Then(
+      .Then(base::OnceClosure(on_done).Then(
           base::BindOnce(&AttributionManagerImpl::OnClearDataComplete,
                          weak_factory_.GetWeakPtr())));
+
+  if (!should_clear_from_os) {
+    return;
+  }
+
+  if (filter_builder) {
+    auto* filter_builder_impl =
+        static_cast<BrowsingDataFilterBuilderImpl*>(filter_builder);
+    attribution_os_level_manager_->ClearData(
+        delete_begin, delete_end, filter_builder_impl->GetOrigins(),
+        filter_builder_impl->GetRegisterableDomains(),
+        filter_builder->GetMode(), delete_rate_limit_data, std::move(on_done));
+  } else {
+    // When there is not filter_builder, we clear all the data.
+    attribution_os_level_manager_->ClearData(
+        delete_begin, delete_end, /*origins=*/{}, /*domains=*/{},
+        // By preserving data only from an empty list, we are effectively
+        // clearing all the data.
+        BrowsingDataFilterBuilder::Mode::kPreserve, delete_rate_limit_data,
+        std::move(on_done));
+  }
 }
 
 void AttributionManagerImpl::OnClearDataComplete() {

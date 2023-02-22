@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BROWSING_DATA_BROWSING_DATA_FILTER_BUILDER_IMPL_H_
 
 #include <set>
+#include <string>
 
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
@@ -49,6 +50,12 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
       override;
   Mode GetMode() override;
   std::unique_ptr<BrowsingDataFilterBuilder> Copy() override;
+
+  // The origins targeted by the filter.
+  const std::set<url::Origin>& GetOrigins() const;
+
+  // The domains targeted by the filter.
+  const std::set<std::string>& GetRegisterableDomains() const;
 
  private:
   bool IsEqual(const BrowsingDataFilterBuilder& other) const override;
