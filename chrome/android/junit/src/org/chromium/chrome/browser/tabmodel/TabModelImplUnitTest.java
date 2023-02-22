@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
@@ -14,15 +17,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -32,12 +38,17 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 
+import java.util.Arrays;
+
 /**
  * Unit tests for {@link TabModelImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabModelImplUnitTest {
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
     private static final long FAKE_NATIVE_ADDRESS = 123L;
 
     /**
@@ -268,5 +279,25 @@ public class TabModelImplUnitTest {
         Tab tab0 = createTab(activeNormal);
         selectTab(activeNormal, tab0);
         Assert.assertNull(activeNormal.getNextTabIfClosed(tab0.getId(), false));
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.TAB_STATE_V1_OPTIMIZATIONS)
+    public void testDontSwitchModelsIfIncognitoGroupClosed() {
+        TabModel activeIncognito = createTabModel(true, true);
+        TabModel inactiveNormal = createTabModel(false, false);
+
+        Tab incognitoTab0 = createTab(activeIncognito);
+        Tab incognitoTab1 = createTab(activeIncognito);
+        Tab incognitoTab2 = createTab(activeIncognito);
+        Tab tab0 = createTab(inactiveNormal);
+
+        selectTab(activeIncognito, incognitoTab0);
+
+        activeIncognito.closeMultipleTabs(
+                Arrays.asList(new Tab[] {incognitoTab0, incognitoTab1}), false);
+        verify(mTabModelSelector, never()).selectModel(anyBoolean());
+        Assert.assertEquals(incognitoTab2, activeIncognito.getTabAt(activeIncognito.index()));
     }
 }
