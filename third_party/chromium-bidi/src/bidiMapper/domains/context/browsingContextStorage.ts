@@ -42,8 +42,8 @@ export class BrowsingContextStorage {
     return this.#contexts.has(contextId);
   }
 
-  findContext(contextId: string): BrowsingContextImpl {
-    return this.#contexts.get(contextId)!;
+  findContext(contextId: string): BrowsingContextImpl | undefined {
+    return this.#contexts.get(contextId);
   }
 
   getKnownContext(contextId: string): BrowsingContextImpl {
