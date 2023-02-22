@@ -130,7 +130,7 @@ class FlagHelpPrettyPrinter {
       for (auto line : absl::StrSplit(str, absl::ByAnyChar("\n\r"))) {
         if (!tokens.empty()) {
           // Keep line separators in the input string.
-          tokens.push_back("\n");
+          tokens.emplace_back("\n");
         }
         for (auto token :
              absl::StrSplit(line, absl::ByAnyChar(" \t"), absl::SkipEmpty())) {

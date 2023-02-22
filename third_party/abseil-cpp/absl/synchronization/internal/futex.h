@@ -16,9 +16,7 @@
 
 #include "absl/base/config.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#else
+#ifndef _WIN32
 #include <sys/time.h>
 #include <unistd.h>
 #endif
@@ -85,34 +83,60 @@ namespace synchronization_internal {
 
 class FutexImpl {
  public:
-  static int WaitUntil(std::atomic<int32_t> *v, int32_t val,
+  // Atomically check that `*v == val`, and if it is, then sleep until the
+  // timeout `t` has been reached, or until woken by `Wake()`.
+  static int WaitUntil(std::atomic<int32_t>* v, int32_t val,
                        KernelTimeout t) {
-    long err = 0;  // NOLINT(runtime/int)
-    if (t.has_timeout()) {
-      // https://locklessinc.com/articles/futex_cheat_sheet/
-      // Unlike FUTEX_WAIT, FUTEX_WAIT_BITSET uses absolute time.
-      struct timespec abs_timeout = t.MakeAbsTimespec();
-      // Atomically check that the futex value is still 0, and if it
-      // is, sleep until abs_timeout or until woken by FUTEX_WAKE.
-      err = syscall(
-          SYS_futex, reinterpret_cast<int32_t *>(v),
-          FUTEX_WAIT_BITSET | FUTEX_PRIVATE_FLAG | FUTEX_CLOCK_REALTIME, val,
-          &abs_timeout, nullptr, FUTEX_BITSET_MATCH_ANY);
+    if (!t.has_timeout()) {
+      return Wait(v, val);
+    } else if (t.is_absolute_timeout()) {
+      auto abs_timespec = t.MakeAbsTimespec();
+      return WaitAbsoluteTimeout(v, val, &abs_timespec);
     } else {
-      // Atomically check that the futex value is still 0, and if it
-      // is, sleep until woken by FUTEX_WAKE.
-      err = syscall(SYS_futex, reinterpret_cast<int32_t *>(v),
-                    FUTEX_WAIT | FUTEX_PRIVATE_FLAG, val, nullptr);
+      auto rel_timespec = t.MakeRelativeTimespec();
+      return WaitRelativeTimeout(v, val, &rel_timespec);
     }
-    if (ABSL_PREDICT_FALSE(err != 0)) {
+  }
+
+  // Atomically check that `*v == val`, and if it is, then sleep until the until
+  // woken by `Wake()`.
+  static int Wait(std::atomic<int32_t>* v, int32_t val) {
+    return WaitAbsoluteTimeout(v, val, nullptr);
+  }
+
+  // Atomically check that `*v == val`, and if it is, then sleep until
+  // CLOCK_REALTIME reaches `*abs_timeout`, or until woken by `Wake()`.
+  static int WaitAbsoluteTimeout(std::atomic<int32_t>* v, int32_t val,
+                                 const struct timespec* abs_timeout) {
+    // https://locklessinc.com/articles/futex_cheat_sheet/
+    // Unlike FUTEX_WAIT, FUTEX_WAIT_BITSET uses absolute time.
+    auto err =
+        syscall(SYS_futex, reinterpret_cast<int32_t*>(v),
+                FUTEX_WAIT_BITSET | FUTEX_PRIVATE_FLAG | FUTEX_CLOCK_REALTIME,
+                val, abs_timeout, nullptr, FUTEX_BITSET_MATCH_ANY);
+    if (err != 0) {
       return -errno;
     }
     return 0;
   }
 
-  static int Wake(std::atomic<int32_t> *v, int32_t count) {
-    // NOLINTNEXTLINE(runtime/int)
-    long err = syscall(SYS_futex, reinterpret_cast<int32_t*>(v),
+  // Atomically check that `*v == val`, and if it is, then sleep until
+  // `*rel_timeout` has elapsed, or until woken by `Wake()`.
+  static int WaitRelativeTimeout(std::atomic<int32_t>* v, int32_t val,
+                                 const struct timespec* rel_timeout) {
+    // Atomically check that the futex value is still 0, and if it
+    // is, sleep until abs_timeout or until woken by FUTEX_WAKE.
+    auto err = syscall(SYS_futex, reinterpret_cast<int32_t*>(v),
+                       FUTEX_PRIVATE_FLAG, val, rel_timeout);
+    if (err != 0) {
+      return -errno;
+    }
+    return 0;
+  }
+
+  // Wakes at most `count` waiters that have entered the sleep state on `v`.
+  static int Wake(std::atomic<int32_t>* v, int32_t count) {
+    auto err = syscall(SYS_futex, reinterpret_cast<int32_t*>(v),
                        FUTEX_WAKE | FUTEX_PRIVATE_FLAG, count);
     if (ABSL_PREDICT_FALSE(err < 0)) {
       return -errno;

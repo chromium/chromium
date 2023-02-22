@@ -16,6 +16,7 @@
 #define ABSL_SYNCHRONIZATION_INTERNAL_KERNEL_TIMEOUT_H_
 
 #include <algorithm>
+#include <chrono>  // NOLINT(build/c++11)
 #include <cstdint>
 #include <ctime>
 #include <limits>
@@ -94,6 +95,20 @@ class KernelTimeout {
   // <intsafe.h> and <WinBase.h>.
   typedef unsigned long DWord;  // NOLINT
   DWord InMillisecondsFromNow() const;
+
+  // Convert to std::chrono::time_point for interfaces that expect an absolute
+  // timeout, like std::condition_variable::wait_until(). If !has_timeout() or
+  // is_relative_timeout(), attempts to convert to a reasonable absolute
+  // timeout, but callers should test has_timeout() and is_relative_timeout()
+  // and prefer to use a more appropriate interface.
+  std::chrono::time_point<std::chrono::system_clock> ToChronoTimePoint() const;
+
+  // Convert to std::chrono::time_point for interfaces that expect a relative
+  // timeout, like std::condition_variable::wait_for(). If !has_timeout() or
+  // is_absolute_timeout(), attempts to convert to a reasonable relative
+  // timeout, but callers should test has_timeout() and is_absolute_timeout()
+  // and prefer to use a more appropriate interface.
+  std::chrono::nanoseconds ToChronoDuration() const;
 
  private:
   // Internal representation.

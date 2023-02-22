@@ -110,6 +110,9 @@ class Waiter {
   ~Waiter() = delete;
 
 #if ABSL_WAITER_MODE == ABSL_WAITER_MODE_FUTEX
+  bool WaitAbsoluteTimeout(KernelTimeout t);
+  bool WaitRelativeTimeout(KernelTimeout t);
+
   // Futexes are defined by specification to be 32-bits.
   // Thus std::atomic<int32_t> must be just an int32_t with lockfree methods.
   std::atomic<int32_t> futex_;

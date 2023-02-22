@@ -1431,14 +1431,14 @@ TYPED_TEST_P(AnyInvTestRvalue, QualifierIndependentObjectLifetime) {
   auto refs = std::make_shared<std::nullptr_t>();
   {
     AnyInvType fun([refs](auto&&...) noexcept { return 0; });
-    EXPECT_FALSE(refs.unique());
+    EXPECT_GT(refs.use_count(), 1);
 
     std::move(fun)(7, 8, 9);
 
     // Ensure destructor hasn't run even if rref-qualified
-    EXPECT_FALSE(refs.unique());
+    EXPECT_GT(refs.use_count(), 1);
   }
-  EXPECT_TRUE(refs.unique());
+  EXPECT_EQ(refs.use_count(), 1);
 }
 
 // NOTE: This test suite originally attempted to enumerate all possible

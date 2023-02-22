@@ -67,11 +67,9 @@ static void MaybeBecomeIdle() {
 
 #if ABSL_WAITER_MODE == ABSL_WAITER_MODE_FUTEX
 
-Waiter::Waiter() {
-  futex_.store(0, std::memory_order_relaxed);
-}
+Waiter::Waiter() : futex_(0) {}
 
-bool Waiter::Wait(KernelTimeout t) {
+bool Waiter::WaitAbsoluteTimeout(KernelTimeout t) {
   // Loop until we can atomically decrement futex from a positive
   // value, waiting on a futex while we believe it is zero.
   // Note that, since the thread ticker is just reset, we don't need to check
@@ -90,7 +88,8 @@ bool Waiter::Wait(KernelTimeout t) {
     }
 
     if (!first_pass) MaybeBecomeIdle();
-    const int err = Futex::WaitUntil(&futex_, 0, t);
+    auto abs_timeout = t.MakeAbsTimespec();
+    const int err = Futex::WaitAbsoluteTimeout(&futex_, 0, &abs_timeout);
     if (err != 0) {
       if (err == -EINTR || err == -EWOULDBLOCK) {
         // Do nothing, the loop will retry.
@@ -102,6 +101,103 @@ bool Waiter::Wait(KernelTimeout t) {
     }
     first_pass = false;
   }
+}
+
+#ifdef CLOCK_MONOTONIC
+
+// Subtracts the timespec `sub` from `in` if the result would not be negative,
+// and returns true.  Returns false if the result would be negative, and leaves
+// `in` unchanged.
+static bool TimespecSubtract(struct timespec& in, const struct timespec& sub) {
+  if (in.tv_sec < sub.tv_sec) {
+    return false;
+  }
+  if (in.tv_nsec < sub.tv_nsec) {
+    if (in.tv_sec == sub.tv_sec) {
+      return false;
+    }
+    // Borrow from tv_sec.
+    in.tv_sec -= 1;
+    in.tv_nsec += 1'000'000'000;
+  }
+  in.tv_sec -= sub.tv_sec;
+  in.tv_nsec -= sub.tv_nsec;
+  return true;
+}
+
+// On some platforms a background thread periodically calls `Poke()` to briefly
+// wake waiter threads so that they may call `MaybeBecomeIdle()`. This means
+// that `WaitRelativeTimeout()` differs slightly from `WaitAbsoluteTimeout()`
+// because it must adjust the timeout by the amount of time that it has already
+// slept.
+bool Waiter::WaitRelativeTimeout(KernelTimeout t) {
+  struct timespec start;
+  ABSL_RAW_CHECK(clock_gettime(CLOCK_MONOTONIC, &start) == 0,
+                 "clock_gettime() failed");
+
+  // Loop until we can atomically decrement futex from a positive
+  // value, waiting on a futex while we believe it is zero.
+  // Note that, since the thread ticker is just reset, we don't need to check
+  // whether the thread is idle on the very first pass of the loop.
+  bool first_pass = true;
+
+  while (true) {
+    int32_t x = futex_.load(std::memory_order_relaxed);
+    while (x != 0) {
+      if (!futex_.compare_exchange_weak(x, x - 1,
+                                        std::memory_order_acquire,
+                                        std::memory_order_relaxed)) {
+        continue;  // Raced with someone, retry.
+      }
+      return true;  // Consumed a wakeup, we are done.
+    }
+
+    auto relative_timeout = t.MakeRelativeTimespec();
+    if (!first_pass) {
+      MaybeBecomeIdle();
+
+      // Adjust relative_timeout for `Poke()`s.
+      struct timespec now;
+      ABSL_RAW_CHECK(clock_gettime(CLOCK_MONOTONIC, &now) == 0,
+                     "clock_gettime() failed");
+      // If TimespecSubstract(now, start) returns false, then the clock isn't
+      // truly monotonic.
+      if (TimespecSubtract(now, start)) {
+        if (!TimespecSubtract(relative_timeout, now)) {
+          return false;  // Timeout.
+        }
+      }
+    }
+
+    const int err = Futex::WaitRelativeTimeout(&futex_, 0, &relative_timeout);
+    if (err != 0) {
+      if (err == -EINTR || err == -EWOULDBLOCK) {
+        // Do nothing, the loop will retry.
+      } else if (err == -ETIMEDOUT) {
+        return false;
+      } else {
+        ABSL_RAW_LOG(FATAL, "Futex operation failed with error %d\n", err);
+      }
+    }
+    first_pass = false;
+  }
+}
+
+#else  // CLOCK_MONOTONIC
+
+// No support for CLOCK_MONOTONIC.
+// KernelTimeout will automatically convert to an absolute timeout.
+bool Waiter::WaitRelativeTimeout(KernelTimeout t) {
+  return WaitAbsoluteTimeout(t);
+}
+
+#endif  // CLOCK_MONOTONIC
+
+bool Waiter::Wait(KernelTimeout t) {
+  if (t.is_absolute_timeout()) {
+    return WaitAbsoluteTimeout(t);
+  }
+  return WaitRelativeTimeout(t);
 }
 
 void Waiter::Post() {

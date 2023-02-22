@@ -14,6 +14,7 @@
 
 #include "absl/synchronization/internal/kernel_timeout.h"
 
+#include <chrono>  // NOLINT(build/c++11)
 #include <limits>
 
 #include "gtest/gtest.h"
@@ -72,6 +73,11 @@ TEST(KernelTimeout, FiniteTimes) {
     EXPECT_LE(absl::AbsDuration(absl::Milliseconds(t.InMillisecondsFromNow()) -
                                 std::max(duration, absl::ZeroDuration())),
               absl::Milliseconds(5));
+    EXPECT_LE(absl::AbsDuration(absl::FromChrono(t.ToChronoTimePoint()) - when),
+              absl::Microseconds(1));
+    EXPECT_LE(absl::AbsDuration(absl::FromChrono(t.ToChronoDuration()) -
+                                std::max(duration, absl::ZeroDuration())),
+              kTimingBound);
   }
 }
 
@@ -90,6 +96,9 @@ TEST(KernelTimeout, InfiniteFuture) {
             absl::Now() + absl::Hours(100000));
   EXPECT_EQ(t.InMillisecondsFromNow(),
             std::numeric_limits<KernelTimeout::DWord>::max());
+  EXPECT_EQ(t.ToChronoTimePoint(),
+            std::chrono::time_point<std::chrono::system_clock>::max());
+  EXPECT_GE(t.ToChronoDuration(), std::chrono::nanoseconds::max());
 }
 
 TEST(KernelTimeout, DefaultConstructor) {
@@ -108,6 +117,9 @@ TEST(KernelTimeout, DefaultConstructor) {
             absl::Now() + absl::Hours(100000));
   EXPECT_EQ(t.InMillisecondsFromNow(),
             std::numeric_limits<KernelTimeout::DWord>::max());
+  EXPECT_EQ(t.ToChronoTimePoint(),
+            std::chrono::time_point<std::chrono::system_clock>::max());
+  EXPECT_GE(t.ToChronoDuration(), std::chrono::nanoseconds::max());
 }
 
 TEST(KernelTimeout, TimeMaxNanos) {
@@ -126,6 +138,9 @@ TEST(KernelTimeout, TimeMaxNanos) {
             absl::Now() + absl::Hours(100000));
   EXPECT_EQ(t.InMillisecondsFromNow(),
             std::numeric_limits<KernelTimeout::DWord>::max());
+  EXPECT_EQ(t.ToChronoTimePoint(),
+            std::chrono::time_point<std::chrono::system_clock>::max());
+  EXPECT_GE(t.ToChronoDuration(), std::chrono::nanoseconds::max());
 }
 
 TEST(KernelTimeout, Never) {
@@ -144,6 +159,9 @@ TEST(KernelTimeout, Never) {
             absl::Now() + absl::Hours(100000));
   EXPECT_EQ(t.InMillisecondsFromNow(),
             std::numeric_limits<KernelTimeout::DWord>::max());
+  EXPECT_EQ(t.ToChronoTimePoint(),
+            std::chrono::time_point<std::chrono::system_clock>::max());
+  EXPECT_GE(t.ToChronoDuration(), std::chrono::nanoseconds::max());
 }
 
 TEST(KernelTimeout, InfinitePast) {
@@ -157,6 +175,9 @@ TEST(KernelTimeout, InfinitePast) {
             absl::ZeroDuration());
   EXPECT_LE(absl::FromUnixNanos(t.MakeAbsNanos()), absl::FromUnixNanos(1));
   EXPECT_EQ(t.InMillisecondsFromNow(), KernelTimeout::DWord{0});
+  EXPECT_LT(t.ToChronoTimePoint(), std::chrono::system_clock::from_time_t(0) +
+                                       std::chrono::seconds(1));
+  EXPECT_EQ(t.ToChronoDuration(), std::chrono::nanoseconds(0));
 }
 
 TEST(KernelTimeout, FiniteDurations) {
@@ -186,6 +207,10 @@ TEST(KernelTimeout, FiniteDurations) {
               absl::Milliseconds(5));
     EXPECT_LE(absl::Milliseconds(t.InMillisecondsFromNow()) - duration,
               absl::Milliseconds(5));
+    EXPECT_LE(absl::AbsDuration(absl::Now() + duration -
+                                absl::FromChrono(t.ToChronoTimePoint())),
+              kTimingBound);
+    EXPECT_EQ(absl::FromChrono(t.ToChronoDuration()), duration);
   }
 }
 
@@ -218,6 +243,10 @@ TEST(KernelTimeout, NegativeDurations) {
         absl::AbsDuration(absl::Now() - absl::FromUnixNanos(t.MakeAbsNanos())),
         absl::Milliseconds(5));
     EXPECT_EQ(t.InMillisecondsFromNow(), KernelTimeout::DWord{0});
+    EXPECT_LE(absl::AbsDuration(absl::Now() -
+                                absl::FromChrono(t.ToChronoTimePoint())),
+              absl::Milliseconds(5));
+    EXPECT_EQ(t.ToChronoDuration(), std::chrono::nanoseconds(0));
   }
 }
 
@@ -236,6 +265,9 @@ TEST(KernelTimeout, InfiniteDuration) {
             absl::Now() + absl::Hours(100000));
   EXPECT_EQ(t.InMillisecondsFromNow(),
             std::numeric_limits<KernelTimeout::DWord>::max());
+  EXPECT_EQ(t.ToChronoTimePoint(),
+            std::chrono::time_point<std::chrono::system_clock>::max());
+  EXPECT_GE(t.ToChronoDuration(), std::chrono::nanoseconds::max());
 }
 
 TEST(KernelTimeout, DurationMaxNanos) {
@@ -254,6 +286,9 @@ TEST(KernelTimeout, DurationMaxNanos) {
             absl::Now() + absl::Hours(100000));
   EXPECT_EQ(t.InMillisecondsFromNow(),
             std::numeric_limits<KernelTimeout::DWord>::max());
+  EXPECT_EQ(t.ToChronoTimePoint(),
+            std::chrono::time_point<std::chrono::system_clock>::max());
+  EXPECT_GE(t.ToChronoDuration(), std::chrono::nanoseconds::max());
 }
 
 TEST(KernelTimeout, OverflowNanos) {
@@ -273,6 +308,9 @@ TEST(KernelTimeout, OverflowNanos) {
             absl::Now() + absl::Hours(100000));
   EXPECT_LE(absl::Milliseconds(t.InMillisecondsFromNow()) - duration,
             absl::Milliseconds(5));
+  EXPECT_GT(t.ToChronoTimePoint(),
+            std::chrono::system_clock::now() + std::chrono::hours(100000));
+  EXPECT_GT(t.ToChronoDuration(), std::chrono::hours(100000));
 }
 
 }  // namespace

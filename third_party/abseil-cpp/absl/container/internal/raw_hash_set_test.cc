@@ -2056,7 +2056,8 @@ bool IsAssertEnabled() {
 }
 
 TEST(TableDeathTest, InvalidIteratorAsserts) {
-  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
+  if (!IsAssertEnabled() && !SwisstableGenerationsEnabled())
+    GTEST_SKIP() << "Assertions not enabled.";
 
   IntTable t;
   // Extra simple "regexp" as regexp support is highly varied across platforms.
@@ -2068,9 +2069,12 @@ TEST(TableDeathTest, InvalidIteratorAsserts) {
   t.insert(0);
   iter = t.begin();
   t.erase(iter);
-  EXPECT_DEATH_IF_SUPPORTED(++iter,
-                            "operator.* called on invalid iterator. The "
-                            "element might have been erased");
+  const char* const kErasedDeathMessage =
+      SwisstableGenerationsEnabled()
+          ? "operator.* called on invalid iterator.*was likely erased"
+          : "operator.* called on invalid iterator.*might have been "
+            "erased.*config=asan";
+  EXPECT_DEATH_IF_SUPPORTED(++iter, kErasedDeathMessage);
 }
 
 // Invalid iterator use can trigger heap-use-after-free in asan,
@@ -2087,7 +2091,8 @@ constexpr bool kMsvc = false;
 #endif
 
 TEST(TableDeathTest, IteratorInvalidAssertsEqualityOperator) {
-  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
+  if (!IsAssertEnabled() && !SwisstableGenerationsEnabled())
+    GTEST_SKIP() << "Assertions not enabled.";
 
   IntTable t;
   t.insert(1);
@@ -2100,8 +2105,9 @@ TEST(TableDeathTest, IteratorInvalidAssertsEqualityOperator) {
   t.erase(iter1);
   // Extra simple "regexp" as regexp support is highly varied across platforms.
   const char* const kErasedDeathMessage =
-      "Invalid iterator comparison. The element might have .*been erased or "
-      "the table might have rehashed.";
+      SwisstableGenerationsEnabled()
+          ? "Invalid iterator comparison.*was likely erased"
+          : "Invalid iterator comparison.*might have been erased.*config=asan";
   EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kErasedDeathMessage);
   EXPECT_DEATH_IF_SUPPORTED(void(iter2 != iter1), kErasedDeathMessage);
   t.erase(iter2);
@@ -2114,17 +2120,20 @@ TEST(TableDeathTest, IteratorInvalidAssertsEqualityOperator) {
   iter2 = t2.begin();
   const char* const kContainerDiffDeathMessage =
       SwisstableGenerationsEnabled()
-          ? "Invalid iterator comparison.*non-end"
-          : "Invalid iterator comparison. The iterators may be from different "
-            ".*containers or the container might have rehashed.";
+          ? "Invalid iterator comparison.*iterators from different hashtables"
+          : "Invalid iterator comparison.*may be from different "
+            ".*containers.*config=asan";
   EXPECT_DEATH_IF_SUPPORTED(void(iter1 == iter2), kContainerDiffDeathMessage);
   EXPECT_DEATH_IF_SUPPORTED(void(iter2 == iter1), kContainerDiffDeathMessage);
 
   for (int i = 0; i < 10; ++i) t1.insert(i);
   // There should have been a rehash in t1.
   if (kMsvc) return;  // MSVC doesn't support | in regex.
-  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == t1.begin()),
-                            kInvalidIteratorDeathMessage);
+  const char* const kRehashedDeathMessage =
+      SwisstableGenerationsEnabled()
+          ? kInvalidIteratorDeathMessage
+          : "Invalid iterator comparison.*might have rehashed.*config=asan";
+  EXPECT_DEATH_IF_SUPPORTED(void(iter1 == t1.begin()), kRehashedDeathMessage);
 }
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)

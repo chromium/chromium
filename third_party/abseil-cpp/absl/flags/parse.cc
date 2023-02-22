@@ -190,7 +190,7 @@ bool ArgsList::ReadFromFlagfile(const std::string& flag_file_name) {
 
   // This argument represents fake argv[0], which should be present in all arg
   // lists.
-  args_.push_back("");
+  args_.emplace_back("");
 
   std::string line;
   bool success = true;
@@ -212,7 +212,7 @@ bool ArgsList::ReadFromFlagfile(const std::string& flag_file_name) {
         break;
       }
 
-      args_.push_back(std::string(stripped));
+      args_.emplace_back(stripped);
       continue;
     }
 
@@ -367,7 +367,7 @@ bool ReadFlagsFromEnv(const std::vector<std::string>& flag_names,
 
   // This argument represents fake argv[0], which should be present in all arg
   // lists.
-  args.push_back("");
+  args.emplace_back("");
 
   for (const auto& flag_name : flag_names) {
     // Avoid infinite recursion.
@@ -680,7 +680,7 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
   std::vector<std::string> flagfile_value;
 
   std::vector<ArgsList> input_args;
-  input_args.push_back(ArgsList(argc, argv));
+  input_args.emplace_back(argc, argv);
 
   std::vector<char*> output_args;
   std::vector<char*> positional_args;

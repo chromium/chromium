@@ -130,7 +130,7 @@ class optional : private optional_internal::optional_data<T>,
 
   // Constructs an `optional` holding an empty value, NOT a default constructed
   // `T`.
-  constexpr optional() noexcept {}
+  constexpr optional() noexcept = default;
 
   // Constructs an `optional` initialized with `nullopt` to hold an empty value.
   constexpr optional(nullopt_t) noexcept {}  // NOLINT(runtime/explicit)

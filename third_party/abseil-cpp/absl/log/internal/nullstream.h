@@ -114,7 +114,7 @@ class NullStreamMaybeFatal final : public NullStream {
 // and expression-defined severity use `NullStreamMaybeFatal` above.
 class NullStreamFatal final : public NullStream {
  public:
-  NullStreamFatal() {}
+  NullStreamFatal() = default;
   // ABSL_ATTRIBUTE_NORETURN doesn't seem to work on destructors with msvc, so
   // disable msvc's warning about the d'tor never returning.
 #if defined(_MSC_VER) && !defined(__clang__)
