@@ -164,6 +164,18 @@ void StreamingReceiverSessionClient::OnVideoConfigUpdated(
                                 video_config.video_transformation());
 }
 
+void StreamingReceiverSessionClient::OnStreamingSessionEnded() {
+  // The streaming session will only "end" (as opposed to being "renegotated"
+  // when a new config is sent or the stream changes between mirroring and
+  // remoting) when the session completely exits. This occurs either when there
+  // is an error in the runtime or the when sender-side ends the streaming
+  // session.
+  //
+  // In either case, the result is an unsupported state for the
+  // StreamingRuntimeApplication, so an error.
+  TriggerError();
+}
+
 void StreamingReceiverSessionClient::TriggerError() {
   if (!is_healthy()) {
     return;

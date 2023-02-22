@@ -238,6 +238,10 @@ void ReceiverSessionImpl::OnSessionEnded() {
   // Cast Streaming Session ending was initiated by the receiver component.
   audio_demuxer_stream_data_provider_.reset();
   video_demuxer_stream_data_provider_.reset();
+
+  if (client_) {
+    client_->OnStreamingSessionEnded();
+  }
 }
 
 void ReceiverSessionImpl::PreloadBuffersAndStartPlayback() {

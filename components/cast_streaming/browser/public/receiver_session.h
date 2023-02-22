@@ -48,6 +48,9 @@ class ReceiverSession {
         const media::AudioDecoderConfig& audio_config) = 0;
     virtual void OnVideoConfigUpdated(
         const media::VideoDecoderConfig& video_config) = 0;
+
+    // Called when the streaming session ends.
+    virtual void OnStreamingSessionEnded() = 0;
   };
 
   // Provides controls for a media::Renderer instance. Methods are a subset of
