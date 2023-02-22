@@ -82,10 +82,9 @@ std::string UnwrapGetAssistantSettingsResponse(
     const GetAssistantSettingsResponse& response,
     bool include_header) {
   const auto& response_details = response.response_details();
-  DCHECK(response_details.has_status());
-
-  if (response_details.status() ==
-      ::assistant::api::ResponseDetails_Status_SUCCESS) {
+  if (response_details.has_status() &&
+      response_details.status() ==
+          ::assistant::api::ResponseDetails_Status_SUCCESS) {
     DCHECK(response.has_get_settings_ui_response() &&
            response.get_settings_ui_response().has_settings());
 
@@ -96,24 +95,28 @@ std::string UnwrapGetAssistantSettingsResponse(
                : response.get_settings_ui_response()
                      .settings()
                      .SerializeAsString();
-  } else {
-    // TODO(xiaohuic): figure out how to log through libassistant.
-    LOG(ERROR) << "Get settings request error with status: "
-               << static_cast<int>(response_details.status());
-    LOG(ERROR) << "Error message: " << response_details.error_message();
-
-    // Upon failure, returns an empty string.
-    return "";
   }
+
+  // TODO(xiaohuic): figure out how to log through libassistant.
+  LOG(ERROR) << "GetAssistantSettings request failed.";
+  if (response_details.has_status()) {
+    LOG(ERROR) << "Failed with status: "
+               << static_cast<int>(response_details.status());
+  }
+  if (response_details.has_error_message()) {
+    LOG(ERROR) << "Error message: " << response_details.error_message();
+  }
+
+  // Upon failure, returns an empty string.
+  return "";
 }
 
 std::string UnwrapUpdateAssistantSettingsResponse(
     const UpdateAssistantSettingsResponse& response) {
   const auto& response_details = response.response_details();
-  DCHECK(response_details.has_status());
-
-  if (response_details.status() ==
-      ::assistant::api::ResponseDetails_Status_SUCCESS) {
+  if (response_details.has_status() &&
+      response_details.status() ==
+          ::assistant::api::ResponseDetails_Status_SUCCESS) {
     DCHECK(response.has_update_settings_ui_response() &&
            response.update_settings_ui_response().has_update_result());
 
@@ -121,16 +124,20 @@ std::string UnwrapUpdateAssistantSettingsResponse(
     return response.update_settings_ui_response()
         .update_result()
         .SerializeAsString();
-  } else {
-    // TODO(xiaohuic): figure out how to log through libassistant.
-    DCHECK(response_details.has_error_message());
-    LOG(ERROR) << "UpdateAssistantSettings request failed with status: "
-               << static_cast<int>(response_details.status());
-    LOG(ERROR) << "ERROR message: " << response_details.error_message();
-
-    // Upon failure, returns an empty string.
-    return "";
   }
+
+  // TODO(xiaohuic): figure out how to log through libassistant.
+  LOG(ERROR) << "UpdateAssistantSettings request failed.";
+  if (response_details.has_status()) {
+    LOG(ERROR) << "Failed with status: "
+               << static_cast<int>(response_details.status());
+  }
+  if (response_details.has_error_message()) {
+    LOG(ERROR) << "ERROR message: " << response_details.error_message();
+  }
+
+  // Upon failure, returns an empty string.
+  return "";
 }
 
 }  // namespace ash::libassistant
