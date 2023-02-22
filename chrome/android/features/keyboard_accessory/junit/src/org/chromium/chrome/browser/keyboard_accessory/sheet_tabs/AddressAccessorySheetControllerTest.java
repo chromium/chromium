@@ -15,15 +15,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.getHistogramForType;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.ADDRESS_INFO;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.TITLE;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.ADDRESS_INFO;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.TITLE;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.getType;
 
 import android.graphics.drawable.Drawable;
 
-import androidx.recyclerview.widget.RecyclerView;
-
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +44,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.ListObservable;
 
@@ -59,12 +59,12 @@ public class AddressAccessorySheetControllerTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
-    private RecyclerView mMockView;
+    private AccessorySheetTabView mMockView;
     @Mock
     private ListObservable.ListObserver<Void> mMockItemListObserver;
 
     private AddressAccessorySheetCoordinator mCoordinator;
-    private AccessorySheetTabModel mSheetDataPieces;
+    private AccessorySheetTabItemsModel mSheetDataPieces;
 
     @Before
     public void setUp() {
@@ -74,6 +74,11 @@ public class AddressAccessorySheetControllerTest {
         mCoordinator = new AddressAccessorySheetCoordinator(RuntimeEnvironment.application, null);
         assertNotNull(mCoordinator);
         mSheetDataPieces = mCoordinator.getSheetDataPiecesForTesting();
+    }
+
+    @After
+    public void tearDown() {
+        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
     }
 
     @Test
@@ -92,6 +97,18 @@ public class AddressAccessorySheetControllerTest {
         assertNotNull(tab.getListener());
         tab.getListener().onTabCreated(mMockView);
         verify(mMockView).setAdapter(any());
+    }
+
+    @Test
+    public void testRequestDefaultFocus() {
+        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+
+        when(mMockView.getParent()).thenReturn(mMockView);
+        KeyboardAccessoryData.Tab tab = mCoordinator.getTab();
+        tab.getListener().onTabCreated(mMockView);
+        tab.getListener().onTabShown();
+
+        verify(mMockView).requestDefaultA11yFocus();
     }
 
     @Test

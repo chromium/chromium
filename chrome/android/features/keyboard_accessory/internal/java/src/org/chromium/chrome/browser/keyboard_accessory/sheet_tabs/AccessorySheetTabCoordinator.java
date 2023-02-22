@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.IS_DEFAULT_A11Y_FOCUS_REQUESTED;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.SCROLL_LISTENER;
+
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
@@ -20,6 +24,8 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * This coordinator aims to be the base class for sheets to be added to the ManualFillingCoordinator
@@ -28,6 +34,8 @@ import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryData.Tab.Listener {
     private final KeyboardAccessoryData.Tab mTab;
     private final RecyclerView.OnScrollListener mScrollListener;
+
+    protected final PropertyModel mModel;
 
     /**
      * Provides the icon used for a sheet. Simplifies mocking in controller tests.
@@ -58,23 +66,30 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
      * @param title A {@link String} permanently displayed in the bar above the keyboard.
      * @param icon The icon that represents this sheet in the keyboard accessory tab switcher.
      * @param contentDescription A description for this sheet used in the tab switcher.
-     * @param openingAnnouncement The announced string when opening this sheet.
      * @param layout The layout containing all views that are used by this sheet.
      * @param tabType The type of this tab as used in histograms.
      * @param scrollListener An optional listener that will be bound to an inflated recycler view.
      */
     AccessorySheetTabCoordinator(String title, Drawable icon, String contentDescription,
-            String openingAnnouncement, @LayoutRes int layout, @AccessoryTabType int tabType,
+            @LayoutRes int layout, @AccessoryTabType int tabType,
             @Nullable RecyclerView.OnScrollListener scrollListener) {
         mTab = new KeyboardAccessoryData.Tab(
-                title, icon, contentDescription, openingAnnouncement, layout, tabType, this);
+                title, icon, contentDescription, layout, tabType, this);
         mScrollListener = scrollListener;
+        mModel = new PropertyModel.Builder(AccessorySheetTabProperties.ALL_KEYS)
+                         .with(ITEMS, new AccessorySheetTabItemsModel())
+                         .with(SCROLL_LISTENER, scrollListener)
+                         .with(IS_DEFAULT_A11Y_FOCUS_REQUESTED, false)
+                         .build();
     }
 
     @CallSuper
     @Override
     public void onTabCreated(ViewGroup view) {
         AccessorySheetTabViewBinder.initializeView((RecyclerView) view, mScrollListener);
+
+        PropertyModelChangeProcessor.create(
+                mModel, (AccessorySheetTabView) view, AccessorySheetTabViewBinder::bind);
     }
 
     @CallSuper
@@ -106,5 +121,10 @@ public abstract class AccessorySheetTabCoordinator implements KeyboardAccessoryD
      */
     public void registerDataProvider(Provider<AccessorySheetData> sheetDataProvider) {
         sheetDataProvider.addObserver(getMediator());
+    }
+
+    @VisibleForTesting
+    AccessorySheetTabItemsModel getSheetDataPiecesForTesting() {
+        return mModel.get(ITEMS);
     }
 }

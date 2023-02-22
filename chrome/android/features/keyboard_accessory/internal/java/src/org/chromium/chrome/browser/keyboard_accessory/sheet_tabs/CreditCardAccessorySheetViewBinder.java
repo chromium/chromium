@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
@@ -149,7 +149,7 @@ class CreditCardAccessorySheetViewBinder {
         }
     }
 
-    static void initializeView(RecyclerView view, AccessorySheetTabModel model) {
+    static void initializeView(RecyclerView view, AccessorySheetTabItemsModel model) {
         view.setAdapter(new RecyclerViewAdapter<>(
                 new SimpleRecyclerViewMcp<>(model, AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),

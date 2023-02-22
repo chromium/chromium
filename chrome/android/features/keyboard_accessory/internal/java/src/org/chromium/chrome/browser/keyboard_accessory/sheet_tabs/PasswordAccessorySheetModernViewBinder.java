@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.utils.InsecureFillingDialogUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -95,7 +95,7 @@ class PasswordAccessorySheetModernViewBinder {
         }
     }
 
-    static void initializeView(RecyclerView view, AccessorySheetTabModel model) {
+    static void initializeView(RecyclerView view, AccessorySheetTabItemsModel model) {
         view.setAdapter(PasswordAccessorySheetCoordinator.createModernAdapter(model));
         view.addItemDecoration(new DynamicInfoViewBottomSpacer(PasswordAccessoryInfoView.class));
     }

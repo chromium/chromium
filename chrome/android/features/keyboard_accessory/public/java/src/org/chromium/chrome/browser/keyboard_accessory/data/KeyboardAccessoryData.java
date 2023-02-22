@@ -29,7 +29,6 @@ public class KeyboardAccessoryData {
     public static final class Tab {
         private final String mTitle;
         private Drawable mIcon;
-        private final @Nullable String mOpeningAnnouncement;
         private final String mContentDescription;
         private final int mTabLayout;
         private final @AccessoryTabType int mRecordingType;
@@ -55,16 +54,9 @@ public class KeyboardAccessoryData {
 
         public Tab(String title, Drawable icon, String contentDescription, @LayoutRes int tabLayout,
                 @AccessoryTabType int recordingType, @Nullable Listener listener) {
-            this(title, icon, contentDescription, null, tabLayout, recordingType, listener);
-        }
-
-        public Tab(String title, Drawable icon, String contentDescription,
-                @Nullable String openingAnnouncement, @LayoutRes int tabLayout,
-                @AccessoryTabType int recordingType, @Nullable Listener listener) {
             mTitle = title;
             mIcon = icon;
             mContentDescription = contentDescription;
-            mOpeningAnnouncement = openingAnnouncement;
             mTabLayout = tabLayout;
             mListener = listener;
             mRecordingType = recordingType;
@@ -106,14 +98,6 @@ public class KeyboardAccessoryData {
          */
         public String getContentDescription() {
             return mContentDescription;
-        }
-
-        /**
-         * An optional announcement triggered when the Tab is opened.
-         * @return A string describing the contents of this tab.
-         */
-        public String getOpeningAnnouncement() {
-            return mOpeningAnnouncement;
         }
 
         /**

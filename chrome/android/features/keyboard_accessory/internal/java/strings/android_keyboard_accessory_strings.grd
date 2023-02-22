@@ -215,40 +215,31 @@
         Alternative filling options available above the keyboard
       </message>
       <message name="IDS_KEYBOARD_ACCESSORY_SHEET_HIDE" desc="Description for the active icon button that closes an accessory sheet and brings back the keyboard.">
-          Show keyboard
+        Show keyboard
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_FILL_WITH_CHROME" desc="Text in In-Product-Help bubble suggesting to use an autofill suggestion provided by Chrome.">
-          Use Chrome autofill suggestion
+        Use Chrome autofill suggestion
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_SWIPE_FOR_MORE" desc="Text in In-Product-Help bubble suggesting to scroll the accessory to reveal more suggestions.">
-          Swipe to see more suggestions
+        Swipe to see more suggestions
       </message>
       <message name="IDS_PASSWORD_GENERATION_ACCESSORY_BUTTON" desc="Text for the button used to generate a password.">
-          Suggest strong password
+        Suggest strong password
       </message>
       <message name="IDS_PASSWORD_GENERATION_ACCESSORY_BUTTON_SHORT" desc="Shortened text for the button used to generate a password. This is used for devices with small screen.">
-          Suggest password
+        Suggest password
       </message>
       <message name="IDS_PASSWORD_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the password accessory sheet.">
-          Show passwords
-      </message>
-      <message name="IDS_PASSWORD_ACCESSORY_SHEET_OPENED" desc="Accessibility announcement when opening a password bottom sheet containing saved credentials and options like managing and generating passwords.">
-          Showing saved passwords and password options
+        Show saved passwords and password options
       </message>
       <message name="IDS_ADDRESS_ACCESSORY_SHEET_TITLE" desc="Text used as title for the address accessory sheet.">
-          Addresses
+        Addresses
       </message>
       <message name="IDS_ADDRESS_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the address accessory sheet.">
-          Show Addresses
-      </message>
-      <message name="IDS_ADDRESS_ACCESSORY_SHEET_OPENED" desc="Accessibility announcement when opening an address bottom sheet containing saved addresses.">
-          Showing saved addresses
+        Show saved addresses
       </message>
       <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_TOGGLE" desc="Description for the icon button used to open and close the payment method accessory sheet, where users' saved payment methods (e.g., credit cards) are shown for use when filling web forms.">
-        Show payment methods
-      </message>
-      <message name="IDS_CREDIT_CARD_ACCESSORY_SHEET_OPENED" desc="Accessibility announcement when opening a sheet containing users' saved payment methods (e.g., credit cards) for use when filling web forms.">
-        Showing saved payment methods
+        Show saved payment methods
       </message>
       <message name="IDS_IPH_KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARDS" desc="Text used for the In-Product-Help bubble suggesting that the current credit card suggestion is a virtual card.">
         Use your virtual card for added security

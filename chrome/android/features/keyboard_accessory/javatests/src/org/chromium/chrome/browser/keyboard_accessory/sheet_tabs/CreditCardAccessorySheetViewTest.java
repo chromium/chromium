@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -71,7 +71,7 @@ public class CreditCardAccessorySheetViewTest {
     private static final Bitmap TEST_CARD_ART_IMAGE =
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
 
-    private AccessorySheetTabModel mModel;
+    private AccessorySheetTabItemsModel mModel;
     private AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Rule
@@ -87,7 +87,7 @@ public class CreditCardAccessorySheetViewTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         PersonalDataManager.setInstanceForTesting(mMockPersonalDataManager);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = new AccessorySheetTabModel();
+            mModel = new AccessorySheetTabItemsModel();
             AccessorySheetCoordinator accessorySheet =
                     new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(
                             R.id.keyboard_accessory_sheet_stub));

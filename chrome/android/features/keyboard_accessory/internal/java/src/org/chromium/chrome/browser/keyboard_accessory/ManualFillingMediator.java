@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -67,6 +68,7 @@ import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -498,6 +500,7 @@ class ManualFillingMediator
                 ViewUtils.requestLayout(compositorViewHolderSupplier.get(),
                         "ManualFillingMediator.enforceStateProperties");
             }
+            trySetA11yFocusOnWebContents();
         }
         TraceEvent.end("ManualFillingMediator#enforceStateProperties");
     }
@@ -633,6 +636,21 @@ class ManualFillingMediator
      */
     private @Nullable Tab getActiveBrowserTab() {
         return mActivity.getActivityTabProvider().get();
+    }
+
+    /**
+     * @return {@link WebContentsAccessibility} instance of the active tab, if available.
+     */
+    private @Nullable WebContentsAccessibility getActiveWebContentsAccessibility() {
+        if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) return null;
+
+        Tab tab = getActiveBrowserTab();
+        if (tab == null) return null;
+
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return null;
+
+        return WebContentsAccessibility.fromWebContents(webContents);
     }
 
     /**
@@ -805,6 +823,13 @@ class ManualFillingMediator
                 return "FLOATING_SHEET";
         }
         return null;
+    }
+
+    private void trySetA11yFocusOnWebContents() {
+        WebContentsAccessibility accessibility = getActiveWebContentsAccessibility();
+        if (accessibility != null) {
+            accessibility.restoreFocus();
+        }
     }
 
     @VisibleForTesting

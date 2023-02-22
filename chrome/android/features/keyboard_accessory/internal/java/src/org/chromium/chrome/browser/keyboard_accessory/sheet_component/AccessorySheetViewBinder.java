@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -32,9 +31,6 @@ class AccessorySheetViewBinder {
         } else if (propertyKey == VISIBLE) {
             view.bringToFront(); // Ensure toolbars and other containers are overlaid.
             view.setVisibility(model.get(VISIBLE) ? View.VISIBLE : View.GONE);
-            if (model.get(VISIBLE) && model.get(ACTIVE_TAB_INDEX) != NO_ACTIVE_TAB) {
-                announceOpenedTab(view, model.get(TABS).get(model.get(ACTIVE_TAB_INDEX)));
-            }
         } else if (propertyKey == HEIGHT) {
             ViewGroup.LayoutParams p = view.getLayoutParams();
             p.height = model.get(HEIGHT);
@@ -52,10 +48,5 @@ class AccessorySheetViewBinder {
         } else {
             assert false : "Every possible property update needs to be handled!";
         }
-    }
-
-    static void announceOpenedTab(View announcer, KeyboardAccessoryData.Tab tab) {
-        if (tab.getOpeningAnnouncement() == null) return;
-        announcer.announceForAccessibility(tab.getOpeningAnnouncement());
     }
 }

@@ -17,7 +17,8 @@ import java.lang.annotation.RetentionPolicy;
  * This class describes the {@link ListModel} used for keyboard accessory sheets like the
  * {@link PasswordAccessorySheetCoordinator}.
  */
-class AccessorySheetTabModel extends ListModel<AccessorySheetTabModel.AccessorySheetDataPiece> {
+class AccessorySheetTabItemsModel
+        extends ListModel<AccessorySheetTabItemsModel.AccessorySheetDataPiece> {
     /**
      * The {@link AccessorySheetData} has to be mapped to single items in a {@link RecyclerView}.
      * This class allows wrapping the {@link AccessorySheetData} into small chunks that are

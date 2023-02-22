@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
+import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AddressAccessorySheetViewTest {
-    private AccessorySheetTabModel mModel;
+    private AccessorySheetTabItemsModel mModel;
     private AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
     @Rule
@@ -63,7 +63,7 @@ public class AddressAccessorySheetViewTest {
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = new AccessorySheetTabModel();
+            mModel = new AccessorySheetTabItemsModel();
 
             AccessorySheetCoordinator accessorySheet =
                     new AccessorySheetCoordinator(mActivityTestRule.getActivity().findViewById(

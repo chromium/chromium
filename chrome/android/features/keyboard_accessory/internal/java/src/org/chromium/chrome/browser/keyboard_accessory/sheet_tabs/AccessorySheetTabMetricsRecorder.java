@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.getHistogramForType;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.ADDRESS_INFO;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.CREDIT_CARD_INFO;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.PASSWORD_INFO;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.PROMO_CODE_INFO;
-import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.getType;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.ADDRESS_INFO;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.CREDIT_CARD_INFO;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PASSWORD_INFO;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.Type.PROMO_CODE_INFO;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabItemsModel.AccessorySheetDataPiece.getType;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -35,7 +35,7 @@ class AccessorySheetTabMetricsRecorder {
      * @param suggestionList The list containing all suggestions.
      */
     static void recordSheetSuggestions(@AccessoryTabType int tabType,
-            ListModel<AccessorySheetTabModel.AccessorySheetDataPiece> suggestionList) {
+            ListModel<AccessorySheetTabItemsModel.AccessorySheetDataPiece> suggestionList) {
         int interactiveSuggestions = 0;
         for (int i = 0; i < suggestionList.size(); ++i) {
             if (getType(suggestionList.get(i)) == PASSWORD_INFO
