@@ -82,7 +82,7 @@ class BlinkTool(Host):
             PrintBaselines(),
             PrintExpectations(),
             Rebaseline(),
-            RebaselineCL(),
+            RebaselineCL(self),
             RebaselineTest(),
             UpdateMetadata(self),
         ]

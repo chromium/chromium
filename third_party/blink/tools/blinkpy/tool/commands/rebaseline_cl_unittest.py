@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
+import io
 import json
 import logging
 import optparse
@@ -14,6 +16,7 @@ from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.log_testing import LoggingTestCase
+from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.rebaseline import TestBaselineSet
 from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
@@ -26,7 +29,7 @@ from unittest import mock
     'blinkpy.common.net.rpc.BuildbucketClient.execute_batch', lambda self: [])
 class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
-    command_constructor = RebaselineCL
+    command_constructor = lambda self: RebaselineCL(MockBlinkTool())
 
     def setUp(self):
         BaseTestCase.setUp(self)
@@ -887,3 +890,16 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         ])
         self.assertEqual(exit_code, 0)
         self.assertEqual(self.command.selected_try_bots, frozenset(builders))
+
+    def test_invalid_explicit_builder_list(self):
+        message = io.StringIO()
+        with contextlib.redirect_stderr(message):
+            with self.assertRaises(SystemExit):
+                self.command.main(['--builders=does-not-exist'])
+        self.assertRegex(message.getvalue(),
+                         "'does-not-exist' is not a try builder")
+        self.assertRegex(message.getvalue(), 'MOCK Try Linux\n')
+        self.assertRegex(message.getvalue(),
+                         'MOCK Try Linux \(CQ duplicate\)\n')
+        self.assertRegex(message.getvalue(), 'MOCK Try Mac\n')
+        self.assertRegex(message.getvalue(), 'MOCK Try Win\n')

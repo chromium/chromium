@@ -62,7 +62,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         type='int',
         help='Patchset number to fetch results from.')
 
-    def __init__(self):
+    def __init__(self, tool):
         super(RebaselineCL, self).__init__(options=[
             self.only_changed_tests_option,
             self.no_trigger_jobs_option,
@@ -79,8 +79,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             self.test_name_file_option,
             optparse.make_option(
                 '--builders',
-                default=None,
-                action='append',
+                default=set(),
+                type='string',
+                callback=self._check_builders,
+                action='callback',
                 help=('Comma-separated-list of builders to pull new baselines '
                       'from (can also be provided multiple times).')),
             self.patchset_option,
@@ -93,9 +95,33 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             self.dry_run_option,
             self.results_directory_option,
         ])
+        self._tool = tool
         self.git_cl = None
         self._builders = []
         self._resultdb_fetcher = False
+
+    def _check_builders(self, option, _opt_str, value, parser):
+        selected_builders = getattr(parser.values, option.dest, set())
+        # This set includes CQ builders, whereas `builder_for_rebaselining()`
+        # does not.
+        allowed_builders = {
+            builder
+            for builder in self._tool.builders.all_try_builder_names()
+            if not self._tool.builders.uses_wptrunner(builder)
+        }
+        for builder in value.split(','):
+            if builder in allowed_builders:
+                selected_builders.add(builder)
+            else:
+                lines = [
+                    "'%s' is not a try builder." % builder,
+                    '',
+                    "The try builders that 'rebaseline-cl' recognizes are:",
+                ]
+                lines.extend('  * %s' % builder
+                             for builder in sorted(allowed_builders))
+                raise optparse.OptionValueError('\n'.join(lines))
+        setattr(parser.values, option.dest, selected_builders)
 
     def execute(self, options, args, tool):
         self._tool = tool
@@ -190,26 +216,9 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
     @property
     def selected_try_bots(self):
-        try_builders = set()
         if self._builders:
-            for builder_names in self._builders:
-                try_builders.update(builder_names.split(','))
-        else:
-            try_builders.update(
-                self._tool.builders.builders_for_rebaselining())
-
-        return set([
-            builder for builder in try_builders
-            if not self._tool.builders.uses_wptrunner(builder)
-        ])
-
-    @property
-    def cq_try_bots(self):
-        return frozenset(self._tool.builders.all_cq_try_builder_names())
-
-    @property
-    def try_bots_with_cq_mirror(self):
-        return self._tool.builders.try_bots_with_cq_mirror()
+            return set(self._builders)
+        return self._tool.builders.builders_for_rebaselining()
 
     def _fetch_results(self, jobs):
         """Fetches results for all of the given builds.
