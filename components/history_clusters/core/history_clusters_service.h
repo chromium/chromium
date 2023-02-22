@@ -144,7 +144,9 @@ class HistoryClustersService : public base::SupportsUserData,
   void CompleteVisitContextAnnotationsIfReady(int64_t nav_id);
 
   // Returns the freshest clusters created from the user visit history based on
-  // `query`, `begin_time`, and `continuation_params`.
+  // `query`, `filter_params`, `begin_time`, and `continuation_params`.
+  // - `filter_params` represents how the caller wants the clusters to be
+  // filtered.
   // - `begin_time` is an inclusive lower bound. In the general case where the
   //   caller wants to traverse to the start of history, `base::Time()` should
   //   be used.
@@ -157,6 +159,7 @@ class HistoryClustersService : public base::SupportsUserData,
   // Virtual for testing.
   virtual std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
       ClusteringRequestSource clustering_request_source,
+      QueryClustersFilterParams filter_params,
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
       bool recluster,

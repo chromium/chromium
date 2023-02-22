@@ -18,7 +18,7 @@ class FilterClusterProcessor : public ClusterProcessor {
  public:
   explicit FilterClusterProcessor(
       ClusteringRequestSource clustering_request_source,
-      QueryClustersFilterParams* filter_params);
+      QueryClustersFilterParams& filter_params);
   ~FilterClusterProcessor() override;
 
   // ClusterProcessor:

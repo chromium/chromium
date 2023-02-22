@@ -17,11 +17,11 @@ namespace {
 
 // Returns whether `filter_params` is a filter that would actually filter
 // clusters out.
-bool IsFunctionalFilter(QueryClustersFilterParams* filter_params) {
-  return filter_params->min_visits_with_images > 0 ||
-         !filter_params->categories.empty() ||
-         filter_params->is_search_initiated ||
-         filter_params->has_related_searches;
+bool IsFunctionalFilter(QueryClustersFilterParams filter_params) {
+  return filter_params.min_visits_with_images > 0 ||
+         !filter_params.categories.empty() ||
+         filter_params.is_search_initiated ||
+         filter_params.has_related_searches;
 }
 
 // Returns whether `visit` could possibly be classified as one of the categories
@@ -93,10 +93,10 @@ bool IsIncludedInFilter(
 
 FilterClusterProcessor::FilterClusterProcessor(
     ClusteringRequestSource clustering_request_source,
-    QueryClustersFilterParams* filter_params)
+    QueryClustersFilterParams& filter_params)
     : clustering_request_source_(clustering_request_source),
       should_run_filter_(IsFunctionalFilter(filter_params)),
-      filter_params_(*filter_params) {}
+      filter_params_(filter_params) {}
 FilterClusterProcessor::~FilterClusterProcessor() = default;
 
 void FilterClusterProcessor::ProcessClusters(

@@ -75,7 +75,7 @@ class FilterClusterProcessorTest : public ::testing::Test {
   std::vector<int64_t> GetTestClusterIdsThatPassFilter(
       QueryClustersFilterParams& filter_params) {
     auto cluster_processor = std::make_unique<FilterClusterProcessor>(
-        ClusteringRequestSource::kNewTabPage, &filter_params);
+        ClusteringRequestSource::kNewTabPage, filter_params);
 
     std::vector<history::Cluster> clusters = GetTestClusters();
     cluster_processor->ProcessClusters(&clusters);

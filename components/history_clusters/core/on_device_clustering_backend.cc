@@ -174,6 +174,7 @@ void OnDeviceClusteringBackend::GetClusters(
 
 void OnDeviceClusteringBackend::GetClustersForUI(
     ClusteringRequestSource clustering_request_source,
+    QueryClustersFilterParams filter_params,
     ClustersCallback callback,
     std::vector<history::Cluster> clusters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -184,8 +185,6 @@ void OnDeviceClusteringBackend::GetClustersForUI(
   }
 
   base::flat_set<std::string> entity_ids = GetEntityIdsForClusters(clusters);
-  // TODO(b/265301309): Allow this to be passed into public API.
-  QueryClustersFilterParams filter_params;
   EntityMetadataProcessedCallback entity_metadata_processed_callback =
       base::BindOnce(&OnDeviceClusteringBackend::
                          DispatchGetClustersForUIToBackgroundThread,
@@ -489,9 +488,8 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   if (requires_ui_and_triggerability) {
     // 2. Determine how the clusters should be displayed.
     base::ElapsedThreadTimer compute_clusters_for_ui_timer;
-    QueryClustersFilterParams filter_params;
     clusters = GetClustersForUIOnBackgroundThread(
-        clustering_request_source, filter_params,
+        clustering_request_source, QueryClustersFilterParams(),
         engagement_score_provider_is_valid, std::move(clusters),
         entity_id_to_entity_metadata_map,
         /*calculate_triggerability=*/false);
@@ -520,7 +518,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
 std::vector<history::Cluster>
 OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
     ClusteringRequestSource clustering_request_source,
-    QueryClustersFilterParams& filter_params,
+    QueryClustersFilterParams filter_params,
     bool engagement_score_provider_is_valid,
     std::vector<history::Cluster> clusters,
     base::flat_map<std::string, optimization_guide::EntityMetadata>&
@@ -536,7 +534,7 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
             &entity_id_to_entity_metadata_map));
   }
   cluster_processors.push_back(std::make_unique<FilterClusterProcessor>(
-      clustering_request_source, &filter_params));
+      clustering_request_source, filter_params));
   // TODO(b/265301309): Figure out if we should dedupe in the clustering
   // processing step instead so that the filter is applied correctly.
 

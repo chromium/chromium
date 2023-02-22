@@ -182,6 +182,7 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
 std::unique_ptr<HistoryClustersServiceTask>
 HistoryClustersService::QueryClusters(
     ClusteringRequestSource clustering_request_source,
+    QueryClustersFilterParams filter_params,
     base::Time begin_time,
     QueryClustersContinuationParams continuation_params,
     bool recluster,
@@ -199,8 +200,8 @@ HistoryClustersService::QueryClusters(
     return std::make_unique<
         HistoryClustersServiceTaskGetMostRecentClustersForUI>(
         weak_ptr_factory_.GetWeakPtr(), backend_.get(), history_service_,
-        clustering_request_source, begin_time, continuation_params,
-        std::move(callback));
+        clustering_request_source, std::move(filter_params), begin_time,
+        continuation_params, std::move(callback));
   }
   return std::make_unique<HistoryClustersServiceTaskGetMostRecentClusters>(
       weak_ptr_factory_.GetWeakPtr(), incomplete_visit_context_annotations_,
@@ -393,6 +394,7 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
     NotifyDebugMessage("Starting all_keywords_cache_ generation.");
     cache_keyword_query_task_ = QueryClusters(
         ClusteringRequestSource::kAllKeywordCacheRefresh,
+        QueryClustersFilterParams(),
         /*begin_time=*/base::Time::Min(), continuation_params,
         /*recluster=*/false,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
@@ -411,6 +413,7 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
     NotifyDebugMessage("Starting short_keywords_cache_ generation.");
     cache_keyword_query_task_ = QueryClusters(
         ClusteringRequestSource::kShortKeywordCacheRefresh,
+        QueryClustersFilterParams(),
         /*begin_time=*/all_keywords_cache_timestamp_, continuation_params,
         /*recluster=*/false,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
@@ -507,7 +510,8 @@ void HistoryClustersService::PopulateClusterKeywordCache(
             ? ClusteringRequestSource::kAllKeywordCacheRefresh
             : ClusteringRequestSource::kShortKeywordCacheRefresh;
     cache_keyword_query_task_ = QueryClusters(
-        clustering_request_source, begin_time, continuation_params,
+        clustering_request_source, QueryClustersFilterParams(), begin_time,
+        continuation_params,
         /*recluster=*/false,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(),

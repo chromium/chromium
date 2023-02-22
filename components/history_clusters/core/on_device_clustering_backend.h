@@ -48,6 +48,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
                    std::vector<history::AnnotatedVisit> visits,
                    bool requires_ui_and_triggerability) override;
   void GetClustersForUI(ClusteringRequestSource clustering_request_source,
+                        QueryClustersFilterParams filter_params,
                         ClustersCallback callback,
                         std::vector<history::Cluster> clusters) override;
   void GetClusterTriggerability(
@@ -140,7 +141,7 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
   //   recorded by the fuller `ClusterVisitsOnBackgroundThread()`.
   static std::vector<history::Cluster> GetClustersForUIOnBackgroundThread(
       ClusteringRequestSource clustering_request_source,
-      QueryClustersFilterParams& filter_params,
+      QueryClustersFilterParams filter_params,
       bool engagement_score_provider_is_valid,
       std::vector<history::Cluster> clusters,
       base::flat_map<std::string, optimization_guide::EntityMetadata>&

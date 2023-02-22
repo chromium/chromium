@@ -41,15 +41,17 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
 void HistoryClustersPageHandler::GetCluster(GetClusterCallback callback) {
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(profile_);
+  // TODO(b/265301309): Add appropriate `continuation_params` and
+  // `filter_params`.
   history_clusters::QueryClustersContinuationParams continuation_params;
+  history_clusters::QueryClustersFilterParams filter_params;
 
-  // TODO(b/265301309): Replace `QueryClusters` with the upcoming "Get Cluster"
-  // API that will return the most relevant history cluster for a given user.
   // TODO(b/244504329): The first call to QueryClusters may come back with
   // empty data though history clusters may exist.
   fetch_clusters_task_ = history_clusters_service->QueryClusters(
-      history_clusters::ClusteringRequestSource::kJourneysPage,
-      /*begin_time=*/base::Time(), continuation_params, false,
+      history_clusters::ClusteringRequestSource::kNewTabPage,
+      std::move(filter_params),
+      /*begin_time=*/base::Time(), continuation_params, /*recluster=*/false,
       base::BindOnce(&HistoryClustersPageHandler::CallbackWithClusterData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

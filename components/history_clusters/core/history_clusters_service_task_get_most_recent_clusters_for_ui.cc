@@ -25,6 +25,7 @@ HistoryClustersServiceTaskGetMostRecentClustersForUI::
         ClusteringBackend* const backend,
         history::HistoryService* const history_service,
         ClusteringRequestSource clustering_request_source,
+        QueryClustersFilterParams filter_params,
         base::Time begin_time,
         QueryClustersContinuationParams continuation_params,
         QueryClustersCallback callback)
@@ -41,13 +42,14 @@ HistoryClustersServiceTaskGetMostRecentClustersForUI::
 
   DCHECK(IsUIRequestSource(clustering_request_source));
 
-  Start();
+  Start(std::move(filter_params));
 }
 
 HistoryClustersServiceTaskGetMostRecentClustersForUI::
     ~HistoryClustersServiceTaskGetMostRecentClustersForUI() = default;
 
-void HistoryClustersServiceTaskGetMostRecentClustersForUI::Start() {
+void HistoryClustersServiceTaskGetMostRecentClustersForUI::Start(
+    QueryClustersFilterParams filter_params) {
   // TODO(b/259466296): Figure out what to do with unclustered visits that
   //   happen before this experiment starts and were unclustered by previous
   //   path.
@@ -62,12 +64,14 @@ void HistoryClustersServiceTaskGetMostRecentClustersForUI::Start() {
       GetConfig().max_persisted_cluster_visits_to_fetch_soft_cap,
       base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClustersForUI::
                          OnGotMostRecentPersistedClusters,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(filter_params),
+                     base::TimeTicks::Now()),
       /*include_keywords_and_duplicates=*/false, &task_tracker_);
 }
 
 void HistoryClustersServiceTaskGetMostRecentClustersForUI::
-    OnGotMostRecentPersistedClusters(base::TimeTicks start_time,
+    OnGotMostRecentPersistedClusters(QueryClustersFilterParams filter_params,
+                                     base::TimeTicks start_time,
                                      std::vector<history::Cluster> clusters) {
   if (!weak_history_clusters_service_) {
     return;
@@ -117,7 +121,7 @@ void HistoryClustersServiceTaskGetMostRecentClustersForUI::
   }
 
   backend_->GetClustersForUI(
-      clustering_request_source_,
+      clustering_request_source_, std::move(filter_params),
       base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClustersForUI::
                          OnGotModelClusters,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),

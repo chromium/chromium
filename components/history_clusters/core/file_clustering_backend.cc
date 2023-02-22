@@ -240,6 +240,7 @@ void FileClusteringBackend::GetClusters(
 
 void FileClusteringBackend::GetClustersForUI(
     ClusteringRequestSource clustering_request_source,
+    QueryClustersFilterParams filter_params,
     ClustersCallback callback,
     std::vector<history::Cluster> clusters) {
   // TODO(b/259466296): Implement this - just invoke the callback as is for now.

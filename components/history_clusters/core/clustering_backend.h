@@ -35,9 +35,11 @@ class ClusteringBackend {
   // Gets the displayable variant of `clusters` that will be shown on the UI
   // surface associated with `clustering_request_source`. This will merge
   // similar clusters, rank visits within the cluster, as well as provide a
-  // label. Will return results asynchronously via `callback`.
+  // label. All returned cluster(s) will match `filter_params`. Will return
+  // results asynchronously via `callback`.
   virtual void GetClustersForUI(
       ClusteringRequestSource clustering_request_source,
+      QueryClustersFilterParams filter_params,
       ClustersCallback callback,
       std::vector<history::Cluster> clusters) = 0;
 

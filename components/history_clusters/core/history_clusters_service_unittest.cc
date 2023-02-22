@@ -64,6 +64,7 @@ class TestClusteringBackend : public ClusteringBackend {
   }
 
   void GetClustersForUI(ClusteringRequestSource clustering_request_source,
+                        QueryClustersFilterParams filter_params,
                         ClustersCallback callback,
                         std::vector<history::Cluster> clusters) override {
     callback_ = std::move(callback);
@@ -310,7 +311,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
     std::vector<history::Cluster> clusters;
     base::RunLoop loop;
     const auto task = history_clusters_service_->QueryClusters(
-        ClusteringRequestSource::kJourneysPage,
+        ClusteringRequestSource::kJourneysPage, QueryClustersFilterParams(),
         /*begin_time=*/base::Time(), continuation_params, /*recluster=*/false,
         base::BindLambdaForTesting(
             [&](std::vector<history::Cluster> clusters_temp,
@@ -516,6 +517,7 @@ TEST_P(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
 
   const auto task = history_clusters_service_->QueryClusters(
       ClusteringRequestSource::kAllKeywordCacheRefresh,
+      QueryClustersFilterParams(),
       /*begin_time=*/base::Time(), /*continuation_params=*/{},
       /*recluster=*/false,
       base::DoNothing());  // Only need to verify the correct request is sent
@@ -969,7 +971,7 @@ TEST_P(HistoryClustersServiceTest, EndToEndWithBackend) {
   base::RunLoop run_loop;
 
   const auto task = history_clusters_service_->QueryClusters(
-      ClusteringRequestSource::kJourneysPage,
+      ClusteringRequestSource::kJourneysPage, QueryClustersFilterParams(),
       /*begin_time=*/base::Time(),
       /*continuation_params=*/{},
       /*recluster=*/false,
