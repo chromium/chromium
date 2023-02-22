@@ -36,6 +36,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -235,6 +236,13 @@ bool FencedFrameReporter::SendReport(
          ReportingDestinationAsString(reporting_destination), "'."});
     return false;
   }
+
+  // Attribution Reporting is required to be enabled for an opaque-ads fenced
+  // frame to load, therefore it's fine to always add the Attribution Reporting
+  // headers in `SendReportInternal()`. This should be revisited if this
+  // restriction changes.
+  DCHECK(request_initiator_frame->IsFeatureEnabled(
+      blink::mojom::PermissionsPolicyFeature::kAttributionReporting));
 
   static base::AtomicSequenceNumber unique_id_counter;
 
