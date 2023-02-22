@@ -42901,6 +42901,10 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Foreground not forced">
     A server request is only made if the feed model is considered stale.
   </int>
+  <int value="8" label="Foreground but feed not visible">
+    The feed is not visible but the app is in the foreground (e.g., user is in
+    another tab).
+  </int>
 </enum>
 
 <enum name="FeedRequestReason">
