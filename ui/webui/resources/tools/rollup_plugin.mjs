@@ -121,6 +121,16 @@ export default function plugin(
         }
       }
 
+      // Check if the URL is an external path that isn't mapped.
+      if (source.includes('://') || source.startsWith('//')) {
+        if (excludes.includes(source)) {
+          return {id: source, external: 'absolute'};
+        } else {
+          this.error(`Invalid absolute path: ${source} is not in |excludes| ` +
+              `or |external_paths|`);
+        }
+      }
+
       // Not in the URL path map -> should be in the root directory.
       // Check if it should be excluded from the bundle. Check for an absolute
       // path before combining with the origin path.

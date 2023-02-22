@@ -1254,10 +1254,14 @@ js_test_type_check("js_test_type_check") {
   extra_deps = [ "//ui/file_manager:js_from_ts" ]
 }
 
+# Root directory for the foreground bundle.
 tsc_folder =
     rebase_path("$target_gen_dir/../../../tsc/file_manager/foreground/js",
                 root_build_dir)
 
+# Path where chrome://file-manager should be mapped.
+files_app_path =
+    rebase_path("$target_gen_dir/../../../tsc/file_manager/", root_build_dir)
 image_loader_path =
     rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
                 root_build_dir)
@@ -1273,10 +1277,11 @@ optimize_webui("build") {
   ]
 
   external_paths = [
+    # Mapping for the absolute chrome://file-manager/common/js/lru_cache.js
+    # import in image_loader.
+    "chrome://file-manager|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
-
-  excludes = [ "chrome://resources/mojo/mojo/public/js/bindings.js" ]
 
   deps = [
     ":main",

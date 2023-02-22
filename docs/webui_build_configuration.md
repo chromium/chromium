@@ -273,6 +273,16 @@ deps: Targets generating any files being bundled. Note that this should include
 excludes: Paths of files that are not bundled. Often used for large mojo files
           that would otherwise be in many bundles, and for cr.js which relies
           on global variables.
+external_paths: Mappings between absolute URLs and paths where files imported
+                from these URLs can be found. Used for files that are not in
+                |input|. For example, the following external_path is
+                automatically added for all targets:
+                "chrome://resources/|$resources_path" where resources_path is
+                the path to where ts_library()s within ui/webui/resources place
+                their output (e.g. gen/ui/webui/resources/tsc).
+                Note: all absolute URLs must either be listed in |excludes| or
+                be mapped in |external_paths|, otherwise a build time error is
+                raised.
 ```
 
 #### **Example**
