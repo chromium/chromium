@@ -1507,6 +1507,16 @@ const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
         SearchSuggestionPrerenderImplementationType::kIgnorePrefetch,
         &search_suggestion_implementation_types};
 
+const base::FeatureParam<SearchPreloadShareableCacheType>::Option
+    search_preload_shareable_cache_types[] = {
+        {SearchPreloadShareableCacheType::kEnabled, "enabled"},
+        {SearchPreloadShareableCacheType::kDisabled, "disabled"}};
+const base::FeatureParam<SearchPreloadShareableCacheType>
+    kSearchPreloadShareableCacheTypeParam{
+        &kSupportSearchSuggestionForPrerender2, "shareable_cache",
+        SearchPreloadShareableCacheType::kDisabled,
+        &search_preload_shareable_cache_types};
+
 BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
              "AutocompleteActionPredictorConfidenceCutoff",
              base::FEATURE_DISABLED_BY_DEFAULT);
