@@ -20,6 +20,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -154,6 +155,12 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Requests the renderer to select the region between two points in the
   // currently focused frame.
   virtual void SelectRange(const gfx::Point& base, const gfx::Point& extent) {}
+
+  // Requests the renderer to select text around the current caret position.
+  // Currently supports word and sentence granularities.
+  virtual void SelectAroundCaret(blink::mojom::SelectionGranularity granularity,
+                                 bool should_show_handle,
+                                 bool should_show_context_menu) {}
 
   // Request the renderer to Move the caret to the new position.
   virtual void MoveCaret(const gfx::Point& extent) {}

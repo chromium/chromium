@@ -802,12 +802,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   void WaitForPageScaleAnimationForTesting(
       WaitForPageScaleAnimationForTestingCallback callback) override;
   void MoveCaret(const gfx::Point& point_in_dips) override;
-#if BUILDFLAG(IS_ANDROID)
   void SelectAroundCaret(mojom::blink::SelectionGranularity granularity,
                          bool should_show_handle,
                          bool should_show_context_menu,
                          SelectAroundCaretCallback callback) override;
-#endif
 
   // PageWidgetEventHandler overrides:
   WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;

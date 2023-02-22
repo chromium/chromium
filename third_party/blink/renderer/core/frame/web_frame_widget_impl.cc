@@ -3893,7 +3893,6 @@ void WebFrameWidgetImpl::MoveCaret(const gfx::Point& point_in_dips) {
       widget_base_->DIPsToRoundedBlinkSpace(point_in_dips));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void WebFrameWidgetImpl::SelectAroundCaret(
     mojom::blink::SelectionGranularity granularity,
     bool should_show_handle,
@@ -3958,7 +3957,6 @@ void WebFrameWidgetImpl::SelectAroundCaret(
   result->word_end_adjust = word_end_adjust;
   std::move(callback).Run(std::move(result));
 }
-#endif
 
 void WebFrameWidgetImpl::ForEachRemoteFrameControlledByWidget(
     base::FunctionRef<void(RemoteFrame*)> callback) {

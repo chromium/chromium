@@ -364,7 +364,6 @@ interface FrameWidgetInputHandler {
   // selection.
   // Expects ack with new selection information when finished, or null if the
   // selection failed.
-  [EnableIf=is_android]
   SelectAroundCaret(SelectionGranularity granularity, bool should_show_handle,
                     bool should_show_context_menu)
       => (SelectAroundCaretResult? result);

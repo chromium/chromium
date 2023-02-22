@@ -166,6 +166,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -4770,6 +4771,21 @@ void WebContentsImpl::SelectRange(const gfx::Point& base,
     return;
 
   input_handler->SelectRange(base, extent);
+}
+
+void WebContentsImpl::SelectAroundCaret(
+    blink::mojom::SelectionGranularity granularity,
+    bool should_show_handle,
+    bool should_show_context_menu) {
+  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SelectAroundCaret");
+  auto* input_handler = GetFocusedFrameWidgetInputHandler();
+  if (!input_handler) {
+    return;
+  }
+
+  last_interaction_time_ = ui::EventTimeForNow();
+  input_handler->SelectAroundCaret(granularity, should_show_handle,
+                                   should_show_context_menu, base::DoNothing());
 }
 
 void WebContentsImpl::MoveCaret(const gfx::Point& extent) {

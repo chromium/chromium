@@ -995,6 +995,53 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
       selection_controller_client()->GetActiveMenuClient()->GetSelectedText(),
       u"Text in a textfield");
 }
+
+// Tests that the select word command in the quick menu works correctly and that
+// the touch handles and quick menu are shown after the command is executed.
+IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
+                       SelectWordCommand) {
+  // Set the test page up.
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+  InitSelectionController();
+
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  ui::TouchSelectionControllerTestApi selection_controller_test_api(
+      rwhva->selection_controller());
+  EXPECT_EQ(ui::TouchSelectionController::INACTIVE,
+            rwhva->selection_controller()->active_status());
+  EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+  EXPECT_EQ(gfx::RectF(),
+            rwhva->selection_controller()->GetVisibleRectBetweenBounds());
+
+  gfx::NativeView native_view = rwhva->GetNativeView();
+  ui::test::EventGenerator generator(native_view->GetRootWindow());
+
+  // Tap inside the textfield and wait for the insertion handle to appear.
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_SHOWN);
+  gfx::Point point = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  generator.delegate()->ConvertPointFromTarget(native_view, &point);
+  generator.GestureTapAt(point);
+  selection_controller_client()->Wait();
+  EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
+            rwhva->selection_controller()->active_status());
+
+  // Execute select word command. The word around the current caret position
+  // should be selected and touch handles and quick menu should be shown.
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::SELECTION_HANDLES_SHOWN);
+  selection_controller_client()->GetActiveMenuClient()->ExecuteCommand(
+      ui::TouchEditable::kSelectWord, 0);
+  selection_controller_client()->Wait();
+  EXPECT_EQ(ui::TouchSelectionController::SELECTION_ACTIVE,
+            rwhva->selection_controller()->active_status());
+  EXPECT_TRUE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
+  EXPECT_TRUE(selection_controller_test_api.GetStartVisible());
+  EXPECT_TRUE(selection_controller_test_api.GetEndVisible());
+  EXPECT_EQ(
+      selection_controller_client()->GetActiveMenuClient()->GetSelectedText(),
+      u"Text");
+}
 #endif
 
 class TouchSelectionControllerClientAuraScaleFactorTest

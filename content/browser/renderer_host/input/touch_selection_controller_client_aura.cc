@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/env.h"
@@ -474,6 +475,8 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
     }
     case ui::TouchEditable::kSelectAll:
       return true;
+    case ui::TouchEditable::kSelectWord:
+      return editable && !has_selection;
     default:
       return false;
   }
@@ -481,7 +484,8 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
 
 void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
                                                         int event_flags) {
-  if (command_id != ui::TouchEditable::kSelectAll) {
+  if (command_id != ui::TouchEditable::kSelectAll &&
+      command_id != ui::TouchEditable::kSelectWord) {
     rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
   }
   RenderWidgetHostDelegate* host_delegate = rwhva_->host()->delegate();
@@ -500,6 +504,12 @@ void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
       break;
     case ui::TouchEditable::kSelectAll:
       host_delegate->SelectAll();
+      break;
+    case ui::TouchEditable::kSelectWord:
+      host_delegate->SelectAroundCaret(
+          blink::mojom::SelectionGranularity::kWord,
+          /*should_show_handle=*/true,
+          /*should_show_context_menu=*/false);
       break;
     default:
       NOTREACHED();
