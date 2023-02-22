@@ -73,6 +73,9 @@ class ArcNetHostImpl : public KeyedService,
                      CreateNetworkCallback callback) override;
   void ForgetNetwork(const std::string& guid,
                      ForgetNetworkCallback callback) override;
+  void UpdateWifiNetwork(const std::string& guid,
+                         mojom::WifiConfigurationPtr cfg,
+                         UpdateWifiNetworkCallback callback) override;
   void StartConnect(const std::string& guid,
                     StartConnectCallback callback) override;
   void StartDisconnect(const std::string& guid,

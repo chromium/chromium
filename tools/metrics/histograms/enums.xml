@@ -4541,6 +4541,7 @@ Unknown properties are collapsed to zero. -->
   <int value="25" label="Service connection error (ArcHostVpnService)"/>
   <int value="26" label="Service crashed error (ArcHostVpnService)"/>
   <int value="27" label="Service internal error (ArcHostVpnService)"/>
+  <int value="28" label="Update host WiFi network error (mojo)"/>
 </enum>
 
 <enum name="ArcNetworkEvent">

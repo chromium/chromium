@@ -123,6 +123,17 @@ void ForgetNetworkFailureCallback(
   std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
 }
 
+void UpdateWifiNetworkSuccessCallback(
+    base::OnceCallback<void(arc::mojom::NetworkResult)> callback) {
+  std::move(callback).Run(arc::mojom::NetworkResult::SUCCESS);
+}
+
+void UpdateWifiNetworkFailureCallback(
+    base::OnceCallback<void(arc::mojom::NetworkResult)> callback,
+    const std::string& error_name) {
+  std::move(callback).Run(arc::mojom::NetworkResult::FAILURE);
+}
+
 void StartConnectSuccessCallback(
     base::OnceCallback<void(arc::mojom::NetworkResult)> callback) {
   std::move(callback).Run(arc::mojom::NetworkResult::SUCCESS);
@@ -525,6 +536,37 @@ void ArcNetHostImpl::ForgetNetwork(const std::string& guid,
       base::BindOnce(&ForgetNetworkSuccessCallback,
                      std::move(split_callback.first)),
       base::BindOnce(&ForgetNetworkFailureCallback,
+                     std::move(split_callback.second)));
+}
+
+void ArcNetHostImpl::UpdateWifiNetwork(const std::string& guid,
+                                       mojom::WifiConfigurationPtr cfg,
+                                       UpdateWifiNetworkCallback callback) {
+  std::string path;
+  if (!GetNetworkPathFromGuid(guid, &path)) {
+    NET_LOG(ERROR) << "Could not retrieve Service path from GUID " << guid;
+    std::move(callback).Run(mojom::NetworkResult::FAILURE);
+    return;
+  }
+
+  // TODO(b/270089579): Add support for more properties to be updatable.
+  base::Value::Dict properties;
+  base::Value::Dict wifi_dict;
+
+  if (cfg->bssid_allowlist.has_value()) {
+    wifi_dict.Set(onc::wifi::kBSSIDAllowlist,
+                  TranslateStringListToValue(cfg->bssid_allowlist.value()));
+  }
+  properties.Set(onc::network_config::kWiFi, std::move(wifi_dict));
+
+  // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
+  // the callee interface.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  GetManagedConfigurationHandler()->SetProperties(
+      path, base::Value(std::move(properties)),
+      base::BindOnce(&UpdateWifiNetworkSuccessCallback,
+                     std::move(split_callback.first)),
+      base::BindOnce(&UpdateWifiNetworkFailureCallback,
                      std::move(split_callback.second)));
 }
 

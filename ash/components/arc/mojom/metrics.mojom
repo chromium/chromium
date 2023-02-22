@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 28
+// Next MinVersion: 29
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -195,6 +195,7 @@ enum ArcNetworkError {
   [MinVersion=27] kArcHostVpnConnectionError = 25,
   [MinVersion=27] kArcHostVpnCrashedError = 26,
   [MinVersion=27] kArcHostVpnInternalError = 27,
+  [MinVersion=28] kMojoWifiUpdateNetworkFailed = 28,
 };
 
 // Describes the type of app kill being reported.
