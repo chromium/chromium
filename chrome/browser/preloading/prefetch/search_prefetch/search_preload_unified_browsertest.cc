@@ -399,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                                                     expected_prerender_url);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // Prefetch should be triggered as well.
   absl::optional<SearchPrefetchStatus> prefetch_status =
@@ -691,7 +691,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       *GetActiveWebContents(), expected_prerender_url);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // 3. Type a different query which results in different suggestions.
   std::string search_query_2 = "pre";
@@ -1378,7 +1378,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, TriggerAndActivate) {
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // 4. Click and activate.
   content::test::PrerenderHostObserver prerender_observer(
@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // 4. Fail the prerender.
   content::test::PrerenderHostObserver prerender_observer(
@@ -1536,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(NoCancelSearchPreloadUnifiedBrowserTest,
       *GetActiveWebContents(), expected_prerender_url);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
-      SearchPrefetchServingReason::kPrerendered, 1);
+      SearchPrefetchServingReason::kServed, 1);
 
   // 3. Type a different query which results in different suggestions.
   std::string search_query_2 = "pre";

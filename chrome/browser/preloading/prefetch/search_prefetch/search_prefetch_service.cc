@@ -470,7 +470,7 @@ SearchPrefetchService::TakePrerenderFromMemoryCache(
   // is about to expire.
   DCHECK_NE(iter->second->current_status(),
             SearchPrefetchStatus::kRequestFailed);
-  recorder.reason_ = SearchPrefetchServingReason::kPrerendered;
+  recorder.reason_ = SearchPrefetchServingReason::kServed;
 
   iter->second->MarkPrefetchAsPrerendered();
   std::unique_ptr<SearchPrefetchURLLoader> response =
