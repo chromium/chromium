@@ -908,6 +908,9 @@ void SyncServiceImpl::OnActionableProtocolError(
 
       // Note: StopAndClear sets IsSyncRequested to false, which ensures that
       // Sync-the-feature remains off.
+      // Note: This method might get called again in the following code when
+      // clearing the primary account. But due to rarity of the event, this
+      // should be okay.
       StopAndClear();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

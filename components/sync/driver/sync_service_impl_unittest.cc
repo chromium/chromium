@@ -988,7 +988,7 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   EXPECT_TRUE(service()->GetLastSyncedTimeForDebugging().is_null());
 #endif
 
-  EXPECT_EQ(1, get_controller(BOOKMARKS)->model()->clear_metadata_call_count());
+  EXPECT_GT(get_controller(BOOKMARKS)->model()->clear_metadata_call_count(), 0);
 
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(service()->IsSyncFeatureActive());
