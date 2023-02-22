@@ -424,8 +424,7 @@ bool FillLayer::ImageIsOpaque(const Document& document,
 
 bool FillLayer::ImageTilesLayer() const {
   // Returns true if an image will be tiled such that it covers any sized
-  // rectangle.
-  // TODO(schenney) We could relax the repeat mode requirement if we also knew
+  // rectangle. We could relax the repeat mode requirement if we also knew
   // the rect we had to fill, and the portion of the image we need to use, and
   // know that the latter covers the former.
   return (RepeatX() == EFillRepeat::kRepeatFill ||

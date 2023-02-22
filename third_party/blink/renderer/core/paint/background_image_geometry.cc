@@ -97,8 +97,6 @@ void BackgroundImageGeometry::SetNoRepeatX(const FillLayer& fill_layer,
 
     // Reduce the width of the dest rect to draw only the portion of the
     // tile that remains visible after offsetting the image.
-    // TODO(schenney): This might grow the dest rect if the dest rect has
-    // been adjusted for opaque borders.
     unsnapped_dest_rect_.SetWidth(tile_size_.width + x_offset);
     snapped_dest_rect_.SetWidth(tile_size_.width + snapped_x_offset);
   }
@@ -138,8 +136,6 @@ void BackgroundImageGeometry::SetNoRepeatY(const FillLayer& fill_layer,
 
     // Reduce the height of the dest rect to draw only the portion of the
     // tile that remains visible after offsetting the image.
-    // TODO(schenney): This might grow the dest rect if the dest rect has
-    // been adjusted for opaque borders.
     unsnapped_dest_rect_.SetHeight(tile_size_.height + y_offset);
     snapped_dest_rect_.SetHeight(tile_size_.height + snapped_y_offset);
   }
@@ -505,7 +501,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       } else {
         // Force the snapped dest rect to match the inner border to
         // avoid gaps between the background and border.
-        // TODO(schenney) The LayoutUnit(float) constructor always
+        // TODO(rendering-core) The LayoutUnit(float) constructor always
         // rounds down. We should FromFloatFloor or FromFloatCeil to
         // move toward the border.
         gfx::RectF inner_border_rect =
@@ -540,9 +536,6 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
       // the size and position of the borders, sometimes adjusting the inner
       // border by more than a pixel when done (particularly under magnifying
       // zoom).
-      // TODO(schenney) The LayoutUnit(float) constructor always
-      // rounds down. We should FromFloatFloor or FromFloatCeil to
-      // move toward the border.
       BorderEdge edges[4];
       positioning_box_->StyleRef().GetBorderEdgeInfo(edges);
       gfx::RectF inner_border_rect =
@@ -713,9 +706,6 @@ void BackgroundImageGeometry::ComputePositioningArea(
 
     // Offset of the positioning area from the corner of the
     // positioning_box_->
-    // TODO(schenney): Could we enable dest adjust for collapsed
-    // borders if we computed this based on the actual offset between
-    // the rects?
     unsnapped_box_offset = PhysicalOffset(
         unsnapped_box_outset.Left() - unsnapped_dest_adjust.Left(),
         unsnapped_box_outset.Top() - unsnapped_dest_adjust.Top());

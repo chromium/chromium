@@ -1484,8 +1484,8 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
   context_.SetStrokeStyle(
       border_style == EBorderStyle::kDashed ? kDashedStroke : kDottedStroke);
 
-  // TODO(schenney): stroking the border path causes issues with tight corners:
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=344234
+  // TODO(crbug.com/344234): stroking the border path causes issues with
+  // tight corners.
   context_.StrokePath(centerline_path, PaintAutoDarkMode(style_, element_role_),
                       centerline_path.length(), border_thickness);
 }
@@ -1497,8 +1497,8 @@ void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
   context_.SetStrokeStyle(kDottedStroke);
   context_.SetLineCap(kRoundCap);
 
-  // TODO(schenney): stroking the border path causes issues with tight corners:
-  // https://bugs.webkit.org/show_bug.cgi?id=58711
+  // TODO(crbug.com/344234): stroking the border path causes issues with
+  // tight corners.
   context_.StrokePath(border_path, PaintAutoDarkMode(style_, element_role_),
                       border_path.length(), border_thickness);
 }

@@ -1207,11 +1207,6 @@ bool SchedulerStateMachine::ProactiveBeginFrameWanted() const {
   // request frames when commits are disabled, because the frame requests will
   // not provide the needed commit (and will wake up the process when it could
   // stay idle).
-  // TODO(schenney) crbug.com/805798 This will need to change. We do want to
-  // issue BeginMainFrames even if commits are deferred if this is during page
-  // load and we want to run lifecycle updates in preparation for the first
-  // commit. We probably need another flag to indicate that we are
-  // pre-rendering the page or in a page navigation state.
   if ((begin_main_frame_state_ != BeginMainFrameState::IDLE) &&
       !defer_begin_main_frame_)
     return true;
@@ -1392,8 +1387,6 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
   if (ShouldSendBeginMainFrame())
     return true;
 
-  // TODO(schenney): Is the right way to handle main frame without commit
-  // to add a new begin_main_frame_state_?
   if (begin_main_frame_state_ != BeginMainFrameState::IDLE)
     return true;
 
@@ -1533,13 +1526,12 @@ void SchedulerStateMachine::BeginMainFrameAborted(CommitEarlyOutReason reason) {
       case CommitEarlyOutReason::ABORTED_NOT_VISIBLE:
       case CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE:
       case CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT:
-        // TODO(schenney) For ABORTED_DEFERRED_COMMIT we will need to do
-        // something different because we have updated the main frame, but
-        // we have not committed it. So we do not need a begin main frame
-        // but we might need a commit.
-        // We might have top split the compositor commit code from frame
-        // updates, or track a pending commit separately from a pending main
-        // frame update.
+        // TODO(rendering-core) For ABORTED_DEFERRED_COMMIT we may wish to do
+        // something different because we have updated the main frame, but we
+        // have not committed it. So we do not necessarily need a begin main
+        // frame but we do need a commit for the frame we deferred. In practice
+        // the next BeginMainFrame after the deferred commit timeout will cause
+        // a commit, but it might come later than optimal.
         begin_main_frame_state_ = BeginMainFrameState::IDLE;
         SetNeedsBeginMainFrame();
         break;

@@ -1622,7 +1622,7 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
       overflow_rect.Unite(outline_rect);
     }
   }
-  // TODO(schenney): Add in Text Decoration overflow rect
+  // TODO(rendering-core): Add in Text Decoration overflow rect.
   return overflow_rect;
 }
 

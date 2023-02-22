@@ -206,7 +206,8 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
     sub_message.SetInlineStyleProperty(CSSPropertyID::kTransition, "none");
   }
   // Get the size to decide position later.
-  // TODO(schenney): This says get size, so we only need to update to layout.
+  // TODO(rendering-core): This gets a size, so we should only need to update
+  // to layout.
   FrameView().UpdateAllLifecyclePhases(DocumentUpdateReason::kOverlay);
   bubble_size_ = container.VisibleBoundsInLocalRoot().size();
   // Add one because the content sometimes exceeds the exact width due to

@@ -99,9 +99,8 @@ void HTMLObjectElement::ParseAttribute(
     wtf_size_t pos = service_type_.Find(";");
     if (pos != kNotFound)
       SetServiceType(service_type_.Left(pos));
-    // TODO(schenney): crbug.com/572908 What is the right thing to do here?
-    // Should we suppress the reload stuff when a persistable widget-type is
-    // specified?
+    // TODO(crbug.com/572908): What is the right thing to do here? Should we
+    // suppress the reload stuff when a persistable widget-type is specified?
     ReloadPluginOnAttributeChange(name);
   } else if (name == html_names::kDataAttr) {
     SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
@@ -183,20 +182,20 @@ void HTMLObjectElement::ReloadPluginOnAttributeChange(
     ReattachOnPluginChangeIfNeeded();
 }
 
-// TODO(schenney): crbug.com/572908 This should be unified with
+// TODO(crbug.com/572908): This should be unified with
 // HTMLEmbedElement::UpdatePlugin and moved down into html_plugin_element.cc
 void HTMLObjectElement::UpdatePluginInternal() {
   DCHECK(!GetLayoutEmbeddedObject()->ShowsUnavailablePluginIndicator());
   DCHECK(NeedsPluginUpdate());
   SetNeedsPluginUpdate(false);
-  // TODO(schenney): crbug.com/572908 This should ASSERT
+  // TODO(crbug.com/572908): This should ASSERT
   // isFinishedParsingChildren() instead.
   if (!IsFinishedParsingChildren()) {
     DispatchErrorEvent();
     return;
   }
 
-  // TODO(schenney): crbug.com/572908 I'm not sure it's ever possible to get
+  // TODO(crbug.com/572908): It may never be possible to get
   // into updateWidget during a removal, but just in case we should avoid
   // loading the frame to prevent security bugs.
   if (!SubframeLoadingDisabler::CanLoadFrame(*this)) {
@@ -212,7 +211,7 @@ void HTMLObjectElement::UpdatePluginInternal() {
     return;
   }
 
-  // TODO(schenney): crbug.com/572908 Is it possible to get here without a
+  // TODO(crbug.com/572908): Is it possible to get here without a
   // layoutObject now that we don't have beforeload events?
   if (!GetLayoutObject())
     return;
