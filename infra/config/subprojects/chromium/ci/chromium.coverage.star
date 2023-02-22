@@ -188,6 +188,7 @@ coverage_builder(
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
+    reclient_scandeps_server = True,
     use_clang_coverage = True,
     xcode = xcode.x14main,
 )
@@ -338,6 +339,7 @@ coverage_builder(
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_scandeps_server = True,
     use_clang_coverage = True,
 )
 
