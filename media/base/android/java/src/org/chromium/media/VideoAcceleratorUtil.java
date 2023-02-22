@@ -141,6 +141,13 @@ class VideoAcceleratorUtil {
                 || lowerName.startsWith("c2.android.avc.decoder");
     }
 
+    // Return true if and only if this is a low latency decoder.
+    private static boolean isLowLatency(String name) {
+        var lowerName = name.toLowerCase(Locale.ROOT);
+        // This is usually a hw decoder provided by the OEM vendors.
+        return lowerName.endsWith(".low_latency");
+    }
+
     /**
      * Returns an array of SupportedProfileAdapter entries since the NDK
      * doesn't provide this functionality :/
@@ -291,6 +298,8 @@ class VideoAcceleratorUtil {
                 // Skip duplicates. Harmless, but pollutes chrome://gpu
                 if (isAtLeastQ && info.isAlias()) continue;
                 if (info.isEncoder()) continue;
+                // Skip low latency codec in case duplication.
+                if (isLowLatency(info.getName())) continue;
 
                 MediaCodecInfo.CodecCapabilities capabilities = null;
                 try {
