@@ -4,10 +4,6 @@
     "args": ["--enable-features=BackForwardCache"]
   },
   {
-    "name": "dangling-pointer-detection",
-    "args": ["--enable-features=PartitionAllocDanglingPtr:mode/crash"]
-  },
-  {
     "name": "devtools-tab-target",
     "args": ["--content-shell-devtools-tab-target"]
   },
