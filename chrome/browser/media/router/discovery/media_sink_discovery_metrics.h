@@ -102,7 +102,6 @@ class CastAnalytics {
  public:
   static const char kHistogramCastChannelConnectResult[];
   static const char kHistogramCastChannelError[];
-  static const char kHistogramCastDeviceNameLength[];
   static const char kHistogramCastMdnsChannelOpenSuccess[];
   static const char kHistogramCastMdnsChannelOpenFailure[];
 
@@ -111,7 +110,6 @@ class CastAnalytics {
   static void RecordDeviceChannelError(MediaRouterChannelError channel_error);
   static void RecordDeviceChannelOpenDuration(bool success,
                                               const base::TimeDelta& duration);
-  static void RecordDeviceNameLength(size_t length);
 };
 
 // Metrics for wired display (local screen) sink counts.

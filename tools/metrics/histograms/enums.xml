@@ -14481,16 +14481,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Clicked"/>
 </enum>
 
-<enum name="CastPlayBackState">
-  <obsolete>
-    Obsoleted on September 2020 as it's no longer being collected.
-  </obsolete>
-  <int value="0" label="YT_PLAYER_SUCCESS"/>
-  <int value="1" label="YT_PLAYER_FAILURE"/>
-  <int value="2" label="DEFAULT_PLAYER_SUCCESS"/>
-  <int value="3" label="DEFAULT_PLAYER_FAILURE"/>
-</enum>
-
 <enum name="CastSignatureStatus">
   <int value="0" label="OK"/>
   <int value="1" label="SignatureEmpty"/>
@@ -67402,12 +67392,6 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Conflicting name resolution"/>
 </enum>
 
-<enum name="MediaCommand">
-  <int value="0" label="Resume"/>
-  <int value="1" label="Pause"/>
-  <int value="2" label="Seek"/>
-</enum>
-
 <enum name="MediaContainers">
   <int value="0" label="Unknown"/>
   <int value="1" label="AAC (Advanced Audio Coding)"/>
@@ -67917,14 +67901,6 @@ Called by update_use_counter_css.py.-->
   <int value="5" label="Network"/>
   <int value="6" label="Connect Timeout"/>
   <int value="7" label="Ping Timeout"/>
-</enum>
-
-<enum name="MediaRouterCastFeedbackEvent">
-  <int value="0" label="Dialog opened"/>
-  <int value="1" label="Sending"/>
-  <int value="2" label="Resending"/>
-  <int value="3" label="Feedback sent"/>
-  <int value="4" label="Too many retries"/>
 </enum>
 
 <enum name="MediaRouterCastSinkSource">
@@ -88710,29 +88686,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Failed to read ACK message from socket"/>
 </enum>
 
-<enum name="RemotePlaybackDeviceType">
-  <obsolete>
-    Dprecated as of 2021/01.
-  </obsolete>
-  <int value="0" label="Cast Generic Media Player"/>
-  <int value="1" label="Cast YouTube Player"/>
-  <int value="2" label="Non-Cast YouTube Player"/>
-</enum>
-
 <enum name="RemotePlaybackInitiationLocation">
   <int value="0" label="RemotePlayback API implemented by the sites"/>
   <int value="1" label="Cast button in the HTML media element"/>
-</enum>
-
-<enum name="RemotePlaybackUrlResolveResult">
-  <int value="0" label="Successfully Resolved"/>
-  <int value="1" label="Malformed or empty Url"/>
-  <int value="2" label="No CORS header when required"/>
-  <int value="3" label="CORS header incompatible with Chromecast"/>
-  <int value="4" label="The response code indicated failure"/>
-  <int value="5" label="IO exception while fetching the url"/>
-  <int value="6" label="Unknown media type"/>
-  <int value="7" label="HttpUrlConnection crash"/>
 </enum>
 
 <enum name="RemoteProcessInteractionResult">
@@ -105793,19 +105749,6 @@ Full version information for the fingerprint enum values:
   <int value="37" label="YUV422AP10"/>
   <int value="38" label="YUV444AP10"/>
   <int value="39" label="NV12A"/>
-</enum>
-
-<enum name="VideoPlayerCastAPIExtensionStatus">
-  <int value="0" label="Skipped (Cast extension is unavailable)"/>
-  <int value="1" label="Installation failed"/>
-  <int value="2" label="Load failed"/>
-  <int value="3" label="Loaded successfully (newly installed)"/>
-  <int value="4" label="Loaded successfully (already installed)"/>
-</enum>
-
-<enum name="VideoPlayerPlayType">
-  <int value="0" label="Local playback"/>
-  <int value="1" label="Play on cast device"/>
 </enum>
 
 <enum name="VideoResolutionDesignation">

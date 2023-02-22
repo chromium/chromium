@@ -2008,87 +2008,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cast.Sender.CastMediaType" enum="MediaContainers"
-    expires_after="2022-02-01">
-  <obsolete>
-    No longer collected as of 2022-01.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>Records the media type of every video being cast.</summary>
-</histogram>
-
-<histogram name="Cast.Sender.CastPlayerResult" enum="CastPlayBackState"
-    expires_after="M85">
-  <obsolete>
-    Removed September 2020 as it's no longer being collected.
-  </obsolete>
-  <owner>maybelle@chromium.org</owner>
-  <owner>miguelg@chromium.org</owner>
-  <summary>
-    Records the result of a request to play remotely on a per player app basis
-    within Chrome for Android.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.DeviceType" enum="RemotePlaybackDeviceType"
-    expires_after="2021-06-01">
-  <obsolete>
-    Deprecated as of 2021/02 as it's not been collected for a while due to
-    refactoring.
-  </obsolete>
-  <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Records the type of the remote playback device selected by the user. This
-    will be recorded when the user has chosen the device from the media route
-    chooser dialog.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.FullscreenControlsActionWithMediaElement"
-    enum="MediaCommand" expires_after="2021-06-01">
-  <obsolete>
-    Deprecated as of 2021/02 as it's not been collected for a while due to
-    refactoring.
-  </obsolete>
-  <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Record each interaction with the fullscreen remote playback controls in
-    cases when the corresponding media element on the page was present.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.FullscreenControlsActionWithoutMediaElement"
-    enum="MediaCommand" expires_after="2021-06-01">
-  <obsolete>
-    Deprecated as of 2021/02 as it's not been collected for a while due to
-    refactoring.
-  </obsolete>
-  <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Record each interaction with the fullscreen remote playback controls in
-    cases when the corresponding media element on the page was not present.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.MediaElementPresentWhenShowFullscreenControls"
-    enum="BooleanPresent" expires_after="2021-06-01">
-  <obsolete>
-    Deprecated as of 2021/02 as it's not been collected for a while due to
-    refactoring.
-  </obsolete>
-  <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Indicates whether the corresponding media element on the page was present
-    when the fullscreen remote playback controls were shown.
-  </summary>
-</histogram>
-
 <histogram name="Cast.Sender.RemotePlayback.InitiationLocation"
     enum="RemotePlaybackInitiationLocation" expires_after="2023-07-16">
   <owner>muyaoxu@google.com</owner>
@@ -2098,38 +2017,6 @@ chromium-metrics-reviews@google.com.
     Clank. Please note, this metric does not show whether a session is started
     or stopped and does not include RemotePlayback sessions initiated through
     the Cast SDK.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.SessionTimeWithoutMediaElementPercentage"
-    units="%" expires_after="2021-06-01">
-  <obsolete>
-    Deprecated as of 2021/02 as it's not been collected for a while due to
-    refactoring. A new metrics,
-    &quot;Cast.Sender.Clank.SessionTimeWithoutMediaElementPercentage&quot; now
-    collects the same data but at a different location.
-  </obsolete>
-  <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Records the ratio of the time the media element was detached from the remote
-    playback session to the total duration of the session (as from when the
-    element has been attached till when the session stopped or disconnected), in
-    percents.
-  </summary>
-</histogram>
-
-<histogram name="Cast.Sender.UrlResolveResult"
-    enum="RemotePlaybackUrlResolveResult" expires_after="2021-06-01">
-  <obsolete>
-    Deprecated as of 2021/02 as it's not been collected for a while due to
-    refactoring.
-  </obsolete>
-  <owner>tguilbert@google.com</owner>
-  <owner>media-dev@chromium.org</owner>
-  <summary>
-    Records the result of resolving the video URL for cast, including checking
-    its CORS header.
   </summary>
 </histogram>
 
@@ -2144,46 +2031,6 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2021-10-17 to 2022-12-15; data may
     be missing.
-  </summary>
-</histogram>
-
-<histogram name="CastV2.Transport.Connect.Latency.Unknown" units="ms"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    The latency between when a Cast V2 connection is established and the first
-    message is received on that connection. &quot;Unknown&quot; is the peer
-    type, which is not known at this point in the CastV2 connection
-    establishment. Naming conforms to the CastV2 sender-side histogram naming
-    convention &quot;CastV2.[action].[name].[peer_type]&quot;.
-  </summary>
-</histogram>
-
-<histogram name="CastV2.Transport.SslHandshake.Error.Unknown"
-    enum="NetErrorCodes" expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    On accepting a Cast V2 transport socket connection, if an error is
-    encountered, the error code is logged here. &quot;Unknown&quot; is the peer
-    type, which is not known at this point in the CastV2 connection
-    establishment. &quot;SslHandshake.Error&quot; is the name of the action.
-    Naming conforms to the CastV2 sender-side histogram naming convention
-    &quot;CastV2.[action].[name].[peer_type]&quot;.
-  </summary>
-</histogram>
-
-<histogram name="CastV2.Transport.SslHandshake.Unknown" units="ms"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <owner>cast-analytics@google.com</owner>
-  <summary>
-    The time taken to do the handshake during Cast V2 transport socket creation.
-    &quot;Unknown&quot; is the peer type, which is not known at this point in
-    the CastV2 connection establishment. Naming conforms to the CastV2
-    sender-side histogram naming convention
-    &quot;CastV2.[action].[name].[peer_type]&quot;.
   </summary>
 </histogram>
 
@@ -14486,46 +14333,11 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VideoPlayer.CastAPIExtensionStatus"
-    enum="VideoPlayerCastAPIExtensionStatus" expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: the results of the cast API extension load. This is
-    recorded after the initialization of the extension is finished.
-  </summary>
-</histogram>
-
-<histogram name="VideoPlayer.CastedVideoLength" units="seconds"
-    expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: the length of casted video (in seconds).
-  </summary>
-</histogram>
-
-<histogram name="VideoPlayer.NumberOfCastDevices" units="units"
-    expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: the number of cast devices. This is recorded when
-    the cast extension finishes the discovery.
-  </summary>
-</histogram>
-
 <histogram name="VideoPlayer.NumberOfOpenedFiles" units="units"
     expires_after="M85">
   <owner>yoshiki@chromium.org</owner>
   <summary>
     Chrome OS Video Player: the number of files being opened on launch.
-  </summary>
-</histogram>
-
-<histogram name="VideoPlayer.PlayType" enum="VideoPlayerPlayType"
-    expires_after="M85">
-  <owner>yoshiki@chromium.org</owner>
-  <summary>
-    Chrome OS Video Player: type of playback (eg. local play, cast). This is
-    recorded when a video starts playing.
   </summary>
 </histogram>
 

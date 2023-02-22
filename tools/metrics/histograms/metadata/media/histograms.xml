@@ -6018,16 +6018,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MediaRouter.Cast.DeviceNameLength" units="characters"
-    expires_after="2022-05-01">
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    Records the length of the friendly name of a Cast device when we succeed to
-    open a Cast channel to it.
-  </summary>
-</histogram>
-
 <histogram name="MediaRouter.Cast.Discovery.ConnectedDevicesCount"
     units="devices" expires_after="2023-06-25">
   <owner>mfoltz@chromium.org</owner>
@@ -6053,13 +6043,6 @@ chromium-metrics-reviews@google.com.
   <owner>btolsch@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>The source of discovery for a newly-created Cast sink.</summary>
-</histogram>
-
-<histogram name="MediaRouter.Cast.Feedback.Event"
-    enum="MediaRouterCastFeedbackEvent" expires_after="2022-05-01">
-  <owner>jrw@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>Events related to the WebUI Cast feedback dialog.</summary>
 </histogram>
 
 <histogram name="MediaRouter.Cast.LaunchSessionRequest.SupportedAppTypes"
@@ -6166,16 +6149,6 @@ chromium-metrics-reviews@google.com.
     Total length of a Cast Streaming mirror session of any type, when the cast
     sink was discovered via access code.
   </summary>
-</histogram>
-
-<histogram name="MediaRouter.CastStreaming.Session.Length.File" units="ms"
-    expires_after="2022-07-01">
-  <obsolete>
-    Removed 04/2022 as local file casting is no longer done via the Cast UI.
-  </obsolete>
-  <owner>takumif@chromium.org</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>Total length of a Cast Streaming File mirror session.</summary>
 </histogram>
 
 <histogram name="MediaRouter.CastStreaming.Session.Length.OffscreenTab"
