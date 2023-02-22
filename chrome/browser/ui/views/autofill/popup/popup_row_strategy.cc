@@ -88,6 +88,8 @@ constexpr int kIconSize = 16;
 // Password Manager icon in the Manager Passwords entry.
 constexpr int kGooglePasswordManagerIconSize = 20;
 
+constexpr int kAutocompleteDeleteIconHorizontalPadding = 8;
+
 // Popup items that use a leading icon instead of a trailing one.
 constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::POPUP_ITEM_ID_CLEAR_FORM,
@@ -659,10 +661,16 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
                 std::make_unique<DeleteButtonAccessibilityDelegate>())
             .Build();
 
-    view->SetUseDefaultFillLayout(true);
+    view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal,
+        gfx::Insets::VH(0, kAutocompleteDeleteIconHorizontalPadding)));
     views::ImageView* delete_icon =
         view->AddChildView(ImageViewFromVectorIcon(kTrashCanIcon));
+    // The tooltip is set for both the cell and the image to ensure that it is
+    // also shown over the padding area.
     delete_icon->SetTooltipText(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
+    view->SetTooltipText(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
     view->SetOnAcceptedCallback(base::BindRepeating(
         base::IgnoreResult(&AutofillPopupController::RemoveSuggestion),

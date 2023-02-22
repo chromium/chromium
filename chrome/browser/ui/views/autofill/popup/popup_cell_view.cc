@@ -7,7 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -41,6 +44,19 @@ void PopupCellView::SetSelected(bool selected) {
           selected_ ? on_selected_callback_ : on_unselected_callback_) {
     callback.Run();
   }
+}
+
+void PopupCellView::SetTooltipText(std::u16string tooltip_text) {
+  if (tooltip_text_ == tooltip_text) {
+    return;
+  }
+
+  tooltip_text_ = std::move(tooltip_text);
+  TooltipTextChanged();
+}
+
+std::u16string PopupCellView::GetTooltipText(const gfx::Point& p) const {
+  return tooltip_text_;
 }
 
 void PopupCellView::SetAccessibilityDelegate(
@@ -165,16 +181,23 @@ void PopupCellView::RefreshStyle() {
   ui::ColorId kBackgroundColorId = GetSelected()
                                        ? ui::kColorDropdownBackgroundSelected
                                        : ui::kColorDropdownBackground;
-  SetBackground(views::CreateThemedSolidBackground(kBackgroundColorId));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)) {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        kBackgroundColorId, ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+                                views::Emphasis::kMedium)));
+  } else {
+    SetBackground(views::CreateThemedSolidBackground(kBackgroundColorId));
+  }
 
   // Set style for each label in this cell depending on its current selection
   // state.
   for (raw_ptr<views::Label>& label : tracked_labels_) {
     label->SetAutoColorReadabilityEnabled(false);
 
-    // If the current suggestion is selected or the label is disabled, override
-    // the style. Otherwise, use the color that corresponds to the actual style
-    // of the label.
+    // If the current suggestion is selected or the label is disabled,
+    // override the style. Otherwise, use the color that corresponds to the
+    // actual style of the label.
     int style = label->GetEnabled()
                     ? (GetSelected() ? views::style::STYLE_SELECTED
                                      : label->GetTextStyle())
@@ -188,6 +211,7 @@ void PopupCellView::RefreshStyle() {
 
 BEGIN_METADATA(PopupCellView, views::View)
 ADD_PROPERTY_METADATA(bool, Selected)
+ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnEnteredCallback)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnExitedCallback)
 ADD_PROPERTY_METADATA(base::RepeatingClosure, OnAcceptedCallback)

@@ -112,6 +112,21 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesBackground) {
                                          ui::kColorDropdownBackgroundSelected));
 }
 
+TEST_F(PopupCellViewTest, Tooltip) {
+  constexpr char16_t kTooltip[] = u"Sample tooltip";
+
+  ShowView(views::Builder<PopupCellView>()
+               .SetAccessibilityDelegate(
+                   std::make_unique<TestAccessibilityDelegate>())
+               .SetTooltipText(kTooltip)
+               .Build());
+  EXPECT_EQ(view().GetTooltipText(), kTooltip);
+
+  // The method derived form `views::View` responds properly, too.
+  const views::View& cell_as_view = view();
+  EXPECT_EQ(cell_as_view.GetTooltipText(gfx::Point()), kTooltip);
+}
+
 TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
   std::unique_ptr<PopupCellView> cell =
       views::Builder<PopupCellView>()

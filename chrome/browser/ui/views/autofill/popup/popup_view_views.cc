@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -73,6 +74,13 @@ constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
 int GetContentsVerticalPadding() {
   return ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_CONTENT_LIST_VERTICAL_SINGLE);
+}
+
+int GetContentsHorizontalPadding() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillShowAutocompleteDeleteButton)
+             ? GetContentsVerticalPadding()
+             : 0;
 }
 
 // Returns true if the item at `line_number` is a footer item.
@@ -363,8 +371,8 @@ void PopupViewViews::CreateChildViews() {
   raw_ptr<views::BoxLayoutView> content_view = AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetInsideBorderInsets(
-              gfx::Insets::VH(GetContentsVerticalPadding(), 0))
+          .SetInsideBorderInsets(gfx::Insets::VH(
+              GetContentsVerticalPadding(), GetContentsHorizontalPadding()))
           .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
           .Build());
 

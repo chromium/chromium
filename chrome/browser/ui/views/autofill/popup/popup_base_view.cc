@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -37,6 +38,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
 #if DCHECK_IS_ON()
@@ -61,7 +63,10 @@ constexpr int kMaximumWidthPercentageToMoveTheSuggestionToCenter = 50;
 // static
 int PopupBaseView::GetCornerRadius() {
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kMedium);
+      base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton)
+          ? views::Emphasis::kHigh
+          : views::Emphasis::kMedium);
 }
 
 // static

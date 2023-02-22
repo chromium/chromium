@@ -18,10 +18,12 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using ::testing::IsNull;
 using ::testing::NotNull;
@@ -147,9 +149,8 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonRemovesEntry) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillShowAutocompleteDeleteButton);
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillShowAutocompleteDeleteButton};
   SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
                   POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
                   POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
@@ -167,9 +168,8 @@ TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonRemovesEntry) {
 }
 
 TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kAutofillShowAutocompleteDeleteButton);
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillShowAutocompleteDeleteButton};
   SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
                   POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
                   POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
@@ -183,6 +183,23 @@ TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonSetsAccessibility) {
   cell->GetAccessibleNodeData(&node_data);
 
   EXPECT_EQ(node_data.role, ax::mojom::Role::kButton);
+}
+
+TEST_F(PopupRowStrategyTest, AutocompleteDeleteButtonHasTooltip) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillShowAutocompleteDeleteButton};
+  SetSuggestions({POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY,
+                  POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY});
+  std::unique_ptr<PopupRowStrategy> strategy =
+      CreateStrategy(StrategyType::kSuggestion, /*line_number=*/1);
+
+  std::unique_ptr<PopupCellView> cell = strategy->CreateControl();
+  ASSERT_THAT(cell, NotNull());
+
+  EXPECT_EQ(cell->GetTooltipText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
 }
 
 class PopupRowStrategyParametrizedTest
