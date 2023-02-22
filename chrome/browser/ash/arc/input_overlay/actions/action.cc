@@ -36,9 +36,9 @@ constexpr char kRadius[] = "radius";
 constexpr int kMinRadius = 18;
 constexpr float kHalf = 0.5;
 
-std::vector<Position> ParseLocation(const base::Value& position) {
+std::vector<Position> ParseLocation(const base::Value::List& position) {
   std::vector<Position> positions;
-  for (const base::Value& val : position.GetList()) {
+  for (const base::Value& val : position) {
     auto pos = ParsePosition(val);
     if (!pos) {
       LOG(ERROR) << "Failed to parse location.";
@@ -76,7 +76,8 @@ std::unique_ptr<Position> ParsePosition(const base::Value& value) {
     return nullptr;
   }
 
-  bool succeed = pos->ParseFromJson(value);
+  DCHECK(value.is_dict());
+  bool succeed = pos->ParseFromJson(value.GetDict());
   if (!succeed) {
     LOG(ERROR) << "Position is parsed incorrectly on type: " << *type;
     return nullptr;
@@ -152,8 +153,13 @@ Action::Action(TouchInjector* touch_injector)
 Action::~Action() = default;
 
 bool Action::ParseFromJson(const base::Value& value) {
+  if (!value.is_dict()) {
+    LOG(ERROR) << "Value must be a dictionary.";
+    return false;
+  }
+
   // Name can be empty.
-  auto* name = value.FindStringKey(kName);
+  auto* name = value.GetDict().FindString(kName);
   if (name)
     name_ = *name;
 
@@ -189,7 +195,7 @@ bool Action::ParseFromJson(const base::Value& value) {
   }
 
   // Location can be empty for mouse related actions.
-  const base::Value* position = value.FindListKey(kLocation);
+  const base::Value::List* position = value.GetDict().FindList(kLocation);
   if (position) {
     auto parsed_pos = ParseLocation(*position);
     if (!parsed_pos.empty()) {
@@ -201,8 +207,9 @@ bool Action::ParseFromJson(const base::Value& value) {
     }
   }
   // Parse action radius.
-  if (!ParsePositiveFraction(value, kRadius, &radius_))
+  if (!ParsePositiveFraction(value.GetDict(), kRadius, &radius_)) {
     return false;
+  }
 
   if (radius_ && *radius_ >= kHalf) {
     LOG(ERROR) << "Require value of " << kRadius << " less than " << kHalf
