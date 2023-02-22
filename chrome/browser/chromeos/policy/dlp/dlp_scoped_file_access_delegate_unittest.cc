@@ -191,25 +191,24 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
       FROM_HERE, base::BindOnce(&base::RunLoop::Quit, base::Unretained(&init)));
   init.Run();
 
-  file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIOCallback*
-      original_callback;
-
   // Callback that calls the original
   // request_files_access_for_system_io_callback_ after destructing
   // DlpScopedFileAccessDelegate.
-  auto decorated_callback = base::BindLambdaForTesting(
-      [this, &original_callback](
-          const std::vector<base::FilePath>& path,
-          base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
-        ui_thread_->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &file_access::ScopedFileAccessDelegate::DeleteInstance));
-        original_callback->Run(path, std::move(callback));
-      });
-
-  original_callback = file_access::ScopedFileAccessDelegate::
-      SetRequestFilesAccessForSystemIOCallbackForTesting(decorated_callback);
+  file_access::ScopedFileAccessDelegate::
+      ScopedRequestFilesAccessCallbackForTesting file_access_callback(
+          base::BindLambdaForTesting(
+              [this, &file_access_callback](
+                  const std::vector<base::FilePath>& path,
+                  base::OnceCallback<void(file_access::ScopedFileAccess)>
+                      callback) {
+                ui_thread_->PostTask(
+                    FROM_HERE,
+                    base::BindOnce(&file_access::ScopedFileAccessDelegate::
+                                       DeleteInstance));
+                file_access_callback.RunOriginalCallback(path,
+                                                         std::move(callback));
+              }),
+          false /* = restore_original_callback*/);
 
   // The request for file access should be granted as that is the default
   // behaviour for no running dlp (no rules).
@@ -224,7 +223,6 @@ TEST_F(DlpScopedFileAccessDelegateTaskTest,
                              }));
       }));
   run_loop_.Run();
-  delete original_callback;
 }
 
 TEST_F(DlpScopedFileAccessDelegateTaskTest,

@@ -96,13 +96,33 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
             path, from_here, traits, std::move(task), std::move(reply)));
   }
 
-  // Sets the callback forwarding the RequestFilesAccessForSystem call from IO
-  // to UI thread. Returns the previous callback transferring the ownership to
-  // the caller.
-  static RequestFilesAccessForSystemIOCallback*
-  SetRequestFilesAccessForSystemIOCallbackForTesting(
-      RequestFilesAccessForSystemIOCallback callback);
-  static void ResetRequestFilesAccessForSystemIOCallbackForTesting();
+  // This class sets the callback forwarding the RequestFilesAccessForSystem
+  // call from IO to UI thread.
+  class COMPONENT_EXPORT(FILE_ACCESS)
+      ScopedRequestFilesAccessCallbackForTesting {
+   public:
+    // If `restore_original_callback` is set, it restores the original callback.
+    // Otherwise, it destroys the original callback when this class is
+    // destroyed.
+    explicit ScopedRequestFilesAccessCallbackForTesting(
+        RequestFilesAccessForSystemIOCallback callback,
+        bool restore_original_callback = true);
+
+    virtual ~ScopedRequestFilesAccessCallbackForTesting();
+
+    ScopedRequestFilesAccessCallbackForTesting(
+        const ScopedRequestFilesAccessCallbackForTesting&) = delete;
+    ScopedRequestFilesAccessCallbackForTesting& operator=(
+        const ScopedRequestFilesAccessCallbackForTesting&) = delete;
+
+    void RunOriginalCallback(
+        const std::vector<base::FilePath>& path,
+        base::OnceCallback<void(file_access::ScopedFileAccess)> callback);
+
+   private:
+    bool restore_original_callback_;
+    RequestFilesAccessForSystemIOCallback* original_callback_ = nullptr;
+  };
 
  protected:
   ScopedFileAccessDelegate();

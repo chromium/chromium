@@ -137,7 +137,8 @@ TEST_F(LocalFileStreamReaderTest, ReadAllowedByDataLeakPrevention) {
       base::OnceCallback<void(file_access::ScopedFileAccess)>)>
       callback;
   file_access::ScopedFileAccessDelegate::
-      SetRequestFilesAccessForSystemIOCallbackForTesting(callback.Get());
+      ScopedRequestFilesAccessCallbackForTesting file_access_callback(
+          callback.Get());
   EXPECT_CALL(
       callback,
       Run(testing::ElementsAre(test_dir().AppendASCII(kTestFileName)), _))
@@ -148,8 +149,6 @@ TEST_F(LocalFileStreamReaderTest, ReadAllowedByDataLeakPrevention) {
   ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
   ASSERT_EQ(net::OK, result);
   ASSERT_EQ(this->kTestData, data);
-  file_access::ScopedFileAccessDelegate::
-      ResetRequestFilesAccessForSystemIOCallbackForTesting();
 }
 
 // TODO(b/262199707 b/265908846): Replace direct call to
@@ -165,7 +164,8 @@ TEST_F(LocalFileStreamReaderTest, ReadBlockedByDataLeakPrevention) {
       base::OnceCallback<void(file_access::ScopedFileAccess)>)>
       callback;
   file_access::ScopedFileAccessDelegate::
-      SetRequestFilesAccessForSystemIOCallbackForTesting(callback.Get());
+      ScopedRequestFilesAccessCallbackForTesting file_access_callback(
+          callback.Get());
   EXPECT_CALL(
       callback,
       Run(testing::ElementsAre(test_dir().AppendASCII(kTestFileName)), _))
@@ -176,8 +176,6 @@ TEST_F(LocalFileStreamReaderTest, ReadBlockedByDataLeakPrevention) {
   ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
   ASSERT_EQ(net::ERR_ACCESS_DENIED, result);
   ASSERT_EQ("", data);
-  file_access::ScopedFileAccessDelegate::
-      ResetRequestFilesAccessForSystemIOCallbackForTesting();
 }
 
 }  // namespace storage
