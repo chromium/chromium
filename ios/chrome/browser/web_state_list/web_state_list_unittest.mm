@@ -1216,3 +1216,13 @@ TEST_F(WebStateListTest, WebStateListDestroyed) {
   web_state_list.reset();
   EXPECT_TRUE(observer_.web_state_list_destroyed_called());
 }
+
+TEST_F(WebStateListTest, WebStateListAsWeakPtr) {
+  // Using a local WebStateList to observe its destruction.
+  std::unique_ptr<WebStateList> web_state_list =
+      std::make_unique<WebStateList>(&web_state_list_delegate_);
+  base::WeakPtr<WebStateList> weak_web_state_list = web_state_list->AsWeakPtr();
+  EXPECT_TRUE(weak_web_state_list);
+  web_state_list.reset();
+  EXPECT_FALSE(weak_web_state_list);
+}

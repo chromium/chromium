@@ -152,6 +152,11 @@ WebStateList::~WebStateList() {
   }
 }
 
+base::WeakPtr<WebStateList> WebStateList::AsWeakPtr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return weak_factory_.GetWeakPtr();
+}
+
 bool WebStateList::ContainsIndex(int index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return 0 <= index && index < count();
