@@ -939,15 +939,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                              timeout:(base::TimeDelta)timeout {
   NSString* errorString =
       [NSString stringWithFormat:@"Expected %zu URLs.", [URLs count]];
+  __block NSError* blockError = nil;
   GREYCondition* verifyURLs =
       [GREYCondition conditionWithName:errorString
                                  block:^{
-                                   NSError* error = [ChromeEarlGreyAppInterface
+                                   blockError = [ChromeEarlGreyAppInterface
                                        verifyHistoryOnSyncServerWithURLs:URLs];
-                                   return !error;
+                                   return !blockError;
                                  }];
 
   bool success = [verifyURLs waitWithTimeout:timeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_NO_ERROR(blockError);
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
