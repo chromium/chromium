@@ -4,8 +4,8 @@
 
 #include "components/payments/content/utility/payment_manifest_parser.h"
 
-#include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
+#include "base/test/values_test_util.h"
 #include "components/payments/core/error_logger.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -20,7 +20,7 @@ void ExpectUnableToParsePaymentMethodManifest(const std::string& input) {
   std::vector<GURL> actual_web_app_urls;
   std::vector<url::Origin> actual_supported_origins;
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(input);
+  base::Value value = base::test::ParseJson(input);
 
   PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
       GURL("https://bobpay.test/pmm.json"), std::move(value), ErrorLogger(),
@@ -38,7 +38,7 @@ void ExpectParsedPaymentMethodManifest(
   std::vector<GURL> actual_web_app_urls;
   std::vector<url::Origin> actual_supported_origins;
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(input);
+  base::Value value = base::test::ParseJson(input);
 
   PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
       GURL("https://bobpay.test/pmm.json"), std::move(value), ErrorLogger(),
@@ -46,14 +46,6 @@ void ExpectParsedPaymentMethodManifest(
 
   EXPECT_EQ(expected_web_app_urls, actual_web_app_urls);
   EXPECT_EQ(expected_supported_origins, actual_supported_origins);
-}
-
-TEST(PaymentManifestParserTest, NullPaymentMethodManifestIsMalformed) {
-  ExpectUnableToParsePaymentMethodManifest(std::string());
-}
-
-TEST(PaymentManifestParserTest, NonJsonPaymentMethodManifestIsMalformed) {
-  ExpectUnableToParsePaymentMethodManifest("this is not json");
 }
 
 TEST(PaymentManifestParserTest, StringPaymentMethodManifestIsMalformed) {
@@ -90,16 +82,6 @@ TEST(PaymentManifestParserTest, DefaultApplicationCanBeRelativeURL) {
   ExpectParsedPaymentMethodManifest(
       "{\"default_applications\": [\"manifest.json\"]}",
       {GURL("https://bobpay.test/manifest.json")}, {});
-}
-
-TEST(PaymentManifestParserTest, DefaultApplicationsShouldNotHaveNulCharacters) {
-  ExpectUnableToParsePaymentMethodManifest(
-      "{\"default_applications\": [\"https://bobpay.test/app\0json\"]}");
-}
-
-TEST(PaymentManifestParserTest, DefaultApplicationsShouldBeUTF8) {
-  ExpectUnableToParsePaymentMethodManifest(
-      "{\"default_applications\":[\"https://b\x0f\x7f\xf0\xff!\"]}");
 }
 
 TEST(PaymentManifestParserTest, DefaultApplicationKeyShouldBeLowercase) {
@@ -143,16 +125,6 @@ TEST(PaymentManifestParserTest, ListOfNumbersSupportedOriginsIsMalformed) {
 
 TEST(PaymentManifestParserTest, ListOfEmptySupportedOriginsIsMalformed) {
   ExpectUnableToParsePaymentMethodManifest("{\"supported_origins\": [\"\"]}");
-}
-
-TEST(PaymentManifestParserTest, SupportedOriginsShouldNotHaveNulCharacters) {
-  ExpectUnableToParsePaymentMethodManifest(
-      "{\"supported_origins\": [\"https://bob\0pay.test\"]}");
-}
-
-TEST(PaymentManifestParserTest, SupportedOriginsShouldBeUTF8) {
-  ExpectUnableToParsePaymentMethodManifest(
-      "{\"supported_origins\":[\"https://b\x0f\x7f\xf0\xff!\"]}");
 }
 
 TEST(PaymentManifestParserTest, SupportedOriginsShouldBeHttps) {
@@ -267,7 +239,7 @@ TEST(PaymentManifestParserTest,
 // Web app manifest parsing:
 
 void ExpectUnableToParseWebAppManifest(const std::string& input) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(input);
+  base::Value value = base::test::ParseJson(input);
   std::vector<WebAppManifestSection> sections;
   PaymentManifestParser::ParseWebAppManifestIntoVector(
       std::move(value), ErrorLogger(), &sections);
@@ -279,7 +251,7 @@ void ExpectParsedWebAppManifest(
     const std::string& expected_id,
     int64_t expected_min_version,
     const std::vector<std::vector<uint8_t>>& expected_fingerprints) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(input);
+  base::Value value = base::test::ParseJson(input);
   std::vector<WebAppManifestSection> sections;
   EXPECT_TRUE(PaymentManifestParser::ParseWebAppManifestIntoVector(
       std::move(value), ErrorLogger(), &sections));
@@ -287,14 +259,6 @@ void ExpectParsedWebAppManifest(
   EXPECT_EQ(expected_id, sections.front().id);
   EXPECT_EQ(expected_min_version, sections.front().min_version);
   EXPECT_EQ(expected_fingerprints, sections.front().fingerprints);
-}
-
-TEST(PaymentManifestParserTest, NullContentIsMalformed) {
-  ExpectUnableToParseWebAppManifest(std::string());
-}
-
-TEST(PaymentManifestParserTest, NonJsonContentIsMalformed) {
-  ExpectUnableToParseWebAppManifest("this is not json");
 }
 
 TEST(PaymentManifestParserTest, StringContentIsMalformed) {
@@ -432,38 +396,6 @@ TEST(PaymentManifestParserTest, NoFingerprintValueIsMalformed) {
       "}");
 }
 
-TEST(PaymentManifestParserTest, PlatformShouldNotHaveNullCharacters) {
-  ExpectUnableToParseWebAppManifest(
-      "{"
-      "  \"related_applications\": [{"
-      "    \"platform\": \"pl\0ay\", "
-      "    \"id\": \"com.bobpay.app\", "
-      "    \"min_version\": \"1\", "
-      "    \"fingerprints\": [{"
-      "      \"type\": \"sha256_cert\", "
-      "      \"value\": \"00:01:02:03:04:05:06:07:08:09:A0:A1:A2:A3:A4:A5:A6:A7"
-      ":A8:A9:B0:B1:B2:B3:B4:B5:B6:B7:B8:B9:C0:C1\""
-      "    }]"
-      "  }]"
-      "}");
-}
-
-TEST(PaymentManifestParserTest, PackageNameShouldNotHaveNullCharacters) {
-  ExpectUnableToParseWebAppManifest(
-      "{"
-      "  \"related_applications\": [{"
-      "    \"platform\": \"play\", "
-      "    \"id\": \"com.bob\0pay.app\", "
-      "    \"min_version\": \"1\", "
-      "    \"fingerprints\": [{"
-      "      \"type\": \"sha256_cert\", "
-      "      \"value\": \"00:01:02:03:04:05:06:07:08:09:A0:A1:A2:A3:A4:A5:A6:A7"
-      ":A8:A9:B0:B1:B2:B3:B4:B5:B6:B7:B8:B9:C0:C1\""
-      "    }]"
-      "  }]"
-      "}");
-}
-
 TEST(PaymentManifestParserTest, VersionShouldNotHaveNullCharacters) {
   ExpectUnableToParseWebAppManifest(
       "{"
@@ -474,39 +406,6 @@ TEST(PaymentManifestParserTest, VersionShouldNotHaveNullCharacters) {
       "    \"fingerprints\": [{"
       "      \"type\": \"sha256_cert\", "
       "      \"value\": \"00:01:02:03:04:05:06:07:08:09:A0:A1:A2:A3:A4:A5:A6:A7"
-      ":A8:A9:B0:B1:B2:B3:B4:B5:B6:B7:B8:B9:C0:C1\""
-      "    }]"
-      "  }]"
-      "}");
-}
-
-TEST(PaymentManifestParserTest, FingerprintTypeShouldNotHaveNullCharacters) {
-  ExpectUnableToParseWebAppManifest(
-      "{"
-      "  \"related_applications\": [{"
-      "    \"platform\": \"play\", "
-      "    \"id\": \"com.bobpay.app\", "
-      "    \"min_version\": \"1\", "
-      "    \"fingerprints\": [{"
-      "      \"type\": \"sha256_c\0ert\", "
-      "      \"value\": \"00:01:02:03:04:05:06:07:08:09:A0:A1:A2:A3:A4:A5:A6:A7"
-      ":A8:A9:B0:B1:B2:B3:B4:B5:B6:B7:B8:B9:C0:C1\""
-      "    }]"
-      "  }]"
-      "}");
-}
-
-TEST(PaymentManifestParserTest, FingerprintValueShouldNotHaveNullCharacters) {
-  ExpectUnableToParseWebAppManifest(
-      "{"
-      "  \"related_applications\": [{"
-      "    \"platform\": \"play\", "
-      "    \"id\": \"com.bobpay.app\", "
-      "    \"min_version\": \"1\", "
-      "    \"fingerprints\": [{"
-      "      \"type\": \"sha256_cert\", "
-      "      \"value\": "
-      "\"00:01:02:0\0:04:05:06:07:08:09:A0:A1:A2:A3:A4:A5:A6:A7"
       ":A8:A9:B0:B1:B2:B3:B4:B5:B6:B7:B8:B9:C0:C1\""
       "    }]"
       "  }]"
@@ -681,7 +580,7 @@ TEST(PaymentManifestParserTest, TwoDifferentSignaturesWellFormed) {
 }
 
 TEST(PaymentManifestParserTest, TwoRelatedApplicationsWellFormed) {
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
+  base::Value value = base::test::ParseJson(
       "{"
       "  \"related_applications\": [{"
       "    \"platform\": \"play\", "
@@ -705,7 +604,6 @@ TEST(PaymentManifestParserTest, TwoRelatedApplicationsWellFormed) {
       "    }]"
       "  }]"
       "}");
-  ASSERT_TRUE(value);
 
   std::vector<WebAppManifestSection> sections;
   EXPECT_TRUE(PaymentManifestParser::ParseWebAppManifestIntoVector(
@@ -735,7 +633,7 @@ TEST(PaymentManifestParserTest, TwoRelatedApplicationsWellFormed) {
 // Web app installation information parsing:
 
 void ExpectUnableToParseInstallInfo(const std::string& input) {
-  auto value = base::JSONReader::ReadDeprecated(input);
+  auto value = base::test::ParseJson(input);
   auto installation_info = std::make_unique<WebAppInstallationInfo>();
   auto icons =
       std::make_unique<std::vector<PaymentManifestParser::WebAppIcon>>();
@@ -747,7 +645,7 @@ void ExpectParsedInstallInfo(
     const std::string& input,
     const WebAppInstallationInfo& expected_installation_info,
     const std::vector<PaymentManifestParser::WebAppIcon>& expected_icons) {
-  auto value = base::JSONReader::ReadDeprecated(input);
+  auto value = base::test::ParseJson(input);
   WebAppInstallationInfo actual_installation_info;
   std::vector<PaymentManifestParser::WebAppIcon> actual_icons;
   EXPECT_TRUE(PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
@@ -773,14 +671,6 @@ void ExpectParsedInstallInfo(
             actual_installation_info.preferred_app_ids);
 }
 
-TEST(PaymentManifestParserTest, NullInstallInfoIsMalformed) {
-  ExpectUnableToParseInstallInfo(std::string());
-}
-
-TEST(PaymentManifestParserTest, NonJsonInstallInfoIsMalformed) {
-  ExpectUnableToParseInstallInfo("this is not json");
-}
-
 TEST(PaymentManifestParserTest, StringInstallInfoIsMalformed) {
   ExpectUnableToParseInstallInfo("\"this is a string\"");
 }
@@ -795,10 +685,6 @@ TEST(PaymentManifestParserTest, StringServiceWorkerInInstallInfoIsMalformed) {
 
 TEST(PaymentManifestParserTest, IntegerSrcInInstallInfoIsMalformed) {
   ExpectUnableToParseInstallInfo("{\"serviceworker\": {\"src\": 0}}");
-}
-
-TEST(PaymentManifestParserTest, NullCharInSrcInInstallInfoIsMalformed) {
-  ExpectUnableToParseInstallInfo("{\"serviceworker\": {\"src\": \"\0\"}}");
 }
 
 TEST(PaymentManifestParserTest, EmptyServiceWorkerSrcInInstallInfoIsMalformed) {
