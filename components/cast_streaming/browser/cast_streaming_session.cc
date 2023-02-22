@@ -390,6 +390,8 @@ void CastStreamingSession::ReceiverSessionClient::OnFlushComplete() {
 void CastStreamingSession::ReceiverSessionClient::OnFlushUntil(
     uint32_t audio_count,
     uint32_t video_count) {
+  DVLOG(1) << "OnFlushUntil called: (audio_count=" << audio_count
+           << ", video_count=" << video_count << ")";
   if (audio_consumer_) {
     audio_consumer_->FlushUntil(audio_count);
   }

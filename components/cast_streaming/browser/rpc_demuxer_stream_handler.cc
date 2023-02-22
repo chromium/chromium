@@ -12,6 +12,8 @@
 #include "components/cast_streaming/public/remoting_message_factories.h"
 #include "third_party/openscreen/src/cast/streaming/remoting.pb.h"
 
+using openscreen::cast::RpcMessenger;
+
 namespace cast_streaming::remoting {
 namespace {
 
@@ -50,11 +52,11 @@ RpcDemuxerStreamHandler::RpcDemuxerStreamHandler(
 RpcDemuxerStreamHandler::~RpcDemuxerStreamHandler() = default;
 
 void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
-    openscreen::cast::RpcMessenger::Handle audio_stream_handle,
-    openscreen::cast::RpcMessenger::Handle video_stream_handle) {
+    RpcMessenger::Handle audio_stream_handle,
+    RpcMessenger::Handle video_stream_handle) {
   // Initialization of the Demuxer happens automatically, so immediately
   // initialize the DemuxerStreams.
-  if (audio_stream_handle != openscreen::cast::RpcMessenger::kInvalidHandle) {
+  if (audio_stream_handle != RpcMessenger::kInvalidHandle) {
     audio_message_processor_ = std::make_unique<MessageProcessor>(
         task_runner_, client_, process_message_cb_, handle_factory_.Run(),
         audio_stream_handle, MessageProcessor::Type::kAudio);
@@ -65,7 +67,7 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
                             std::move(message));
   }
 
-  if (video_stream_handle != openscreen::cast::RpcMessenger::kInvalidHandle) {
+  if (video_stream_handle != RpcMessenger::kInvalidHandle) {
     video_message_processor_ = std::make_unique<MessageProcessor>(
         task_runner_, client_, process_message_cb_, handle_factory_.Run(),
         video_stream_handle, MessageProcessor::Type::kVideo);
@@ -78,7 +80,7 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
 }
 
 void RpcDemuxerStreamHandler::OnRpcEnableBitstreamConverterCallback(
-    openscreen::cast::RpcMessenger::Handle handle,
+    RpcMessenger::Handle handle,
     bool succeeded) {
   if (audio_message_processor_ &&
       handle == audio_message_processor_->local_handle()) {
@@ -105,7 +107,7 @@ void RpcDemuxerStreamHandler::OnRpcEnableBitstreamConverterCallback(
 }
 
 void RpcDemuxerStreamHandler::OnRpcInitializeCallback(
-    openscreen::cast::RpcMessenger::Handle handle,
+    RpcMessenger::Handle handle,
     absl::optional<media::AudioDecoderConfig> audio_config,
     absl::optional<media::VideoDecoderConfig> video_config) {
   if (audio_message_processor_ &&
@@ -122,7 +124,7 @@ void RpcDemuxerStreamHandler::OnRpcInitializeCallback(
 }
 
 void RpcDemuxerStreamHandler::OnRpcReadUntilCallback(
-    openscreen::cast::RpcMessenger::Handle handle,
+    RpcMessenger::Handle handle,
     absl::optional<media::AudioDecoderConfig> audio_config,
     absl::optional<media::VideoDecoderConfig> video_config,
     uint32_t total_frames_received) {
@@ -142,7 +144,7 @@ void RpcDemuxerStreamHandler::OnRpcReadUntilCallback(
 }
 
 void RpcDemuxerStreamHandler::OnRpcBitstreamConverterEnabled(
-    openscreen::cast::RpcMessenger::Handle handle,
+    RpcMessenger::Handle handle,
     bool success) {
   if (audio_message_processor_ &&
       handle == audio_message_processor_->local_handle()) {
@@ -178,8 +180,8 @@ RpcDemuxerStreamHandler::MessageProcessor::MessageProcessor(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     Client* client,
     RpcProcessMessageCB process_message_cb,
-    openscreen::cast::RpcMessenger::Handle local_handle,
-    openscreen::cast::RpcMessenger::Handle remote_handle,
+    RpcMessenger::Handle local_handle,
+    RpcMessenger::Handle remote_handle,
     Type type)
     : task_runner_(std::move(task_runner)),
       client_(client),
@@ -190,8 +192,8 @@ RpcDemuxerStreamHandler::MessageProcessor::MessageProcessor(
       weak_factory_(this) {
   DCHECK(task_runner_);
   DCHECK(client_);
-  DCHECK_NE(local_handle_, openscreen::cast::RpcMessenger::kInvalidHandle);
-  DCHECK_NE(remote_handle_, openscreen::cast::RpcMessenger::kInvalidHandle);
+  DCHECK_NE(local_handle_, RpcMessenger::kInvalidHandle);
+  DCHECK_NE(remote_handle_, RpcMessenger::kInvalidHandle);
 }
 
 RpcDemuxerStreamHandler::MessageProcessor::~MessageProcessor() = default;
@@ -270,7 +272,8 @@ void RpcDemuxerStreamHandler::MessageProcessor::EnableBitstreamConverter(
 }
 
 void RpcDemuxerStreamHandler::MessageProcessor::OnNoBuffersAvailable() {
-  DVLOG(1) << "Requesting more buffers";
+  DVLOG(1) << "Requesting more buffers: source handle = " << local_handle_
+           << ", remote handle = " << remote_handle_;
 
   // If a call is already ongoing, queue up a new call to be made once its ACK
   // is received.

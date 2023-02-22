@@ -71,7 +71,7 @@ void PlaybackCommandDispatcher::OnRemotingSessionNegotiated(
   RegisterHandleForCallbacks(
       openscreen::cast::RpcMessenger::kAcquireDemuxerHandle);
 
-  renderer_call_translator_->set_handle(AcquireHandle());
+  renderer_call_translator_->set_local_handle(AcquireHandle());
   demuxer_stream_handler_ = std::make_unique<remoting::RpcDemuxerStreamHandler>(
       task_runner_, this,
       base::BindRepeating(&PlaybackCommandDispatcher::AcquireHandle,
@@ -135,7 +135,8 @@ void PlaybackCommandDispatcher::SendRemotingRpcMessageToRemote(
       1, message->proc() != openscreen::cast::RpcMessage::RPC_RC_ONTIMEUPDATE &&
              message->proc() !=
                  openscreen::cast::RpcMessage::RPC_RC_ONSTATISTICSUPDATE)
-      << "SendRemotingRpcMessageToRemote() type=" << message->proc();
+      << "SendRemotingRpcMessageToRemote() type=" << message->proc()
+      << " handle=" << handle;
 
   message->set_handle(handle);
   messenger_->SendMessageToRemote(*message);
@@ -146,7 +147,8 @@ void PlaybackCommandDispatcher::ProcessRemotingRpcMessageFromRemote(
   DCHECK(message);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  DVLOG(1) << "ProcessRemotingRpcMessageFromRemote() type=" << message->proc();
+  DVLOG(1) << "ProcessRemotingRpcMessageFromRemote() type=" << message->proc()
+           << ", handle=" << message->handle();
 
   const bool did_dispatch_as_initialization_call =
       remoting::DispatchInitializationRpcCall(message.get(), this);
@@ -204,12 +206,15 @@ void PlaybackCommandDispatcher::OnSetPlaybackControllerDone() {
   }
 }
 
-void PlaybackCommandDispatcher::RpcAcquireRendererAsync(AcquireRendererCB cb) {
+void PlaybackCommandDispatcher::RpcAcquireRendererAsync(
+    openscreen::cast::RpcMessenger::Handle remote_handle,
+    AcquireRendererCB cb) {
   DCHECK(renderer_call_translator_);
-  const auto handle = renderer_call_translator_->handle();
+  renderer_call_translator_->set_remote_handle(remote_handle);
 
-  DCHECK_NE(handle, openscreen::cast::RpcMessenger::kInvalidHandle);
-  acquire_renderer_cb_ = base::BindOnce(std::move(cb), handle);
+  const auto local_handle = renderer_call_translator_->local_handle();
+  DCHECK_NE(local_handle, openscreen::cast::RpcMessenger::kInvalidHandle);
+  acquire_renderer_cb_ = base::BindOnce(std::move(cb), local_handle);
 
   if (has_set_playback_controller_call_returned_) {
     std::move(acquire_renderer_cb_).Run();

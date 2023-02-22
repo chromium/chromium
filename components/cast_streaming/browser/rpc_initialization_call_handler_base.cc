@@ -21,6 +21,7 @@ RpcInitializationCallHandlerBase::~RpcInitializationCallHandlerBase() = default;
 void RpcInitializationCallHandlerBase::OnRpcAcquireRenderer(
     openscreen::cast::RpcMessenger::Handle handle) {
   RpcAcquireRendererAsync(
+      handle,
       base::BindOnce(&RpcInitializationCallHandlerBase::OnAcquireRendererDone,
                      weak_factory_.GetWeakPtr(), handle));
 }

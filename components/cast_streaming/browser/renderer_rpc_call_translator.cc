@@ -30,15 +30,15 @@ void RendererRpcCallTranslator::OnRpcInitialize() {
         renderer_client_receiver_.BindNewEndpointAndPassRemote(),
         /* streams */ {}, /* media_url_params */ nullptr,
         base::BindOnce(&RendererRpcCallTranslator::OnInitializeCompleted,
-                       weak_factory_.GetWeakPtr(), handle_));
+                       weak_factory_.GetWeakPtr(), remote_handle_));
   } else {
-    OnInitializeCompleted(handle_, true);
+    OnInitializeCompleted(remote_handle_, true);
   }
 }
 
 void RendererRpcCallTranslator::OnRpcFlush(uint32_t audio_count,
                                            uint32_t video_count) {
-  flush_handles_.push_back(handle_);
+  flush_handles_.push_back(remote_handle_);
   renderer_->Flush(base::BindOnce(&RendererRpcCallTranslator::OnFlushCompleted,
                                   weak_factory_.GetWeakPtr()));
   flush_until_cb_.Run(audio_count, video_count);
@@ -59,45 +59,52 @@ void RendererRpcCallTranslator::OnRpcSetVolume(double volume) {
 void RendererRpcCallTranslator::OnTimeUpdate(base::TimeDelta media_time,
                                              base::TimeDelta max_time,
                                              base::TimeTicks capture_time) {
-  message_processor_.Run(handle_, CreateMessageForMediaTimeUpdate(media_time));
+  message_processor_.Run(remote_handle_,
+                         CreateMessageForMediaTimeUpdate(media_time));
 }
 
 void RendererRpcCallTranslator::OnBufferingStateChange(
     media::BufferingState state,
     media::BufferingStateChangeReason reason) {
-  message_processor_.Run(handle_, CreateMessageForBufferingStateChange(state));
+  message_processor_.Run(remote_handle_,
+                         CreateMessageForBufferingStateChange(state));
 }
 
 void RendererRpcCallTranslator::OnError(const media::PipelineStatus& status) {
-  message_processor_.Run(handle_, CreateMessageForError());
+  message_processor_.Run(remote_handle_, CreateMessageForError());
 }
 
 void RendererRpcCallTranslator::OnEnded() {
-  message_processor_.Run(handle_, CreateMessageForMediaEnded());
+  message_processor_.Run(remote_handle_, CreateMessageForMediaEnded());
 }
 
 void RendererRpcCallTranslator::OnAudioConfigChange(
     const media::AudioDecoderConfig& config) {
-  message_processor_.Run(handle_, CreateMessageForAudioConfigChange(config));
+  message_processor_.Run(remote_handle_,
+                         CreateMessageForAudioConfigChange(config));
 }
 
 void RendererRpcCallTranslator::OnVideoConfigChange(
     const media::VideoDecoderConfig& config) {
-  message_processor_.Run(handle_, CreateMessageForVideoConfigChange(config));
+  message_processor_.Run(remote_handle_,
+                         CreateMessageForVideoConfigChange(config));
 }
 
 void RendererRpcCallTranslator::OnVideoNaturalSizeChange(
     const gfx::Size& size) {
-  message_processor_.Run(handle_, CreateMessageForVideoNaturalSizeChange(size));
+  message_processor_.Run(remote_handle_,
+                         CreateMessageForVideoNaturalSizeChange(size));
 }
 
 void RendererRpcCallTranslator::OnVideoOpacityChange(bool opaque) {
-  message_processor_.Run(handle_, CreateMessageForVideoOpacityChange(opaque));
+  message_processor_.Run(remote_handle_,
+                         CreateMessageForVideoOpacityChange(opaque));
 }
 
 void RendererRpcCallTranslator::OnStatisticsUpdate(
     const media::PipelineStatistics& stats) {
-  message_processor_.Run(handle_, CreateMessageForStatisticsUpdate(stats));
+  message_processor_.Run(remote_handle_,
+                         CreateMessageForStatisticsUpdate(stats));
 }
 
 void RendererRpcCallTranslator::OnWaiting(media::WaitingReason reason) {}

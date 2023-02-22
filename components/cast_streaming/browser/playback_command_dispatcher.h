@@ -99,7 +99,9 @@ class PlaybackCommandDispatcher
   void OnSetPlaybackControllerDone();
 
   // RpcInitializationCallHandlerBase overrides.
-  void RpcAcquireRendererAsync(AcquireRendererCB cb) override;
+  void RpcAcquireRendererAsync(
+      openscreen::cast::RpcMessenger::Handle remote_handle,
+      AcquireRendererCB cb) override;
   void OnRpcAcquireDemuxer(
       openscreen::cast::RpcMessenger::Handle audio_stream_handle,
       openscreen::cast::RpcMessenger::Handle video_stream_handle) override;

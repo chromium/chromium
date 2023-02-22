@@ -43,10 +43,20 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
   ~RendererRpcCallTranslator() override;
 
   // Sets the |handle| to be used for future outgoing RPC calls.
-  void set_handle(openscreen::cast::RpcMessenger::Handle handle) {
-    handle_ = handle;
+  void set_remote_handle(openscreen::cast::RpcMessenger::Handle handle) {
+    remote_handle_ = handle;
   }
-  openscreen::cast::RpcMessenger::Handle handle() const { return handle_; }
+  openscreen::cast::RpcMessenger::Handle remote_handle() const {
+    return remote_handle_;
+  }
+
+  // Sets the |handle| associated with this instance.
+  void set_local_handle(openscreen::cast::RpcMessenger::Handle handle) {
+    local_handle_ = handle;
+  }
+  openscreen::cast::RpcMessenger::Handle local_handle() const {
+    return local_handle_;
+  }
 
  private:
   // media::mojom::RendererClient overrides.
@@ -99,7 +109,9 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
       renderer_client_receiver_;
   raw_ptr<media::mojom::Renderer> renderer_;
 
-  openscreen::cast::RpcMessenger::Handle handle_ =
+  openscreen::cast::RpcMessenger::Handle remote_handle_ =
+      openscreen::cast::RpcMessenger::kInvalidHandle;
+  openscreen::cast::RpcMessenger::Handle local_handle_ =
       openscreen::cast::RpcMessenger::kInvalidHandle;
 
   base::WeakPtrFactory<RendererRpcCallTranslator> weak_factory_;

@@ -30,7 +30,9 @@ class RpcInitializationCallHandlerBase
   // the handle to be used by future calls associated with the Renderer.
   using AcquireRendererCB =
       base::OnceCallback<void(openscreen::cast::RpcMessenger::Handle)>;
-  virtual void RpcAcquireRendererAsync(AcquireRendererCB cb) = 0;
+  virtual void RpcAcquireRendererAsync(
+      openscreen::cast::RpcMessenger::Handle remote_handle,
+      AcquireRendererCB cb) = 0;
 
  protected:
   using RpcProcessMessageCB = base::RepeatingCallback<void(
