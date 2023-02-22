@@ -432,9 +432,16 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot(
 }
 
 void InitializeTrustStoreAndroid() {
+  // Start observing DB change before the Trust Store is initialized so we don't
+  // accidentally miss any changes. See https://crrev.com/c/4226436 for context.
+  //
+  // This call is safe here because we're the only callers of
+  // ObserveCertDBChanges on the singleton TrustStoreAndroid.
+  GetGlobalTrustStoreAndroidForCRS()->ObserveCertDBChanges();
+
   base::ThreadPool::PostTask(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&InitializeTrustStoreForCRSOnWorkerThread));
 }
 
