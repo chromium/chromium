@@ -369,13 +369,20 @@ void GPUDevice::OnCreateComputePipelineAsyncCallback(
       break;
     }
 
-    case WGPUCreatePipelineAsyncStatus_ValidationError:
+    case WGPUCreatePipelineAsyncStatus_ValidationError: {
+      resolver->Reject(MakeGarbageCollected<GPUPipelineError>(
+          StringFromASCIIAndUTF8(message),
+          V8GPUPipelineErrorReason::Enum::kValidation));
+      break;
+    }
+
     case WGPUCreatePipelineAsyncStatus_InternalError:
     case WGPUCreatePipelineAsyncStatus_DeviceLost:
     case WGPUCreatePipelineAsyncStatus_DeviceDestroyed:
     case WGPUCreatePipelineAsyncStatus_Unknown: {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, StringFromASCIIAndUTF8(message)));
+      resolver->Reject(MakeGarbageCollected<GPUPipelineError>(
+          StringFromASCIIAndUTF8(message),
+          V8GPUPipelineErrorReason::Enum::kInternal));
       break;
     }
 
