@@ -62,6 +62,13 @@ static const std::unordered_set<policy::DeviceMode>& DeviceModeEnterprise() {
 // TODO(https://crbug.com/1267432): Enable passing base url as a runtime flag.
 const char kFresnelBaseUrl[] = "https://crosfresnel-pa.googleapis.com";
 
+// Number of minutes to wait before retrying
+// reading the .oobe_completed file again.
+constexpr base::TimeDelta kOobeReadFailedRetryDelay = base::Minutes(60);
+
+// Number of times to retry before failing to report any device actives.
+constexpr int kNumberOfRetriesBeforeFail = 120;
+
 // Count the number of PSM device active secret that is set.
 const char kDeviceActiveControllerPsmDeviceActiveSecretIsSet[] =
     "Ash.DeviceActiveController.PsmDeviceActiveSecretIsSet";
@@ -172,10 +179,12 @@ DeviceActivityController::DeviceActivityController(
     const ChromeDeviceMetadataParameters& chrome_passed_device_params,
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::Time chrome_first_run_time)
+    base::Time chrome_first_run_time,
+    base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback)
     : chrome_first_run_time_(chrome_first_run_time),
       chrome_passed_device_params_(chrome_passed_device_params),
-      statistics_provider_(system::StatisticsProvider::GetInstance()) {
+      statistics_provider_(system::StatisticsProvider::GetInstance()),
+      oobe_completed_timer_(std::make_unique<base::OneShotTimer>()) {
   DeviceActivityClient::RecordDeviceActivityMethodCalled(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerConstructor);
@@ -215,7 +224,8 @@ DeviceActivityController::DeviceActivityController(
       FROM_HERE,
       base::BindOnce(&device_activity::DeviceActivityController::Start,
                      weak_factory_.GetWeakPtr(), local_state,
-                     url_loader_factory),
+                     url_loader_factory,
+                     std::move(check_oobe_completed_callback)),
       DeviceActivityController::DetermineStartUpDelay(chrome_first_run_time));
 }
 
@@ -228,12 +238,72 @@ DeviceActivityController::~DeviceActivityController() {
   g_ash_device_activity_controller = nullptr;
 }
 
+int DeviceActivityController::GetRetryOobeCompletedCountForTesting() const {
+  return retry_oobe_completed_count_;
+}
+
+base::OneShotTimer*
+DeviceActivityController::GetOobeCompletedTimerForTesting() {
+  DCHECK(oobe_completed_timer_.get() != nullptr);
+  return oobe_completed_timer_.get();
+}
+
 void DeviceActivityController::Start(
     PrefService* local_state,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback) {
   DeviceActivityClient::RecordDeviceActivityMethodCalled(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerStart);
+
+  OnOobeFileWritten(local_state, url_loader_factory,
+                    std::move(check_oobe_completed_callback));
+}
+
+void DeviceActivityController::Stop() {
+  if (da_client_network_) {
+    da_client_network_.reset();
+  }
+}
+
+void DeviceActivityController::OnOobeFileWritten(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback) {
+  // We block if the oobe completed file is not written.
+  // ChromeOS devices should go through oobe to be considered a real device.
+  // The ActivateDate is also only set after oobe is written.
+  if (retry_oobe_completed_count_ >= kNumberOfRetriesBeforeFail) {
+    LOG(ERROR) << "Retry failed - .oobe_completed file was not written for "
+               << "1 minute after retrying 120 times. "
+               << "There was a 60 minute wait between each retry and spanned "
+               << "5 days.";
+    return;
+  }
+
+  base::TimeDelta time_since_oobe_file_written =
+      check_oobe_completed_callback.Run();
+
+  if (time_since_oobe_file_written < base::Minutes(1)) {
+    retry_oobe_completed_count_ += 1;
+
+    LOG(ERROR) << "Time since oobe file created was less than 1 minute. "
+               << std::endl
+               << "Wait and retry again after 1 minute to ensure that "
+               << "the ActivateDate VPD field is set. " << std::endl
+               << "TimeDelta since oobe flag file was created = "
+               << time_since_oobe_file_written
+               << ". Retry count = " << retry_oobe_completed_count_;
+
+    oobe_completed_timer_->Start(
+        FROM_HERE, kOobeReadFailedRetryDelay,
+        base::BindOnce(&DeviceActivityController::OnOobeFileWritten,
+                       weak_factory_.GetWeakPtr(), local_state,
+                       url_loader_factory,
+                       std::move(check_oobe_completed_callback)));
+
+    return;
+  }
 
   // Wrap with callback from |psm_device_active_secret_| retrieval using
   // |SessionManagerClient| DBus.
@@ -241,12 +311,6 @@ void DeviceActivityController::Start(
       &device_activity::DeviceActivityController::
           OnPsmDeviceActiveSecretFetched,
       weak_factory_.GetWeakPtr(), local_state, url_loader_factory));
-}
-
-void DeviceActivityController::Stop() {
-  if (da_client_network_) {
-    da_client_network_.reset();
-  }
 }
 
 void DeviceActivityController::OnPsmDeviceActiveSecretFetched(
