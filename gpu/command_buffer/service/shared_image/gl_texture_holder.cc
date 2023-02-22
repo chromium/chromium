@@ -106,6 +106,8 @@ void GLTextureHolder::Initialize(
     bool framebuffer_attachment_angle,
     base::span<const uint8_t> pixel_data,
     const std::string& debug_label) {
+  DCHECK(!texture_ && !passthrough_texture_);
+
   format_desc_.target = GL_TEXTURE_2D;
   format_desc_.data_format = format_info.gl_format;
   format_desc_.data_type = format_info.gl_type;
@@ -179,6 +181,25 @@ void GLTextureHolder::Initialize(
   if (!debug_label.empty()) {
     api->glObjectLabelFn(GL_TEXTURE, GetServiceId(), -1, debug_label.c_str());
   }
+}
+
+void GLTextureHolder::InitializeWithTexture(
+    const GLFormatDesc& format_desc,
+    scoped_refptr<gles2::TexturePassthrough> texture) {
+  DCHECK(!texture_ && !passthrough_texture_);
+  DCHECK(is_passthrough_);
+
+  format_desc_ = format_desc;
+  passthrough_texture_ = std::move(texture);
+}
+
+void GLTextureHolder::InitializeWithTexture(const GLFormatDesc& format_desc,
+                                            gles2::Texture* texture) {
+  DCHECK(!texture_ && !passthrough_texture_);
+  DCHECK(!is_passthrough_);
+
+  format_desc_ = format_desc;
+  texture_ = texture;
 }
 
 bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {

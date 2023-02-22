@@ -33,10 +33,20 @@ class GLTextureHolder {
   // Returns the service GL texture id.
   GLuint GetServiceId() const;
 
+  // Initialize by creating a new GL texture.
   void Initialize(const GLCommonImageBackingFactory::FormatInfo& format_info,
                   bool framebuffer_attachment_angle,
                   base::span<const uint8_t> pixel_data,
                   const std::string& debug_label);
+
+  // Initialize with a GL texture created elsewhere.
+  void InitializeWithTexture(const GLFormatDesc& format_desc,
+                             scoped_refptr<gles2::TexturePassthrough> texture);
+
+  // Initialize with a GL texture created elsewhere. Takes ownership of
+  // lightweight ref on `texture`.
+  void InitializeWithTexture(const GLFormatDesc& format_desc,
+                             gles2::Texture* texture);
 
   // Uploads pixels from `pixmap` to GL texture.
   bool UploadFromMemory(const SkPixmap& pixmap);
