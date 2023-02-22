@@ -270,7 +270,7 @@ BASE_FEATURE(kBluetoothWbsDogfood,
 
 BASE_FEATURE(kRobustAudioDeviceSelectLogic,
              "RobustAudioDeviceSelectLogic",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable Big GL when using Borealis.
 BASE_FEATURE(kBorealisBigGl, "BorealisBigGl", base::FEATURE_ENABLED_BY_DEFAULT);

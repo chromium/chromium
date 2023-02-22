@@ -2821,8 +2821,8 @@ TEST_P(CrasAudioHandlerTest, ActiveDeviceSelectionWithStableDeviceId) {
   EXPECT_EQ(kUSBHeadphone1->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
 
-  // Change the active device to internal speaker, now USB headphone becomes
-  // inactive.
+  // Change the active device to internal speaker, now internal speaker has
+  // higher preference priority than USB headphone.
   AudioDevice speaker(GenerateAudioNode(kInternalSpeaker));
   cras_audio_handler_->SwitchToDevice(speaker, true,
                                       CrasAudioHandler::ACTIVATE_BY_USER);
@@ -2867,9 +2867,10 @@ TEST_P(CrasAudioHandlerTest, ActiveDeviceSelectionWithStableDeviceId) {
   audio_nodes.push_back(usb_headset);
   ChangeAudioNodes(audio_nodes);
 
-  // There is no active node after USB2 unplugged, the 1st USB got selected
-  // by its priority.
-  EXPECT_EQ(usb_headset.id, cras_audio_handler_->GetPrimaryActiveOutputNode());
+  // There is no active node after USB2 unplugged, the internal speaker got
+  // selected by its preference priority.
+  EXPECT_EQ(kInternalSpeakerId,
+            cras_audio_handler_->GetPrimaryActiveOutputNode());
 
   audio_nodes.clear();
   internal_speaker.active = false;
@@ -3017,41 +3018,6 @@ TEST_P(CrasAudioHandlerTest, PlugInHeadphoneFirstTimeAfterPowerDown) {
 
   // Verify headphone becomes the active output.
   EXPECT_EQ(kHeadphone->id, cras_audio_handler_->GetPrimaryActiveOutputNode());
-}
-
-TEST_P(CrasAudioHandlerTest,
-       PersistActiveUsbHeadphoneAcrossRebootUsbComeLater) {
-  // Simulates the device was shut down with three audio devices, and
-  // usb headphone being the active one selected by priority.
-  AudioNodeList audio_nodes_in_pref =
-      GenerateAudioNodeList({kInternalSpeaker, kHeadphone, kUSBHeadphone1});
-
-  // Simulate the first NodesChanged signal coming with only internal speaker
-  // and the headphone.
-  AudioNodeList audio_nodes =
-      GenerateAudioNodeList({kInternalSpeaker, kHeadphone});
-
-  SetupCrasAudioHandlerWithActiveNodeInPref(
-      audio_nodes, audio_nodes_in_pref,
-      AudioDevice(GenerateAudioNode(kUSBHeadphone1)), false);
-
-  // Verify the headphone has been made active.
-  AudioDeviceList audio_devices;
-  cras_audio_handler_->GetAudioDevices(&audio_devices);
-  EXPECT_EQ(audio_nodes.size(), audio_devices.size());
-  EXPECT_EQ(kHeadphone->id, cras_audio_handler_->GetPrimaryActiveOutputNode());
-
-  // Simulate USB node comes later with all ndoes.
-  AudioNode usb_node = GenerateAudioNode(kUSBHeadphone1);
-  usb_node.plugged_time = 80000000;
-  audio_nodes.push_back(usb_node);
-  ChangeAudioNodes(audio_nodes);
-
-  // Verify the active output has been restored to usb headphone.
-  cras_audio_handler_->GetAudioDevices(&audio_devices);
-  EXPECT_EQ(audio_nodes.size(), audio_devices.size());
-  EXPECT_EQ(kUSBHeadphone1->id,
-            cras_audio_handler_->GetPrimaryActiveOutputNode());
 }
 
 TEST_P(CrasAudioHandlerTest,
@@ -4157,7 +4123,7 @@ TEST_P(CrasAudioHandlerTest, HotPlug35mmHeadphoneAndMic) {
 // The hotplug of hdmi output should not change user's selection of active
 // device.
 // crbug.com/447826.
-TEST_P(CrasAudioHandlerTest, HotPlugHDMINotChangeActiveOutput) {
+TEST_P(CrasAudioHandlerTest, HotPlugHDMIChangeActiveOutput) {
   AudioNodeList audio_nodes;
   AudioNode internal_speaker = GenerateAudioNode(kInternalSpeaker);
   audio_nodes.push_back(internal_speaker);
@@ -4197,9 +4163,9 @@ TEST_P(CrasAudioHandlerTest, HotPlugHDMINotChangeActiveOutput) {
   audio_nodes.push_back(hdmi);
   ChangeAudioNodes(audio_nodes);
 
-  // The active output should not change.
-  EXPECT_EQ(kInternalSpeaker->id,
-            cras_audio_handler_->GetPrimaryActiveOutputNode());
+  // The active output change to hdmi as it has higher built-in priority than
+  // the internal speaker.
+  EXPECT_EQ(kHDMIOutputId, cras_audio_handler_->GetPrimaryActiveOutputNode());
 }
 
 // Test the case in which the active device was set to inactive from cras after
