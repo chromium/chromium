@@ -15,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 
@@ -62,7 +61,6 @@ struct FileSearchResult {
 // A persistent storage to efficiently store, retrieve and search annotations.
 // It maintains and runs tasks on its own background task runner.
 // Constructor and all *Async() methods can be called on any sequence.
-// TODO(b/260646344): Pass SQL review.
 class AnnotationStorage : public base::RefCountedThreadSafe<AnnotationStorage> {
  public:
   enum class TableColumnName {
@@ -80,29 +78,29 @@ class AnnotationStorage : public base::RefCountedThreadSafe<AnnotationStorage> {
 
   // Initializes the db. Must be called before any other method.
   // Can be called from any sequence.
-  bool InitializeAsync();
+  void InitializeAsync();
 
   // Adds a new image to the storage. Can be called from any sequence.
-  bool InsertOrReplaceAsync(ImageInfo image_info);
+  void InsertOrReplaceAsync(ImageInfo image_info);
 
   // Removes an image from the storage. It does nothing if the file does not
   // exist. Can be called from any sequence.
-  bool RemoveAsync(base::FilePath image_path);
+  void RemoveAsync(base::FilePath image_path);
 
   // TODO(b/260646344): Remove after implementing a more efficient search.
   // Returns all the stored annotations. Can be called from any sequence.
-  bool GetAllAnnotationsAsync(
+  void GetAllAnnotationsAsync(
       base::OnceCallback<void(std::vector<ImageInfo>)> callback);
 
   // Searches the database for a desired `image_path`.
   // Can be called from any sequence.
-  bool FindImagePathAsync(
+  void FindImagePathAsync(
       base::FilePath image_path,
       base::OnceCallback<void(std::vector<ImageInfo>)> callback);
 
   // Searches for annotations using FuzzyTokenizedStringMatch with relevance to
   // `query` above a fixed threshold. Can be called from any sequence.
-  bool LinearSearchAnnotationsAsync(
+  void LinearSearchAnnotationsAsync(
       std::u16string query,
       base::OnceCallback<void(std::vector<FileSearchResult>)> callback);
 
@@ -110,15 +108,16 @@ class AnnotationStorage : public base::RefCountedThreadSafe<AnnotationStorage> {
   friend class base::RefCountedThreadSafe<AnnotationStorage>;
   ~AnnotationStorage();
   // Runs the worker in the background.
-  void StartWorkerOnBackgroundSequence(bool is_error);
-  bool InsertOnBackgroundSequence(ImageInfo image_info);
-  bool RemoveOnBackgroundSequence(base::FilePath image_path);
+  void InitializeOnBackgroundSequence();
+  void InsertOnBackgroundSequence(ImageInfo image_info);
+  void RemoveOnBackgroundSequence(base::FilePath image_path);
 
-  // Searches the database for a desired `value` in the `column_name`.
-  // Yields all annotations if `column_name` and `value` are empty.
-  std::vector<ImageInfo> FindAnnotationsOnBackgroundSequence(
-      absl::optional<TableColumnName> column_name,
-      absl::optional<std::string> value);
+  // Yields all annotations in the db.
+  std::vector<ImageInfo> GetAllAnnotationsOnBackgroundSequence();
+
+  // Searches the database for a desired `image_path`.
+  std::vector<ImageInfo> FindImagePathOnBackgroundSequence(
+      base::FilePath image_path);
 
   // Searches annotations using FuzzyTokenizedStringMatch.
   std::vector<FileSearchResult> LinearSearchAnnotationsOnBackgroundSequence(

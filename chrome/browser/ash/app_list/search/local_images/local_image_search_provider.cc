@@ -56,12 +56,9 @@ void LocalImageSearchProvider::Start(const std::u16string& query) {
   query_start_time_ = base::TimeTicks::Now();
   last_query_ = query;
 
-  if (!annotation_storage_->LinearSearchAnnotationsAsync(
-          query, base::BindOnce(&LocalImageSearchProvider::OnSearchComplete,
-                                weak_factory_.GetWeakPtr()))) {
-    // TODO(b/260646344): log to UMA
-    LOG(ERROR) << "SelectAnnotationAsync error";
-  }
+  annotation_storage_->LinearSearchAnnotationsAsync(
+      query, base::BindOnce(&LocalImageSearchProvider::OnSearchComplete,
+                            weak_factory_.GetWeakPtr()));
 }
 
 void LocalImageSearchProvider::StopQuery() {

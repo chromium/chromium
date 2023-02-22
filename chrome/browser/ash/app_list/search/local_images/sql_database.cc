@@ -32,6 +32,7 @@ SqlDatabase::SqlDatabase(
       current_version_number_(current_version_number) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK_GT(current_version_number_, 1);
+  DCHECK(!path_to_db_.empty());
 }
 
 SqlDatabase::~SqlDatabase() = default;
@@ -46,7 +47,7 @@ bool SqlDatabase::Initialize() {
     return false;
   }
 
-  db_ = std::make_unique<sql::Database>();
+  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions());
   db_->set_histogram_tag(histogram_tag_);
   meta_table_ = std::make_unique<sql::MetaTable>();
 
