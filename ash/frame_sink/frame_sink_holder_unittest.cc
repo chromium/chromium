@@ -350,6 +350,41 @@ TEST_F(FrameSinkHolderTest, HandlingAsynchronousFrameRequests_NoAutoUpdate) {
   EXPECT_TRUE(test_api.IsPendingFrameAck());
 }
 
+TEST_F(FrameSinkHolderTest, DontSubmitNewFramesWhenWaitingToDeleteSinkHolder) {
+  FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
+  base::RunLoop loop;
+
+  viz::ResourceId id_1 =
+      GetResourceManager().OfferResource(std::make_unique<UiResource>());
+
+  frame_factory_->SetFrameResources({id_1});
+  frame_factory_->SetFrameMetaData(gfx::Size(100, 100), 1.0);
+
+  // Call OnBeginFrame so that FrameSinkHolder can know that it can submit
+  // frames synchronously.
+  frame_sink_holder_->OnBeginFrame(CreateFakeBeginFrameArgs());
+  frame_sink_holder_->SubmitCompositorFrame(/*synchronous_draw=*/true);
+  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 1);
+
+  // The lifetime of frame_sink_holder has been extended since there are still
+  // some exported resources.
+  EXPECT_FALSE(FrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
+      std::move(frame_sink_holder_), host_window_));
+
+  ASSERT_TRUE(holder_weak_ptr_);
+
+  // During deletion FrameSinkHolder submits a empty frame.
+  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 2);
+
+  layer_tree_frame_sink_->ResetLatestFrameState();
+
+  holder_weak_ptr_->OnBeginFrame(CreateFakeBeginFrameArgs());
+
+  // Confirms that FrameSinkHolder did not submit a new frame on asynchronous
+  // request.
+  EXPECT_EQ(layer_tree_frame_sink_->num_frames_received(), 2);
+}
+
 TEST_F(FrameSinkHolderTest,
        DeleteSinkHolderImmediatelyWhenNoFramesIsSubmitted) {
   FrameSinkHolderTestApi test_api(frame_sink_holder_.get());
