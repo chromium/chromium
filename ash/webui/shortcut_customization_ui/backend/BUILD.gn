@@ -51,6 +51,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components:test_support",
     "//content/test:test_support",
+    "//device/udev_linux:test_support",
     "//testing/gtest",
     "//ui/base:test_support",
     "//ui/base/ime/ash",

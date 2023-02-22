@@ -23,6 +23,8 @@ namespace {
 constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kKbdTopRowLayout1Tag[] = "1";
 constexpr char kKbdTopRowLayout2Tag[] = "2";
+constexpr char kKbdTopRowLayoutWilcoTag[] = "3";
+constexpr char kKbdTopRowLayoutDrallionTag[] = "4";
 
 class FakeDeviceManager {
  public:
@@ -153,13 +155,67 @@ TEST_F(KeyboardCapabilityTest, TestIsReversedSixPackKey) {
       keyboard_capability_->IsReversedSixPackKey(ui::KeyboardCode::VKEY_A));
 }
 
-TEST_F(KeyboardCapabilityTest, TestIsTopRowKey) {
-  for (const auto& [key_code, _] : ui::kLayout2TopRowKeyToFKeyMap) {
-    EXPECT_TRUE(keyboard_capability_->IsTopRowKey(key_code));
-  }
+TEST_F(KeyboardCapabilityTest, TestGetMappedFKeyIfExists) {
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"fake_Keyboard");
+  fake_keyboard.sys_path = base::FilePath("path1");
 
-  // A key not in the kLayout2TopRowKeyToFKeyMap is not a top row key.
-  EXPECT_FALSE(keyboard_capability_->IsTopRowKey(ui::KeyboardCode::VKEY_A));
+  // Add a fake layout1 keyboard.
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+  for (const auto& [key_code, f_key] : ui::kLayout1TopRowKeyToFKeyMap) {
+    EXPECT_EQ(f_key, keyboard_capability_
+                         ->GetMappedFKeyIfExists(key_code, fake_keyboard)
+                         .value());
+  }
+  // VKEY_MEDIA_PLAY_PAUSE key is not a top row key for layout1.
+  EXPECT_FALSE(keyboard_capability_
+                   ->GetMappedFKeyIfExists(
+                       ui::KeyboardCode::VKEY_MEDIA_PLAY_PAUSE, fake_keyboard)
+                   .has_value());
+
+  // Add a fake layout2 keyboard.
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+  for (const auto& [key_code, f_key] : ui::kLayout2TopRowKeyToFKeyMap) {
+    EXPECT_EQ(f_key, keyboard_capability_
+                         ->GetMappedFKeyIfExists(key_code, fake_keyboard)
+                         .value());
+  }
+  // VKEY_BROWSER_FORWARD key is not a top row key for layout2.
+  EXPECT_FALSE(keyboard_capability_
+                   ->GetMappedFKeyIfExists(
+                       ui::KeyboardCode::VKEY_BROWSER_FORWARD, fake_keyboard)
+                   .has_value());
+
+  // Add a fake wilco keyboard.
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard,
+                                          kKbdTopRowLayoutWilcoTag);
+  for (const auto& [key_code, f_key] :
+       ui::kLayoutWilcoDrallionTopRowKeyToFKeyMap) {
+    EXPECT_EQ(f_key, keyboard_capability_
+                         ->GetMappedFKeyIfExists(key_code, fake_keyboard)
+                         .value());
+  }
+  // VKEY_MEDIA_PLAY_PAUSE key is not a top row key for wilco layout.
+  EXPECT_FALSE(keyboard_capability_
+                   ->GetMappedFKeyIfExists(
+                       ui::KeyboardCode::VKEY_MEDIA_PLAY_PAUSE, fake_keyboard)
+                   .has_value());
+
+  // Add a fake drallion keyboard.
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard,
+                                          kKbdTopRowLayoutDrallionTag);
+  for (const auto& [key_code, f_key] :
+       ui::kLayoutWilcoDrallionTopRowKeyToFKeyMap) {
+    EXPECT_EQ(f_key, keyboard_capability_
+                         ->GetMappedFKeyIfExists(key_code, fake_keyboard)
+                         .value());
+  }
+  // VKEY_BROWSER_FORWARD key is not a top row key for drallion layout.
+  EXPECT_FALSE(keyboard_capability_
+                   ->GetMappedFKeyIfExists(
+                       ui::KeyboardCode::VKEY_BROWSER_FORWARD, fake_keyboard)
+                   .has_value());
 }
 
 TEST_F(KeyboardCapabilityTest, TestHasLauncherButton) {

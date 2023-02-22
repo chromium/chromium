@@ -27,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
+#include "device/udev_linux/fake_udev_loader.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,6 +48,45 @@ using NonConfigurableActionToParts =
 
 namespace {
 
+constexpr char kKbdTopRowPropertyName[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kKbdTopRowLayout2Tag[] = "2";
+
+class FakeDeviceManager {
+ public:
+  FakeDeviceManager() = default;
+  FakeDeviceManager(const FakeDeviceManager&) = delete;
+  FakeDeviceManager& operator=(const FakeDeviceManager&) = delete;
+  ~FakeDeviceManager() = default;
+
+  // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
+  // fake udev.
+  void AddFakeKeyboard(const ui::InputDevice& fake_keyboard,
+                       const std::string& layout) {
+    fake_keyboard_devices_.push_back(fake_keyboard);
+
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices({});
+    ui::DeviceDataManagerTestApi().SetKeyboardDevices(fake_keyboard_devices_);
+    ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
+
+    std::map<std::string, std::string> sysfs_properties;
+    std::map<std::string, std::string> sysfs_attributes;
+    sysfs_properties[kKbdTopRowPropertyName] = layout;
+    fake_udev_.AddFakeDevice(fake_keyboard.name, fake_keyboard.sys_path.value(),
+                             /*subsystem=*/"input", /*devnode=*/absl::nullopt,
+                             /*devtype=*/absl::nullopt,
+                             std::move(sysfs_attributes),
+                             std::move(sysfs_properties));
+  }
+
+  void RemoveAllDevices() {
+    fake_udev_.Reset();
+    fake_keyboard_devices_.clear();
+  }
+
+ private:
+  testing::FakeUdevLoader fake_udev_;
+  std::vector<ui::InputDevice> fake_keyboard_devices_;
+};
 class FakeAcceleratorsUpdatedObserver
     : public shortcut_customization::mojom::AcceleratorsUpdatedObserver {
  public:
@@ -222,6 +262,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     provider_ = std::make_unique<AcceleratorConfigurationProvider>();
     non_configurable_actions_map_ =
         provider_->GetNonConfigurableAcceleratorsForTesting();
+    fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -286,6 +327,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   // Test global singleton. Delete is handled by InputMethodManager::Shutdown().
   base::raw_ptr<TestInputMethodManager> input_method_manager_;
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
 };
 
 TEST_F(AcceleratorConfigurationProviderTest, ResetReceiverOnBindInterface) {
@@ -410,6 +452,13 @@ TEST_F(AcceleratorConfigurationProviderTest, ValidateAllAcceleratorLayouts) {
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
+  // Add a fake layout2 keyboard.
+  ui::InputDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"fake_Keyboard");
+  fake_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
+
   FakeAcceleratorsUpdatedObserver observer;
   SetUpObserver(&observer);
   EXPECT_EQ(0, observer.num_times_notified());

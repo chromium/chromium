@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "accelerator_alias_converter_unittest\.cc": [
+    "+device/udev_linux/fake_udev_loader.h",
+  ],
   "accelerator_controller_delegate_classic\.cc": [
     "+ash/host"
   ],
