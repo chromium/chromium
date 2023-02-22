@@ -214,6 +214,14 @@ void QuickSettingsSlider::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
+void QuickSettingsSlider::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  // Signals that this view needs to be repainted since `GetColorProvider()` is
+  // called in `OnPaint()` and the views system won't know about it.
+  SchedulePaint();
+}
+
 ReadOnlySlider::ReadOnlySlider(Style slider_style)
     : QuickSettingsSlider(/*listener=*/nullptr, slider_style) {}
 
