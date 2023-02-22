@@ -126,6 +126,46 @@ TEST_F(PriceTrackingUtilsTest,
   EXPECT_EQ(0U, bookmark_model_->other_node()->children().size());
 }
 
+// If a bookmark was created by price tracking, only delete the bookmark if the
+// relationship between cluster ID and bookmark is 1:1.
+TEST_F(PriceTrackingUtilsTest,
+       SetPriceTrackingState_UnsubscribeNoDeleteMultipleBookmarks) {
+  const bookmarks::BookmarkNode* product =
+      AddProductBookmark(bookmark_model_.get(), u"product 1",
+                         GURL("http://example.com/1"), 12345L, true);
+  AddProductBookmark(bookmark_model_.get(), u"product 1 again",
+                     GURL("http://example.com/1_2"), 12345L, true);
+
+  EXPECT_EQ(2U, bookmark_model_->other_node()->children().size());
+
+  // Simulate successful calls in the subscriptions manager.
+  shopping_service_->SetSubscribeCallbackValue(true);
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  base::RunLoop run_loop;
+  SetPriceTrackingStateForBookmark(
+      shopping_service_.get(), bookmark_model_.get(), product, true,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
+          &run_loop),
+      true);
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), product));
+  EXPECT_EQ(2U, bookmark_model_->other_node()->children().size());
+
+  base::RunLoop run_loop2;
+  SetPriceTrackingStateForBookmark(
+      shopping_service_.get(), bookmark_model_.get(), product, false,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
+          &run_loop2));
+  run_loop2.Run();
+
+  // Both bookmarks should still exist after unsubscribe.
+  EXPECT_EQ(2U, bookmark_model_->other_node()->children().size());
+}
+
 // A bookmark that was created through the bookmark flow rather than price
 // tracking shouldn't be deleted after unsubscribe
 TEST_F(PriceTrackingUtilsTest,
