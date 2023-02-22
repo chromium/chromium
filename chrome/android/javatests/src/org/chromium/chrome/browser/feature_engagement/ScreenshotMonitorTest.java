@@ -5,7 +5,11 @@
 package org.chromium.chrome.browser.feature_engagement;
 
 import android.database.ContentObserver;
+import android.database.Cursor;
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.test.mock.MockContentProvider;
+import android.test.mock.MockContentResolver;
 
 import androidx.test.filters.SmallTest;
 
@@ -13,6 +17,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -22,10 +29,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Tests ScreenshotMonitor.
  */
@@ -36,9 +45,14 @@ public class ScreenshotMonitorTest {
     private static final String TAG = "ScreenshotTest";
     private static final Uri TEST_URI = Uri.parse("content://media/external/images/media/101");
 
-    private ScreenshotMonitor mTestScreenshotMonitor;
+    private ScreenshotMonitorImpl mTestScreenshotMonitor;
     private TestScreenshotMonitorDelegate mTestScreenshotMonitorDelegate;
     private ContentObserver mContentObserver;
+
+    private MockContentResolver mMockContentResolver = new MockContentResolver();
+
+    @Mock
+    private DisplayAndroid mDisplayAndroid;
 
     static class TestScreenshotMonitorDelegate implements ScreenshotMonitorDelegate {
         // This is modified on the UI thread and accessed on the test thread.
@@ -53,14 +67,45 @@ public class ScreenshotMonitorTest {
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         mTestScreenshotMonitorDelegate = new TestScreenshotMonitorDelegate();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTestScreenshotMonitor = new ScreenshotMonitor(mTestScreenshotMonitorDelegate);
+            mTestScreenshotMonitor = new ScreenshotMonitorImpl(
+                    mTestScreenshotMonitorDelegate, null, mMockContentResolver, mDisplayAndroid);
             mContentObserver = mTestScreenshotMonitor.getContentObserver();
-            mTestScreenshotMonitor.setSkipOsCallsForUnitTesting();
         });
     }
+
+    private void mockValidContentResolver(String path, String width, String height) {
+        final Cursor cursor = Mockito.mock(Cursor.class);
+        Mockito.doReturn(true).when(cursor).moveToNext();
+
+        Mockito.doReturn(1).when(cursor).getColumnIndexOrThrow(
+                Mockito.eq(MediaStore.MediaColumns.DATA));
+        Mockito.doReturn(2).when(cursor).getColumnIndexOrThrow(
+                Mockito.eq(MediaStore.MediaColumns.WIDTH));
+        Mockito.doReturn(3).when(cursor).getColumnIndexOrThrow(
+                Mockito.eq(MediaStore.MediaColumns.HEIGHT));
+        Mockito.doReturn(path).when(cursor).getString(Mockito.eq(1));
+        Mockito.doReturn(width).when(cursor).getString(Mockito.eq(2));
+        Mockito.doReturn(height).when(cursor).getString(Mockito.eq(3));
+
+        mMockContentResolver.addProvider("media", new MockContentProvider() {
+            @Override
+            public Cursor query(Uri uri, String[] projection, String selection,
+                    String[] selectionArgs, String sortOrder) {
+                return cursor;
+            }
+        });
+    }
+
+    private void mockDisplay(int width, int height) {
+        Mockito.doReturn(width).when(mDisplayAndroid).getDisplayWidth();
+        Mockito.doReturn(height).when(mDisplayAndroid).getDisplayHeight();
+    }
+
+    private void mockValidScreenshot() {}
 
     /**
      * Verify that if monitoring starts, the delegate should be called. Also verify that the
@@ -70,6 +115,9 @@ public class ScreenshotMonitorTest {
     @SmallTest
     @Feature({"FeatureEngagement", "Screenshot"})
     public void testDelegateCalledOnEvent() {
+        mockDisplay(50, 100);
+        mockValidContentResolver("Screenshot", "50", "100");
+
         startMonitoringOnUiThreadBlocking();
         Assert.assertEquals(0, mTestScreenshotMonitorDelegate.screenshotShowUiCount.get());
 
@@ -86,6 +134,9 @@ public class ScreenshotMonitorTest {
     @SmallTest
     @Feature({"FeatureEngagement", "Screenshot"})
     public void testRestartShouldTriggerDelegate() {
+        mockDisplay(50, 100);
+        mockValidContentResolver("Screenshot", "50", "100");
+
         startMonitoringOnUiThreadBlocking();
         Assert.assertEquals(0, mTestScreenshotMonitorDelegate.screenshotShowUiCount.get());
 
@@ -109,6 +160,9 @@ public class ScreenshotMonitorTest {
     @SmallTest
     @Feature({"FeatureEngagement", "Screenshot"})
     public void testStopMonitoringShouldNotTriggerDelegate() {
+        mockDisplay(50, 100);
+        mockValidContentResolver("Screenshot", "50", "100");
+
         startMonitoringOnUiThreadBlocking();
         Assert.assertEquals(0, mTestScreenshotMonitorDelegate.screenshotShowUiCount.get());
 
@@ -125,6 +179,37 @@ public class ScreenshotMonitorTest {
     @SmallTest
     @Feature({"FeatureEngagement", "Screenshot"})
     public void testNoMonitoringShouldNotTriggerDelegate() {
+        mockDisplay(50, 100);
+        mockValidContentResolver("Screenshot", "50", "100");
+
+        Assert.assertEquals(0, mTestScreenshotMonitorDelegate.screenshotShowUiCount.get());
+
+        mContentObserver.onChange(true, TEST_URI);
+        assertScreenshotShowUiCountOnUiThreadBlocking(0);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"FeatureEngagement", "Screenshot"})
+    public void testRotatedContent() {
+        mockDisplay(100, 50);
+        mockValidContentResolver("Screenshot", "50", "100");
+
+        startMonitoringOnUiThreadBlocking();
+        Assert.assertEquals(0, mTestScreenshotMonitorDelegate.screenshotShowUiCount.get());
+
+        mContentObserver.onChange(true, TEST_URI);
+        assertScreenshotShowUiCountOnUiThreadBlocking(1);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"FeatureEngagement", "Screenshot"})
+    public void testInvalidSize() {
+        mockDisplay(150, 150);
+        mockValidContentResolver("Screenshot", "50", "100");
+
+        startMonitoringOnUiThreadBlocking();
         Assert.assertEquals(0, mTestScreenshotMonitorDelegate.screenshotShowUiCount.get());
 
         mContentObserver.onChange(true, TEST_URI);
