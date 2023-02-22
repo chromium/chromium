@@ -96,8 +96,11 @@ ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {
   AddRef();  // Balanced in OnAuthFlowSuccess/Failure.
 
   auth_flow_ = std::make_unique<WebAuthFlow>(this, profile, auth_url, mode,
-                                             WebAuthFlow::LAUNCH_WEB_AUTH_FLOW,
-                                             extension()->name());
+                                             WebAuthFlow::LAUNCH_WEB_AUTH_FLOW);
+  // An extension might call `launchWebAuthFlow()` with any URL. Add an infobar
+  // to attribute displayed URL to the extension.
+  auth_flow_->SetShouldShowInfoBar(extension()->name());
+
   auth_flow_->Start();
   return RespondLater();
 }

@@ -93,8 +93,7 @@ class WebAuthFlow : public content::WebContentsObserver,
               Profile* profile,
               const GURL& provider_url,
               Mode mode,
-              Partition partition,
-              const std::string& extension_name);
+              Partition partition);
 
   WebAuthFlow(const WebAuthFlow&) = delete;
   WebAuthFlow& operator=(const WebAuthFlow&) = delete;
@@ -119,6 +118,10 @@ class WebAuthFlow : public content::WebContentsObserver,
   static content::StoragePartitionConfig GetWebViewPartitionConfig(
       Partition partition,
       content::BrowserContext* browser_context);
+
+  // This call will make the interactive mode, that opens up a browser tab for
+  // auth, display an Infobar that shows the extension name.
+  void SetShouldShowInfoBar(const std::string& extension_display_name);
 
   // Returns nullptr if the InfoBar is not displayed.
   base::WeakPtr<WebAuthFlowInfoBarDelegate> GetInfoBarDelegateForTesting();
@@ -175,7 +178,16 @@ class WebAuthFlow : public content::WebContentsObserver,
   // `this`. When this value becomes nullptr, this means that the browser tab
   // has taken ownership and the interactive tab was opened.
   std::unique_ptr<content::WebContents> web_contents_;
-  const std::string extension_name_;
+
+  // Internal struct to manage infobar parameters, external calls can only set
+  // the extension display name which will force show the info bar through
+  // `SetShouldShowInfoBar()`.
+  struct InfoBarParameters {
+    bool should_show = false;
+    std::string extension_display_name;
+  };
+  InfoBarParameters info_bar_parameters_;
+
   // WeakPtr to the info bar delegate attached to the auth tab when opened. Used
   // to close the info bar when closing the flow if still valid.
   base::WeakPtr<WebAuthFlowInfoBarDelegate> info_bar_delegate_ = nullptr;

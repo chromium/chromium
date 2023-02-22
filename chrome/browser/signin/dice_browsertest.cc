@@ -896,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest,
   auto web_auth_flow = std::make_unique<extensions::WebAuthFlow>(
       nullptr, browser()->profile(), https_server_.GetURL(kSigninURL),
       extensions::WebAuthFlow::INTERACTIVE,
-      extensions::WebAuthFlow::LAUNCH_WEB_AUTH_FLOW, "extension_name");
+      extensions::WebAuthFlow::LAUNCH_WEB_AUTH_FLOW);
   web_auth_flow->Start();
 
   if (dice_request_header_.empty())
@@ -923,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, DiceExtensionConsent_GetAuthToken) {
   auto web_auth_flow = std::make_unique<extensions::WebAuthFlow>(
       &delegate, browser()->profile(), https_server_.GetURL(kSigninURL),
       extensions::WebAuthFlow::INTERACTIVE,
-      extensions::WebAuthFlow::GET_AUTH_TOKEN, "extension_name");
+      extensions::WebAuthFlow::GET_AUTH_TOKEN);
   web_auth_flow->Start();
 
   // Check that the token was requested and added to the token service.

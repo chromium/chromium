@@ -888,7 +888,7 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
 void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog(
     const RemoteConsentResolutionData& resolution_data) {
   gaia_remote_consent_flow_ = std::make_unique<GaiaRemoteConsentFlow>(
-      this, GetProfile(), token_key_, resolution_data, extension()->name());
+      this, GetProfile(), token_key_, resolution_data);
   gaia_remote_consent_flow_->Start();
 }
 

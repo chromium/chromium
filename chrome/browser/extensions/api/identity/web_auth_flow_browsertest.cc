@@ -28,8 +28,6 @@
 
 namespace extensions {
 
-const char kExtensionName[] = "extension_name";
-
 class MockWebAuthFlowDelegate : public WebAuthFlow::Delegate {
  public:
   MOCK_METHOD(void, OnAuthFlowURLChange, (const GURL&), (override));
@@ -72,9 +70,8 @@ class WebAuthFlowBrowserTest : public InProcessBrowserTest {
     if (!profile)
       profile = browser()->profile();
 
-    web_auth_flow_ =
-        std::make_unique<WebAuthFlow>(&mock_web_auth_flow_delegate_, profile,
-                                      url, mode, partition, kExtensionName);
+    web_auth_flow_ = std::make_unique<WebAuthFlow>(
+        &mock_web_auth_flow_delegate_, profile, url, mode, partition);
     web_auth_flow_->Start();
   }
 
@@ -369,6 +366,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
   StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
                    WebAuthFlow::Mode::INTERACTIVE);
 
+  const char extension_name[] = "extension_name";
+  web_auth_flow()->SetShouldShowInfoBar(extension_name);
+
   navigation_observer.Wait();
 
   EXPECT_EQ(tabs->count(), initial_tab_count + 1);
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
       infobar_delegate->GetIdentifier(),
       infobars::InfoBarDelegate::EXTENSIONS_WEB_AUTH_FLOW_INFOBAR_DELEGATE);
   EXPECT_TRUE(infobar_delegate->GetMessageText().find(
-      base::UTF8ToUTF16(std::string(kExtensionName))));
+      base::UTF8ToUTF16(std::string(extension_name))));
 
   //---------------------------------------------------------------------
   // Part of the test that closes the tab, simulating declining the consent.
@@ -404,6 +404,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
   StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
                    WebAuthFlow::Mode::INTERACTIVE);
+  web_auth_flow()->SetShouldShowInfoBar("extension name");
 
   navigation_observer.Wait();
 
@@ -416,6 +417,7 @@ IN_PROC_BROWSER_TEST_F(
   // Keeping a reference to the info bar delegate to check later.
   base::WeakPtr<WebAuthFlowInfoBarDelegate> auth_info_bar =
       web_auth_flow()->GetInfoBarDelegateForTesting();
+  ASSERT_TRUE(auth_info_bar);
 
   GURL new_url = embedded_test_server()->GetURL("a.com", "/new.html");
   EXPECT_CALL(mock(),
@@ -485,6 +487,31 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
 
   // Tab not created, tab count did not increase.
   EXPECT_EQ(tabs->count(), initial_tab_count);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthFlowWithBrowserTabBrowserTest,
+                       InteractiveNewTabCreatedWithAuthURL_NoInfoBarByDefault) {
+  TabStripModel* tabs = browser()->tab_strip_model();
+  int initial_tab_count = tabs->count();
+
+  const GURL auth_url = embedded_test_server()->GetURL("/title1.html");
+  content::TestNavigationObserver navigation_observer(auth_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  StartWebAuthFlow(auth_url, WebAuthFlow::Partition::GET_AUTH_TOKEN,
+                   WebAuthFlow::Mode::INTERACTIVE);
+
+  navigation_observer.Wait();
+
+  EXPECT_EQ(tabs->count(), initial_tab_count + 1);
+  EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), auth_url);
+
+  // Check info bar is not created if not set via
+  // `SetShouldShowInfoBar())`.
+  base::WeakPtr<WebAuthFlowInfoBarDelegate> infobar_delegate =
+      web_auth_flow()->GetInfoBarDelegateForTesting();
+  EXPECT_FALSE(infobar_delegate);
 }
 
 class WebAuthFlowWithBrowserTabInPopupWindowBrowserTest

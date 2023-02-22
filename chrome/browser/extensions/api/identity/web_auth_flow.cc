@@ -101,14 +101,12 @@ WebAuthFlow::WebAuthFlow(Delegate* delegate,
                          Profile* profile,
                          const GURL& provider_url,
                          Mode mode,
-                         Partition partition,
-                         const std::string& extension_name)
+                         Partition partition)
     : delegate_(delegate),
       profile_(profile),
       provider_url_(provider_url),
       mode_(mode),
-      partition_(partition),
-      extension_name_(extension_name) {
+      partition_(partition) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("identity", "WebAuthFlow", this);
 }
 
@@ -254,8 +252,8 @@ void WebAuthFlow::DisplayInfoBar() {
   DCHECK(web_contents());
   DCHECK(using_auth_with_browser_tab_);
 
-  info_bar_delegate_ =
-      WebAuthFlowInfoBarDelegate::Create(web_contents(), extension_name_);
+  info_bar_delegate_ = WebAuthFlowInfoBarDelegate::Create(
+      web_contents(), info_bar_parameters_.extension_display_name);
 }
 
 void WebAuthFlow::CloseInfoBar() {
@@ -305,7 +303,9 @@ void WebAuthFlow::AfterUrlLoaded() {
       }
     }
 
-    DisplayInfoBar();
+    if (info_bar_parameters_.should_show) {
+      DisplayInfoBar();
+    }
   }
 }
 
@@ -426,6 +426,12 @@ void WebAuthFlow::DidFinishNavigation(
   if (failed && delegate_) {
     delegate_->OnAuthFlowFailure(LOAD_FAILED);
   }
+}
+
+void WebAuthFlow::SetShouldShowInfoBar(
+    const std::string& extension_display_name) {
+  info_bar_parameters_.should_show = true;
+  info_bar_parameters_.extension_display_name = extension_display_name;
 }
 
 base::WeakPtr<WebAuthFlowInfoBarDelegate>
