@@ -780,6 +780,8 @@ const char kSyncInvalidationVersions2[] = "sync.invalidation_versions2";
 
 // Deprecated 02/2023.
 const char kPluginsAllowOutdated[] = "plugins.allow_outdated";
+const char kPluginsLastInternalDirectory[] = "plugins.last_internal_directory";
+const char kPluginsPluginsList[] = "plugins.plugins_list";
 const char kPluginsShowDetails[] = "plugins.show_details";
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1037,6 +1039,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 02/2023.
   registry->RegisterBooleanPref(kPluginsAllowOutdated, false);
+  registry->RegisterFilePathPref(kPluginsLastInternalDirectory,
+                                 base::FilePath());
+  registry->RegisterListPref(kPluginsPluginsList);
   registry->RegisterBooleanPref(kPluginsShowDetails, false);
 }
 
@@ -2057,6 +2062,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 02/2023.
   profile_prefs->ClearPref(kPluginsAllowOutdated);
+  profile_prefs->ClearPref(kPluginsLastInternalDirectory);
+  profile_prefs->ClearPref(kPluginsPluginsList);
   profile_prefs->ClearPref(kPluginsShowDetails);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

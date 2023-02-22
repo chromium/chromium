@@ -1229,13 +1229,6 @@ const char kExtensionsUIDeveloperMode[] = "extensions.ui.developer_mode";
 // extension + named command pair.
 const char kExtensionCommands[] = "extensions.commands";
 
-// Pref containing the directory for internal plugins as written to the plugins
-// list (below).
-const char kPluginsLastInternalDirectory[] = "plugins.last_internal_directory";
-
-// List pref containing information (dictionaries) on plugins.
-const char kPluginsPluginsList[] = "plugins.plugins_list";
-
 // Whether Chrome should use its internal PDF viewer or not.
 const char kPluginsAlwaysOpenPdfExternally[] =
     "plugins.always_open_pdf_externally";

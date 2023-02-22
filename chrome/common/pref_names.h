@@ -399,8 +399,6 @@ extern const char kPolicyThemeColor[];
 extern const char kExtensionsUIDeveloperMode[];
 extern const char kExtensionsUIDismissedADTPromo[];
 extern const char kExtensionCommands[];
-extern const char kPluginsLastInternalDirectory[];
-extern const char kPluginsPluginsList[];
 extern const char kPluginsAlwaysOpenPdfExternally[];
 extern const char kDefaultBrowserLastDeclined[];
 extern const char kResetCheckDefaultBrowser[];
