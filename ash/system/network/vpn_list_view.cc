@@ -364,15 +364,15 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
   if (chromeos::network_config::StateIsConnected(vpn->connection_state)) {
     SetupConnectedScrollListItem(this);
     if (IsVpnConfigAllowed()) {
-      auto disconnect_button_ = std::make_unique<PillButton>(
+      auto disconnect_button = std::make_unique<PillButton>(
           // TODO(stevenjb): Replace with mojo API. https://crbug.com/862420.
           base::BindRepeating(&NetworkConnect::DisconnectFromNetworkId,
                               base::Unretained(NetworkConnect::Get()), guid_),
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_DISCONNECT),
           PillButton::kPrimaryWithoutIcon);
-      disconnect_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
+      disconnect_button->SetAccessibleName(l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL, label));
-      AddRightView(disconnect_button_.release());
+      AddRightView(disconnect_button.release());
     }
     tri_view()->SetContainerBorder(
         TriView::Container::END,
