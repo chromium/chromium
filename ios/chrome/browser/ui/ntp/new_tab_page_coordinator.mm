@@ -1232,7 +1232,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
     if (IsWebChannelsEnabled()) {
       [self.feedHeaderViewController updateForFollowingFeedVisibilityChanged];
-      [self.NTPViewController updateNTPLayout];
       [self updateFeedLayout];
       [self.NTPViewController setContentOffsetToTop];
     }
@@ -1535,7 +1534,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 // Handles how the NTP reacts when the default search engine is changed.
 - (void)defaultSearchEngineDidChange {
   [self.feedHeaderViewController updateForDefaultSearchEngineChanged];
-  [self.NTPViewController updateNTPLayout];
   [self updateFeedLayout];
   [self.NTPViewController setContentOffsetToTop];
 }
