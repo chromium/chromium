@@ -339,6 +339,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/InterfaceRegistrar.java",
     "java/src/org/chromium/content_public/browser/JavaScriptCallback.java",
     "java/src/org/chromium/content_public/browser/JavascriptInjector.java",
+    "java/src/org/chromium/content_public/browser/KeyboardShortcutRecorder.java",
     "java/src/org/chromium/content_public/browser/LGEmailActionModeWorkaround.java",
     "java/src/org/chromium/content_public/browser/LoadCommittedDetails.java",
     "java/src/org/chromium/content_public/browser/LoadUrlParams.java",

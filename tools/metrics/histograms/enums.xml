@@ -81475,6 +81475,12 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="kCached"/>
 </enum>
 
+<enum name="PhysicalKeyboardShortcut">
+  <int value="0" label="zoom-in"/>
+  <int value="1" label="zoom-out"/>
+  <int value="2" label="zoom-reset"/>
+</enum>
+
 <enum name="PhysicalWebActivityReferer">
   <int value="0" label="REFERER_UNDEFINED"/>
   <int value="1" label="REFERER_NOTIFICATION (Obsolete)"/>

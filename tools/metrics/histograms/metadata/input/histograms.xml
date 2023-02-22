@@ -1187,6 +1187,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.PhysicalKeyboard.KeyboardShortcut"
+    enum="PhysicalKeyboardShortcut" expires_after="2023-12-31">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>embedded-experience@google.com</owner>
+  <summary>
+    Keyboard shortcut performed by user on physical IME. This signal should only
+    be sent on key down.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.PhysicalKeyboard.Korean.Action"
     enum="KoreanAction" expires_after="2023-06-25">
   <owner>shend@chromium.org</owner>

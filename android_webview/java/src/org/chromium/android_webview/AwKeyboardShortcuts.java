@@ -7,10 +7,12 @@ package org.chromium.android_webview;
 import android.view.KeyEvent;
 
 import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.content_public.browser.KeyboardShortcutRecorder;
+import org.chromium.content_public.browser.KeyboardShortcutRecorder.KeyboardShortcut;
 
 /**
- * Handles WebView keyboard shortcut events that weren't handled in
- * {@link AwWebContentsDelegateAdapter#handleKeyboardEvent(KeyEvent)}.
+ * Handles WebView keyboard shortcut events that weren't handled in {@link
+ * AwWebContentsDelegateAdapter#handleKeyboardEvent(KeyEvent)}.
  */
 /**
  * TODO(wbjacksonjr) Possibly merge this class with {@link
@@ -56,17 +58,20 @@ public class AwKeyboardShortcuts {
             case KeyEvent.KEYCODE_ZOOM_IN:
                 if (supportsZoom) {
                     awContents.zoomIn();
+                    KeyboardShortcutRecorder.recordKeyboardShortcut(KeyboardShortcut.ZOOM_IN);
                 }
                 return true;
             case CTRL | KeyEvent.KEYCODE_MINUS:
             case KeyEvent.KEYCODE_ZOOM_OUT:
                 if (supportsZoom) {
                     awContents.zoomOut();
+                    KeyboardShortcutRecorder.recordKeyboardShortcut(KeyboardShortcut.ZOOM_OUT);
                 }
                 return true;
             case CTRL | KeyEvent.KEYCODE_0:
                 if (supportsZoom) {
                     awContents.zoomReset();
+                    KeyboardShortcutRecorder.recordKeyboardShortcut(KeyboardShortcut.ZOOM_RESET);
                 }
                 return true;
         }
