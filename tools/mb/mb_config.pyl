@@ -415,7 +415,7 @@
       'ios-simulator-cronet': 'ios_cronet_xctest_reclient',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest_reclient_no_lld',
-      'ios-wpt-fyi-rel': 'ios_simulator_debug_static_bot_xctest_reclient',
+      'ios-wpt-fyi-rel': 'ios_simulator_release_static_bot_xctest_reclient',
       'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
@@ -2928,6 +2928,10 @@
 
     'ios_simulator_release_static_asan_bot_xctest_reclient': [
         'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot_reclient', 'asan', 'xctest',
+    ],
+
+    'ios_simulator_release_static_bot_xctest_reclient': [
+        'minimal_symbols', 'ios', 'ios_simulator', 'ios_cpu_x64', 'release_bot_reclient', 'xctest', 'dcheck_always_on',
     ],
 
     'js_coverage_reclient': [

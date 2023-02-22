@@ -851,7 +851,7 @@ fyi_ios_builder(
                 "mb",
                 "mac_toolchain",
             ],
-            build_config = builder_config.build_config.DEBUG,
+            build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
             target_platform = "ios",
         ),

@@ -17,7 +17,7 @@
                   "mb",
                   "mac_toolchain"
                 ],
-                "build_config": "Debug",
+                "build_config": "Release",
                 "config": "chromium",
                 "target_bits": 64,
                 "target_platform": "ios"
