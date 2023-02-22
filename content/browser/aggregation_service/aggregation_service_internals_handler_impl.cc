@@ -103,9 +103,24 @@ void ForwardReportsToWebUI(
 
 AggregationServiceInternalsHandlerImpl::AggregationServiceInternalsHandlerImpl(
     WebUI* web_ui,
+    mojo::PendingRemote<aggregation_service_internals::mojom::Observer>
+        observer,
     mojo::PendingReceiver<aggregation_service_internals::mojom::Handler>
-        receiver)
-    : web_ui_(web_ui), receiver_(this, std::move(receiver)) {}
+        handler)
+    : web_ui_(web_ui),
+      observer_(std::move(observer)),
+      handler_(this, std::move(handler)) {
+  DCHECK(web_ui);
+  if (AggregationService* aggregation_service =
+          GetAggregationService(web_ui_->GetWebContents())) {
+    aggregation_service_observer_.Observe(aggregation_service);
+    // `base::Unretained()` is safe because the observer is owned by `this`
+    // and the callback will only be called while `observer_` is still alive.
+    observer_.set_disconnect_handler(base::BindOnce(
+        &AggregationServiceInternalsHandlerImpl::OnObserverDisconnected,
+        base::Unretained(this)));
+  }
+}
 
 AggregationServiceInternalsHandlerImpl::
     ~AggregationServiceInternalsHandlerImpl() = default;
@@ -148,30 +163,8 @@ void AggregationServiceInternalsHandlerImpl::ClearStorage(
   }
 }
 
-void AggregationServiceInternalsHandlerImpl::AddObserver(
-    mojo::PendingRemote<aggregation_service_internals::mojom::Observer>
-        observer,
-    aggregation_service_internals::mojom::Handler::AddObserverCallback
-        callback) {
-  if (AggregationService* aggregation_service =
-          GetAggregationService(web_ui_->GetWebContents())) {
-    observers_.Add(std::move(observer));
-
-    // `this` does not start observing the aggregation service until at least
-    // one observer has been registered.
-    if (!aggregation_service_observer_.IsObservingSource(aggregation_service))
-      aggregation_service_observer_.Observe(aggregation_service);
-
-    std::move(callback).Run(true);
-  } else {
-    std::move(callback).Run(false);
-  }
-}
-
 void AggregationServiceInternalsHandlerImpl::OnRequestStorageModified() {
-  for (auto& observer : observers_) {
-    observer->OnRequestStorageModified();
-  }
+  observer_->OnRequestStorageModified();
 }
 
 void AggregationServiceInternalsHandlerImpl::OnReportHandled(
@@ -196,12 +189,12 @@ void AggregationServiceInternalsHandlerImpl::OnReportHandled(
       break;
   }
 
-  auto web_report = CreateWebUIAggregatableReport(
-      request, id, actual_report_time, web_report_status, report);
+  observer_->OnReportHandled(CreateWebUIAggregatableReport(
+      request, id, actual_report_time, web_report_status, report));
+}
 
-  for (auto& observer : observers_) {
-    observer->OnReportHandled(web_report.Clone());
-  }
+void AggregationServiceInternalsHandlerImpl::OnObserverDisconnected() {
+  aggregation_service_observer_.Reset();
 }
 
 }  // namespace content

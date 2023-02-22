@@ -1130,7 +1130,7 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&EmptyBinderForFrame<device::mojom::VRService>));
 #endif
   RegisterWebUIControllerInterfaceBinder<
-      aggregation_service_internals::mojom::Handler,
+      aggregation_service_internals::mojom::Factory,
       AggregationServiceInternalsUI>(map);
   RegisterWebUIControllerInterfaceBinder<attribution_internals::mojom::Factory,
                                          AttributionInternalsUI>(map);

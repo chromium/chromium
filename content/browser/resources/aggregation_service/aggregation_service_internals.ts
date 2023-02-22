@@ -6,7 +6,7 @@ import './aggregation_service_internals_table.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AggregatableReportRequestID, Handler as AggregationServiceInternalsHandler, HandlerRemote as AggregationServiceInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportStatus, WebUIAggregatableReport} from './aggregation_service_internals.mojom-webui.js';
+import {AggregatableReportRequestID, Factory as AggregationServiceInternalsFactory, HandlerRemote as AggregationServiceInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportStatus, WebUIAggregatableReport} from './aggregation_service_internals.mojom-webui.js';
 import {AggregationServiceInternalsTableElement} from './aggregation_service_internals_table.js';
 import {Column, TableModel} from './table_model.js';
 
@@ -344,7 +344,7 @@ class Observer implements ObserverInterface {
 
 document.addEventListener('DOMContentLoaded', () => {
   // Setup the mojo interface.
-  pageHandler = AggregationServiceInternalsHandler.getRemote();
+  pageHandler = new AggregationServiceInternalsHandlerRemote();
 
   const sendReports =
       document.querySelector<HTMLButtonElement>('#send-reports');
@@ -360,8 +360,9 @@ document.addEventListener('DOMContentLoaded', () => {
           '#reportTable');
   reportTable!.setModel(reportTableModel!);
 
-  const receiver = new ObserverReceiver(new Observer());
-  pageHandler!.addObserver(receiver.$.bindNewPipeAndPassRemote());
+  AggregationServiceInternalsFactory.getRemote().create(
+    new ObserverReceiver(new Observer()).$.bindNewPipeAndPassRemote(),
+    pageHandler.$.bindNewPipeAndPassReceiver());
 
   updateReports();
 });
