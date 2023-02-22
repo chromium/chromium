@@ -58,7 +58,8 @@ class CONTENT_EXPORT MediaLicenseStorageHost : public media::mojom::CdmStorage {
     kMaxValue = kBucketLocatorError
   };
 
-  static void ReportDatabaseOpenError(MediaLicenseStorageHostOpenError error);
+  static void ReportDatabaseOpenError(MediaLicenseStorageHostOpenError error,
+                                      bool in_memory);
 
   MediaLicenseStorageHost(MediaLicenseManager* manager,
                           const storage::BucketLocator& bucket_locator);

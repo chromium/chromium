@@ -2413,10 +2413,36 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.EME.MediaLicenseStorageHostOpenError"
     enum="MediaLicenseStorageHostOpenError" expires_after="2023-12-24">
+  <obsolete>
+    Deprecated in favor for Media.EME.MediaLicenseStorageHostOpenError.Incognito
+    and Media.EME.MediaLicenseStorageHostOpenError.NotIncognito in 2/2023.
+  </obsolete>
   <owner>vpasupathy@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     General errors reported while attempting to open the MediaLicenseDatabase.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseStorageHostOpenError.Incognito"
+    enum="MediaLicenseStorageHostOpenError" expires_after="2023-12-24">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    General errors reported while attempting to open the MediaLicenseDatabase.
+    This UMA further breaks down the UMA above by only reporting errors if the
+    media license storage host error occurs during an incognito process.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseStorageHostOpenError.NotIncognito"
+    enum="MediaLicenseStorageHostOpenError" expires_after="2023-12-24">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    General errors reported while attempting to open the MediaLicenseDatabase.
+    This UMA further breaks down the UMA above by only reporting errors if the
+    media license storage host error occurs during a non incognito process.
   </summary>
 </histogram>
 
