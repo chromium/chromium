@@ -54,7 +54,6 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "ui/base/win/atl_module.h"
-#include "ui/gfx/switches.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
@@ -303,9 +302,7 @@ RunContentProcess(ContentMainParams params,
 #if BUILDFLAG(IS_WIN)
     // Route stdio to parent console (if any) or create one.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableLogging) ||
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kHeadless)) {
+            switches::kEnableLogging)) {
       base::RouteStdioToConsole(true);
     }
 #endif
