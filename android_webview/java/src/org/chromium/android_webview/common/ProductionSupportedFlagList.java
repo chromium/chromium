@@ -381,6 +381,8 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE,
                     "When enabled, the following ads APIs will be available: Attribution Reporting,"
                             + "FLEDGE, Topics."),
+            Flag.baseFeature(BlinkFeatures.WEB_RTC_STATS_REPORT_IDL,
+                    "Backs the WebRTC stats report object with generated objects defined in IDL"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

@@ -58841,6 +58841,7 @@ from previous Chrome versions.
   <int value="-1647433421" label="use-passthrough-command-decoder"/>
   <int value="-1647250046" label="LauncherPlayStoreSearch:enabled"/>
   <int value="-1646653199" label="WallpaperGooglePhotosIntegration:enabled"/>
+  <int value="-1646196271" label="WebRtcStatsReportIdl:disabled"/>
   <int value="-1646016597" label="IsolatePrerenders:disabled"/>
   <int value="-1645071473" label="ChromeColors:disabled"/>
   <int value="-1644308778" label="WASAPIRawAudioCapture:disabled"/>
@@ -62094,6 +62095,7 @@ from previous Chrome versions.
       label="OmniboxRemoveSuggestionHeaderCapitalization:enabled"/>
   <int value="173288154" label="PrintPdfAsImage:enabled"/>
   <int value="173339199" label="SmsReceiverCrossDevice:disabled"/>
+  <int value="173738967" label="WebRtcStatsReportIdl:enabled"/>
   <int value="174759256" label="LockScreenMediaControls:enabled"/>
   <int value="174917935" label="ReengagementNotification:disabled"/>
   <int value="175254474" label="SpectreVariant2Mitigation:enabled"/>
