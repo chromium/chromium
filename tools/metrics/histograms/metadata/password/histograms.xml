@@ -3860,6 +3860,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.{Store}InaccessiblePasswords2"
     units="saved passwords" expires_after="2023-06-26">
+  <obsolete>
+    Obsolete in M112 due to renaming profile scoped variant from empty to
+    ProfileStore. Replaced by
+    PasswordManager.ProfileStore.InaccessiblePasswords3 and
+    PasswordManager.AccountStore.InaccessiblePasswords3
+  </obsolete>
   <owner>derinel@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
@@ -3870,6 +3876,22 @@ chromium-metrics-reviews@google.com.
   <token key="Store">
     <variant name="" summary="profile-scoped store"/>
     <variant name="AccountStore." summary="account-scoped store"/>
+  </token>
+</histogram>
+
+<histogram name="PasswordManager.{Store}InaccessiblePasswords3"
+    units="saved passwords" expires_after="2023-06-26">
+  <owner>derinel@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <owner>mamir@chromium.org</owner>
+  <summary>
+    The number of saved passwords that could not be decrypted in the password
+    manager's LoginDatabase for {Store}. Recorded once for the regular profile
+    when it's opened.
+  </summary>
+  <token key="Store">
+    <variant name="AccountStore." summary="account-scoped store"/>
+    <variant name="ProfileStore." summary="profile-scoped store"/>
   </token>
 </histogram>
 

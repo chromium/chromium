@@ -966,12 +966,10 @@ void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
       ++failed_encryption;
     }
   }
-  // Note: For historic reasons, the profile store does not use a suffix, only
-  // the account store does.
   base::StringPiece suffix_for_store =
-      is_account_store_.value() ? ".AccountStore" : "";
+      is_account_store_.value() ? ".AccountStore" : ".ProfileStore";
   base::UmaHistogramCounts100(base::StrCat({kPasswordManager, suffix_for_store,
-                                            ".InaccessiblePasswords2"}),
+                                            ".InaccessiblePasswords3"}),
                               failed_encryption);
 }
 
