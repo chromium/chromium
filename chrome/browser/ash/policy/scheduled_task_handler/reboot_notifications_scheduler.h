@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -34,6 +35,9 @@ namespace policy {
 class RebootNotificationsScheduler
     : public session_manager::SessionManagerObserver {
  public:
+  // Represtents the source of notification request.
+  enum class Requester { kScheduledRebootPolicy, kRebootCommand };
+
   RebootNotificationsScheduler();
   RebootNotificationsScheduler(const RebootNotificationsScheduler&) = delete;
   RebootNotificationsScheduler& operator=(const RebootNotificationsScheduler&) =
@@ -55,13 +59,15 @@ class RebootNotificationsScheduler
   // shows them right away if the scheduled reboot time is soon. Notifications
   // are not shown when grace time applies.
   void SchedulePendingRebootNotifications(base::OnceClosure reboot_callback,
-                                          const base::Time& reboot_time);
+                                          const base::Time& reboot_time,
+                                          Requester requester);
 
   // Sets pref for showing the post reboot notification for the active user.
   void SchedulePostRebootNotification();
 
-  // Resets timers and closes notification and dialog if open.
-  void ResetState();
+  // Resets the state for `requester`. Does nothing if `requester` does not
+  // match the last caller of `SchedulePendingRebootNotifications`.
+  void CancelRebootNotifications(Requester requester);
 
   // SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary_user) override;
@@ -99,6 +105,16 @@ class RebootNotificationsScheduler
   // we need to wait for full restore service initialization.
   virtual bool ShouldWaitFullRestoreInit() const;
 
+  // Returns true if `requester` can reschedule notification. Rescheduling
+  // is possible if one of the following:
+  // 1. There's no ongoing schedule.
+  // 2. `requester` is the same as the previous one.
+  // 3. `reboot_time` is earlier than the previous one.
+  bool CanReschedule(Requester requester, base::Time reboot_time) const;
+
+  // Resets timers and closes notification and dialog if open.
+  void ResetState();
+
   // Returns true if the pref for showing the post reboot notification is set in
   // |prefs|.
   static bool IsPostRebootPrefSet(PrefService* prefs);
@@ -120,6 +136,10 @@ class RebootNotificationsScheduler
       observation_{this};
 
   base::raw_ptr<const base::Clock> clock_;
+
+  // Holds the last notification requester that successfully called
+  // `SchedulePendingRebootNotifications`.
+  absl::optional<Requester> current_requester_;
 
   base::WeakPtrFactory<RebootNotificationsScheduler> weak_ptr_factory_{this};
 };

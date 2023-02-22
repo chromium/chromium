@@ -216,7 +216,8 @@ void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
   // policy comes or Chrome is restarted.
   if (!result) {
     LOG(ERROR) << "Failed to start reboot timer";
-    notifications_scheduler_->ResetState();
+    notifications_scheduler_->CancelRebootNotifications(
+        RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
     skip_reboot_ = false;
     scheduled_reboot_data_ = absl::nullopt;
     return;
@@ -233,13 +234,15 @@ void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
       notifications_scheduler_->SchedulePendingRebootNotifications(
           base::BindOnce(&DeviceScheduledRebootHandler::OnRebootButtonClicked,
                          base::Unretained(this)),
-          scheduled_task_executor_->GetScheduledTaskTime());
+          scheduled_task_executor_->GetScheduledTaskTime(),
+          RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
     }
   }
 }
 
 void DeviceScheduledRebootHandler::ResetState() {
-  notifications_scheduler_->ResetState();
+  notifications_scheduler_->CancelRebootNotifications(
+      RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
   scheduled_task_executor_->Reset();
   skip_reboot_ = false;
   scheduled_reboot_data_ = absl::nullopt;
