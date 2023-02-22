@@ -154,13 +154,8 @@ constexpr int kDefaultDocumentCookie = 1234;
 constexpr char kFakeDmToken[] = "fake-dm-token";
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
-std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
-    PrintingContext::Delegate* delegate,
-    bool skip_system_calls,
+std::unique_ptr<PrintSettings> MakeDefaultPrintSettings(
     const std::string& printer_name) {
-  auto context =
-      std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
-
   // Setup a sample page setup, which is needed to pass checks in
   // `PrintRenderFrameHelper` that the print params are valid.
   constexpr gfx::Size kPhysicalSize = gfx::Size(200, 200);
@@ -175,8 +170,29 @@ std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
   settings->set_dpi(kTestPrintingDpi);
   settings->set_page_setup_device_units(kPageSetup);
   settings->set_device_name(base::ASCIIToUTF16(printer_name));
-  context->SetDeviceSettings(printer_name, std::move(settings));
+  return settings;
+}
+
+std::unique_ptr<TestPrintingContext> MakeDefaultTestPrintingContext(
+    PrintingContext::Delegate* delegate,
+    bool skip_system_calls,
+    const std::string& printer_name) {
+  auto context =
+      std::make_unique<TestPrintingContext>(delegate, skip_system_calls);
+
+  context->SetDeviceSettings(printer_name,
+                             MakeDefaultPrintSettings(printer_name));
   return context;
+}
+
+// Make some settings which are different than the generated defaults, to
+// be used if test calls `AskUserForSettings()`.
+std::unique_ptr<PrintSettings> MakeUserModifiedPrintSettings(
+    const std::string& printer_name) {
+  std::unique_ptr<PrintSettings> settings =
+      MakeDefaultPrintSettings(printer_name);
+  settings->set_copies(kTestPrintSettingsCopies + 1);
+  return settings;
 }
 
 void OnDidUpdatePrintSettings(
@@ -241,8 +257,10 @@ class BrowserPrintingContextFactoryForTest
       context->SetAskUserForSettingsCanceled();
 #endif
 
-    context->SetNewDocumentCalledClosure(base::BindRepeating(
-        &BrowserPrintingContextFactoryForTest::NewDocumentCalled,
+    context->SetUserSettings(*MakeUserModifiedPrintSettings(printer_name_));
+
+    context->SetOnNewDocumentCallback(base::BindRepeating(
+        &BrowserPrintingContextFactoryForTest::OnNewDocument,
         base::Unretained(this)));
 
     return std::move(context);
@@ -292,9 +310,16 @@ class BrowserPrintingContextFactoryForTest
   }
 #endif
 
-  void NewDocumentCalled() { ++new_document_called_count_; }
+  void OnNewDocument(const PrintSettings& settings) {
+    ++new_document_called_count_;
+    document_print_settings_ = settings;
+  }
 
   int new_document_called_count() { return new_document_called_count_; }
+
+  const absl::optional<PrintSettings>& document_print_settings() const {
+    return document_print_settings_;
+  }
 
  private:
   std::string printer_name_;
@@ -312,6 +337,7 @@ class BrowserPrintingContextFactoryForTest
   bool cancel_on_ask_user_for_settings_ = false;
 #endif
   int new_document_called_count_ = 0;
+  absl::optional<PrintSettings> document_print_settings_;
 };
 
 class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
@@ -1089,6 +1115,10 @@ class PrintBrowserTest : public InProcessBrowserTest {
 
   void set_rendered_page_count(uint32_t page_count) {
     rendered_page_count_ = page_count;
+  }
+
+  const absl::optional<PrintSettings>& document_print_settings() const {
+    return test_printing_context_factory_.document_print_settings();
   }
 
  private:
@@ -3592,6 +3622,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     // updates to support this scenario with out-of-process are in place.
   }
 #endif
+  ASSERT_EQ(*MakeUserModifiedPrintSettings("printer1"),
+            *document_print_settings());
   EXPECT_EQ(error_dialog_shown_count(), 0u);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
@@ -3645,6 +3677,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kSuccess);
 #endif
+  // TODO(crbug.com/1414968)  Correct expectation once system print settings
+  // are properly reflected at start of job print.
+  ASSERT_NE(*MakeUserModifiedPrintSettings("printer1"),
+            *document_print_settings());
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1008222)  Include Windows coverage of

@@ -36,6 +36,9 @@ class TestPrintingContextDelegate : public PrintingContext::Delegate {
 
 class TestPrintingContext : public PrintingContext {
  public:
+  using OnNewDocumentCallback =
+      base::RepeatingCallback<void(const PrintSettings&)>;
+
   TestPrintingContext(Delegate* delegate, bool skip_system_calls);
   TestPrintingContext(const TestPrintingContext&) = delete;
   TestPrintingContext& operator=(const TestPrintingContext&) = delete;
@@ -47,6 +50,10 @@ class TestPrintingContext : public PrintingContext {
   // indicated device.
   void SetDeviceSettings(const std::string& device_name,
                          std::unique_ptr<PrintSettings> settings);
+
+  // Provide the settings which should be applied to mimic a user's choices
+  // during AskUserForSettings().
+  void SetUserSettings(const PrintSettings& settings);
 
   // Enables tests to fail with an access-denied error.
   void SetNewDocumentBlockedByPermissions() {
@@ -75,8 +82,8 @@ class TestPrintingContext : public PrintingContext {
   void SetNewDocumentCancels() { new_document_cancels_ = true; }
   void SetAskUserForSettingsCanceled() { ask_user_for_settings_cancel_ = true; }
 
-  void SetNewDocumentCalledClosure(base::RepeatingClosure closure) {
-    new_document_called_ = std::move(closure);
+  void SetOnNewDocumentCallback(OnNewDocumentCallback callback) {
+    on_new_document_callback_ = std::move(callback);
   }
 
   // PrintingContext overrides:
@@ -106,7 +113,20 @@ class TestPrintingContext : public PrintingContext {
 #endif
 
  private:
+  // Simulation of platform drivers' default settings.
   base::flat_map<std::string, std::unique_ptr<PrintSettings>> device_settings_;
+
+  // Settings to apply to mimic a user's choices in `AskUserForSettings()`.
+  absl::optional<PrintSettings> user_settings_;
+
+  // Platform implementations of `PrintingContext` apply PrintSettings to the
+  // respective device contexts.  Once the upper printing layers call
+  // `TakeAndResetSettings()`, the values in `settings_` no longer reflect
+  // what the printer driver's device context are set for.
+  // Simulate this by capturing what the settings are whenever `settings_` is
+  // applied to a device context.
+  PrintSettings applied_settings_;
+
   bool use_default_settings_fails_ = false;
   bool ask_user_for_settings_cancel_ = false;
   bool new_document_cancels_ = false;
@@ -119,8 +139,9 @@ class TestPrintingContext : public PrintingContext {
   bool render_document_blocked_by_permissions_ = false;
   bool document_done_blocked_by_permissions_ = false;
 
-  // Called every time `NewDocument` is called.
-  base::RepeatingClosure new_document_called_;
+  // Called every time `NewDocument` is called.  Provides a copy of the
+  // effective device context settings.
+  OnNewDocumentCallback on_new_document_callback_;
 };
 
 }  // namespace printing
