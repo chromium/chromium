@@ -49,6 +49,7 @@
 using testing::_;
 using testing::AllOf;
 using testing::AnyNumber;
+using testing::AtLeast;
 using testing::ByMove;
 using testing::Eq;
 using testing::Not;
@@ -1178,7 +1179,11 @@ TEST_F(SyncServiceImplTest,
        ShouldActivateSyncInvalidationsServiceWhenSyncIsInitialized) {
   SignIn();
   CreateService(SyncServiceImpl::MANUAL_START);
-  EXPECT_CALL(*sync_invalidations_service(), StartListening());
+
+  // Invalidations may start listening twice. The first one during
+  // initialization, the second once everything is configured.
+  EXPECT_CALL(*sync_invalidations_service(), StartListening())
+      .Times(AtLeast(1));
   InitializeForFirstSync();
 }
 
