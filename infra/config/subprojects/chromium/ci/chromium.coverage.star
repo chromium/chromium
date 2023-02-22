@@ -225,7 +225,6 @@ coverage_builder(
     use_clang_coverage = True,
 )
 
-# this builder is still experimental, so we do not export_coverage_to_zoss.
 coverage_builder(
     name = "linux-js-code-coverage",
     builder_spec = builder_config.builder_spec(
