@@ -66,9 +66,6 @@ class PopupViewViews : public PopupBaseView,
   void AxAnnounce(const std::u16string& text) override;
 
   // PopupBaseView:
-  // TODO(crbug.com/831603): Remove these overrides and the corresponding
-  // methods in PopupBaseView.
-  void OnMouseMoved(const ui::MouseEvent& event) override {}
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
  private:
