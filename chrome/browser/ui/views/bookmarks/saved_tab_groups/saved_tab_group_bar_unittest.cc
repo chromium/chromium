@@ -5,11 +5,8 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_controller.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/views/view_utils.h"
@@ -44,46 +41,44 @@ tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
 class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
  public:
   SavedTabGroupBarUnitTest()
-      : button_padding_(GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)),
+      : saved_tab_group_model_(std::make_unique<SavedTabGroupModel>()),
+        button_padding_(GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)),
         button_height_(GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT)) {}
 
-  SavedTabGroupBar* saved_tab_group_bar() { return bar_.get(); }
+  SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
   SavedTabGroupModel* saved_tab_group_model() {
-    return service_->GetModelForTesting();
-  }
-  SavedTabGroupController* saved_tab_group_controller() {
-    return service_.get();
+    return saved_tab_group_model_.get();
   }
 
   int button_padding() { return button_padding_; }
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    profile_ = std::make_unique<TestingProfile>();
-    service_ = std::make_unique<SavedTabGroupKeyedService>(profile_.get());
-    bar_ = std::make_unique<SavedTabGroupBar>(
-        nullptr, saved_tab_group_controller(), saved_tab_group_model(), false);
+
+    saved_tab_group_model_ = std::make_unique<SavedTabGroupModel>();
+    saved_tab_group_bar_ = std::make_unique<SavedTabGroupBar>(
+        nullptr, saved_tab_group_model(), false);
   }
 
   void TearDown() override {
-    bar_.reset();
-    service_.reset();
+    saved_tab_group_bar_.reset();
+    saved_tab_group_model_.reset();
 
     ChromeViewsTestBase::TearDown();
   }
 
   void Add4Groups() {
-    saved_tab_group_model()->Add(kSavedTabGroup1);
-    saved_tab_group_model()->Add(kSavedTabGroup2);
-    saved_tab_group_model()->Add(kSavedTabGroup3);
-    saved_tab_group_model()->Add(kSavedTabGroup4);
+    saved_tab_group_model_->Add(kSavedTabGroup1);
+    saved_tab_group_model_->Add(kSavedTabGroup2);
+    saved_tab_group_model_->Add(kSavedTabGroup3);
+    saved_tab_group_model_->Add(kSavedTabGroup4);
   }
 
   int GetWidthOfButtonsAndPadding() {
     // iterate through bubble getting size plus button padding
     // calculated button_sizes + extra_padding
     int size = 0;
-    for (const auto* const button : bar_->children()) {
+    for (const auto* const button : saved_tab_group_bar_->children()) {
       size += button->GetVisible()
                   ? button->GetPreferredSize().width() + button_padding_
                   : 0;
@@ -93,9 +88,8 @@ class SavedTabGroupBarUnitTest : public ChromeViewsTestBase {
   }
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<SavedTabGroupKeyedService> service_;
-  std::unique_ptr<SavedTabGroupBar> bar_;
+  std::unique_ptr<SavedTabGroupBar> saved_tab_group_bar_;
+  std::unique_ptr<SavedTabGroupModel> saved_tab_group_model_;
 
   const int button_padding_;
   const int button_height_;
@@ -185,7 +179,7 @@ TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
 
   SavedTabGroupBar another_tab_group_bar_on_same_model(
-      nullptr, saved_tab_group_controller(), saved_tab_group_model(), false);
+      nullptr, saved_tab_group_model(), false);
 
   EXPECT_EQ(saved_tab_group_bar()->children().size(),
             another_tab_group_bar_on_same_model.children().size());

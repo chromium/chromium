@@ -46,16 +46,9 @@ class SavedTabGroupModel {
   // vector.
   const SavedTabGroup* Get(const tab_groups::TabGroupId local_group_id) const;
   const SavedTabGroup* Get(const base::GUID& id) const;
-
   // TODO(crbug/1372503): Remove non-const accessor functions.
   SavedTabGroup* Get(const tab_groups::TabGroupId local_group_id);
   SavedTabGroup* Get(const base::GUID& id);
-
-  // Methods for getting the group from the tab ids.
-  const SavedTabGroup* GetGroupContainingTab(
-      const base::GUID& saved_tab_guid) const;
-  const SavedTabGroup* GetGroupContainingTab(
-      const base::Token& local_tab_id) const;
 
   // Methods for checking if a group is in the SavedTabGroupModel.
   bool Contains(const tab_groups::TabGroupId& local_group_id) const {
@@ -92,6 +85,9 @@ class SavedTabGroupModel {
   void UpdatedVisualDataFromSync(
       const base::GUID& id,
       const tab_groups::TabGroupVisualData* visual_data);
+
+  SavedTabGroup* GetGroupContainingTab(const base::GUID& saved_tab_guid);
+  SavedTabGroup* GetGroupContainingTab(const base::Token& local_tab_id);
 
   // Adds a saved tab to `index` in the specified group denoted by `group_id` if
   // it exists. If `update_tab_positions` is true, update the positions of all

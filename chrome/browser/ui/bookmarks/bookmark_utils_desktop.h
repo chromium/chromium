@@ -78,6 +78,11 @@ void OpenAllNow(Browser* browser,
                 WindowOpenDisposition initial_disposition,
                 content::BrowserContext* browser_context);
 
+// Tries to open all urls in |group|. If there are many, prompts the user first.
+void OpenSavedTabGroup(Browser* browser,
+                       const base::GUID& saved_group_id,
+                       const size_t num_tabs);
+
 // Returns the count of bookmarks that would be opened by OpenAll. If
 // |incognito_context| is set, the function will use it to check if the URLs
 // can be opened in incognito mode, which may affect the count.

@@ -44,19 +44,18 @@ SavedTabGroup::SavedTabGroup(const SavedTabGroup& other) = default;
 
 SavedTabGroup::~SavedTabGroup() = default;
 
-const SavedTabGroupTab* SavedTabGroup::GetTab(
-    const base::GUID& saved_tab_guid) const {
+SavedTabGroupTab* SavedTabGroup::GetTab(const base::GUID& saved_tab_guid) {
   absl::optional<int> index = GetIndexOfTab(saved_tab_guid);
   if (!index.has_value())
     return nullptr;
   return &saved_tabs()[index.value()];
 }
 
-const SavedTabGroupTab* SavedTabGroup::GetTab(
-    const base::Token& local_tab_id) const {
+SavedTabGroupTab* SavedTabGroup::GetTab(const base::Token& local_tab_id) {
   absl::optional<int> index = GetIndexOfTab(local_tab_id);
   if (!index.has_value())
     return nullptr;
+
   return &saved_tabs()[index.value()];
 }
 
@@ -174,6 +173,7 @@ SavedTabGroup& SavedTabGroup::ReplaceTabAt(const base::GUID& tab_id,
   CHECK(index.has_value());
   CHECK_GE(index.value(), 0u);
   CHECK_LT(index.value(), saved_tabs_.size());
+  CHECK(!ContainsTab(tab.saved_tab_guid()));
   saved_tabs_.erase(saved_tabs_.begin() + index.value());
   saved_tabs_.insert(saved_tabs_.begin() + index.value(), std::move(tab));
   UpdateTabPositionsImpl();

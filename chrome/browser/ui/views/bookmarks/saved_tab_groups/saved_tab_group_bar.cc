@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_overflow_button.h"
@@ -42,21 +41,20 @@ constexpr int kMaxVisibleButtons = 4;
 // The amount of padding between elements listed in the overflow menu.
 const int kOverflowMenuButtonPadding = 8;
 
-// Convenience method for getting the service for the constructor.
-SavedTabGroupKeyedService* GetServiceFromBrowser(Browser* browser) {
+SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
   DCHECK(browser);
-  return SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+  SavedTabGroupKeyedService* keyed_service =
+      SavedTabGroupServiceFactory::GetForProfile(browser->profile());
+  return keyed_service ? keyed_service->model() : nullptr;
 }
 }  // namespace
 
 // TODO(crbug/1372008): Prevent `SavedTabGroupBar` from instantiating if the
 // corresponding feature flag is disabled.
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
-                                   SavedTabGroupController* controller,
-                                   const SavedTabGroupModel* model,
-                                   bool animations_enabled)
-    : controller_(controller),
-      model_(model),
+                                   SavedTabGroupModel* saved_tab_group_model,
+                                   bool animations_enabled = true)
+    : saved_tab_group_model_(saved_tab_group_model),
       browser_(browser),
       animations_enabled_(animations_enabled) {
   std::unique_ptr<views::LayoutManager> layout_manager =
@@ -65,11 +63,10 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
           GetLayoutConstant(TOOLBAR_ELEMENT_PADDING));
   SetLayoutManager(std::move(layout_manager));
 
-  if (!controller_) {
+  if (!saved_tab_group_model_)
     return;
-  }
 
-  controller_->AddModelObserver(this);
+  saved_tab_group_model_->AddObserver(this);
 
   overflow_button_ = AddChildView(std::make_unique<SavedTabGroupOverflowButton>(
       base::BindRepeating(&SavedTabGroupBar::OnOverflowButtonPressed,
@@ -84,17 +81,15 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                                    bool animations_enabled = true)
     : SavedTabGroupBar(browser,
-                       GetServiceFromBrowser(browser),
-                       GetServiceFromBrowser(browser)->model(),
+                       GetSavedTabGroupModelFromBrowser(browser),
                        animations_enabled) {}
 
 SavedTabGroupBar::~SavedTabGroupBar() {
   // Remove all buttons from the hierarchy
   RemoveAllButtons();
 
-  if (controller_) {
-    controller_->RemoveModelObserver(this);
-  }
+  if (saved_tab_group_model_)
+    saved_tab_group_model_->RemoveObserver(this);
 }
 
 void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -124,7 +119,7 @@ void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
       continue;
     }
 
-    const absl::optional<int> model_index = model_->GetIndexOf(
+    const absl::optional<int> model_index = saved_tab_group_model_->GetIndexOf(
         views::AsViewClass<SavedTabGroupButton>(child)->guid());
     ReorderChildView(child, model_index.value());
   }
@@ -198,10 +193,10 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
 }
 
 void SavedTabGroupBar::SavedTabGroupAdded(const base::GUID& guid) {
-  const absl::optional<int> index = model_->GetIndexOf(guid);
+  absl::optional<int> index = saved_tab_group_model_->GetIndexOf(guid);
   if (!index.has_value())
     return;
-  AddTabGroupButton(*model_->Get(guid), index.value());
+  AddTabGroupButton(*saved_tab_group_model_->Get(guid), index.value());
   PreferredSizeChanged();
 }
 
@@ -211,10 +206,10 @@ void SavedTabGroupBar::SavedTabGroupRemoved(const base::GUID& guid) {
 }
 
 void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
-  const absl::optional<int> index = model_->GetIndexOf(guid);
+  absl::optional<int> index = saved_tab_group_model_->GetIndexOf(guid);
   if (!index.has_value())
     return;
-  const SavedTabGroup* group = model_->Get(guid);
+  const SavedTabGroup* group = saved_tab_group_model_->Get(guid);
   SavedTabGroupButton* button =
       views::AsViewClass<SavedTabGroupButton>(GetButton(group->saved_guid()));
   DCHECK(button);
@@ -237,7 +232,7 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
 
 void SavedTabGroupBar::AddAllButtons() {
   const std::vector<SavedTabGroup>& saved_tab_groups =
-      model_->saved_tab_groups();
+      saved_tab_group_model_->saved_tab_groups();
 
   for (size_t index = 0; index < saved_tab_groups.size(); index++)
     AddTabGroupButton(saved_tab_groups[index], index);
@@ -284,16 +279,16 @@ views::View* SavedTabGroupBar::GetButton(const base::GUID& guid) {
 
 void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
                                                const ui::Event& event) {
-  DCHECK(controller_ && model_->Contains(id));
+  DCHECK(saved_tab_group_model_ && saved_tab_group_model_->Contains(id));
 
-  const SavedTabGroup* const group = model_->Get(id);
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id);
 
   // TODO: Handle click if group has already been opened (crbug.com/1238539)
   // left click on a saved tab group opens all links in new group
   if (event.flags() & ui::EF_LEFT_MOUSE_BUTTON) {
     if (group->saved_tabs().empty())
       return;
-    SavedTabGroupController* const keyed_service =
+    SavedTabGroupKeyedService* keyed_service =
         SavedTabGroupServiceFactory::GetForProfile(browser_->profile());
 
     keyed_service->OpenSavedTabGroupInBrowser(browser_, group->saved_guid());
@@ -330,7 +325,8 @@ void SavedTabGroupBar::OnOverflowButtonPressed(views::View* view,
 
     SavedTabGroupButton* button =
         views::AsViewClass<SavedTabGroupButton>(child);
-    const SavedTabGroup* const group = model_->Get(button->guid());
+    const SavedTabGroup* const group =
+        saved_tab_group_model_->Get(button->guid());
 
     overflow_menu->AddChildView(std::make_unique<SavedTabGroupButton>(
         *group,

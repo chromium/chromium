@@ -53,10 +53,10 @@ TEST(SavedTabGroupTest, GetTabByGUID) {
   AddTabToEndOfGroup(group, tab_2_saved_guid);
   ASSERT_EQ(2u, group.saved_tabs().size());
 
-  const SavedTabGroupTab* tab_1 = group.GetTab(tab_1_saved_guid);
+  SavedTabGroupTab* tab_1 = group.GetTab(tab_1_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[0], tab_1);
 
-  const SavedTabGroupTab* tab_2 = group.GetTab(tab_2_saved_guid);
+  SavedTabGroupTab* tab_2 = group.GetTab(tab_2_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[1], tab_2);
 }
 
@@ -70,10 +70,10 @@ TEST(SavedTabGroupTest, GetTabByToken) {
   AddTabToEndOfGroup(group, absl::nullopt, tab_2_local_id);
   ASSERT_EQ(2u, group.saved_tabs().size());
 
-  const SavedTabGroupTab* tab_1 = group.GetTab(tab_1_local_id);
+  SavedTabGroupTab* tab_1 = group.GetTab(tab_1_local_id);
   EXPECT_EQ(&group.saved_tabs()[0], tab_1);
 
-  const SavedTabGroupTab* tab_2 = group.GetTab(tab_2_local_id);
+  SavedTabGroupTab* tab_2 = group.GetTab(tab_2_local_id);
   EXPECT_EQ(&group.saved_tabs()[1], tab_2);
 }
 
@@ -98,12 +98,12 @@ TEST(SavedTabGroupTest, AddTabLocallyDisrespectsPositions) {
   // Locally added groups will be added into their preferred positions if
   // possible. If not, they will be added as close to the preferred position as
   // possible, and have their position updated to reflect this.
-  const SavedTabGroupTab* first_tab = group.GetTab(tab_1_saved_guid);
+  SavedTabGroupTab* first_tab = group.GetTab(tab_1_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[0], first_tab);
   EXPECT_EQ(first_tab->position(), 0);
 
   // Expect tab_2 to be at the front of the group.
-  const SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
+  SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[1], second_tab);
   EXPECT_EQ(second_tab->position(), 1);
 }
@@ -124,7 +124,7 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
 
   // Verify tab_2 has a position of 1.
   {
-    const SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
+    SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[1], second_tab);
     EXPECT_EQ(second_tab->position(), 1);
   }
@@ -140,7 +140,7 @@ TEST(SavedTabGroupTest, RemoveTabLocallyReordersPositions) {
   // Verify tab_2 has a position of 0 now.
   {
     // Expect tab two to be at the front of the group.
-    const SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
+    SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[0], second_tab);
     EXPECT_EQ(second_tab->position(), 0);
   }
@@ -164,12 +164,12 @@ TEST(SavedTabGroupTest, AddTabFromSyncRespectsPositions) {
   ASSERT_EQ(2u, group.saved_tabs().size());
 
   // Expect tab one to be at the end of the group.
-  const SavedTabGroupTab* first_tab = group.GetTab(tab_1_saved_guid);
+  SavedTabGroupTab* first_tab = group.GetTab(tab_1_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[1], first_tab);
   EXPECT_EQ(first_tab->position(), 1);
 
   // Expect tab two to be at the front of the group.
-  const SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
+  SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
   EXPECT_EQ(&group.saved_tabs()[0], second_tab);
   EXPECT_EQ(second_tab->position(), 0);
 }
@@ -190,7 +190,7 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
 
   // Verify tab_2 has a position of 1.
   {
-    const SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
+    SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[1], second_tab);
     EXPECT_EQ(second_tab->position(), 1);
   }
@@ -206,7 +206,7 @@ TEST(SavedTabGroupTest, RemoveTabFromSyncMaintainsPositions) {
   // Verify tab_2 keeps its position of 1.
   {
     // Expect tab two to be at the front of the group.
-    const SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
+    SavedTabGroupTab* second_tab = group.GetTab(tab_2_saved_guid);
     EXPECT_EQ(&group.saved_tabs()[0], second_tab);
     EXPECT_EQ(second_tab->position(), 1);
   }

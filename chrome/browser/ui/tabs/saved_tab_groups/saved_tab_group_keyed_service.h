@@ -27,9 +27,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   ~SavedTabGroupKeyedService() override;
 
   SavedTabGroupModelListener* listener() { return &listener_; }
-  const SavedTabGroupModel* model() const { return &model_; }
-  SavedTabGroupModel* GetModelForTesting() { return &model_; }
-
+  SavedTabGroupModel* model() { return &model_; }
   SavedTabGroupSyncBridge* bridge() { return &bridge_; }
   Profile* profile() { return profile_; }
 
@@ -40,8 +38,6 @@ class SavedTabGroupKeyedService : public KeyedService,
                  Browser* browser = nullptr) override;
   void UnsaveGroup(const tab_groups::TabGroupId& group_id) override;
   void DisconnectLocalTabGroup(const tab_groups::TabGroupId& group_id) override;
-  void AddModelObserver(SavedTabGroupModelObserver* observer) override;
-  void RemoveModelObserver(SavedTabGroupModelObserver* observer) override;
 
  private:
   // Returns the ModelTypeStoreFactory tied to the current profile.

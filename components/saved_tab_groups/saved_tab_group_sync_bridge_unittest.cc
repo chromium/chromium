@@ -173,7 +173,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeSyncData) {
   EXPECT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
   EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
 
-  const SavedTabGroup* group_from_model =
+  SavedTabGroup* group_from_model =
       saved_tab_group_model_.Get(group.saved_guid());
 
   EXPECT_EQ(group_from_model->saved_tabs().size(), 2u);

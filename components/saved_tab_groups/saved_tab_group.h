@@ -62,8 +62,8 @@ class SavedTabGroup {
   std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
 
   // Accessors for Tabs based on id.
-  const SavedTabGroupTab* GetTab(const base::GUID& saved_tab_guid) const;
-  const SavedTabGroupTab* GetTab(const base::Token& local_tab_id) const;
+  SavedTabGroupTab* GetTab(const base::GUID& saved_tab_guid);
+  SavedTabGroupTab* GetTab(const base::Token& local_tab_id);
 
   // Returns the index for `tab_id` in `saved_tabs_` if it exists. Otherwise,
   // returns absl::nullopt.

@@ -33,7 +33,13 @@
 TabGroup::TabGroup(TabGroupController* controller,
                    const tab_groups::TabGroupId& id,
                    const tab_groups::TabGroupVisualData& visual_data)
-    : controller_(controller), id_(id) {
+    : controller_(controller),
+      saved_tab_group_model_([](Profile* profile) -> SavedTabGroupModel* {
+        SavedTabGroupKeyedService* const service =
+            SavedTabGroupServiceFactory::GetForProfile(profile);
+        return service ? service->model() : nullptr;
+      }(controller->GetProfile())),
+      id_(id) {
   visual_data_ = std::make_unique<tab_groups::TabGroupVisualData>(visual_data);
 }
 
@@ -96,6 +102,10 @@ bool TabGroup::IsCustomized() const {
   return is_customized_;
 }
 
+bool TabGroup::IsSaved() const {
+  return saved_tab_group_model_ && saved_tab_group_model_->Contains(id());
+}
+
 absl::optional<int> TabGroup::GetFirstTab() const {
   for (int i = 0; i < controller_->GetTabCount(); ++i) {
     if (controller_->GetTabGroupForTab(i) == id_)
@@ -131,4 +141,37 @@ gfx::Range TabGroup::ListTabs() const {
   }
 
   return gfx::Range(first_tab, last_tab + 1);
+}
+
+void TabGroup::SaveGroup() {
+  std::vector<SavedTabGroupTab> tabs;
+  const gfx::Range tab_range = ListTabs();
+  const base::GUID saved_group_guid = base::GUID::GenerateRandomV4();
+  SavedTabGroup group(visual_data_->title(), visual_data_->color(), {},
+                      saved_group_guid, absl::nullopt, id_);
+
+  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+    content::WebContents* web_contents = controller_->GetWebContentsAt(i);
+    const GURL& url = web_contents->GetVisibleURL();
+    const std::u16string& title = web_contents->GetTitle();
+    SavedTabGroupTab tab(url, title, saved_group_guid);
+    tab.SetFavicon(favicon::TabFaviconFromWebContents(web_contents));
+    group.AddTab(tab);
+  }
+
+  SavedTabGroupKeyedService* backend =
+      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  if (!backend || !backend->model())
+    return;
+  backend->model()->Add(std::move(group));
+}
+
+void TabGroup::UnsaveGroup() {
+  is_saved_ = false;
+
+  SavedTabGroupKeyedService* backend =
+      SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  CHECK(backend);
+
+  backend->UnsaveGroup(id_);
 }
