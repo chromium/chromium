@@ -49,6 +49,9 @@ void PrerenderHandleImpl::SetPreloadingAttemptFailureReason(
   if (!prerender_host) {
     return;
   }
+  if (!prerender_host->preloading_attempt()) {
+    return;
+  }
   prerender_host->preloading_attempt()->SetFailureReason(reason);
 }
 
