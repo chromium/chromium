@@ -2640,6 +2640,12 @@ ServiceWorkerGlobalScope::FetchHandlerType() {
       return mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable;
     }
   }
+  AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kJavaScript,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "Fetch event handler is recognized as no-op. "
+      "No-op fetch handler may bring overhead during navigation. "
+      "Consider removing the handler if possible."));
   return mojom::blink::ServiceWorkerFetchHandlerType::kEmptyFetchHandler;
 }
 

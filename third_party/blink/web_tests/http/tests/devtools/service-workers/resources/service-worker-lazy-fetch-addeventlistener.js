@@ -1,3 +1,3 @@
 setTimeout(() => {
-  addEventListener('fetch', () => {});
+  addEventListener('fetch', () => { let a = 0;});
 }, 0);
