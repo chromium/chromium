@@ -1,5 +1,6 @@
 <style include="cr-icons cr-hidden-style">
   :host {
+    --cr-dialog-width: 300px;
     --back-button-size: 14px;
     --edit-footer-background: var(--google-grey-50);
   }
@@ -46,6 +47,16 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+  }
+
+  .dialog-body {
+    display: flex;
+    font-size: var(--mwb-primary-text-font-size);
+    gap: 12px;
+  }
+
+  .dialog-body > iron-icon {
+    --icon-size: 20px;
   }
 
   .dropdown-item {
@@ -245,10 +256,21 @@
     on-save="onBookmarksEdited_">
 </power-bookmarks-edit-dialog>
 
+<cr-dialog id="disabledFeatureDialog">
+  <div slot="body" class="dialog-body">
+    <iron-icon icon="cr:domain"></iron-icon>
+    <div>$i18n{disabledFeature}</div>
+  </div>
+  <div class="button-row" slot="button-container">
+    <cr-button on-click="closeDisabledFeatureDialog_">Ok</cr-button>
+  </div>
+</cr-dialog>
+
 <cr-lazy-render id="contextMenu">
   <template>
     <power-bookmarks-context-menu
         on-delete-clicked="onContextMenuDeleteClicked_"
+        on-disabled-feature="showDisabledFeatureDialog_"
         on-rename-clicked="setRenamingId_">
     </power-bookmarks-context-menu>
   </template>

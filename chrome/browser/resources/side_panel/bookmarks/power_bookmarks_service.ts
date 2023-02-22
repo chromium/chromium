@@ -34,6 +34,23 @@ interface PowerBookmarksDelegate {
   isPriceTracked(bookmark: chrome.bookmarks.BookmarkTreeNode): boolean;
 }
 
+export function editingDisabledByPolicy(
+    bookmarks: chrome.bookmarks.BookmarkTreeNode[]) {
+  if (!loadTimeData.getBoolean('editBookmarksEnabled')) {
+    return true;
+  }
+  if (loadTimeData.getBoolean('hasManagedBookmarks')) {
+    const managedNodeId = loadTimeData.getString('managedBookmarksFolderId');
+    for (const bookmark of bookmarks) {
+      if (bookmark.id === managedNodeId ||
+          bookmark.parentId === managedNodeId) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 export class PowerBookmarksService {
   private delegate_: PowerBookmarksDelegate;
   private bookmarksApi_: BookmarksApiProxy =

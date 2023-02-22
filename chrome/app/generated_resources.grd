@@ -7464,6 +7464,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_URL_FOLDER_DESCRIPTION" desc="Description for a bookmark that includes its URL and parent folder">
         <ph name="URL">$1<ex>www.google.com</ex></ph> - <ph name="FOLDER">$2<ex>Bookmarks Bar</ex></ph>
       </message>
+      <message name="IDS_BOOKMARKS_DISABLED_FEATURE" desc="Body text for the dialog displayed when the user attempts to use a feature that is disabled by policy">
+        Your administrator has disabled this feature.
+      </message>
 
       <!-- Read Anything strings -->
       <!-- TODO(crbug.com/1266555): Add final strings and make them translateable. -->

@@ -16,6 +16,7 @@ import {ActionSource} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
 import {getTemplate} from './power_bookmarks_context_menu.html.js';
+import {editingDisabledByPolicy} from './power_bookmarks_service.js';
 
 export interface PowerBookmarksContextMenuElement {
   $: {
@@ -162,6 +163,10 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
     return menuItem.id === MenuItemId.DIVIDER;
   }
 
+  private dispatchDisabledFeatureEvent_() {
+    this.dispatchEvent(new CustomEvent('disabled-feature'));
+  }
+
   private onMenuItemClicked_(event: DomRepeatEvent<MenuItem>) {
     event.preventDefault();
     event.stopPropagation();
@@ -184,45 +189,65 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       // Everything below is not expected to ever be called when
       // this.bookmarks_ has more than one entry.
       case MenuItemId.ADD_TO_BOOKMARKS_BAR:
-        this.bookmarksApi_.contextMenuAddToBookmarksBar(
-            this.bookmarks_[0]!.id, ActionSource.kBookmark);
+        if (editingDisabledByPolicy(this.bookmarks_)) {
+          this.dispatchDisabledFeatureEvent_();
+        } else {
+          this.bookmarksApi_.contextMenuAddToBookmarksBar(
+              this.bookmarks_[0]!.id, ActionSource.kBookmark);
+        }
         break;
       case MenuItemId.REMOVE_FROM_BOOKMARKS_BAR:
-        this.bookmarksApi_.contextMenuRemoveFromBookmarksBar(
-            this.bookmarks_[0]!.id, ActionSource.kBookmark);
+        if (editingDisabledByPolicy(this.bookmarks_)) {
+          this.dispatchDisabledFeatureEvent_();
+        } else {
+          this.bookmarksApi_.contextMenuRemoveFromBookmarksBar(
+              this.bookmarks_[0]!.id, ActionSource.kBookmark);
+        }
         break;
       case MenuItemId.TRACK_PRICE:
-        if (this.priceTracked_) {
-          this.shoppingListApi_.untrackPriceForBookmark(
-              BigInt(this.bookmarks_[0]!.id));
-          chrome.metricsPrivate.recordUserAction(
-              'Commerce.PriceTracking.SidePanel.Untrack.ContextMenu');
+        if (editingDisabledByPolicy(this.bookmarks_)) {
+          this.dispatchDisabledFeatureEvent_();
         } else {
-          this.shoppingListApi_.trackPriceForBookmark(
-              BigInt(this.bookmarks_[0]!.id));
-          chrome.metricsPrivate.recordUserAction(
-              'Commerce.PriceTracking.SidePanel.Track.ContextMenu');
+          if (this.priceTracked_) {
+            this.shoppingListApi_.untrackPriceForBookmark(
+                BigInt(this.bookmarks_[0]!.id));
+            chrome.metricsPrivate.recordUserAction(
+                'Commerce.PriceTracking.SidePanel.Untrack.ContextMenu');
+          } else {
+            this.shoppingListApi_.trackPriceForBookmark(
+                BigInt(this.bookmarks_[0]!.id));
+            chrome.metricsPrivate.recordUserAction(
+                'Commerce.PriceTracking.SidePanel.Track.ContextMenu');
+          }
         }
         break;
       case MenuItemId.RENAME:
-        this.dispatchEvent(new CustomEvent('rename-clicked', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            id: this.bookmarks_[0]!.id,
-          },
-        }));
+        if (editingDisabledByPolicy(this.bookmarks_)) {
+          this.dispatchDisabledFeatureEvent_();
+        } else {
+          this.dispatchEvent(new CustomEvent('rename-clicked', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              id: this.bookmarks_[0]!.id,
+            },
+          }));
+        }
         break;
       case MenuItemId.DELETE:
-        this.bookmarksApi_.contextMenuDelete(
-            this.bookmarks_[0]!.id, ActionSource.kBookmark);
-        this.dispatchEvent(new CustomEvent('delete-clicked', {
-          bubbles: true,
-          composed: true,
-          detail: {
-            id: this.bookmarks_[0]!.id,
-          },
-        }));
+        if (editingDisabledByPolicy(this.bookmarks_)) {
+          this.dispatchDisabledFeatureEvent_();
+        } else {
+          this.bookmarksApi_.contextMenuDelete(
+              this.bookmarks_[0]!.id, ActionSource.kBookmark);
+          this.dispatchEvent(new CustomEvent('delete-clicked', {
+            bubbles: true,
+            composed: true,
+            detail: {
+              id: this.bookmarks_[0]!.id,
+            },
+          }));
+        }
         break;
     }
     this.$.menu.close();

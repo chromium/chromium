@@ -17,6 +17,7 @@ import '//bookmarks-side-panel.top-chrome/shared/sp_icons.html.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_list_item_badge.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
@@ -28,6 +29,7 @@ import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLazyRenderElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -42,7 +44,7 @@ import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shoppin
 import {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
 import {PowerBookmarksEditDialogElement} from './power_bookmarks_edit_dialog.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
-import {Label, PowerBookmarksService} from './power_bookmarks_service.js';
+import {editingDisabledByPolicy, Label, PowerBookmarksService} from './power_bookmarks_service.js';
 import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
 function getBookmarkName(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
@@ -57,6 +59,7 @@ export interface PowerBookmarksListElement {
     shownBookmarksIronList: IronListElement,
     sortMenu: CrActionMenuElement,
     editDialog: PowerBookmarksEditDialogElement,
+    disabledFeatureDialog: CrDialogElement,
   };
 }
 
@@ -564,6 +567,10 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     const newParent = this.getParentFolder_();
+    if (editingDisabledByPolicy([newParent])) {
+      this.showDisabledFeatureDialog_();
+      return;
+    }
     this.bookmarksApi_
         .createFolder(newParent.id, loadTimeData.getString('newFolderTitle'))
         .then((newFolder) => {
@@ -583,6 +590,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onDeleteClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
+    if (editingDisabledByPolicy(this.selectedBookmarks_)) {
+      this.showDisabledFeatureDialog_();
+      return;
+    }
     this.bookmarksApi_
         .deleteBookmarks(this.selectedBookmarks_.map(bookmark => bookmark.id))
         .then(() => {
@@ -608,6 +619,14 @@ export class PowerBookmarksListElement extends PolymerElement {
         });
   }
 
+  private showDisabledFeatureDialog_() {
+    this.$.disabledFeatureDialog.showModal();
+  }
+
+  private closeDisabledFeatureDialog_() {
+    this.$.disabledFeatureDialog.close();
+  }
+
   private onUndoClicked_() {
     this.bookmarksApi_.undo();
     this.$.deletionToast.get().hide();
@@ -616,6 +635,10 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onMoveClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
+    if (editingDisabledByPolicy(this.selectedBookmarks_)) {
+      this.showDisabledFeatureDialog_();
+      return;
+    }
     this.$.editDialog.showDialog(
         this.activeFolderPath_, this.bookmarksService_.getTopLevelBookmarks(),
         this.selectedBookmarks_);
@@ -653,6 +676,10 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private onAddTabClicked_() {
     const newParent = this.getParentFolder_();
+    if (editingDisabledByPolicy([newParent])) {
+      this.showDisabledFeatureDialog_();
+      return;
+    }
     this.bookmarksApi_.bookmarkCurrentTabInFolder(newParent.id);
   }
 
