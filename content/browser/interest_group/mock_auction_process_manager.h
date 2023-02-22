@@ -106,6 +106,12 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   // Waits for GenerateBid() to be invoked.
   void WaitForGenerateBid();
 
+  // The below functions alter `trusted_signals_fetch_duration` (from
+  // OnBiddingSignalsReceived()) and `bidding_duration` (from
+  // OnGenerateBidComplete()), respectively, to return `delta`.
+  void SetBidderTrustedSignalsFetchDuration(base::TimeDelta delta);
+  void SetBiddingDuration(base::TimeDelta delta);
+
   // Invokes the GenerateBid callback. A bid of base::nullopt means no bid
   // should be offered. Waits for the GenerateBid() call first, if needed.
   void InvokeGenerateBidCallback(
@@ -160,6 +166,12 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
 
   // Expected per-bidder timeout values, indexed by interest group name.
   std::map<std::string, base::TimeDelta> expected_per_buyer_timeouts_;
+
+  // To be fed as `trusted_signals_fetch_duration` (from
+  // OnBiddingSignalsReceived()) and `bidding_duration` (from
+  // OnGenerateBidComplete()), respectively,
+  base::TimeDelta trusted_signals_fetch_duration_;
+  base::TimeDelta bidding_duration_;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.

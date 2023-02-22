@@ -175,6 +175,15 @@ void MockBidderWorklet::WaitForGenerateBid() {
   }
 }
 
+void MockBidderWorklet::SetBidderTrustedSignalsFetchDuration(
+    base::TimeDelta delta) {
+  trusted_signals_fetch_duration_ = delta;
+}
+
+void MockBidderWorklet::SetBiddingDuration(base::TimeDelta delta) {
+  bidding_duration_ = delta;
+}
+
 void MockBidderWorklet::InvokeGenerateBidCallback(
     absl::optional<double> bid,
     const GURL& render_url,
@@ -191,7 +200,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
   base::RunLoop run_loop;
   generate_bid_client_->OnBiddingSignalsReceived(
       /*priority_vector=*/{},
-      /*trusted_signals_fetch_duration=*/base::TimeDelta(),
+      /*trusted_signals_fetch_duration=*/trusted_signals_fetch_duration_,
       run_loop.QuitClosure());
   run_loop.Run();
 
@@ -208,7 +217,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         base::flat_map<std::string,
                        auction_worklet::mojom::PrioritySignalsDoublePtr>(),
         /*pa_requests=*/std::move(pa_requests),
-        /*bidding_duration=*/base::TimeDelta(),
+        /*bidding_duration=*/bidding_duration_,
         /*errors=*/std::vector<std::string>());
     return;
   }
@@ -226,7 +235,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>(),
       /*pa_requests=*/std::move(pa_requests),
-      /*bidding_duration=*/base::TimeDelta(),
+      /*bidding_duration=*/bidding_duration_,
       /*errors=*/std::vector<std::string>());
 }
 

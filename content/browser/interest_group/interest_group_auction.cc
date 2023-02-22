@@ -22,6 +22,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
@@ -188,6 +189,67 @@ static const char* ScoreAdTraceEventName(const InterestGroupAuction::Bid& bid) {
   } else {
     return "seller_worklet_score_ad";
   }
+}
+
+// Helper for ReportPaBuyersValueIfAllowed() -- returns true iff
+// `interest_group`'s seller capabilities has authorized `capability` for
+// `seller`.
+bool CanReportPaBuyersValue(const blink::InterestGroup& interest_group,
+                            blink::InterestGroup::SellerCapabilities capability,
+                            const url::Origin& seller) {
+  if (interest_group.seller_capabilities) {
+    auto it = interest_group.seller_capabilities->find(seller);
+    if (it != interest_group.seller_capabilities->end()) {
+      return it->second.Has(capability);
+    }
+  }
+  return interest_group.all_sellers_capabilities.Has(capability);
+}
+
+// Helper for ReportPaBuyersValueIfAllowed() -- returns the bucket base
+// of `buyer`, if present in `config`'s `auction_report_buyer_keys`.
+absl::optional<absl::uint128> BucketBaseForReportPaBuyers(
+    const blink::AuctionConfig& config,
+    const url::Origin& buyer) {
+  if (!config.non_shared_params.auction_report_buyer_keys) {
+    return absl::nullopt;
+  }
+  // Find the index of the buyer in `buyers`. It should be present, since we
+  // only load interest groups belonging to owners from `buyers`.
+  DCHECK(config.non_shared_params.interest_group_buyers);
+  const std::vector<url::Origin>& buyers =
+      *config.non_shared_params.interest_group_buyers;
+  absl::optional<size_t> index;
+  for (size_t i = 0; i < buyers.size(); i++) {
+    if (buyer == buyers.at(i)) {
+      index = i;
+      break;
+    }
+  }
+  DCHECK(index);
+  // Use that index to get the associated bucket base, if present.
+  if (*index >= config.non_shared_params.auction_report_buyer_keys->size()) {
+    return absl::nullopt;
+  }
+  return config.non_shared_params.auction_report_buyer_keys->at(*index);
+}
+
+// Helper for ReportPaBuyersValueIfAllowed() -- returns the
+// AuctionReportBuyersConfig for `buyer_report_type`, if it exists in
+// `auction_report_buyers` in `config`.
+absl::optional<blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig>
+ReportBuyersConfigForPaBuyers(
+    blink::AuctionConfig::NonSharedParams::BuyerReportType buyer_report_type,
+    const blink::AuctionConfig& config) {
+  if (!config.non_shared_params.auction_report_buyers) {
+    return absl::nullopt;
+  }
+  const auto& report_buyers = *config.non_shared_params.auction_report_buyers;
+  auto it = report_buyers.find(buyer_report_type);
+  if (it == report_buyers.end()) {
+    return absl::nullopt;
+  }
+  return it->second;
 }
 
 }  // namespace
@@ -396,9 +458,11 @@ class InterestGroupAuction::BuyerHelper
       base::TimeDelta trusted_signals_fetch_duration,
       base::OnceClosure resume_generate_bid_callback) override {
     BidState* state = generate_bid_client_receiver_set_.current_context();
+    const blink::InterestGroup& interest_group = state->bidder->interest_group;
+    auction_->ReportTrustedSignalsFetchLatency(interest_group,
+                                               trusted_signals_fetch_duration);
     absl::optional<double> new_priority;
     if (!priority_vector.empty()) {
-      const auto& interest_group = state->bidder->interest_group;
       new_priority = CalculateInterestGroupPriority(
           *auction_->config_, *state->bidder, auction_->auction_start_time_,
           priority_vector,
@@ -1671,6 +1735,47 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
   return url.ReplaceComponents(replacements);
 }
 
+void InterestGroupAuction::ReportPaBuyersValueIfAllowed(
+    const blink::InterestGroup& interest_group,
+    blink::InterestGroup::SellerCapabilities capability,
+    blink::AuctionConfig::NonSharedParams::BuyerReportType buyer_report_type,
+    int value) {
+  if (!CanReportPaBuyersValue(interest_group, capability, config_->seller)) {
+    return;
+  }
+
+  absl::optional<absl::uint128> bucket_base =
+      BucketBaseForReportPaBuyers(*config_, interest_group.owner);
+  if (!bucket_base) {
+    return;
+  }
+
+  absl::optional<
+      blink::AuctionConfig::NonSharedParams::AuctionReportBuyersConfig>
+      report_buyers_config =
+          ReportBuyersConfigForPaBuyers(buyer_report_type, *config_);
+  if (!report_buyers_config) {
+    return;
+  }
+
+  // TODO(caraitto): Consider adding renderer and Mojo validation to ensure that
+  // bucket sums can't be out of range, and scales can't be negative, infinite,
+  // or NaN.
+  PrivateAggregationRequests& destination_vector =
+      private_aggregation_requests_reserved_[config_->seller];
+  destination_vector.push_back(
+      auction_worklet::mojom::PrivateAggregationRequest::New(
+          auction_worklet::mojom::AggregatableReportContribution::
+              NewHistogramContribution(
+                  content::mojom::AggregatableReportHistogramContribution::New(
+                      *bucket_base + report_buyers_config->bucket,
+                      base::saturated_cast<int32_t>(
+                          std::max(0.0, value * report_buyers_config->scale)))),
+          // TODO(caraitto): Consider allowing these to be set.
+          content::mojom::AggregationServiceMode::kDefault,
+          content::mojom::DebugModeDetails::New()));
+}
+
 bool InterestGroupAuction::HasNonKAnonWinner() const {
   if (!final_auction_result_) {
     return false;
@@ -1867,6 +1972,16 @@ void InterestGroupAuction::TakePostAuctionUpdateOwners(
   for (auto& component_auction_info : component_auctions_) {
     component_auction_info.second->TakePostAuctionUpdateOwners(owners);
   }
+}
+
+void InterestGroupAuction::ReportTrustedSignalsFetchLatency(
+    const blink::InterestGroup& interest_group,
+    base::TimeDelta trusted_signals_fetch_duration) {
+  ReportPaBuyersValueIfAllowed(
+      interest_group, blink::InterestGroup::SellerCapabilities::kLatencyStats,
+      blink::AuctionConfig::NonSharedParams::BuyerReportType::
+          kTotalSignalsFetchLatency,
+      trusted_signals_fetch_duration.InMilliseconds());
 }
 
 base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
