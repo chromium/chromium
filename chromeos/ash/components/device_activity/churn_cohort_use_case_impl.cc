@@ -96,7 +96,7 @@ ChurnCohortUseCaseImpl::GenerateImportRequestBody() {
   // Only when we can get the ActivateDate from VPD then set whether the
   // device is first active during the churn cohort period. If we cannot
   // get value from VPD, then we don't set value for this field.
-  if (first_active_week != base::Time::UnixEpoch()) {
+  if (first_active_week != base::Time()) {
     cohort_metadata->set_is_first_active_in_cohort(IsFirstActiveInCohort(
         churn_active_status_ptr_->GetFirstActiveWeek(), GetActiveTs()));
   }
