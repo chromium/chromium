@@ -7440,8 +7440,6 @@ static_library("browser") {
       "supervised_user/supervised_user_service_observer.h",
       "supervised_user/supervised_user_settings_service_factory.cc",
       "supervised_user/supervised_user_settings_service_factory.h",
-      "supervised_user/supervised_user_sync_model_type_controller.cc",
-      "supervised_user/supervised_user_sync_model_type_controller.h",
       "supervised_user/supervised_user_url_filter.cc",
       "supervised_user/supervised_user_url_filter.h",
       "supervised_user/web_approvals_manager.cc",

@@ -12,6 +12,8 @@ static_library("browser") {
     "supervised_user_error_page.h",
     "supervised_user_settings_service.cc",
     "supervised_user_settings_service.h",
+    "supervised_user_sync_model_type_controller.cc",
+    "supervised_user_sync_model_type_controller.h",
   ]
 
   public_deps = [
@@ -45,7 +47,9 @@ source_set("unit_tests") {
   sources = [
     "supervised_user_error_page_unittest.cc",
     "supervised_user_settings_service_unittest.cc",
+    "supervised_user_sync_model_type_controller_unittest.cc",
   ]
+
   deps = [
     ":browser",
     "//base",

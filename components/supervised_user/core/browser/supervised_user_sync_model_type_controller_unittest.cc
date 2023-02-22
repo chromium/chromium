@@ -2,32 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_sync_model_type_controller.h"
+#include "components/supervised_user/core/browser/supervised_user_sync_model_type_controller.h"
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/test/base/testing_profile.h"
+#include "base/test/mock_callback.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/driver/data_type_controller.h"
-#include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using syncer::DataTypeController;
+using ::testing::Return;
 
-class SupervisedUserSyncModelTypeControllerTest : public testing::Test {
- private:
-  content::BrowserTaskEnvironment task_environment_;
-};
+class SupervisedUserSyncModelTypeControllerTest : public testing::Test {};
 
 TEST_F(SupervisedUserSyncModelTypeControllerTest,
        SupervisedUserMeetsPreconditions) {
-  TestingProfile::Builder builder;
-  builder.SetIsSupervisedProfile();
-  std::unique_ptr<Profile> child_profile = builder.Build();
-  ASSERT_TRUE(child_profile->IsChild());
+  base::MockRepeatingCallback<bool()> is_supervised_user_callback;
+  EXPECT_CALL(is_supervised_user_callback, Run()).WillOnce(Return(true));
 
   SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS, child_profile.get(),
+      syncer::SUPERVISED_USER_SETTINGS, is_supervised_user_callback.Get(),
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr);
@@ -37,12 +33,11 @@ TEST_F(SupervisedUserSyncModelTypeControllerTest,
 
 TEST_F(SupervisedUserSyncModelTypeControllerTest,
        NonSupervisedUserDoesNotMeetPreconditions) {
-  TestingProfile::Builder builder;
-  std::unique_ptr<Profile> non_child_profile = builder.Build();
-  ASSERT_FALSE(non_child_profile->IsChild());
+  base::MockRepeatingCallback<bool()> is_supervised_user_callback;
+  EXPECT_CALL(is_supervised_user_callback, Run()).WillOnce(Return(false));
 
   SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS, non_child_profile.get(),
+      syncer::SUPERVISED_USER_SETTINGS, is_supervised_user_callback.Get(),
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr);
@@ -51,13 +46,11 @@ TEST_F(SupervisedUserSyncModelTypeControllerTest,
 }
 
 TEST_F(SupervisedUserSyncModelTypeControllerTest, HasTransportModeDelegate) {
-  TestingProfile::Builder builder;
-  builder.SetIsSupervisedProfile();
-  std::unique_ptr<Profile> child_profile = builder.Build();
-  ASSERT_TRUE(child_profile->IsChild());
+  base::MockRepeatingCallback<bool()> is_supervised_user_callback;
+  EXPECT_CALL(is_supervised_user_callback, Run()).Times(0);
 
   SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS, child_profile.get(),
+      syncer::SUPERVISED_USER_SETTINGS, is_supervised_user_callback.Get(),
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr);
