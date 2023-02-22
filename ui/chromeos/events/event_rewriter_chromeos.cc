@@ -793,14 +793,13 @@ EventDispatchDetails EventRewriterChromeOS::RewriteEvent(
     const base::Time key_rewrite_start_time = base::Time::Now();
     const EventRewriteStatus status =
         RewriteKeyEvent(*((&event)->AsKeyEvent()), &rewritten_event);
-    const EventDispatchDetails details = RewriteKeyEventInContext(
-        *((&event)->AsKeyEvent()), std::move(rewritten_event), status,
-        continuation);
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "ChromeOS.Inputs.EventRewriter.KeyRewriteLatency",
         base::Time::Now() - key_rewrite_start_time, base::Microseconds(1),
         base::Milliseconds(100), 100);
-    return details;
+    return RewriteKeyEventInContext(*((&event)->AsKeyEvent()),
+                                    std::move(rewritten_event), status,
+                                    continuation);
   }
   if ((event.type() == ET_MOUSE_PRESSED) ||
       (event.type() == ET_MOUSE_RELEASED)) {
