@@ -76,14 +76,15 @@ class CONTENT_EXPORT FencedFrameReporter
   // for the beacons.
   static scoped_refptr<FencedFrameReporter> CreateForFledge(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AttributionDataHostManager* attribution_data_host_manager);
+      AttributionDataHostManager* attribution_data_host_manager,
+      bool direct_seller_is_seller);
 
   // Called when a mapping for reports of type `reporting_destination` is ready.
   // The reporter must currently be considering maps of type
   // `reporting_destination` pending - that is:
   //
   // 1) It must have been created by CreateForFledge()
-  // 2) `reporting_destination` must be one of kBuyer, kSeller, or
+  // 2) `reporting_destination` must be one of kBuyer, kSeller, kDirectSeller or
   // kComponentSeller.
   // 3) OnUrlMappingReady() must not yet have been invoked with
   // `reporting_destination` yet.
@@ -222,6 +223,10 @@ class CONTENT_EXPORT FencedFrameReporter
   base::flat_map<blink::FencedFrame::ReportingDestination,
                  ReportingDestinationInfo>
       reporting_metadata_;
+
+  // True if the "directSeller" alias maps to the Seller destination. False if
+  // it maps to the "ComponentSeller" destination.
+  bool direct_seller_is_seller_ = false;
 
   // Stores data registered by one of the documents in a FencedFrame using
   // the `Fence.setReportEventDataForAutomaticBeacons` API.

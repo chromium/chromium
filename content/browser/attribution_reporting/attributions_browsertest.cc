@@ -1717,7 +1717,8 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
             ->GetStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
         AttributionDataHostManager::FromBrowserContext(
-            web_contents()->GetBrowserContext()));
+            web_contents()->GetBrowserContext()),
+        /*direct_seller_is_seller=*/false);
   }
 
  private:

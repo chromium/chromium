@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/types/pass_key.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -97,7 +98,10 @@ base::StringPiece ReportingDestinationAsString(
       return "ComponentSeller";
     case blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl:
       return "SharedStorageSelectUrl";
+    case blink::FencedFrame::ReportingDestination::kDirectSeller:
+      return "DirectSeller";
   }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -182,11 +186,13 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
 
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AttributionDataHostManager* attribution_data_host_manager) {
+    AttributionDataHostManager* attribution_data_host_manager,
+    bool direct_seller_is_seller) {
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
           base::PassKey<FencedFrameReporter>(), std::move(url_loader_factory),
           attribution_data_host_manager);
+  reporter->direct_seller_is_seller_ = direct_seller_is_seller;
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kBuyer,
       ReportingDestinationInfo());
@@ -225,6 +231,15 @@ bool FencedFrameReporter::SendReport(
     absl::optional<int64_t> navigation_id) {
   DCHECK(request_initiator_frame);
 
+  if (reporting_destination ==
+      blink::FencedFrame::ReportingDestination::kDirectSeller) {
+    if (direct_seller_is_seller_) {
+      reporting_destination = blink::FencedFrame::ReportingDestination::kSeller;
+    } else {
+      reporting_destination =
+          blink::FencedFrame::ReportingDestination::kComponentSeller;
+    }
+  }
   auto it = reporting_metadata_.find(reporting_destination);
   // Check metadata registration for given destination. If there's no map, or
   // the map is empty, can't send a request. An entry with a null (not empty)

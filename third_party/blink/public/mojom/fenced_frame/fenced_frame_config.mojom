@@ -16,6 +16,7 @@ enum ReportingDestination {
   kSeller,
   kComponentSeller,
   kSharedStorageSelectUrl,
+  kDirectSeller,
 };
 
 // The fenced frame config's "mode" describes a set of functionalities that it

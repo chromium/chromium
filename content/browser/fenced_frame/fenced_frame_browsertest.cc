@@ -4644,7 +4644,8 @@ class FencedFrameReportEventBrowserTest
             ->GetStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
         AttributionDataHostManager::FromBrowserContext(
-            web_contents()->GetBrowserContext()));
+            web_contents()->GetBrowserContext()),
+        /*direct_seller_is_seller=*/false);
   }
 
   // A helper function for specifying reportEvent tests. Each step consists of a
@@ -6070,7 +6071,8 @@ class FencedFrameAutomaticBeaconBrowserTest
             ->GetStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
         AttributionDataHostManager::FromBrowserContext(
-            web_contents()->GetBrowserContext()));
+            web_contents()->GetBrowserContext()),
+        /*direct_seller_is_seller=*/false);
   }
 
   void SendBasicRequest(GURL url) {

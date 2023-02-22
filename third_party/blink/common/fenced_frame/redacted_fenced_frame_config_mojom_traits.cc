@@ -49,6 +49,8 @@ EnumTraits<blink::mojom::ReportingDestination,
       return blink::mojom::ReportingDestination::kComponentSeller;
     case blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl:
       return blink::mojom::ReportingDestination::kSharedStorageSelectUrl;
+    case blink::FencedFrame::ReportingDestination::kDirectSeller:
+      return blink::mojom::ReportingDestination::kDirectSeller;
   }
   NOTREACHED();
   return blink::mojom::ReportingDestination::kBuyer;
@@ -103,6 +105,9 @@ bool EnumTraits<blink::mojom::ReportingDestination,
       return true;
     case blink::mojom::ReportingDestination::kSharedStorageSelectUrl:
       *out = blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
+      return true;
+    case blink::mojom::ReportingDestination::kDirectSeller:
+      *out = blink::FencedFrame::ReportingDestination::kDirectSeller;
       return true;
   }
   NOTREACHED();

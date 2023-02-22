@@ -512,7 +512,8 @@ TEST(FencedFrameConfigMojomTraitsTest, PropertiesHasFencedFrameReportingTest) {
   // Create a reporting service with a dummy SharedURLLoaderFactory.
   properties.fenced_frame_reporter_ = FencedFrameReporter::CreateForFledge(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(nullptr),
-      /*attribution_data_host_manager=*/nullptr);
+      /*attribution_data_host_manager=*/nullptr,
+      /*direct_seller_is_seller=*/false);
   input_properties = properties.RedactFor(FencedFrameEntity::kEmbedder);
   EXPECT_TRUE(input_properties.has_fenced_frame_reporting());
   mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(

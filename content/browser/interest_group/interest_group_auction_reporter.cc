@@ -122,9 +122,11 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           std::move(private_aggregation_requests_reserved)),
       private_aggregation_requests_non_reserved_(
           std::move(private_aggregation_requests_non_reserved)),
-      fenced_frame_reporter_(
-          FencedFrameReporter::CreateForFledge(url_loader_factory_,
-                                               attribution_data_host_manager)) {
+      fenced_frame_reporter_(FencedFrameReporter::CreateForFledge(
+          url_loader_factory_,
+          attribution_data_host_manager,
+          /*direct_seller_is_seller=*/
+          !component_seller_winning_bid_info.has_value())) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);

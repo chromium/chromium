@@ -97,8 +97,7 @@ TEST_F(FencedFrameReporterTest, NoReportNoMap) {
           shared_url_loader_factory(), attribution_data_host_manager(),
           /*reporting_url_map=*/{{"event_type", report_destination_}});
   std::string error_message;
-  // FencedFrameReporters for Shared Storage a non-existent maps for FLEDGE
-  // destinations.
+  // A Shared Storage FencedFrameReporter has no map for FLEDGE destinations.
   EXPECT_FALSE(
       reporter->SendReport("event_type", "event_data",
                            blink::FencedFrame::ReportingDestination::kBuyer,
@@ -115,6 +114,13 @@ TEST_F(FencedFrameReporterTest, NoReportNoMap) {
             "'Seller'.");
   EXPECT_FALSE(reporter->SendReport(
       "event_type", "event_data",
+      blink::FencedFrame::ReportingDestination::kDirectSeller, main_rfh_impl(),
+      error_message));
+  EXPECT_EQ(error_message,
+            "This frame did not register reporting metadata for destination "
+            "'ComponentSeller'.");
+  EXPECT_FALSE(reporter->SendReport(
+      "event_type", "event_data",
       blink::FencedFrame::ReportingDestination::kComponentSeller,
       main_rfh_impl(), error_message));
   EXPECT_EQ(error_message,
@@ -123,7 +129,8 @@ TEST_F(FencedFrameReporterTest, NoReportNoMap) {
 
   // A FLEDGE FencedFrameReporter has no map for Shared Storage.
   reporter = FencedFrameReporter::CreateForFledge(
-      shared_url_loader_factory(), attribution_data_host_manager());
+      shared_url_loader_factory(), attribution_data_host_manager(),
+      /*direct_seller_is_seller=*/false);
   EXPECT_FALSE(reporter->SendReport(
       "event_type", "event_data",
       blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
@@ -247,7 +254,8 @@ TEST_F(FencedFrameReporterTest, SendReports) {
 TEST_F(FencedFrameReporterTest, SendFledgeReportsAfterMapsReceived) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(shared_url_loader_factory(),
-                                           attribution_data_host_manager());
+                                           attribution_data_host_manager(),
+                                           /*direct_seller_is_seller=*/false);
 
   // Receive all mappings.
   reporter->OnUrlMappingReady(
@@ -287,6 +295,14 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsAfterMapsReceived) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 3);
   ValidateRequest((*test_url_loader_factory_.pending_requests())[2].request,
                   report_destination3_, "event_data");
+
+  EXPECT_TRUE(reporter->SendReport(
+      "event_type", "event_data",
+      blink::FencedFrame::ReportingDestination::kDirectSeller, main_rfh_impl(),
+      error_message));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 4);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[3].request,
+                  report_destination2_, "event_data");
 }
 
 // Test reports in the FLEDGE case, where reporting URL maps are received after
@@ -294,7 +310,8 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsAfterMapsReceived) {
 TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(shared_url_loader_factory(),
-                                           attribution_data_host_manager());
+                                           attribution_data_host_manager(),
+                                           /*direct_seller_is_seller=*/true);
 
   // Make reports. They should be queued, since mappings haven't been received
   // yet.
@@ -311,6 +328,11 @@ TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
       reporter->SendReport("event_type", "event_data",
                            blink::FencedFrame::ReportingDestination::kBuyer,
                            main_rfh_impl(), error_message));
+  EXPECT_TRUE(reporter->SendReport(
+      "event_type", "event_data",
+      blink::FencedFrame::ReportingDestination::kDirectSeller, main_rfh_impl(),
+      error_message));
+
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 
   // Each report should be sent as its mapping is received.
@@ -318,22 +340,26 @@ TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
   reporter->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kSeller,
       /*reporting_url_map=*/{{"event_type", report_destination_}});
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 2);
   ValidateRequest((*test_url_loader_factory_.pending_requests())[0].request,
+                  report_destination_, "event_data");
+  // This one is from the "DirectSeller" destination, which was aliased to
+  // kSeller.
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[1].request,
                   report_destination_, "event_data");
 
   reporter->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kComponentSeller,
       /*reporting_url_map=*/{{"event_type", report_destination2_}});
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 2);
-  ValidateRequest((*test_url_loader_factory_.pending_requests())[1].request,
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 3);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[2].request,
                   report_destination2_, "event_data");
 
   reporter->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
       /*reporting_url_map=*/{{"event_type", report_destination3_}});
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 3);
-  ValidateRequest((*test_url_loader_factory_.pending_requests())[2].request,
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 4);
+  ValidateRequest((*test_url_loader_factory_.pending_requests())[3].request,
                   report_destination3_, "event_data");
 }
 
@@ -344,7 +370,8 @@ TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
 TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
   scoped_refptr<FencedFrameReporter> reporter =
       FencedFrameReporter::CreateForFledge(shared_url_loader_factory(),
-                                           attribution_data_host_manager());
+                                           attribution_data_host_manager(),
+                                           /*direct_seller_is_seller=*/false);
 
   // SendReport() is called, and then a mapping is received that doesn't have
   // the report's event type. No request should be made.

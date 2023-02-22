@@ -127,7 +127,8 @@ GURL GenerateAndVerifyPendingMappedURN(
 scoped_refptr<FencedFrameReporter> CreateReporter() {
   return FencedFrameReporter::CreateForFledge(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(nullptr),
-      /*attribution_data_host_manager=*/nullptr);
+      /*attribution_data_host_manager=*/nullptr,
+      /*direct_seller_is_seller=*/false);
 }
 
 }  // namespace

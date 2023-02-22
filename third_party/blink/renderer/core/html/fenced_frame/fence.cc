@@ -35,6 +35,8 @@ blink::FencedFrame::ReportingDestination ToPublicDestination(
       return blink::FencedFrame::ReportingDestination::kSeller;
     case V8FenceReportingDestination::Enum::kComponentSeller:
       return blink::FencedFrame::ReportingDestination::kComponentSeller;
+    case V8FenceReportingDestination::Enum::kDirectSeller:
+      return blink::FencedFrame::ReportingDestination::kDirectSeller;
     case V8FenceReportingDestination::Enum::kSharedStorageSelectUrl:
       return blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
   }

@@ -6,6 +6,7 @@ enum FenceReportingDestination {
   "buyer",
   "seller",
   "component-seller",
+  "direct-seller",
   "shared-storage-select-url"
 };
 
