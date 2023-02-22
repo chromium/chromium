@@ -1778,6 +1778,36 @@ TEST_P(DesksTest, DragWindowToDesk) {
   EXPECT_TRUE(shadow->layer()->GetTargetVisibility());
 }
 
+// Tests that theme change during drag to close does not trigger any crashes.
+// Regression test for b/270171802.
+TEST_P(DesksTest, DragWindowToCloseWithThemeChange) {
+  // Create two windows.
+  auto win1 = CreateAppWindow();
+  auto win2 = CreateAppWindow();
+
+  // Enter overview.
+  EnterOverview();
+  auto* overview_item = Shell::Get()
+                            ->overview_controller()
+                            ->overview_session()
+                            ->GetOverviewItemForWindow(win1.get());
+  ASSERT_TRUE(overview_item);
+
+  // Drag `win1` to close and simulate multiple theme changes at the same time.
+  // There should not be any crashes.
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(
+      gfx::ToRoundedPoint(overview_item->target_bounds().CenterPoint()));
+  event_generator->PressTouch();
+  overview_item->item_widget()->ThemeChanged();
+  event_generator->MoveTouchBy(0, -50);
+  overview_item->item_widget()->ThemeChanged();
+  event_generator->MoveTouchBy(0, -200);
+  overview_item->item_widget()->ThemeChanged();
+  event_generator->ReleaseTouch();
+  overview_item->item_widget()->ThemeChanged();
+}
+
 TEST_P(DesksTest, DragMinimizedWindowToDesk) {
   auto* controller = DesksController::Get();
   NewDesk();
