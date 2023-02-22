@@ -6,12 +6,9 @@
 
 #include <utility>
 
-#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -140,16 +137,22 @@ UploadState* AccessState(::reporting::Priority priority,
 }  // namespace
 
 EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
-    CloudPolicyClient* client,
+    scoped_refptr<network::SharedURLLoaderFactory> factory,
+    DMAuth auth_data,
     const std::string& server_url,
     base::Value::Dict merging_payload,
+    const std::string& dm_token,
+    const std::string& client_id,
     UploadCompleteCallback complete_cb)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_ENCRYPTED_REPORT,
-                                    client->GetURLLoaderFactory(),
-                                    client,
+                                    factory,
+                                    std::move(auth_data),
                                     server_url,
-                                    /*include_device_info*/ true,
                                     std::move(complete_cb)) {
+  // Init common payload fields.
+  // TODO(b/237809917): Init using `InitializePayloadWithoutDeviceInfo` when
+  // backend is ready to support unmanaged devices.
+  InitializePayloadWithDeviceInfo(dm_token, client_id);
   // Merge it into the base class payload.
   payload_.Merge(std::move(merging_payload));
   // Retrieve priorities and figure out maximum sequence id for each.
