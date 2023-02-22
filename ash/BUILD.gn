@@ -1113,6 +1113,8 @@ component("ash") {
     "style/tab_slider.h",
     "style/tab_slider_button.cc",
     "style/tab_slider_button.h",
+    "style/typography.cc",
+    "style/typography.h",
     "system/accessibility/accessibility_detailed_view.cc",
     "system/accessibility/accessibility_detailed_view.h",
     "system/accessibility/accessibility_feature_disable_dialog.cc",
