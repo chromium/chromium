@@ -58,7 +58,7 @@
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_chromium_rust_toolchain": false,
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }

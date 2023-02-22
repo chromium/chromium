@@ -1214,8 +1214,8 @@
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
       'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot_reclient',
-      'linux_chromium_clobber_deterministic': 'release_trybot',
-      'linux_chromium_clobber_rel_ng': 'release_trybot',
+      'linux_chromium_clobber_deterministic': 'release_trybot_reclient',
+      'linux_chromium_clobber_rel_ng': 'release_trybot_reclient',
       'linux_chromium_compile_dbg_ng': 'debug_bot_reclient',
       'linux_chromium_compile_rel_ng': 'release_trybot_reclient',
       'linux_chromium_dbg_ng': 'gpu_tests_debug_bot_reclient',
@@ -1234,7 +1234,7 @@
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'linux_upload_clang': 'release_bot',
       'linux_vr': 'vr_release_trybot_reclient',
-      'network_service_linux': 'release_trybot',
+      'network_service_linux': 'release_trybot_reclient',
     },
 
     'tryserver.chromium.mac': {
@@ -1327,7 +1327,7 @@
       'android-rust-arm-rel': 'release_rust_android_arm_reclient',
       'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64_reclient',
       'linux-rust-x64-rel': 'release_rust_linux_x64_reclient',
-      'linux-rust-x64-rel-android-toolchain': 'release_rust_linux_x64_android_toolchain',
+      'linux-rust-x64-rel-android-toolchain': 'release_rust_linux_x64_android_toolchain_reclient',
     },
 
     'tryserver.chromium.swangle': {
@@ -1352,7 +1352,7 @@
       'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient_cxx17_no_werror',
       'linux-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
       'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient_cxx17_no_werror',
-      'mac-clang-tidy-rel': 'release_trybot_cxx17_no_werror',
+      'mac-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
       'win10-clang-tidy-rel': 'release_trybot_reclient_cxx17_no_werror',
     },
 
@@ -1375,19 +1375,19 @@
       'gpu-fyi-try-win10-nvidia-exp-64': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-win10-nvidia-rel-32': 'gpu_fyi_tests_release_trybot_x86_reclient',
       'gpu-fyi-try-win10-nvidia-rel-64': 'gpu_fyi_tests_release_trybot_reclient',
-      'win-annotator-rel': 'release_trybot',
+      'win-annotator-rel': 'release_trybot_reclient',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release_reclient',
       'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',
-      'win-fieldtrial-rel': 'release_bot_minimal_symbols',
+      'win-fieldtrial-rel': 'release_bot_minimal_symbols_reclient',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
-      'win-perfetto-rel': 'perfetto_release_trybot',
-      'win-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
+      'win-perfetto-rel': 'perfetto_release_trybot_reclient',
+      'win-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'win10-code-coverage': 'clang_code_coverage_reclient',
-      'win10-wpt-content-shell-fyi-rel': 'release_trybot',
+      'win10-wpt-content-shell-fyi-rel': 'release_trybot_reclient',
       'win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng': 'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials',
       'win10_chromium_x64_dbg_ng': 'gpu_tests_debug_bot_reclient',
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
-      'win11-wpt-content-shell-fyi-rel': 'release_trybot',
+      'win11-wpt-content-shell-fyi-rel': 'release_trybot_reclient',
       'win11-x64-fyi-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
       'win_archive': 'release_trybot_x86_reclient',
       'win_chromium_compile_dbg_ng': 'gpu_tests_debug_bot_x86_no_symbols_reclient',
@@ -1395,7 +1395,7 @@
       'win_chromium_x64_rel_ng': 'gpu_tests_release_trybot_reclient',
       'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'win_upload_clang': 'release_bot',
-      'win_x64_archive': 'release_trybot',
+      'win_x64_archive': 'release_trybot_reclient',
     },
 
     'tryserver.devtools-frontend': {
@@ -2816,7 +2816,7 @@
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials': [
-      'gpu_tests', 'release_trybot', 'resource_allowlisting', 'invert_fieldtrials',
+      'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting', 'invert_fieldtrials',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient': [
@@ -2878,7 +2878,7 @@
     ],
 
     'ios_device_release_compile_only_cxx17_no_werror': [
-      'ios_device_release_compile_only', 'force_cxx17', 'no_werror',
+      'ios_device_release_compile_only_reclient', 'force_cxx17', 'no_werror',
     ],
 
     'ios_device_release_compile_only_reclient': [
@@ -3386,10 +3386,6 @@
       'perfetto', 'release_bot_reclient', 'android', 'x64'
     ],
 
-    'perfetto_release_trybot': [
-      'perfetto', 'release_trybot',
-    ],
-
     'perfetto_release_trybot_reclient': [
       'perfetto', 'release_trybot_reclient',
     ],
@@ -3481,10 +3477,6 @@
       'release_bot_reclient', 'mac_strip', 'minimal_symbols',
     ],
 
-    'release_bot_minimal_symbols': [
-      'release_bot', 'minimal_symbols',
-    ],
-
     'release_bot_minimal_symbols_no_clang': [
       'release_bot', 'minimal_symbols', 'no_clang', 'no_goma',
     ],
@@ -3525,8 +3517,8 @@
       'release_trybot_minimal_symbols_reclient', 'enable_rust', 'android', 'arm',
     ],
 
-    'release_rust_linux_x64_android_toolchain': [
-      'release_trybot_minimal_symbols', 'enable_rust', 'use_android_rust_toolchain', 'x64',
+    'release_rust_linux_x64_android_toolchain_reclient': [
+      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'use_android_rust_toolchain', 'x64',
     ],
 
     'release_rust_linux_x64_reclient': [
@@ -3563,10 +3555,6 @@
 
     'release_trybot_blink_reclient': [
       'release_trybot_blink_reclient',
-    ],
-
-    'release_trybot_cxx17_no_werror': [
-      'release_trybot', 'force_cxx17', 'no_werror',
     ],
 
     'release_trybot_dcheck_off_reclient': [
@@ -4286,6 +4274,12 @@
     'ios_device_release_compile_only': {
       'mixins': [
         'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot',
+      ],
+    },
+
+    'ios_device_release_compile_only_reclient': {
+      'mixins': [
+        'compile_only', 'ios', 'ios_device', 'ios_cpu_arm64', 'ios_google_cert', 'ios_disable_code_signing', 'release_bot_reclient',
       ],
     },
 

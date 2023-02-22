@@ -114,7 +114,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-asan": {
@@ -144,7 +144,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-libfuzzer-asan-rel": {
@@ -170,8 +170,8 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true,
-      "use_perfetto_client_library": true
+      "use_perfetto_client_library": true,
+      "use_remoteexec": true
     }
   },
   "win-rel": {
@@ -185,7 +185,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win10-code-coverage": {
@@ -207,7 +207,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng": {
@@ -220,7 +220,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win10_chromium_x64_dbg_ng": {
@@ -248,7 +248,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win11-x64-fyi-rel": {
@@ -336,7 +336,7 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 0,
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }

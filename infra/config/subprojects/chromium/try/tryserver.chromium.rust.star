@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.rust builder group."""
 
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -42,7 +42,6 @@ try_.builder(
 try_.builder(
     name = "linux-rust-x64-rel-android-toolchain",
     mirrors = ["ci/linux-rust-x64-rel"],
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 try_.builder(
