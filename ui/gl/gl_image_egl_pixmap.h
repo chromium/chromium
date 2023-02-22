@@ -16,10 +16,23 @@
 typedef void* EGLSurface;
 typedef void* EGLDisplay;
 
+namespace media {
+class VaapiPictureNativePixmapAngle;
+}
+
+namespace ui {
+class NativePixmapEGLX11Binding;
+}
+
 namespace gl {
 
 class GL_EXPORT GLImageEGLPixmap : public GLImage {
- public:
+  // NOTE: We are in the process of eliminating this class, so no new usages
+  // of it should be introduced.
+ private:
+  friend class media::VaapiPictureNativePixmapAngle;
+  friend class ui::NativePixmapEGLX11Binding;
+
   GLImageEGLPixmap(const gfx::Size& size, gfx::BufferFormat format);
 
   GLImageEGLPixmap(const GLImageEGLPixmap&) = delete;
@@ -37,12 +50,10 @@ class GL_EXPORT GLImageEGLPixmap : public GLImage {
   // Releases the image that was bound via BindTexImage().
   void ReleaseEGLImage();
 
- protected:
   ~GLImageEGLPixmap() override;
 
   gfx::BufferFormat format() const { return format_; }
 
- private:
   EGLSurface surface_;
   const gfx::Size size_;
   gfx::BufferFormat format_;

@@ -100,8 +100,8 @@ VaapiStatus VaapiPictureNativePixmapAngle::Allocate(gfx::BufferFormat format) {
   if (!make_context_current_cb_ || !make_context_current_cb_.Run())
     return VaapiStatus::Codes::kBadContext;
 
-  auto image =
-      base::MakeRefCounted<gl::GLImageEGLPixmap>(visible_size_, format);
+  auto image = base::WrapRefCounted<gl::GLImageEGLPixmap>(
+      new gl::GLImageEGLPixmap(visible_size_, format));
   if (!image)
     return VaapiStatus::Codes::kNoImage;
 
