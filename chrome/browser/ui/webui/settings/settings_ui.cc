@@ -291,6 +291,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               password_manager::features::kPasswordImport));
 
+  html_source->AddBoolean("enablePasswordsImportM2",
+                          base::FeatureList::IsEnabled(
+                              password_manager::features::kPasswordsImportM2));
+
   html_source->AddBoolean(
       "enablePasswordViewPage",
       base::FeatureList::IsEnabled(
