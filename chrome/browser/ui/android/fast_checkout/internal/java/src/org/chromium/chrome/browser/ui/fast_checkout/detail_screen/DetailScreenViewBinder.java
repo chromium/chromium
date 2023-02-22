@@ -16,7 +16,6 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import android.content.Context;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,13 +36,11 @@ public class DetailScreenViewBinder {
         final Context mContext;
         final Toolbar mToolbar;
         final MenuItem mSettingsMenuItem;
-        final FrameLayout mSheetItemListContainer;
         final RecyclerView mRecyclerView;
         final DetailScreenScrollListener mScrollListener;
 
         ViewHolder(Context context, View contentView, DetailScreenScrollListener scrollListener) {
             mContext = context;
-            mSheetItemListContainer = contentView.findViewById(R.id.sheet_item_list_container);
             mRecyclerView =
                     contentView.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
             mToolbar = contentView.findViewById(R.id.action_bar);

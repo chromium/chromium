@@ -23,17 +23,11 @@ found in the LICENSE file.
         android:titleTextAppearance="@style/TextAppearance.Headline"
         style="@style/ModernToolbar" />
 
-      <FrameLayout
-          android:id="@+id/sheet_item_list_container"
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/fast_checkout_detail_screen_recycler_view"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content">
-          <androidx.recyclerview.widget.RecyclerView
-              android:id="@+id/fast_checkout_detail_screen_recycler_view"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:clipToPadding="false"
-              android:divider="@null"
-              android:paddingBottom="24dp"/>
-      </FrameLayout>
-
+          android:layout_height="wrap_content"
+          android:clipToPadding="false"
+          android:divider="@null"
+          android:paddingBottom="24dp"/>
     </LinearLayout>

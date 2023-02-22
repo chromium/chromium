@@ -59,7 +59,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:paddingTop="@dimen/fast_checkout_home_sheet_address_card_padding"
             android:paddingBottom="@dimen/fast_checkout_home_sheet_address_card_padding"
-            android:background="@drawable/fast_checkout_item_background_top_copy"
+            android:background="@drawable/fast_checkout_home_screen_address_background"
             android:orientation="horizontal">
           <ImageView
               android:layout_width="@dimen/fast_checkout_address_icon"
@@ -126,7 +126,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:gravity="center_vertical"
             android:minHeight="@dimen/fast_checkout_sheet_home_screen_cc_min_height"
-            android:background="@drawable/fast_checkout_item_background_bottom">
+            android:background="@drawable/fast_checkout_home_screen_cc_background">
 
             <ImageView
                 android:id="@+id/fast_checkout_credit_card_icon"

@@ -4,10 +4,6 @@ Copyright 2022 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<!--
-TODO(crbug.com/1416195): Remove this file and use the non-copy instead without
-breaking the UI.
--->
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
     android:color="?android:attr/colorControlHighlight">
     <item>
@@ -15,13 +11,10 @@ breaking the UI.
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:shape="rectangle"
             app:surfaceElevation="@dimen/default_elevation_1">
-            <!--
-            TODO(crbug.com/1354596): Merge background resource for TTF Payments/Passwords and FC.
-            -->
-            <corners android:topLeftRadius="@dimen/fast_checkout_outer_corner_radius"
-            android:topRightRadius="@dimen/fast_checkout_outer_corner_radius"
-            android:bottomLeftRadius="@dimen/fast_checkout_inner_corner_radius"
-            android:bottomRightRadius="@dimen/fast_checkout_inner_corner_radius"/>
+            <corners android:topLeftRadius="@dimen/fast_checkout_inner_corner_radius"
+            android:topRightRadius="@dimen/fast_checkout_inner_corner_radius"
+            android:bottomLeftRadius="@dimen/fast_checkout_outer_corner_radius"
+            android:bottomRightRadius="@dimen/fast_checkout_outer_corner_radius"/>
         </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
     </item>
 </ripple>

@@ -61,9 +61,10 @@ android_resources("java_resources") {
   sources = [
     "java/res/anim/fast_checkout_view_flipper_fade_in.xml",
     "java/res/anim/fast_checkout_view_flipper_fade_out.xml",
+    "java/res/drawable/fast_checkout_home_screen_address_background.xml",
+    "java/res/drawable/fast_checkout_home_screen_cc_background.xml",
     "java/res/drawable/fast_checkout_item_background_bottom.xml",
     "java/res/drawable/fast_checkout_item_background_top.xml",
-    "java/res/drawable/fast_checkout_item_background_top_copy.xml",
     "java/res/drawable/fast_checkout_list_view_background_middle.xml",
     "java/res/layout/fast_checkout_autofill_profile_item.xml",
     "java/res/layout/fast_checkout_bottom_sheet.xml",
