@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -49,6 +50,9 @@ constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
 // characters.
 constexpr size_t kEndpointInfoAdvertisingIdLength = 10;
 
+// Base64 padding character
+constexpr char kBase64PaddingChar = '=';
+
 // The display name must:
 // - Be a variable-length string of utf-8 bytes
 // - Be at most 18 bytes
@@ -70,6 +74,22 @@ std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
   }
 
   return display_name_bytes;
+}
+
+std::vector<uint8_t> Base64EncodeOmitPadding(
+    const std::vector<uint8_t>& bytes) {
+  std::string input(bytes.begin(), bytes.end());
+  std::string output;
+  base::Base64Encode(input, &output);
+
+  // Strip padding characters from end.
+  const size_t last_non_padding_pos =
+      output.find_last_not_of(kBase64PaddingChar);
+  if (last_non_padding_pos != std::string::npos) {
+    output.resize(last_non_padding_pos + 1);
+  }
+
+  return std::vector<uint8_t>(output.begin(), output.end());
 }
 
 }  // namespace
@@ -238,7 +258,7 @@ void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
 // The EndpointInfo consists of the following fields:
 // - EndpointInfo version number, 1 byte
 // - Display name, max 18 bytes (see GetEndpointInfoDisplayNameBytes())
-// - Advertisement data, 13 bytes:
+// - Advertisement data, 13 bytes, base64 encoded:
 //   - Verification Style, byte[0]
 //   - Device Type, byte[1]
 //   - Advertising Id, byte[2-11], 10 UTF-8 bytes. (See RandomSessionId)
@@ -248,23 +268,28 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo() {
   std::vector<uint8_t> display_name_bytes =
       GetEndpointInfoDisplayNameBytes(random_session_id_);
 
-  std::vector<uint8_t> endpoint_info;
-  endpoint_info.reserve(32);
-
-  endpoint_info.push_back(kEndpointInfoVersion);
-  endpoint_info.insert(endpoint_info.end(), display_name_bytes.begin(),
-                       display_name_bytes.end());
-  endpoint_info.push_back(kEndpointInfoVerificationStyle);
-  endpoint_info.push_back(kEndpointInfoDeviceType);
-  endpoint_info.insert(endpoint_info.end(), session_id.begin(),
-                       session_id.end());
+  std::vector<uint8_t> advertisement_data;
+  advertisement_data.reserve(13);
+  advertisement_data.push_back(kEndpointInfoVerificationStyle);
+  advertisement_data.push_back(kEndpointInfoDeviceType);
+  advertisement_data.insert(advertisement_data.end(), session_id.begin(),
+                            session_id.end());
   for (size_t i = 0; i < kEndpointInfoAdvertisingIdLength - session_id.size();
        i++) {
     // Pad out the advertising id to the correct field length using null
     // terminators.
-    endpoint_info.push_back(0);
+    advertisement_data.push_back(0);
   }
-  endpoint_info.push_back(kEndpointInfoIsQuickStart);
+  advertisement_data.push_back(kEndpointInfoIsQuickStart);
+  std::vector<uint8_t> advertisement_data_b64 =
+      Base64EncodeOmitPadding(advertisement_data);
+
+  std::vector<uint8_t> endpoint_info;
+  endpoint_info.push_back(kEndpointInfoVersion);
+  endpoint_info.insert(endpoint_info.end(), display_name_bytes.begin(),
+                       display_name_bytes.end());
+  endpoint_info.insert(endpoint_info.end(), advertisement_data_b64.begin(),
+                       advertisement_data_b64.end());
 
   return endpoint_info;
 }
