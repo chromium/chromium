@@ -50,7 +50,8 @@ PRODUCTS = PRODUCTS + [
     'chrome_linux', 'content_shell', 'wpt_content_shell_linux',
     'wpt_content_shell_win10', 'wpt_content_shell_win11',
     'wpt_content_shell_mac11', 'wpt_content_shell_mac12',
-    'wpt_content_shell_mac12_arm64'
+    'wpt_content_shell_mac12_arm64', 'wpt_content_shell_mac13',
+    'wpt_content_shell_mac13_arm64'
 ]
 PRODUCTS_TO_STEPNAMES.update({
     'chrome_linux': 'wpt_tests_suite',
@@ -60,6 +61,8 @@ PRODUCTS_TO_STEPNAMES.update({
     'wpt_content_shell_mac11': 'wpt_tests_suite_mac_11',
     'wpt_content_shell_mac12': 'wpt_tests_suite_mac12',
     'wpt_content_shell_mac12_arm64': 'wpt_tests_suite_mac12_arm64',
+    'wpt_content_shell_mac13': 'wpt_tests_suite_mac13',
+    'wpt_content_shell_mac13_arm64': 'wpt_tests_suite_mac13_arm64',
     'content_shell': 'blink_wpt_tests'
 })
 PRODUCTS_TO_BUILDER_NAME = {
@@ -72,6 +75,8 @@ PRODUCTS_TO_BUILDER_NAME = {
     'wpt_content_shell_mac11': 'mac11-wpt-content-shell-fyi-rel',
     'wpt_content_shell_mac12': 'mac12-wpt-content-shell-fyi-rel',
     'wpt_content_shell_mac12_arm64': 'mac12-arm64-wpt-content-shell-fyi-rel',
+    'wpt_content_shell_mac13': 'mac13-wpt-content-shell-fyi-rel',
+    'wpt_content_shell_mac13_arm64': 'mac13-arm64-wpt-content-shell-fyi-rel',
     'content_shell': "Linux Tests"
 }
 STEP_NAME_VARIANTS = {
@@ -88,6 +93,9 @@ STEP_NAME_VARIANTS = {
     'wpt_tests_suite_mac11': ['wpt_tests_suite (experimental) on Mac-11'],
     'wpt_tests_suite_mac12_arm64':
     ['wpt_tests_suite (experimental) on Mac-12'],
+    'wpt_tests_suite_mac13': ['wpt_tests_suite (experimental) on Mac-13'],
+    'wpt_tests_suite_mac13_arm64':
+    ['wpt_tests_suite (experimental) on Mac-13'],
     'blink_wpt_tests': ['blink_wpt_tests on Ubuntu-18.04']
 }
 
