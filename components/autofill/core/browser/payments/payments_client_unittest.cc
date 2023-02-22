@@ -1483,6 +1483,39 @@ TEST_F(PaymentsClientTest,
       std::string::npos);
 }
 
+TEST_F(PaymentsClientTest, UploadRequestIncludesEncryptedPan) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillUpstreamUseAlternateSecureDataType);
+
+  StartUploading(/*include_cvc=*/true);
+  IssueOAuthToken();
+
+  // Verify that the encrypted_pan and s7e_1_pan parameters were included
+  // in the request.
+  EXPECT_TRUE(GetUploadData().find("encrypted_pan") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("__param:s7e_1_pan") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("&s7e_1_pan=4111111111111111") !=
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest,
+       UploadRequestIncludesEncryptedPanUsingAlternateType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillUpstreamUseAlternateSecureDataType);
+
+  StartUploading(/*include_cvc=*/true);
+  IssueOAuthToken();
+
+  // Verify that the encrypted_pan and s7e_38_pan parameters were included
+  // in the request.
+  EXPECT_TRUE(GetUploadData().find("encrypted_pan") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("__param:s7e_38_pan") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("&s7e_38_pan=4111111111111111") !=
+              std::string::npos);
+}
+
 TEST_F(PaymentsClientTest, UploadIncludesCvcInRequestIfProvided) {
   StartUploading(/*include_cvc=*/true);
   IssueOAuthToken();

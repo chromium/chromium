@@ -24,6 +24,12 @@ const char kUploadCardRequestFormat[] =
 const char kUploadCardRequestFormatWithoutCvc[] =
     "requestContentType=application/json; charset=utf-8&request=%s"
     "&s7e_1_pan=%s";
+const char kUploadCardRequestFormatUsingAlternateType[] =
+    "requestContentType=application/json; charset=utf-8&request=%s"
+    "&s7e_38_pan=%s&s7e_13_cvc=%s";
+const char kUploadCardRequestFormatWithoutCvcUsingAlternateType[] =
+    "requestContentType=application/json; charset=utf-8&request=%s"
+    "&s7e_38_pan=%s";
 }  // namespace
 
 UploadCardRequest::UploadCardRequest(
@@ -48,7 +54,12 @@ std::string UploadCardRequest::GetRequestContentType() {
 
 std::string UploadCardRequest::GetRequestContent() {
   base::Value::Dict request_dict;
-  request_dict.Set("encrypted_pan", "__param:s7e_1_pan");
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUpstreamUseAlternateSecureDataType)) {
+    request_dict.Set("encrypted_pan", "__param:s7e_38_pan");
+  } else {
+    request_dict.Set("encrypted_pan", "__param:s7e_1_pan");
+  }
   if (!request_details_.cvc.empty())
     request_dict.Set("encrypted_cvc", "__param:s7e_13_cvc");
   request_dict.Set("risk_data_encoded",
@@ -103,12 +114,18 @@ std::string UploadCardRequest::GetRequestContent() {
   std::string request_content;
   if (request_details_.cvc.empty()) {
     request_content = base::StringPrintf(
-        kUploadCardRequestFormatWithoutCvc,
+        base::FeatureList::IsEnabled(
+            features::kAutofillUpstreamUseAlternateSecureDataType)
+            ? kUploadCardRequestFormatWithoutCvcUsingAlternateType
+            : kUploadCardRequestFormatWithoutCvc,
         base::EscapeUrlEncodedData(json_request, true).c_str(),
         base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str());
   } else {
     request_content = base::StringPrintf(
-        kUploadCardRequestFormat,
+        base::FeatureList::IsEnabled(
+            features::kAutofillUpstreamUseAlternateSecureDataType)
+            ? kUploadCardRequestFormatUsingAlternateType
+            : kUploadCardRequestFormat,
         base::EscapeUrlEncodedData(json_request, true).c_str(),
         base::EscapeUrlEncodedData(base::UTF16ToASCII(pan), true).c_str(),
         base::EscapeUrlEncodedData(base::UTF16ToASCII(request_details_.cvc),

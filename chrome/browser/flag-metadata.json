@@ -658,6 +658,15 @@
     "expiry_milestone": 116
   },
   {
+    "name": "autofill-upstream-use-alternate-secure-data-type",
+    "owners": [
+      "jsaul@google.com",
+      "siashah",
+      "payments-autofill-team@google.com"
+    ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "autofill-use-improved-label-disambiguation",
     "owners": [ "autofill-squad-muc@google.com" ],
     "expiry_milestone": 106

@@ -251,6 +251,12 @@ BASE_FEATURE(kAutofillUpstreamAllowAllEmailDomains,
 #endif
 );
 
+// When enabled, the secure data type for cards sent during credit card upload
+// save is updated to match newer server requirements.
+BASE_FEATURE(kAutofillUpstreamUseAlternateSecureDataType,
+             "AutofillUpstreamUseAlternateSecureDataType",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The delay required since the last strike before offering another virtual card
 // enrollment attempt.
 const base::FeatureParam<int>
