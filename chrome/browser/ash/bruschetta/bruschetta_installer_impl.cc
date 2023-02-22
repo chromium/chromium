@@ -501,7 +501,7 @@ void BruschettaInstallerImpl::StartVm() {
   disk->set_path(std::move(disk_path_));
   disk->set_writable(true);
 
-  request.add_oem_strings("com.google.glinux.installer.arg:track=latest");
+  request.add_oem_strings("com.google.glinux.installer.arg:track=testing");
   request.add_oem_strings("com.google.glinux.bruschetta.alpha");
   request.set_timeout(240);
 
