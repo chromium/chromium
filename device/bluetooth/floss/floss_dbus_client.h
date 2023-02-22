@@ -237,6 +237,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnBatteryInfoUpdated[];
 
 namespace experimental {
 extern DEVICE_BLUETOOTH_EXPORT const char kSetLLPrivacy[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetDevCoredump[];
 }  // namespace experimental
 
 namespace admin {

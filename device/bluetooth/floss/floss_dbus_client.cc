@@ -259,6 +259,7 @@ const char kSetDebugLogging[] = "SetDebugLogging";
 
 namespace experimental {
 const char kSetLLPrivacy[] = "SetLLPrivacy";
+const char kSetDevCoredump[] = "SetDevCoredump";
 }  // namespace experimental
 
 namespace {
