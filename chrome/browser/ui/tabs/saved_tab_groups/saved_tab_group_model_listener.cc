@@ -40,16 +40,16 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
-  SavedTabGroup* group = model_->GetGroupContainingTab(token_);
+  const SavedTabGroup* const group = model_->GetGroupContainingTab(token_);
   if (!group) {
     return;
   }
 
-  SavedTabGroupTab* tab = group->GetTab(token_);
-  tab->SetTitle(web_contents_->GetTitle());
-  tab->SetURL(web_contents_->GetURL());
-  tab->SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
-  model_->UpdateTabInGroup(group->saved_guid(), *tab);
+  SavedTabGroupTab new_tab = *group->GetTab(token_);
+  new_tab.SetTitle(web_contents_->GetTitle());
+  new_tab.SetURL(web_contents_->GetURL());
+  new_tab.SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
+  model_->UpdateTabInGroup(group->saved_guid(), std::move(new_tab));
 }
 
 // TODO(crbug/1376259): Update SavedTabGroupModel state with any groups that
@@ -129,7 +129,8 @@ void SavedTabGroupBrowserListener::TabGroupedStateChanged(
   if (web_contents_to_tab_id_map_.count(contents) > 0) {
     // Remove the tab from it's old group.
     base::Token local_tab_id = web_contents_to_tab_id_map_.at(contents).token();
-    SavedTabGroup* old_group = model_->GetGroupContainingTab(local_tab_id);
+    const SavedTabGroup* const old_group =
+        model_->GetGroupContainingTab(local_tab_id);
 
     // If the tab is tracked by has no old local group, then it is being created
     // via AddTabToGroupForRestore, and does not need to update it's membership
@@ -140,7 +141,7 @@ void SavedTabGroupBrowserListener::TabGroupedStateChanged(
 
     // if its already in the correct group then this tab was already restored.
     // Remove the tab from it's old group.
-    SavedTabGroupTab* tab = old_group->GetTab(local_tab_id);
+    const SavedTabGroupTab* tab = old_group->GetTab(local_tab_id);
     model_->RemoveTabFromGroup(old_group->saved_guid(), tab->saved_tab_guid());
 
     // Remove the tab from the mapping.

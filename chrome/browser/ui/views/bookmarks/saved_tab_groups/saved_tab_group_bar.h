@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
@@ -30,8 +31,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
  public:
   SavedTabGroupBar(Browser* browser, bool animations_enabled);
   SavedTabGroupBar(Browser* browser,
-                   SavedTabGroupModel* saved_tab_group_model,
-                   bool animations_enabled);
+                   SavedTabGroupController* controller,
+                   const SavedTabGroupModel* model,
+                   bool animations_enabled = true);
   SavedTabGroupBar(const SavedTabGroupBar&) = delete;
   SavedTabGroupBar& operator=(const SavedTabGroupBar&) = delete;
   ~SavedTabGroupBar() override;
@@ -115,11 +117,12 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
 
   // The model this tab group bar listens to.
-  raw_ptr<SavedTabGroupModel> saved_tab_group_model_;
+  const raw_ptr<SavedTabGroupController> controller_;
+  const raw_ptr<const SavedTabGroupModel> model_;
 
   // The page navigator used to create tab groups
   raw_ptr<content::PageNavigator, DanglingUntriaged> page_navigator_ = nullptr;
-  raw_ptr<Browser> browser_;
+  const raw_ptr<Browser> browser_;
 
   // animations have been noted to cause issues with tests in the bookmarks bar.
   // this boolean lets the SavedTabGroupButton choose whether they want to

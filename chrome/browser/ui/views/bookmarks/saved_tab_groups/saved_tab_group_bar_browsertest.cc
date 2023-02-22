@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
                        ValidGroupIsOpenedInTabstripOnce) {
   SavedTabGroupKeyedService* saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
-  SavedTabGroupModel* stg_model = saved_tab_group_service->model();
+  SavedTabGroupModel* stg_model = saved_tab_group_service->GetModelForTesting();
   TabStripModel* model = browser()->tab_strip_model();
   base::GUID guid = base::GUID::GenerateRandomV4();
 
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
                        DeletedSavedTabGroupDoesNotOpen) {
   SavedTabGroupKeyedService* saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
-  SavedTabGroupModel* stg_model = saved_tab_group_service->model();
+  SavedTabGroupModel* stg_model = saved_tab_group_service->GetModelForTesting();
   TabStripModel* model = browser()->tab_strip_model();
 
   base::GUID guid = base::GUID::GenerateRandomV4();
@@ -110,14 +110,14 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
                        GroupMarkedAsSavedIfInModel) {
   SavedTabGroupKeyedService* saved_tab_group_service =
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
-  SavedTabGroupModel* stg_model = saved_tab_group_service->model();
+  SavedTabGroupModel* stg_model = saved_tab_group_service->GetModelForTesting();
   TabStripModel* model = browser()->tab_strip_model();
   base::GUID guid = base::GUID::GenerateRandomV4();
 
   // Add a tab to a new group and expect the new group is not saved.
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), -1, true);
   tab_groups::TabGroupId group_id = model->AddToNewGroup({1});
-  EXPECT_FALSE(model->group_model()->GetTabGroup(group_id)->IsSaved());
+  EXPECT_FALSE(stg_model->Contains(group_id));
 
   // Add the group to the SavedTabGroupModel and expect it is saved.
   stg_model->Add(SavedTabGroup(
@@ -125,10 +125,10 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
       {SavedTabGroupTab(GURL("chrome://newtab"), u"New Tab Title", guid)
            .SetFavicon(favicon::GetDefaultFavicon())},
       guid, absl::nullopt, group_id));
-  EXPECT_TRUE(model->group_model()->GetTabGroup(group_id)->IsSaved());
+  EXPECT_TRUE(stg_model->Contains(group_id));
 
   // Remove the group from the SavedTabGroupModel and expect it is no longer
   // saved.
   stg_model->Remove(group_id);
-  EXPECT_FALSE(model->group_model()->GetTabGroup(group_id)->IsSaved());
+  EXPECT_FALSE(stg_model->Contains(group_id));
 }

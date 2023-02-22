@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -84,9 +85,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
 
   void OnBubbleClose();
 
-  const raw_ptr<const Browser> browser_;
-  const tab_groups::TabGroupId group_;
-
   class TitleFieldController : public views::TextfieldController {
    public:
     explicit TitleFieldController(TabGroupEditorBubbleView* parent)
@@ -102,8 +100,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
    private:
     const raw_ptr<TabGroupEditorBubbleView> parent_;
   };
-
-  TitleFieldController title_field_controller_;
 
   class TitleField : public views::Textfield {
    public:
@@ -123,6 +119,12 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
     // itself.
     bool stop_context_menu_propagation_;
   };
+
+  const raw_ptr<const Browser> browser_;
+  const tab_groups::TabGroupId group_;
+  const raw_ptr<SavedTabGroupKeyedService> saved_tab_group_service_ = nullptr;
+
+  TitleFieldController title_field_controller_;
 
   raw_ptr<TitleField> title_field_;
 

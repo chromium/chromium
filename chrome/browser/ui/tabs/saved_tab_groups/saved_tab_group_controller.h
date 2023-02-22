@@ -9,9 +9,13 @@
 #include "components/tab_groups/tab_group_id.h"
 
 class Browser;
+class SavedTabGroupModelObserver;
 
 // The API for performing updates to the SavedTabGroup feature.
 class SavedTabGroupController {
+ public:
+  virtual ~SavedTabGroupController() = default;
+
   // Opens a Saved Tab Group in a specified browser and sets all of the required
   // state in the SavedTabGroupService.
   virtual void OpenSavedTabGroupInBrowser(
@@ -32,6 +36,11 @@ class SavedTabGroupController {
   // group id and web content tokens.
   virtual void DisconnectLocalTabGroup(
       const tab_groups::TabGroupId& group_id) = 0;
+
+  // Since the model should only be passed as const, this method allows for
+  // adding listeners to the SavedTabGroupModel.
+  virtual void AddModelObserver(SavedTabGroupModelObserver* observer) = 0;
+  virtual void RemoveModelObserver(SavedTabGroupModelObserver* observer) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_CONTROLLER_H_

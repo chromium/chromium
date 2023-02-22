@@ -535,15 +535,15 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   ASSERT_TRUE(keyed_service->model());
 
   // Add 3 saved tab groups.
-  keyed_service->model()->Add(SavedTabGroup(
+  keyed_service->GetModelForTesting()->Add(SavedTabGroup(
       std::u16string(u"tab group 1"), tab_groups::TabGroupColorId::kGrey, {}));
 
   base::GUID button_2_id = base::GUID::GenerateRandomV4();
-  keyed_service->model()->Add(SavedTabGroup(std::u16string(u"tab group 2"),
-                                            tab_groups::TabGroupColorId::kGrey,
-                                            {}, button_2_id));
+  keyed_service->GetModelForTesting()->Add(
+      SavedTabGroup(std::u16string(u"tab group 2"),
+                    tab_groups::TabGroupColorId::kGrey, {}, button_2_id));
 
-  keyed_service->model()->Add(SavedTabGroup(
+  keyed_service->GetModelForTesting()->Add(SavedTabGroup(
       std::u16string(u"tab group 3"), tab_groups::TabGroupColorId::kGrey, {}));
 
   // Save the position of the 3rd button. The 4th button is an overflow menu
@@ -553,7 +553,7 @@ TEST_F(BookmarkBarViewTest, OnSavedTabGroupUpdateBookmarkBarCallsLayout) {
   gfx::Rect bounds_in_screen = button_3->GetBoundsInScreen();
 
   // Remove the middle tab group.
-  keyed_service->model()->Remove(button_2_id);
+  keyed_service->GetModelForTesting()->Remove(button_2_id);
 
   // Make sure the positions of the buttons were updated.
   EXPECT_EQ(bounds_in_screen, button_3->GetBoundsInScreen());

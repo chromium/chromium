@@ -38,8 +38,8 @@ CreateChangeProcessor() {
 
 SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
     : profile_(profile),
-      listener_(model(), profile),
-      bridge_(model(), GetStoreFactory(), CreateChangeProcessor()) {}
+      listener_(&model_, profile),
+      bridge_(&model_, GetStoreFactory(), CreateChangeProcessor()) {}
 
 SavedTabGroupKeyedService::~SavedTabGroupKeyedService() = default;
 
@@ -47,6 +47,16 @@ syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
   DCHECK(ModelTypeStoreServiceFactory::GetForProfile(profile()));
   return ModelTypeStoreServiceFactory::GetForProfile(profile())
       ->GetStoreFactory();
+}
+
+void SavedTabGroupKeyedService::AddModelObserver(
+    SavedTabGroupModelObserver* observer) {
+  model_.AddObserver(observer);
+}
+
+void SavedTabGroupKeyedService::RemoveModelObserver(
+    SavedTabGroupModelObserver* observer) {
+  model_.RemoveObserver(observer);
 }
 
 void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
@@ -103,9 +113,13 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
     base::Token token =
         listener_.GetOrCreateTrackedIDForWebContents(browser, created_contents);
-    model_.Get(saved_tab.saved_group_guid())
-        ->GetTab(saved_tab.saved_tab_guid())
-        ->SetLocalTabID(token);
+
+    SavedTabGroupTab tab = *model_.Get(saved_tab.saved_group_guid())
+                                ->GetTab(saved_tab.saved_tab_guid());
+    tab.SetLocalTabID(token);
+
+    model_.ReplaceTabInGroupAt(saved_tab.saved_group_guid(),
+                               saved_tab.saved_tab_guid(), tab);
 
     opened_web_contents.emplace_back(created_contents);
   }
@@ -136,11 +150,6 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
   TabGroup* const group =
       tab_strip_model_for_creation->group_model()->GetTabGroup(tab_group_id);
 
-  // Activate the first tab in the tab group.
-  absl::optional<int> first_tab = group->GetFirstTab();
-  DCHECK(first_tab.has_value());
-  tab_strip_model_for_creation->ActivateTabAt(first_tab.value());
-
   // Update the group to use the saved title and color.
   tab_groups::TabGroupVisualData visual_data(saved_group->title(),
                                              saved_group->color(),
@@ -148,6 +157,11 @@ void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
   // Set the groups visual data after the tab strip is in its final state. This
   // ensures the tab group's bounds are correctly set. crbug/1408814.
   group->SetVisualData(visual_data, /*is_customized=*/true);
+
+  // Activate the first tab in the tab group.
+  const absl::optional<int> first_tab = group->GetFirstTab();
+  DCHECK(first_tab.has_value());
+  tab_strip_model_for_creation->ActivateTabAt(first_tab.value());
 }
 
 void SavedTabGroupKeyedService::SaveGroup(
