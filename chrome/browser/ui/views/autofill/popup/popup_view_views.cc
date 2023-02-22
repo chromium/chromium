@@ -183,6 +183,14 @@ void PopupViewViews::SetSelectedCell(absl::optional<CellIndex> cell_index) {
 
 bool PopupViewViews::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
+  // If the row can handle the event itself (e.g. switching between cells in the
+  // same row), we let it.
+  if (absl::optional<CellIndex> selected_cell = GetSelectedCell()) {
+    if (GetPopupRowViewAt(selected_cell->first).HandleKeyPressEvent(event)) {
+      return true;
+    }
+  }
+
   const bool kHasShiftModifier =
       (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
   const bool kHasNonShiftModifier =

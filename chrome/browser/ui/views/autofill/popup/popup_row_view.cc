@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
@@ -19,6 +20,7 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/type_conversion.h"
 
@@ -128,6 +130,56 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
     // Set the selected cell to none in case an invalid choice was made (e.g.
     // selecting a control cell when none exists).
     selected_cell_ = absl::nullopt;
+  }
+}
+
+bool PopupRowView::HandleKeyPressEvent(
+    const content::NativeWebKeyboardEvent& event) {
+  switch (event.windows_key_code) {
+    case ui::VKEY_RETURN:
+      if (*GetSelectedCell() == CellType::kControl &&
+          GetControlView()->GetOnAcceptedCallback()) {
+        GetControlView()->GetOnAcceptedCallback().Run();
+        return true;
+      }
+      // TODO(crbug.com/1411172): Handle all return key presses here once the
+      // reaction delay for accepting suggestions is the same between keyboard
+      // and mouse/gesture events.
+      return false;
+    case ui::VKEY_LEFT:
+      // `base::i18n::IsRTL` is used here instead of the controller's method
+      // because the controller's `IsRTL` depends on the language of the focused
+      // field and not the overall UI language. However, the layout of the popup
+      // is determined by the overall UI language.
+      if (base::i18n::IsRTL()) {
+        SelectNextCell();
+      } else {
+        SelectPreviousCell();
+      }
+      return true;
+    case ui::VKEY_RIGHT:
+      if (base::i18n::IsRTL()) {
+        SelectPreviousCell();
+      } else {
+        SelectNextCell();
+      }
+      return true;
+    default:
+      return false;
+  }
+}
+
+void PopupRowView::SelectNextCell() {
+  DCHECK(GetSelectedCell());
+  if (*GetSelectedCell() == CellType::kContent && GetControlView()) {
+    SetSelectedCell(CellType::kControl);
+  }
+}
+
+void PopupRowView::SelectPreviousCell() {
+  DCHECK(GetSelectedCell());
+  if (*GetSelectedCell() == CellType::kControl) {
+    SetSelectedCell(CellType::kContent);
   }
 }
 
