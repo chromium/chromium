@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# pylint: disable=too-many-lines
+
 import collections
 import fnmatch
 import logging
@@ -13,6 +15,7 @@ import unittest
 
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
 from telemetry.testing import serially_executed_browser_test_case
+from telemetry.util import minidump_utils
 from telemetry.util import screenshot
 from typ import json_results
 
@@ -650,6 +653,7 @@ class GpuIntegrationTest(
       return True
     return False
 
+  # pylint: disable=too-many-return-statements
   def _ClearExpectedCrashes(self, expected_crashes: Dict[str, int]) -> bool:
     """Clears any expected crash minidumps so they're not caught later.
 
@@ -664,26 +668,53 @@ class GpuIntegrationTest(
     # We can't get crashes if we don't have a browser.
     if self.browser is None:
       return True
-    # TODO(crbug.com/1006331): Properly match type once we have a way of
-    # checking the crashed process type without symbolizing the minidump.
+
     total_expected_crashes = sum(expected_crashes.values())
     # The Telemetry-wide cleanup will handle any remaining minidumps, so early
     # return here since we don't expect any, which saves us a bit of work.
     if total_expected_crashes == 0:
       return True
-    unsymbolized_minidumps = self.browser.GetAllUnsymbolizedMinidumpPaths()
-    total_unsymbolized_minidumps = len(unsymbolized_minidumps)
 
-    if total_expected_crashes == total_unsymbolized_minidumps:
+    unsymbolized_minidumps = self.browser.GetAllUnsymbolizedMinidumpPaths()
+
+    # Windows does not currently have a way of extracting process type from a
+    # minidump, so all we can do is assert that the number of crashes matches.
+    # TODO(crbug.com/1006331): Remove this if/when minidump_dump or an
+    # equivalent is available on Windows.
+    if self.browser.platform.GetOSName() == 'win':
+      total_unsymbolized_minidumps = len(unsymbolized_minidumps)
+      if total_expected_crashes == total_unsymbolized_minidumps:
+        for path in unsymbolized_minidumps:
+          self.browser.IgnoreMinidump(path)
+        return True
+      logging.error(
+          'Found %d unsymbolized minidumps when we expected %d. Expected '
+          'crash breakdown: %s', total_unsymbolized_minidumps,
+          total_expected_crashes, expected_crashes)
+      return False
+
+    # On other platforms, we can extract the process type from a minidump and
+    # ensure that we only got the expected kind of crashes.
+    crash_counts = collections.defaultdict(int)
+    for path in unsymbolized_minidumps:
+      crash_type = minidump_utils.GetProcessTypeFromMinidump(path)
+      if not crash_type:
+        logging.error(
+            'Unable to verify expected crashes due to inability to extract '
+            'process type from minidump %s', path)
+        return False
+      crash_counts[crash_type] += 1
+
+    if crash_counts == expected_crashes:
       for path in unsymbolized_minidumps:
         self.browser.IgnoreMinidump(path)
       return True
 
     logging.error(
-        'Found %d unsymbolized minidumps when we expected %d. Expected '
-        'crash breakdown: %s', total_unsymbolized_minidumps,
-        total_expected_crashes, expected_crashes)
+        'Found mismatch between expected and actual crash counts. Expected: '
+        '%s, Actual: %s', expected_crashes, crash_counts)
     return False
+  # pylint: enable=too-many-return-statements
 
   # pylint: disable=no-self-use
   def GetExpectedCrashes(self, args: ct.TestArgs) -> Dict[str, int]:

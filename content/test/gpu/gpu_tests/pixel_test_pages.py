@@ -20,7 +20,9 @@ from gpu_tests import skia_gold_matching_algorithms as algo
 
 import gpu_path_util
 
-CRASH_TYPE_GPU = 'gpu'
+CRASH_TYPE_BROWSER = 'browser'
+CRASH_TYPE_GPU = 'gpu-process'
+CRASH_TYPE_RENDERER = 'renderer'
 
 # These tests attempt to use test rects that are larger than the small screen
 # on some Fuchsia devices, so we need to use a less-desirable screenshot capture
