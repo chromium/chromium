@@ -174,10 +174,8 @@ absl::optional<CaptionStyle> InitializeFromSystemSettings() {
   TRACE_EVENT0("ui", "InitializeFromSystemSettings");
   DCHECK(base::FeatureList::IsEnabled(features::kSystemCaptionStyle));
 
-  // Need to do this check before using ScopedHString.
-  bool can_use_scoped_hstring =
-      base::win::ResolveCoreWinRTDelayload() &&
-      base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
+  // Need to do this check before using WinRT functions.
+  bool can_use_scoped_hstring = base::win::ResolveCoreWinRTDelayload();
 
   if (!can_use_scoped_hstring)
     return absl::nullopt;

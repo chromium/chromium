@@ -41,8 +41,7 @@ HRESULT GetDataTransferManagerHandles(
     IDataTransferManagerInterop** data_transfer_manager_interop,
     IDataTransferManager** data_transfer_manager) {
   // If the required WinRT functionality is not available, fail the operation.
-  if (!base::win::ResolveCoreWinRTDelayload() ||
-      !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     return E_FAIL;
   }
 

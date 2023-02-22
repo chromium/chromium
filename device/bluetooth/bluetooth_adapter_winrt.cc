@@ -105,11 +105,6 @@ using ABI::Windows::Storage::Streams::IDataReaderStatics;
 using Microsoft::WRL::Callback;
 using Microsoft::WRL::ComPtr;
 
-bool ResolveCoreWinRT() {
-  return base::win::ResolveCoreWinRTDelayload() &&
-         base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
-}
-
 // Query string for powered Bluetooth radios. GUID Reference:
 // https://docs.microsoft.com/en-us/windows-hardware/drivers/install/guid-bthport-device-interface
 // TODO(https://crbug.com/821766): Consider adding WindowsCreateStringReference
@@ -671,7 +666,7 @@ void BluetoothAdapterWinrt::InitForTests(
     ComPtr<IBluetoothAdapterStatics> bluetooth_adapter_statics,
     ComPtr<IDeviceInformationStatics> device_information_statics,
     ComPtr<IRadioStatics> radio_statics) {
-  if (!ResolveCoreWinRT()) {
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     CompleteInit(std::move(init_callback), std::move(bluetooth_adapter_statics),
                  std::move(device_information_statics),
                  std::move(radio_statics));
@@ -701,9 +696,9 @@ void BluetoothAdapterWinrt::InitForTests(
 BluetoothAdapterWinrt::StaticsInterfaces
 BluetoothAdapterWinrt::PerformSlowInitTasks() {
   base::win::AssertComApartmentType(base::win::ComApartmentType::MTA);
-  if (!ResolveCoreWinRT())
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     return BluetoothAdapterWinrt::StaticsInterfaces();
-
+  }
   ComPtr<IBluetoothAdapterStatics> adapter_statics;
   HRESULT hr = base::win::GetActivationFactory<
       IBluetoothAdapterStatics,

@@ -374,8 +374,7 @@ void ShareOperation::Run(blink::mojom::ShareService::ShareCallback callback) {
   callback_ = std::move(callback);
 
   // Ensure that the required WinRT functionality is available/loaded.
-  if (!base::win::ResolveCoreWinRTDelayload() ||
-      !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     Complete(blink::mojom::ShareError::INTERNAL_ERROR);
     return;
   }

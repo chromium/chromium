@@ -284,8 +284,7 @@ DevicesInfo::const_iterator FindNonDirectShowDeviceInfoByNameAndModel(
 }
 
 bool IsEnclosureLocationSupported() {
-  if (!(base::win::ResolveCoreWinRTDelayload() &&
-        ScopedHString::ResolveCoreWinRTStringDelayload())) {
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     DLOG(ERROR) << "Failed loading functions from combase.dll";
     return false;
   }

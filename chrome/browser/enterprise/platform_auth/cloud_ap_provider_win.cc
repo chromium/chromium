@@ -88,8 +88,6 @@ class WebAccountSupportFinder
 
     if (!base::win::ResolveCoreWinRTDelayload())
       return;  // Unsupported.
-    if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-      return;  // Unsupported.
 
     // Get the `WebAuthenticationCoreManager`.
     ComPtr<IWebAuthenticationCoreManagerStatics> auth_manager;

@@ -238,8 +238,7 @@ bool IsWindows10OrGreaterTabletMode(HWND hwnd) {
            IsDeviceUsedAsATablet(/*reason=*/nullptr);
   }
 
-  if (!ResolveCoreWinRTDelayload() ||
-      !ScopedHString::ResolveCoreWinRTStringDelayload()) {
+  if (!ResolveCoreWinRTDelayload()) {
     return false;
   }
 

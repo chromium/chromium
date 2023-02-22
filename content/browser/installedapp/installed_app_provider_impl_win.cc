@@ -112,8 +112,7 @@ void FilterInstalledAppsForWin(
     std::vector<blink::mojom::RelatedApplicationPtr> related_apps,
     blink::mojom::InstalledAppProvider::FilterInstalledAppsCallback callback,
     const GURL frame_url) {
-  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload() ||
-      !base::win::ResolveCoreWinRTDelayload()) {
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     std::move(callback).Run(std::vector<blink::mojom::RelatedApplicationPtr>());
     return;
   }

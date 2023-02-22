@@ -4,12 +4,12 @@
 
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
-#include <utility>
-#include <vector>
-
 #include <Windows.Gaming.Input.h>
 #include <XInput.h>
 #include <winerror.h>
+
+#include <utility>
+#include <vector>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
@@ -191,7 +191,6 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
   }
 
   void SetUpTestEnv(WgiTestErrorCode error_code = WgiTestErrorCode::kOk) {
-    EXPECT_TRUE(base::win::ScopedHString::ResolveCoreWinRTStringDelayload());
     wgi_environment_ = std::make_unique<FakeWinrtWgiEnvironment>(error_code);
     SetUpXInputEnv(error_code);
     auto fetcher = std::make_unique<WgiDataFetcherWin>();

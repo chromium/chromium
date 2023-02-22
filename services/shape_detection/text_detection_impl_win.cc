@@ -43,8 +43,7 @@ using Microsoft::WRL::ComPtr;
 void TextDetectionImpl::Create(
     mojo::PendingReceiver<mojom::TextDetection> receiver) {
   // Loads functions dynamically at runtime to prevent library dependencies.
-  if (!(base::win::ResolveCoreWinRTDelayload() &&
-        ScopedHString::ResolveCoreWinRTStringDelayload())) {
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     DLOG(ERROR) << "Failed loading functions from combase.dll";
     return;
   }

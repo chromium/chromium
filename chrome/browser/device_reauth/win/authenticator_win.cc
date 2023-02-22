@@ -45,11 +45,6 @@ using ABI::Windows::Security::Credentials::UI::
     UserConsentVerifierAvailability_NotConfiguredForUser;
 using Microsoft::WRL::ComPtr;
 
-bool ResolveCoreWinRT() {
-  return base::win::ResolveCoreWinRTDelayload() &&
-         base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
-}
-
 BiometricAuthenticationStatusWin ConvertUserConsentVerifierAvailability(
     UserConsentVerifierAvailability availability) {
   switch (availability) {
@@ -94,7 +89,7 @@ void ReportCantCheckAvailability(
 void GetBiometricAvailabilityFromWindows(
     AvailabilityCallback callback,
     scoped_refptr<base::SequencedTaskRunner> thread) {
-  if (!ResolveCoreWinRT()) {
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     ReportCantCheckAvailability(thread, std::move(callback));
     return;
   }

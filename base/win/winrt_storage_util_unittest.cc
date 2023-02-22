@@ -21,8 +21,7 @@ namespace win {
 TEST(WinrtStorageUtilTest, CreateBufferFromData) {
   ScopedCOMInitializer com_initializer(ScopedCOMInitializer::kMTA);
 
-  if (!ResolveCoreWinRTDelayload() ||
-      !ScopedHString::ResolveCoreWinRTStringDelayload()) {
+  if (!ResolveCoreWinRTDelayload()) {
     return;
   }
 

@@ -9,6 +9,11 @@
 #include <wrl/client.h>
 #include <wrl/event.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
@@ -86,8 +91,7 @@ bool SystemMediaControlsWin::Initialize() {
 
   attempted_to_initialize_ = true;
 
-  if (!base::win::ResolveCoreWinRTDelayload() ||
-      !base::win::ScopedHString::ResolveCoreWinRTStringDelayload()) {
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     return false;
   }
 

@@ -129,10 +129,6 @@ HRESULT MediaFoundationCdmModule::ActivateCdmFactory() {
     return kErrorLoadLibrary;
   }
 
-  // Initialization required to call base::win::ScopedHString::Create();
-  if (!base::win::ScopedHString::ResolveCoreWinRTStringDelayload())
-    return kErrorResolveCoreWinRTStringDelayload;
-
   // Get function pointer to the activation factory.
   using GetActivationFactoryFunc =
       HRESULT(WINAPI*)(_In_ HSTRING activatible_class_id,

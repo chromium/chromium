@@ -233,12 +233,8 @@ bool InitializeUWPSupport() {
     // 10.0.10240.0.
     DCHECK_GE(base::win::OSInfo::GetInstance()->version_number().build, 10240u);
 
-    // Provide access to Core WinRT/UWP functions and load all required HSTRING
-    // functions available from Win8 and onwards. ScopedHString is a wrapper
-    // around an HSTRING and it requires certain functions that need to be
-    // delayloaded to avoid breaking Chrome on Windows 7.
-    if (!(base::win::ResolveCoreWinRTDelayload() &&
-          base::win::ScopedHString::ResolveCoreWinRTStringDelayload())) {
+    // Provide access to Core WinRT/UWP functions.
+    if (!base::win::ResolveCoreWinRTDelayload()) {
       // Failed loading functions from combase.dll.
       DLOG(WARNING) << "Failed to initialize WinRT/UWP";
       return false;

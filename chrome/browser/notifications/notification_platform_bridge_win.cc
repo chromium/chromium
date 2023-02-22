@@ -166,9 +166,7 @@ class NotificationPlatformBridgeWinImpl
  public:
   explicit NotificationPlatformBridgeWinImpl(
       scoped_refptr<base::SequencedTaskRunner> notification_task_runner)
-      : com_functions_initialized_(
-            base::win::ResolveCoreWinRTDelayload() &&
-            ScopedHString::ResolveCoreWinRTStringDelayload()),
+      : com_functions_initialized_(base::win::ResolveCoreWinRTDelayload()),
         notification_task_runner_(std::move(notification_task_runner)),
         image_retainer_(std::make_unique<NotificationImageRetainer>()) {
     // Delete any remaining temp files in the image folder from the previous

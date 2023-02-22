@@ -187,8 +187,7 @@ const std::map<int, double, internal::Less> g_one{{1, 10.7}};
 const std::map<int, double, internal::Less> g_two{{1, 10.7}, {2, 20.3}};
 
 bool ResolveCoreWinRT() {
-  return base::win::ResolveCoreWinRTDelayload() &&
-         base::win::ScopedHString::ResolveCoreWinRTStringDelayload();
+  return base::win::ResolveCoreWinRTDelayload();
 }
 
 HRESULT GetPropertyValueStaticsActivationFactory(

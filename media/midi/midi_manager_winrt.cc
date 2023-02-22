@@ -822,8 +822,7 @@ void MidiManagerWinrt::InitializeOnComRunner() {
 
   DCHECK(service()->task_service()->IsOnTaskRunner(kComTaskRunner));
 
-  bool preload_success = base::win::ResolveCoreWinRTDelayload() &&
-                         ScopedHString::ResolveCoreWinRTStringDelayload();
+  bool preload_success = base::win::ResolveCoreWinRTDelayload();
   if (!preload_success) {
     service()->task_service()->PostBoundTask(
         kDefaultTaskRunner,

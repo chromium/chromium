@@ -52,9 +52,8 @@ bool g_default_instance_cleaned_up = false;
 bool CreateUiSettingsComObject(ComPtr<IUISettings2>& ptr) {
   DCHECK(!ptr);
 
-  // This is required setup before using ScopedHString.
-  if (!(base::win::ResolveCoreWinRTDelayload() &&
-        base::win::ScopedHString::ResolveCoreWinRTStringDelayload())) {
+  // Need to do this check before using WinRT functions.
+  if (!base::win::ResolveCoreWinRTDelayload()) {
     DLOG(ERROR) << "Failed loading functions from combase.dll";
     return false;
   }
