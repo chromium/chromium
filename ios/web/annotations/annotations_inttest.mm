@@ -12,7 +12,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
 #import "ios/web/annotations/annotations_text_manager.h"
-#import "ios/web/annotations/annotations_utils.h"
+#import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/web_frame_impl.h"
@@ -173,8 +173,8 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     base::Value::List annotations;
     for (NSString* item in items) {
       NSRange range = [source rangeOfString:item];
-      annotations.Append(annotations::ConvertMatchToAnnotation(
-          source, range, @"data", @"type"));
+      annotations.Append(
+          web::ConvertMatchToAnnotation(source, range, @"data", @"type"));
     }
     auto* manager = AnnotationsTextManager::FromWebState(web_state());
     base::Value value = base::Value(std::move(annotations));

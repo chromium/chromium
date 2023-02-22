@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/text_selection/text_classifier_model_service_factory.h"
 #import "ios/public/provider/chrome/browser/context_menu/context_menu_api.h"
 #import "ios/web/annotations/annotations_text_manager.h"
-#import "ios/web/annotations/annotations_utils.h"
+#import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -100,8 +100,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
                                    const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSTextCheckingResult* match =
-      web::annotations::DecodeNSTextCheckingResultData(
-          base::SysUTF8ToNSString(data));
+      web::DecodeNSTextCheckingResultData(base::SysUTF8ToNSString(data));
   if (!match) {
     return;
   }
@@ -120,7 +119,7 @@ void AnnotationsTabHelper::OnClick(web::WebState* web_state,
                   openURL:[NSURL URLWithString:phone_number_call_format]
                   options:@{}
         completionHandler:nil];
-  } else if (web::annotations::IsNSTextCheckingResultEmail(match)) {
+  } else if (web::IsNSTextCheckingResultEmail(match)) {
     base::RecordAction(
         base::UserMetricsAction("IOS.EmailExperience.OneTap.CreateEmail"));
     MailtoHandlerServiceFactory::GetForBrowserState(

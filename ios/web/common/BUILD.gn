@@ -6,6 +6,8 @@ import("//ios/build/config.gni")
 
 source_set("common") {
   sources = [
+    "annotations_utils.h",
+    "annotations_utils.mm",
     "crw_content_view.h",
     "crw_input_view_provider.h",
     "crw_viewport_adjustment.h",

@@ -98,6 +98,7 @@ source_set("java_script_feature_util") {
     ":js_messaging",
     "//base",
     "//ios/web/annotations",
+    "//ios/web/common",
     "//ios/web/common:features",
     "//ios/web/favicon",
     "//ios/web/find_in_page",

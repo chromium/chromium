@@ -11,7 +11,7 @@
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
-#import "ios/web/annotations/annotations_utils.h"
+#import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
@@ -151,7 +151,7 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
     features.push_back(GetPluginPlaceholderJavaScriptFeature());
   }
 
-  if (web::annotations::WebPageAnnotationsEnabled()) {
+  if (web::WebPageAnnotationsEnabled()) {
     features.push_back(AnnotationsJavaScriptFeature::GetInstance());
   }
 

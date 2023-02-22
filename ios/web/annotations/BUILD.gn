@@ -66,6 +66,7 @@ source_set("inttests") {
     ":annotations_test_ts",
     "//base",
     "//base/test:test_support",
+    "//ios/web/common",
     "//ios/web/common:features",
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature_manager_header",

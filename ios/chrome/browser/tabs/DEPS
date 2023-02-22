@@ -3,7 +3,6 @@ specific_include_rules = {
   "^tab_helper_util.mm": [
     "+ios/chrome/browser/ui/download/features.h",
     "+ios/chrome/browser/ui/ui_feature_flags.h",
-    "+ios/web/annotations/annotations_utils.h",
   ],
 }
 
