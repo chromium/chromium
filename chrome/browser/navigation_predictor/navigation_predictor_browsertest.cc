@@ -751,8 +751,10 @@ class NavigationPredictorFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(NavigationPredictorFencedFrameBrowserTest,
-                       EnsureFencedFrameDoesNotCreateNavigationPredictor) {
+// Disabled for being flaky. crbug.com/1418424
+IN_PROC_BROWSER_TEST_F(
+    NavigationPredictorFencedFrameBrowserTest,
+    DISABLED_EnsureFencedFrameDoesNotCreateNavigationPredictor) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
