@@ -130,4 +130,10 @@ BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 // Enables indexing Reading List items in Spotlight.
 BASE_DECLARE_FEATURE(kSpotlightReadingListSource);
 
+// Feature to enable sign-in only flow without device level account.
+BASE_DECLARE_FEATURE(kConsistencyNewAccountInterface);
+
+// Whether the flag for consistency new-account interface is enabled.
+bool IsConsistencyNewAccountInterfaceEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

@@ -147,3 +147,11 @@ BASE_FEATURE(kNotificationSettingsMenuItem,
 BASE_FEATURE(kSpotlightReadingListSource,
              "SpotlightReadingListSource",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kConsistencyNewAccountInterface,
+             "ConsistencyNewAccountInterface",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsConsistencyNewAccountInterfaceEnabled() {
+  return base::FeatureList::IsEnabled(kConsistencyNewAccountInterface);
+}

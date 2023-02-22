@@ -128,6 +128,11 @@ extern const char kBreakpadNoDelayInitialUploadDescription[];
 extern const char kCalendarExperienceKitName[];
 extern const char kCalendarExperienceKitDescription[];
 
+// Title and description for the flag to enable the the sign-in-only flow
+// when no device level account is detected.
+extern const char kConsistencyNewAccountInterfaceName[];
+extern const char kConsistencyNewAccountInterfaceDescription[];
+
 // Title and description for the flag to enable experience kit apple calendar
 // events.
 extern const char kAppleCalendarExperienceKitName[];

@@ -158,6 +158,11 @@ extern const char kAppleCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Apple "
     "Calendar event handling.";
 
+extern const char kConsistencyNewAccountInterfaceName[] =
+    "Consistency New Account Interface";
+extern const char kConsistencyNewAccountInterfaceDescription[] =
+    "Enables a sign-in only UI for users who need to add a new account.";
+
 extern const char kEmailName[] = "Email experience enable";
 extern const char kEmailDescription[] =
     "When enabled, one tapping or long pressing on an email address will "

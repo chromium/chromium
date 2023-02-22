@@ -1091,6 +1091,14 @@
     "expiry_milestone": 115
   },
   {
+    "name": "consistency-new-account-interface",
+    "owners": [
+      "zekunjiang",
+      "chrome-with-friends@google.com"
+    ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "consolidated-site-storage-controls",
     "owners": [
       "sauski",
