@@ -2315,7 +2315,7 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
         strlen(reinterpret_cast<const char*>(media_info.bus_info)) > 0 &&
         strncmp(reinterpret_cast<const char*>(caps.bus_info),
                 reinterpret_cast<const char*>(media_info.bus_info),
-                sizeof(caps.driver))) {
+                sizeof(caps.bus_info))) {
       continue;
     }
 
