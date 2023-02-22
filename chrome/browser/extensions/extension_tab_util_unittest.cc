@@ -92,32 +92,27 @@ TEST(ExtensionTabUtilTest, PrepareURLForNavigation) {
   // A fully qualified URL should return the same URL.
   {
     const std::string kTestUrl("http://google.com");
-    std::string error;
-    GURL url;
-    EXPECT_TRUE(ExtensionTabUtil::PrepareURLForNavigation(
-        kTestUrl, extension.get(), &url, &error));
-    EXPECT_EQ(GURL(kTestUrl), url);
-    EXPECT_EQ("", error);
+    auto url =
+        ExtensionTabUtil::PrepareURLForNavigation(kTestUrl, extension.get());
+    ASSERT_TRUE(url.has_value());
+    EXPECT_EQ(GURL(kTestUrl), *url);
   }
   // A relative path should return a URL relative to the extension's base URL.
   {
     const std::string kTestPath("foo");
-    std::string error;
-    GURL url;
-    EXPECT_TRUE(ExtensionTabUtil::PrepareURLForNavigation(
-        kTestPath, extension.get(), &url, &error));
-    EXPECT_EQ(extension->GetResourceURL(kTestPath), url);
-    EXPECT_EQ("", error);
+    auto url =
+        ExtensionTabUtil::PrepareURLForNavigation(kTestPath, extension.get());
+    ASSERT_TRUE(url.has_value());
+    EXPECT_EQ(extension->GetResourceURL(kTestPath), *url);
   }
   // A kill URL should return false and set the error. There are several
   // different potential kill URLs and this just checks one of them.
   {
     const std::string kKillURL("chrome://crash");
-    std::string error;
-    GURL url;
-    EXPECT_FALSE(ExtensionTabUtil::PrepareURLForNavigation(
-        kKillURL, extension.get(), &url, &error));
-    EXPECT_EQ(tabs_constants::kNoCrashBrowserError, error);
+    auto url =
+        ExtensionTabUtil::PrepareURLForNavigation(kKillURL, extension.get());
+    ASSERT_FALSE(url.has_value());
+    EXPECT_EQ(tabs_constants::kNoCrashBrowserError, url.error());
   }
 }
 
@@ -127,45 +122,39 @@ TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnDevtools) {
   // A devtools url should return false and set the error.
   {
     auto no_permission_extension = ExtensionBuilder("none").Build();
-    std::string error;
-    GURL url;
-    EXPECT_FALSE(ExtensionTabUtil::PrepareURLForNavigation(
-        kDevtoolsURL, no_permission_extension.get(), &url, &error));
-    EXPECT_EQ(tabs_constants::kCannotNavigateToDevtools, error);
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kDevtoolsURL, no_permission_extension.get());
+    ASSERT_FALSE(url.has_value());
+    EXPECT_EQ(tabs_constants::kCannotNavigateToDevtools, url.error());
   }
   // Having the devtools permissions should allow access.
   {
     auto devtools_extension = ExtensionBuilder("devtools")
                                   .SetManifestKey("devtools_page", "foo.html")
                                   .Build();
-    std::string error;
-    GURL url;
-    EXPECT_TRUE(ExtensionTabUtil::PrepareURLForNavigation(
-        kDevtoolsURL, devtools_extension.get(), &url, &error));
-    EXPECT_EQ(kDevtoolsURL, url);
-    EXPECT_TRUE(error.empty());
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kDevtoolsURL, devtools_extension.get());
+    ASSERT_TRUE(url.has_value());
+    EXPECT_EQ(kDevtoolsURL, *url);
   }
   // Having the debugger permissions should also allow access.
   {
     auto debugger_extension =
         ExtensionBuilder("debugger").AddPermission("debugger").Build();
-    std::string error;
-    GURL url;
-    EXPECT_TRUE(ExtensionTabUtil::PrepareURLForNavigation(
-        kDevtoolsURL, debugger_extension.get(), &url, &error));
-    EXPECT_EQ(kDevtoolsURL, url);
-    EXPECT_TRUE(error.empty());
+    auto url = ExtensionTabUtil::PrepareURLForNavigation(
+        kDevtoolsURL, debugger_extension.get());
+    ASSERT_TRUE(url.has_value());
+    EXPECT_EQ(kDevtoolsURL, *url);
   }
 }
 
 TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnChromeUntrusted) {
   const std::string kChromeUntrustedURL("chrome-untrusted://terminal/");
   auto extension = ExtensionBuilder("none").Build();
-  std::string error;
-  GURL url;
-  EXPECT_FALSE(ExtensionTabUtil::PrepareURLForNavigation(
-      kChromeUntrustedURL, extension.get(), &url, &error));
-  EXPECT_EQ(tabs_constants::kCannotNavigateToChromeUntrusted, error);
+  auto url = ExtensionTabUtil::PrepareURLForNavigation(kChromeUntrustedURL,
+                                                       extension.get());
+  ASSERT_FALSE(url.has_value());
+  EXPECT_EQ(tabs_constants::kCannotNavigateToChromeUntrusted, url.error());
 }
 
 }  // namespace extensions

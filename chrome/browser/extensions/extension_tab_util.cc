@@ -204,10 +204,12 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
   GURL url;
   if (params.url) {
-    if (!ExtensionTabUtil::PrepareURLForNavigation(
-            *params.url, function->extension(), &url, &error)) {
-      return base::unexpected(error);
+    auto result = ExtensionTabUtil::PrepareURLForNavigation(
+        *params.url, function->extension());
+    if (!result.has_value()) {
+      return base::unexpected(result.error());
     }
+    url = std::move(*result);
   } else {
     url = GURL(chrome::kChromeUINewTabURL);
   }
@@ -773,10 +775,9 @@ bool ExtensionTabUtil::IsKillURL(const GURL& url) {
   return base::Contains(kill_hosts, url.host_piece());
 }
 
-bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
-                                               const Extension* extension,
-                                               GURL* return_url,
-                                               std::string* error) {
+base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
+    const std::string& url_string,
+    const Extension* extension) {
   GURL url =
       ExtensionTabUtil::ResolvePossiblyRelativeURL(url_string, extension);
 
@@ -788,15 +789,13 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
 
   // Reject invalid URLs.
   if (!url.is_valid()) {
-    *error = ErrorUtils::FormatErrorMessage(tabs_constants::kInvalidUrlError,
-                                            url_string);
-    return false;
+    return base::unexpected(ErrorUtils::FormatErrorMessage(
+        tabs_constants::kInvalidUrlError, url_string));
   }
 
   // Don't let the extension crash the browser or renderers.
   if (ExtensionTabUtil::IsKillURL(url)) {
-    *error = tabs_constants::kNoCrashBrowserError;
-    return false;
+    return base::unexpected(tabs_constants::kNoCrashBrowserError);
   }
 
   // Don't let the extension navigate directly to devtools scheme pages, unless
@@ -808,19 +807,16 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
                       extension->permissions_data()->HasAPIPermission(
                           APIPermissionID::kDebugger));
     if (!has_permission) {
-      *error = tabs_constants::kCannotNavigateToDevtools;
-      return false;
+      return base::unexpected(tabs_constants::kCannotNavigateToDevtools);
     }
   }
 
   // Don't let the extension navigate directly to chrome-untrusted scheme pages.
   if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    *error = tabs_constants::kCannotNavigateToChromeUntrusted;
-    return false;
+    return base::unexpected(tabs_constants::kCannotNavigateToChromeUntrusted);
   }
 
-  return_url->Swap(&url);
-  return true;
+  return url;
 }
 
 void ExtensionTabUtil::CreateTab(
