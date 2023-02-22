@@ -41,11 +41,6 @@ namespace {
 
 constexpr base::TimeDelta kImplicitGrantDuration = base::Hours(24);
 constexpr base::TimeDelta kExplicitGrantDuration = base::Days(30);
-constexpr bool kAutograntInFPS = true;
-
-// These are mutable for testing purposes.
-static int implicit_grant_limit = 0;
-static bool autodeny_outside_fps = true;
 
 // Returns true iff the request was answered implicitly (assuming it met some
 // other baseline prerequisites).
@@ -96,18 +91,6 @@ content_settings::ContentSettingConstraints ComputeConstraints(
 
 }  // namespace
 
-// static
-void StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
-    int limit) {
-  implicit_grant_limit = limit;
-}
-
-// static
-void StorageAccessGrantPermissionContext::SetAutodenyOutsideFPSForTesting(
-    bool deny) {
-  autodeny_outside_fps = deny;
-}
-
 StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
     content::BrowserContext* browser_context)
     : PermissionContextBase(
@@ -144,7 +127,8 @@ void StorageAccessGrantPermissionContext::DecidePermission(
   }
 
   if (!base::FeatureList::IsEnabled(features::kFirstPartySets) ||
-      (!kAutograntInFPS && !autodeny_outside_fps)) {
+      (!blink::features::kStorageAccessAPIAutoGrantInFPS.Get() &&
+       !blink::features::kStorageAccessAPIAutoDenyOutsideFPS.Get())) {
     // First-Party Sets is disabled, or Auto-grants and auto-denials are both
     // disabled, so don't bother getting First-Party Sets data.
     UseImplicitGrantOrPrompt(id, requesting_origin, embedding_origin,
@@ -177,10 +161,11 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     permissions::BrowserPermissionCallback callback,
     net::FirstPartySetMetadata metadata) {
   // We should only run this method if something might need the FPS metadata.
-  DCHECK(kAutograntInFPS || autodeny_outside_fps);
+  DCHECK(blink::features::kStorageAccessAPIAutoGrantInFPS.Get() ||
+         blink::features::kStorageAccessAPIAutoDenyOutsideFPS.Get());
 
   if (metadata.AreSitesInSameFirstPartySet()) {
-    if (kAutograntInFPS) {
+    if (blink::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
       // Service domains are not allowed to request storage access on behalf
       // of other domains, even in the same First-Party Set.
       if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
@@ -200,7 +185,7 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
     }
     // Not autogranting; fall back to implicit grants or prompt.
   } else {
-    if (autodeny_outside_fps) {
+    if (blink::features::kStorageAccessAPIAutoDenyOutsideFPS.Get()) {
       NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                   std::move(callback),
                                   /*persist=*/true, CONTENT_SETTING_BLOCK,
@@ -238,7 +223,8 @@ void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(
 
   // If we have fewer grants than our limit, we can just set an implicit grant
   // now and skip prompting the user.
-  if (existing_implicit_grants < implicit_grant_limit) {
+  if (existing_implicit_grants <
+      blink::features::kStorageAccessAPIImplicitGrantLimit.Get()) {
     NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                                 std::move(callback),
                                 /*persist=*/true, CONTENT_SETTING_ALLOW,

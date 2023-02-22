@@ -27,6 +27,7 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace {
@@ -62,7 +63,14 @@ class StorageAccessGrantPermissionContextTest
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
     if (saa_enabled) {
-      enabled.push_back({blink::features::kStorageAccessAPI, {}});
+      enabled.push_back(
+          {blink::features::kStorageAccessAPI,
+           {
+               {
+                   blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
+                   "false",
+               },
+           }});
     } else {
       disabled.push_back(blink::features::kStorageAccessAPI);
     }
@@ -100,7 +108,8 @@ class StorageAccessGrantPermissionContextTest
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(web_contents());
     DCHECK(manager);
-    const int implicit_grant_limit = 5;
+    const int implicit_grant_limit =
+        blink::features::kStorageAccessAPIImplicitGrantLimit.Get();
     base::RunLoop run_loop;
     auto barrier = base::BarrierCallback<ContentSetting>(
         implicit_grant_limit,
@@ -166,16 +175,6 @@ class StorageAccessGrantPermissionContextAPIEnabledTest
  public:
   StorageAccessGrantPermissionContextAPIEnabledTest()
       : StorageAccessGrantPermissionContextTest(true) {}
-
-  void SetUp() override {
-    StorageAccessGrantPermissionContextTest::SetUp();
-    StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(5);
-  }
-
-  void TearDown() override {
-    StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(0);
-    StorageAccessGrantPermissionContextTest::TearDown();
-  }
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
@@ -352,7 +351,8 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
   permission_context.RequestPermission(CreateFakeID(), GetRequesterURL(), true,
                                        future.GetCallback());
 
-  int implicit_grant_limit = 5;
+  int implicit_grant_limit =
+      blink::features::kStorageAccessAPIImplicitGrantLimit.Get();
 
   // We should have no prompts still and our latest result should be an allow.
   EXPECT_EQ(CONTENT_SETTING_ALLOW, future.Get());
@@ -460,7 +460,13 @@ class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
     features_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kFirstPartySets, {}},
-         {blink::features::kStorageAccessAPI, {}}},
+         {blink::features::kStorageAccessAPI,
+          {
+              {
+                  blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
+                  "false",
+              },
+          }}},
         /*disabled_features=*/{});
   }
   void SetUp() override {

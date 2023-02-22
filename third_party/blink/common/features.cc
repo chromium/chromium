@@ -10,6 +10,7 @@
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
 #include "third_party/blink/public/common/switches.h"
 
@@ -1762,6 +1763,13 @@ BASE_FEATURE(kWebRtcStatsReportIdl,
 BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
              "QuoteEmptySecChUaStringHeadersConsistently",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kStorageAccessAPIImplicitGrantLimit{
+    &kStorageAccessAPI, "storage-access-api-implicit-grant-limit", 5};
+const base::FeatureParam<bool> kStorageAccessAPIAutoGrantInFPS{
+    &kStorageAccessAPI, "storage_access_api_auto_grant_in_fps", true};
+const base::FeatureParam<bool> kStorageAccessAPIAutoDenyOutsideFPS{
+    &kStorageAccessAPI, "storage_access_api_auto_deny_outside_fps", true};
 
 }  // namespace features
 }  // namespace blink

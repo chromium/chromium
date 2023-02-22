@@ -70,16 +70,22 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
                                             GetDisabledFeatures());
-    StorageAccessGrantPermissionContext::SetAutodenyOutsideFPSForTesting(
-        AutodenyOutsideFPS());
-    StorageAccessGrantPermissionContext::SetImplicitGrantLimitForTesting(
-        ImplicitGrantLimit());
     InProcessBrowserTest::SetUp();
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
     std::vector<base::test::FeatureRefAndParams> enabled({
-        {blink::features::kStorageAccessAPI, {}},
+        {blink::features::kStorageAccessAPI,
+         {
+             {
+                 blink::features::kStorageAccessAPIAutoGrantInFPS.name,
+                 "false",
+             },
+             {
+                 blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
+                 "false",
+             },
+         }},
     });
     if (is_storage_partitioned_) {
       enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
@@ -94,10 +100,6 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
     }
     return disabled;
   }
-
-  virtual bool AutodenyOutsideFPS() const { return false; }
-
-  virtual int ImplicitGrantLimit() const { return 5; }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -777,13 +779,13 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
-        {blink::features::kStorageAccessAPI, {}},
+        {blink::features::kStorageAccessAPI,
+         {{
+             blink::features::kStorageAccessAPIImplicitGrantLimit.name,
+             "0",
+         }}},
     };
   }
-
-  bool AutodenyOutsideFPS() const override { return true; }
-
-  int ImplicitGrantLimit() const override { return 0; }
 };
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithFirstPartySetsBrowserTest,
@@ -896,13 +898,15 @@ class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest
  protected:
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
-        {blink::features::kStorageAccessAPI, {}},
+        {blink::features::kStorageAccessAPI,
+         {
+             {
+                 blink::features::kStorageAccessAPIAutoDenyOutsideFPS.name,
+                 "false",
+             },
+         }},
     };
   }
-
-  bool AutodenyOutsideFPS() const override { return false; }
-
-  int ImplicitGrantLimit() const override { return 5; }
 };
 
 IN_PROC_BROWSER_TEST_F(

@@ -998,6 +998,23 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kQuoteEmptySecChUaStringHeadersConsistently);
 
+// The number of "automatic" implicit storage access grants per third-party
+// origin that can be granted.
+//
+// Note that if `kStorageAccessAPIAutoGrantInFPS` and
+// `kStorageAccessAPIAutoDenyOutsideFPS` are both true, then this parameter has
+// no effect.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kStorageAccessAPIImplicitGrantLimit;
+// Whether to auto-grant storage access requests when the top level origin and
+// the requesting origin are in the same First-Party Set.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIAutoGrantInFPS;
+// Whether to auto-deny storage access requests when the top level origin and
+// the requesting origin are not in the same First-Party Set.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIAutoDenyOutsideFPS;
+
 }  // namespace features
 }  // namespace blink
 
