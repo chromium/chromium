@@ -14,7 +14,7 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    sheriff_rotations = sheriff_rotations.CHROMIUM_FUZZ,
+    sheriff_rotations = sheriff_rotations.CHROMIUM,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     notifies = ["chromesec-lkgr-failures"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,

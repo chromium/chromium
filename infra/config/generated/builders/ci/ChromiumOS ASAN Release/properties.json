@@ -61,6 +61,6 @@
   "builder_group": "chromium.fuzz",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium.fuzz"
+    "chromium"
   ]
 }
