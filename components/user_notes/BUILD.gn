@@ -10,3 +10,17 @@ static_library("features") {
 
   deps = [ "//base" ]
 }
+
+static_library("user_notes_prefs") {
+  sources = [
+    "user_notes_prefs.cc",
+    "user_notes_prefs.h",
+  ]
+
+  deps = [
+    ":features",
+    "//base",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs",
+  ]
+}

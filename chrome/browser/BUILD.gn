@@ -4435,6 +4435,7 @@ static_library("browser") {
       "//components/soda:constants",
       "//components/ukm/content",
       "//components/user_notes:features",
+      "//components/user_notes:user_notes_prefs",
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
       "//components/user_notes/storage",

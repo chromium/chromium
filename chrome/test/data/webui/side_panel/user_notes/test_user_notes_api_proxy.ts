@@ -24,6 +24,7 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
       'getNoteOverviews',
       'newNoteFinished',
       'noteOverviewSelected',
+      'setSortOrder',
       'showUi',
       'updateNote',
     ]);
@@ -54,6 +55,10 @@ export class TestUserNotesApiProxy extends TestBrowserProxy implements
 
   noteOverviewSelected(url: Url, clickModifiers: ClickModifiers) {
     this.methodCalled('noteOverviewSelected', url, clickModifiers);
+  }
+
+  setSortOrder(sortByNewest: boolean) {
+    this.methodCalled('setSortOrder', sortByNewest);
   }
 
   showUi() {

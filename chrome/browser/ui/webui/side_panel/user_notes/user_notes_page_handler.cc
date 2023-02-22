@@ -17,7 +17,9 @@
 #include "components/power_bookmarks/common/power.h"
 #include "components/power_bookmarks/common/power_overview.h"
 #include "components/power_bookmarks/core/power_bookmark_service.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
+#include "components/user_notes/user_notes_prefs.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -105,6 +107,11 @@ UserNotesPageHandler::UserNotesPageHandler(
       service_(PowerBookmarkServiceFactory::GetForBrowserContext(profile_)),
       browser_(browser),
       user_notes_ui_(user_notes_ui) {
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kUserNotesSortByNewest,
+      base::BindRepeating(&UserNotesPageHandler::OnSortByNewestPrefChanged,
+                          base::Unretained(this)));
   service_->AddObserver(this);
   DCHECK(browser_);
   browser_->tab_strip_model()->AddObserver(this);
@@ -220,6 +227,22 @@ void UserNotesPageHandler::NoteOverviewSelected(
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
   browser_->OpenURL(params);
+}
+
+void UserNotesPageHandler::SetSortOrder(bool sort_by_newest) {
+  PrefService* pref_service = profile_->GetPrefs();
+  if (pref_service && pref_service->GetBoolean(prefs::kUserNotesSortByNewest) !=
+                          sort_by_newest) {
+    pref_service->SetBoolean(prefs::kUserNotesSortByNewest, sort_by_newest);
+  }
+}
+
+void UserNotesPageHandler::OnSortByNewestPrefChanged() {
+  PrefService* pref_service = profile_->GetPrefs();
+  if (pref_service) {
+    page_->SortByNewestPrefChanged(
+        pref_service->GetBoolean(prefs::kUserNotesSortByNewest));
+  }
 }
 
 void UserNotesPageHandler::OnPowersChanged() {

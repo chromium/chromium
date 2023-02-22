@@ -231,6 +231,8 @@ suite('UserNotesListTest', () => {
     const sortNewestButton =
         sortMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
     sortNewestButton.click();
+    const sortByNewest = await testProxy.whenCalled('setSortOrder');
+    testProxy.getCallbackRouterRemote().sortByNewestPrefChanged(sortByNewest);
     await flushTasks();
     // Verify note order.
     notesElements = queryNotes();

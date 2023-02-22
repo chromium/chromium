@@ -44,6 +44,7 @@ class MockUserNotesPage : public side_panel::mojom::UserNotesPage {
 
   MOCK_METHOD0(NotesChanged, void());
   MOCK_METHOD0(CurrentTabUrlChanged, void());
+  MOCK_METHOD1(SortByNewestPrefChanged, void(bool));
 };
 
 struct Note {

@@ -17,7 +17,9 @@
 #include "chrome/grit/side_panel_shared_resources_map.h"
 #include "chrome/grit/side_panel_user_notes_resources.h"
 #include "chrome/grit/side_panel_user_notes_resources_map.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_notes/user_notes_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/ui_base_features.h"
@@ -43,6 +45,13 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
+
+  Profile* const profile = Profile::FromWebUI(web_ui);
+  PrefService* pref_service = profile->GetPrefs();
+  if (pref_service) {
+    source->AddBoolean("sortByNewest",
+                       pref_service->GetBoolean(prefs::kUserNotesSortByNewest));
   }
 
   source->AddString(

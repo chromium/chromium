@@ -283,6 +283,7 @@
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
+#include "components/user_notes/user_notes_prefs.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1486,6 +1487,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   UnifiedAutoplayConfig::RegisterProfilePrefs(registry);
   CartService::RegisterProfilePrefs(registry);
   commerce::ShoppingListUiTabHelper::RegisterProfilePrefs(registry);
+  user_notes::RegisterProfilePrefs(registry);
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   captions::LiveCaptionController::RegisterProfilePrefs(registry);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

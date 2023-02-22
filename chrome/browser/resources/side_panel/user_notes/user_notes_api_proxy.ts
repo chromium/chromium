@@ -17,6 +17,7 @@ export interface UserNotesApiProxy {
   updateNote(guid: string, text: string): Promise<{success: boolean}>;
   deleteNote(guid: string): Promise<{success: boolean}>;
   noteOverviewSelected(url: Url, clickModifiers: ClickModifiers): void;
+  setSortOrder(sortByNewest: boolean): void;
   getCallbackRouter(): UserNotesPageCallbackRouter;
 }
 
@@ -59,6 +60,10 @@ export class UserNotesApiProxyImpl implements UserNotesApiProxy {
 
   noteOverviewSelected(url: Url, clickModifiers: ClickModifiers) {
     this.handler.noteOverviewSelected(url, clickModifiers);
+  }
+
+  setSortOrder(sortByNewest: boolean) {
+    this.handler.setSortOrder(sortByNewest);
   }
 
   getCallbackRouter() {
