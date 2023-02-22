@@ -6,6 +6,10 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu.h"
+#include "ash/wm/tablet_mode/tablet_mode_multitask_menu_event_handler.h"
+#include "ash/wm/tablet_mode/tablet_mode_window_manager.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ui/wm/features.h"
@@ -31,6 +35,7 @@ constexpr SkColor kCueColor = SK_ColorGRAY;
 
 TabletModeMultitaskCue::TabletModeMultitaskCue() {
   DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
+  DCHECK(Shell::Get()->IsInTabletMode());
   Shell::Get()->activation_client()->AddObserver(this);
 
   // If an app window is active before switching to tablet mode, show the cue.
@@ -48,8 +53,6 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
   DCHECK(active_window);
 
   // Only show or dismiss the cue when activating app windows.
-  // TODO(hewer): Review and update logic when `gained_active` is a NON_APP
-  // window and `lost_active` is an app.
   if (static_cast<AppType>(active_window->GetProperty(
           aura::client::kAppType)) == AppType::NON_APP) {
     return;
@@ -132,9 +135,28 @@ void TabletModeMultitaskCue::OnWindowBoundsChanged(
 void TabletModeMultitaskCue::OnWindowActivated(ActivationReason reason,
                                                aura::Window* gained_active,
                                                aura::Window* lost_active) {
-  if (gained_active) {
-    MaybeShowCue(gained_active);
+  auto* event_handler = Shell::Get()
+                            ->tablet_mode_controller()
+                            ->tablet_mode_window_manager()
+                            ->tablet_mode_multitask_menu_event_handler();
+  DCHECK(event_handler);
+
+  if (!gained_active) {
+    return;
   }
+
+  // TODO(b/263519133): Stop the cue from reappearing after using non-app
+  // windows like popups.
+
+  // The cue should not reappear when tapping off of the menu or selecting a
+  // new layout.
+  if (event_handler->multitask_menu() &&
+      event_handler->multitask_menu()->widget()->GetNativeWindow() ==
+          lost_active) {
+    return;
+  }
+
+  MaybeShowCue(gained_active);
 }
 
 void TabletModeMultitaskCue::OnPostWindowStateTypeChange(

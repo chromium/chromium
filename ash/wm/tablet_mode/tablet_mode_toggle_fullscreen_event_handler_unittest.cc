@@ -68,7 +68,7 @@ class TabletModeToggleFullscreenEventHandlerTest : public AshTestBase {
     auto* multitask_menu = TabletModeControllerTestApi()
                                .tablet_mode_window_manager()
                                ->tablet_mode_multitask_menu_event_handler()
-                               ->multitask_menu_for_testing();
+                               ->multitask_menu();
     ASSERT_FALSE(multitask_menu);
   }
 
