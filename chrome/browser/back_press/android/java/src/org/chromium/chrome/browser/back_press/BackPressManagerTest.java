@@ -14,9 +14,12 @@ import org.junit.runner.RunWith;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.concurrent.TimeoutException;
 
 /**
  * Tests for {@link BackPressManager}.
@@ -28,11 +31,20 @@ public class BackPressManagerTest {
         private ObservableSupplierImpl<Boolean> mSupplier = new ObservableSupplierImpl<>();
 
         @Override
-        public void handleBackPress() {}
+        public @BackPressResult int handleBackPress() {
+            return BackPressResult.UNKNOWN;
+        }
 
         @Override
         public ObservableSupplierImpl<Boolean> getHandleBackPressChangedSupplier() {
             return mSupplier;
+        }
+    }
+
+    private class FailedBackPressHandler extends EmptyBackPressHandler {
+        @Override
+        public @BackPressResult int handleBackPress() {
+            return BackPressResult.FAILURE;
         }
     }
 
@@ -58,7 +70,10 @@ public class BackPressManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { manager.addHandler(h1, BackPressHandler.Type.FIND_TOOLBAR); });
 
-        manager.getCallback().handleOnBackPressed();
+        try {
+            manager.getCallback().handleOnBackPressed();
+        } catch (AssertionError ignored) {
+        }
 
         histogramWatcher.assertExpected(
                 "Handler's histogram should be not recorded if it is not executed");
@@ -74,7 +89,10 @@ public class BackPressManagerTest {
                 HistogramWatcher.newBuilder().expectNoRecords(BackPressManager.HISTOGRAM).build();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { h1.getHandleBackPressChangedSupplier().set(false); });
-        manager.getCallback().handleOnBackPressed();
+        try {
+            manager.getCallback().handleOnBackPressed();
+        } catch (AssertionError ignored) {
+        }
         histogramWatcher.assertExpected(
                 "Handler's histogram should be not recorded if it is not executed");
     }
@@ -107,5 +125,60 @@ public class BackPressManagerTest {
         manager.getCallback().handleOnBackPressed();
         histogramWatcher.assertExpected(
                 "Only record to handler's histogram should have value 1 (VR_DELEGATE).");
+    }
+
+    @Test
+    @SmallTest
+    public void testFailedHandlers() {
+        BackPressManager manager = new BackPressManager();
+        var vrFailedHandler =
+                TestThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
+        var arSuccessHandler =
+                TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            manager.addHandler(vrFailedHandler, BackPressHandler.Type.VR_DELEGATE);
+            manager.addHandler(arSuccessHandler, BackPressHandler.Type.AR_DELEGATE);
+            vrFailedHandler.getHandleBackPressChangedSupplier().set(true);
+            arSuccessHandler.getHandleBackPressChangedSupplier().set(true);
+        });
+
+        var watcher = HistogramWatcher.newBuilder()
+                              .expectIntRecord(BackPressManager.FAILURE_HISTOGRAM,
+                                      BackPressManager.getHistogramValueForTesting(
+                                              BackPressHandler.Type.VR_DELEGATE))
+                              .expectIntRecord(BackPressManager.HISTOGRAM,
+                                      BackPressManager.getHistogramValueForTesting(
+                                              BackPressHandler.Type.AR_DELEGATE))
+                              .build();
+        try {
+            manager.getCallback().handleOnBackPressed();
+        } catch (AssertionError ignored) {
+        }
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testFallbackCallback() throws TimeoutException {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        BackPressManager manager = new BackPressManager(callbackHelper::notifyCalled);
+        var vrFailedHandler =
+                TestThreadUtils.runOnUiThreadBlockingNoException(FailedBackPressHandler::new);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            manager.addHandler(vrFailedHandler, BackPressHandler.Type.VR_DELEGATE);
+            vrFailedHandler.getHandleBackPressChangedSupplier().set(true);
+        });
+
+        var watcher = HistogramWatcher.newBuilder()
+                              .expectIntRecord(BackPressManager.FAILURE_HISTOGRAM,
+                                      BackPressManager.getHistogramValueForTesting(
+                                              BackPressHandler.Type.VR_DELEGATE))
+                              .build();
+        try {
+            manager.getCallback().handleOnBackPressed();
+        } catch (AssertionError ignored) {
+        }
+        callbackHelper.waitForFirst("Fallback should be triggered if all handlers failed.");
+        watcher.assertExpected();
     }
 }

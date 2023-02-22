@@ -1456,8 +1456,10 @@ class LocationBarMediator
     // BackPressHandler implementation.
     // Modern way to intercept back press starting from T.
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
+        int res = mUrlHasFocus ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         backKeyPressed();
+        return res;
     }
 
     @Override

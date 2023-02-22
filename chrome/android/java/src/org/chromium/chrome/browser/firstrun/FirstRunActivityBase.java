@@ -173,7 +173,7 @@ public abstract class FirstRunActivityBase
      * Called when back press is intercepted.
      */
     @Override
-    public abstract void handleBackPress();
+    public abstract @BackPressResult int handleBackPress();
 
     protected void flushPersistentData() {
         if (mNativeInitialized) {

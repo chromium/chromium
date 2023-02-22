@@ -29,8 +29,8 @@ public class ArDelegateImpl implements ArDelegate {
     }
 
     @Override
-    public void handleBackPress() {
-        onBackPressed();
+    public @BackPressResult int handleBackPress() {
+        return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

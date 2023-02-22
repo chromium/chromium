@@ -375,9 +375,8 @@ public class BookmarkManager implements BookmarkDelegate, SearchDelegate,
 
     // BackPressHandler Overrides
     @Override
-    public void handleBackPress() {
-        var ret = onBackPressed();
-        assert ret;
+    public @BackPressResult int handleBackPress() {
+        return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

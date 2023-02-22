@@ -689,9 +689,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
     // BackPressHandler implementation.
     @Override
-    public void handleBackPress() {
-        var ret = onBackPressed();
-        assert ret;
+    public @BackPressResult int handleBackPress() {
+        return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

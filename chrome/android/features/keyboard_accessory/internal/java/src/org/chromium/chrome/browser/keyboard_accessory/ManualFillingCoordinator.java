@@ -77,8 +77,8 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
-    public void handleBackPress() {
-        mMediator.handleBackPress();
+    public @BackPressResult int handleBackPress() {
+        return mMediator.handleBackPress();
     }
 
     @Override

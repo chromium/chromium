@@ -397,7 +397,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     // returned by {@link isInPictureInPictureMode}.
     private boolean mLastPictureInPictureModeForTesting;
 
-    protected BackPressManager mBackPressManager = new BackPressManager();
+    protected BackPressManager mBackPressManager = new BackPressManager(this::handleOnBackPressed);
     private TextBubbleBackPressHandler mTextBubbleBackPressHandler;
     private SelectionPopupBackPressHandler mSelectionPopupBackPressHandler;
     private Callback<TabModelSelector> mSelectionPopupBackPressInitCallback;
@@ -2193,8 +2193,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
     /** Handles back press events for Chrome in various states. */
     protected final boolean handleOnBackPressed() {
-        assert !BackPressManager.isEnabled()
-            : "Back press should be handled by implementors of BackPressHandler if enabled";
         RecordUserAction.record(
                 mNativeInitialized ? "SystemBack" : "SystemBackBeforeNativeInitialized");
         if (isActivityFinishingOrDestroyed()) {

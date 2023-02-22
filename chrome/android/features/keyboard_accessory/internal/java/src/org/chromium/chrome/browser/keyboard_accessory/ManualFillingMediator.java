@@ -298,9 +298,8 @@ class ManualFillingMediator
     }
 
     @Override
-    public void handleBackPress() {
-        boolean ret = onBackPressed();
-        assert ret : "This should only be called when mBackPressChangedSupplier yields true";
+    public @BackPressResult int handleBackPress() {
+        return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

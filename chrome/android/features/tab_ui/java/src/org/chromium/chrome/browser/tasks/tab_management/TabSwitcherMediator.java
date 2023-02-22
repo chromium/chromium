@@ -882,9 +882,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public void handleBackPress() {
-        boolean ret = onBackPressedInternal();
-        assert ret;
+    public @BackPressResult int handleBackPress() {
+        return onBackPressedInternal() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

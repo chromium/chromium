@@ -379,8 +379,11 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
+        int result =
+                shouldDeactivateByBackPress() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         deactivate();
+        return result;
     }
 
     @Override
@@ -682,7 +685,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
 
     private void setCurrentState(@FindLocationBarState int state) {
         mCurrentState = state;
-        mBackPressStateSupplier.set(mCurrentState == FindLocationBarState.SHOWN);
+        mBackPressStateSupplier.set(shouldDeactivateByBackPress());
 
         // Notify the observers if we hit the transition states.
         if (mObserver != null) {
@@ -704,6 +707,11 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
                 && mDesiredState == FindLocationBarState.HIDDEN) {
             deactivate();
         }
+    }
+
+    // Whether the find toolbar should be deactivated by back press.
+    private boolean shouldDeactivateByBackPress() {
+        return mCurrentState == FindLocationBarState.SHOWN;
     }
 
     /**

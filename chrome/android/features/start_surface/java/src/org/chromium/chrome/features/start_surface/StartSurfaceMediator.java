@@ -973,9 +973,10 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     }
 
     @Override
-    public void handleBackPress() {
-        onBackPressedInternal();
+    public @BackPressResult int handleBackPress() {
+        boolean ret = onBackPressedInternal();
         notifyBackPressStateChanged();
+        return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

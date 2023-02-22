@@ -117,7 +117,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         boolean minimizeApp;
         boolean shouldCloseTab;
         Tab currentTab = mActivityTabSupplier.get();
@@ -157,6 +157,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
             WebContents webContents = currentTab.getWebContents();
             if (webContents != null) webContents.dispatchBeforeUnload(false);
         }
+        return BackPressResult.SUCCESS;
     }
 
     @Override

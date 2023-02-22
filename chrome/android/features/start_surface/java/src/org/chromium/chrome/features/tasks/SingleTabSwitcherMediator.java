@@ -252,8 +252,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
     }
 
     @Override
-    public void handleBackPress() {
-        selectTheCurrentTab();
+    public @BackPressResult int handleBackPress() {
+        return BackPressResult.FAILURE;
     }
 
     @Override

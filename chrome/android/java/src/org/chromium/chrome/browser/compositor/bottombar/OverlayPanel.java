@@ -987,8 +987,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     }
 
     @Override
-    public void handleBackPress() {
-        boolean ret = onBackPressed();
-        assert ret;
+    public @BackPressResult int handleBackPress() {
+        return onBackPressed() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 }

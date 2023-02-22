@@ -234,8 +234,8 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     }
 
     @Override
-    public void handleBackPress() {
-        mMediator.handleBackPress();
+    public @BackPressResult int handleBackPress() {
+        return mMediator.handleBackPress();
     }
 
     @Override

@@ -44,7 +44,9 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
     }
 
     @Override
-    public void handleBackPress() {}
+    public @BackPressResult int handleBackPress() {
+        return BackPressResult.FAILURE;
+    }
 
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {

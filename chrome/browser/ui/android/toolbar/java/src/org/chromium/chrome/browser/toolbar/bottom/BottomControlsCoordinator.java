@@ -133,8 +133,9 @@ public class BottomControlsCoordinator implements BackPressHandler {
     }
 
     @Override
-    public void handleBackPress() {
-        if (mContentDelegate != null) mContentDelegate.handleBackPress();
+    public @BackPressResult int handleBackPress() {
+        if (mContentDelegate != null) return mContentDelegate.handleBackPress();
+        return BackPressResult.FAILURE;
     }
 
     @Override

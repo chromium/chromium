@@ -15,7 +15,11 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A central manager class to handle the back gesture. Every component/feature which is going to
@@ -62,11 +66,13 @@ public class BackPressManager implements Destroyable {
     };
 
     static final String HISTOGRAM = "Android.BackPress.Intercept";
+    static final String FAILURE_HISTOGRAM = "Android.BackPress.Failure";
 
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
 
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private final boolean[] mStates = new boolean[Type.NUM_TYPES];
+    private final Runnable mFallbackOnBackPressed;
     private int mEnabledCount;
     private int mLastCalledHandlerForTesting = -1;
 
@@ -90,6 +96,23 @@ public class BackPressManager implements Destroyable {
      */
     public static void record(@Type int type) {
         RecordHistogram.recordEnumeratedHistogram(HISTOGRAM, sMetricsMap.get(type), Type.NUM_TYPES);
+    }
+
+    private static void recordFailure(@Type int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                FAILURE_HISTOGRAM, sMetricsMap.get(type), Type.NUM_TYPES);
+    }
+
+    public BackPressManager() {
+        mFallbackOnBackPressed = () -> {};
+    }
+
+    /**
+     * @param fallbackOnBackPressed Callback executed when a handler claims to intercept back press
+     *         but no handler succeeds.
+     */
+    public BackPressManager(Runnable fallbackOnBackPressed) {
+        mFallbackOnBackPressed = fallbackOnBackPressed;
     }
 
     /**
@@ -163,19 +186,27 @@ public class BackPressManager implements Destroyable {
     }
 
     private void handleBackPress() {
+        var failed = new ArrayList<String>();
         for (int i = 0; i < mHandlers.length; i++) {
             BackPressHandler handler = mHandlers[i];
             if (handler == null) continue;
             Boolean enabled = handler.getHandleBackPressChangedSupplier().get();
             if (enabled != null && enabled) {
-                // Record before #handleBackPress; otherwise, histograms may be missing if
-                // #handleBackPress throws an error.
-                record(i);
-                handler.handleBackPress();
+                int res = handler.handleBackPress();
                 mLastCalledHandlerForTesting = i;
-                return;
+                if (res == BackPressResult.FAILURE) {
+                    failed.add(i + "");
+                    recordFailure(i);
+                } else {
+                    record(i);
+                    assertListOfFailedHandlers(failed, i);
+                    return;
+                }
             }
         }
+        mFallbackOnBackPressed.run();
+        assertListOfFailedHandlers(failed, -1);
+        assert false : "Callback is enabled but no handler consumed back gesture.";
     }
 
     @Override
@@ -185,6 +216,13 @@ public class BackPressManager implements Destroyable {
                 removeHandler(i);
             }
         }
+    }
+
+    private void assertListOfFailedHandlers(List<String> failed, int succeed) {
+        if (failed.isEmpty()) return;
+        var msg = String.join(", ", failed);
+        assert false
+            : String.format("%s didn't correctly handle back press; handled by %s.", msg, succeed);
     }
 
     @VisibleForTesting

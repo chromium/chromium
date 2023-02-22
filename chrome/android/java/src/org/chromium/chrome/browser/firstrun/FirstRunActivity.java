@@ -418,11 +418,11 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         // Terminate if we are still waiting for the native or for Android EDU / GAIA Child checks.
         if (!mPostNativeAndPolicyPagesCreated) {
             abortFirstRunExperience();
-            return;
+            return BackPressResult.SUCCESS;
         }
 
         mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
@@ -437,6 +437,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         } else {
             setCurrentItemForPager(position);
         }
+        return BackPressResult.SUCCESS;
     }
 
     // FirstRunPageDelegate:

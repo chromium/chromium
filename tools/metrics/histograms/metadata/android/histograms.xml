@@ -569,6 +569,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BackPress.Failure" enum="BackPressConsumer"
+    expires_after="2023-07-02">
+  <owner>lazzzis@chromium.org</owner>
+  <owner>src/chrome/browser/back_press/android/OWNERS</owner>
+  <summary>
+    Recorded when the user invokes a back navigation only if the handler failed
+    to operate as expected, (e.g. it does nothing). May be recorded multiple
+    times for a single back press event if there are multiple failed handlers.
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="Android.BackPress.Intercept" enum="BackPressConsumer"
     expires_after="2023-07-02">
   <owner>lazzzis@chromium.org</owner>

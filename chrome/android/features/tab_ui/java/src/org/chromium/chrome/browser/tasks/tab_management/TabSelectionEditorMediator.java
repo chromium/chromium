@@ -291,8 +291,10 @@ class TabSelectionEditorMediator
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
+        int result = isEditorVisible() ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
         mNavigationProvider.goBack();
+        return result;
     }
 
     @Override

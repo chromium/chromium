@@ -416,8 +416,9 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     @Override
-    public void handleBackPress() {
-        if (mTabGridDialogController != null) mTabGridDialogController.handleBackPress();
+    public @BackPressResult int handleBackPress() {
+        if (mTabGridDialogController != null) return mTabGridDialogController.handleBackPress();
+        return BackPressResult.FAILURE;
     }
 
     @Override

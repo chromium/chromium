@@ -2123,7 +2123,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         boolean ret = back();
         if (!ret) {
             var bc = mBottomControlsCoordinatorSupplier != null
@@ -2138,6 +2138,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     tab != null && tab.isDestroyed());
             assert false : msg;
         }
+        return ret ? BackPressResult.SUCCESS : BackPressResult.FAILURE;
     }
 
     @Override

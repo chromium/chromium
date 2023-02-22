@@ -221,9 +221,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     }
 
     @Override
-    public void handleBackPress() {
+    public @BackPressResult int handleBackPress() {
         mMediator.hideDialog(true);
         RecordUserAction.record("TabGridDialog.Exit");
+        return isVisible() ? BackPressResult.FAILURE : BackPressResult.SUCCESS;
     }
 
     @Override
