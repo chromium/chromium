@@ -35,6 +35,7 @@ bool IsAboutThisSiteNewIconFeatureEnabled() {
 bool IsAboutThisSiteForNonMsbbFeatureEnabled() {
   return IsMoreAboutThisSiteFeatureEnabled() &&
          IsDescriptionPlaceholderFeatureEnabled() &&
+         IsAboutThisSiteNewIconFeatureEnabled() &&
          base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteNonMsbb);
 }
 

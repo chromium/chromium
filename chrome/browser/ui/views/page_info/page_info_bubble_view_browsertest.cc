@@ -1000,6 +1000,7 @@ class PageInfoBubbleViewAboutThisSiteAllowNonMsbbBrowserTest
         {
             page_info::kPageInfoAboutThisSiteMoreInfo,
             page_info::kPageInfoAboutThisSiteDescriptionPlaceholder,
+            page_info::kPageInfoAboutThisSiteNewIcon,
             page_info::kPageInfoAboutThisSiteNonMsbb,
         },
         {});
