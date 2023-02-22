@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Regs.h"
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Unwinder.h"
@@ -83,9 +84,9 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
 }  // namespace
 
 LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid()
-    : memory_regions_map_(NativeUnwinderAndroid::CreateMaps()),
+    : memory_regions_map_(NativeUnwinderAndroid::CreateMemoryRegionsMap()),
       process_memory_(std::shared_ptr<unwindstack::Memory>(
-          NativeUnwinderAndroid::CreateProcessMemory().release())) {
+          memory_regions_map_->TakeMemory().release())) {
   TRACE_EVENT_INSTANT(
       TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
       "LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid");
@@ -143,7 +144,7 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
     std::unique_ptr<unwindstack::Regs> regs =
         CreateFromRegisterContext(thread_context);
     DCHECK(regs);
-    unwindstack::Unwinder unwinder(kMaxFrames, memory_regions_map_.get(),
+    unwindstack::Unwinder unwinder(kMaxFrames, memory_regions_map_->GetMaps(),
                                    regs.get(), process_memory_);
 
     unwinder.SetJitDebug(GetOrCreateJitDebug(regs->Arch()));
@@ -169,7 +170,7 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
     TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"),
                 "TryUnwind Reparsing Maps");
     samples_since_last_maps_parse_ = 0;
-    memory_regions_map_->Parse();
+    memory_regions_map_->GetMaps()->Parse();
     jit_debug_.reset();
     dex_files_.reset();
 

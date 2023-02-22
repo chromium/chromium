@@ -3,9 +3,5 @@
 # found in the LICENSE file.
 
 source_set("native") {
-  public = [
-    "function_types.h",
-    "memory_regions_map.h",
-  ]
-  sources = [ "memory_regions_map.cc" ]
+  public = [ "function_types.h" ]
 }

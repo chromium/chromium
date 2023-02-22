@@ -9,16 +9,18 @@
 
 namespace base {
 class Unwinder;
+class NativeUnwinderAndroidMapDelegate;
+class NativeUnwinderAndroidMemoryRegionsMap;
 }
 
 namespace stack_unwinder {
 
-class MemoryRegionsMap;
-
 // Type declarations for C++ functions exported by the module.
-using CreateMemoryRegionsMapFunction = std::unique_ptr<MemoryRegionsMap> (*)();
+using CreateMemoryRegionsMapFunction =
+    std::unique_ptr<base::NativeUnwinderAndroidMemoryRegionsMap> (*)();
 using CreateNativeUnwinderFunction =
-    std::unique_ptr<base::Unwinder> (*)(MemoryRegionsMap*, uintptr_t);
+    std::unique_ptr<base::Unwinder> (*)(base::NativeUnwinderAndroidMapDelegate*,
+                                        uintptr_t);
 using CreateLibunwindstackUnwinderFunction =
     std::unique_ptr<base::Unwinder> (*)();
 
