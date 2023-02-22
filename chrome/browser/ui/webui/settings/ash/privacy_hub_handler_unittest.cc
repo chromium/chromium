@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/webui/settings/ash/privacy_hub_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/adapters.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/privacy_hub/privacy_hub_hats_trigger.h"
+#include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "content/public/test/test_web_ui.h"
-#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::settings {
@@ -20,6 +22,8 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
   using content::WebUIMessageHandler::set_web_ui;
 
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
+  using PrivacyHubHandler::HandlePrivacyPageClosed;
+  using PrivacyHubHandler::HandlePrivacyPageOpened;
 };
 
 using cps = cros::mojom::CameraPrivacySwitchState;
@@ -49,6 +53,8 @@ class PrivacyHubHandlerTest : public testing::Test {
             testing::UnitTest::GetInstance()->current_test_info()->name()) {
     privacy_hub_handler_.set_web_ui(&web_ui_);
     privacy_hub_handler_.AllowJavascriptForTesting();
+
+    feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
   }
 
   [[nodiscard]] base::Value GetLastWebUIListenerData(
@@ -95,6 +101,8 @@ class PrivacyHubHandlerTest : public testing::Test {
                   << "' with a valid arg";
     return base::Value();
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class PrivacyHubHandlerMicrophoneTest
@@ -113,6 +121,21 @@ class PrivacyHubHandlerMicrophoneTest
   void ExpectValueMatchesBoolParam(const base::Value& value) const {
     PrivacyHubHandlerTest::ExpectValueMatchesBoolParam(GetParam(), value);
   }
+};
+
+class PrivacyHubHandlerHatsTest : public PrivacyHubHandlerTest {
+ public:
+  PrivacyHubHandlerHatsTest() {
+    feature_list_.InitAndEnableFeature(
+        ::features::kHappinessTrackingPrivacyHubBaseline);
+  }
+
+  bool IsTimerStarted() {
+    return PrivacyHubHatsTrigger::Get().GetTimerForTesting().IsRunning();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_P(PrivacyHubHandlerMicrophoneTest,
@@ -143,6 +166,25 @@ INSTANTIATE_TEST_SUITE_P(HardwareSwitchStates,
                          testing::Values(true, false),
                          testing::PrintToStringParamName());
 
+TEST_F(PrivacyHubHandlerHatsTest, OnlyTriggerHatsIfPageWasVisited) {
+  const base::Value::List args;
+
+  EXPECT_FALSE(IsTimerStarted());
+
+  // We trigger the HaTS survey on the leave event but the user hasn't visited
+  // the page yet.
+  privacy_hub_handler_.HandlePrivacyPageClosed(args);
+  EXPECT_FALSE(IsTimerStarted());
+
+  // User goes to the page.
+  privacy_hub_handler_.HandlePrivacyPageOpened(args);
+  EXPECT_FALSE(IsTimerStarted());
+
+  // And leaves it again, now the survey should be triggered.
+  privacy_hub_handler_.HandlePrivacyPageClosed(args);
+  EXPECT_TRUE(IsTimerStarted());
+}
+
 #if DCHECK_IS_ON()
 using PrivacyHubHandlerDeathTest = PrivacyHubHandlerTest;
 
@@ -162,6 +204,34 @@ TEST_F(PrivacyHubHandlerDeathTest, HandleInitialMicrophoneSwitchStateWithArgs) {
   EXPECT_DEATH(privacy_hub_handler_.HandleInitialMicrophoneSwitchState(args),
                ".*Did not expect arguments.*");
 }
+
+TEST_F(PrivacyHubHandlerDeathTest, HandlePrivacyPageOpened) {
+  base::Value::List args;
+  args.Append(this_test_name_);
+
+  EXPECT_DEATH(privacy_hub_handler_.HandlePrivacyPageOpened(args), ".*empty.*");
+}
+
+TEST_F(PrivacyHubHandlerDeathTest, HandlePrivacyPageClosed) {
+  base::Value::List args;
+  args.Append(this_test_name_);
+
+  EXPECT_DEATH(privacy_hub_handler_.HandlePrivacyPageClosed(args), ".*empty.*");
+}
+
+TEST_F(PrivacyHubHandlerDeathTest, OnlyTriggerHatsIfFeatureIsEnabled) {
+  const base::Value::List args;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ::features::kHappinessTrackingPrivacyHubBaseline);
+
+  // User goes to the page.
+  EXPECT_DEATH(privacy_hub_handler_.HandlePrivacyPageOpened(args),
+               "base::FeatureList::IsEnabled");
+  EXPECT_DEATH(privacy_hub_handler_.HandlePrivacyPageClosed(args),
+               "base::FeatureList::IsEnabled");
+}
+
 #endif
 
 }  // namespace ash::settings

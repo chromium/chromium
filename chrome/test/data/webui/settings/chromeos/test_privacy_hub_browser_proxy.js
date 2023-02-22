@@ -9,13 +9,25 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'getInitialMicrophoneHardwareToggleState',
+      'sendLeftOsPrivacyPage',
+      'sendOpenedOsPrivacyPage',
     ]);
     this.microphoneToggleIsEnabled = false;
+    this.sendLeftOsPrivacyPageCalled = 0;
+    this.sendOpenedOsPrivacyPageCalled = 0;
   }
 
   /** override */
   getInitialMicrophoneHardwareToggleState() {
     this.methodCalled('getInitialMicrophoneHardwareToggleState');
     return Promise.resolve(this.microphoneToggleIsEnabled);
+  }
+
+  sendLeftOsPrivacyPage() {
+    this.sendLeftOsPrivacyPageCalled = this.sendLeftOsPrivacyPageCalled + 1;
+  }
+
+  sendOpenedOsPrivacyPage() {
+    this.sendOpenedOsPrivacyPageCalled = this.sendOpenedOsPrivacyPageCalled + 1;
   }
 }
