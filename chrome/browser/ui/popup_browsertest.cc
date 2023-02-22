@@ -21,7 +21,6 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/screen_base.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -290,7 +289,7 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
   test_screen.display_list().AddDisplay(
       {2, gfx::Rect(901, 100, 802, 802)},
       display::DisplayList::Type::NOT_PRIMARY);
-  display::test::ScopedScreenOverride screen_override(&test_screen);
+  display::Screen::SetScreenInstance(&test_screen);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ(actual_num_displays + 1, screen->GetNumDisplays());
 
@@ -350,6 +349,10 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
   EXPECT_TRUE(new_popup_display.work_area().Contains(popup_bounds))
       << " work_area: " << new_popup_display.work_area().ToString()
       << " popup: " << popup_bounds.ToString();
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
+  display::Screen::SetScreenInstance(nullptr);
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
 }
 
 // Opens two popups with custom position and size, but one has noopener. They
