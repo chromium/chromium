@@ -7538,14 +7538,10 @@
             ]
         }
     ],
-    "MojoIpcz": [
+    "MojoIpczMac": [
         {
             "platforms": [
-                "android",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
