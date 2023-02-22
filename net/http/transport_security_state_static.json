@@ -188043,7 +188043,6 @@
     { "name": "tvtsvod.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "twistys.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "twofestivaltower.au", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "twosigma.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "tyndalehouse.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "typing.su", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "tzsrv.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
