@@ -64,6 +64,20 @@ bool DeleteObsoletePolicies(const base::FilePath& cache_root,
   return result;
 }
 
+bool MakePathGlobalAccessible(const base::FilePath& path) {
+#if BUILDFLAG(IS_POSIX)
+  return base::SetPosixFilePermissions(
+      path, base::FILE_PERMISSION_USER_MASK |
+                base::FILE_PERMISSION_READ_BY_GROUP |
+                base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                base::FILE_PERMISSION_READ_BY_OTHERS |
+                base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+#else
+  // Use system default permission for that path.
+  return true;
+#endif  // BUILDFLAG(IS_POSIX)
+}
+
 }  // namespace
 
 DMStorage::DMStorage(const base::FilePath& policy_cache_root,
@@ -105,7 +119,8 @@ bool DMStorage::CanPersistPolicies() const {
   return base::PathExists(policy_info_file_)
              ? base::PathIsWritable(policy_info_file_)
              : base::ScopedTempDir().CreateUniqueTempDirUnderPath(
-                   policy_cache_root_);
+                   policy_cache_root_) &&
+                   MakePathGlobalAccessible(policy_cache_root_);
 }
 
 bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
@@ -123,7 +138,8 @@ bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
   if (cached_info.Populate(policy_info_data) &&
       !cached_info.public_key().empty()) {
     if (!base::ImportantFileWriter::WriteFileAtomically(policy_info_file_,
-                                                        policy_info_data)) {
+                                                        policy_info_data) ||
+        !MakePathGlobalAccessible(policy_info_file_)) {
       return false;
     }
   }
@@ -141,12 +157,14 @@ bool DMStorage::PersistPolicies(const DMPolicyMap& policy_map) const {
 
     base::FilePath policy_dir =
         policy_cache_root_.AppendASCII(encoded_policy_type);
-    if (!base::CreateDirectory(policy_dir)) {
+    if (!base::CreateDirectory(policy_dir) ||
+        !MakePathGlobalAccessible(policy_dir)) {
       return false;
     }
     base::FilePath policy_file = policy_dir.AppendASCII(kPolicyFileName);
     if (!base::ImportantFileWriter::WriteFileAtomically(policy_file,
-                                                        policy_value)) {
+                                                        policy_value) ||
+        !MakePathGlobalAccessible(policy_file)) {
       return false;
     }
   }
