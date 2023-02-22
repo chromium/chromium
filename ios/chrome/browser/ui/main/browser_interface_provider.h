@@ -36,6 +36,9 @@ class ChromeBrowserState;
 @property(nonatomic, readonly) id<SyncPresenter> syncPresenter;
 // The active browser. This can never be nullptr.
 @property(nonatomic, readonly) Browser* browser;
+// The inactive browser. This can be nullptr if in an incognito interface or if
+// Inactive Tabs is disabled.
+@property(nonatomic) Browser* inactiveBrowser;
 // The browser state for this interface. This can never be nullptr.
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 // YES if the tab view is available for user interaction.

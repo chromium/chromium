@@ -139,6 +139,7 @@ source_set("session_saving") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/main:browser_interface_provider",
     "//ios/chrome/browser/ui/main:observing_scene_agent",
     "//ios/chrome/browser/web_state_list",

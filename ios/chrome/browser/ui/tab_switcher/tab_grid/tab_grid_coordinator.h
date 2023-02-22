@@ -25,6 +25,7 @@ class Browser;
     browsingDataCommandEndpoint:
         (id<BrowsingDataCommands>)browsingDataCommandEndpoint
                  regularBrowser:(Browser*)regularBrowser
+                inactiveBrowser:(Browser*)inactiveBrowser
                incognitoBrowser:(Browser*)incognitoBrowser
     NS_DESIGNATED_INITIALIZER;
 

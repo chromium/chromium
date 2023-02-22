@@ -22,12 +22,11 @@ void MoveTab(WebStateList* source,
              int source_index,
              WebStateList* destination,
              int destination_index) {
-  WebStateOpener opener = source->GetOpenerOfWebStateAt(source_index);
   std::unique_ptr<web::WebState> removed_web_state =
       source->DetachWebStateAt(source_index);
   destination->InsertWebState(destination_index, std::move(removed_web_state),
                               WebStateList::InsertionFlags::INSERT_FORCE_INDEX,
-                              opener);
+                              WebStateOpener());
 }
 
 }  // namespace
@@ -54,6 +53,8 @@ void MoveTabsFromActiveToInactive(Browser* active_browser,
   }
 
   // Ensure to have an active web state so the save can be performed.
+  // TODO(crbug.com/1264451): Remove this workaround when it will not be longer
+  // required to have an active WebState in the WebStateList.
   if (inactive_web_state_list->count() > 0) {
     inactive_web_state_list->ActivateWebStateAt(
         inactive_web_state_list->count() - 1);

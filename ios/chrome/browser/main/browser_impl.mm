@@ -19,9 +19,10 @@
 #error "This file requires ARC support."
 #endif
 
-BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state)
+BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state, bool inactive)
     : browser_state_(browser_state),
-      command_dispatcher_([[CommandDispatcher alloc] init]) {
+      command_dispatcher_([[CommandDispatcher alloc] init]),
+      is_inactive_(inactive) {
   DCHECK(browser_state_);
 
   web_state_list_delegate_ = std::make_unique<BrowserWebStateListDelegate>();
@@ -59,10 +60,23 @@ base::WeakPtr<Browser> BrowserImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+bool BrowserImpl::IsInactive() const {
+  return is_inactive_;
+}
+
 // static
 std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state) {
   std::unique_ptr<BrowserImpl> browser =
-      std::make_unique<BrowserImpl>(browser_state);
+      std::make_unique<BrowserImpl>(browser_state, /*inactive=*/false);
+  AttachBrowserAgents(browser.get());
+  return browser;
+}
+
+// static
+std::unique_ptr<Browser> Browser::CreateForInactiveTabs(
+    ChromeBrowserState* browser_state) {
+  std::unique_ptr<BrowserImpl> browser =
+      std::make_unique<BrowserImpl>(browser_state, /*inactive=*/true);
   AttachBrowserAgents(browser.get());
   return browser;
 }

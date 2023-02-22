@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -28,9 +29,16 @@
   std::set<Browser*> browsers =
       BrowserListFactory::GetForBrowserState(browserState)
           ->AllRegularBrowsers();
-  DCHECK(browsers.size() == 1);
+  // There is regular browser and inactive browser. More means multi-window.
+  // NOTE: The inactive browser is always created even if the feature is
+  // disabled, in order to ensure to restore all saved tabs.
+  DCHECK(browsers.size() == 2);
+  std::set<Browser*>::iterator iterator = base::ranges::find_if(
+      browsers, [](Browser* browser) { return !browser->IsInactive(); });
+  DCHECK(iterator != browsers.end());
   FullscreenController* fullscreenController =
-      FullscreenController::FromBrowser(*browsers.begin());
+      FullscreenController::FromBrowser(*iterator);
+
   if (!fullscreenController)
     return UIEdgeInsetsZero;
   return fullscreenController->GetCurrentViewportInsets();

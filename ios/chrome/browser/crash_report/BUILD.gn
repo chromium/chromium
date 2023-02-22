@@ -78,6 +78,7 @@ source_set("crash_report_internal") {
     "//ios/chrome/browser/sessions:restoration_agent",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/sessions:session_service",
+    "//ios/chrome/browser/tabs/inactive_tabs",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/main:scene_state_header",

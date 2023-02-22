@@ -96,11 +96,17 @@
   // ivar.
   Browser* _incognitoBrowser;
 
+  // Browser that contain tabs, from the regular browser, that have not been
+  // open since a certain amount of time.
+  Browser* _inactiveBrowser;
+
   // The coordinator that shows the bookmarking UI after the user taps the Add
   // to Bookmarks button.
   BookmarksCoordinator* _bookmarksCoordinator;
 }
 
+// Browser that contain tabs from the main pane (i.e. non-incognito).
+// TODO(crbug.com/1416934): Make regular ivar as incognito and inactive.
 @property(nonatomic, assign, readonly) Browser* regularBrowser;
 // Superclass property specialized for the class that this coordinator uses.
 @property(nonatomic, weak) TabGridViewController* baseViewController;
@@ -170,6 +176,7 @@
     browsingDataCommandEndpoint:
         (id<BrowsingDataCommands>)browsingDataCommandEndpoint
                  regularBrowser:(Browser*)regularBrowser
+                inactiveBrowser:(Browser*)inactiveBrowser
                incognitoBrowser:(Browser*)incognitoBrowser {
   if ((self = [super initWithBaseViewController:nil browser:nullptr])) {
     _window = window;
@@ -186,6 +193,7 @@
                               forProtocol:@protocol(BrowsingDataCommands)];
 
     _regularBrowser = regularBrowser;
+    _inactiveBrowser = inactiveBrowser;
     _incognitoBrowser = incognitoBrowser;
 
     if (IsIncognitoModeDisabled(

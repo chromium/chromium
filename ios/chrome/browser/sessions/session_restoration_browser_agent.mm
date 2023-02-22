@@ -62,6 +62,12 @@ void SessionRestorationBrowserAgent::SetSessionID(
   session_identifier_ = session_identifier;
 }
 
+NSString* SessionRestorationBrowserAgent::GetSessionID() const {
+  DCHECK(session_identifier_.length != 0)
+      << "SetSessionID must be called before GetSessionID";
+  return session_identifier_;
+}
+
 void SessionRestorationBrowserAgent::AddObserver(
     SessionRestorationObserver* observer) {
   observers_.AddObserver(observer);

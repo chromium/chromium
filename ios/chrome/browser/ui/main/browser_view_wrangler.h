@@ -52,6 +52,12 @@ class ChromeBrowserState;
 // -createMainBrowser MUST be called before calling this method.
 - (void)createMainCoordinatorAndInterface;
 
+// Creates the inactive browser that stores all tabs from the main browser that
+// have not been opened after a defined time. This browser is added to the main
+// interface. -createMainBrowser and -createMainCoordinatorAndInterface MUST be
+// called before calling this method.
+- (void)createInactiveBrowser;
+
 // Tells the receiver to clean up all the state that is tied to the incognito
 // BrowserState. This method should be called before the incognito BrowserState
 // is destroyed.

@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -22,6 +23,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
 #import "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -29,6 +31,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -118,6 +121,7 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
         browsingDataCommandEndpoint:nil];
     [wrangler createMainBrowser];
     [wrangler createMainCoordinatorAndInterface];
+    [wrangler createInactiveBrowser];
     // Test that BVC is created on demand.
     UIViewController* bvc = wrangler.mainInterface.viewController;
     EXPECT_NE(bvc, nil);
@@ -147,6 +151,11 @@ TEST_F(BrowserViewWranglerTest, TestInitNilObserver) {
 }
 
 TEST_F(BrowserViewWranglerTest, TestBrowserList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {/* Enabled features */},
+      {/* Disabled features */ kTabInactivityThreshold});
+
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
   TestBrowserListObserver observer;
@@ -164,6 +173,13 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   [wrangler createMainCoordinatorAndInterface];
   EXPECT_EQ(wrangler.mainInterface.browser, observer.GetLastAddedBrowser());
   EXPECT_EQ(1UL, browser_list->AllRegularBrowsers().size());
+
+  // Create the inactive browser but as the feature is disabled, ensure it is
+  // not added to the main interface.
+  [wrangler createInactiveBrowser];
+  EXPECT_EQ(2UL, browser_list->AllRegularBrowsers().size());
+  EXPECT_EQ(wrangler.mainInterface.inactiveBrowser, nullptr);
+
   // The lazy OTR browser creation should involve an addition to the browser
   // list.
   EXPECT_EQ(wrangler.incognitoInterface.browser,
@@ -198,6 +214,44 @@ TEST_F(BrowserViewWranglerTest, TestBrowserList) {
   EXPECT_EQ(pre_shutdown_main_browser, observer.GetLastRemovedBrowser());
   EXPECT_EQ(pre_shutdown_incognito_browser,
             observer.GetLastRemovedIncognitoBrowser());
+
+  browser_list->RemoveObserver(&observer);
+}
+
+TEST_F(BrowserViewWranglerTest, TestInactiveInterface) {
+  // No inactive tabs on iPad.
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  // Enabled inactive tabs feature.
+  base::test::ScopedFeatureList feature_list;
+  std::map<std::string, std::string> parameters;
+  parameters[kTabInactivityThresholdParameterName] =
+      kTabInactivityThresholdOneWeekParam;
+  feature_list.InitAndEnableFeatureWithParameters(kTabInactivityThreshold,
+                                                  parameters);
+
+  BrowserList* browser_list =
+      BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+  TestBrowserListObserver observer;
+  browser_list->AddObserver(&observer);
+
+  BrowserViewWrangler* wrangler = [[BrowserViewWrangler alloc]
+             initWithBrowserState:chrome_browser_state_.get()
+                       sceneState:scene_state_
+       applicationCommandEndpoint:nil
+      browsingDataCommandEndpoint:nil];
+
+  [wrangler createMainBrowser];
+  [wrangler createMainCoordinatorAndInterface];
+  [wrangler createInactiveBrowser];
+  EXPECT_EQ(2UL, browser_list->AllRegularBrowsers().size());
+  EXPECT_EQ(wrangler.mainInterface.inactiveBrowser,
+            observer.GetLastAddedBrowser());
+
+  // After shutdown all browsers are destroyed.
+  [wrangler shutdown];
+  EXPECT_EQ(0UL, browser_list->AllRegularBrowsers().size());
 
   browser_list->RemoveObserver(&observer);
 }

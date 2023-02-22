@@ -35,6 +35,7 @@ class TestBrowser final : public Browser {
   void AddObserver(BrowserObserver* observer) final;
   void RemoveObserver(BrowserObserver* observer) final;
   base::WeakPtr<Browser> AsWeakPtr() final;
+  bool IsInactive() const final;
 
  private:
   ChromeBrowserState* browser_state_ = nullptr;

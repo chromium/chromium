@@ -61,3 +61,7 @@ void TestBrowser::RemoveObserver(BrowserObserver* observer) {
 base::WeakPtr<Browser> TestBrowser::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
+
+bool TestBrowser::IsInactive() const {
+  return false;
+}

@@ -381,6 +381,7 @@ void InjectNTP(Browser* browser) {
          applicationCommandEndpoint:self
         browsingDataCommandEndpoint:self.browsingDataCommandsHandler
                      regularBrowser:self.mainInterface.browser
+                    inactiveBrowser:self.mainInterface.inactiveBrowser
                    incognitoBrowser:self.incognitoInterface.browser];
     tabGridCoordinator.delegate = self;
     _mainCoordinator = tabGridCoordinator;
@@ -872,6 +873,14 @@ void InjectNTP(Browser* browser) {
 
   // Create and start the BVC.
   [self.browserViewWrangler createMainCoordinatorAndInterface];
+
+  // Create the inactive browser. Should be called after the main browser is
+  // created (in -createMainBrowser) and restored (in
+  // -createMainCoordinatorAndInterface). Even if the feature is disabled, we
+  // always create the inactive browser to restore any element that have been
+  // saved in the past. To avoid any tab disappearance from user perspective, we
+  // move all tabs accordingly.
+  [self.browserViewWrangler createInactiveBrowser];
 
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(mainCommandDispatcher, ApplicationCommands);

@@ -176,6 +176,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         window.rootViewController;
     [incognito_popup_menu_coordinator_ start];
 
+    // TODO(crbug.com/1414048): Add inactive browser.
     coordinator_ = [[TabGridCoordinator alloc]
                      initWithWindow:window
          applicationCommandEndpoint:OCMProtocolMock(
@@ -183,6 +184,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
         browsingDataCommandEndpoint:OCMProtocolMock(
                                         @protocol(BrowsingDataCommands))
                      regularBrowser:browser_.get()
+                    inactiveBrowser:nil
                    incognitoBrowser:incognito_browser_.get()];
     coordinator_.animationsDisabledForTesting = YES;
 
