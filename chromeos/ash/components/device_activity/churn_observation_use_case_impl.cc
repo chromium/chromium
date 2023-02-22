@@ -15,6 +15,25 @@
 
 namespace {
 
+// There are 18 bits (indexed 17 to 0, left to right) representing the past 18
+// months of the device actives. The right-most bit will always represent the
+// device was active for the current month.
+//
+// The cohort use case will ping for the current month before
+// the observation use case reads the active status bits.
+// In other words, the current month is represented at index 0 (right-most bit).
+//
+// Index (1-3) in the active status bits represents the monthly active churn
+// status for the 3 different observation windows.
+constexpr int kMonthlyChurnActiveStatusOffsetIndex = 1;
+
+// Index (13-15) in the active status bits represents the
+// yearly active churn status for the 3 different observation windows.
+constexpr int kYearlyChurnActiveStatusOffsetIndex = 13;
+
+// Number of months in a given year.
+constexpr int kMonthsInYear = 12;
+
 base::Time GetNextMonth(base::Time ts) {
   base::Time::Exploded exploded;
   ts.UTCExplode(&exploded);
@@ -109,21 +128,31 @@ std::string ChurnObservationUseCaseImpl::GenerateWindowIdentifier(
 
 absl::optional<FresnelImportDataRequest>
 ChurnObservationUseCaseImpl::GenerateImportRequestBody() {
+  if (!CohortCheckInSuccessfullyUpdatedActiveStatus()) {
+    LOG(ERROR)
+        << "Churn observation use case should only generate import request "
+        << "if the cohort use case successfully reported and updated the "
+           "active_status object.";
+    LOG(ERROR) << "Active status object currently has value = "
+               << churn_active_status_ptr_->GetValueAsInt();
+    return absl::nullopt;
+  }
+
   // Initializes the 3 observation period window identifiers based on the
   // current active ts month.
-  SetObservationPeriodWindowIds(GetActiveTs());
+  SetObservationPeriodWindows(GetActiveTs());
+
+  // Verify observation periods were set as expected.
+  if (observation_window_0_.observation_period.empty() &&
+      observation_window_1_.observation_period.empty() &&
+      observation_window_2_.observation_period.empty()) {
+    LOG(ERROR) << "All observation periods are currently unset. "
+               << "Returning empty FresnelImportDataRequest.";
+    return absl::nullopt;
+  }
 
   // Generate Fresnel PSM import request body.
   FresnelImportDataRequest import_request;
-
-  // Verify observation periods were set as expected.
-  if (observation_period_minus_0_id_.empty() &&
-      observation_period_minus_1_id_.empty() &&
-      observation_period_minus_2_id_.empty()) {
-    LOG(ERROR) << "All observation periods are currently unset. "
-               << "Returning empty FresnelImportDataRequest.";
-    return import_request;
-  }
 
   // Create fresh |DeviceMetadata| object.
   // Note every dimension added to this proto must be approved by privacy.
@@ -135,16 +164,17 @@ ChurnObservationUseCaseImpl::GenerateImportRequestBody() {
 
   import_request.set_use_case(GetPsmUseCase());
 
-  DCHECK(!observation_period_minus_0_id_.empty());
-  DCHECK(!observation_period_minus_1_id_.empty());
-  DCHECK(!observation_period_minus_2_id_.empty());
+  // TODO(hirthanan): Selectively DCHECK after adding local state checks.
+  DCHECK(!observation_window_0_.observation_period.empty());
+  DCHECK(!observation_window_1_.observation_period.empty());
+  DCHECK(!observation_window_2_.observation_period.empty());
 
   *import_request.add_import_data() =
-      GenerateObservationFresnelImportData(observation_period_minus_0_id_);
+      GenerateObservationFresnelImportData(observation_window_0_);
   *import_request.add_import_data() =
-      GenerateObservationFresnelImportData(observation_period_minus_1_id_);
+      GenerateObservationFresnelImportData(observation_window_1_);
   *import_request.add_import_data() =
-      GenerateObservationFresnelImportData(observation_period_minus_2_id_);
+      GenerateObservationFresnelImportData(observation_window_2_);
 
   return import_request;
 }
@@ -176,13 +206,13 @@ ChurnObservationUseCaseImpl::GenerateActiveStatus() {
 
 FresnelImportData
 ChurnObservationUseCaseImpl::GenerateObservationFresnelImportData(
-    const std::string& observation_window_id) const {
+    const ObservationWindow& observation_window) const {
+  DCHECK(!observation_window.observation_period.empty());
+
+  std::string observation_window_id = observation_window.observation_period;
   absl::optional<psm_rlwe::RlwePlaintextId> psm_id =
       GeneratePsmIdentifier(observation_window_id);
   std::string psm_id_str = psm_id.value().sensitive_id();
-
-  // TODO(hirthanan): Verify whether active status needs to be imported with
-  // observation use case.
 
   FresnelImportData import_data;
   import_data.set_plaintext_id(psm_id_str);
@@ -192,40 +222,203 @@ ChurnObservationUseCaseImpl::GenerateObservationFresnelImportData(
   // Set the observation metadata used in churn computation.
   ChurnObservationMetadata* observation_metadata =
       import_data.mutable_churn_observation_metadata();
-  observation_metadata->set_monthly_active_status(IsPreviousMonthlyActive());
-  observation_metadata->set_yearly_active_status(IsPreviousYearlyActive());
-  observation_metadata->set_first_active_during_cohort(
-      GetFirstActiveDuringCohort());
+  observation_metadata->set_monthly_active_status(
+      IsPreviousMonthlyActive(observation_window));
+  observation_metadata->set_yearly_active_status(
+      IsPreviousYearlyActive(observation_window));
+
+  absl::optional<ChurnObservationMetadata::FirstActiveDuringCohort>
+      first_active_during_cohort =
+          GetFirstActiveDuringCohort(observation_window);
+
+  // Only set the proto observation metadata if we were able to calculate the
+  // first active during cohort enum successfully.
+  if (first_active_during_cohort.has_value()) {
+    observation_metadata->set_first_active_during_cohort(
+        first_active_during_cohort.value());
+  }
 
   return import_data;
 }
 
-// TODO(hirthanan): Implement method to calculate previous monthly active.
-// We will need the active status object pointer in the following three methods
-// to proceed with implementation.
-bool ChurnObservationUseCaseImpl::IsPreviousMonthlyActive() const {
-  (void)churn_active_status_ptr_;
-  return true;
+bool ChurnObservationUseCaseImpl::IsPreviousMonthlyActive(
+    const ObservationWindow& observation_window) const {
+  DCHECK(churn_active_status_ptr_);
+  DCHECK(!observation_window.observation_period.empty());
+
+  int active_month_val = churn_active_status_ptr_->GetActiveMonthBits();
+
+  std::bitset<ChurnActiveStatus::kActiveMonthsBitSize> active_month_bits(
+      active_month_val);
+
+  // Calculate the monthly churn rate by determining whether device was active
+  // in the previous month of the observation window.
+  // For example, for observation window "202303-202305", we would check for
+  // whether "202302" month was active.
+  return active_month_bits.test(kMonthlyChurnActiveStatusOffsetIndex +
+                                observation_window.period);
 }
 
-// TODO(hirthanan): Implement method to calculate previous yearly active.
-// We will need the active status object pointer in the following three methods
-// to proceed with implementation.
-bool ChurnObservationUseCaseImpl::IsPreviousYearlyActive() const {
-  (void)churn_active_status_ptr_;
-  return true;
+bool ChurnObservationUseCaseImpl::IsPreviousYearlyActive(
+    const ObservationWindow& observation_window) const {
+  DCHECK(churn_active_status_ptr_);
+  DCHECK(!observation_window.observation_period.empty());
+
+  int active_month_val = churn_active_status_ptr_->GetActiveMonthBits();
+
+  std::bitset<ChurnActiveStatus::kActiveMonthsBitSize> active_month_bits(
+      active_month_val);
+
+  // Calculate the yearly churn rate by determining whether device was active
+  // 12 months before the previous month of the observation window.
+  // For example, for observation window "202303-202305", we would check for
+  // whether "202202" month was active.
+  return active_month_bits.test(kYearlyChurnActiveStatusOffsetIndex +
+                                observation_window.period);
 }
 
-// TODO(hirthanan): Implement method to calculate first active during cohort.
-// We will need the active status object pointer in the following three methods
-// to proceed with implementation.
-ChurnObservationMetadata::FirstActiveDuringCohort
-ChurnObservationUseCaseImpl::GetFirstActiveDuringCohort() const {
-  (void)churn_active_status_ptr_;
+absl::optional<ChurnObservationMetadata::FirstActiveDuringCohort>
+ChurnObservationUseCaseImpl::GetFirstActiveDuringCohort(
+    const ObservationWindow& observation_window) const {
+  DCHECK(churn_active_status_ptr_);
+  DCHECK(!observation_window.observation_period.empty());
+
+  // TODO(hirthanan): Add UMA histogram to measure start of ActivateDate Period
+  base::Time first_active_week = churn_active_status_ptr_->GetFirstActiveWeek();
+
+  if (first_active_week == base::Time()) {
+    LOG(ERROR)
+        << "Reached an invalid state where the first active week is unset.";
+    return absl::nullopt;
+  }
+
+  // This case should never happen since the device reports the churn cohort use
+  // case before this, churn observation use case. The churn cohort use case
+  // updates the active month bits for the current month, meaning this value
+  // should never be 0.
+  if (churn_active_status_ptr_->GetActiveMonthBits() == 0) {
+    LOG(ERROR) << "Reached an invalid state where the Active Month Bits is 0.";
+    return absl::nullopt;
+  }
+
+  // Determine whether the device was first active in the month previous to the
+  // observation window.
+  // 1. Get new timestamp for months since inception.
+  // 2. IsPreviousMonthlyActive(observation_window) will tell us whether the
+  //    device was active in the month before the observation window.
+  // 3. It is labelled first active if
+  //    first_active_week == (observation_window_month-1) && bool in step 2 is
+  //    true.
+  base::Time current_active_month =
+      churn_active_status_ptr_->GetCurrentActiveMonth();
+  base::Time prev_active_month = current_active_month;
+
+  // Get the month before the start of the observation period, [0,2].
+  // This depends on the observation window period to know how
+  // many months back to go from the current active month.
+  // 1. Period 0 will be 1 month before the current active month.
+  // 2. Period 1 will be 2 months before the current active month.
+  // 3. Period 2 will be 3 months before the current active month.
+  //
+  for (int i = 0; i <= observation_window.period; i++) {
+    prev_active_month = GetPreviousMonth(prev_active_month);
+  }
+
+  base::Time::Exploded first_active_week_exploded;
+  base::Time::Exploded prev_active_month_exploded;
+
+  first_active_week.UTCExplode(&first_active_week_exploded);
+  prev_active_month.UTCExplode(&prev_active_month_exploded);
+
+  if ((first_active_week_exploded.month == prev_active_month_exploded.month) &&
+      (first_active_week_exploded.year == prev_active_month_exploded.year) &&
+      IsPreviousMonthlyActive(observation_window)) {
+    return ChurnObservationMetadata_FirstActiveDuringCohort_FIRST_ACTIVE_IN_MONTHLY_COHORT;
+  }
+
+  // Determine whether the device was first active in previous cohort year.
+  // The previous cohort year is 12 months behind the previous cohort month.
+  base::Time prev_active_year = prev_active_month;
+  for (int i = 0; i < kMonthsInYear; i++) {
+    prev_active_year = GetPreviousMonth(prev_active_year);
+  }
+
+  base::Time::Exploded prev_active_year_exploded;
+  prev_active_year.UTCExplode(&prev_active_year_exploded);
+
+  if ((first_active_week_exploded.month == prev_active_year_exploded.month) &&
+      (first_active_week_exploded.year == prev_active_year_exploded.year) &&
+      IsPreviousYearlyActive(observation_window)) {
+    return ChurnObservationMetadata_FirstActiveDuringCohort_FIRST_ACTIVE_IN_YEARLY_COHORT;
+  }
+
+  // Since the device was not first active in the previous cohort month or
+  // previous cohort year, return EXISTED_OR_NOT_ACTIVE_YET.
   return ChurnObservationMetadata_FirstActiveDuringCohort_EXISTED_OR_NOT_ACTIVE_YET;
 }
 
-void ChurnObservationUseCaseImpl::SetObservationPeriodWindowIds(base::Time ts) {
+std::string ChurnObservationUseCaseImpl::GetObservationPeriodForTesting(
+    int period) {
+  if (period == 0) {
+    return observation_window_0_.observation_period;
+  }
+  if (period == 1) {
+    return observation_window_1_.observation_period;
+  }
+  if (period == 2) {
+    return observation_window_2_.observation_period;
+  }
+  LOG(ERROR) << "Invalid period passed to method. "
+             << "There is only 3 observation periods.";
+  return std::string();
+}
+
+bool ChurnObservationUseCaseImpl::CohortCheckInSuccessfullyUpdatedActiveStatus()
+    const {
+  // Verify the active status object was updated from the inception date.
+  if (churn_active_status_ptr_->GetActiveMonthBits() == 0) {
+    LOG(ERROR) << "Active status has no active bits set. "
+               << "Active status value = "
+               << churn_active_status_ptr_->GetValueAsInt();
+    return false;
+  }
+
+  base::Time active_status_ts =
+      churn_active_status_ptr_->GetCurrentActiveMonth();
+  base::Time cur_ping_ts = GetActiveTs();
+
+  // The active_status_ts and cur_ping_ts should already be initialized.
+  if (active_status_ts == base::Time() || cur_ping_ts == base::Time()) {
+    LOG(ERROR) << "active status or cur ping ts is not initialized. "
+               << std::endl
+               << "Active status ts = " << active_status_ts << std::endl
+               << "Current ping ts = " << cur_ping_ts;
+    return false;
+  }
+
+  // Check that the active status object was updated at some point in this
+  // month.
+  base::Time::Exploded active_status_exploded;
+  base::Time::Exploded cur_ts_exploded;
+
+  active_status_ts.UTCExplode(&active_status_exploded);
+  cur_ping_ts.UTCExplode(&cur_ts_exploded);
+
+  if ((active_status_exploded.month == cur_ts_exploded.month) &&
+      (active_status_exploded.year == cur_ts_exploded.year)) {
+    return true;
+  }
+
+  return false;
+}
+
+void ChurnObservationUseCaseImpl::SetObservationPeriodWindows(base::Time ts) {
+  if (ts == base::Time()) {
+    LOG(ERROR) << "Timestamp ts is not initialized. "
+               << "Observation periods are left unset.";
+    return;
+  }
+
   base::Time cur_month_minus_1 = GetPreviousMonth(ts);
   base::Time cur_month_minus_2 = GetPreviousMonth(cur_month_minus_1);
 
@@ -241,13 +434,13 @@ void ChurnObservationUseCaseImpl::SetObservationPeriodWindowIds(base::Time ts) {
 
   std::string cur_month_window_id = GenerateWindowIdentifier(ts);
 
-  observation_period_minus_0_id_ =
-      cur_month_window_id + "-" + GenerateWindowIdentifier(cur_month_plus_2);
-  observation_period_minus_1_id_ = GenerateWindowIdentifier(cur_month_minus_1) +
-                                   "-" +
-                                   GenerateWindowIdentifier(cur_month_plus_1);
-  observation_period_minus_2_id_ =
-      GenerateWindowIdentifier(cur_month_minus_2) + "-" + cur_month_window_id;
+  observation_window_0_ = {0, cur_month_window_id + "-" +
+                                  GenerateWindowIdentifier(cur_month_plus_2)};
+  observation_window_1_ = {1, GenerateWindowIdentifier(cur_month_minus_1) +
+                                  "-" +
+                                  GenerateWindowIdentifier(cur_month_plus_1)};
+  observation_window_2_ = {2, GenerateWindowIdentifier(cur_month_minus_2) +
+                                  "-" + cur_month_window_id};
 }
 
 }  // namespace ash::device_activity

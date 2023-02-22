@@ -22,6 +22,26 @@ namespace ash::device_activity {
 // Forward declaration from fresnel_service.proto.
 class FresnelImportDataRequest;
 
+// For a given device active month, there can be up to 3 observation windows
+// that may need to be sent to Fresnel to compute monthly, yearly, and first
+// active churn.
+//
+// For example, a device that comes online in Feb 2023 that has never sent
+// observation windows for previous months may send.
+// (Period, Observation Window)
+// (0, 202302-202304)
+// (1, 202301-202303)
+// (2, 202212-202302)
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
+    ObservationWindow {
+  // Observation window period should be between [0, 2].
+  int period = -1;
+
+  // String representing the observation period formatted
+  // as "YYYYMM-YYYYMM" where the period length is 3 months.
+  std::string observation_period;
+};
+
 // Contains the methods required to report the churn observation device active.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
     ChurnObservationUseCaseImpl : public DeviceActiveUseCase {
@@ -44,37 +64,44 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   bool IsEnabledCheckMembership() override;
   private_computing::ActiveStatus GenerateActiveStatus() override;
 
+  std::string GetObservationPeriodForTesting(int period);
+
  private:
+  // On successful churn cohort check in, the active status object is updated to
+  // the current month. If churn cohort check in failed this month, the
+  // active status object will reflect an old month.
+  bool CohortCheckInSuccessfullyUpdatedActiveStatus() const;
+
   // The observation use case generates 3 observation window identifiers
   // for the 3 periods that it will need to ping for.
-  // Sets the |observation_period_minus_0_id_|,
-  // |observation_period_minus_1_id_|, and |observation_period_minus_2_id_|
-  // based on the current ts month.
+  // Sets the |observation_window_0_|, |observation_window_1_|,
+  // and |observation_window_2_| based on the current ts month.
   //
   // For example, for the ts representing the date 03/01/2022, this method will
   // set the observation period strings to:
   // 202203-202205 ,202202-202204, and 202201-202203 respectively.
-  void SetObservationPeriodWindowIds(base::Time ts);
+  void SetObservationPeriodWindows(base::Time ts);
 
   // Generates FresnelImportData message given the window identifier.
   // The churn observation use case will call this method 3 times for each of
   // it's observation windows.
   FresnelImportData GenerateObservationFresnelImportData(
-      const std::string& observation_window_id) const;
+      const ObservationWindow& observation_window) const;
 
-  // TODO(hirthanan): Implement following three methods in new CL.
-  bool IsPreviousMonthlyActive() const;
+  bool IsPreviousMonthlyActive(
+      const ObservationWindow& observation_window) const;
 
-  bool IsPreviousYearlyActive() const;
+  bool IsPreviousYearlyActive(
+      const ObservationWindow& observation_window) const;
 
-  ChurnObservationMetadata::FirstActiveDuringCohort GetFirstActiveDuringCohort()
-      const;
+  absl::optional<ChurnObservationMetadata::FirstActiveDuringCohort>
+  GetFirstActiveDuringCohort(const ObservationWindow& observation_window) const;
 
   ChurnActiveStatus* const churn_active_status_ptr_;
 
-  std::string observation_period_minus_0_id_;
-  std::string observation_period_minus_1_id_;
-  std::string observation_period_minus_2_id_;
+  ObservationWindow observation_window_0_;
+  ObservationWindow observation_window_1_;
+  ObservationWindow observation_window_2_;
 };
 
 }  // namespace ash::device_activity
