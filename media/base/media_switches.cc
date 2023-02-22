@@ -116,6 +116,8 @@ const char kAudioCapturerWithEchoCancellation[] =
 #if defined(USE_CRAS)
 // Use CRAS, the ChromeOS audio server.
 const char kUseCras[] = "use-cras";
+// Enforce system audio echo cancellation.
+const char kSystemAecEnabled[] = "system-aec-enabled";
 #endif  // defined(USE_CRAS)
 
 // For automated testing of protected content, this switch allows specific

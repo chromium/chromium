@@ -65,6 +65,7 @@ MEDIA_EXPORT extern const char kAudioCapturerWithEchoCancellation[];
 
 #if defined(USE_CRAS)
 MEDIA_EXPORT extern const char kUseCras[];
+MEDIA_EXPORT extern const char kSystemAecEnabled[];
 #endif
 
 MEDIA_EXPORT extern const char

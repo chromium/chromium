@@ -1079,6 +1079,7 @@ policies:
   1078: WebRtcTextLogCollectionAllowed
   1079: EnforceLocalAnchorConstraintsEnabled
   1080: ShowTouchpadScrollScreenEnabled
+  1081: DeviceSystemAecEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

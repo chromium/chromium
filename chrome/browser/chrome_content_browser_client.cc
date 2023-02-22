@@ -5191,6 +5191,20 @@ ChromeContentBrowserClient::CreateScreenEnumerator() const {
   return std::make_unique<ChromeScreenEnumerator>();
 }
 
+bool ChromeContentBrowserClient::EnforceSystemAudioEchoCancellation() {
+  // TODO(b/270042522): This is a short term solution to enforce the system
+  // audio cancellation and will be removed before Lacros is released. The
+  // short term solution will not work on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_CRAS)
+  bool system_aec_enabled = false;
+  ash::CrosSettings::Get()->GetBoolean(ash::kDeviceSystemAecEnabled,
+                                       &system_aec_enabled);
+  return system_aec_enabled;
+#else
+  return false;
+#endif
+}
+
 std::unique_ptr<content::DevToolsManagerDelegate>
 ChromeContentBrowserClient::CreateDevToolsManagerDelegate() {
 #if BUILDFLAG(IS_ANDROID)

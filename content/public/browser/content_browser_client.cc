@@ -301,6 +301,10 @@ bool ContentBrowserClient::OverridesAudioManager() {
   return false;
 }
 
+bool ContentBrowserClient::EnforceSystemAudioEchoCancellation() {
+  return false;
+}
+
 bool ContentBrowserClient::ShouldAssignSiteForURL(const GURL& url) {
   return true;
 }

@@ -1378,6 +1378,9 @@
       }
     ]
   },
+  "DeviceSystemAecEnabled": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "DevicePrintingClientNameTemplate": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

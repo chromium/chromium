@@ -92,6 +92,9 @@ const char kReleaseLtsTag[] = "cros.system.releaseLtsTag";
 const char kDeviceChannelDowngradeBehavior[] =
     "cros.system.channelDowngradeBehavior";
 
+// This setting is used to enforce usage of system audio echo cancellation.
+const char kDeviceSystemAecEnabled[] = "cros.audio.device_system_aec_enabled";
+
 // A boolean pref that indicates whether OS & firmware version info should be
 // reported along with device policy requests.
 const char kReportDeviceVersionInfo[] =

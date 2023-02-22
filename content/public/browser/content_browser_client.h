@@ -1344,6 +1344,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // returns a non-null value.
   virtual bool OverridesAudioManager();
 
+  // Returns true if the system audio echo cancellation shall be enforced.
+  virtual bool EnforceSystemAudioEchoCancellation();
+
   // Populates |mappings| with all files that need to be mapped before launching
   // a child process.
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)) || BUILDFLAG(IS_FUCHSIA)

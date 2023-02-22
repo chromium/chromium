@@ -1172,6 +1172,10 @@ message DeviceScreensaverImagesProto {
   optional string device_screensaver_images = 1;
 };
 
+message DeviceSystemAecEnabledProto {
+  optional bool device_system_aec_enabled = 1;
+};
+
 message DeviceScreensaverEnabledProto {
   optional bool device_screensaver_enabled = 1;
 };
@@ -1970,4 +1974,5 @@ message ChromeDeviceSettingsProto {
   optional DeviceScreensaverImageDisplayIntervalSecondsProto
       device_screensaver_image_display_interval_seconds = 144;
   optional DeviceScreensaverImagesProto device_screensaver_images = 145;
+  optional DeviceSystemAecEnabledProto device_system_aec_enabled = 146;
 }
