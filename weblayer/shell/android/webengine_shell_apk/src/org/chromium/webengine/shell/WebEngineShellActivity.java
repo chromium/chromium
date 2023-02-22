@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -87,7 +88,11 @@ public class WebEngineShellActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable thrown) {}
+            public void onFailure(Throwable thrown) {
+                Toast.makeText(mContext, "Failed to start WebSandbox. WebView update needed.",
+                             Toast.LENGTH_LONG)
+                        .show();
+            }
         }, ContextCompat.getMainExecutor(mContext));
     }
 

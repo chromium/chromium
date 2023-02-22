@@ -61,7 +61,14 @@ class BrowserProcessBinder extends IWebSandboxService.Stub {
     @Override
     public void initializeBrowserProcess(IWebSandboxCallback callback) {
         new Handler(Looper.getMainLooper()).post(() -> {
-            WebLayer.loadAsync(mContext, (webLayer) -> onWebLayerReady(webLayer, callback));
+            try {
+                WebLayer.loadAsync(mContext, (webLayer) -> onWebLayerReady(webLayer, callback));
+            } catch (Exception e) {
+                try {
+                    callback.onBrowserProcessInitializationFailure();
+                } catch (RemoteException re) {
+                }
+            }
         });
     }
 
