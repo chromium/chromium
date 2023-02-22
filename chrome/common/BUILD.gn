@@ -407,6 +407,7 @@ static_library("common_lib") {
   } else {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
+    sources += [ "accessibility/read_anything_constants.h" ]
   }
 
   if (is_win) {

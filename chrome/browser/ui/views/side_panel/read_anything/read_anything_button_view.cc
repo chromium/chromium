@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
 
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/image_button_factory.h"

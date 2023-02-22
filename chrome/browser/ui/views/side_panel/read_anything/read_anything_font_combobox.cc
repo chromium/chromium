@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_font_combobox.h"
 
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

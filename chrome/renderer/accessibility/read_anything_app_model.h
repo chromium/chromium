@@ -6,6 +6,7 @@
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
 
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "ui/accessibility/ax_selection.h"
 
 namespace ui {
@@ -51,10 +52,8 @@ class ReadAnythingAppModel {
       read_anything::mojom::LineSpacing line_spacing) const;
 
   // Theme information.
-  // TODO(crbug.com/c/1266555): Reference read_anything_constants to set
-  // default values.
-  std::string font_name_;
-  float font_size_;
+  std::string font_name_ = kReadAnythingDefaultFontName;
+  float font_size_ = kReadAnythingDefaultFontScale;
   float letter_spacing_ =
       (int)read_anything::mojom::LetterSpacing::kDefaultValue;
   float line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;

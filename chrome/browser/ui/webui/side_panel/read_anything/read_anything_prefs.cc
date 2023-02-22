@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -8,9 +8,9 @@
 
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_model.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class ReadAnythingControllerTest : public TestWithBrowserView {
