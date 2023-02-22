@@ -300,6 +300,11 @@ export class SearchContainer extends EventTarget {
     const element = this.getSearchOptionsElement_();
     if (element) {
       element.hidden = true;
+      // Reset options so that we always start searching with the defaults.
+      this.currentOptions_ = getDefaultSearchOptions();
+      element.getLocationSelector().value = this.currentOptions_.location;
+      element.getRecencySelector().value = this.currentOptions_.recency;
+      element.getFileTypeSelector().value = this.currentOptions_.type;
     }
   }
 

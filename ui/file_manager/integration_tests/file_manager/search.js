@@ -20,6 +20,28 @@ const SEARCH_RESULTS_ENTRY_SET = [
 ];
 
 /**
+ * @param {string} appId The ID that identifies the files app.
+ * @param {string} type The search option type (location, recency, type).
+ * @return {Promise<string>} The text of the element with 'selected-option' ID.
+ */
+async function getSelectedOptionText(appId, type) {
+  // Force refresh of the element by showing the dropdown menu.
+  await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, [
+    [
+      'xf-search-options',
+      `xf-select#${type}-selector`,
+    ],
+  ]);
+  // Fetch the current selected item.
+  const option = await remoteCall.waitForElement(appId, [
+    'xf-search-options',
+    `xf-select#${type}-selector`,
+    '#selected-option',
+  ]);
+  return option.text;
+}
+
+/**
  * Tests searching inside Downloads with results.
  */
 testcase.searchDownloadsWithResults = async () => {
@@ -345,15 +367,7 @@ testcase.searchWithLocationOptions = async () => {
 
   // Click the second button, which is This Chromebook.
   chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId,
-          [
-            [
-              'xf-search-options',
-              'xf-select#location-selector',
-              'cr-action-menu cr-button:nth-of-type(2)',
-            ],
-          ]),
+      !!await remoteCall.selectSearchOption(appId, 'location', 2),
       'Failed to click "This Chromebook" location selector');
 
   // Expect all hello files to be found.
@@ -395,15 +409,7 @@ testcase.searchWithRecencyOptions = async () => {
 
   // Click the fourth button, which is "Last week" option.
   chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId,
-          [
-            [
-              'xf-search-options',
-              'xf-select#recency-selector',
-              'cr-action-menu cr-button:nth-of-type(4)',
-            ],
-          ]),
+      !!await remoteCall.selectSearchOption(appId, 'recency', 4),
       'Failed to click "Last week" recency selector');
 
   // Expect only the recent hello file to be found.
@@ -429,15 +435,7 @@ testcase.searchLocalWithTypeOptions = async () => {
 
   // Click the fifth button, which is "Video" option.
   chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId,
-          [
-            [
-              'xf-search-options',
-              'xf-select#type-selector',
-              'cr-action-menu cr-button:nth-of-type(5)',
-            ],
-          ]),
+      !!await remoteCall.selectSearchOption(appId, 'type', 5),
       'Failed to click "Videos" type selector');
 
   // Expect only world, which is a video file.
@@ -469,15 +467,7 @@ testcase.searchDriveWithTypeOptions = async () => {
 
   // Click the second button, which is "Audio" option.
   chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'fakeMouseClick', appId,
-          [
-            [
-              'xf-search-options',
-              'xf-select#type-selector',
-              'cr-action-menu cr-button:nth-of-type(2)',
-            ],
-          ]),
+      !!await remoteCall.selectSearchOption(appId, 'type', 2),
       'Failed to click "Audio" type selector');
 
   await remoteCall.waitForFiles(appId, TestEntryInfo.getExpectedRows([
@@ -513,4 +503,41 @@ testcase.searchRemovableDevice = async () => {
         ENTRIES.hello,
       ]),
       {ignoreLastModifiedTime: true});
+};
+
+/**
+ * Checks that the search options are reset to default on folder change.
+ */
+testcase.resetSearchOptionsOnFolderChange = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Type something into the search query to see search options.
+  await remoteCall.typeSearchText(appId, 'b');
+
+  // Check the defaults.
+  chrome.test.assertEq(
+      'This folder', await getSelectedOptionText(appId, 'location'));
+  chrome.test.assertEq(
+      'All time', await getSelectedOptionText(appId, 'recency'));
+  chrome.test.assertEq('All types', await getSelectedOptionText(appId, 'type'));
+
+  // Change options.
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'type', 2),
+      'Failed to change to "Audio" type selector');
+  chrome.test.assertTrue(
+      !!await remoteCall.selectSearchOption(appId, 'recency', 4),
+      'Failed to change to "Last week" recency selector');
+
+  await navigateWithDirectoryTree(appId, '/My files/Downloads/photos');
+
+  // Start search again.
+  await remoteCall.typeSearchText(appId, 'b');
+
+  // Check that we are back to defaults.
+  chrome.test.assertEq(
+      'This folder', await getSelectedOptionText(appId, 'location'));
+  chrome.test.assertEq(
+      'All time', await getSelectedOptionText(appId, 'recency'));
+  chrome.test.assertEq('All types', await getSelectedOptionText(appId, 'type'));
 };

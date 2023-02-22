@@ -420,6 +420,26 @@ export class RemoteCall {
     return sendTestMessage(
         {appId, name: 'simulateClick', 'clickX': x, 'clickY': y});
   }
+
+  /**
+   * Selects the option given by the index in the menu given by the type. This
+   * only works in V2 version of the search.
+   *
+   * @param {string} appId The ID that identifies the files app.
+   * @param {string} type The search option type (location, recency, type).
+   * @param {number} index The index of the button.
+   * @return {Promise<boolean>} A promise that resolves to true if click was
+   *     successful and false otherwise.
+   */
+  selectSearchOption(appId, type, index) {
+    return this.callRemoteTestUtil('fakeMouseClick', appId, [
+      [
+        'xf-search-options',
+        `xf-select#${type}-selector`,
+        `cr-action-menu cr-button:nth-of-type(${index})`,
+      ],
+    ]);
+  }
 }
 
 /**
