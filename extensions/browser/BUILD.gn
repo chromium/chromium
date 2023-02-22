@@ -942,6 +942,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/test:test_support",
     "//components/crx_file",
     "//components/feedback",
+    "//components/file_access:test_support",
     "//components/keyed_service/content",
     "//components/onc",
     "//components/permissions:permissions_common",

@@ -34,10 +34,25 @@ source_set("unit_tests") {
 
   deps = [
     ":file_access",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//storage/browser:browser",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/mock_scoped_file_access_delegate.cc",
+    "test/mock_scoped_file_access_delegate.h",
+  ]
+
+  deps = [
+    ":file_access",
+    "//base",
+    "//testing/gmock",
   ]
 }

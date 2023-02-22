@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -87,21 +88,6 @@ TEST_F(ScopedFileAccessDelegateTest, MultiSetInstance) {
   new ScopedFileAccessDelegateTestInstance();
   EXPECT_EQ(ScopedFileAccessDelegateTestInstance::instance_counter, 1);
 }
-
-class MockScopedFileAccessDelegate : public ScopedFileAccessDelegate {
- public:
-  MOCK_METHOD(void,
-              RequestFilesAccess,
-              (const std::vector<base::FilePath>&,
-               const GURL&,
-               base::OnceCallback<void(file_access::ScopedFileAccess)>),
-              (override));
-  MOCK_METHOD((void),
-              RequestFilesAccessForSystem,
-              (const std::vector<base::FilePath>&,
-               base::OnceCallback<void(file_access::ScopedFileAccess)>),
-              (override));
-};
 
 class ScopedFileAccessDelegateTaskTest : public ::testing::Test {
  protected:

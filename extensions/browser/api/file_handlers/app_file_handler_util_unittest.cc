@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
+#include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -379,31 +380,13 @@ TEST_F(PrepareFilesForWritableAppTest,
   run_loop.Run();
 }
 
-class MockScopedFileAccessDelegate
-    : public file_access::ScopedFileAccessDelegate {
- public:
-  MOCK_METHOD(
-      (void),
-      RequestFilesAccess,
-      (const std::vector<base::FilePath>& files,
-       const GURL& destination_url,
-       base::OnceCallback<void(file_access::ScopedFileAccess)> callback),
-      (override));
-  MOCK_METHOD(
-      (void),
-      RequestFilesAccessForSystem,
-      (const std::vector<base::FilePath>& files,
-       base::OnceCallback<void(file_access::ScopedFileAccess)> callback),
-      (override));
-};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(PrepareFilesForWritableAppTest, SingleFileThatExistsDlpGrantsAccess) {
   testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
   testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
       fail_callback;
-  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  file_access::MockScopedFileAccessDelegate scoped_file_access_delegate;
   base::RunLoop run_loop;
   EXPECT_CALL(scoped_file_access_delegate, RequestFilesAccessForSystem)
       .WillOnce([this](const std::vector<base::FilePath>& paths,
@@ -424,7 +407,7 @@ TEST_F(PrepareFilesForWritableAppTest, SingleFileThatExistsDlpDeniesAccess) {
   testing::StrictMock<base::MockOnceCallback<void()>> success_callback;
   testing::StrictMock<base::MockOnceCallback<void(const base::FilePath& path)>>
       fail_callback;
-  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  file_access::MockScopedFileAccessDelegate scoped_file_access_delegate;
   base::RunLoop run_loop;
   EXPECT_CALL(scoped_file_access_delegate, RequestFilesAccessForSystem)
       .WillOnce([this](const std::vector<base::FilePath>& paths,
