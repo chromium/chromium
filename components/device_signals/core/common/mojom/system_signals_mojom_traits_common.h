@@ -46,6 +46,15 @@ struct StructTraits<device_signals::mojom::ExecutableMetadataDataView,
     return input.version;
   }
 
+  static bool is_os_verified(const device_signals::ExecutableMetadata& input) {
+    return input.is_os_verified;
+  }
+
+  static absl::optional<std::string> subject_name(
+      const device_signals::ExecutableMetadata& input) {
+    return input.subject_name;
+  }
+
   static bool Read(device_signals::mojom::ExecutableMetadataDataView data,
                    device_signals::ExecutableMetadata* output);
 };

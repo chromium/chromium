@@ -17,9 +17,8 @@ class WinPlatformDelegate : public BasePlatformDelegate {
   // PlatformDelegate:
   bool ResolveFilePath(const base::FilePath& file_path,
                        base::FilePath* resolved_file_path) override;
-  absl::optional<std::vector<std::string>>
-  GetSigningCertificatesPublicKeyHashes(
-      const base::FilePath& file_path) override;
+  absl::optional<SigningCertificatesPublicKeys>
+  GetSigningCertificatesPublicKeys(const base::FilePath& file_path) override;
 };
 
 }  // namespace device_signals

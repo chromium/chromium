@@ -39,10 +39,20 @@ PlatformDelegate::GetProductMetadata(const base::FilePath& file_path) {
   return absl::nullopt;
 }
 
-absl::optional<std::vector<std::string>>
-PlatformDelegate::GetSigningCertificatesPublicKeyHashes(
+absl::optional<PlatformDelegate::SigningCertificatesPublicKeys>
+PlatformDelegate::GetSigningCertificatesPublicKeys(
     const base::FilePath& file_path) {
   return absl::nullopt;
 }
+
+PlatformDelegate::SigningCertificatesPublicKeys::
+    SigningCertificatesPublicKeys() = default;
+PlatformDelegate::SigningCertificatesPublicKeys::SigningCertificatesPublicKeys(
+    const PlatformDelegate::SigningCertificatesPublicKeys&) = default;
+PlatformDelegate::SigningCertificatesPublicKeys&
+PlatformDelegate::SigningCertificatesPublicKeys::operator=(
+    const PlatformDelegate::SigningCertificatesPublicKeys&) = default;
+PlatformDelegate::SigningCertificatesPublicKeys::
+    ~SigningCertificatesPublicKeys() = default;
 
 }  // namespace device_signals

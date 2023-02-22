@@ -31,6 +31,8 @@ struct ExecutableMetadata {
   array<mojo_base.mojom.ByteString>? public_keys_hashes;
   string? product_name;
   string? version;
+  bool is_os_verified;
+  string? subject_name;
 };
 
 struct FileSystemItem {

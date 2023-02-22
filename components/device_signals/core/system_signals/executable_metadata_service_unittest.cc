@@ -74,17 +74,18 @@ TEST_F(ExecutableMetadataServiceTest, GetAllExecutableMetadata_Success) {
   EXPECT_CALL(*mock_platform_delegate_, AreExecutablesRunning(executable_files))
       .WillOnce(Return(is_running_map));
 
-  std::vector<std::string> public_keys_value{"fake_public_key_value"};
+  PlatformDelegate::SigningCertificatesPublicKeys expected_keys;
+  expected_keys.hashes = std::vector<std::string>{"fake_public_key_value"};
   EXPECT_CALL(*mock_platform_delegate_,
-              GetSigningCertificatesPublicKeyHashes(running_path))
-      .WillOnce(Return(public_keys_value));
+              GetSigningCertificatesPublicKeys(running_path))
+      .WillOnce(Return(expected_keys));
   EXPECT_CALL(*mock_platform_delegate_,
-              GetSigningCertificatesPublicKeyHashes(not_running_path))
+              GetSigningCertificatesPublicKeys(not_running_path))
       .WillOnce(Return(absl::nullopt));
 
   FilePathMap<ExecutableMetadata> expected_metadata_map;
   expected_metadata_map.insert(
-      {running_path, CreateExecutableMetadata(true, public_keys_value)});
+      {running_path, CreateExecutableMetadata(true, expected_keys.hashes)});
   expected_metadata_map.insert(
       {not_running_path, CreateExecutableMetadata(false, absl::nullopt)});
 
