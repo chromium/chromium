@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -69,7 +70,10 @@ public final class BaseSuggestionViewBinder<T extends View>
             updateContentViewPadding(model, view.getDecoratedSuggestionView());
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
+        } else if (DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED == propertyKey) {
+            roundSuggestionViewCorners(model, view);
         } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
+            roundSuggestionViewCorners(model, view);
             updateBackground(model, view);
         } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
             updateMargin(model, view);
@@ -335,27 +339,40 @@ public final class BaseSuggestionViewBinder<T extends View>
      * @param view A view that provides context.
      * @return The suggestion background drawable.
      */
-    private static Drawable getBackgroundDrawable(PropertyModel model, View view) {
-        final Resources resources = view.getContext().getResources();
-        int roundedRadius =
-                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius);
-        int rectangleRadius = resources.getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_bg_rectangle_corner_radius);
+    public static Drawable getBackgroundDrawable(PropertyModel model, View view) {
+        return new ColorDrawable(getBackgroundDrawableColor(isIncognito(model), view));
+    }
 
-        int topRadii = model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED) ? roundedRadius
-                                                                                 : rectangleRadius;
-        int bottomRadii = model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED)
-                ? roundedRadius
-                : rectangleRadius;
+    /**
+     * Round top/bottom suggestion view corners to mark suggestions that begin or end section -- or
+     * are standalone suggestions.
+     *
+     * The rounding mechanism utilizes OutlineProviders to guarantee that focus and selection won't
+     * leak outside of the rounded edges.
+     *
+     * @param model A property model, defining which corners (specifically: corners along which
+     *         edge) should be rounded,
+     * @param view The view that should receive rounding.
+     */
+    private static void roundSuggestionViewCorners(PropertyModel model, View view) {
+        var roundTopEdge = model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED);
+        var roundBottomEdge = model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED);
 
-        GradientDrawable backgroundGradient = new GradientDrawable();
-        backgroundGradient.setShape(GradientDrawable.RECTANGLE);
+        if (!roundTopEdge && !roundBottomEdge) {
+            // Note: Suggestion views are re-used. Make sure we don't carry over rounding from
+            // previous model.
+            view.setClipToOutline(false);
+            return;
+        }
 
-        backgroundGradient.setCornerRadii(new float[] {topRadii, topRadii, topRadii, topRadii,
-                bottomRadii, bottomRadii, bottomRadii, bottomRadii});
-        backgroundGradient.setColor(getBackgroundDrawableColor(isIncognito(model), view));
-
-        return backgroundGradient;
+        // TODO(crbug.com/1418077): This should be part of BaseSuggestionView.
+        // Move this once we reconcile Pedals with Base.
+        var outlineProvider =
+                new RoundedCornerOutlineProvider(view.getResources().getDimensionPixelSize(
+                        R.dimen.omnibox_suggestion_bg_round_corner_radius));
+        outlineProvider.setRoundingEdges(true, roundTopEdge, true, roundBottomEdge);
+        view.setOutlineProvider(outlineProvider);
+        view.setClipToOutline(true);
     }
 
     /**

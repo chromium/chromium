@@ -25,6 +25,10 @@ import androidx.annotation.VisibleForTesting;
 public class RoundedCornerOutlineProvider extends ViewOutlineProvider {
     /** Radius of each corner. */
     private int mRadius;
+    private boolean mRoundLeftEdge;
+    private boolean mRoundTopEdge;
+    private boolean mRoundRightEdge;
+    private boolean mRoundBottomEdge;
 
     public RoundedCornerOutlineProvider() {
         this(0);
@@ -32,13 +36,27 @@ public class RoundedCornerOutlineProvider extends ViewOutlineProvider {
 
     public RoundedCornerOutlineProvider(int radius) {
         setRadius(radius);
+        mRoundLeftEdge = true;
+        mRoundTopEdge = true;
+        mRoundRightEdge = true;
+        mRoundBottomEdge = true;
     }
 
     @Override
     public void getOutline(View view, Outline outline) {
-        outline.setRoundRect(view.getPaddingLeft(), view.getPaddingTop(),
-                view.getWidth() - view.getPaddingRight(),
-                view.getHeight() - view.getPaddingBottom(), mRadius);
+        var left = view.getPaddingLeft();
+        var top = view.getPaddingTop();
+        var right = view.getWidth() - view.getPaddingRight();
+        var bottom = view.getHeight() - view.getPaddingBottom();
+
+        // Grow the rounded area size in the direction where the rounding is not desired.
+        if (!mRoundLeftEdge) left -= mRadius;
+        if (!mRoundTopEdge) top -= mRadius;
+        if (!mRoundRightEdge) right += mRadius;
+        if (!mRoundBottomEdge) bottom += mRadius;
+
+        // Apply rounding.
+        outline.setRoundRect(left, top, right, bottom, mRadius);
     }
 
     /**
@@ -49,9 +67,30 @@ public class RoundedCornerOutlineProvider extends ViewOutlineProvider {
         mRadius = radius;
     }
 
+    /**
+     * Override edges that receive rounding.
+     */
+    public void setRoundingEdges(
+            boolean leftEdge, boolean topEdge, boolean rightEdge, boolean bottomEdge) {
+        mRoundLeftEdge = leftEdge;
+        mRoundTopEdge = topEdge;
+        mRoundRightEdge = rightEdge;
+        mRoundBottomEdge = bottomEdge;
+    }
+
     /** Returns the radius used to round the view. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public int getRadiusForTesting() {
         return mRadius;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isTopEdgeRoundedForTesting() {
+        return mRoundTopEdge;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public boolean isBottomEdgeRoundedForTesting() {
+        return mRoundBottomEdge;
     }
 }
