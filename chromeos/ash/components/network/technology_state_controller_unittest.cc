@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -14,12 +15,22 @@
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_controller.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
+#include "chromeos/ash/components/network/metrics/connection_results.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace ash {
+
+namespace {
+
+const char kEnableWifiResultHistogram[] =
+    "Network.Ash.WiFi.EnabledState.Enable.Result";
+const char kEnableWifiResultCodeHistogram[] =
+    "Network.Ash.WiFi.EnabledState.Enable.ResultCode";
+
+}  // namespace
 
 class TechnologyStateControllerTest : public ::testing::Test {
  public:
@@ -70,6 +81,7 @@ class TechnologyStateControllerTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
   std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
@@ -217,6 +229,12 @@ TEST_F(TechnologyStateControllerTest, EnableWifiWhenHotspotOn) {
       NetworkStateHandler::TECHNOLOGY_AVAILABLE,
       network_state_test_helper_.network_state_handler()->GetTechnologyState(
           NetworkTypePattern::WiFi()));
+  histogram_tester_.ExpectTotalCount(kEnableWifiResultCodeHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kEnableWifiResultCodeHistogram,
+      ShillConnectResult::kErrorDisableHotspotFailed, 1);
+  histogram_tester_.ExpectTotalCount(kEnableWifiResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(kEnableWifiResultHistogram, false, 1);
 
   // Simulate disable hotspot will succeed.
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
@@ -229,6 +247,11 @@ TEST_F(TechnologyStateControllerTest, EnableWifiWhenHotspotOn) {
       NetworkStateHandler::TECHNOLOGY_ENABLED,
       network_state_test_helper_.network_state_handler()->GetTechnologyState(
           NetworkTypePattern::WiFi()));
+  histogram_tester_.ExpectTotalCount(kEnableWifiResultCodeHistogram, 2);
+  histogram_tester_.ExpectBucketCount(kEnableWifiResultCodeHistogram,
+                                      ShillConnectResult::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount(kEnableWifiResultHistogram, 2);
+  histogram_tester_.ExpectBucketCount(kEnableWifiResultHistogram, true, 1);
 }
 
 TEST_F(TechnologyStateControllerTest, PrepareEnableHotspot) {

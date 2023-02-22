@@ -83,8 +83,9 @@ enum class ShillConnectResult {
   kErrorEapLocalTlsFailed = 55,
   kErrorEapRemoteTlsFailed = 56,
   kErrorResultWepNotSupported = 57,
+  kErrorDisableHotspotFailed = 58,
 
-  kMaxValue = kErrorResultWepNotSupported,
+  kMaxValue = kErrorDisableHotspotFailed,
 };
 
 // This enum is used to track user-initiated connection results from
