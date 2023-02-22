@@ -242,6 +242,14 @@ void DiagnosticsLogController::OnLoginStatusChanged(LoginStatus login_status) {
   if (ShouldResetAndInitializeLogWritersForLoginStatus(
           g_instance->previous_status_, login_status)) {
     g_instance->ResetAndInitializeLogWriters();
+
+    // Schedule removal of log directory as this should happen every time a user
+    // logs in.
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&DiagnosticsLogController::RemoveDirectory,
+                       g_instance->weak_ptr_factory_.GetWeakPtr(),
+                       g_instance->log_base_path_));
   }
 
   g_instance->previous_status_ = login_status;
