@@ -349,6 +349,10 @@ const IDNTestCase kIdnCases[] = {
     // them.
     {"xn--1-8sbn9akccw8m.com",
      u"\u0455\u0441\u043e\u0440\u0435\u0031\u0440\u0430\u0443.com", kUnsafe},
+    // курс.com is a whole-script-confusable but курс is an allowed word.
+    {"xn--j1amdg.com", u"\u043a\u0443\u0440\u0441.com", kSafe},
+    // ск.com is a whole-script-confusable.
+    {"xn--j1an.com", u"\u0441\u043a.com", kUnsafe},
 
     // The same as above three, but in IDN TLD (рф).
     // 1) ѕсоре.рф with ѕсоре in Cyrillic.
