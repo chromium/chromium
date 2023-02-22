@@ -1756,6 +1756,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Cellular.PortalAttemptsToOnline" units="units"
     expires_after="2023-07-16">
+  <obsolete>
+    Removed as of 01/2023 in crrev/c/4141265.
+  </obsolete>
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1983,6 +1986,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Ethernet.PortalAttemptsToOnline" units="units"
     expires_after="2023-05-07">
+  <obsolete>
+    Removed as of 01/2023 in crrev/c/4141265.
+  </obsolete>
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2974,6 +2980,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Shill.Wifi.PortalAttemptsToOnline" units="units"
     expires_after="2023-06-18">
+  <obsolete>
+    Removed as of 01/2023 in https://crrev/c/4141265.
+  </obsolete>
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
