@@ -100,8 +100,8 @@ int MigrateFrom1To2(sql::Database* db, sql::MetaTable* meta_table) {
       "ALTER TABLE categories ADD COLUMN ntp_shown_count INTEGER NOT NULL "
       "DEFAULT 0;";
   sql::Transaction transaction(db);
-  if (transaction.Begin() && db->Execute(k1To2Sql) && transaction.Commit()) {
-    meta_table->SetVersionNumber(target_version);
+  if (transaction.Begin() && db->Execute(k1To2Sql) &&
+      meta_table->SetVersionNumber(target_version) && transaction.Commit()) {
     return target_version;
   }
   return 1;
@@ -113,8 +113,8 @@ int MigrateFrom2To3(sql::Database* db, sql::MetaTable* meta_table) {
   static const char k2To3Sql[] =
       "ALTER TABLE site_blacklist RENAME TO site_blocklist;";
   sql::Transaction transaction(db);
-  if (transaction.Begin() && db->Execute(k2To3Sql) && transaction.Commit()) {
-    meta_table->SetVersionNumber(target_version);
+  if (transaction.Begin() && db->Execute(k2To3Sql) &&
+      meta_table->SetVersionNumber(target_version) && transaction.Commit()) {
     return target_version;
   }
   return 2;
