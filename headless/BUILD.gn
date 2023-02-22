@@ -383,6 +383,10 @@ component("headless_non_renderer") {
     sources += [ "lib/browser/headless_browser_main_parts_linux.cc" ]
   }
 
+  if (is_win) {
+    sources += [ "lib/browser/headless_browser_main_parts_win.cc" ]
+  }
+
   if (use_aura) {
     sources += [
       "lib/browser/headless_browser_impl_aura.cc",
