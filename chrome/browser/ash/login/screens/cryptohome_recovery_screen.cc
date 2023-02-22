@@ -100,10 +100,14 @@ void CryptohomeRecoveryScreen::OnGetAuthFactorsConfiguration(
       config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
   if (is_configured) {
     if (user_context->GetReauthProofToken().empty()) {
-      RecordReauthReason(user_context->GetAccountId(),
-                         ReauthReason::kCryptohomeRecovery);
+      if (context()->gaia_reauth_token_fetch_error) {
+        view_->OnRecoveryFailed();
+      } else {
+        RecordReauthReason(user_context->GetAccountId(),
+                           ReauthReason::kCryptohomeRecovery);
+        view_->ShowReauthNotification();
+      }
       context()->user_context = std::move(user_context);
-      view_->ShowReauthNotification();
       return;
     }
     recovery_performer_ = std::make_unique<CryptohomeRecoveryPerformer>(

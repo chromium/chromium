@@ -233,6 +233,9 @@ void GaiaScreen::FetchGaiaReauthToken(const AccountId& account) {
 
 void GaiaScreen::OnGaiaReauthTokenFetched(const AccountId& account,
                                           const std::string& token) {
+  if (token.empty()) {
+    context()->gaia_reauth_token_fetch_error = true;
+  }
   gaia_reauth_token_fetcher_.reset();
   view_->SetReauthRequestToken(token);
   view_->LoadGaiaAsync(account);
