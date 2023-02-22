@@ -176,6 +176,10 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _editModelDelegate =
       std::make_unique<WebOmniboxEditModelDelegateImpl>(self, self.delegate);
   _editModelDelegate->SetURLLoader(self);
+  _locationBarModelDelegate.reset(new LocationBarModelDelegateIOS(
+      self.browser->GetWebStateList(), self.browserState));
+  _locationBarModel = std::make_unique<LocationBarModelImpl>(
+      _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
   self.omniboxCoordinator =
       [[OmniboxCoordinator alloc] initWithBaseViewController:nil
@@ -222,11 +226,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
   self.mediator.consumer = self;
   self.mediator.webStateList = self.webStateList;
-
-  _locationBarModelDelegate.reset(new LocationBarModelDelegateIOS(
-      self.browser->GetWebStateList(), self.browserState));
-  _locationBarModel = std::make_unique<LocationBarModelImpl>(
-      _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 
   self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
       initWithLocationBarModel:[self locationBarModel]];

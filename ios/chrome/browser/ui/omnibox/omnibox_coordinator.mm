@@ -170,8 +170,8 @@
 
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
     self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
-          initWithWebStateList:self.browser->GetWebStateList()
-        autocompleteController:_editView->model()->autocomplete_controller()];
+        initWithWebStateList:self.browser->GetWebStateList()
+                   editModel:_editView->model()];
   }
 
   self.popupCoordinator = [self createPopupCoordinator:self.presenterDelegate];

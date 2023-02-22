@@ -5,13 +5,10 @@
 #import "ios/chrome/browser/ui/omnibox/zero_suggest_prefetch_helper.h"
 
 #import "base/feature_list.h"
-#import "components/omnibox/browser/autocomplete_controller.h"
-#import "components/omnibox/browser/autocomplete_input.h"
-#import "components/omnibox/common/omnibox_features.h"
-#import "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
-#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "components/omnibox/browser/omnibox_edit_model.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
@@ -22,7 +19,8 @@
 using web::WebState;
 using web::WebStateObserverBridge;
 
-@interface ZeroSuggestPrefetchHelper () <CRWWebStateObserver>
+@interface ZeroSuggestPrefetchHelper () <CRWWebStateObserver,
+                                         WebStateListObserving>
 @end
 
 @implementation ZeroSuggestPrefetchHelper {
@@ -31,29 +29,39 @@ using web::WebStateObserverBridge;
       _activeWebStateObservationForwarder;
   /// Bridge to receive WS events for the active web state.
   std::unique_ptr<WebStateObserverBridge> _webStateObserverBridge;
+
+  /// Bridge to receive WSL events.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 }
 
 - (void)dealloc {
   /// Reset the web state observation forwarder, which will remove
   /// `_webStateObserverBridge` from the relevant observer list.
   _activeWebStateObservationForwarder.reset();
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+    _webStateListObserverBridge.reset();
+    _webStateList = nullptr;
+  }
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-              autocompleteController:
-                  (AutocompleteController*)autocompleteController {
+                           editModel:(OmniboxEditModel*)editModel {
   self = [super init];
   if (self) {
     DCHECK(webStateList);
-    DCHECK(autocompleteController);
-    DCHECK(base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching));
+    DCHECK(editModel);
 
     _webStateList = webStateList;
-    _autocompleteController = autocompleteController;
+    _editModel = editModel;
     _webStateObserverBridge = std::make_unique<WebStateObserverBridge>(self);
     _activeWebStateObservationForwarder =
         std::make_unique<ActiveWebStateObservationForwarder>(
             webStateList, _webStateObserverBridge.get());
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
+    _webStateList->AddObserver(_webStateListObserverBridge.get());
+
     [self startPrefetchIfNecessary];
   }
   return self;
@@ -61,36 +69,34 @@ using web::WebStateObserverBridge;
 
 #pragma mark - CRWWebStateObserver
 
-- (void)webStateWasShown:(web::WebState*)webState {
-  [self startPrefetchIfNecessary];
-}
-
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
   [self startPrefetchIfNecessary];
 }
 
-#pragma mark - private
+#pragma mark - WebStateListObserving
 
-+ (BOOL)isNTPURL:(GURL)url {
-  return url == kChromeUINewTabURL || url == kChromeUIAboutNewTabURL;
+- (void)webStateList:(WebStateList*)webStateList
+    didChangeActiveWebState:(web::WebState*)newWebState
+                oldWebState:(web::WebState*)oldWebState
+                    atIndex:(int)atIndex
+                     reason:(ActiveWebStateChangeReason)reason {
+  if (newWebState) {
+    [self startPrefetchIfNecessary];
+  }
 }
 
-/// Start prefetching if the active web state is displaying an NTP.
+#pragma mark - private
+
+/// Tell edit model to start prefetching whenever there's an active web state.
+/// The prefetching is expected on navigation, tab switch, and page reload.
 - (void)startPrefetchIfNecessary {
   WebState* activeWebState = _webStateList->GetActiveWebState();
-  if (activeWebState == nullptr ||
-      ![ZeroSuggestPrefetchHelper
-          isNTPURL:activeWebState->GetLastCommittedURL()]) {
+  if (activeWebState == nullptr) {
     return;
   }
 
-  AutocompleteInput autocomplete_input(
-      u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
-      AutocompleteSchemeClassifierImpl());
-  autocomplete_input.set_focus_type(
-      metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  self.autocompleteController->StartPrefetch(autocomplete_input);
+  self.editModel->StartPrefetch();
 }
 
 @end

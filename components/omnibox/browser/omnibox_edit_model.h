@@ -198,7 +198,8 @@ class OmniboxEditModel {
   // Starts an autocomplete prefetch request so that zero-prefix providers can
   // optionally start a prefetch request to warm up the their underlying
   // service(s) and/or optionally cache their otherwise async response.
-  void StartPrefetch();
+  // Virtual for testing.
+  virtual void StartPrefetch();
 
   // Closes the popup and cancels any pending asynchronous queries.
   void StopAutocomplete();
