@@ -41,8 +41,8 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
         // The detail screen can display the Autofill profile or the credit
         // card selection.
         View detailScreenView = rootView.findViewById(R.id.fast_checkout_detail_screen_sheet);
-        DetailScreenCoordinator detailScreenCoordinator =
-                new DetailScreenCoordinator(context, detailScreenView, mModel);
+        DetailScreenCoordinator detailScreenCoordinator = new DetailScreenCoordinator(
+                context, detailScreenView, mModel, mBottomSheetController);
 
         ViewFlipper viewFlipperView =
                 (ViewFlipper) rootView.findViewById(R.id.fast_checkout_bottom_sheet_view_flipper);
