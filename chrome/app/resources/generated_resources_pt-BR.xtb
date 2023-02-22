@@ -2040,7 +2040,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Remover 1 app sem suporte}one{Remover # app sem suporte}other{Remover # apps sem suporte}}</translation>
 <translation id="2776560192867872731">Mudar nome do dispositivo para <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Excluir contêiner</translation>
-<translation id="2777525873368474674">Colar o link da imagem</translation>
+<translation id="2777525873368474674">Cole o link de uma imagem</translation>
 <translation id="2778471504622896352">Adicionar apps remotos ao iniciador do ChromeOS</translation>
 <translation id="2781120507965857989">Ative a sincronização para acessar favoritos, senhas, histórico e muito mais neste dispositivo e em qualquer outro lugar em que esse recurso também esteja ativado. O Google pode usar seu histórico para personalizar a Pesquisa e outros serviços que ele oferece.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
