@@ -1479,7 +1479,7 @@ BASE_FEATURE(kRequestDesktopSiteAdditions,
 // Refer to the launch bug (https://crbug.com/1244979) for more information.
 BASE_FEATURE(kRequestDesktopSiteExceptions,
              "RequestDesktopSiteExceptions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Request Desktop Site zoom for Android. Apply a pre-defined page zoom level
 // when desktop user agent is used.

@@ -104,7 +104,7 @@ class WebsitePreference extends ChromeImageViewPreference {
             } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
                     && ContentFeatureList.getFieldTrialParamByFeatureAsBoolean(
                             ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
-                            PARAM_SUBDOMAIN_SETTINGS, false)
+                            PARAM_SUBDOMAIN_SETTINGS, true)
                     && mSite.getAddress().getIsAnySubdomainPattern()) {
                 setSummary(String.format(
                         getContext().getString(R.string.website_settings_domain_exception_label),
