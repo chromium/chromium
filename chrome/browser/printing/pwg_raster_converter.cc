@@ -253,12 +253,15 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
       result.odd_page_transform = TRANSFORM_NORMAL;
       break;
     case cloud_devices::printer::DuplexType::LONG_EDGE:
+      result.duplex_mode = mojom::DuplexMode::kLongEdge;
       if (document_sheet_back ==
           cloud_devices::printer::DocumentSheetBack::ROTATED) {
         result.odd_page_transform = TRANSFORM_ROTATE_180;
       } else if (document_sheet_back ==
                  cloud_devices::printer::DocumentSheetBack::FLIPPED) {
         result.odd_page_transform = TRANSFORM_FLIP_VERTICAL;
+      } else {
+        result.odd_page_transform = TRANSFORM_NORMAL;
       }
       break;
     case cloud_devices::printer::DuplexType::SHORT_EDGE:
@@ -269,6 +272,8 @@ PwgRasterSettings PwgRasterConverter::GetBitmapSettings(
       } else if (document_sheet_back ==
                  cloud_devices::printer::DocumentSheetBack::FLIPPED) {
         result.odd_page_transform = TRANSFORM_FLIP_HORIZONTAL;
+      } else {
+        result.odd_page_transform = TRANSFORM_NORMAL;
       }
       break;
   }

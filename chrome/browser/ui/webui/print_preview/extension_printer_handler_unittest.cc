@@ -816,6 +816,8 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPwg) {
   ASSERT_TRUE(fake_api);
   ASSERT_EQ(1u, fake_api->pending_print_count());
 
+  EXPECT_EQ(mojom::DuplexMode::kSimplex,
+            pwg_raster_converter_->bitmap_settings().duplex_mode);
   EXPECT_EQ(TRANSFORM_NORMAL,
             pwg_raster_converter_->bitmap_settings().odd_page_transform);
   EXPECT_FALSE(pwg_raster_converter_->bitmap_settings().rotate_all_pages);
@@ -870,6 +872,8 @@ TEST_F(ExtensionPrinterHandlerTest, PrintPwgNonDefaultSettings) {
   ASSERT_TRUE(fake_api);
   ASSERT_EQ(1u, fake_api->pending_print_count());
 
+  EXPECT_EQ(mojom::DuplexMode::kLongEdge,
+            pwg_raster_converter_->bitmap_settings().duplex_mode);
   EXPECT_EQ(TRANSFORM_FLIP_VERTICAL,
             pwg_raster_converter_->bitmap_settings().odd_page_transform);
   EXPECT_TRUE(pwg_raster_converter_->bitmap_settings().rotate_all_pages);
