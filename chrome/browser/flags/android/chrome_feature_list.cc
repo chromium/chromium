@@ -190,6 +190,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTNewDownloadTab,
     &kCCTPackageNameRecording,
     &kCCTPostMessageAPI,
+    &kCCTPostMessageOrigin,
     &kCCTPrefetchDelayShowOnStart,
     &kCCTRealTimeEngagementSignals,
     &kCCTRedirectPreconnect,
@@ -556,6 +557,10 @@ BASE_FEATURE(kCCTPackageNameRecording,
 BASE_FEATURE(kCCTPostMessageAPI,
              "CCTPostMessageAPI",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTPostMessageOrigin,
+             "CCTPostMessageOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTPrefetchDelayShowOnStart,
              "CCTPrefetchDelayShowOnStart",
