@@ -388,10 +388,9 @@ class TrashDirectoryReader implements FileSystemDirectoryReader {
       return null;
     }
 
-    const deletionDate = parsedEntry.deletionDate;
     return new TrashEntry(
-        parsedEntry.restoreEntry.name, deletionDate, filesEntry, infoEntry,
-        parsedEntry.restoreEntry);
+        parsedEntry.restoreEntry.name, new Date(parsedEntry.deletionDate),
+        filesEntry, infoEntry, parsedEntry.restoreEntry);
   }
 
   /**
@@ -488,8 +487,7 @@ class TrashDirectoryReader implements FileSystemDirectoryReader {
         }
         // In the event the parsed entry was deleted more than 30 days ago,
         // schedule them for deletion and don't render them in the view.
-        if (parsedEntry.deletionDate.getTime() <
-            (dateNow - AUTO_DELETE_INTERVAL_MS)) {
+        if (parsedEntry.deletionDate < (dateNow - AUTO_DELETE_INTERVAL_MS)) {
           entriesToDelete.push(infoEntry);
           const trashEntry = this.getFilesEntry(parsedEntry.trashInfoFileName);
           if (trashEntry) {

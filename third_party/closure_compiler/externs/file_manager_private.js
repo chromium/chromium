@@ -827,7 +827,7 @@ chrome.fileManagerPrivate.DialogCallerInformation;
  * @typedef {{
  *   restoreEntry: !Entry,
  *   trashInfoFileName: string,
- *   deletionDate: Date,
+ *   deletionDate: number,
  * }}
  */
 chrome.fileManagerPrivate.ParsedTrashInfoFile;
