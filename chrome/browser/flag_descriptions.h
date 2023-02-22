@@ -213,6 +213,9 @@ extern const char kAutofillAutoTriggerManualFallbackForCardsDescription[];
 extern const char kAutofillEnableFIDOProgressDialogName[];
 extern const char kAutofillEnableFIDOProgressDialogDescription[];
 
+extern const char kAutofillEnableIbanClientSideUrlFilteringName[];
+extern const char kAutofillEnableIbanClientSideUrlFilteringDescription[];
+
 extern const char kAutofillEnableManualFallbackForVirtualCardsName[];
 extern const char kAutofillEnableManualFallbackForVirtualCardsDescription[];
 
@@ -233,9 +236,6 @@ extern const char kAutofillEnableOfferNotificationForPromoCodesDescription[];
 
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryName[];
 extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
-
-extern const char kAutofillEnablePageLoadMetadataIntegrationName[];
-extern const char kAutofillEnablePageLoadMetadataIntegrationDescription[];
 
 extern const char kAutofillEnableRankingFormulaAddressProfilesName[];
 extern const char kAutofillEnableRankingFormulaAddressProfilesDescription[];

@@ -9377,12 +9377,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(thumbnail::kThumbnailCacheRefactor)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-page-load-metadata-integration",
-     flag_descriptions::kAutofillEnablePageLoadMetadataIntegrationName,
-     flag_descriptions::kAutofillEnablePageLoadMetadataIntegrationDescription,
+    {"autofill-enable-iban-client-side-url-filtering",
+     flag_descriptions::kAutofillEnableIbanClientSideUrlFilteringName,
+     flag_descriptions::kAutofillEnableIbanClientSideUrlFilteringDescription,
      kOsAll,
      FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnablePageLoadMetadataIntegration)},
+         autofill::features::kAutofillEnableIbanClientSideUrlFiltering)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"system-live-caption", flag_descriptions::kSystemLiveCaptionName,

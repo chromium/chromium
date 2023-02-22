@@ -490,6 +490,11 @@
     "expiry_milestone": 113
   },
   {
+    "name": "autofill-enable-iban-client-side-url-filtering",
+    "owners": [ "vinnypersky@google.com"],
+    "expiry_milestone": 123
+  },
+  {
     "name": "autofill-enable-manual-fallback-for-virtual-cards",
     "owners": [ "siashah", "siyua" ],
     "expiry_milestone": 116
@@ -518,11 +523,6 @@
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua", "siashah@google.com" ],
     "expiry_milestone": 116
-  },
-  {
-    "name": "autofill-enable-page-load-metadata-integration",
-    "owners": [ "vinnypersky@google.com"],
-    "expiry_milestone": 123
   },
   {
     "name": "autofill-enable-ranking-formula-address-profiles",

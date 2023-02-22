@@ -369,6 +369,13 @@ const char kAutofillEnableFIDOProgressDialogDescription[] =
     "When enabled, a progress dialog is displayed while authenticating with "
     "FIDO on Android.";
 
+const char kAutofillEnableIbanClientSideUrlFilteringName[] =
+    "Enable Autofill IBAN client side URL filtering";
+const char kAutofillEnableIbanClientSideUrlFilteringDescription[] =
+    "When enabled, client side URL filtering will be triggered for the IBAN "
+    "use-case, so that IBAN autofill is not offered on websites that are "
+    "blocked.";
+
 const char kAutofillEnableManualFallbackForVirtualCardsName[] =
     "Show manual fallback for virtual cards";
 const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
@@ -410,14 +417,6 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
-
-const char kAutofillEnablePageLoadMetadataIntegrationName[] =
-    "Enable Autofill Page Load Metadata integration";
-const char kAutofillEnablePageLoadMetadataIntegrationDescription[] =
-    "When enabled, client side filtering functionality will be triggered for "
-    "certain autofill use-cases, for example filtering displaying virtual card "
-    "suggestions on websites where the merchant has opted-out of virtual "
-    "cards.";
 
 const char kAutofillEnableRankingFormulaAddressProfilesName[] =
     "Enable new Autofill suggestion ranking formula for profiles";

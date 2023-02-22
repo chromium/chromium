@@ -81,6 +81,12 @@ BASE_FEATURE(kAutofillEnableFIDOProgressDialog,
              "AutofillEnableFIDOProgressDialog",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, client side URL filtering will be triggered for the IBAN
+// use-case, so that IBAN autofill is not offered on websites that are blocked.
+BASE_FEATURE(kAutofillEnableIbanClientSideUrlFiltering,
+             "AutofillEnableIbanClientSideUrlFiltering",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, enable manual falling component for virtual cards on Android.
 BASE_FEATURE(kAutofillEnableManualFallbackForVirtualCards,
              "AutofillEnableManualFallbackForVirtualCards",
@@ -102,14 +108,6 @@ BASE_FEATURE(kAutofillEnableOfferNotificationForPromoCodes,
 // downstream.
 BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
              "AutofillEnableOffersInClankKeyboardAccessory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, client side filtering functionality will be triggered for
-// certain autofill use-cases, for example filtering displaying virtual card
-// suggestions on websites where the merchant has opted-out of virtual
-// cards.
-BASE_FEATURE(kAutofillEnablePageLoadMetadataIntegration,
-             "AutofillEnablePageLoadMetadataIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, some extra metrics logging for Autofill Downstream will start.
