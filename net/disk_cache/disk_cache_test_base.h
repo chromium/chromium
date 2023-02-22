@@ -193,6 +193,8 @@ class DiskCacheTestWithCache : public DiskCacheTest {
 
   void OnExternalCacheHit(const std::string& key);
 
+  std::unique_ptr<disk_cache::Backend> TakeCache();
+
   void TearDown() override;
 
   // cache_ will always have a valid object, regardless of how the cache was

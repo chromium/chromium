@@ -2329,7 +2329,7 @@ TEST_F(DiskCacheEntryTest, DoomSparseEntry2) {
 
   entry->Close();
   disk_cache::Backend* cache = cache_.get();
-  SparseTestCompletionCallback cb(std::move(cache_));
+  SparseTestCompletionCallback cb(TakeCache());
   int rv = cache->DoomEntry(key, net::HIGHEST, cb.callback());
   EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
   EXPECT_THAT(cb.WaitForResult(), IsOk());
@@ -4472,7 +4472,7 @@ void DiskCacheEntryTest::TruncateFileFromEnd(int file_index,
 void DiskCacheEntryTest::UseAfterBackendDestruction() {
   disk_cache::Entry* entry = nullptr;
   ASSERT_THAT(CreateEntry("the first key", &entry), IsOk());
-  cache_.reset();
+  ResetCaches();
 
   const int kSize = 100;
   scoped_refptr<net::IOBuffer> buffer =
@@ -4498,7 +4498,7 @@ void DiskCacheEntryTest::CloseSparseAfterBackendDestruction() {
   ASSERT_THAT(CreateEntry("the first key", &entry), IsOk());
   WriteSparseData(entry, 20000, buffer.get(), kSize);
 
-  cache_.reset();
+  ResetCaches();
 
   // This call shouldn't DCHECK or crash.
   entry->Close();
@@ -5576,7 +5576,7 @@ TEST_F(DiskCacheEntryTest, BlockFileSparsePendingAfterDtor) {
   EXPECT_EQ(net::ERR_IO_PENDING,
             entry->WriteSparseData(2560, buf.get(), kSize, base::DoNothing()));
   entry->Close();
-  cache_.reset();
+  ResetCaches();
 
   // Create a new instance as a way of flushing the thread.
   InitCache();
