@@ -30,11 +30,8 @@ export class ConsoleTts {
    * @return {!ConsoleTts}
    */
   speak(textString, queueMode, properties) {
-    if (this.enabled_ && window['console']) {
-      let category = TtsCategory.NAV;
-      if (properties && properties.category) {
-        category = properties.category;
-      }
+    if (this.enabled_ && globalThis.console) {
+      const category = properties?.category ?? TtsCategory.NAV;
 
       const speechLog = new SpeechLog(textString, queueMode, category);
       LogStore.instance.writeLog(speechLog);
