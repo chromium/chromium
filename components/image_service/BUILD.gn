@@ -11,8 +11,8 @@ source_set("image_service") {
     "image_service_handler.cc",
     "image_service_handler.h",
   ]
+  public_deps = [ "mojom:mojo_bindings" ]
   deps = [
-    "mojom:mojo_bindings",
     "//base",
     "//components/google/core/common",
     "//components/keyed_service/core",

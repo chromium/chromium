@@ -1,0 +1,23 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../tools/build_cr_component.gni")
+
+assert(!is_android && !is_ios)
+
+build_cr_component("build") {
+  grd_prefix = "cr_components_image_service"
+
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  mojo_files_deps =
+      [ "//components/image_service/mojom:mojo_bindings_ts__generator" ]
+  mojo_files = [
+    "$root_gen_dir/components/image_service/mojom/image_service.mojom-webui.ts",
+  ]
+
+  tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/image_service"
+  ts_deps = [ "//ui/webui/resources/mojo:library" ]
+  ts_use_local_config = false
+}

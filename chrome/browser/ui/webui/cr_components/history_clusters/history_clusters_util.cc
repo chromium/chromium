@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -11,6 +12,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
+#include "components/image_service/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -39,6 +41,10 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
                      history_clusters::GetConfig().hide_visits);
   source->AddBoolean("isHideVisitsIconEnabled",
                      history_clusters::GetConfig().hide_visits_icon);
+  source->AddBoolean(
+      "isHistoryClustersImagesEnabled",
+      history_clusters::GetConfig().images &&
+          base::FeatureList::IsEnabled(image_service::kImageService));
 
   static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
       {"actionMenuDescription", IDS_HISTORY_CLUSTERS_ACTION_MENU_DESCRIPTION},

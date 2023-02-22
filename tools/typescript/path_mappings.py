@@ -17,6 +17,7 @@ def GetDepToPathMappings(root_gen_dir):
       "cr_components/customize_themes",
       "cr_components/help_bubble",
       "cr_components/history_clusters",
+      "cr_components/image_service",
       "cr_components/localized_link",
       "cr_components/managed_dialog",
       "cr_components/managed_footnote",

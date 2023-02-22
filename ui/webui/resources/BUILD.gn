@@ -112,11 +112,13 @@ generate_grd("build_grd") {
   if (!is_android && !is_ios) {
     public_deps += [
       "cr_components/color_change_listener:build_grdp",
+      "cr_components/image_service:build_grdp",
       "//third_party/lottie:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/third_party/lottie/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_components/image_service/resources.grdp",
     ]
   }
 }

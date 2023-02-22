@@ -118,6 +118,11 @@ bool HistoryClustersService::IsJourneysEnabled() const {
   return is_journeys_enabled_;
 }
 
+// static
+bool HistoryClustersService::IsJourneysImagesEnabled() {
+  return GetConfig().images;
+}
+
 void HistoryClustersService::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
 }

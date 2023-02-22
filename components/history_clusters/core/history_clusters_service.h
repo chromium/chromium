@@ -114,6 +114,9 @@ class HistoryClustersService : public base::SupportsUserData,
   // that's already evaluated against the g_browser_process application locale.
   bool IsJourneysEnabled() const;
 
+  // Returns true if the Journeys use of Images is enabled.
+  static bool IsJourneysImagesEnabled();
+
   // Used to add and remove observers.
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
