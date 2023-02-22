@@ -929,6 +929,7 @@ void PasswordSyncBridge::ApplyStopSyncChanges(
     for (const auto& [primary_key, specifics] : credentials) {
       PasswordForm form = PasswordFromSpecifics(*specifics);
       form.primary_key = primary_key;
+      form.in_store = password_manager::PasswordForm::Store::kAccountStore;
       password_store_changes.emplace_back(PasswordStoreChange::REMOVE, form);
       if (unsynced_passwords_storage_keys.count(primary_key) != 0 &&
           !form.blocked_by_user) {

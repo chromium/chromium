@@ -1416,10 +1416,13 @@ TEST_F(PasswordSyncBridgeTest, ShouldNotifyUnsyncedCredentialsIfAccountStore) {
   const int kPrimaryKeyUnsyncedBlocklist = 1003;
   PasswordForm unsynced_credential =
       MakePasswordForm(kSignonRealm1, kPrimaryKeyUnsyncedCredential);
+  unsynced_credential.in_store = PasswordForm::Store::kAccountStore;
   PasswordForm synced_credential =
       MakePasswordForm(kSignonRealm2, kPrimaryKeySyncedCredential);
+  synced_credential.in_store = PasswordForm::Store::kAccountStore;
   PasswordForm unsynced_blocklist =
       MakeBlocklistedForm(kSignonRealm3, kPrimaryKeyUnsyncedBlocklist);
+  unsynced_blocklist.in_store = PasswordForm::Store::kAccountStore;
   fake_db()->AddLoginWithPrimaryKey(unsynced_credential);
   fake_db()->AddLoginWithPrimaryKey(synced_credential);
   fake_db()->AddLoginWithPrimaryKey(unsynced_blocklist);
