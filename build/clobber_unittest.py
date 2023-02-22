@@ -6,6 +6,7 @@
 import os
 import pathlib
 import shutil
+import sys
 import tempfile
 import textwrap
 import unittest
@@ -128,6 +129,7 @@ class TestDelete(unittest.TestCase):
       with self.assertRaises(OSError):
         clobber.delete_build_dir(self.build_dir)
 
+  @unittest.skipIf(sys.platform == 'win32', 'Symlinks are not allowed on Windows by default')
   def test_delete_build_dir_link(self):
     with tempfile.TemporaryDirectory() as tmpdir:
       # create a symlink.
