@@ -624,8 +624,9 @@ void WebMediaPlayerMS::OnSurfaceIdUpdated(viz::SurfaceId surface_id) {
   // disabled.
   // The viz::SurfaceId may be updated when the video begins playback or when
   // the size of the video changes.
-  if (client_)
+  if (client_ && !client_->IsAudioElement()) {
     client_->OnPictureInPictureStateChange();
+  }
 }
 
 void WebMediaPlayerMS::TrackAdded(const WebString& track_id) {

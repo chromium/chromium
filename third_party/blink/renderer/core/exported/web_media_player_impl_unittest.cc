@@ -2188,6 +2188,33 @@ TEST_F(WebMediaPlayerImplTest, PictureInPictureStateChange) {
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }
 
+// Test that OnPictureInPictureStateChange is not called for audio elements.
+// This test explicitly sets display type to picture in picture, for an audio
+// element, for testing purposes only (See crbug.com/1403547 for reference).
+TEST_F(WebMediaPlayerImplTest, OnPictureInPictureStateChangeNotCalled) {
+  InitializeWebMediaPlayerImpl();
+
+  EXPECT_CALL(*surface_layer_bridge_ptr_, CreateSurfaceLayer());
+  EXPECT_CALL(*surface_layer_bridge_ptr_, GetSurfaceId())
+      .WillRepeatedly(ReturnRef(surface_id_));
+  EXPECT_CALL(*compositor_, EnableSubmission(_, _, _));
+  EXPECT_CALL(*surface_layer_bridge_ptr_, SetContentsOpaque(false));
+
+  media::PipelineMetadata metadata;
+  metadata.has_video = true;
+  metadata.has_audio = true;
+  OnMetadata(metadata);
+
+  EXPECT_CALL(client_, IsAudioElement()).WillOnce(Return(true));
+  EXPECT_CALL(client_, GetDisplayType())
+      .WillRepeatedly(Return(DisplayType::kPictureInPicture));
+  EXPECT_CALL(client_, OnPictureInPictureStateChange()).Times(0);
+
+  wmpi_->OnSurfaceIdUpdated(surface_id_);
+
+  EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
+}
+
 TEST_F(WebMediaPlayerImplTest, DisplayTypeChange) {
   InitializeWebMediaPlayerImpl();
 
