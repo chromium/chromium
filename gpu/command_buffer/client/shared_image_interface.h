@@ -79,17 +79,6 @@ class GPU_EXPORT SharedImageInterface {
                                     uint32_t usage,
                                     base::span<const uint8_t> pixel_data) = 0;
 
-  // Deprecated version of the corresponding method above that takes in a
-  // ResourceFormat rather than a SharedImageFormat. TODO(crbug.com/1414192):
-  // Convert all clients to the above and eliminate this method.
-  virtual Mailbox CreateSharedImage(viz::ResourceFormat format,
-                                    const gfx::Size& size,
-                                    const gfx::ColorSpace& color_space,
-                                    GrSurfaceOrigin surface_origin,
-                                    SkAlphaType alpha_type,
-                                    uint32_t usage,
-                                    gpu::SurfaceHandle surface_handle) = 0;
-
   // Creates a shared image out an existing buffer. The buffer described by
   // `buffer_handle` must hold all planes based `format` and `size. `usage` is a
   // combination of |SharedImageUsage| bits that describes which API(s) the

@@ -102,17 +102,6 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   TestSharedImageInterface() = default;
   ~TestSharedImageInterface() override = default;
 
-  gpu::Mailbox CreateSharedImage(viz::ResourceFormat format,
-                                 const gfx::Size& size,
-                                 const gfx::ColorSpace& color_space,
-                                 GrSurfaceOrigin surface_origin,
-                                 SkAlphaType alpha_type,
-                                 uint32_t usage,
-                                 gpu::SurfaceHandle surface_handle) override {
-    ADD_FAILURE();
-    return gpu::Mailbox();
-  }
-
   gpu::Mailbox CreateSharedImage(viz::SharedImageFormat format,
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,

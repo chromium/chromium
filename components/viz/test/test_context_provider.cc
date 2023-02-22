@@ -129,19 +129,6 @@ TestSharedImageInterface::TestSharedImageInterface() = default;
 TestSharedImageInterface::~TestSharedImageInterface() = default;
 
 gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
-    ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    uint32_t usage,
-    gpu::SurfaceHandle surface_handle) {
-  return CreateSharedImage(SharedImageFormat::SinglePlane(format), size,
-                           color_space, surface_origin, alpha_type, usage,
-                           surface_handle);
-}
-
-gpu::Mailbox TestSharedImageInterface::CreateSharedImage(
     SharedImageFormat format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
