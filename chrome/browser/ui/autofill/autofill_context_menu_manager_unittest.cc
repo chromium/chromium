@@ -146,14 +146,18 @@ TEST_F(AutofillContextMenuManagerTest, AutofillContextMenuContents) {
   std::vector<std::u16string> all_added_strings;
 
   // Check for top level menu with autofill options.
-  ASSERT_EQ(3u, menu_model()->GetItemCount());
+  ASSERT_EQ(5u, menu_model()->GetItemCount());
   ASSERT_EQ(u"Fill Address Info", menu_model()->GetLabelAt(0));
   ASSERT_EQ(u"Fill Payment", menu_model()->GetLabelAt(1));
   ASSERT_EQ(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK),
-            menu_model()->GetLabelAt(2));
+            menu_model()->GetLabelAt(3));
   ASSERT_EQ(menu_model()->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_SUBMENU);
   ASSERT_EQ(menu_model()->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SUBMENU);
-  ASSERT_EQ(menu_model()->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_COMMAND);
+  ASSERT_EQ(menu_model()->GetTypeAt(2),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
+  ASSERT_EQ(menu_model()->GetTypeAt(3), ui::MenuModel::ItemType::TYPE_COMMAND);
+  ASSERT_EQ(menu_model()->GetTypeAt(4),
+            ui::MenuModel::ItemType::TYPE_SEPARATOR);
 
   // Check for submenu with address descriptions.
   auto* address_menu_model = menu_model()->GetSubmenuModelAt(0);

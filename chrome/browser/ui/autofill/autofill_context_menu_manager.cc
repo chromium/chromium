@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/overloaded.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -21,7 +22,9 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/gfx/favicon_size.h"
 
 namespace autofill {
 
@@ -143,12 +146,16 @@ void AutofillContextMenuManager::AppendItems() {
     command_id_to_menu_item_value_mapper_ =
         base::flat_map<CommandId, ContextMenuItem>(
             std::move(detail_items_added_to_context_menu));
+    menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
   // Includes the option of submitting feedback on Autofill.
   if (base::FeatureList::IsEnabled(features::kAutofillFeedback)) {
-    menu_model_->AddItemWithStringId(IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
-                                     IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
+    menu_model_->AddItemWithStringIdAndIcon(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
+        ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon));
+    menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 }
 

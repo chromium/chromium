@@ -809,7 +809,7 @@ are declared in tools/grit/grit_rule.gni.
             Open with <ph name="APP">$1<ex>Hangouts</ex></ph>
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
-           Provide Autofill feedback
+           Help improve autofill
           </message>
         </if>
         <if expr="use_titlecase">
@@ -1081,7 +1081,7 @@ are declared in tools/grit/grit_rule.gni.
             Suggest Password...
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
-           Provide Autofill Feedback
+           Help Improve Autofill
           </message>
         </if>
 
