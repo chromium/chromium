@@ -72,7 +72,6 @@
 // flag to #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "extensions/browser/api/management/management_api.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 using safe_browsing::SafeBrowsingNavigationObserverManager;
@@ -616,36 +615,33 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseFailure(
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
-    SupervisedUserExtensionsDelegate::ExtensionApprovalResult result) {
+void WebstorePrivateBeginInstallWithManifest3Function::OnParentPermissionDone(
+    ParentPermissionDialog::Result result) {
   switch (result) {
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kApproved:
-      OnExtensionApprovalApproved();
+    case ParentPermissionDialog::Result::kParentPermissionReceived:
+      OnParentPermissionReceived();
       break;
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kCanceled:
-      OnExtensionApprovalCanceled();
+    case ParentPermissionDialog::Result::kParentPermissionCanceled:
+      OnParentPermissionCanceled();
       break;
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kFailed:
-      OnExtensionApprovalFailed();
-      break;
-    case SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kBlocked:
-      OnExtensionApprovalBlocked();
+    case ParentPermissionDialog::Result::kParentPermissionFailed:
+      OnParentPermissionFailed();
       break;
   }
-  Release();  // Matches the AddRef in Run().
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::
-    OnExtensionApprovalApproved() {
+    OnParentPermissionReceived() {
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   service->AddExtensionApproval(*dummy_extension_);
 
   HandleInstallProceed();
+  Release();  // Matches the AddRef in Run().
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::
-    OnExtensionApprovalCanceled() {
+    OnParentPermissionCanceled() {
   if (test_webstore_installer_delegate) {
     test_webstore_installer_delegate->OnExtensionInstallFailure(
         dummy_extension_->id(), kWebstoreParentPermissionFailedError,
@@ -653,10 +649,11 @@ void WebstorePrivateBeginInstallWithManifest3Function::
   }
 
   HandleInstallAbort(true /* user_initiated */);
+  Release();  // Matches the AddRef in Run().
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::
-    OnExtensionApprovalFailed() {
+    OnParentPermissionFailed() {
   if (test_webstore_installer_delegate) {
     test_webstore_installer_delegate->OnExtensionInstallFailure(
         dummy_extension_->id(), kWebstoreParentPermissionFailedError,
@@ -665,12 +662,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
   Respond(BuildResponse(api::webstore_private::RESULT_UNKNOWN_ERROR,
                         kWebstoreParentPermissionFailedError));
-}
 
-void WebstorePrivateBeginInstallWithManifest3Function::
-    OnExtensionApprovalBlocked() {
-  Respond(BuildResponse(api::webstore_private::RESULT_BLOCKED_FOR_CHILD_ACCOUNT,
-                        kParentBlockedExtensionInstallError));
+  Release();  // Matches the AddRef in Run().
 }
 
 bool WebstorePrivateBeginInstallWithManifest3Function::
@@ -684,32 +677,26 @@ bool WebstorePrivateBeginInstallWithManifest3Function::
     return false;
   }
 
-  auto extension_approval_callback =
-      base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
-                         OnExtensionApprovalDone,
-                     this);
+  ParentPermissionDialog::DoneCallback done_callback = base::BindOnce(
+      &WebstorePrivateBeginInstallWithManifest3Function::OnParentPermissionDone,
+      this);
 
-  SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate =
-      ManagementAPI::GetFactoryInstance()
-          ->Get(profile_)
-          ->GetSupervisedUserExtensionsDelegate();
-  DCHECK(supervised_user_extensions_delegate);
-
-  // Assume that the block dialog will not be shown by the
-  // SupervisedUserExtensionsDelegate, because if permissions for extensions
-  // were disabled, the block dialog would have been shown at the install prompt
-  // step.
-  supervised_user_extensions_delegate->PromptForParentPermissionOrShowError(
-      *dummy_extension_, profile_, web_contents,
-      std::move(extension_approval_callback));
+  parent_permission_dialog_ =
+      ParentPermissionDialog::CreateParentPermissionDialogForExtension(
+          profile_, web_contents->GetTopLevelNativeWindow(),
+          gfx::ImageSkia::CreateFrom1xBitmap(icon_), dummy_extension_.get(),
+          std::move(done_callback));
+  parent_permission_dialog_->ShowDialog();
 
   return true;
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::
     OnBlockedByParentDialogDone() {
-  OnExtensionApprovalDone(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult::kBlocked);
+  Respond(BuildResponse(api::webstore_private::RESULT_BLOCKED_FOR_CHILD_ACCOUNT,
+                        kParentBlockedExtensionInstallError));
+  // Matches the AddRef in Run().
+  Release();
 }
 
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)

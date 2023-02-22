@@ -107,12 +107,15 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
           *extension, profile_)) {
     // Either ask for parent permission or notify the child that their parent
     // has disabled this action.
-    auto extension_approval_callback =
-        base::BindOnce(&ExtensionEnableFlow::OnExtensionApprovalDone,
+    auto parent_permission_callback =
+        base::BindOnce(&ExtensionEnableFlow::OnParentPermissionDialogDone,
+                       weak_ptr_factory_.GetWeakPtr());
+    auto error_callback =
+        base::BindOnce(&ExtensionEnableFlow::OnBlockedByParentDialogDone,
                        weak_ptr_factory_.GetWeakPtr());
     supervised_user_extensions_delegate->PromptForParentPermissionOrShowError(
         *extension, profile_, parent_contents_,
-        std::move(extension_approval_callback));
+        std::move(parent_permission_callback), std::move(error_callback));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -165,27 +168,30 @@ void ExtensionEnableFlow::CreatePrompt() {
 }
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-void ExtensionEnableFlow::OnExtensionApprovalDone(
-    extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult
+void ExtensionEnableFlow::OnParentPermissionDialogDone(
+    extensions::SupervisedUserExtensionsDelegate::ParentPermissionDialogResult
         result) {
   switch (result) {
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kApproved:
+    case extensions::SupervisedUserExtensionsDelegate::
+        ParentPermissionDialogResult::kParentPermissionReceived:
       EnableExtension();
       break;
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kCanceled:
+    case extensions::SupervisedUserExtensionsDelegate::
+        ParentPermissionDialogResult::kParentPermissionCanceled:
       delegate_->ExtensionEnableFlowAborted(
           /*user_initiated=*/true);  // |delegate_| may delete us.
       break;
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kFailed:
-    case extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
-        kBlocked:
+    case extensions::SupervisedUserExtensionsDelegate::
+        ParentPermissionDialogResult::kParentPermissionFailed:
       delegate_->ExtensionEnableFlowAborted(
           /*user_initiated=*/false);  // |delegate_| may delete us.
       break;
   }
+}
+
+void ExtensionEnableFlow::OnBlockedByParentDialogDone() {
+  delegate_->ExtensionEnableFlowAborted(
+      /*user_initiated=*/false);  // |delegate_| may delete us.
 }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 

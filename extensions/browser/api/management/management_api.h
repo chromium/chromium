@@ -118,9 +118,13 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
 
   void OnRequirementsChecked(const PreloadCheck::Errors& errors);
 
-  // Called when the extension approval flow is completed.
-  void OnExtensionApprovalDone(
-      SupervisedUserExtensionsDelegate::ExtensionApprovalResult result);
+  // Called when the user dismisses the Parent Permission Dialog.
+  void OnParentPermissionDialogDone(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult result);
+
+  // Called when the user dismisses the Extension Install Blocked By Parent
+  // Dialog.
+  void OnBlockedByParentDialogDone();
 
   std::string extension_id_;
 

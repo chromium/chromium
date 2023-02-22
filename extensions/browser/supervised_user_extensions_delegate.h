@@ -17,16 +17,15 @@ namespace extensions {
 
 class SupervisedUserExtensionsDelegate {
  public:
-  // Result of the extension approval flow.
-  enum class ExtensionApprovalResult {
-    kApproved,  // Extension installation was approved.
-    kCanceled,  // Extension approval flow was canceled.
-    kFailed,    // Extension approval failed due to an error.
-    kBlocked,   // Extension installation has been blocked by a parent.
+  // Result of the parent permission dialog invocation.
+  enum class ParentPermissionDialogResult {
+    kParentPermissionReceived,
+    kParentPermissionCanceled,
+    kParentPermissionFailed,
   };
 
-  using ExtensionApprovalDoneCallback =
-      base::OnceCallback<void(ExtensionApprovalResult)>;
+  using ParentPermissionDialogDoneCallback =
+      base::OnceCallback<void(ParentPermissionDialogResult)>;
 
   virtual ~SupervisedUserExtensionsDelegate() = default;
 
@@ -40,14 +39,16 @@ class SupervisedUserExtensionsDelegate {
 
   // If the current user is a child, the child user has a custodian/parent, and
   // the parent has enabled the "Permissions for sites, apps and extensions"
-  // toggle, then display the Parent Permission Dialog. If the setting is
-  // disabled, the extension install blocked dialog is shown. When the flow is
-  // complete call |extension_approval_callback|.
+  // toggle, then display the Parent Permission Dialog and call
+  // |parent_permission_callback|. Otherwise, display the Extension Install
+  // Blocked by Parent Dialog and call |error_callback|. The two paths are
+  // mutually exclusive.
   virtual void PromptForParentPermissionOrShowError(
       const extensions::Extension& extension,
       content::BrowserContext* browser_context,
       content::WebContents* web_contents,
-      ExtensionApprovalDoneCallback extension_approval_callback) = 0;
+      ParentPermissionDialogDoneCallback parent_permission_callback,
+      base::OnceClosure error_callback) = 0;
 };
 
 }  // namespace extensions

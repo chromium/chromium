@@ -82,10 +82,14 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
   void CreatePrompt();
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  // Called when the extension approval flow is complete.
-  void OnExtensionApprovalDone(
-      extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalResult
+  // Called when the user dismisses the Parent Permission Dialog.
+  void OnParentPermissionDialogDone(
+      extensions::SupervisedUserExtensionsDelegate::ParentPermissionDialogResult
           result);
+
+  // Called when the user dismisses the Extension Install Blocked By Parent
+  // Dialog.
+  void OnBlockedByParentDialogDone();
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
   // Starts/stops observing extension load notifications.
