@@ -13,6 +13,8 @@ source_set("attribution") {
   sources = [
     "attribution_attestation_mediator.cc",
     "attribution_attestation_mediator.h",
+    "attribution_attestation_mediator_metrics_recorder.cc",
+    "attribution_attestation_mediator_metrics_recorder.h",
     "attribution_request_helper.cc",
     "attribution_request_helper.h",
     "boringssl_attestation_cryptographer.cc",
@@ -34,6 +36,7 @@ source_set("tests") {
   defines = [ "IS_NETWORK_SERVICE_IMPL" ]
 
   sources = [
+    "attribution_attestation_mediator_metrics_recorder_unittest.cc",
     "attribution_attestation_mediator_unittest.cc",
     "attribution_request_helper_unittest.cc",
     "attribution_test_utils.cc",

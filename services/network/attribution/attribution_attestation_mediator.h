@@ -28,6 +28,37 @@ class TrustTokenKeyCommitmentGetter;
 //  token which is returned.
 class AttributionAttestationMediator {
  public:
+  // Represents the status/outcome of the execution of
+  // `GetHeadersForAttestation`. These values are persisted to logs.
+  enum class GetHeadersStatus {
+    kSuccess = 0,
+    kIssuerOriginNotSuitable = 1,
+    kIssuerNotRegistered = 2,
+    kUnableToInitializeCryptographer = 3,
+    kUnableToAddKeysOnCryptographer = 4,
+    kUnableToBlindMessage = 5,
+    kMaxValue = kUnableToBlindMessage,
+  };
+
+  // Represents the status/outcome of the execution of
+  // `ProcessAttestationToGetToken`. These values are persisted to logs.
+  enum class ProcessAttestationStatus {
+    kSuccess = 0,
+    kNoSignatureReceivedFromIssuer = 1,
+    kUnableToUnblindSignature = 2,
+    kMaxValue = kUnableToUnblindSignature,
+  };
+
+  // Describe the ordered steps associated to completing an attestation
+  // operation.
+  enum class Step {
+    kGetKeyCommitment = 0,
+    kInitializeCryptographer = 1,
+    kBlindMessage = 2,
+    kSignBlindMessage = 3,
+    kUnblindMessage = 4,
+  };
+
   class Cryptographer {
    public:
     virtual ~Cryptographer() = default;
@@ -70,12 +101,24 @@ class AttributionAttestationMediator {
     ConfirmIssuanceAndBeginRedemption(base::StringPiece response_header) = 0;
   };
 
+  class MetricsRecorder {
+   public:
+    virtual ~MetricsRecorder() = default;
+
+    virtual void Start() = 0;
+    virtual void Complete(Step step) = 0;
+    virtual void FinishGetHeadersWith(GetHeadersStatus status) = 0;
+    virtual void FinishProcessAttestationWith(
+        ProcessAttestationStatus status) = 0;
+  };
+
   static constexpr char kTriggerAttestationHeader[] =
       "Sec-Attribution-Reporting-Private-State-Token";
 
   AttributionAttestationMediator(
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
-      std::unique_ptr<Cryptographer> cryptographer);
+      std::unique_ptr<Cryptographer> cryptographer,
+      std::unique_ptr<MetricsRecorder> metrics_recorder);
   ~AttributionAttestationMediator();
 
   AttributionAttestationMediator(const AttributionAttestationMediator&) =
@@ -168,6 +211,9 @@ class AttributionAttestationMediator {
   // Cryptographer::ConfirmIssuanceAndBeginRedemption); repopulated when
   // regaining ownership upon receiving each operation's results.
   std::unique_ptr<Cryptographer> cryptographer_;
+
+  // The metrics recorder will be defined for the full lifecycle of this.
+  std::unique_ptr<MetricsRecorder> metrics_recorder_;
 
   base::WeakPtrFactory<AttributionAttestationMediator> weak_ptr_factory_{this};
 };

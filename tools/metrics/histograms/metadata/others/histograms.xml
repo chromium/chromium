@@ -4107,6 +4107,85 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.TriggerAttestation.DestinationOriginStatus"
+    enum="ConversionsTriggerAttestationDestinationOriginStatus"
+    expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the top_frame origin status when an attempting to complete a trigger
+    attestation. In the attribution context, the origin represents the
+    destination origin which is required to complete the attestation operation.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerAttestation.Duration.{TimeSpan}.{Outcome}"
+    units="ms" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Time taken to execute various parts of a Trigger Attestation operation: [1]
+    GetKeyCommitment = time taken to retrieve the issuer's key commitment. [2]
+    InitializeCryptographer = time take to initialize the BoringSSL
+    cryptographer with the issuer's keys. [3] BlindMessage = time taken by the
+    cryptographer to blind the message. [4] Issuer = time from the end of the
+    outbound BlindMessage half to the beginning of the inbound UnblindSignature
+    half. [5] UnblindSignature = time taken to unblind the blind signature
+    received from the issuer. [6] Total = GetKeyCommitment +
+    InitializeCryptographer + BlindMessage + UnblindSignature (only recorded for
+    operations that see issuer's responses)
+
+    Each part of the operation can be a Failure or a Success. e.g. if we are
+    unable to retrieve key commitment for an issuer, it is a failure. The
+    metrics are recorded when the attestation operation finish.
+  </summary>
+  <token key="TimeSpan">
+    <variant name="BlindMessage"/>
+    <variant name="GetKeyCommitment"/>
+    <variant name="InitializeCryptographer"/>
+    <variant name="SignBlindMessage"/>
+    <variant name="Total"/>
+    <variant name="UnblindSignature"/>
+  </token>
+  <token key="Outcome">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="Conversions.TriggerAttestation.GetHeadersStatus"
+    enum="ConversionTriggerAttestationGetHeadersStatus" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the status of the initial part of an attestation operation which
+    attempts to retrieve attestation headers to be added to a trigger
+    registration request.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerAttestation.HasReportAttestation"
+    enum="Boolean" expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records whether or not an aggregatable report is sent with an attestation or
+    not. Only recorded for reports if the Attestation feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TriggerAttestation.ProcessAttestationStatus"
+    enum="ConversionTriggerAttestationProcessAttestationStatus"
+    expires_after="M117">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the status of the second part of an attestation operation which
+    processes the private state issuer's signature to generate an attestation
+    token.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.TriggerDataHandleStatus2"
     enum="ConversionDataHandleStatus" expires_after="M117">
   <owner>linnan@chromium.org</owner>

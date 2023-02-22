@@ -53,6 +53,7 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "net/base/schemeful_site.h"
+#include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/recovery.h"
@@ -2739,6 +2740,12 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
 
   if (trigger.attestation().has_value()) {
     attestation_token = trigger.attestation()->token();
+  }
+  if (base::FeatureList::IsEnabled(
+          network::features::kAttributionReportingTriggerAttestation)) {
+    base::UmaHistogramBoolean(
+        "Conversions.TriggerAttestation.ReportHasAttestation",
+        trigger.attestation().has_value());
   }
 
   base::GUID external_report_id =

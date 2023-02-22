@@ -35,6 +35,17 @@ class TrustTokenKeyCommitmentGetter;
 // url_loader instance.
 class AttributionRequestHelper {
  public:
+  // In the context of a attribution trigger registration request. The
+  // destination origin corresponds to the top_frame origin where the trigger is
+  // registered. We use this enum to log the status of this value. We can only
+  // proceed with attestation with a valid destination origin.
+  enum class DestinationOriginStatus {
+    kValid = 0,
+    kMissing = 1,
+    kNonSuitable = 2,
+    kMaxValue = kNonSuitable,
+  };
+
   // Creates an AttributionRequestHelper instance if needed.
   //
   // It is needed when it's to be hooked to a request related to attribution;
@@ -142,6 +153,11 @@ class AttributionRequestHelper {
   // requires a distinct operation. `attestation_operation_` will be defined
   // when an operation is undergoing.
   std::unique_ptr<AttestationOperation> attestation_operation_;
+
+  // The destination origin is needed to complete the attestation. On `Request`,
+  // we check that it is suitable and update `has_suitable_destination_origin_`
+  // accordingly. On `finalize` we check that it is true before proceeding.
+  bool has_suitable_destination_origin_ = false;
 
   base::WeakPtrFactory<AttributionRequestHelper> weak_ptr_factory_{this};
 };

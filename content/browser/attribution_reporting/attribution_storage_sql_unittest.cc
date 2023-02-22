@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
@@ -30,6 +31,7 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_attestation.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -326,7 +328,13 @@ TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
   ASSERT_THAT(storage()->GetAttributionReports(base::Time::Now()), IsEmpty());
 }
 
-TEST_F(AttributionStorageSqlTest, StoreAndRetrieveReportWithAttestation) {
+TEST_F(AttributionStorageSqlTest,
+       StoreAndRetrieveReportWithAttestation_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kAttributionReportingTriggerAttestation);
+  base::HistogramTester histograms;
+
   OpenDatabase();
 
   StorableSource source = TestAggregatableSourceProvider()
@@ -346,6 +354,9 @@ TEST_F(AttributionStorageSqlTest, StoreAndRetrieveReportWithAttestation) {
                         AttributionTrigger::EventLevelResult::kSuccess),
                     CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::kSuccess)));
+  histograms.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.ReportHasAttestation", true,
+      /*expected_bucket_count=*/1);
 
   AttributionReport aggregatable_report =
       storage()->GetAttributionReports(base::Time::Max()).at(1);
@@ -358,6 +369,76 @@ TEST_F(AttributionStorageSqlTest, StoreAndRetrieveReportWithAttestation) {
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &aggregatable_report.data());
   EXPECT_EQ(data->attestation_token.value(), trigger_attestation->token());
+
+  CloseDatabase();
+}
+
+TEST_F(AttributionStorageSqlTest,
+       StoreAndRetrieveReportWithoutAttestation_FeatureEnabled) {
+  OpenDatabase();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      network::features::kAttributionReportingTriggerAttestation);
+  base::HistogramTester histograms;
+
+  StorableSource source = TestAggregatableSourceProvider()
+                              .GetBuilder()
+                              .SetExpiry(base::Days(30))
+                              .Build();
+  storage()->StoreSource(source);
+  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder().Build();
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess)));
+  histograms.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.ReportHasAttestation", false,
+      /*expected_bucket_count=*/1);
+
+  AttributionReport aggregatable_report =
+      storage()->GetAttributionReports(base::Time::Max()).at(1);
+
+  const auto* data =
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &aggregatable_report.data());
+  EXPECT_FALSE(data->attestation_token.has_value());
+
+  CloseDatabase();
+}
+
+TEST_F(
+    AttributionStorageSqlTest,
+    StoreAndRetrieveReportWithoutAttestation_FeatureDisabled_HasAttestationNotRecorded) {
+  OpenDatabase();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      network::features::kAttributionReportingTriggerAttestation);
+  base::HistogramTester histograms;
+
+  StorableSource source = TestAggregatableSourceProvider()
+                              .GetBuilder()
+                              .SetExpiry(base::Days(30))
+                              .Build();
+  storage()->StoreSource(source);
+  AttributionTrigger trigger = DefaultAggregatableTriggerBuilder().Build();
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger),
+              AllOf(CreateReportEventLevelStatusIs(
+                        AttributionTrigger::EventLevelResult::kSuccess),
+                    CreateReportAggregatableStatusIs(
+                        AttributionTrigger::AggregatableResult::kSuccess)));
+  histograms.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.ReportHasAttestation", false,
+      /*expected_bucket_count=*/0);
+
+  AttributionReport aggregatable_report =
+      storage()->GetAttributionReports(base::Time::Max()).at(1);
+
+  const auto* data =
+      absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &aggregatable_report.data());
+  EXPECT_FALSE(data->attestation_token.has_value());
 
   CloseDatabase();
 }

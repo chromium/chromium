@@ -11,6 +11,7 @@
 #include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -20,6 +21,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/attribution_test_utils.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
@@ -44,7 +46,6 @@ class AttributionRequestHelperTest : public testing::Test {
         /*key=*/"any-key",
         /*protocol_version=*/mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb,
         /*issuer_url=*/example_valid_request_url_);
-
     net::HttpRequestHeaders request_headers;
     request_headers.SetHeader("Attribution-Reporting-Eligible", "trigger");
     helper_ = AttributionRequestHelper::CreateForTesting(
@@ -150,6 +151,7 @@ class AttributionRequestHelperTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histograms_;
   std::unique_ptr<AttributionRequestHelper> helper_;
   GURL example_valid_request_url_ =
       GURL("https://reporting-origin.example/test/path/#123");
@@ -192,6 +194,11 @@ TEST_F(AttributionRequestHelperTest, Begin_HeadersAdded) {
   std::string potential_id =
       message.substr(0, message.length() - expected_origin.length());
   EXPECT_TRUE(base::GUID::ParseLowercase(potential_id).is_valid());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.DestinationOriginStatus",
+      AttributionRequestHelper::DestinationOriginStatus::kValid,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionRequestHelperTest, Begin_NoDestinationOnTheRequest) {
@@ -201,6 +208,26 @@ TEST_F(AttributionRequestHelperTest, Begin_NoDestinationOnTheRequest) {
   RunBeginWith(*request);
 
   EXPECT_TRUE(request->extra_request_headers().IsEmpty());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.DestinationOriginStatus",
+      AttributionRequestHelper::DestinationOriginStatus::kMissing,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(AttributionRequestHelperTest, Begin_NoSuitableDestinationOnTheRequest) {
+  std::unique_ptr<net::URLRequest> request = CreateTestUrlRequestFrom(
+      /*to_url=*/example_valid_request_url_,
+      /*from_url=*/GURL("http://origin.example/path/123#foo"));
+
+  RunBeginWith(*request);
+
+  EXPECT_TRUE(request->extra_request_headers().IsEmpty());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.DestinationOriginStatus",
+      AttributionRequestHelper::DestinationOriginStatus::kNonSuitable,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionRequestHelperTest, Begin_NoHeadersReturned) {

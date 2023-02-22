@@ -14,11 +14,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/boringssl_attestation_cryptographer.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -33,17 +35,19 @@ namespace network {
 
 namespace {
 
+void RecordDestinationOriginStatus(
+    AttributionRequestHelper::DestinationOriginStatus status) {
+  base::UmaHistogramEnumeration(
+      "Conversions.TriggerAttestation.DestinationOriginStatus", status);
+}
+
 // Same as attribution_reporting::SuitableOrigin
 // TODO(https://crbug.com/1408181): unify logic across browser and network
-// service
-bool IsSuitableDestinationOrigin(const absl::optional<url::Origin>& origin) {
-  if (!origin.has_value()) {
-    return false;
-  }
-
-  const std::string& scheme = origin.value().scheme();
+// service.
+bool IsSuitableDestinationOrigin(const url::Origin& origin) {
+  const std::string& scheme = origin.scheme();
   return (scheme == url::kHttpsScheme || scheme == url::kHttpScheme) &&
-         network::IsOriginPotentiallyTrustworthy(origin.value());
+         network::IsOriginPotentiallyTrustworthy(origin);
 }
 
 bool IsNeededForRequest(const net::HttpRequestHeaders& request_headers) {
@@ -91,7 +95,8 @@ AttributionRequestHelper::CreateIfNeeded(
         // The key_commitment_getter instance  (`t`) is a singleton owned by
         // NetworkService, it will always outlive this.
         return AttributionAttestationMediator(
-            t, std::make_unique<BoringsslAttestationCryptographer>());
+            t, std::make_unique<BoringsslAttestationCryptographer>(),
+            std::make_unique<AttributionAttestationMediatorMetricsRecorder>());
       },
       key_commitment_getter);
   return absl::WrapUnique(
@@ -123,8 +128,19 @@ void AttributionRequestHelper::Begin(net::URLRequest& request,
   // TODO(https://crbug.com/1406643): investigate the situations in which
   // `url_request->isolation_info().top_frame_origin()` would not be defined and
   // confirm that it can be relied upon here.
-  if (!IsSuitableDestinationOrigin(
-          request.isolation_info().top_frame_origin())) {
+  if (!request.isolation_info().top_frame_origin().has_value()) {
+    RecordDestinationOriginStatus(
+        AttributionRequestHelper::DestinationOriginStatus::kMissing);
+    std::move(done).Run();
+    return;
+  }
+  has_suitable_destination_origin_ = IsSuitableDestinationOrigin(
+      request.isolation_info().top_frame_origin().value());
+  RecordDestinationOriginStatus(
+      has_suitable_destination_origin_
+          ? AttributionRequestHelper::DestinationOriginStatus::kValid
+          : AttributionRequestHelper::DestinationOriginStatus::kNonSuitable);
+  if (!has_suitable_destination_origin_) {
     std::move(done).Run();
     return;
   }
@@ -168,12 +184,7 @@ void AttributionRequestHelper::OnReceiveRedirect(
     base::OnceCallback<void(mojom::URLResponseHeadPtr response)> done) {
   // No operation was started and none will start for the redirect request as
   // the request's destination origin is not suitable. We can return early.
-  //
-  // TODO(https://crbug.com/1406643): investigate the situations in which
-  // `url_request->isolation_info().top_frame_origin()` would not be defined and
-  // confirm that it can be relied upon here.
-  if (!IsSuitableDestinationOrigin(
-          request.isolation_info().top_frame_origin())) {
+  if (!has_suitable_destination_origin_) {
     std::move(done).Run(std::move(response));
     return;
   }

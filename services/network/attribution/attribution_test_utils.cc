@@ -14,6 +14,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/attribution/attribution_attestation_mediator.h"
+#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
@@ -155,8 +156,9 @@ std::unique_ptr<AttributionRequestHelper> CreateTestAttributionRequestHelper(
 
 AttributionAttestationMediator CreateTestAttestationMediator(
     TrustTokenKeyCommitments* trust_token_key_commitments) {
-  return AttributionAttestationMediator(trust_token_key_commitments,
-                                        std::make_unique<FakeCryptographer>());
+  return AttributionAttestationMediator(
+      trust_token_key_commitments, std::make_unique<FakeCryptographer>(),
+      std::make_unique<AttributionAttestationMediatorMetricsRecorder>());
 }
 
 }  // namespace network

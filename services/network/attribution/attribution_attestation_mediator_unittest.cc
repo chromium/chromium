@@ -11,9 +11,11 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/attribution_test_utils.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -36,7 +38,8 @@ class AttributionAttestationMediatorTest : public testing::Test {
     fake_cryptographer_ = fake_cryptographer.get();
 
     mediator_ = std::make_unique<AttributionAttestationMediator>(
-        key_commitment_getter_.get(), std::move(fake_cryptographer));
+        key_commitment_getter_.get(), std::move(fake_cryptographer),
+        std::make_unique<AttributionAttestationMediatorMetricsRecorder>());
   }
 
   net::HttpRequestHeaders RunGetHeadersForAttestationWith(
@@ -95,6 +98,8 @@ class AttributionAttestationMediatorTest : public testing::Test {
   // the unique_ptr.
   base::raw_ptr<FakeCryptographer> fake_cryptographer_;
   std::unique_ptr<AttributionAttestationMediator> mediator_;
+
+  base::HistogramTester histograms_;
 };
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -116,6 +121,11 @@ TEST_F(AttributionAttestationMediatorTest,
 
   EXPECT_TRUE(
       base::Contains(fake_cryptographer_->keys, example_verification_key_));
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.GetHeadersStatus",
+      AttributionAttestationMediator::GetHeadersStatus::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -125,6 +135,12 @@ TEST_F(AttributionAttestationMediatorTest,
       /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.GetHeadersStatus",
+      AttributionAttestationMediator::GetHeadersStatus::
+          kIssuerOriginNotSuitable,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -134,6 +150,11 @@ TEST_F(AttributionAttestationMediatorTest,
       /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.GetHeadersStatus",
+      AttributionAttestationMediator::GetHeadersStatus::kIssuerNotRegistered,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -144,6 +165,12 @@ TEST_F(AttributionAttestationMediatorTest,
       /*url=*/example_valid_request_url_, /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.GetHeadersStatus",
+      AttributionAttestationMediator::GetHeadersStatus::
+          kUnableToInitializeCryptographer,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -154,6 +181,12 @@ TEST_F(AttributionAttestationMediatorTest,
       /*url=*/example_valid_request_url_, /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.GetHeadersStatus",
+      AttributionAttestationMediator::GetHeadersStatus::
+          kUnableToAddKeysOnCryptographer,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -164,6 +197,11 @@ TEST_F(AttributionAttestationMediatorTest,
       /*url=*/example_valid_request_url_, /*message=*/"does-not-matter");
 
   EXPECT_TRUE(headers.IsEmpty());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.GetHeadersStatus",
+      AttributionAttestationMediator::GetHeadersStatus::kUnableToBlindMessage,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -184,6 +222,11 @@ TEST_F(AttributionAttestationMediatorTest,
   // Check that the header has been removed after beein processed.
   EXPECT_FALSE(response_head->headers->HasHeader(
       "Sec-Attribution-Reporting-Private-State-Token"));
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.ProcessAttestationStatus",
+      AttributionAttestationMediator::ProcessAttestationStatus::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -197,6 +240,12 @@ TEST_F(AttributionAttestationMediatorTest,
       RunProcessAttestationToGetTokenWith(*response_head->headers.get());
 
   EXPECT_FALSE(maybe_token.has_value());
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.ProcessAttestationStatus",
+      AttributionAttestationMediator::ProcessAttestationStatus::
+          kNoSignatureReceivedFromIssuer,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(AttributionAttestationMediatorTest,
@@ -219,6 +268,12 @@ TEST_F(AttributionAttestationMediatorTest,
   // token from it.
   EXPECT_FALSE(response_head->headers->HasHeader(
       "Sec-Attribution-Reporting-Private-State-Token"));
+
+  histograms_.ExpectUniqueSample(
+      "Conversions.TriggerAttestation.ProcessAttestationStatus",
+      AttributionAttestationMediator::ProcessAttestationStatus::
+          kUnableToUnblindSignature,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace network
