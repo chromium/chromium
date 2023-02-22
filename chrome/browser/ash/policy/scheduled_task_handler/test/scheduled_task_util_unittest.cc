@@ -5,8 +5,11 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/time/time.h"
 #include "base/time/time_delta_from_string.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor.h"
@@ -18,6 +21,8 @@
 namespace policy {
 
 namespace {
+
+constexpr base::TimeDelta kDefaultGracePeriod = base::Hours(1);
 
 base::Time TimeFromUtcString(const char* time) {
   base::Time delayult;
@@ -154,6 +159,84 @@ TEST(ScheduledTaskUtilTest, GenerateRandomDelayInRange) {
     EXPECT_GE(delay, min_delay);
     EXPECT_LT(delay, max_delay);
   }
+}
+
+TEST(ScheduledTaskUtilTest, ParsesEmptyGracePeriodSwitch) {
+  base::test::ScopedCommandLine command_line;
+
+  // Check that returns default with empty command line.
+  EXPECT_EQ(scheduled_task_util::GetScheduledRebootGracePeriod(),
+            kDefaultGracePeriod);
+
+  // Check that returns default with empty switch.
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kScheduledRebootGracePeriodInSecondsForTesting, "");
+  EXPECT_EQ(scheduled_task_util::GetScheduledRebootGracePeriod(),
+            kDefaultGracePeriod);
+}
+
+TEST(ScheduledTaskUtilTest, ParsesNonNumbericGracePeriodSwitch) {
+  base::test::ScopedCommandLine command_line;
+
+  // Check that returns default with incorrect value.
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kScheduledRebootGracePeriodInSecondsForTesting,
+      "one-hundred");
+  EXPECT_EQ(scheduled_task_util::GetScheduledRebootGracePeriod(),
+            kDefaultGracePeriod);
+}
+
+TEST(ScheduledTaskUtilTest, ParsesNegativeGracePeriodSwitch) {
+  base::test::ScopedCommandLine command_line;
+
+  // Check that returns default with negative value.
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kScheduledRebootGracePeriodInSecondsForTesting, "-100");
+  EXPECT_EQ(scheduled_task_util::GetScheduledRebootGracePeriod(),
+            kDefaultGracePeriod);
+}
+
+TEST(ScheduledTaskUtilTest, ParsesValidGracePeriodSwitch) {
+  base::test::ScopedCommandLine command_line;
+
+  // Check that returns default with negative value.
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kScheduledRebootGracePeriodInSecondsForTesting, "100");
+  EXPECT_EQ(scheduled_task_util::GetScheduledRebootGracePeriod(),
+            base::Seconds(100));
+}
+
+TEST(ScheduledTaskUtilTest, SkipsRebootWithinGracePeriod) {
+  constexpr base::TimeDelta kGracePeriod = base::Hours(1);
+
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kScheduledRebootGracePeriodInSecondsForTesting,
+      base::NumberToString(kGracePeriod.InSeconds()));
+
+  const base::Time boot_time;
+
+  // Check that allows reboot outside of grace time period.
+  const base::Time reboot_time_outside_grace_time =
+      boot_time + kGracePeriod + base::Seconds(1);
+  EXPECT_FALSE(scheduled_task_util::ShouldSkipRebootDueToGracePeriod(
+      boot_time, reboot_time_outside_grace_time));
+}
+
+TEST(ScheduledTaskUtilTest, DoesNotSkipRebootWithinGracePeriod) {
+  constexpr base::TimeDelta kGracePeriod = base::Hours(1);
+
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      ash::switches::kScheduledRebootGracePeriodInSecondsForTesting,
+      base::NumberToString(kGracePeriod.InSeconds()));
+
+  const base::Time boot_time;
+
+  // Check that does not allow reboot inside grace time period.
+  const base::Time reboot_time_within_grace_time = boot_time + kGracePeriod;
+  EXPECT_TRUE(scheduled_task_util::ShouldSkipRebootDueToGracePeriod(
+      boot_time, reboot_time_within_grace_time));
 }
 
 }  // namespace policy

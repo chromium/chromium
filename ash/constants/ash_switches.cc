@@ -852,6 +852,11 @@ const char kSamlPasswordChangeUrl[] = "saml-password-change-url";
 // smaller shelf in clamshell mode.
 const char kShelfHotseat[] = "shelf-hotseat";
 
+// Testing grace period for DeviceScheduledReboot policy. Useful for tast tests.
+// See `ShouldSkipRebootDueToGracePeriod` in scheduled_task_util.h.
+const char kScheduledRebootGracePeriodInSecondsForTesting[] =
+    "scheduled-reboot-grace-period-in-seconds-for-testing";
+
 // App window previews when hovering over the shelf.
 const char kShelfHoverPreviews[] = "shelf-hover-previews";
 
