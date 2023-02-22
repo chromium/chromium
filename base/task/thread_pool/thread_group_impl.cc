@@ -792,6 +792,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(
     BlockingType blocking_type) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   DCHECK(worker_only().worker_thread_);
+  // Skip if this blocking scope happened outside of a RunTask.
   if (!read_worker().current_task_priority) {
     return;
   }
@@ -830,6 +831,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingStarted(
 
 void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingTypeUpgraded() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  // Skip if this blocking scope happened outside of a RunTask.
   if (!read_worker().current_task_priority) {
     return;
   }
@@ -858,6 +860,7 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingTypeUpgraded() {
 
 void ThreadGroupImpl::WorkerThreadDelegateImpl::BlockingEnded() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  // Skip if this blocking scope happened outside of a RunTask.
   if (!read_worker().current_task_priority) {
     return;
   }
