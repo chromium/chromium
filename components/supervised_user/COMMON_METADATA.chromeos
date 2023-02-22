@@ -8,8 +8,12 @@
 
 # ChromeOS FamilyExperiences team
 team_email: "cros-families-eng@google.com"
-os: CHROME_OS
 buganizer {
   # ChromeOS > Software > Family > Parental controls
   component_id: 1090157
 }
+# Allow "os" to be inherited from ancestor directory DIR_METADATA so that both
+# COMMON_METADATA.chromeos and COMMON_METADATA can be added as mixins for
+# shared directories.
+# When adding both files, list COMMON_METADATA.chromeos first so that the
+# team_email from the latter one takes precedence (assuming this is desired).
