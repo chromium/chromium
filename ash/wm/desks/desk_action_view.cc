@@ -17,8 +17,9 @@ namespace ash {
 
 namespace {
 
-constexpr int kButtonSpacing = 4;
+constexpr int kButtonSpacing = 0;
 constexpr int kCornerRadius = 20;
+constexpr int kDeskCloseButtonSize = 24;
 
 }  // namespace
 
@@ -40,6 +41,11 @@ DeskActionView::DeskActionView(
   close_all_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_DESKS_CLOSE_ALL_DESCRIPTION));
   UpdateCombineDesksTooltip(initial_combine_desks_target_name);
+
+  combine_desks_button_->SetPreferredSize(
+      gfx::Size(kDeskCloseButtonSize, kDeskCloseButtonSize));
+  close_all_button_->SetPreferredSize(
+      gfx::Size(kDeskCloseButtonSize, kDeskCloseButtonSize));
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);

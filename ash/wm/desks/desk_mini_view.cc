@@ -47,7 +47,7 @@ namespace {
 
 constexpr int kLabelPreviewSpacing = 8;
 
-constexpr int kCloseButtonMargin = 8;
+constexpr int kCloseButtonMargin = 4;
 
 constexpr int kMinDeskNameViewWidth = 56;
 
