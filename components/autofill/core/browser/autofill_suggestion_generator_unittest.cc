@@ -564,6 +564,9 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[0].main_text.value,
             iban0.GetIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(
+      iban_suggestions[0].GetPayload<Suggestion::ValueToFill>().value(),
+      iban0.GetIdentifierStringForAutofillDisplay(/*is_value_masked=*/false));
   ASSERT_EQ(iban_suggestions[0].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[0].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[0].labels[0][0].value, u"My doctor's IBAN");
@@ -571,6 +574,9 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[1].main_text.value,
             iban1.GetIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(
+      iban_suggestions[1].GetPayload<Suggestion::ValueToFill>().value(),
+      iban1.GetIdentifierStringForAutofillDisplay(/*is_value_masked=*/false));
   ASSERT_EQ(iban_suggestions[1].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[1].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[1].labels[0][0].value, u"My brother's IBAN");
@@ -578,6 +584,9 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[2].main_text.value,
             iban2.GetIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(
+      iban_suggestions[2].GetPayload<Suggestion::ValueToFill>().value(),
+      iban2.GetIdentifierStringForAutofillDisplay(/*is_value_masked=*/false));
   ASSERT_EQ(iban_suggestions[2].labels.size(), 1u);
   ASSERT_EQ(iban_suggestions[2].labels[0].size(), 1u);
   EXPECT_EQ(iban_suggestions[2].labels[0][0].value, u"My teacher's IBAN");
@@ -585,6 +594,9 @@ TEST_F(AutofillSuggestionGeneratorTest, GetIBANSuggestions) {
 
   EXPECT_EQ(iban_suggestions[3].main_text.value,
             iban3.GetIdentifierStringForAutofillDisplay());
+  EXPECT_EQ(
+      iban_suggestions[3].GetPayload<Suggestion::ValueToFill>().value(),
+      iban3.GetIdentifierStringForAutofillDisplay(/*is_value_masked=*/false));
   EXPECT_EQ(iban_suggestions[3].labels.size(), 0u);
   EXPECT_EQ(iban_suggestions[3].frontend_id, POPUP_ITEM_ID_IBAN_ENTRY);
 }

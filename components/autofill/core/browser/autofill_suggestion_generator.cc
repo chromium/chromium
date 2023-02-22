@@ -252,7 +252,9 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIBANs(
   for (const IBAN* iban : ibans) {
     Suggestion& suggestion = suggestions.emplace_back(iban->value());
     suggestion.frontend_id = POPUP_ITEM_ID_IBAN_ENTRY;
-    suggestion.payload = Suggestion::BackendId(iban->guid());
+    suggestion.payload =
+        Suggestion::ValueToFill(iban->GetIdentifierStringForAutofillDisplay(
+            /*is_value_masked=*/false));
     suggestion.main_text.value = iban->GetIdentifierStringForAutofillDisplay();
     if (!iban->nickname().empty())
       suggestion.labels = {{Suggestion::Text(iban->nickname())}};
