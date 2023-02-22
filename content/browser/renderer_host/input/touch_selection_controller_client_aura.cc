@@ -484,7 +484,9 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
 
 void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
                                                         int event_flags) {
-  rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
+  if (command_id != ui::TouchEditable::kSelectAll) {
+    rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
+  }
   RenderWidgetHostDelegate* host_delegate = rwhva_->host()->delegate();
   if (!host_delegate)
     return;
