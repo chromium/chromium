@@ -712,7 +712,8 @@ StringView CSSTokenizer::ConsumeName() {
       // so to implement the IsASCII() test, which for LChar only
       // tests whether the top bit is set, we don't need a compare;
       // we can just rely on the top bit directly (using a PANDN).
-      uint16_t bits = _mm_movemask_epi8(non_name_mask & ~b);
+      uint16_t bits =
+          _mm_movemask_epi8(reinterpret_cast<__m128i>(non_name_mask & ~b));
       if (bits == 0) {
         size += 16;
         continue;
