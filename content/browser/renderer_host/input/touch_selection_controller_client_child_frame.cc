@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -174,10 +173,8 @@ bool TouchSelectionControllerClientChildFrame::IsCommandIdEnabled(
           ui::ClipboardBuffer::kCopyPaste, &data_dst, &result);
       return editable && !result.empty();
     }
-#if BUILDFLAG(IS_CHROMEOS)
     case ui::TouchEditable::kSelectAll:
-      return readable && features::IsTouchTextEditingRedesignEnabled();
-#endif
+      return true;
     default:
       return false;
   }
