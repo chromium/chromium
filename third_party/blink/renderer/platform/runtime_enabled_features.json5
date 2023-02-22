@@ -2131,9 +2131,7 @@
     },
     {
       name: "NavigateEventCancelableTraversals",
-      status: "experimental",
-      base_feature: "NavigateEventCancelableTraversals",
-      base_feature_status: "enabled",
+      status: "stable",
     },
     {
       name: "NavigationId",
