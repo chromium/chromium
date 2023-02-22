@@ -93,11 +93,15 @@ generate_grd("build_grd") {
       ":build_cros_styles_grdp",
       "//ash/webui/common/resources:build_grdp",
       "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
+      "//ash/webui/common/resources/hotspot:build_grdp",
+      "//ash/webui/common/resources/typescript_utils:build_grdp",
       "//third_party/material_web_components:build_grdp",
       "//third_party/web-animations-js:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/ash/webui/common/resources/ash_common_resources.grdp",
+      "$root_gen_dir/ash/webui/common/resources/hotspot/resources.grdp",
+      "$root_gen_dir/ash/webui/common/resources/typescript_utils/resources.grdp",
       "$root_gen_dir/ash/webui/common/resources/html_css_wrapper_files_resources.grdp",
       "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",

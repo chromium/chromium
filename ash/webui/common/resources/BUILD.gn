@@ -15,7 +15,6 @@ assert(is_chromeos_ash)
 
 preprocessed_dir = "preprocessed"
 preprocessed_manifest = "preprocessed_manifest.json"
-preprocessed_generated_manifest = "preprocessed_generated_manifest.json"
 
 web_component_files = [
   "keyboard_diagram.js",
@@ -195,47 +194,6 @@ preprocess_if_expr("preprocess") {
              html_files + css_files
 }
 
-preprocess_if_expr("preprocess_ts_generated") {
-  deps = [
-    "hotspot:build_ts",
-    "typescript_utils:build_ts",
-  ]
-  in_folder = "$target_gen_dir"
-  out_folder = "$target_gen_dir/$preprocessed_dir"
-  out_manifest = "$target_gen_dir/$preprocessed_generated_manifest"
-  in_files = [
-    "hotspot/cros_hotspot_config.js",
-    "hotspot/fake_hotspot_config.js",
-    "hotspot/cros_hotspot_config.mojom-webui.js",
-    "typescript_utils/strict_query.js",
-  ]
-}
-
-copy("copy_generated_dts_files_hotspot") {
-  deps = [ "hotspot:build_ts" ]
-  sources = [
-    "$target_gen_dir/hotspot/cros_hotspot_config.d.ts",
-    "$target_gen_dir/hotspot/cros_hotspot_config.mojom-webui.d.ts",
-    "$target_gen_dir/hotspot/fake_hotspot_config.d.ts",
-  ]
-  outputs = [ "$target_gen_dir/$preprocessed_dir/hotspot/{{source_file_part}}" ]
-}
-
-copy("copy_generated_dts_files_typescript_utils") {
-  deps = [ "typescript_utils:build_ts" ]
-  sources = [ "$target_gen_dir/typescript_utils/strict_query.d.ts" ]
-  outputs = [
-    "$target_gen_dir/$preprocessed_dir/typescript_utils/{{source_file_part}}",
-  ]
-}
-
-group("copy_generated_dts_files") {
-  deps = [
-    ":copy_generated_dts_files_hotspot",
-    ":copy_generated_dts_files_typescript_utils",
-  ]
-}
-
 html_to_wrapper("html_wrapper_files") {
   deps = [ ":preprocess" ]
   in_folder = "$target_gen_dir/$preprocessed_dir"
@@ -317,14 +275,8 @@ generate_grd("build_grdp") {
     "network_health/test_warning.png",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  public_deps = [
-    ":preprocess",
-    ":preprocess_ts_generated",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocessed_manifest",
-    "$target_gen_dir/$preprocessed_generated_manifest",
-  ]
+  public_deps = [ ":preprocess" ]
+  manifest_files = [ "$target_gen_dir/$preprocessed_manifest" ]
   grd_prefix = "ash_common"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
   resource_path_prefix = "ash/common"
@@ -383,7 +335,6 @@ ts_definitions("generate_definitions") {
   ]
   extra_deps = [
     ":copy_checked_in_dts_files",
-    ":copy_generated_dts_files",
     ":css_wrapper_files",
     ":html_wrapper_files",
     ":preprocess",

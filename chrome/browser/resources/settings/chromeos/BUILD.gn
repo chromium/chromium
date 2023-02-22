@@ -37,7 +37,7 @@ if (optimize_webui) {
 
     deps = [
       ":build_ts",
-      "//ash/webui/common/resources:preprocess_ts_generated",
+      "//ash/webui/common/resources/hotspot:build_ts",
     ]
     excludes = [
       "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
