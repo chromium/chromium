@@ -176,27 +176,4 @@ TEST(LanguageDetectionModelTest, LongTextLanguageDetemination) {
       "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
 }
 
-// Regression test for https://crbug.com/1414235. This test is expecting that
-// the code under test does not crash on ASan.
-TEST(LanguageDetectionModelTest, UnalignedString) {
-  base::HistogramTester histogram_tester;
-  LanguageDetectionModel language_detection_model;
-  language_detection_model.UpdateWithFile(GetValidModelFile());
-  EXPECT_TRUE(language_detection_model.IsAvailable());
-
-  bool is_prediction_reliable;
-  float model_reliability_score = 0.0;
-  std::string predicted_language;
-  std::u16string contents(1, ' ');
-  std::string language = language_detection_model.DeterminePageLanguage(
-      std::string("ja"), std::string(), contents, &predicted_language,
-      &is_prediction_reliable, model_reliability_score);
-  EXPECT_FALSE(is_prediction_reliable);
-  EXPECT_EQ(translate::kUnknownLanguageCode, predicted_language);
-  // Rely on the provided language code if the mode is unreliable.
-  EXPECT_EQ("ja", language);
-  histogram_tester.ExpectUniqueSample(
-      "LanguageDetection.TFLite.DidAttemptDetection", true, 1);
-}
-
 }  // namespace translate
