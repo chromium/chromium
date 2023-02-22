@@ -226,6 +226,21 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
          OncMojo.deviceIsInhibited(deviceState));
   }
 
+  /**
+   * @return True if the device state is enabling.
+   */
+  private deviceIsEnabling_(deviceState: OncMojo.DeviceStateProperties|
+                            undefined): boolean {
+    return !!deviceState &&
+        deviceState.deviceState === DeviceStateType.kEnabling;
+  }
+
+  private deviceIsEnabledOrEnabling_(deviceState: OncMojo.DeviceStateProperties|
+                                     undefined): boolean {
+    return this.deviceIsEnabled_(deviceState) ||
+        this.deviceIsEnabling_(deviceState);
+  }
+
   private enableToggleIsVisible_(deviceState: OncMojo.DeviceStateProperties|
                                  undefined): boolean {
     if (!deviceState) {
