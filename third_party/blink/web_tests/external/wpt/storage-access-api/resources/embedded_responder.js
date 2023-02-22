@@ -40,6 +40,11 @@ window.addEventListener("message", async (event) => {
     case "reload":
       window.location.reload();
       break;
+    case "httpCookies":
+      // The `httpCookies` variable is defined/set by
+      // script-with-cookie-header.py.
+      reply(httpCookies);
+      break;
     default:
   }
 });
