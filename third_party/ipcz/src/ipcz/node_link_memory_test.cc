@@ -271,7 +271,7 @@ TEST_F(NodeLinkMemoryTest, ParcelDataAllocation) {
 
   const IpczCreateNodeOptions options = {
       .size = sizeof(options),
-      .disable_parcel_memory_expansion = true,
+      .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
   };
   const Ref<Node> node_c{MakeRefCounted<Node>(
       Node::Type::kNormal, kTestDriver, IPCZ_INVALID_DRIVER_HANDLE, &options)};

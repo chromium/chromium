@@ -46,7 +46,7 @@ bool InitializeIpczNodeForProcess(const IpczNodeOptions& options) {
 
       // TODO(https://crbug.com/1380476): Enable parcel data allocation capacity
       // to be expanded.
-      .disable_parcel_memory_expansion = true,
+      .memory_flags = IPCZ_MEMORY_FIXED_PARCEL_CAPACITY,
   };
   IpczResult result =
       GetIpczAPI().CreateNode(&ipcz_driver::kDriver, IPCZ_INVALID_DRIVER_HANDLE,

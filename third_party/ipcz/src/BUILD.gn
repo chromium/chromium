@@ -371,6 +371,7 @@ ipcz_source_set("ipcz_tests_sources") {
   sources = [
     "api_test.cc",
     "box_test.cc",
+    "compile_c_test.c",
     "connect_test.cc",
     "ipcz/block_allocator_test.cc",
     "ipcz/buffer_pool_test.cc",

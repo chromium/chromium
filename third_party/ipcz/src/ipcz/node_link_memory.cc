@@ -154,7 +154,8 @@ NodeLinkMemory::NodeLinkMemory(Ref<Node> node,
                                DriverMemoryMapping primary_buffer_memory)
     : node_(std::move(node)),
       allow_memory_expansion_for_parcel_data_(
-          !node_->options().disable_parcel_memory_expansion),
+          (node_->options().memory_flags & IPCZ_MEMORY_FIXED_PARCEL_CAPACITY) ==
+          0),
       primary_buffer_memory_(primary_buffer_memory.bytes()),
       primary_buffer_(
           *reinterpret_cast<PrimaryBuffer*>(primary_buffer_memory_.data())) {

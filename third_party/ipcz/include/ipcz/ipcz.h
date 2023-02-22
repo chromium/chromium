@@ -544,21 +544,28 @@ struct IPCZ_ALIGN(8) IpczDriver {
 }  // extern "C"
 #endif
 
+// Flags which may be passed via the `memory_flags` field of
+// IpczCreateNodeOptions to configure features of ipcz internal memory
+// allocation and usage.
+typedef uint32_t IpczMemoryFlags;
+
+// If this flag is set, the node will not attempt to expand the shared memory
+// pools it uses to allocate parcel data between itself and other nodes.
+//
+// This means more application messages may fall back onto driver I/O for
+// transmission, but also that ipcz' memory footprint will remain largely
+// constant. Note that memory may still be expanded to facilitate new portal
+// links as needed.
+#define IPCZ_MEMORY_FIXED_PARCEL_CAPACITY ((IpczMemoryFlags)(1 << 0))
+
 // Options given to CreateNode() to configure the new node's behavior.
 struct IPCZ_ALIGN(8) IpczCreateNodeOptions {
   // The exact size of this structure in bytes. Must be set accurately before
   // passing the structure to CreateNode().
   size_t size;
 
-  // If set to true this node will not attempt to expand the shared memory
-  // capacity from which parcel data blocks may be allocated on its various
-  // links to other nodes.
-  //
-  // This means more application messages may fall back onto driver I/O for
-  // transmission, but also that ipcz' memory footprint will remain largely
-  // constant. Note that memory may still be occasionally expanded to facilitate
-  // new portal links as needed.
-  bool disable_parcel_memory_expansion;
+  // See IpczMemoryFlags above.
+  IpczMemoryFlags memory_flags;
 };
 
 // See CreateNode() and the IPCZ_CREATE_NODE_* flag descriptions below.
@@ -1052,11 +1059,12 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //        from operating correctly. For example, the is returned if ipcz was
   //        built against a std::atomic implementation which does not provide
   //        lock-free 32-bit and 64-bit atomics.
-  IpczResult(IPCZ_API* CreateNode)(const struct IpczDriver* driver,       // in
-                                   IpczDriverHandle driver_node,          // in
-                                   IpczCreateNodeFlags flags,             // in
-                                   const IpczCreateNodeOptions* options,  // in
-                                   IpczHandle* node);                     // out
+  IpczResult(IPCZ_API* CreateNode)(
+      const struct IpczDriver* driver,              // in
+      IpczDriverHandle driver_node,                 // in
+      IpczCreateNodeFlags flags,                    // in
+      const struct IpczCreateNodeOptions* options,  // in
+      IpczHandle* node);                            // out
 
   // ConnectNode()
   // =============
@@ -1707,11 +1715,11 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `contents` is null or malformed, or if
   //        `handle` is null.
-  IpczResult(IPCZ_API* Box)(IpczHandle node,                  // in
-                            const IpczBoxContents* contents,  // in
-                            uint32_t flags,                   // in
-                            const void* options,              // in
-                            IpczHandle* handle);              // out
+  IpczResult(IPCZ_API* Box)(IpczHandle node,                         // in
+                            const struct IpczBoxContents* contents,  // in
+                            uint32_t flags,                          // in
+                            const void* options,                     // in
+                            IpczHandle* handle);                     // out
 
   // Unbox()
   // =======
@@ -1732,10 +1740,10 @@ struct IPCZ_ALIGN(8) IpczAPI {
   //
   //    IPCZ_RESULT_INVALID_ARGUMENT if `handle` is invalid or does not
   //        reference a box, or if `contents` is null or malformed.
-  IpczResult(IPCZ_API* Unbox)(IpczHandle handle,           // in
-                              IpczUnboxFlags flags,        // in
-                              const void* options,         // in
-                              IpczBoxContents* contents);  // out
+  IpczResult(IPCZ_API* Unbox)(IpczHandle handle,                  // in
+                              IpczUnboxFlags flags,               // in
+                              const void* options,                // in
+                              struct IpczBoxContents* contents);  // out
 };
 
 // A function which populates `api` with a table of ipcz API functions. The
