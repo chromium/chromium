@@ -58,7 +58,6 @@
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_notification_controller.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -2164,13 +2163,6 @@ void UserSessionManager::CheckEolInfo(Profile* profile) {
                .first;
   }
   iter->second->CheckEolInfo();
-}
-
-EasyUnlockKeyManager* UserSessionManager::GetEasyUnlockKeyManager() {
-  if (!easy_unlock_key_manager_)
-    easy_unlock_key_manager_ = std::make_unique<EasyUnlockKeyManager>();
-
-  return easy_unlock_key_manager_.get();
 }
 
 void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,

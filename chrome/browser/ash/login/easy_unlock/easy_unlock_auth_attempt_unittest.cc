@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
