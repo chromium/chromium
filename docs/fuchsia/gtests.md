@@ -56,7 +56,7 @@ would run the following command:
 $ out/fuchsia/bin/run_base_unittests --target-id fuchsia-emulator-198
 ```
 
-If only one Fuchsia device is connected, you can also simply use 
+If only one Fuchsia device is connected, you can use the following command:
 
 ```bash
 $ out/fuchsia/bin/run_base_unittests -d
@@ -178,7 +178,7 @@ the `fx set` command for the Fuchsia build.
 
 ##### Combined repo
 
-When using a compined repo as in option (1), packages that are already part of
+When using a combined repo as in option (1), packages that are already part of
 the Core configuration (including
 [cached](https://fuchsia.dev/fuchsia-src/concepts/packages/package?hl=en#cached-packages)
 and
