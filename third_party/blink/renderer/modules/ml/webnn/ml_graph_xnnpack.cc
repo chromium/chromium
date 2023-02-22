@@ -866,6 +866,21 @@ xnn_status DefineXnnNodeForReshape(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForSigmoid(
+    xnn_subgraph_t subgraph,
+    const MLOperator* sigmoid,
+    const OperandValueIdMap& operand_value_id_map,
+    String& error_message) {
+  const uint32_t input_id =
+      GetOperatorInputValueId(sigmoid, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(sigmoid, operand_value_id_map);
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_sigmoid(subgraph, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForSoftmax(
     xnn_subgraph_t subgraph,
     const MLOperator* softmax,
@@ -971,6 +986,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
       break;
     case MLOperator::OperatorKind::kReshape:
       XNN_CHECK_STATUS(DefineXnnNodeForReshape(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    case MLOperator::OperatorKind::kSigmoid:
+      XNN_CHECK_STATUS(DefineXnnNodeForSigmoid(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     case MLOperator::OperatorKind::kSoftmax:

@@ -1509,6 +1509,122 @@ TEST_P(MLGraphXnnpackTest, SoftmaxTest) {
   }
 }
 
+// The outputs of sigmoid function,
+// https://en.wikipedia.org/wiki/Sigmoid_function, are floating-point numbers
+// with mantissa follow the formula: y = 1 / (exp(-x) + 1). The WPT WebNN
+// conformance test cases of sigmoid operator,
+// https://github.com/web-platform-tests/wpt/blob/master/webnn/resources/test_data/sigmoid.json,
+// will test the accuracy loss of the results against the expected values with
+// the WG-agreed tolerance setting.
+//
+// For MLGraphXnnpack unit testing, SigmoidTester instead checks the compute
+// results of an MLGraph containing a sigmoid MLOperator against the results of
+// calling XNNPACK sigmoid operator API for the same input. With that, the
+// expected values are not needed.
+struct SigmoidTester {
+  MLGraphXnnpackTest* helper;
+  OperandInfo<float> input;
+
+  void Test(V8TestingScope& scope) {
+    // Create and run XNNPACK sigmoid operator.
+    ASSERT_EQ(xnn_status_success, xnn_initialize(/*allocator=*/nullptr));
+
+    const uint32_t batch_size = 1;
+    uint32_t channels = input.dimensions[0];
+    for (uint32_t i = 1; i < input.dimensions.size(); i++) {
+      channels *= input.dimensions[i];
+    }
+
+    xnn_operator_t sigmoid_op = nullptr;
+    const xnn_status status = xnn_create_sigmoid_nc_f32(
+        channels, channels, channels, /*flags=*/0, &sigmoid_op);
+    ASSERT_EQ(xnn_status_success, status);
+    ASSERT_NE(nullptr, sigmoid_op);
+    std::unique_ptr<xnn_operator, decltype(&xnn_delete_operator)> auto_op(
+        sigmoid_op, xnn_delete_operator);
+
+    // XNNPACK may access beyond array bounds. The caller must allocate at least
+    // XNN_EXTRA_BYTES extra bytes after the tensor data passed to XNNPACK.
+    Vector<float> xnnpack_input(input.values);
+    xnnpack_input.Grow(input.values.size() + XNN_EXTRA_BYTES / sizeof(float));
+    Vector<float> xnnpack_output(batch_size * channels +
+                                 XNN_EXTRA_BYTES / sizeof(float));
+    ASSERT_EQ(
+        xnn_status_success,
+        xnn_setup_sigmoid_nc_f32(sigmoid_op, batch_size, xnnpack_input.data(),
+                                 xnnpack_output.data(),
+                                 /*threadpool=*/nullptr));
+
+    ASSERT_EQ(xnn_status_success,
+              xnn_run_operator(sigmoid_op, /*threadpool=*/nullptr));
+    // Remove the extra bytes of XNNPACK output.
+    xnnpack_output.Shrink(batch_size * channels);
+
+    // Build WebNN graph with sigmoid operator.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->sigmoid(input_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper->BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute WebNN graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper->ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
+
+    // Compare the results of WebNN graph and XNNPACK operator.
+    EXPECT_EQ(results, xnnpack_output);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, SigmoidTest) {
+  V8TestingScope scope;
+  {
+    // Test sigmoid operator for 1-D tensor.
+    // There is no need to set expected results, because SigmoidTester will
+    // calculate the expected results by calling XNNPACK sigmoid operator
+    // APIs.
+    SigmoidTester{.helper = this,
+                  .input = {.type = V8MLOperandType::Enum::kFloat32,
+                            .dimensions = {2},
+                            .values = {-1.0, 1.0}}}
+        .Test(scope);
+  }
+  {
+    // Test sigmoid operator for 2-D tensor.
+    SigmoidTester{.helper = this,
+                  .input = {.type = V8MLOperandType::Enum::kFloat32,
+                            .dimensions = {2, 2},
+                            .values = {-10.0, -0.5, 0.5, 10.0}}}
+        .Test(scope);
+  }
+  {
+    // Test sigmoid operator for 3-D tensor.
+    SigmoidTester{.helper = this,
+                  .input = {.type = V8MLOperandType::Enum::kFloat32,
+                            .dimensions = {1, 2, 2},
+                            .values = {-10.0, -0.5, 0.5, 10.0}}}
+        .Test(scope);
+  }
+  {
+    // Test sigmoid operator for 4-D tensor.
+    SigmoidTester{.helper = this,
+                  .input = {.type = V8MLOperandType::Enum::kFloat32,
+                            .dimensions = {1, 2, 2, 1},
+                            .values = {-10.0, -0.5, 0.5, 10.0}}}
+        .Test(scope);
+  }
+}
+
 // TODO(crbug.com/1273291): Test the async execution mode once the
 // MLGraphXnnpack implements it.
 INSTANTIATE_TEST_SUITE_P(All,
