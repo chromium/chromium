@@ -535,7 +535,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetPrinters) {
   EXPECT_EQ(printers, original_printers.GetList());
 }
 
-TEST_F(ExtensionPrinterHandlerTest, GetPrinters_Reset) {
+TEST_F(ExtensionPrinterHandlerTest, GetPrintersReset) {
   size_t call_count = 0;
   base::Value::List printers;
   bool is_done = false;
@@ -667,7 +667,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetCapability) {
   EXPECT_EQ(capability, original_capability_with_dpi_dict);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, GetCapability_Reset) {
+TEST_F(ExtensionPrinterHandlerTest, GetCapabilityReset) {
   size_t call_count = 0;
   base::Value::Dict capability;
 
@@ -693,7 +693,7 @@ TEST_F(ExtensionPrinterHandlerTest, GetCapability_Reset) {
   EXPECT_EQ(0u, call_count);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, Print_Pdf) {
+TEST_F(ExtensionPrinterHandlerTest, PrintPdf) {
   size_t call_count = 0;
   bool success = false;
   std::string status;
@@ -730,7 +730,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf) {
   EXPECT_EQ(kPrintRequestSuccess, status);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, Print_Pdf_Reset) {
+TEST_F(ExtensionPrinterHandlerTest, PrintPdfReset) {
   size_t call_count = 0;
   bool success = false;
   std::string status;
@@ -756,7 +756,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pdf_Reset) {
   EXPECT_EQ(0u, call_count);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, Print_All) {
+TEST_F(ExtensionPrinterHandlerTest, PrintAll) {
   size_t call_count = 0;
   bool success = false;
   std::string status;
@@ -794,7 +794,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_All) {
   EXPECT_EQ(kPrintRequestSuccess, status);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, Print_Pwg) {
+TEST_F(ExtensionPrinterHandlerTest, PrintPwg) {
   size_t call_count = 0;
   bool success = false;
   std::string status;
@@ -848,7 +848,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg) {
   EXPECT_EQ(kPrintRequestSuccess, status);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_NonDefaultSettings) {
+TEST_F(ExtensionPrinterHandlerTest, PrintPwgNonDefaultSettings) {
   size_t call_count = 0;
   bool success = false;
   std::string status;
@@ -902,7 +902,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_NonDefaultSettings) {
   EXPECT_EQ(kPrintRequestSuccess, status);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_Reset) {
+TEST_F(ExtensionPrinterHandlerTest, PrintPwgReset) {
   size_t call_count = 0;
   bool success = false;
   std::string status;
@@ -931,7 +931,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_Reset) {
   EXPECT_EQ(0u, call_count);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_InvalidTicket) {
+TEST_F(ExtensionPrinterHandlerTest, PrintPwgInvalidTicket) {
   size_t call_count = 0;
   bool success = false;
   std::string status;
@@ -951,7 +951,7 @@ TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_InvalidTicket) {
   EXPECT_EQ("INVALID_TICKET", status);
 }
 
-TEST_F(ExtensionPrinterHandlerTest, Print_Pwg_FailedConversion) {
+TEST_F(ExtensionPrinterHandlerTest, PrintPwgFailedConversion) {
   size_t call_count = 0;
   bool success = false;
   std::string status;
@@ -1005,7 +1005,7 @@ TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess) {
       << printer_info << ", expected: " << original_printer_info;
 }
 
-TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccess_Reset) {
+TEST_F(ExtensionPrinterHandlerTest, GrantUsbPrinterAccessReset) {
   UsbDeviceInfoPtr device =
       fake_usb_manager_.CreateAndAddDevice(0, 0, "Google", "USB Printer", "");
   base::RunLoop().RunUntilIdle();
