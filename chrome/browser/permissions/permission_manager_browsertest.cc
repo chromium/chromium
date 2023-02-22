@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "build/build_config.h"
 #include "chrome/browser/geolocation/geolocation_permission_context_delegate.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -127,17 +126,8 @@ IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
   // browser explicitly.
 }
 
-// Disable the test as it's flaky on Win7 dbg.
-// crbug.com/1068190
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
-  DISABLED_ServiceWorkerPermissionAfterRendererCrash
-#else
-#define MAYBE_ServiceWorkerPermissionAfterRendererCrash \
-  ServiceWorkerPermissionAfterRendererCrash
-#endif
 IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
-                       MAYBE_ServiceWorkerPermissionAfterRendererCrash) {
+                       ServiceWorkerPermissionAfterRendererCrash) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
 
   content::RenderProcessHostWatcher crash_observer(
