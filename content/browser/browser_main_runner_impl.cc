@@ -63,8 +63,9 @@ BrowserMainRunnerImpl::BrowserMainRunnerImpl()
           std::make_unique<base::ThreadPoolInstance::ScopedExecutionFence>()) {}
 
 BrowserMainRunnerImpl::~BrowserMainRunnerImpl() {
-  if (initialization_started_ && !is_shutdown_)
+  if (initialization_started_ && !is_shutdown_) {
     Shutdown();
+  }
 }
 
 int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
@@ -79,15 +80,15 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
   if (!initialization_started_) {
     initialization_started_ = true;
 
-    const base::TimeTicks start_time_step1 = base::TimeTicks::Now();
-
     SkGraphics::Init();
 
-    if (parameters.command_line->HasSwitch(switches::kWaitForDebugger))
+    if (parameters.command_line->HasSwitch(switches::kWaitForDebugger)) {
       base::debug::WaitForDebugger(60, true);
+    }
 
-    if (parameters.command_line->HasSwitch(switches::kBrowserStartupDialog))
+    if (parameters.command_line->HasSwitch(switches::kBrowserStartupDialog)) {
       WaitForDebugger("Browser");
+    }
 
     notification_service_ = std::make_unique<NotificationServiceImpl>();
 
@@ -134,17 +135,12 @@ int BrowserMainRunnerImpl::Initialize(MainFunctionParams parameters) {
     // to browser_shutdown::Shutdown or BrowserProcess::EndSession.
 
     ui::InitializeInputMethod();
-    UMA_HISTOGRAM_TIMES("Startup.BrowserMainRunnerImplInitializeStep1Time",
-                        base::TimeTicks::Now() - start_time_step1);
   }
-  const base::TimeTicks start_time_step2 = base::TimeTicks::Now();
   main_loop_->CreateStartupTasks();
   int result_code = main_loop_->GetResultCode();
-  if (result_code > 0)
+  if (result_code > 0) {
     return result_code;
-
-  UMA_HISTOGRAM_TIMES("Startup.BrowserMainRunnerImplInitializeStep2Time",
-                      base::TimeTicks::Now() - start_time_step2);
+  }
 
   // Return -1 to indicate no early termination.
   return -1;

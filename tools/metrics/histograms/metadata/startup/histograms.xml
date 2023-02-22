@@ -412,24 +412,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.BrowserMainRunnerImplInitializeStep1Time" units="ms"
-    expires_after="M77">
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during the first section of
-    BrowserMainRunnerImpl::Initialize.
-  </summary>
-</histogram>
-
-<histogram name="Startup.BrowserMainRunnerImplInitializeStep2Time" units="ms"
-    expires_after="M77">
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    The amount of time that elapsed during the second section of
-    BrowserMainRunnerImpl::Initialize.
-  </summary>
-</histogram>
-
 <histogram name="Startup.BrowserMessageLoopFirstIdle" units="ms"
     expires_after="2023-06-25">
   <owner>gab@chromium.org</owner>
