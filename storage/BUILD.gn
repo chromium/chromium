@@ -9,5 +9,9 @@ test("storage_unittests") {
     "//storage/common:unittests",
   ]
 
-  data = [ "//storage/test/data/" ]
+  if (is_ios) {
+    deps += [ "//storage/test:test_bundle_data" ]
+  } else {
+    data = [ "//storage/test/data/" ]
+  }
 }

@@ -1073,7 +1073,7 @@ TEST_F(QuotaDatabaseTest, QuotaDatabasePathBadMigration) {
 //
 // base::CreateDirectory behaves differently on Mac and allows directory
 // migration to succeed when we expect failure.
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
 TEST_F(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
   const base::FilePath kLegacyFilePath =
       ProfilePath().AppendASCII(kDatabaseName);
@@ -1111,7 +1111,7 @@ TEST_F(QuotaDatabaseTest, QuotaDatabaseDirectoryMigrationError) {
     EXPECT_NE(result->id, example_id);
   }
 }
-#endif  // !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(IS_APPLE)
 
 TEST_F(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
   QuotaDatabase db(ProfilePath());

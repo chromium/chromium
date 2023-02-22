@@ -178,7 +178,10 @@ group("gn_all") {
   }
 
   if (use_blink) {
-    deps += [ "//content/shell:content_shell" ]
+    deps += [
+      "//content/shell:content_shell",
+      "//storage:storage_unittests",
+    ]
   }
 
   if (!is_ios) {
@@ -203,7 +206,6 @@ group("gn_all") {
       "//mojo",
       "//mojo:mojo_unittests",
       "//net:net_perftests",
-      "//storage:storage_unittests",
       "//third_party/blink/common:blink_common_unittests",
       "//third_party/blink/renderer/controller:blink_unittests",
       "//third_party/blink/renderer/platform:blink_platform_unittests",
