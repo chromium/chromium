@@ -186,7 +186,6 @@ void TouchToFillDelegateImpl::OnCreditCardScanned(const CreditCard& card) {
 }
 
 void TouchToFillDelegateImpl::ShowCreditCardSettings() {
-  HideTouchToFill();
   manager_->client()->ShowAutofillSettings(PopupType::kCreditCards);
 }
 

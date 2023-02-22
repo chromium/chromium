@@ -4334,7 +4334,10 @@ chromium-metrics-reviews@google.com.
     card or dismissed with no action. The metric is recorded right after user
     has done the action: the credit card selection or some other option (which
     always leads to the bottom sheet being closed) or swiped the sheet to close
-    it. See the TouchToFillCreditCardMediator.java for details.
+    it. See the TouchToFillCreditCardMediator.java for details. Note that
+    &quot;Go to payment settings&quot; click is also considered as the outcome,
+    although it doesn't close the Touch To Fill. So in this case there will be a
+    double count for one bottom sheet showing.
   </summary>
 </histogram>
 

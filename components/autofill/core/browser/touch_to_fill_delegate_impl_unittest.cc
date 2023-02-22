@@ -546,7 +546,7 @@ TEST_F(TouchToFillDelegateImplUnitTest, ShowCreditCardSettingsIsCalled) {
               ShowAutofillSettings(testing::Eq(PopupType::kCreditCards)));
   touch_to_fill_delegate_->ShowCreditCardSettings();
 
-  ASSERT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
+  ASSERT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), true);
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest, CardSelectionClosesTheSheet) {

@@ -223,8 +223,6 @@ void ContentAutofillDriverFactory::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::HIDDEN) {
     client_->HideAutofillPopup(PopupHidingReason::kTabGone);
-    if (client_->IsTouchToFillCreditCardSupported())
-      client_->HideTouchToFillCreditCard();
   }
 }
 
