@@ -7,16 +7,12 @@ package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
-import android.view.ViewGroup.MarginLayoutParams;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
@@ -57,10 +53,6 @@ public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutVie
         pedal.getChipView().setMinimumHeight(pedalSuggestionSizePx);
         addView(pedal);
         mPedalList.add(pedal);
-
-        final @Px int pedalBottomPaddingPx = getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_semicompact_padding);
-        setPaddingRelative(0, 0, 0, pedalBottomPaddingPx);
     }
 
     @Override
@@ -70,27 +62,6 @@ public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutVie
             return mPedalList.get(0).onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
         }
         return false;
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        updatePedalLayoutMargin();
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
-    private void updatePedalLayoutMargin() {
-        List<ImageView> buttons = mBaseSuggestionView.getActionButtons();
-        int actionButtonsWidth = 0;
-        if (buttons != null) {
-            for (ImageView button : buttons) {
-                actionButtonsWidth += button.getMeasuredWidth();
-            }
-        }
-
-        MarginLayoutParams layoutParams =
-                new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        MarginLayoutParamsCompat.setMarginEnd(layoutParams, actionButtonsWidth);
-        mPedalList.get(0).setLayoutParams(layoutParams);
     }
 
     /** @return base suggestion view. */
