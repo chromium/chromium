@@ -130,7 +130,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'chrome/test/data/webui/settings/chromeos',
       'components/policy/resources/webui',
       'ui/webui/resources/js',
-      'mojom-webui',
+      'ui/webui/resources/mojo',
   ]
   for directory in migrating_directories:
     if (source_dir.endswith(directory)
@@ -162,10 +162,6 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
   # Legacy cases supported for backward-compatibility. Do not add new targets
   # here. The existing exceptions should be removed over time.
   exceptions = [
-      # TODO (https://www.crbug.com/1412158): Update this folder to copy files
-      # instead of setting $root_gen_dir/mojom-webui as the root_dir.
-      'ui/webui/resources/mojo',
-
       # ChromeOS cases
       'ash/webui/camera_app_ui/resources/js',
       'ash/webui/color_internals/mojom',
