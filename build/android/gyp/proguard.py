@@ -72,9 +72,7 @@ def _ParseOptions():
     '--disable-checks',
     action='store_true',
     help='Disable -checkdiscard directives and missing symbols check')
-  parser.add_argument('--source-file', help='Value for source file attribute.')
-  parser.add_argument('--package-name',
-                      help='Goes into a comment in the mapping file.')
+  parser.add_argument('--sourcefile', help='Value for source file attribute')
   parser.add_argument(
       '--force-enable-assertions',
       action='store_true',
@@ -266,10 +264,6 @@ def _OptimizeWithR8(options,
         options.r8_path,
         'com.android.tools.r8.R8',
         '--no-data-resources',
-        '--map-id-template',
-        f'{options.source_file} ({options.package_name})',
-        '--source-file-template',
-        options.source_file,
         '--output',
         base_context.staging_dir,
         '--pg-map-output',
@@ -495,7 +489,15 @@ def _CombineConfigs(configs,
 
 
 def _CreateDynamicConfig(options):
-  ret = []
+  # Our scripts already fail on output. Adding -ignorewarnings makes R8 output
+  # warnings rather than throw exceptions so we can selectively ignore them via
+  # dex.py's ignore list. Context: https://crbug.com/1180222
+  ret = ["-ignorewarnings"]
+
+  if options.sourcefile:
+    ret.append("-renamesourcefileattribute '%s' # OMIT FROM EXPECTATIONS" %
+               options.sourcefile)
+
   if options.enable_obfuscation:
     ret.append("-repackageclasses ''")
   else:

@@ -4,7 +4,6 @@
 
 # Do not add any imports to non-//build directories here.
 # Some projects (e.g. V8) do not have non-build directories DEPS'ed in.
-import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compute_inputs_for_analyze.gni")
@@ -1178,24 +1177,6 @@ if (enable_java_templates) {
     }
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
-
-    # This is generally the apk name, and serves to identify the mapping
-    # file that would be required to deobfuscate a stacktrace.
-    _mapping_basename = get_path_info(_mapping_path, "name")
-    _version_code = "@FileArg($_rebased_build_config:deps_info:version_code)"
-    _package_name = "@FileArg($_rebased_build_config:deps_info:package_name)"
-    if (defined(invoker.package_name)) {
-      _package_name = invoker.package_name
-    }
-    if (defined(invoker.version_code)) {
-      _version_code = invoker.version_code
-    }
-
-    # The Mapping ID is parsed to when uploading mapping files.
-    # See: https://crbug.com/1417308
-    _source_file_template =
-        "chromium-$_mapping_basename-$android_channel-$_version_code"
-
     _args = [
       "--mapping-output",
       rebase_path(_mapping_path, root_build_dir),
@@ -1205,9 +1186,6 @@ if (enable_java_templates) {
       "@FileArg($_rebased_build_config:android:sdk_jars)",
       "--r8-path",
       rebase_path(_r8_path, root_build_dir),
-      "--package-name=$_package_name",
-      "--source-file",
-      _source_file_template,
     ]
     if (treat_warnings_as_errors) {
       _args += [ "--warnings-as-errors" ]
@@ -1215,7 +1193,21 @@ if (enable_java_templates) {
 
     if ((!defined(invoker.proguard_enable_obfuscation) ||
          invoker.proguard_enable_obfuscation) && enable_proguard_obfuscation) {
-      _args += [ "--enable-obfuscation" ]
+      _proguard_sourcefile_suffix = ""
+      if (defined(invoker.proguard_sourcefile_suffix)) {
+        _proguard_sourcefile_suffix = "-${invoker.proguard_sourcefile_suffix}"
+      }
+
+      # This is generally the apk name, and serves to identify the mapping
+      # file that would be required to deobfuscate a stacktrace.
+      _mapping_id = get_path_info(_mapping_path, "name")
+      _args += [
+        "--enable-obfuscation",
+        "--sourcefile",
+        "chromium-${_mapping_id}${_proguard_sourcefile_suffix}",
+      ]
+    } else if (defined(invoker.proguard_sourcefile_suffix)) {
+      not_needed(invoker, [ "proguard_sourcefile_suffix" ])
     }
 
     if (defined(invoker.modules)) {
@@ -1494,12 +1486,10 @@ if (enable_java_templates) {
                                      "expected_proguard_config_base",
                                      "ignore_desugar_missing_deps",
                                      "modules",
-                                     "package_name",
                                      "proguard_enable_obfuscation",
                                      "proguard_mapping_path",
                                      "proguard_sourcefile_suffix",
                                      "top_target_name",
-                                     "version_code",
                                    ])
         inputs = []
         if (defined(invoker.inputs)) {
