@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_id.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -32,6 +33,8 @@ LoginErrorBubble::LoginErrorBubble(base::WeakPtr<views::View> anchor_view)
     : LoginBaseBubbleView(std::move(anchor_view)) {
   alert_icon_ = AddChildView(std::make_unique<views::ImageView>());
   alert_icon_->SetPreferredSize(gfx::Size(kAlertIconSizeDp, kAlertIconSizeDp));
+  alert_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kLockScreenAlertIcon, kColorAshIconColorPrimary));
 }
 
 LoginErrorBubble::~LoginErrorBubble() = default;
@@ -55,20 +58,6 @@ void LoginErrorBubble::SetTextContent(const std::u16string& message) {
 void LoginErrorBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlertDialog;
   node_data->SetName(GetAccessibleName());
-}
-
-void LoginErrorBubble::OnThemeChanged() {
-  LoginBaseBubbleView::OnThemeChanged();
-  alert_icon_->SetImage(gfx::CreateVectorIcon(
-      kLockScreenAlertIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-  // It is assumed that we will not have an external call to SetTextContent
-  // followed by a call to SetContent (in such a case, the content would be
-  // erased on theme changed and replaced with the prior message).
-  if (!message_.empty()) {
-    SetTextContent(message_);
-  }
 }
 
 BEGIN_METADATA(LoginErrorBubble, LoginBaseBubbleView)
