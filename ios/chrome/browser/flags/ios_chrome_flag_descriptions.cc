@@ -16,6 +16,11 @@ const char kAdaptiveSuggestionsCountDescription[] =
     "Allows Omnibox to dynamically adjust number of offered suggestions to "
     "fill in the space between Omnibox and the soft keyboard.";
 
+const char kAddToHomeScreenName[] = "Add to home screen";
+const char kAddToHomeScreenDescription[] =
+    "Allows to add a bookmark on the device home screen when sharing from a "
+    "web view.";
+
 const char kAppStoreRatingName[] = "Enable the App Store Rating promo.";
 const char kAppStoreRatingDescription[] =
     "When enabled, App Store Rating promo will be presented to eligible "

@@ -574,6 +574,10 @@ id<CRWFindInteraction> FakeWebState::GetFindInteraction()
   return is_find_interaction_enabled_ ? find_interaction_ : nil;
 }
 
+id FakeWebState::GetActivityItem() API_AVAILABLE(ios(16.4)) {
+  return nil;
+}
+
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(
     BrowserState* browser_state)
     : FakeWebState(),

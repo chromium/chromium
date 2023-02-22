@@ -29,6 +29,7 @@ source_set("activity_services") {
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo",

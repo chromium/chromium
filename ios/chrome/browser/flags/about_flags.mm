@@ -1371,6 +1371,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kConsistencyNewAccountInterfaceName,
      flag_descriptions::kConsistencyNewAccountInterfaceDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kConsistencyNewAccountInterface)},
+    {"add-to-home-screen", flag_descriptions::kAddToHomeScreenName,
+     flag_descriptions::kAddToHomeScreenDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAddToHomeScreen)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

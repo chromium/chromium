@@ -136,4 +136,7 @@ BASE_DECLARE_FEATURE(kConsistencyNewAccountInterface);
 // Whether the flag for consistency new-account interface is enabled.
 bool IsConsistencyNewAccountInterfaceEnabled();
 
+// Feature flag to enable add to home screen in share menu.
+BASE_DECLARE_FEATURE(kAddToHomeScreen);
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

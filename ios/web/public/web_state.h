@@ -477,6 +477,10 @@ class WebState : public base::SupportsUserData {
   // called if `IsFindInteractionSupported()` returns `true`.
   virtual id<CRWFindInteraction> GetFindInteraction() = 0;
 
+  // Get an opaque activity item that can be passed to a
+  // UIActivityViewController to share the current URL.
+  virtual id GetActivityItem() API_AVAILABLE(ios(16.4)) = 0;
+
  protected:
   friend class WebStatePolicyDecider;
 

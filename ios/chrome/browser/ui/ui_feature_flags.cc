@@ -155,3 +155,7 @@ BASE_FEATURE(kConsistencyNewAccountInterface,
 bool IsConsistencyNewAccountInterfaceEnabled() {
   return base::FeatureList::IsEnabled(kConsistencyNewAccountInterface);
 }
+
+BASE_FEATURE(kAddToHomeScreen,
+             "AddToHomeScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);

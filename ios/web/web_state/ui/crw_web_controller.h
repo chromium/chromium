@@ -259,6 +259,10 @@ class WebStateImpl;
 // Returns the Find interaction of the contained web view, if any.
 - (id<CRWFindInteraction>)findInteraction API_AVAILABLE(ios(16));
 
+// Returns an opaque activity item that can be passed to a
+// UIActivityViewController to add additional share action for the current URL.
+- (id)activityItem;
+
 #pragma mark Navigation Message Handlers
 
 // Handles a navigation hash change message for the current webpage.

@@ -712,6 +712,13 @@ id<CRWFindInteraction> WebStateImpl::GetFindInteraction()
   return [GetWebController() findInteraction];
 }
 
+id WebStateImpl::GetActivityItem() API_AVAILABLE(ios(16.4)) {
+  if (UNLIKELY(!IsRealized())) {
+    return nil;
+  }
+  return [GetWebController() activityItem];
+}
+
 #pragma mark - WebStateImpl private methods
 
 WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {

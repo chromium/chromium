@@ -1083,6 +1083,14 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return nil;
 }
 
+- (id)activityItem {
+  if (!self.webView || ![_containerView webViewContentView]) {
+    return nil;
+  }
+  DCHECK([self.webView isKindOfClass:[WKWebView class]]);
+  return self.webView;
+}
+
 #pragma mark - JavaScript
 
 - (void)executeJavaScript:(NSString*)javascript

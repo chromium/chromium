@@ -77,6 +77,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "add-to-home-screen",
+    "owners": [ "olivierrobin@chromium.org", "gambard@chromium.org", "bling-flags@google.com"],
+    "expiry_milestone": 125
+  },
+  {
     "name": "add-to-homescreen-iph",
     "owners": [ "shaktisahu" ],
     "expiry_milestone": 100

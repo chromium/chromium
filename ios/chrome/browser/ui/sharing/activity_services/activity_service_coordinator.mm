@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data_builder.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/sharing/sharing_positioner.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -144,9 +145,16 @@ const char kMimeTypePDF[] = "application/pdf";
 
 // Sets up the activity ViewController with the given `items` and `activities`.
 - (void)shareItems:(NSArray<id<ChromeActivityItemSource>>*)items
-        activities:(NSArray*)activities {
+        activities:(NSArray*)activities
+         extraItem:(id)extraItem {
+  NSArray* itemsToShare = items;
+  if (extraItem) {
+    NSMutableArray* itemsWithExtra = [items mutableCopy];
+    [itemsWithExtra addObject:extraItem];
+    itemsToShare = itemsWithExtra;
+  }
   self.viewController =
-      [[UIActivityViewController alloc] initWithActivityItems:items
+      [[UIActivityViewController alloc] initWithActivityItems:itemsToShare
                                         applicationActivities:activities];
 
   [self.viewController setModalPresentationStyle:UIModalPresentationPopover];
@@ -244,7 +252,13 @@ const char kMimeTypePDF[] = "application/pdf";
   NSArray* activities =
       [self.mediator applicationActivitiesForDataItems:@[ data ]];
 
-  [self shareItems:items activities:activities];
+  id extraItem = nil;
+  if (@available(iOS 16.4, *)) {
+    if (base::FeatureList::IsEnabled(kAddToHomeScreen)) {
+      extraItem = webState->GetActivityItem();
+    }
+  }
+  [self shareItems:items activities:activities extraItem:extraItem];
 }
 
 #pragma mark - Private Methods: Share Image
@@ -260,7 +274,7 @@ const char kMimeTypePDF[] = "application/pdf";
       [self.mediator activityItemsForImageData:data];
   NSArray* activities = [self.mediator applicationActivitiesForImageData:data];
 
-  [self shareItems:items activities:activities];
+  [self shareItems:items activities:activities extraItem:nil];
 }
 
 #pragma mark - Private Methods: Share File
@@ -317,7 +331,13 @@ const char kMimeTypePDF[] = "application/pdf";
       [self.mediator activityItemsForFileData:fileData];
   NSArray* activities =
       [self.mediator applicationActivitiesForDataItems:@[ URLData ]];
-  [self shareItems:items activities:activities];
+  id extraItem = nil;
+  if (@available(iOS 16.4, *)) {
+    if (base::FeatureList::IsEnabled(kAddToHomeScreen)) {
+      extraItem = webState->GetActivityItem();
+    }
+  }
+  [self shareItems:items activities:activities extraItem:extraItem];
 }
 
 #pragma mark - Private Methods: Share URL
@@ -348,7 +368,7 @@ const char kMimeTypePDF[] = "application/pdf";
   NSArray* activities =
       [self.mediator applicationActivitiesForDataItems:dataItems];
 
-  [self shareItems:items activities:activities];
+  [self shareItems:items activities:activities extraItem:nil];
 }
 
 @end

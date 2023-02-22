@@ -350,6 +350,7 @@ class WebStateImpl final : public WebState {
   bool IsFindInteractionEnabled() final;
   void SetFindInteractionEnabled(bool enabled) final;
   id<CRWFindInteraction> GetFindInteraction() final API_AVAILABLE(ios(16));
+  id GetActivityItem() final API_AVAILABLE(ios(16.4));
 
  protected:
   // WebState:
