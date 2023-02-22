@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Webgl didn't render imagedata with format uint8 and float32 correctly. Cannot read properties of null (reading 'getContextAttributes')
-Harness: the test ran to completion.
-

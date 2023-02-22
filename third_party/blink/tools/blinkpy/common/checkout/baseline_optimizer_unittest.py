@@ -326,10 +326,6 @@ class BaselineOptimizerTest(unittest.TestCase):
             baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_test_fallback_to_same_baseline_after_optimization_1(self):
-        # Baseline optimization in this case changed the result for
-        # virtual/gpu/fast/canvas on win10. The test previously expects
-        # output '2'. After optimization it expects '1'.
-        # TODO(crbug/1375568): consider do away with the patching virtual subtree operation.
         self._assert_optimization(
             {
                 'platform/win/fast/canvas': '1',
@@ -337,18 +333,17 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/mac/fast/canvas': '2',
                 'platform/mac/virtual/gpu/fast/canvas': '1',
             }, {
-                'virtual/gpu/fast/canvas': '1',
                 'platform/win/fast/canvas': '1',
                 'platform/win10/fast/canvas': '2',
                 'platform/mac/fast/canvas': '2',
+                'virtual/gpu/fast/canvas': None,
+                'platform/win/virtual/gpu/fast/canvas': None,
+                'platform/win10/virtual/gpu/fast/canvas': None,
+                'platform/mac/virtual/gpu/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_test_fallback_to_same_baseline_after_optimization_2(self):
-        # Baseline optimization in this case changed the result for
-        # virtual/gpu/fast/canvas on mac11. The test previously expects
-        # output '1'. After optimization it expects '2'.
-        # TODO(crbug/1375568): consider do away with the patching virtual subtree operation.
         self._assert_optimization(
             {
                 'platform/mac-mac10.15/virtual/gpu/fast/canvas': '3',
@@ -358,35 +353,28 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/mac-mac10.15/virtual/gpu/fast/canvas': '3',
                 'platform/mac-mac11/virtual/gpu/fast/canvas': None,
                 'platform/mac/virtual/gpu/fast/canvas': None,
-                'virtual/gpu/fast/canvas': '2',
+                'virtual/gpu/fast/canvas': None,
                 'platform/mac-mac11/fast/canvas': '1',
                 'fast/canvas': '2',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_test_fallback_to_same_baseline_after_optimization_3(self):
-        # Baseline optimization in this case removed the baseline for
-        # virtual/gpu/fast/canvas on Linux. When patching virtual tree,
-        # virtual/gpu/fast/canvas on Win get a baseline of '1', the algorithm
-        # then decides the virtual baseline on both Win and Linux can be
-        # removed, which is not correct.
-        # TODO(crbug/1375568): consider do away with the patching virtual subtree operation.
         self._assert_optimization(
             {
                 'platform/win/fast/canvas': '1',
                 'platform/linux/fast/canvas': '2',
                 'platform/mac/fast/canvas': '3',
-                'platform/linux/virtual/gpu/fast/canvas': '1'
+                'platform/linux/virtual/gpu/fast/canvas': '1',
             }, {
                 'platform/win/fast/canvas': '1',
                 'platform/linux/fast/canvas': '2',
                 'platform/mac/fast/canvas': '3',
-                'platform/linux/virtual/gpu/fast/canvas': None
+                'platform/win/virtual/gpu/fast/canvas': None,
+                'platform/linux/virtual/gpu/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
-    @unittest.skip('linux/virtual is not removed because it is not unpatched; '
-                   'reenable after patching is removed (crbug.com/1375568).')
     def test_virtual_test_redundant_with_nonvirtual_successor(self):
         self._assert_optimization(
             {
@@ -403,18 +391,15 @@ class BaselineOptimizerTest(unittest.TestCase):
             baseline_dirname='virtual/gpu/fast/canvas')
 
     def test_virtual_baseline_not_redundant_with_actual_root(self):
-        # baseline optimization supprisingly added one baseline in this case.
-        # This is because we are patching the virtual subtree first.
-        # TODO(crbug/1375568): consider do away with the patching virtual subtree operation.
         self._assert_optimization(
             {
                 'platform/mac-mac11/virtual/gpu/fast/canvas': '1',
                 'platform/mac-mac11/fast/canvas': '1',
                 'fast/canvas': '2',
             }, {
-                'platform/mac-mac11/virtual/gpu/fast/canvas': '1',
+                'platform/mac-mac11/virtual/gpu/fast/canvas': None,
                 'platform/mac/virtual/gpu/fast/canvas': None,
-                'virtual/gpu/fast/canvas': '2',
+                'virtual/gpu/fast/canvas': None,
                 'platform/mac-mac11/fast/canvas': '1',
                 'fast/canvas': '2',
             },
@@ -452,10 +437,11 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/mac/fast/canvas': '2',
                 'platform/win/fast/canvas': '2',
                 'platform/win10/fast/canvas': '1',
-            }, {
+            },
+            {
                 'virtual/gpu/fast/canvas': None,
-                'platform/mac/fast/canvas': '2',
-                'platform/win/fast/canvas': '2',
+                'fast/canvas': '2',
+                # win10 skips the virtual test, so it is not deleted.
                 'platform/win10/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
@@ -484,11 +470,22 @@ class BaselineOptimizerTest(unittest.TestCase):
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
+    def test_virtual_platform_not_redundant_with_some_ancestors(self):
+        self._assert_optimization(
+            {
+                'platform/linux/virtual/gpu/fast/canvas': '1',
+                'platform/win/virtual/gpu/fast/canvas': '1',
+                'platform/linux/fast/canvas': '2',
+                'platform/win/fast/canvas': '1',
+            }, {
+                'platform/linux/virtual/gpu/fast/canvas': None,
+                'platform/win/virtual/gpu/fast/canvas': '1',
+                'platform/linux/fast/canvas': '2',
+                'platform/win/fast/canvas': '1',
+            },
+            baseline_dirname='virtual/gpu/fast/canvas')
+
     def test_virtual_root_not_redundant_with_flag_specific_ancestors(self):
-        # virtual root should not be removed when any flag specific non virtual
-        # baseline differs with the virtual root, otherwise virtual flag
-        # specific will fall back to a different baseline after optimization.
-        # TODO: fix this together when we do away with patch virtual subtree.
         self._assert_optimization(
             {
                 'virtual/gpu/fast/canvas': '2',
@@ -496,9 +493,10 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'platform/win/fast/canvas': '2',
                 'flag-specific/highdpi/fast/canvas': '1',
             }, {
-                'virtual/gpu/fast/canvas': None,
-                'platform/mac/fast/canvas': '2',
-                'platform/win/fast/canvas': '2',
+                'virtual/gpu/fast/canvas': '2',
+                'platform/mac/fast/canvas': None,
+                'platform/win/fast/canvas': None,
+                'fast/canvas': '2',
                 'flag-specific/highdpi/fast/canvas': '1',
             },
             baseline_dirname='virtual/gpu/fast/canvas')
@@ -536,10 +534,6 @@ class BaselineOptimizerTest(unittest.TestCase):
             })
 
     def test_all_pass_testharness_at_win_and_mac_not_redundant(self):
-        # Baseline optimization in the case removed the all pass baseline
-        # for virtual/gpu/fast/canvas on Win and Mac, but failed to add a
-        # generic virtual baseline.
-        # TODO(1399685):  all pass baselines are removed incorrectly
         self._assert_optimization(
             {
                 'fast/canvas': '1',
@@ -551,7 +545,7 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'fast/canvas': '1',
                 'platform/mac/virtual/gpu/fast/canvas': None,
                 'platform/win/virtual/gpu/fast/canvas': None,
-                'virtual/gpu/fast/canvas': None
+                'virtual/gpu/fast/canvas': ALL_PASS_TESTHARNESS_RESULT,
             },
             baseline_dirname='virtual/gpu/fast/canvas')
 
@@ -781,59 +775,6 @@ class BaselineOptimizerTest(unittest.TestCase):
                 'fast/canvas': '1',
             },
             baseline_dirname='fast/canvas')
-
-    # Tests for protected methods - pylint: disable=protected-access
-
-    def test_move_baselines(self):
-        self.fs.write_text_file(MOCK_WEB_TESTS + 'VirtualTestSuites', '[]')
-        self.fs.write_binary_file(
-            MOCK_WEB_TESTS + 'platform/win/another/test-expected.txt',
-            'result A')
-        self.fs.write_binary_file(
-            MOCK_WEB_TESTS + 'platform/mac/another/test-expected.txt',
-            'result A')
-        self.fs.write_binary_file(MOCK_WEB_TESTS + 'another/test-expected.txt',
-                                  'result B')
-        baseline_optimizer = BaselineOptimizer(
-            self.host, self.host.port_factory.get(),
-            self.host.port_factory.all_port_names())
-        baseline_optimizer._move_baselines(
-            'another/test-expected.txt', {
-                MOCK_WEB_TESTS + 'platform/win': 'aaa',
-                MOCK_WEB_TESTS + 'platform/mac': 'aaa',
-                MOCK_WEB_TESTS[:-1]: 'bbb',
-            }, {
-                MOCK_WEB_TESTS[:-1]: 'aaa',
-            })
-        self.assertEqual(
-            self.fs.read_binary_file(MOCK_WEB_TESTS +
-                                     'another/test-expected.txt'), 'result A')
-
-    def test_move_baselines_skip_git_commands(self):
-        self.fs.write_text_file(MOCK_WEB_TESTS + 'VirtualTestSuites', '[]')
-        self.fs.write_binary_file(
-            MOCK_WEB_TESTS + 'platform/win/another/test-expected.txt',
-            'result A')
-        self.fs.write_binary_file(
-            MOCK_WEB_TESTS + 'platform/mac/another/test-expected.txt',
-            'result A')
-        self.fs.write_binary_file(MOCK_WEB_TESTS + 'another/test-expected.txt',
-                                  'result B')
-        baseline_optimizer = BaselineOptimizer(
-            self.host, self.host.port_factory.get(),
-            self.host.port_factory.all_port_names())
-        baseline_optimizer._move_baselines(
-            'another/test-expected.txt', {
-                MOCK_WEB_TESTS + 'platform/win': 'aaa',
-                MOCK_WEB_TESTS + 'platform/mac': 'aaa',
-                MOCK_WEB_TESTS[:-1]: 'bbb',
-            }, {
-                MOCK_WEB_TESTS + 'platform/linux': 'bbb',
-                MOCK_WEB_TESTS[:-1]: 'aaa',
-            })
-        self.assertEqual(
-            self.fs.read_binary_file(MOCK_WEB_TESTS +
-                                     'another/test-expected.txt'), 'result A')
 
 
 class ResultDigestTest(unittest.TestCase):

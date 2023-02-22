@@ -4,26 +4,26 @@ EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotificatio
 layer at (0,0) size 800x600
   LayoutView at (0,0) size 800x600
 layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow {DIV} at (0,0) size 784x184 [border: (2px solid #0000FF)]
-        LayoutBlockFlow {DIV} at (14,14) size 756x56
-          LayoutText {#text} at (0,0) size 67x28
-            text run at (0,0) width 67: "Tests: "
-          LayoutBR {BR} at (0,0) size 0x0
-          LayoutText {#text} at (0,28) size 544x28
-            text run at (0,28) width 544: "Cntl-y at caret selection when nothing is in the kill ring."
-        LayoutBlockFlow {DIV} at (14,86) size 756x84
-          LayoutText {#text} at (0,0) size 189x28
-            text run at (0,0) width 189: "Expected Results: "
-          LayoutBR {BR} at (189,22) size 0x0
-          LayoutText {#text} at (0,28) size 291x28
-            text run at (0,28) width 291: "Deletes a character, yielding: "
-          LayoutBR {BR} at (291,50) size 0x0
-          LayoutText {#text} at (0,56) size 166x28
-            text run at (0,56) width 166: "one tw three four"
-      LayoutBlockFlow {DIV} at (0,208) size 784x32
-        LayoutBlockFlow {DIV} at (0,0) size 784x32 [border: (2px solid #FF0000)]
-          LayoutText {#text} at (2,2) size 178x28
-            text run at (2,2) width 178: "one two three four"
+  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+      LayoutNGBlockFlow {DIV} at (0,0) size 784x184 [border: (2px solid #0000FF)]
+        LayoutNGBlockFlow {DIV} at (14,14) size 756x56
+          LayoutText {#text} at (0,0) size 60x28
+            text run at (0,0) width 60: "Tests:"
+          LayoutBR {BR} at (59,0) size 1x28
+          LayoutText {#text} at (0,28) size 537x28
+            text run at (0,28) width 537: "Cntl-y at caret selection when nothing is in the kill ring."
+        LayoutNGBlockFlow {DIV} at (14,86) size 756x84
+          LayoutText {#text} at (0,0) size 184x28
+            text run at (0,0) width 184: "Expected Results:"
+          LayoutBR {BR} at (183,0) size 1x28
+          LayoutText {#text} at (0,28) size 279x28
+            text run at (0,28) width 279: "Deletes a character, yielding:"
+          LayoutBR {BR} at (278,28) size 1x28
+          LayoutText {#text} at (0,56) size 165x28
+            text run at (0,56) width 165: "one tw three four"
+      LayoutNGBlockFlow {DIV} at (0,208) size 784x32
+        LayoutNGBlockFlow {DIV} at (0,0) size 784x32 [border: (2px solid #FF0000)]
+          LayoutText {#text} at (2,2) size 177x28
+            text run at (2,2) width 177: "one two three four"
 caret: position 7 of child 0 {#text} of child 1 {DIV} of child 3 {DIV} of body

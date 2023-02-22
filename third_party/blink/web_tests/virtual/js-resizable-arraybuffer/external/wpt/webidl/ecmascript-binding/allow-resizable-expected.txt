@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS APIs without [AllowResizable] throw when passed resizable ArrayBuffers
-FAIL APIs with [AllowShared] but without [AllowResizable] throw when passed growable SharedArrayBuffers Failed to execute 'encodeInto' on 'TextEncoder': The provided Uint8Array value must not be shared.
-Harness: the test ran to completion.
-

@@ -58,5 +58,8 @@ class OptimizeBaselines(AbstractRebaseliningCommand):
         ])
         test_set -= virtual_tests_to_exclude
 
+        if not test_set:
+            _log.error('No tests to optimize. Ensure all listed tests exist.')
+            return 1
         for test_name in test_set:
             self._optimize_baseline(optimizer, test_name)

@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL texImage2D with 48x36 srgb VideoFrame. Cannot read properties of null (reading 'VERTEX_SHADER')
-FAIL texSubImage2D with 48x36 srgb VideoFrame. Cannot read properties of null (reading 'VERTEX_SHADER')
-FAIL texImage2D with 480x360 srgb VideoFrame. Cannot read properties of null (reading 'VERTEX_SHADER')
-FAIL texSubImage2D with 480x360 srgb VideoFrame. Cannot read properties of null (reading 'VERTEX_SHADER')
-FAIL texImage2D with a closed VideoFrame. Cannot read properties of null (reading 'texImage2D')
-FAIL texSubImage2D with a closed VideoFrame. Cannot read properties of null (reading 'texSubImage2D')
-Harness: the test ran to completion.
-
