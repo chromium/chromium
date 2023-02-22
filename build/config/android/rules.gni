@@ -5084,8 +5084,6 @@ if (enable_java_templates && is_android) {
       if (!_proguard_enabled) {
         _module_target_name = get_label_info(_module_target, "name")
         _dex_target = "${_module_target_name}__final_dex"
-        _rebased_module_build_config =
-            rebase_path(_module_build_config, root_build_dir)
         _dex_path = "$target_out_dir/$_module_target_name/$_module_target_name.mergeddex.jar"
         dex(_dex_target) {
           forward_variables_from(invoker,
