@@ -181,7 +181,8 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, Pipeline) {
+// TODO(crbug.com/1417581): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, DISABLED_Pipeline) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
@@ -342,8 +343,9 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, PageWithIframe) {
 
 // Tests cross-origin iframe. For now we don't log cross-origin links, so this
 // test just makes sure the iframe is ignored and the browser doesn't crash.
+// TODO(crbug.com/1417581): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
-                       PageWithCrossOriginIframe) {
+                       DISABLED_PageWithCrossOriginIframe) {
   auto test_ukm_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   ResetUKM();
 
