@@ -59,8 +59,7 @@ var SidePanelPowerBookmarksListTest = class extends SidePanelBrowserTest {
   }
 };
 
-// TODO(crbug.com/1410117): Flaky across multiple builders. Re-enable this test.
-TEST_F('SidePanelPowerBookmarksListTest', 'DISABLED_All', function() {
+TEST_F('SidePanelPowerBookmarksListTest', 'All', function() {
   mocha.run();
 });
 
