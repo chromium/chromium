@@ -728,7 +728,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
     self.pinTabAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_PIN_TAB, kPinSymbol,
-        /*systemSymbol=*/NO, /*monochromeSymbol=*/NO, kToolsMenuPinTabId, ^{
+        /*systemSymbol=*/YES, /*monochromeSymbol=*/NO, kToolsMenuPinTabId, ^{
           [weakSelf pinTab];
         });
 
