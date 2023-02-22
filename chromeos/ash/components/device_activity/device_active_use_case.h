@@ -188,10 +188,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // metadata.
   ChurnActiveStatus* GetChurnActiveStatus();
 
- protected:
   // Retrieve the timestamp when the device came active.
   base::Time GetActiveTs() const;
 
+ protected:
   // Retrieve full hardware class from MachineStatistics.
   // |DeviceActivityController| waits for object to finish loading, to avoid
   // callback logic in this class.

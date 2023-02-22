@@ -133,7 +133,9 @@ ChurnActiveStatus* DeviceActiveUseCase::GetChurnActiveStatus() {
 }
 
 base::Time DeviceActiveUseCase::GetActiveTs() const {
-  DCHECK(active_ts_ != base::Time());
+  if (active_ts_.is_null()) {
+    LOG(ERROR) << "active_ts is currently unset.";
+  }
   return active_ts_;
 }
 
