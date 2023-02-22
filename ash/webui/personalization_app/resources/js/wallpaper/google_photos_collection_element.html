@@ -1,4 +1,4 @@
-<style include="wallpaper common">
+<style include="wallpaper common cros-button-style">
   :host {
     overflow: hidden;
   }
@@ -30,7 +30,12 @@
   }
 
   #tabStrip cr-button[aria-pressed='false'] {
+    background-color: unset;
     color: var(--cros-text-color-secondary);
+  }
+
+  #tabStrip cr-button[aria-pressed='false']:hover {
+    background-color: var(--cros-sys-hover_on_subtle, var(--cros-button-background-color-secondary-hover));
   }
 
   #albumsContent,
@@ -47,11 +52,11 @@
   <template is="dom-if" if="[[isTabStripVisible_(albumId, albums_, albumsShared_)]]">
     <div id="tabStrip">
       <cr-button id="photosTab" aria-pressed="[[isPhotosTabSelected_(tab_)]]"
-        on-click="onTabSelected_">
+        on-click="onTabSelected_" class="secondary">
         <div class="text">$i18n{googlePhotosPhotosTabLabel}</div>
       </cr-button>
       <cr-button id="albumsTab" aria-pressed="[[isAlbumsTabSelected_(tab_)]]"
-        on-click="onTabSelected_">
+        on-click="onTabSelected_" class="secondary">
         <div class="text">$i18n{googlePhotosAlbumsTabLabel}</div>
       </cr-button>
     </div>
