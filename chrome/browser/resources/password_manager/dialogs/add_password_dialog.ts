@@ -11,17 +11,24 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../shared_style.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PasswordManagerImpl} from '../password_manager_proxy.js';
 
 import {getTemplate} from './add_password_dialog.html.js';
 
 export interface AddPasswordDialogElement {
   $: {
     dialog: CrDialogElement,
+    websiteInput: CrInputElement,
   };
 }
 
-export class AddPasswordDialogElement extends PolymerElement {
+const AddPasswordDialogElementBase = I18nMixin(PolymerElement);
+
+export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   static get is() {
     return 'add-password-dialog';
   }
@@ -31,11 +38,47 @@ export class AddPasswordDialogElement extends PolymerElement {
   }
 
   static get properties() {
-    return {};
+    return {
+      website_: String,
+
+      /**
+       * Error message if the website input is invalid.
+       */
+      websiteErrorMessage_: {type: String, value: null},
+    };
   }
+
+  private website_: string;
+  private websiteErrorMessage_: string|null;
 
   private onCancel_() {
     this.$.dialog.close();
+  }
+
+  /**
+   * Helper function that checks whether the entered url is valid.
+   */
+  private async validateWebsite_() {
+    PasswordManagerImpl.getInstance()
+        .getUrlCollection(this.website_)
+        .then(urlCollection => {
+          this.websiteErrorMessage_ = null;
+          if (!urlCollection) {
+            this.websiteErrorMessage_ = this.i18n('notValidWebsite');
+          }
+        })
+        .catch(() => this.websiteErrorMessage_ = this.i18n('notValidWebsite'));
+  }
+
+  private onWebsiteInputBlur_() {
+    if (!this.websiteErrorMessage_ && !this.website_.includes('.')) {
+      this.websiteErrorMessage_ =
+          this.i18n('missingTLD', `${this.website_}.com`);
+    }
+  }
+
+  private isWebsiteInputInvalid_(): boolean {
+    return !!this.websiteErrorMessage_;
   }
 }
 

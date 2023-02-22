@@ -45,6 +45,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getInsecureCredentials',
       'getPasswordCheckStatus',
       'getSavedPasswordList',
+      'getUrlCollection',
       'muteInsecureCredential',
       'recordPasswordCheckInteraction',
       'removeBlockedSite',
@@ -236,5 +237,18 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   showExportedFileInShell() {
     this.methodCalled('showExportedFileInShell');
+  }
+
+  getUrlCollection(url: string) {
+    this.methodCalled('getUrlCollection', url);
+    if (url.includes('www')) {
+      return Promise.resolve({
+        signonRealm: `https://${url}/login`,
+        shown: url,
+        link: `https://${url}/login`,
+      });
+    } else {
+      return Promise.reject();
+    }
   }
 }

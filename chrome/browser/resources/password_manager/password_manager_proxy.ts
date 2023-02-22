@@ -229,6 +229,15 @@ export interface PasswordManagerProxy {
    * Shows the file with the exported passwords in the OS shell.
    */
   showExportedFileInShell(filePath: string): void;
+
+  /**
+   * Requests whether the given |url| meets the requirements to save a password
+   * for it (e.g. valid, has proper scheme etc.).
+   * @return A promise that resolves to the corresponding URLCollection on
+   *     success and to null otherwise.
+   */
+  getUrlCollection(url: string):
+      Promise<chrome.passwordsPrivate.UrlCollection|null>;
 }
 
 /**
@@ -374,6 +383,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   showExportedFileInShell(filePath: string) {
     chrome.passwordsPrivate.showExportedFileInShell(filePath);
+  }
+
+  getUrlCollection(url: string) {
+    return chrome.passwordsPrivate.getUrlCollection(url);
   }
 
   static getInstance(): PasswordManagerProxy {
