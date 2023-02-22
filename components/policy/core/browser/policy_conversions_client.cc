@@ -86,8 +86,6 @@ base::Value::Dict PolicyConversionsClient::GetChromePolicies() {
 
   auto* schema_registry = GetPolicySchemaRegistry();
   if (!schema_registry) {
-    LOG_POLICY(ERROR, POLICY_PROCESSING)
-        << "Cannot retrieve Chrome policies, no schema registry";
     return Value::Dict();
   }
 

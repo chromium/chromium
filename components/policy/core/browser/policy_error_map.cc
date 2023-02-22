@@ -12,7 +12,6 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/schema.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -227,9 +226,6 @@ void PolicyErrorMap::AddError(std::unique_ptr<PendingError> error) {
 }
 
 void PolicyErrorMap::Convert(PendingError* error) {
-  DLOG_POLICY(ERROR, POLICY_PROCESSING)
-      << "Error in " << error->policy_name()
-      << "policy: " << error->GetMessage().c_str();
   map_.insert(std::make_pair(
       error->policy_name(),
       Data{.message = error->GetMessage(), .level = error->level()}));
