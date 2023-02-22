@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +20,7 @@
 #include "cc/slim/test_layer_tree_impl.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -488,6 +490,66 @@ TEST_F(SlimLayerTreeCompositorFrameTest,
     ASSERT_TRUE(feedback_time_opt_2);
     EXPECT_EQ(feedback_time_opt_2.value(),
               details.presentation_feedback.timestamp);
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, CopyOutputRequest) {
+  auto solid_color_layer =
+      CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(solid_color_layer);
+
+  auto copy_request_no_source_1 = std::make_unique<viz::CopyOutputRequest>(
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+      base::DoNothing());
+  auto copy_request_no_source_2 = std::make_unique<viz::CopyOutputRequest>(
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+      base::DoNothing());
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  auto copy_request_with_source = std::make_unique<viz::CopyOutputRequest>(
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+      base::DoNothing());
+  copy_request_with_source->set_source(token);
+  auto copy_request_with_same_source = std::make_unique<viz::CopyOutputRequest>(
+      viz::CopyOutputRequest::ResultFormat::RGBA,
+      viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+      base::DoNothing());
+  copy_request_with_same_source->set_source(token);
+
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  auto copy_request_with_difference_source =
+      std::make_unique<viz::CopyOutputRequest>(
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
+          base::DoNothing());
+  copy_request_with_difference_source->set_source(token2);
+
+  layer_tree_->RequestCopyOfOutput(std::move(copy_request_no_source_1));
+  layer_tree_->RequestCopyOfOutput(std::move(copy_request_no_source_2));
+  layer_tree_->RequestCopyOfOutput(std::move(copy_request_with_source));
+  layer_tree_->RequestCopyOfOutput(std::move(copy_request_with_same_source));
+  layer_tree_->RequestCopyOfOutput(
+      std::move(copy_request_with_difference_source));
+
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_EQ(pass->copy_requests.size(), 4u);
+    EXPECT_TRUE(pass->copy_requests[0]);
+    EXPECT_TRUE(pass->copy_requests[1]);
+    EXPECT_TRUE(pass->copy_requests[2]);
+    EXPECT_TRUE(pass->copy_requests[3]);
+  }
+
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_EQ(pass->copy_requests.size(), 0u);
   }
 }
 

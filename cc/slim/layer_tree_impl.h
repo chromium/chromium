@@ -172,6 +172,8 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   viz::FrameTokenGenerator next_frame_token_;
   gfx::OverlayTransform display_transform_hint_ = gfx::OVERLAY_TRANSFORM_NONE;
 
+  std::vector<std::unique_ptr<viz::CopyOutputRequest>>
+      copy_requests_for_next_frame_;
   // These are added to `pending_presentation_callbacks_` in the next frame.
   std::vector<PresentationCallback> presentation_callback_for_next_frame_;
   std::vector<SuccessfulCallback> success_callback_for_next_frame_;

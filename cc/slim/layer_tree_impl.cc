@@ -104,7 +104,18 @@ void LayerTreeImpl::set_display_transform_hint(gfx::OverlayTransform hint) {
 
 void LayerTreeImpl::RequestCopyOfOutput(
     std::unique_ptr<viz::CopyOutputRequest> request) {
-  // TODO(crbug.com/1408128): Implement.
+  if (request->has_source()) {
+    const base::UnguessableToken& source = request->source();
+    auto it = base::ranges::find_if(
+        copy_requests_for_next_frame_,
+        [&source](const std::unique_ptr<viz::CopyOutputRequest>& x) {
+          return x->has_source() && x->source() == source;
+        });
+    if (it != copy_requests_for_next_frame_.end()) {
+      copy_requests_for_next_frame_.erase(it);
+    }
+  }
+  copy_requests_for_next_frame_.push_back(std::move(request));
 }
 
 base::OnceClosure LayerTreeImpl::DeferBeginFrame() {
@@ -391,6 +402,8 @@ void LayerTreeImpl::GenerateCompositorFrame(
   Draw(*root_, *render_pass, /*transform_to_target=*/gfx::Transform(),
        /*clip_from_parent=*/nullptr);
 
+  render_pass->copy_requests = std::move(copy_requests_for_next_frame_);
+  copy_requests_for_next_frame_.clear();
   out_frame.render_pass_list.push_back(std::move(render_pass));
 
   for (const auto& pass : out_frame.render_pass_list) {
