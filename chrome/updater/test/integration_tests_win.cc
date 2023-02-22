@@ -122,19 +122,6 @@ HRESULT CreateLocalServer(GUID clsid,
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
-[[nodiscard]] bool DeleteRegValue(HKEY root,
-                                  const std::wstring& path,
-                                  const std::wstring& value) {
-  if (!base::win::RegKey(root, path.c_str(), Wow6432(KEY_QUERY_VALUE))
-           .Valid()) {
-    return true;
-  }
-
-  LONG result = base::win::RegKey(root, path.c_str(), Wow6432(KEY_WRITE))
-                    .DeleteValue(value.c_str());
-  return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
-}
-
 [[nodiscard]] bool DeleteService(const std::wstring& service_name) {
   SC_HANDLE scm = ::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
@@ -185,20 +172,6 @@ HRESULT CreateLocalServer(GUID clsid,
   return is_service_gone &&
          !base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_KEY, Wow6432(KEY_READ))
               .HasValue(service_name.c_str());
-}
-
-// Runs `callback` for each run value in the registry that matches `prefix`.
-void ForEachRunValue(
-    const std::wstring& prefix,
-    base::RepeatingCallback<void(const std::wstring&)> callback) {
-  for (base::win::RegistryValueIterator it(HKEY_CURRENT_USER, REGSTR_PATH_RUN,
-                                           KEY_WOW64_32KEY);
-       it.Valid(); ++it) {
-    const std::wstring run_name = it.Name();
-    if (base::StartsWith(run_name, prefix)) {
-      callback.Run(run_name);
-    }
-  }
 }
 
 // Runs `callback` for each system service that matches `prefix`.
@@ -277,11 +250,11 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_FALSE(RegKeyExists(root, UPDATER_KEY));
 
       if (!IsSystemInstall(scope)) {
-        ForEachRunValue(base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-                        base::BindRepeating([](const std::wstring& run_name) {
-                          ADD_FAILURE()
-                              << "Unexpected Run key found: " << run_name;
-                        }));
+        ForEachRegistryRunValueWithPrefix(
+            base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+            base::BindRepeating([](const std::wstring& run_name) {
+              ADD_FAILURE() << "Unexpected Run key found: " << run_name;
+            }));
       }
     }
   }
@@ -629,12 +602,12 @@ void Clean(UpdaterScope scope) {
   }
 
   if (!IsSystemInstall(scope)) {
-    ForEachRunValue(base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-                    base::BindRepeating([](const std::wstring& run_name) {
-                      base::win::RegKey(HKEY_CURRENT_USER, REGSTR_PATH_RUN,
-                                        KEY_WRITE)
-                          .DeleteValue(run_name.c_str());
-                    }));
+    ForEachRegistryRunValueWithPrefix(
+        base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+        base::BindRepeating([](const std::wstring& run_name) {
+          base::win::RegKey(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_WRITE)
+              .DeleteValue(run_name.c_str());
+        }));
   }
 
   if (IsSystemInstall(scope)) {

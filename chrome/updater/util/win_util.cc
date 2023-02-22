@@ -6,6 +6,7 @@
 
 #include <aclapi.h>
 #include <objidl.h>
+#include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
 #include <windows.h>
@@ -997,6 +998,32 @@ bool IsGuid(const std::wstring& s) {
 
   GUID guid = {0};
   return SUCCEEDED(::IIDFromString(&s[0], &guid));
+}
+
+void ForEachRegistryRunValueWithPrefix(
+    const std::wstring& prefix,
+    base::RepeatingCallback<void(const std::wstring&)> callback) {
+  for (base::win::RegistryValueIterator it(HKEY_CURRENT_USER, REGSTR_PATH_RUN,
+                                           KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const std::wstring run_name = it.Name();
+    if (base::StartsWith(run_name, prefix)) {
+      callback.Run(run_name);
+    }
+  }
+}
+
+[[nodiscard]] bool DeleteRegValue(HKEY root,
+                                  const std::wstring& path,
+                                  const std::wstring& value) {
+  if (!base::win::RegKey(root, path.c_str(), Wow6432(KEY_QUERY_VALUE))
+           .Valid()) {
+    return true;
+  }
+
+  LONG result = base::win::RegKey(root, path.c_str(), Wow6432(KEY_WRITE))
+                    .DeleteValue(value.c_str());
+  return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
 }  // namespace updater

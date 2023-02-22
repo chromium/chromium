@@ -4,6 +4,7 @@
 
 #include "chrome/updater/util/win_util.h"
 
+#include <regstr.h>
 #include <shellapi.h>
 #include <shlobj.h>
 #include <windows.h>
@@ -26,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/atl.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_localalloc.h"
 #include "chrome/updater/test/integration_tests_impl.h"
@@ -378,6 +380,54 @@ TEST(WinUtil, IsGuid) {
 
   EXPECT_TRUE(IsGuid(L"{CA3045BF-A6B1-4fb8-A0EF-A615CEFE452C}"));
   EXPECT_TRUE(IsGuid(L"{ca3045bf-a6b1-4fb8-a0ef-a615cefe452c}"));
+}
+
+TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
+  constexpr int kRunEntries = 6;
+  constexpr wchar_t kRunEntryPrefix[] = L"foobar";
+
+  base::win::RegKey key;
+  ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
+            ERROR_SUCCESS);
+
+  for (int count = 0; count < kRunEntries; ++count) {
+    std::wstring entry_name(kRunEntryPrefix);
+    entry_name.push_back(L'0' + count);
+    ASSERT_EQ(key.WriteValue(entry_name.c_str(), entry_name.c_str()),
+              ERROR_SUCCESS);
+  }
+
+  int count_entries = 0;
+  ForEachRegistryRunValueWithPrefix(
+      kRunEntryPrefix,
+      base::BindLambdaForTesting([&key, &count_entries, kRunEntryPrefix](
+                                     const std::wstring& run_name) {
+        EXPECT_TRUE(base::StartsWith(run_name, kRunEntryPrefix));
+        ++count_entries;
+        EXPECT_EQ(key.DeleteValue(run_name.c_str()), ERROR_SUCCESS);
+      }));
+  EXPECT_EQ(count_entries, kRunEntries);
+}
+
+TEST(WinUtil, DeleteRegValue) {
+  constexpr int kRegValues = 6;
+  constexpr wchar_t kRegValuePrefix[] = L"foobar";
+
+  base::win::RegKey key;
+  ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
+            ERROR_SUCCESS);
+
+  for (int count = 0; count < kRegValues; ++count) {
+    std::wstring entry_name(kRegValuePrefix);
+    entry_name.push_back(L'0' + count);
+    ASSERT_EQ(key.WriteValue(entry_name.c_str(), entry_name.c_str()),
+              ERROR_SUCCESS);
+
+    EXPECT_TRUE(key.HasValue(entry_name.c_str()));
+    EXPECT_TRUE(DeleteRegValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, entry_name));
+    EXPECT_FALSE(key.HasValue(entry_name.c_str()));
+    EXPECT_TRUE(DeleteRegValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, entry_name));
+  }
 }
 
 }  // namespace updater
