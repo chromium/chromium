@@ -10,10 +10,9 @@
 
 namespace reporting {
 
-class AudioEventsObserver
-    : public MojoServiceEventsObserverBase<
-          ash::cros_healthd::mojom::CrosHealthdAudioObserver>,
-      public ash::cros_healthd::mojom::CrosHealthdAudioObserver {
+class AudioEventsObserver : public MojoServiceEventsObserverBase<
+                                ash::cros_healthd::mojom::EventObserver>,
+                            public ash::cros_healthd::mojom::EventObserver {
  public:
   AudioEventsObserver();
 
@@ -22,10 +21,8 @@ class AudioEventsObserver
 
   ~AudioEventsObserver() override;
 
-  // ash::cros_healthd::mojom::CrosHealthdAudioObserver:
-  void OnUnderrun() override;
-
-  void OnSevereUnderrun() override;
+  // ash::cros_healthd::mojom::EventObserver:
+  void OnEvent(const ash::cros_healthd::mojom::EventInfoPtr info) override;
 
  protected:
   // CrosHealthdEventsObserverBase

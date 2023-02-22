@@ -191,12 +191,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Calls the lid event OnLidOpened for all registered lid observers.
   void EmitLidOpenedEventForTesting();
 
-  // Calls the audio event OnUnderrun for all registered audio observers.
-  void EmitAudioUnderrunEventForTesting();
-
-  // Calls the audio event OnSevereUnderrun for all registered audio observers.
-  void EmitAudioSevereUnderrunEventForTesting();
-
   // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
   void EmitThunderboltAddEventForTesting();
 
@@ -412,8 +406,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Collection of registered network observers.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
       network_observers_;
-  // Collection of registered audio observers.
-  mojo::RemoteSet<mojom::CrosHealthdAudioObserver> audio_observers_;
   // Collection of registered Thunderbolt observers.
   mojo::RemoteSet<mojom::CrosHealthdThunderboltObserver> thunderbolt_observers_;
   // Collection of registered USB observers.

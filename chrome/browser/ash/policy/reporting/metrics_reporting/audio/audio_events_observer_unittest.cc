@@ -43,8 +43,12 @@ TEST_F(AudioEventsObserverTest, SevereUnderrun) {
   audio_observer.SetOnEventObservedCallback(result_metric_data.repeating_cb());
   audio_observer.SetReportingEnabled(true);
 
-  ::ash::cros_healthd::FakeCrosHealthd::Get()
-      ->EmitAudioSevereUnderrunEventForTesting();
+  ::ash::cros_healthd::mojom::AudioEventInfo info;
+  info.state =
+      ::ash::cros_healthd::mojom::AudioEventInfo::State::kSevereUnderrun;
+  ::ash::cros_healthd::FakeCrosHealthd::Get()->EmitEventForCategory(
+      ::ash::cros_healthd::mojom::EventCategoryEnum::kAudio,
+      ::ash::cros_healthd::mojom::EventInfo::NewAudioEventInfo(info.Clone()));
 
   const auto metric_data = result_metric_data.result();
   ASSERT_TRUE(metric_data.has_event_data());

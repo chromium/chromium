@@ -273,26 +273,6 @@ void FakeCrosHealthd::EmitLidOpenedEventForTesting() {
   }
 }
 
-void FakeCrosHealthd::EmitAudioUnderrunEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : audio_observers_) {
-    observer->OnUnderrun();
-  }
-}
-
-void FakeCrosHealthd::EmitAudioSevereUnderrunEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : audio_observers_) {
-    observer->OnSevereUnderrun();
-  }
-}
-
 void FakeCrosHealthd::EmitThunderboltAddEventForTesting() {
   // Flush the receiver, so any pending observers are registered before the
   // event is emitted.
@@ -316,11 +296,16 @@ void FakeCrosHealthd::EmitUsbAddEventForTesting() {
 
 void FakeCrosHealthd::EmitEventForCategory(mojom::EventCategoryEnum category,
                                            mojom::EventInfoPtr info) {
-  if (event_observers_.find(category) == event_observers_.end()) {
+  // Flush the receiver, so any pending observers are registered before the
+  // event is emitted.
+  event_provider_.FlushForTesting();
+
+  auto it = event_observers_.find(category);
+  if (it == event_observers_.end()) {
     return;
   }
 
-  for (const auto& observer : event_observers_.at(category)) {
+  for (auto& observer : it->second) {
     observer->OnEvent(info.Clone());
   }
 }
@@ -876,7 +861,7 @@ void FakeCrosHealthd::AddNetworkObserver(
 
 void FakeCrosHealthd::AddAudioObserver(
     mojo::PendingRemote<mojom::CrosHealthdAudioObserver> observer) {
-  audio_observers_.Add(std::move(observer));
+  NOTREACHED();
 }
 
 void FakeCrosHealthd::AddThunderboltObserver(
