@@ -46,10 +46,6 @@ crbug.com/760543 [ Linux ] http/tests/devtools/oopif/oopif-performance-cpu-profi
 crbug.com/803276 inspector-protocol/memory/sampling-native-profile.js [ Skip ]
 crbug.com/803276 inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
 
-# The following test is flaky and timing out on chromium.webkit/WebKit Linux Trusty MSAN.
-crbug.com/851497 http/tests/devtools/tracing/timeline-style/timeline-style-recalc-all-invalidator-types.js [ Pass Timeout ]
-
-
 crbug.com/856601 [ Linux ] fast/css/visited-link-hang.html [ Pass Timeout ]
 
 # Flaky-timeout on MSAN; incorrectly attributed to crbug.com/856601
