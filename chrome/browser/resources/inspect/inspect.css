@@ -321,7 +321,11 @@ img {
 }
 
 .node-frontend-action {
+  background-color: transparent;
+  border: none;
+  font-size: inherit;
   margin: 6px 4px;
+  padding: 0;
 }
 
 dialog.config::backdrop {
