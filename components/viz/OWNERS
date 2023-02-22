@@ -51,3 +51,6 @@ sunnyps@chromium.org
 vmpstr@chromium.org
 kylechar@chromium.org
 khushalsagar@chromium.org
+
+# Anyone can update the test bundle data filelists.
+per-file *.filelist=*

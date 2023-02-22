@@ -6,6 +6,15 @@ import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
 import("//testing/test.gni")
 
+if (is_ios) {
+  import("//build/config/ios/bundle_data_from_filelist.gni")
+
+  bundle_data_from_filelist("unit_tests_bundle_data") {
+    testonly = true
+    filelist_name = "unit_tests_bundle_data.filelist"
+  }
+}
+
 viz_test("viz_unittests") {
   configs = []
   if (is_chromeos_lacros && is_chromeos_device) {
@@ -49,6 +58,10 @@ viz_test("viz_unittests") {
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
       "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
+  }
+
+  if (is_ios) {
+    public_deps = [ ":unit_tests_bundle_data" ]
   }
 }
 

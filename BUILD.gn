@@ -179,6 +179,7 @@ group("gn_all") {
 
   if (use_blink) {
     deps += [
+      "//components/viz:viz_unittests",
       "//content/shell:content_shell",
       "//storage:storage_unittests",
     ]
@@ -192,7 +193,6 @@ group("gn_all") {
       "//components/policy:policy_templates",
       "//components/url_formatter/tools:format_url",
       "//components/viz:viz_perftests",
-      "//components/viz:viz_unittests",
       "//content/test:content_browsertests",
       "//content/test:content_unittests",
       "//device:device_unittests",
