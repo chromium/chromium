@@ -31,6 +31,7 @@ constexpr SkColor kDragColor100White = SK_ColorWHITE;
 constexpr SkColor kDragColor60Blue =
     SkColorSetA(gfx::kGoogleBlue300, 0x99 /*60%*/);
 constexpr SkColor kHoverColor = SkColorSetA(gfx::kGoogleBlue600, 0x66 /*40%*/);
+constexpr SkColor kBorderColor = SkColorSetA(SK_ColorBLACK, 0x33 /*20%*/);
 
 constexpr int kParentPadding = 16;
 constexpr int kMenuEntrySize = 48;
@@ -65,6 +66,11 @@ MenuEntryView::MenuEntryView(
   SetImageModel(views::Button::STATE_NORMAL, game_icon);
   SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                    kMenuEntryCornerRadius));
+
+  if (allow_reposition_) {
+    SetBorder(views::CreateRoundedRectBorder(
+        kMenuEntryBorderThickness, kMenuEntryCornerRadius, kBorderColor));
+  }
 
   SetSize(allow_reposition_
               ? gfx::Size(kMenuEntrySize, kMenuEntrySize)
@@ -227,7 +233,8 @@ void MenuEntryView::ChangeMenuEntryOnDrag(bool is_dragging) {
   } else {
     SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                      kMenuEntryCornerRadius));
-    SetBorder(views::CreateEmptyBorder(kMenuEntryBorderThickness));
+    SetBorder(views::CreateRoundedRectBorder(
+        kMenuEntryBorderThickness, kMenuEntryCornerRadius, kBorderColor));
   }
 }
 
