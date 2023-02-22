@@ -315,6 +315,9 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else if (manufacturer.equals("xiaomi")) {
             // https://crbug.com/1401331
             threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+        } else if (manufacturer.equals("realme")) {
+            // https://crbug.com/1418348
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
         }
         StrictMode.setThreadPolicy(threadPolicyBuilder.build());
 
