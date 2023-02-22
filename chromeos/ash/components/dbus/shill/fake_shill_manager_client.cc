@@ -1074,15 +1074,14 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
             base::Value(shill::kActivationStateNotActivated));
       }
 
-      base::Value payment_portal(base::Value::Type::DICT);
-      payment_portal.SetKey(shill::kPaymentPortalMethod, base::Value("POST"));
-      payment_portal.SetKey(shill::kPaymentPortalPostData,
-                            base::Value("iccid=123&imei=456&mdn=789"));
-      payment_portal.SetKey(shill::kPaymentPortalURL,
-                            base::Value(cellular_olp_));
+      base::Value::Dict payment_portal;
+      payment_portal.Set(shill::kPaymentPortalMethod, "POST");
+      payment_portal.Set(shill::kPaymentPortalPostData,
+                         "iccid=123&imei=456&mdn=789");
+      payment_portal.Set(shill::kPaymentPortalURL, cellular_olp_);
       services->SetServiceProperty(kCellularServicePath,
                                    shill::kPaymentPortalProperty,
-                                   std::move(payment_portal));
+                                   base::Value(std::move(payment_portal)));
 
       std::string shill_roaming_state;
       if (roaming_state_ == kRoamingRequired)
@@ -1127,26 +1126,28 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
     // Shill, "Provider.Type", etc keys are used, but when reading the values
     // "Provider" . "Type", etc keys are used. Here we are setting the values
     // that will be read (by the UI, tests, etc).
-    base::Value provider_properties_openvpn(base::Value::Type::DICT);
-    provider_properties_openvpn.SetStringKey(shill::kTypeProperty,
-                                             shill::kProviderOpenVpn);
-    provider_properties_openvpn.SetStringKey(shill::kHostProperty, "vpn_host");
+    base::Value::Dict provider_properties_openvpn;
+    provider_properties_openvpn.Set(shill::kTypeProperty,
+                                    shill::kProviderOpenVpn);
+    provider_properties_openvpn.Set(shill::kHostProperty, "vpn_host");
 
     services->AddService("/service/vpn1", "vpn1_guid", "vpn1" /* name */,
                          shill::kTypeVPN, state, add_to_visible);
-    services->SetServiceProperty("/service/vpn1", shill::kProviderProperty,
-                                 provider_properties_openvpn);
+    services->SetServiceProperty(
+        "/service/vpn1", shill::kProviderProperty,
+        base::Value(std::move(provider_properties_openvpn)));
     profiles->AddService(shared_profile, "/service/vpn1");
 
-    base::Value provider_properties_l2tp(base::Value::Type::DICT);
-    provider_properties_l2tp.SetStringKey(shill::kTypeProperty,
-                                          shill::kProviderL2tpIpsec);
-    provider_properties_l2tp.SetStringKey(shill::kHostProperty, "vpn_host2");
+    base::Value::Dict provider_properties_l2tp;
+    provider_properties_l2tp.Set(shill::kTypeProperty,
+                                 shill::kProviderL2tpIpsec);
+    provider_properties_l2tp.Set(shill::kHostProperty, "vpn_host2");
 
     services->AddService("/service/vpn2", "vpn2_guid", "vpn2" /* name */,
                          shill::kTypeVPN, shill::kStateIdle, add_to_visible);
-    services->SetServiceProperty("/service/vpn2", shill::kProviderProperty,
-                                 provider_properties_l2tp);
+    services->SetServiceProperty(
+        "/service/vpn2", shill::kProviderProperty,
+        base::Value(std::move(provider_properties_l2tp)));
   }
 
   // Additional device states

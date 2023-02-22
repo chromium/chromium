@@ -812,11 +812,11 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   }
 
   // Encode origin list values.
-  base::Value origin_list_dict(base::Value::Type::DICT);
+  base::Value::Dict origin_list_dict;
   for (const auto& entry : iter->second.origin_list_flags) {
-    origin_list_dict.SetStringKey(entry.first, entry.second);
+    origin_list_dict.Set(entry.first, entry.second);
   }
-  if (!origin_list_dict.DictEmpty()) {
+  if (!origin_list_dict.empty()) {
     std::string encoded;
     base::JSONWriter::Write(origin_list_dict, &encoded);
     out_flags_for_user->push_back(base::StringPrintf(
