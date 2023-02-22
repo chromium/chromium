@@ -1387,6 +1387,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUsbDetectorNotificationEnabled,
     ash::prefs::kUsbDetectorNotificationEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kShowTouchpadScrollScreenEnabled,
+    ash::prefs::kShowTouchpadScrollScreenEnabled,
+    base::Value::Type::BOOLEAN },
+
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

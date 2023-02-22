@@ -601,6 +601,9 @@ extern const char kPersonalizationKeyboardBacklightColor[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPersonalizationKeyboardBacklightZoneColors[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShowTouchpadScrollScreenEnabled[];
+
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomState[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAutozoomNudges[];

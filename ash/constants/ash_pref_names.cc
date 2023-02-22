@@ -996,6 +996,11 @@ const char kTapDraggingEnabled[] = "settings.touchpad.enable_tap_dragging";
 const char kTouchpadEnabled[] = "events.touch_pad.enabled";
 const char kTouchscreenEnabled[] = "events.touch_screen.enabled";
 
+// Boolean value indicating that the touchpad scroll direction screen should be
+// shown to the user during oobe.
+const char kShowTouchpadScrollScreenEnabled[] =
+    "ash.touchpad_scroll_screen_oobe_enabled";
+
 // Integer prefs indicating the minimum and maximum lengths of the lock screen
 // pin.
 const char kPinUnlockMaximumLength[] = "pin_unlock_maximum_length";

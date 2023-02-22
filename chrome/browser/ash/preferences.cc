@@ -568,6 +568,8 @@ void Preferences::RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   registry->RegisterBooleanPref(prefs::kUsbDetectorNotificationEnabled, true);
+
+  registry->RegisterBooleanPref(prefs::kShowTouchpadScrollScreenEnabled, true);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
