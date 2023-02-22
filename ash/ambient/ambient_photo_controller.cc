@@ -168,24 +168,25 @@ void AmbientPhotoController::OnMarkerHit(AmbientPhotoConfig::Marker marker) {
   }
 
   DVLOG(3) << "UI event " << marker << " triggering topic refresh";
-  if (state_ == State::kInactive) {
-    LOG(DFATAL) << "Received unexpected UI marker " << marker
-                << " while inactive";
-    return;
-  }
-
-  bool is_still_preparing_topics = state_ != State::kWaitingForNextMarker;
-  state_ = State::kPreparingNextTopicSet;
-  num_topics_prepared_ = 0;
-  if (is_still_preparing_topics) {
-    // The controller is still in the middle of preparing a topic from the
-    // previous set (i.e. waiting on a callback or timer to fire). Resetting
-    // |num_topics_prepared_| to 0 above is enough, and the topic currently
-    // being prepared will count towards the next set.
-    DVLOG(4) << "Did not finished preparing current topic set in time. "
-                "Starting new set...";
-  } else {
-    StartPreparingNextTopic();
+  switch (state_) {
+    case State::kInactive:
+      LOG(DFATAL) << "Received unexpected UI marker " << marker
+                  << " while inactive";
+      break;
+    case State::kPreparingNextTopicSet:
+      // The controller is still in the middle of preparing a topic from the
+      // previous set (i.e. waiting on a callback or timer to fire). Resetting
+      // |num_topics_prepared_| to 0 is enough, and the topic currently being
+      // prepared will count towards the next set.
+      DVLOG(4) << "Did not finished preparing current topic set in time. "
+                  "Starting new set...";
+      num_topics_prepared_ = 0;
+      break;
+    case State::kWaitingForNextMarker:
+      state_ = State::kPreparingNextTopicSet;
+      num_topics_prepared_ = 0;
+      StartPreparingNextTopic();
+      break;
   }
 }
 
