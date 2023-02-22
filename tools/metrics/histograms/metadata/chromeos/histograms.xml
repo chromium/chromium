@@ -1931,16 +1931,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.PlatformVerification.Available"
-    enum="BooleanAvailable" expires_after="2021-12-21">
-  <owner>apronin@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>
-    Whether platform verification subsystem features are available at the time a
-    platform verification request is made for content protection on Chrome OS.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.PlatformVerification.BrowserResult"
     enum="ChromeOSPlatformVerificationBrowserResult" expires_after="2022-05-21">
   <owner>erikchen@chromium.org</owner>

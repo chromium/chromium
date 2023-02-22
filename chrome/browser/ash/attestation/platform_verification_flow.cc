@@ -53,8 +53,6 @@ namespace {
 const int kTimeoutInSeconds = 8;
 const char kAttestationResultHistogram[] =
     "ChromeOS.PlatformVerification.Result2";
-const char kAttestationAvailableHistogram[] =
-    "ChromeOS.PlatformVerification.Available";
 constexpr base::TimeDelta kOpportunisticRenewalThreshold = base::Days(30);
 
 // A helper to call a ChallengeCallback with an error result.
@@ -218,7 +216,6 @@ void PlatformVerificationFlow::OnAttestationPrepared(
   }
   const bool attestation_prepared =
       AttestationClient::IsAttestationPrepared(reply);
-  UMA_HISTOGRAM_BOOLEAN(kAttestationAvailableHistogram, attestation_prepared);
 
   if (!attestation_prepared) {
     // This device is not currently able to use attestation features.
