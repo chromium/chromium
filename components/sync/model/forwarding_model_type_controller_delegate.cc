@@ -45,7 +45,11 @@ void ForwardingModelTypeControllerDelegate::
 }
 
 void ForwardingModelTypeControllerDelegate::ClearMetadataWhileStopped() {
-  other_->ClearMetadataWhileStopped();
+  // `other_` can be null during testing.
+  // TODO(crbug.com/1418351): Remove test-only code-path.
+  if (other_) {
+    other_->ClearMetadataWhileStopped();
+  }
 }
 
 }  // namespace syncer

@@ -332,7 +332,11 @@ void ModelTypeController::TriggerCompletionCallbacks(const SyncError& error) {
 void ModelTypeController::ClearMetadataWhileStopped() {
   DCHECK(state_ == NOT_RUNNING || state_ == FAILED);
   for (auto& [sync_mode, delegate] : delegate_map_) {
-    delegate->ClearMetadataWhileStopped();
+    // `delegate` can be null during testing.
+    // TODO(crbug.com/1418351): Remove test-only code-path.
+    if (delegate) {
+      delegate->ClearMetadataWhileStopped();
+    }
   }
 }
 
