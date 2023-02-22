@@ -175,6 +175,12 @@ export class FakeEntry extends FilesAppDirEntry {
     this.isFile = false;
 
     /**
+     * @public {boolean} false FakeEntry can be disabled if it represents the
+     * placeholder of the real volume.
+     */
+    this.disabled = false;
+
+    /**
      * @public {chrome.fileManagerPrivate.SourceRestriction|undefined} It's used
      * to communicate restrictions about sources to
      * chrome.fileManagerPrivate.getRecentFiles API.

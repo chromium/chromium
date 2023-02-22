@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppEntry} from '../externs/files_app_entry_interfaces.js';
 import {FileData, FileKey, SearchFileType, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
 import {BaseStore} from '../lib/base_store.js';
 
@@ -46,6 +47,13 @@ export function getEmptyState(): State {
       status: undefined,
       options: undefined,
     },
+    navigation: {
+      roots: [],
+    },
+    volumes: {},
+    uiEntries: [],
+    folderShortcuts: [],
+    androidApps: [],
   };
 }
 
@@ -90,27 +98,35 @@ export async function waitForState(
 
 /**
  * Returns the `FileData` from a FileKey.
- * @throws {Error} if it can't find the FileData.
  */
-export function getFileData(state: State, key: FileKey): FileData {
-  const entry = state.allEntries[key];
-  if (!entry) {
-    throw new Error(`Key ${key} not found in the store`);
+export function getFileData(state: State, key: FileKey): FileData|null {
+  const fileData = state.allEntries[key];
+  if (fileData) {
+    return fileData;
   }
-  return entry;
+  return null;
 }
 
 /**
  * Returns FileData for each key.
- * @throws {Error} if it can't find the FileData.
+ * NOTE: It might return less results than the requested keys when the key isn't
+ * found.
  */
 export function getFilesData(state: State, keys: FileKey[]): FileData[] {
   const filesData: FileData[] = [];
   for (const key of keys) {
-    filesData.push(getFileData(state, key));
+    const fileData = getFileData(state, key);
+    if (fileData) {
+      filesData.push(fileData);
+    }
   }
 
   return filesData;
+}
+
+export function getEntry(state: State, key: FileKey): Entry|FilesAppEntry|null {
+  const fileData = state.allEntries[key];
+  return fileData?.entry ?? null;
 }
 
 /**
