@@ -208,7 +208,8 @@ TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
 }
 
 // Tests that right clicking the ProjectorAnnotationTray shows a bubble.
-TEST_F(ProjectorUiControllerTest, RightClickShowsBubble) {
+// Disabled for being flaky. crbug.com/1418409
+TEST_F(ProjectorUiControllerTest, DISABLED_RightClickShowsBubble) {
   controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
   controller_->OnCanvasInitialized(true);
 
