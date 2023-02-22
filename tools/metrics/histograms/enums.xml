@@ -26171,6 +26171,11 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="1" label="Conditional Breakpoint"/>
 </enum>
 
+<enum name="DevToolsColorConvertedFrom">
+  <int value="0" label="Color Swatch (Shift + Click menu)"/>
+  <int value="1" label="Color Picker"/>
+</enum>
+
 <enum name="DevToolsColorPickerFixedColor">
   <obsolete>
     Removed in M95.
@@ -26178,6 +26183,11 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="0" label="AA"/>
   <int value="1" label="AAA"/>
   <int value="2" label="APCA"/>
+</enum>
+
+<enum name="DevToolsColorPickerOpenedFrom">
+  <int value="0" label="Sources panel"/>
+  <int value="1" label="Styles pane"/>
 </enum>
 
 <enum name="DevToolsComputedStyleGrouping">

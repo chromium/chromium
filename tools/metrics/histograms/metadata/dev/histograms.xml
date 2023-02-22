@@ -68,6 +68,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="DevTools.ColorConvertedFrom" enum="DevToolsColorConvertedFrom"
+    expires_after="2023-12-01">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Records the color conversion menu usage.</summary>
+</histogram>
+
+<histogram name="DevTools.ColorPickerOpenedFrom"
+    enum="DevToolsColorPickerOpenedFrom" expires_after="2023-12-01">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Records the color picker usage.</summary>
+</histogram>
+
 <histogram name="DevTools.CSSHintShown" enum="DevToolsCSSHintShown"
     expires_after="2023-08-12">
   <owner>changhaohan@chromium.org</owner>
