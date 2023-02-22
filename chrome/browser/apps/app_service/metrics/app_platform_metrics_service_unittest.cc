@@ -2100,8 +2100,8 @@ TEST_P(AppPlatformMetricsServiceTest,
                    ->FindStringKey(kUsageTimeAppIdKey),
               StrEq(kAppId));
   EXPECT_THAT(
-      base::ValueToTimeDelta(usage_dict_pref.Find(kInstanceId.ToString())
-                                 ->FindKey(kUsageTimeDurationKey)),
+      base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
+                                 ->Find(kUsageTimeDurationKey)),
       Eq(kAppRunningDuration));
 
   // Fast forward by two hours so it reports usage data and we can verify usage
@@ -2136,8 +2136,8 @@ TEST_P(AppPlatformMetricsServiceTest,
                    ->FindStringKey(kUsageTimeAppIdKey),
               StrEq(kAppId));
   EXPECT_THAT(
-      base::ValueToTimeDelta(usage_dict_pref.Find(kInstanceId.ToString())
-                                 ->FindKey(kUsageTimeDurationKey)),
+      base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
+                                 ->Find(kUsageTimeDurationKey)),
       Eq(kAppRunningDuration));
 
   // Set reporting usage time for the current app instance and persist it in the
@@ -2161,12 +2161,12 @@ TEST_P(AppPlatformMetricsServiceTest,
                    ->FindStringKey(kUsageTimeAppIdKey),
               StrEq(kAppId));
   EXPECT_THAT(
-      base::ValueToTimeDelta(usage_dict_pref.Find(kInstanceId.ToString())
-                                 ->FindKey(kUsageTimeDurationKey)),
+      base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
+                                 ->Find(kUsageTimeDurationKey)),
       Eq(base::TimeDelta()));
   EXPECT_THAT(
-      base::ValueToTimeDelta(usage_dict_pref.Find(kInstanceId.ToString())
-                                 ->FindKey(kReportingUsageTimeDurationKey)),
+      base::ValueToTimeDelta(usage_dict_pref.FindDict(kInstanceId.ToString())
+                                 ->Find(kReportingUsageTimeDurationKey)),
       Eq(kAppRunningDuration));
 }
 

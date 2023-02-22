@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 
+#include "base/check_deref.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -1303,7 +1304,8 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkmFromPref() {
     // Clear app UKM usage from the pref store now that we have reported this
     // data.
     for (const auto usage_it : profile_->GetPrefs()->GetDict(kAppUsageTime)) {
-      if (*usage_it.second.FindKey(kUsageTimeAppIdKey) == it->app_id) {
+      if (CHECK_DEREF(usage_it.second.GetDict().FindString(
+              kUsageTimeAppIdKey)) == it->app_id) {
         ClearAppsUsageTimeForInstance(usage_it.first);
       }
     }
