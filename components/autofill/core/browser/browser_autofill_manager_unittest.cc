@@ -8869,11 +8869,13 @@ TEST_F(BrowserAutofillManagerTest,
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
   FormFieldData field;
-  test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
+  test::CreateTestFormField("Phone Number", "phonenumber1", "", "tel",
+                            "tel-country-code", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Email", "email", "", "email", &field);
+  test::CreateTestFormField("Phone Number", "phonenumber2", "", "tel",
+                            "tel-national", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Email", "email", "", "email", &field);
+  test::CreateTestFormField("Email", "email", "", "email", "email", &field);
   form.fields.push_back(field);
   FormsSeen({form});
 
@@ -8912,11 +8914,14 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
   form.submission_event = SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
   FormFieldData field;
-  test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
+  test::CreateTestFormField("Phone Number", "phonenumber", "", "tel",
+                            "tel-country-code", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
+  test::CreateTestFormField("Phone Number", "phonenumber", "", "tel",
+                            "tel-area-code", &field);
   form.fields.push_back(field);
-  test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
+  test::CreateTestFormField("Phone Number", "phonenumber", "", "tel",
+                            "tel-local", &field);
   form.fields.push_back(field);
   FormsSeen({form});
 

@@ -356,7 +356,7 @@ BASE_FEATURE(kAutofillPreventOverridingPrefilledValues,
 // TODO(crbug/1352826): Remove once experiment is finished.
 BASE_FEATURE(kAutofillMin3FieldTypesForLocalHeuristics,
              "AutofillMin3FieldTypesForLocalHeuristics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, use the parsing patterns from a JSON file for heuristics, rather
 // than the hardcoded ones from autofill_regex_constants.cc.
