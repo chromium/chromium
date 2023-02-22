@@ -162,50 +162,20 @@ bool ProfileHelper::IsLockScreenProfile(const Profile* profile) {
 
 // static
 bool ProfileHelper::IsOwnerProfile(const Profile* profile) {
-  if (!profile)
-    return false;
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
-    return false;
-  return user->GetAccountId() ==
-         user_manager::UserManager::Get()->GetOwnerAccountId();
+  return user_manager::UserManager::Get()->IsOwnerUser(
+      ProfileHelper::Get()->GetUserByProfile(profile));
 }
 
 // static
 bool ProfileHelper::IsPrimaryProfile(const Profile* profile) {
-  if (!profile)
-    return false;
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
-    return false;
-  return user == user_manager::UserManager::Get()->GetPrimaryUser();
+  return user_manager::UserManager::Get()->IsPrimaryUser(
+      ProfileHelper::Get()->GetUserByProfile(profile));
 }
 
 // static
 bool ProfileHelper::IsEphemeralUserProfile(const Profile* profile) {
-  if (!profile)
-    return false;
-
-  // Owner profile is always persistent.
-  if (IsOwnerProfile(profile))
-    return false;
-
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
-  if (!user)
-    return false;
-
-  // Guest and public account is ephemeral.
-  const user_manager::UserType user_type = user->GetType();
-  if (user_type == user_manager::USER_TYPE_GUEST ||
-      user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-    return true;
-  }
-
-  // Otherwise, users are ephemeral when the policy is enabled.
-  return user_manager::UserManager::Get()->AreEphemeralUsersEnabled();
+  return user_manager::UserManager::Get()->IsEphemeralUser(
+      ProfileHelper::Get()->GetUserByProfile(profile));
 }
 
 // static

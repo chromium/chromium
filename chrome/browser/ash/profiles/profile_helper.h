@@ -113,13 +113,25 @@ class ProfileHelper {
   // Returns true if |profile| is the lockscreen profile.
   static bool IsLockScreenProfile(const Profile* profile);
 
+  // DEPRECATED. Please use
+  // user_manager::UserManager::Get()->IsOwnerUser(
+  //     BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+  // instead.
   // Returns true when |profile| corresponds to owner's profile.
   static bool IsOwnerProfile(const Profile* profile);
 
+  // DEPRECATED. Please use
+  // user_manager::UserManager::Get()->IsPrimaryUser(
+  //     BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+  // instead.
   // Returns true when |profile| corresponds to the primary user profile
   // of the current session.
   static bool IsPrimaryProfile(const Profile* profile);
 
+  // DEPRECATED. Please use
+  // user_manager::UserManager::Get()->IsEphemeralUser(
+  //     BrowserContextHelper::Get()->GetUserByBrowserContext(profile))
+  // instead.
   // Returns true when |profile| is for an ephemeral user.
   static bool IsEphemeralUserProfile(const Profile* profile);
 

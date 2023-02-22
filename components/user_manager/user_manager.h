@@ -290,6 +290,15 @@ class USER_MANAGER_EXPORT UserManager {
   // always stores the email.
   virtual void RecordOwner(const AccountId& owner) = 0;
 
+  // Returns true if the given |user| is the device owner.
+  virtual bool IsOwnerUser(const User* user) const = 0;
+
+  // Returns true if the given |user| is the primary user.
+  virtual bool IsPrimaryUser(const User* user) const = 0;
+
+  // Returns true if the given |user| is an ephemeral user.
+  virtual bool IsEphemeralUser(const User* user) const = 0;
+
   // Returns true if current user is an owner.
   virtual bool IsCurrentUserOwner() const = 0;
 

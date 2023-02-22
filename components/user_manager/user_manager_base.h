@@ -119,6 +119,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void RecordOwner(const AccountId& owner) override;
   void UpdateUserAccountData(const AccountId& account_id,
                              const UserAccountData& account_data) override;
+  bool IsOwnerUser(const User* user) const override;
+  bool IsPrimaryUser(const User* user) const override;
+  bool IsEphemeralUser(const User* user) const override;
   bool IsCurrentUserOwner() const override;
   bool IsCurrentUserNew() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
