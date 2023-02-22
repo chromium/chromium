@@ -1406,7 +1406,7 @@
     Failed to enable local data recovery
   </message>
   <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_ERROR_SUBTITLE" desc="The subtitle message when Cryptohome recovery setup failed.">
-    You can skip for now and we will retry automatically after you finish the setup
+    You can enable it later in Settings > Security and Privacy > Lock screen and sign-in
   </message>
   <message name="IDS_LOGIN_CRYPTOHOME_RECOVERY_SETUP_RETRY_BUTTON" desc="Label for the button to retry when Cryptohome recovery setup failed.">
     Retry
