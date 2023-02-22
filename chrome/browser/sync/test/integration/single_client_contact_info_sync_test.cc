@@ -5,9 +5,11 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
@@ -23,6 +25,9 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
+#endif
 
 namespace {
 
@@ -31,6 +36,29 @@ using contact_info_helper::BuildTestAccountProfile;
 using contact_info_helper::PersonalDataManagerProfileChecker;
 using testing::IsEmpty;
 using testing::UnorderedElementsAre;
+
+#if !BUILDFLAG(IS_ANDROID)
+std::string CreateSerializedProtoField(int field_number,
+                                       const std::string& value) {
+  std::string result;
+  google::protobuf::io::StringOutputStream string_stream(&result);
+  google::protobuf::io::CodedOutputStream output(&string_stream);
+  google::protobuf::internal::WireFormatLite::WriteTag(
+      field_number,
+      google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED,
+      &output);
+  output.WriteVarint32(value.size());
+  output.WriteString(value);
+  return result;
+}
+
+// Matches a sync::entity_data has a contact info field with `guid` and a set of
+// `unknown_fields`.
+MATCHER_P2(HasContactInfoWithGuidAndUnknownFields, guid, unknown_fields, "") {
+  return arg.specifics().contact_info().guid() == guid &&
+         arg.specifics().contact_info().unknown_fields() == unknown_fields;
+}
+#endif
 
 // Helper class to wait until the fake server's ContactInfoSpecifics match a
 // given predicate.
@@ -66,7 +94,8 @@ class FakeServerSpecificsChecker
 // function converts a given `profile` to the equivalent ContactInfoSpecifics.
 sync_pb::ContactInfoSpecifics AsContactInfoSpecifics(
     const AutofillProfile& profile) {
-  return autofill::CreateContactInfoEntityDataFromAutofillProfile(profile)
+  return autofill::CreateContactInfoEntityDataFromAutofillProfile(
+             profile, /*base_contact_info_specifics=*/{})
       ->specifics.contact_info();
 }
 
@@ -206,5 +235,70 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoTransportSyncTest,
           .Wait());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest,
+                       PreservesUnsupportedFieldsDataOnCommits) {
+  // Create an unsupported field with an unused tag.
+  const std::string kUnsupportedField =
+      CreateSerializedProtoField(/*field_number=*/999999, "unknown_field");
+
+  autofill::AutofillProfile profile;
+  profile.SetRawInfoWithVerificationStatus(
+      autofill::NAME_FULL, u"Full Name",
+      autofill::VerificationStatus::kFormatted);
+
+  sync_pb::EntitySpecifics entity_data;
+  sync_pb::ContactInfoSpecifics* specifics = entity_data.mutable_contact_info();
+  *specifics = autofill::ContactInfoSpecificsFromAutofillProfile(profile, {});
+
+  specifics->mutable_name_full()->set_value("Full Name");
+  *specifics->mutable_unknown_fields() = kUnsupportedField;
+
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/"",
+          /*client_tag=*/
+          profile.guid(), entity_data,
+          /*creation_time=*/0,
+          /*last_modified_time=*/0));
+
+  // Sign in and enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+
+  // Apply a change to the profile.
+  autofill_helper::UpdateProfile(
+      0, profile.guid(), autofill::AutofillType(autofill::NAME_FULL),
+      u"New Name", autofill::VerificationStatus::kParsed);
+
+  autofill::AutofillProfile profile2;
+  profile2.SetRawInfoWithVerificationStatus(
+      autofill::NAME_FULL, u"Name of new profile.",
+      autofill::VerificationStatus::kFormatted);
+  profile2.set_source_for_testing(autofill::AutofillProfile::Source::kAccount);
+
+  // Add an obsolete profile to make sure that the server has received the
+  // update.
+  autofill_helper::AddProfile(0, profile2);
+
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::CONTACT_INFO, 2).Wait());
+
+  const std::vector<sync_pb::SyncEntity> entities =
+      fake_server_->GetSyncEntitiesByModelType(syncer::CONTACT_INFO);
+
+  ASSERT_EQ(entities.size(), 2u);
+  // Verifies that the profile with `profile.guid()` has preserved
+  // unknown_fields while they are completely stripped for `profile2`.
+  EXPECT_THAT(entities,
+              testing::Contains(HasContactInfoWithGuidAndUnknownFields(
+                  profile.guid(), kUnsupportedField)));
+  EXPECT_THAT(entities,
+              testing::Contains(
+                  HasContactInfoWithGuidAndUnknownFields(profile2.guid(), "")));
+}
+#endif
 
 }  // namespace

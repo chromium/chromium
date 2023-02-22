@@ -782,6 +782,9 @@ class AutofillTable : public WebDatabaseTable,
   bool GetAllSyncMetadata(syncer::ModelType model_type,
                           syncer::MetadataBatch* metadata_batch);
 
+  // Deletes all metadata for |model_type|.
+  bool DeleteAllSyncMetadata(syncer::ModelType model_type);
+
   // syncer::SyncMetadataStore implementation.
   bool UpdateEntityMetadata(syncer::ModelType model_type,
                             const std::string& storage_key,

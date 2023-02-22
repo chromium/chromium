@@ -473,6 +473,19 @@ bool DeleteWhereColumnEq(sql::Database* db,
   return statement.Run();
 }
 
+// Wrapper around `DeleteBuilder()`, which initializes the where clause as
+// `column` = `value`.
+// Runs the statement and returns true if it was successful.
+bool DeleteWhereColumnEq(sql::Database* db,
+                         base::StringPiece table_name,
+                         base::StringPiece column,
+                         int value) {
+  sql::Statement statement;
+  DeleteBuilder(db, statement, table_name, base::StrCat({column, " = ?"}));
+  statement.BindInt(0, value);
+  return statement.Run();
+}
+
 // Initializes `statement` with UPDATE `table_name` SET `column_names` = ?, with
 // a placeholder for every `column_names`. A WHERE clause can optionally be
 // specified in `where_clause`.
@@ -2963,6 +2976,11 @@ bool AutofillTable::GetAllSyncMetadata(syncer::ModelType model_type,
 
   metadata_batch->SetModelTypeState(model_type_state);
   return true;
+}
+
+bool AutofillTable::DeleteAllSyncMetadata(syncer::ModelType model_type) {
+  return DeleteWhereColumnEq(db_, kAutofillSyncMetadataTable, kModelType,
+                             GetKeyValueForModelType(model_type));
 }
 
 bool AutofillTable::UpdateEntityMetadata(
