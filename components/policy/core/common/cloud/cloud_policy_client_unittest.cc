@@ -2792,7 +2792,7 @@ TEST_P(CloudPolicyClientCertProvisioningRequestTest, NonSuccessStatus) {
   MockClientCertProvisioningRequestCallbackObserver callback_observer;
   EXPECT_CALL(
       callback_observer,
-      Callback(DeviceManagementStatus::DM_STATUS_RESPONSE_DECODING_ERROR, _))
+      Callback(DeviceManagementStatus::DM_STATUS_SERVICE_ACTIVATION_PENDING, _))
       .WillOnce(SaveArg<1>(&received_response));
 
   EXPECT_CALL(job_creation_handler_, OnJobCreation)

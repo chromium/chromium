@@ -1320,7 +1320,11 @@ void CloudPolicyClient::OnClientCertProvisioningRequestResponse(
       &CloudPolicyClient::RemoveJob, base::Unretained(this), result.job));
 
   last_dm_status_ = result.dm_status;
-  if (!result.response.has_client_certificate_provisioning_response()) {
+  // For DM_STATUS_SUCCESS, always expect that the response contains the correct
+  // sub-proto. Forward other error codes without modifying them even if no
+  // response sub-proto is filled.
+  if (last_dm_status_ == DM_STATUS_SUCCESS &&
+      !result.response.has_client_certificate_provisioning_response()) {
     last_dm_status_ = DM_STATUS_RESPONSE_DECODING_ERROR;
   }
 
