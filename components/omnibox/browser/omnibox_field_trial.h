@@ -338,6 +338,14 @@ extern const base::FeatureParam<int> kFuzzyUrlSuggestionsPenaltyTaperLength;
 // Returns true if the default browser pedal feature is enabled.
 bool IsDefaultBrowserPedalEnabled();
 
+// Indicates whether the default browser pedal should make the change
+// immediately by calling the shell_integration API directly. When
+// false (default), the pedal goes to settings to let the user see
+// and commit the change themselves.
+extern const base::FeatureParam<bool> kDefaultBrowserPedalImmediate;
+
+// Note: These two feature params are only relevant when the above
+// param `kDefaultBrowserPedalImmediate` is true.
 // Indicates whether the default browser pedal can be used when the
 // shell_integration API indicates the system sets default browser
 // interactively, e.g. by bringing up system settings.

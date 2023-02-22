@@ -613,6 +613,11 @@ bool OmniboxFieldTrial::IsDefaultBrowserPedalEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxDefaultBrowserPedal);
 }
 
+const base::FeatureParam<bool> OmniboxFieldTrial::kDefaultBrowserPedalImmediate(
+    &omnibox::kOmniboxDefaultBrowserPedal,
+    "DefaultBrowserPedalImmediate",
+    false);
+
 const base::FeatureParam<bool>
     OmniboxFieldTrial::kDefaultBrowserPedalInteractive(
         &omnibox::kOmniboxDefaultBrowserPedal,
