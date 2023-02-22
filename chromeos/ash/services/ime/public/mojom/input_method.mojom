@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 16
+// Next MinVersion: 17
 
 module ash.ime.mojom;
 
@@ -48,6 +48,19 @@ enum NamedDomKey {
   [MinVersion=2] kPageDown = 15,
   [MinVersion=2] kPageUp = 16,
   [MinVersion=8] kTab = 17,
+  // Function keys
+  [MinVersion=16] kF1 = 18,
+  [MinVersion=16] kF2 = 19,
+  [MinVersion=16] kF3 = 20,
+  [MinVersion=16] kF4 = 21,
+  [MinVersion=16] kF5 = 22,
+  [MinVersion=16] kF6 = 23,
+  [MinVersion=16] kF7 = 24,
+  [MinVersion=16] kF8 = 25,
+  [MinVersion=16] kF9 = 26,
+  [MinVersion=16] kF10 = 27,
+  [MinVersion=16] kF11 = 28,
+  [MinVersion=16] kF12 = 29,
 };
 
 // Represents a key pressed by the user, taking into account aspects like

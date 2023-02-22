@@ -374,6 +374,30 @@ absl::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kPageUp;
     case ui::DomKey::TAB:
       return mojom::NamedDomKey::kTab;
+    case ui::DomKey::F1:
+      return mojom::NamedDomKey::kF1;
+    case ui::DomKey::F2:
+      return mojom::NamedDomKey::kF2;
+    case ui::DomKey::F3:
+      return mojom::NamedDomKey::kF3;
+    case ui::DomKey::F4:
+      return mojom::NamedDomKey::kF4;
+    case ui::DomKey::F5:
+      return mojom::NamedDomKey::kF5;
+    case ui::DomKey::F6:
+      return mojom::NamedDomKey::kF6;
+    case ui::DomKey::F7:
+      return mojom::NamedDomKey::kF7;
+    case ui::DomKey::F8:
+      return mojom::NamedDomKey::kF8;
+    case ui::DomKey::F9:
+      return mojom::NamedDomKey::kF9;
+    case ui::DomKey::F10:
+      return mojom::NamedDomKey::kF10;
+    case ui::DomKey::F11:
+      return mojom::NamedDomKey::kF11;
+    case ui::DomKey::F12:
+      return mojom::NamedDomKey::kF12;
     default:
       return absl::nullopt;
   }
