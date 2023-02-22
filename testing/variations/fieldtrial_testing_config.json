@@ -2650,6 +2650,24 @@
             ]
         }
     ],
+    "ChromeOSCalendarJellyExperiments": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "params": {
+                        "launch_stage": "dogfood"
+                    },
+                    "enable_features": [
+                        "CalendarJelly"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSHoldingSpaceExperiments": [
         {
             "platforms": [
