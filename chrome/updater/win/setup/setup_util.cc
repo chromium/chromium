@@ -20,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/win/win_util.h"
@@ -40,7 +41,7 @@ namespace updater {
 namespace {
 
 std::wstring GetTaskName(UpdaterScope scope) {
-  std::unique_ptr<TaskScheduler> task_scheduler =
+  scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
   DCHECK(task_scheduler);
   return task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));

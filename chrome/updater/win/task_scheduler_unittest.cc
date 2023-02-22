@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -151,7 +152,7 @@ class TaskSchedulerTests : public ::testing::Test {
   }
 
  protected:
-  std::unique_ptr<TaskScheduler> task_scheduler_;
+  scoped_refptr<TaskScheduler> task_scheduler_;
 };
 
 }  // namespace

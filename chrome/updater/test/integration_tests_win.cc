@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -200,23 +201,6 @@ void ForEachRunValue(
   }
 }
 
-// Runs `callback` for each task that matches `scope` and `prefix`.
-void ForEachTask(UpdaterScope scope,
-                 const std::wstring& prefix,
-                 base::RepeatingCallback<void(const std::wstring&)> callback) {
-  std::unique_ptr<TaskScheduler> task_scheduler =
-      TaskScheduler::CreateInstance(scope);
-  ASSERT_TRUE(task_scheduler);
-  std::vector<std::wstring> task_names;
-  task_scheduler->GetTaskNameList(&task_names);
-
-  for (const std::wstring& task_name : task_names) {
-    if (base::StartsWith(task_name, prefix)) {
-      callback.Run(task_name);
-    }
-  }
-}
-
 // Runs `callback` for each system service that matches `prefix`.
 void ForEachService(
     const std::wstring& prefix,
@@ -353,9 +337,9 @@ void CheckInstallation(UpdaterScope scope,
     }
   }
 
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope);
   if (is_installed) {
-    std::unique_ptr<TaskScheduler> task_scheduler =
-        TaskScheduler::CreateInstance(scope);
     const std::wstring task_name =
         task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
     EXPECT_TRUE(!task_name.empty());
@@ -372,13 +356,12 @@ void CheckInstallation(UpdaterScope scope,
                       L"*/components/update_client/*=2,"
                       L"*/chrome/updater/*=2"})
             .c_str());
-  }
-
-  if (!is_installed) {
-    ForEachTask(scope, base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-                base::BindRepeating([](const std::wstring& task_name) {
-                  ADD_FAILURE() << "Unexpected task found: " << task_name;
-                }));
+  } else {
+    task_scheduler->ForEachTask(
+        base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+        base::BindRepeating([](const std::wstring& task_name) {
+          ADD_FAILURE() << "Unexpected task found: " << task_name;
+        }));
   }
 
   const absl::optional<base::FilePath> path =
@@ -661,14 +644,16 @@ void Clean(UpdaterScope scope) {
                    }));
   }
 
-  ForEachTask(
-      scope, base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-      base::BindLambdaForTesting([scope](const std::wstring& task_name) {
-        std::unique_ptr<TaskScheduler> task_scheduler =
-            TaskScheduler::CreateInstance(scope);
-        ASSERT_TRUE(task_scheduler);
-        task_scheduler->DeleteTask(task_name.c_str());
-      }));
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope);
+  task_scheduler->ForEachTask(
+      base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+      base::BindRepeating(
+          [](scoped_refptr<TaskScheduler> task_scheduler,
+             const std::wstring& task_name) {
+            task_scheduler->DeleteTask(task_name.c_str());
+          },
+          task_scheduler));
 
   const absl::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);

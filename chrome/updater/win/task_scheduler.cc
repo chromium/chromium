@@ -18,7 +18,9 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/native_library.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -733,6 +735,25 @@ class TaskSchedulerV2 final : public TaskScheduler {
         {GetTaskCompanyFolder(), L"\\" PRODUCT_FULLNAME_STRING});
   }
 
+  void ForEachTask(
+      const std::wstring& prefix,
+      base::RepeatingCallback<void(const std::wstring&)> callback) override {
+    if (!task_folder_) {
+      return;
+    }
+
+    std::vector<std::wstring> task_names;
+    if (!GetTaskNameList(&task_names)) {
+      return;
+    }
+
+    for (const std::wstring& task_name : task_names) {
+      if (base::StartsWith(task_name, prefix)) {
+        callback.Run(task_name);
+      }
+    }
+  }
+
  private:
   // Helper class that lets us iterate over all registered tasks.
   class TaskIterator {
@@ -1260,6 +1281,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return true;
   }
 
+  ~TaskSchedulerV2() override = default;
+
   const UpdaterScope scope_;
 
   Microsoft::WRL::ComPtr<ITaskService> task_service_;
@@ -1285,9 +1308,8 @@ TaskScheduler::TaskInfo& TaskScheduler::TaskInfo::operator=(
 TaskScheduler::TaskInfo::~TaskInfo() = default;
 
 // static.
-std::unique_ptr<TaskScheduler> TaskScheduler::CreateInstance(
-    UpdaterScope scope) {
-  return std::make_unique<TaskSchedulerV2>(scope);
+scoped_refptr<TaskScheduler> TaskScheduler::CreateInstance(UpdaterScope scope) {
+  return base::MakeRefCounted<TaskSchedulerV2>(scope);
 }
 
 TaskScheduler::TaskScheduler() = default;
