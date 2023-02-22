@@ -34,6 +34,7 @@ enum class DebugDataType {
   kSourceDestinationLimit,
   kSourceNoised,
   kSourceStorageLimit,
+  kSourceSuccess,
   kSourceUnknownError,
   kTriggerNoMatchingSource,
   kTriggerAttributionsPerSourceDestinationLimit,
@@ -62,10 +63,16 @@ absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
 absl::optional<DebugDataType> GetReportDataType(StorableSource::Result result,
                                                 bool is_debug_cookie_set) {
   switch (result) {
-    case StorableSource::Result::kSuccess:
-    case StorableSource::Result::kExcessiveReportingOrigins:
     case StorableSource::Result::kProhibitedByBrowserPolicy:
       return absl::nullopt;
+    case StorableSource::Result::kSuccess:
+    // `kSourceSuccess` is sent for unattributed reporting origin limit to
+    // mitigate the security concerns on reporting this error. Because
+    // `kExcessiveReportingOrigins` is thrown based on information across
+    // reporting origins, reporting on it would violate the same-origin policy.
+    case StorableSource::Result::kExcessiveReportingOrigins:
+      return DataTypeIfCookieSet(DebugDataType::kSourceSuccess,
+                                 is_debug_cookie_set);
     case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
       return DebugDataType::kSourceDestinationLimit;
     case StorableSource::Result::kSuccessNoised:
@@ -181,6 +188,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "source-noised";
     case DebugDataType::kSourceStorageLimit:
       return "source-storage-limit";
+    case DebugDataType::kSourceSuccess:
+      return "source-success";
     case DebugDataType::kSourceUnknownError:
       return "source-unknown-error";
     case DebugDataType::kTriggerNoMatchingSource:
@@ -258,6 +267,7 @@ base::Value::Dict GetReportDataBody(
       SetLimit(data_body, result.max_sources_per_origin);
       break;
     case DebugDataType::kSourceNoised:
+    case DebugDataType::kSourceSuccess:
     case DebugDataType::kSourceUnknownError:
       break;
     case DebugDataType::kTriggerNoMatchingSource:
@@ -343,6 +353,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kSourceDestinationLimit:
     case DebugDataType::kSourceNoised:
     case DebugDataType::kSourceStorageLimit:
+    case DebugDataType::kSourceSuccess:
     case DebugDataType::kSourceUnknownError:
       NOTREACHED();
       return base::Value::Dict();

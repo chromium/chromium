@@ -124,7 +124,14 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        /*max_sources_per_origin=*/absl::nullopt,
        /*debug_key=*/absl::nullopt,
        /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/nullptr},
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "source-success"
+       }])json"},
       {StorableSource::Result::kInternalError,
        /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
        /*max_sources_per_origin=*/absl::nullopt,
@@ -198,6 +205,21 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
            "source_site": "https://impression.test"
          },
          "type": "source-noised"
+       }])json"},
+      {StorableSource::Result::kExcessiveReportingOrigins,
+       /*max_destinations_per_source_site_reporting_origin=*/absl::nullopt,
+       /*max_sources_per_origin=*/absl::nullopt,
+       /*debug_key=*/789,
+       /*expected_report_body_without_cookie=*/nullptr,
+       /*expected_report_body_with_cookie=*/
+       R"json([{
+         "body": {
+           "attribution_destination": "https://conversion.test",
+           "source_debug_key": "789",
+           "source_event_id": "123",
+           "source_site": "https://impression.test"
+         },
+         "type": "source-success"
        }])json"},
   };
 
