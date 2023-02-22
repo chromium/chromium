@@ -8,6 +8,7 @@
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 #include "gpu/command_buffer/tests/webgpu_test.h"
 #include "gpu/config/gpu_test_config.h"
@@ -56,19 +57,10 @@ struct WebGPUMailboxTestParams : WebGPUTest::Options {
 
 std::ostream& operator<<(std::ostream& os,
                          const WebGPUMailboxTestParams& options) {
-  switch (options.format.resource_format()) {
-    case viz::ResourceFormat::RGBA_8888:
-      os << "RGBA_8888";
-      break;
-    case viz::ResourceFormat::BGRA_8888:
-      os << "BGRA_8888";
-      break;
-    case viz::ResourceFormat::RGBA_F16:
-      os << "RGBA_F16";
-      break;
-    default:
-      NOTREACHED();
-  }
+  DCHECK(options.format == viz::SinglePlaneFormat::kRGBA_8888 ||
+         options.format == viz::SinglePlaneFormat::kBGRA_8888 ||
+         options.format == viz::SinglePlaneFormat::kRGBA_F16);
+  os << options.format.ToTestParamString();
   if (options.enable_unsafe_webgpu) {
     os << "_UnsafeWebGPU";
   }
@@ -79,16 +71,17 @@ std::ostream& operator<<(std::ostream& os,
 }
 
 uint32_t BytesPerTexel(viz::SharedImageFormat format) {
-  switch (format.resource_format()) {
-    case viz::ResourceFormat::RGBA_8888:
-    case viz::ResourceFormat::BGRA_8888:
-      return 4;
-    case viz::ResourceFormat::RGBA_F16:
-      return 8;
-    default:
-      NOTREACHED();
-      return 0;
+  if ((format == viz::SinglePlaneFormat::kRGBA_8888) ||
+      (format == viz::SinglePlaneFormat::kBGRA_8888)) {
+    return 4;
   }
+
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return 8;
+  }
+
+  NOTREACHED();
+  return 0;
 }
 
 }  // namespace
@@ -312,23 +305,19 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
                sizeof(mailbox.name));
 
         uint32_t view_format_count = 0u;
-        switch (GetParam().format.resource_format()) {
-          case viz::ResourceFormat::RGBA_F16:
-            break;
-          case viz::ResourceFormat::RGBA_8888:
-            view_format_count = 1u;
-            packed_data.push_back(
-                static_cast<uint32_t>(WGPUTextureFormat_RGBA8UnormSrgb));
-            break;
-          case viz::ResourceFormat::BGRA_8888:
-            view_format_count = 2u;
-            packed_data.push_back(
-                static_cast<uint32_t>(WGPUTextureFormat_BGRA8UnormSrgb));
-            packed_data.push_back(
-                static_cast<uint32_t>(WGPUTextureFormat_BGRA8Unorm));
-            break;
-          default:
-            NOTREACHED();
+        if (GetParam().format == viz::SinglePlaneFormat::kRGBA_F16) {
+        } else if (GetParam().format == viz::SinglePlaneFormat::kRGBA_8888) {
+          view_format_count = 1u;
+          packed_data.push_back(
+              static_cast<uint32_t>(WGPUTextureFormat_RGBA8UnormSrgb));
+        } else if (GetParam().format == viz::SinglePlaneFormat::kBGRA_8888) {
+          view_format_count = 2u;
+          packed_data.push_back(
+              static_cast<uint32_t>(WGPUTextureFormat_BGRA8UnormSrgb));
+          packed_data.push_back(
+              static_cast<uint32_t>(WGPUTextureFormat_BGRA8Unorm));
+        } else {
+          NOTREACHED();
         }
 
         // Error case: packed data empty.
@@ -593,15 +582,12 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     WaitForCompletion(device_);
 
     const void* data = readback_buffer.GetConstMappedRange();
-    switch (GetParam().format.resource_format()) {
-      case viz::ResourceFormat::RGBA_8888:
-        EXPECT_EQ(0xFFFF0000u, *static_cast<const uint32_t*>(data));
-        break;
-      case viz::ResourceFormat::BGRA_8888:
-        EXPECT_EQ(0xFF0000FFu, *static_cast<const uint32_t*>(data));
-        break;
-      default:
-        NOTREACHED();
+    if (GetParam().format == viz::SinglePlaneFormat::kRGBA_8888) {
+      EXPECT_EQ(0xFFFF0000u, *static_cast<const uint32_t*>(data));
+    } else if (GetParam().format == viz::SinglePlaneFormat::kBGRA_8888) {
+      EXPECT_EQ(0xFF0000FFu, *static_cast<const uint32_t*>(data));
+    } else {
+      NOTREACHED();
     }
   }
 }
@@ -791,19 +777,10 @@ TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   wgpu::TextureDescriptor dst_desc = {};
   dst_desc.size = {1, 1};
   dst_desc.usage = wgpu::TextureUsage::CopyDst;
-  switch (GetParam().format.resource_format()) {
-    case viz::ResourceFormat::RGBA_8888:
-      dst_desc.format = wgpu::TextureFormat::RGBA8Unorm;
-      break;
-    case viz::ResourceFormat::BGRA_8888:
-      dst_desc.format = wgpu::TextureFormat::BGRA8Unorm;
-      break;
-    case viz::ResourceFormat::RGBA_F16:
-      dst_desc.format = wgpu::TextureFormat::RGBA16Float;
-      break;
-    default:
-      NOTREACHED();
-  }
+  DCHECK(GetParam().format == viz::SinglePlaneFormat::kRGBA_8888 ||
+         GetParam().format == viz::SinglePlaneFormat::kBGRA_8888 ||
+         GetParam().format == viz::SinglePlaneFormat::kRGBA_F16);
+  dst_desc.format = ToDawnFormat(GetParam().format);
 
   wgpu::ImageCopyTexture src_image = {};
   src_image.texture = texture;
