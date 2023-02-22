@@ -270,6 +270,13 @@ void LayerTreeImpl::NotifyPropertyChanged() {
   SetNeedsDraw();
 }
 
+viz::ClientResourceProvider* LayerTreeImpl::GetClientResourceProvider() {
+  if (!frame_sink_) {
+    return nullptr;
+  }
+  return frame_sink_->client_resource_provider();
+}
+
 viz::ResourceId LayerTreeImpl::GetVizResourceId(cc::UIResourceId id) {
   if (!frame_sink_) {
     return viz::kInvalidResourceId;
@@ -279,6 +286,14 @@ viz::ResourceId LayerTreeImpl::GetVizResourceId(cc::UIResourceId id) {
 
 bool LayerTreeImpl::IsUIResourceOpaque(int resource_id) {
   return !frame_sink_ || frame_sink_->IsUIResourceOpaque(resource_id);
+}
+
+gfx::Size LayerTreeImpl::GetUIResourceSize(int resource_id) {
+  if (!frame_sink_) {
+    return gfx::Size();
+  }
+
+  return frame_sink_->GetUIResourceSize(resource_id);
 }
 
 void LayerTreeImpl::AddSurfaceRange(const viz::SurfaceRange& range) {

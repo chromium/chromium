@@ -68,6 +68,9 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   viz::ResourceId GetVizResourceId(cc::UIResourceId id);
   bool IsUIResourceOpaque(cc::UIResourceId resource_id);
   gfx::Size GetUIResourceSize(cc::UIResourceId resource_id);
+  viz::ClientResourceProvider* client_resource_provider() {
+    return &resource_provider_;
+  }
 
   // viz::ContextLostObserver
   void OnContextLost() override;

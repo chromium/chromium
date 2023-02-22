@@ -7,6 +7,7 @@
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -330,31 +331,56 @@ std::vector<NinePatchGenerator::Patch> NinePatchGenerator::GeneratePatches()
   return patches;
 }
 
-void NinePatchGenerator::AppendQuads(LayerImpl* layer_impl,
-                                     UIResourceId ui_resource_id,
-                                     viz::CompositorRenderPass* render_pass,
-                                     viz::SharedQuadState* shared_quad_state,
-                                     const std::vector<Patch>& patches) {
-  if (!ui_resource_id)
+void NinePatchGenerator::AppendQuadsForCc(
+    LayerImpl* layer_impl,
+    UIResourceId ui_resource_id,
+    viz::CompositorRenderPass* render_pass,
+    viz::SharedQuadState* shared_quad_state,
+    const std::vector<Patch>& patches) {
+  if (!ui_resource_id) {
     return;
+  }
 
   viz::ResourceId resource =
       layer_impl->layer_tree_impl()->ResourceIdForUIResource(ui_resource_id);
-
-  if (!resource)
+  if (!resource) {
     return;
+  }
 
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   const bool opaque =
       layer_impl->layer_tree_impl()->IsUIResourceOpaque(ui_resource_id);
+  AppendQuads(
+      resource, opaque,
+      base::BindRepeating(
+          &Occlusion::GetUnoccludedContentRect,
+          base::Unretained(
+              &layer_impl->draw_properties().occlusion_in_content_space)),
+      layer_impl->layer_tree_impl()->resource_provider(), render_pass,
+      shared_quad_state, patches);
+}
+
+void NinePatchGenerator::AppendQuads(
+    viz::ResourceId resource,
+    bool opaque,
+    base::RepeatingCallback<gfx::Rect(const gfx::Rect&)> clip_visible_rect,
+    viz::ClientResourceProvider* client_resource_provider,
+    viz::CompositorRenderPass* render_pass,
+    viz::SharedQuadState* shared_quad_state,
+    const std::vector<Patch>& patches) {
+  if (!resource) {
+    return;
+  }
+#if DCHECK_IS_ON()
+  client_resource_provider->ValidateResource(resource);
+#endif
+
+  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   constexpr bool flipped = false;
   constexpr bool premultiplied_alpha = true;
 
   for (const auto& patch : patches) {
     gfx::Rect output_rect = gfx::ToEnclosingRect(patch.output_rect);
-    gfx::Rect visible_rect =
-        layer_impl->draw_properties()
-            .occlusion_in_content_space.GetUnoccludedContentRect(output_rect);
+    gfx::Rect visible_rect = clip_visible_rect.Run(output_rect);
     bool needs_blending = !opaque;
     if (!visible_rect.IsEmpty()) {
       gfx::RectF image_rect = patch.normalized_image_rect;
@@ -365,7 +391,6 @@ void NinePatchGenerator::AppendQuads(LayerImpl* layer_impl,
                    vertex_opacity, flipped, nearest_neighbor_,
                    /*secure_output_only=*/false,
                    gfx::ProtectedVideoType::kClear);
-      layer_impl->ValidateQuadResources(quad);
     }
   }
 }

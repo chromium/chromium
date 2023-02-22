@@ -9,8 +9,10 @@
 #include "cc/layers/nine_patch_generator.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "cc/slim/features.h"
+#include "cc/slim/layer_tree_impl.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace cc::slim {
@@ -79,6 +81,36 @@ void NinePatchLayer::SetNearestNeighbor(bool nearest_neighbor) {
   }
   nearest_neighbor_ = nearest_neighbor;
   NotifyPropertyChanged();
+}
+
+void NinePatchLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
+                                 const gfx::Transform& transform,
+                                 const gfx::Rect* clip) {
+  LayerTreeImpl* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree());
+  viz::ResourceId viz_resource_id =
+      layer_tree_impl->GetVizResourceId(resource_id());
+  if (viz_resource_id == viz::kInvalidResourceId) {
+    return;
+  }
+
+  viz::SharedQuadState* quad_state =
+      CreateAndAppendSharedQuadState(render_pass, transform, clip);
+
+  constexpr gfx::Rect kOcclusion;
+  const gfx::Size image_bounds =
+      layer_tree_impl->GetUIResourceSize(resource_id());
+  quad_generator_.SetLayout(image_bounds, bounds(), aperture_, border_,
+                            kOcclusion, fill_center_, nearest_neighbor_);
+  const bool opaque = layer_tree_impl->IsUIResourceOpaque(resource_id());
+  // Select the int instead of float version.
+  auto IntersectRects =
+      static_cast<gfx::Rect (*)(const gfx::Rect&, const gfx::Rect&)>(
+          gfx::IntersectRects);
+  quad_generator_.AppendQuads(
+      viz_resource_id, opaque,
+      base::BindRepeating(IntersectRects, quad_state->visible_quad_layer_rect),
+      layer_tree_impl->GetClientResourceProvider(), &render_pass, quad_state,
+      quad_generator_.GeneratePatches());
 }
 
 }  // namespace cc::slim

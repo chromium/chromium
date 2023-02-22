@@ -12,6 +12,7 @@
 #include "base/unguessable_token.h"
 #include "cc/slim/features.h"
 #include "cc/slim/layer.h"
+#include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/test_frame_sink_impl.h"
 #include "cc/slim/test_layer_tree_client.h"
@@ -566,6 +567,100 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
     EXPECT_EQ(frame.resource_list[0].size, gfx::Size(2, 2));
     EXPECT_NE(first_resource_id, texture_quad->resource_id());
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
+  auto nine_patch_layer = NinePatchLayer::Create();
+  nine_patch_layer->SetBounds(viewport_.size());
+  nine_patch_layer->SetIsDrawable(true);
+  layer_tree_->SetRoot(nine_patch_layer);
+
+  auto image_info =
+      SkImageInfo::Make(10, 10, kN32_SkColorType, kPremul_SkAlphaType);
+  SkBitmap bitmap;
+  bitmap.allocPixels(image_info);
+  bitmap.setImmutable();
+  nine_patch_layer->SetBitmap(bitmap);
+
+  nine_patch_layer->SetBorder(gfx::Rect(10, 10, 20, 20));  // 10 pixel border.
+  nine_patch_layer->SetAperture(gfx::Rect(2, 2, 6, 6));
+  nine_patch_layer->SetFillCenter(true);
+  nine_patch_layer->SetNearestNeighbor(true);
+
+  viz::CompositorFrame frame = ProduceFrame();
+  ASSERT_EQ(frame.resource_list.size(), 1u);
+  EXPECT_EQ(frame.resource_list[0].size, gfx::Size(10, 10));
+  ASSERT_EQ(frame_sink_->uploaded_resources().size(), 1u);
+  ASSERT_EQ(frame.render_pass_list.size(), 1u);
+  auto& pass = frame.render_pass_list.back();
+  ASSERT_THAT(
+      pass->quad_list,
+      ElementsAre(
+          // Top left.
+          AllOf(viz::IsTextureQuad(), viz::HasRect(gfx::Rect(10, 10)),
+                viz::HasVisibleRect(gfx::Rect(10, 10))),
+          // Top right.
+          AllOf(viz::IsTextureQuad(), viz::HasRect(gfx::Rect(90, 0, 10, 10)),
+                viz::HasVisibleRect(gfx::Rect(90, 0, 10, 10))),
+          // Bottom left.
+          AllOf(viz::IsTextureQuad(), viz::HasRect(gfx::Rect(0, 90, 10, 10)),
+                viz::HasVisibleRect(gfx::Rect(0, 90, 10, 10))),
+          // Bottom right.
+          AllOf(viz::IsTextureQuad(), viz::HasRect(gfx::Rect(90, 90, 10, 10)),
+                viz::HasVisibleRect(gfx::Rect(90, 90, 10, 10))),
+          // Top.
+          AllOf(viz::IsTextureQuad(), viz::HasRect(gfx::Rect(10, 0, 80, 10)),
+                viz::HasVisibleRect(gfx::Rect(10, 0, 80, 10))),
+          // Left.
+          AllOf(viz::IsTextureQuad(), viz::HasRect(gfx::Rect(0, 10, 10, 80)),
+                viz::HasVisibleRect(gfx::Rect(0, 10, 10, 80))),
+          // Right.
+          AllOf(viz::IsTextureQuad(), viz::HasRect(gfx::Rect(90, 10, 10, 80)),
+                viz::HasVisibleRect(gfx::Rect(90, 10, 10, 80))),
+          // Bottom.
+          AllOf(viz::IsTextureQuad(), viz::HasRect(gfx::Rect(10, 90, 80, 10)),
+                viz::HasVisibleRect(gfx::Rect(10, 90, 80, 10))),
+          // Center.
+          AllOf(viz::IsTextureQuad(),
+                viz::HasRect(gfx::Rect(10, 10, 80, 80)))));
+  gfx::PointF expected_uv_top_left[] = {
+      gfx::PointF(0.0f, 0.0f),  // Top left.
+      gfx::PointF(0.8f, 0.0f),  // Top right.
+      gfx::PointF(0.0f, 0.8f),  // Bottom left.
+      gfx::PointF(0.8f, 0.8f),  // Bottom right.
+      gfx::PointF(0.2f, 0.0f),  // Top.
+      gfx::PointF(0.0f, 0.2f),  // Left.
+      gfx::PointF(0.8f, 0.2f),  // Right.
+      gfx::PointF(0.2f, 0.8f),  // Bottom.
+      gfx::PointF(0.2f, 0.2f),  // Center.
+  };
+  gfx::PointF expected_uv_bottom_right[] = {
+      gfx::PointF(0.2f, 0.2f),  // Top left.
+      gfx::PointF(1.0f, 0.2f),  // Top right.
+      gfx::PointF(0.2f, 1.0f),  // Bottom left.
+      gfx::PointF(1.0f, 1.0f),  // Bottom right.
+      gfx::PointF(0.8f, 0.2f),  // Top.
+      gfx::PointF(0.2f, 0.8f),  // Left.
+      gfx::PointF(1.0f, 0.8f),  // Right.
+      gfx::PointF(0.8f, 1.0f),  // Bottom.
+      gfx::PointF(0.8f, 0.8f),  // Center.
+  };
+  for (size_t i = 0; i < std::size(expected_uv_top_left); ++i) {
+    const viz::TextureDrawQuad* texture_quad =
+        viz::TextureDrawQuad::MaterialCast(pass->quad_list.ElementAt(i));
+    EXPECT_NE(viz::kInvalidResourceId, texture_quad->resource_id());
+    EXPECT_TRUE(texture_quad->nearest_neighbor);
+    EXPECT_EQ(expected_uv_top_left[i], texture_quad->uv_top_left);
+    EXPECT_EQ(expected_uv_bottom_right[i], texture_quad->uv_bottom_right);
+    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[0]);
+    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[1]);
+    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[2]);
+    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[3]);
+
+    EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
+    EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,
+              texture_quad->resource_id());
   }
 }
 

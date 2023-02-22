@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -79,8 +80,8 @@ void NinePatchLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     patch.output_rect =
         gfx::RectF(gfx::ToFlooredRectDeprecated(patch.output_rect));
 
-  quad_generator_.AppendQuads(this, ui_resource_id_, render_pass,
-                              shared_quad_state, patches);
+  quad_generator_.AppendQuadsForCc(this, ui_resource_id_, render_pass,
+                                   shared_quad_state, patches);
 }
 
 const char* NinePatchLayerImpl::LayerTypeAsString() const {
