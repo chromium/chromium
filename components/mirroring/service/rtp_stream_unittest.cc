@@ -5,6 +5,7 @@
 #include "components/mirroring/service/rtp_stream.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
@@ -41,11 +42,14 @@ class StreamClient final : public RtpStreamClient {
   ~StreamClient() override = default;
 
   void SetVideoRtpStream(VideoRtpStream* stream) { video_stream_ = stream; }
+  void SetShouldDeliverFrames(bool should_deliver) {
+    should_deliver_frames_ = should_deliver;
+  }
 
   // RtpStreamClient implementation.
   void OnError(const std::string& message) override {}
   void RequestRefreshFrame() override {
-    if (video_stream_) {
+    if (video_stream_ && should_deliver_frames_) {
       video_stream_->InsertVideoFrame(CreateVideoFrame());
     }
   }
@@ -78,6 +82,7 @@ class StreamClient final : public RtpStreamClient {
 
  private:
   raw_ptr<VideoRtpStream> video_stream_;
+  bool should_deliver_frames_ = true;
   base::TimeTicks first_frame_time_;
   const raw_ptr<base::SimpleTestTickClock> clock_;
   base::WeakPtrFactory<StreamClient> weak_factory_{this};
@@ -130,7 +135,8 @@ class RtpStreamTest : public ::testing::Test {
     EXPECT_FALSE(video_stream.refresh_timer_.IsRunning());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::SimpleTestTickClock testing_clock_;
   const scoped_refptr<media::cast::CastEnvironment> cast_environment_;
   StreamClient client_;
@@ -174,6 +180,45 @@ TEST_F(RtpStreamTest, VideoStreamDoesNotRefreshWithZeroInterval) {
   client_.SetVideoRtpStream(&video_stream);
   ExpectVideoFrames(video_stream, 1);
   ExpectTimerNotRunning(video_stream);
+}
+
+TEST_F(RtpStreamTest, VideoStreamTimerNotRunningWhenNoFramesDelivered) {
+  auto video_sender = std::make_unique<media::cast::VideoSender>(
+      cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
+      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
+      base::DoNothing());
+  VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
+                              base::Milliseconds(1));
+  client_.SetVideoRtpStream(&video_stream);
+  client_.SetShouldDeliverFrames(false);
+  video_stream.InsertVideoFrame(client_.CreateVideoFrame());
+  // Fast forward by enough time for the refresh_timer_ to fire 2 times.
+  task_environment_.FastForwardBy(base::Milliseconds(5));
+
+  ExpectTimerNotRunning(video_stream);
+}
+
+TEST_F(RtpStreamTest, VideoStreamTimerRestartsWhenFramesDeliveredAgain) {
+  auto video_sender = std::make_unique<media::cast::VideoSender>(
+      cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
+      base::DoNothing(), base::DoNothing(), &transport_, base::DoNothing(),
+      base::DoNothing());
+  VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr(),
+                              base::Milliseconds(1));
+  client_.SetVideoRtpStream(&video_stream);
+  client_.SetShouldDeliverFrames(false);
+  video_stream.InsertVideoFrame(client_.CreateVideoFrame());
+  // Fast forward by enough time for the refresh_timer_ to fire 2 times.
+  task_environment_.FastForwardBy(base::Milliseconds(5));
+
+  ExpectTimerNotRunning(video_stream);
+  client_.SetShouldDeliverFrames(true);
+
+  // When the video stream receives a frame, it restarts the timer.
+  video_stream.InsertVideoFrame(client_.CreateVideoFrame());
+  task_environment_.FastForwardBy(base::Milliseconds(5));
+
+  ExpectTimerRunning(video_stream);
 }
 
 // Test the audio streaming pipeline.
