@@ -42,6 +42,18 @@ export class BrailleTranslatorManager {
     this.uncontractedTableId_ = null;
   }
 
+  static init() {
+    if (BrailleTranslatorManager.instance) {
+      throw new Error('\nCannot create two BrailleTranslatorManagers');
+    }
+    BrailleTranslatorManager.instance = new BrailleTranslatorManager();
+
+    SettingsManager.addListenerForKey(
+        'brailleTable',
+        brailleTable =>
+            BrailleTranslatorManager.instance.refresh(brailleTable));
+  }
+
   /**
    * Adds a listener to be called whenever there is a change in the
    * translator(s) returned by other methods of this instance.
@@ -210,3 +222,6 @@ export class BrailleTranslatorManager {
     await this.fetchTables_();
   }
 }
+
+/** @type {BrailleTranslatorManager} */
+BrailleTranslatorManager.instance;

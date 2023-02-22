@@ -39,7 +39,7 @@ ChromeVoxBrailleDisplayManagerTest = class extends ChromeVoxE2ETest {
     this.NAV_BRAILLE = new NavBraille({text: 'Hello, world!'});
     this.EMPTY_NAV_BRAILLE = new NavBraille({text: ''});
     this.translator = new FakeTranslator();
-    this.translatorManager = new FakeTranslatorManager();
+    BrailleTranslatorManager.instance = new FakeTranslatorManager();
     /** @const */
     this.DISPLAY_ROW_SIZE = 1;
     this.DISPLAY_COLUMN_SIZE = 12;
@@ -182,9 +182,9 @@ FakeTranslatorManager.prototype = {
 };
 
 AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoApi', function() {
-  const manager = new BrailleDisplayManager(this.translatorManager);
+  const manager = new BrailleDisplayManager();
   manager.setContent(this.NAV_BRAILLE);
-  this.translatorManager.setTranslator(this.translator);
+  BrailleTranslatorManager.instance.setTranslator(this.translator);
   manager.setContent(this.NAV_BRAILLE);
 });
 
@@ -195,9 +195,9 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoApi', function() {
 AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoDisplay', function() {
   this.displayState = {available: false};
 
-  const manager = new BrailleDisplayManager(this.translatorManager);
+  const manager = new BrailleDisplayManager();
   manager.setContent(this.NAV_BRAILLE);
-  this.translatorManager.setTranslator(this.translator);
+  BrailleTranslatorManager.instance.setTranslator(this.translator);
   manager.setContent(this.NAV_BRAILLE);
   assertEquals(0, this.writtenCells.length);
 });
@@ -206,11 +206,11 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'NoDisplay', function() {
  * Tests the typical sequence: setContent, setTranslator, setContent.
  */
 AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'BasicSetContent', function() {
-  const manager = new BrailleDisplayManager(this.translatorManager);
+  const manager = new BrailleDisplayManager();
   this.assertEmptyDisplayAndClear();
   manager.setContent(this.NAV_BRAILLE);
   this.assertEmptyDisplayAndClear();
-  this.translatorManager.setTranslator(this.translator);
+  BrailleTranslatorManager.instance.setTranslator(this.translator);
   this.assertDisplayPositionAndClear(0);
   manager.setContent(this.NAV_BRAILLE);
   this.assertDisplayPositionAndClear(0);
@@ -222,11 +222,11 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'BasicSetContent', function() {
 AX_TEST_F(
     'ChromeVoxBrailleDisplayManagerTest', 'SetEmptyContentWithTranslator',
     function() {
-      const manager = new BrailleDisplayManager(this.translatorManager);
+      const manager = new BrailleDisplayManager();
       this.assertEmptyDisplayAndClear();
       manager.setContent(this.NAV_BRAILLE);
       this.assertEmptyDisplayAndClear();
-      this.translatorManager.setTranslator(this.translator);
+      BrailleTranslatorManager.instance.setTranslator(this.translator);
       this.assertDisplayPositionAndClear(0);
       manager.setContent(this.EMPTY_NAV_BRAILLE);
       this.assertEmptyDisplayAndClear();
@@ -242,9 +242,9 @@ AX_TEST_F(
 
       const translatedSize = Math.floor(text.length + text.length / 2);
 
-      const manager = new BrailleDisplayManager(this.translatorManager);
+      const manager = new BrailleDisplayManager();
       this.assertEmptyDisplayAndClear();
-      this.translatorManager.setTranslator(this.translator);
+      BrailleTranslatorManager.instance.setTranslator(this.translator);
       this.assertEmptyDisplayAndClear();
 
       // Cursor at beginning of line.
@@ -387,7 +387,7 @@ AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'RandB_Random', function() {
  */
 AX_TEST_F('ChromeVoxBrailleDisplayManagerTest', 'UpdatePrefs', function() {
   this.displayState = {available: false};
-  const manager = new BrailleDisplayManager(this.translatorManager);
+  const manager = new BrailleDisplayManager();
   assertEquals(false, SettingsManager.get('menuBrailleCommands'));
   this.simulateOnDisplayStateChanged({available: true});
   assertEquals(true, SettingsManager.get('menuBrailleCommands'));

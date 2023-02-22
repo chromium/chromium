@@ -15,8 +15,8 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
 
     // Alphabetical based on file path.
     await importModule(
-        'BrailleBackground',
-        '/chromevox/background/braille/braille_background.js');
+        'BrailleTranslatorManager',
+        '/chromevox/background/braille/braille_translator_manager.js');
     await importModule(
         'BrailleCommandHandler',
         '/chromevox/background/braille/braille_command_handler.js');
@@ -2047,12 +2047,11 @@ AX_TEST_F(
       await this.focusFirstTextField(root);
 
       // In case LibLouis takes a while to load.
-      if (!ChromeVox.braille.displayManager_.translatorManager_.liblouis_
-               .isLoaded()) {
-        await new Promise(r => {
-          ChromeVox.braille.displayManager_.translatorManager_.liblouis_
-              .onInstanceLoad_ = r;
-        });
+      if (!BrailleTranslatorManager.instance.liblouis_.isLoaded()) {
+        await new Promise(
+            resolve =>
+                BrailleTranslatorManager.instance.liblouis_.onInstanceLoad_ =
+                    resolve);
       }
 
       // Fake an available display.
@@ -2065,8 +2064,7 @@ AX_TEST_F(
 
       // Wait for it to be fully refreshed (liblouis loads the new tables, our
       // translators are re-created).
-      await BrailleBackground.instance.getTranslatorManager()
-          .loadTablesForTest();
+      await BrailleTranslatorManager.instance.loadTablesForTest();
 
       // Fake an available display.
       ChromeVox.braille.displayManager_.refreshDisplayState_(
@@ -2076,8 +2074,8 @@ AX_TEST_F(
       // contracted braille).
       SettingsManager.set('brailleTable', 'en-ueb-g2');
       await new Promise(
-          r => BrailleBackground.instance.getTranslatorManager().refresh(
-              SettingsManager.getString('brailleTable'), undefined, r));
+          resolve => BrailleTranslatorManager.instance.refresh(
+              SettingsManager.getString('brailleTable'), undefined, resolve));
 
       async function waitForBrailleDots(expectedDots) {
         return new Promise(r => {

@@ -18,7 +18,7 @@ import {Msgs} from '../../common/msgs.js';
 import {SettingsManager} from '../../common/settings_manager.js';
 import {MultiSpannable, Spannable} from '../../common/spannable.js';
 import {Personality, QueueMode} from '../../common/tts_types.js';
-import {BrailleBackground} from '../braille/braille_background.js';
+import {BrailleTranslatorManager} from '../braille/braille_translator_manager.js';
 import {LibLouis} from '../braille/liblouis.js';
 import {BrailleTextStyleSpan, ValueSelectionSpan, ValueSpan} from '../braille/spans.js';
 import {ChromeVox} from '../chromevox.js';
@@ -1012,11 +1012,11 @@ class EditingRangeObserver {
   onCurrentRangeChanged(range, opt_fromEditing) {
     const inputType = range && range.start.node.inputType;
     if (inputType === 'email' || inputType === 'url') {
-      BrailleBackground.instance.getTranslatorManager().refresh(
+      BrailleTranslatorManager.instance.refresh(
           SettingsManager.getString('brailleTable8'));
       return;
     }
-    BrailleBackground.instance.getTranslatorManager().refresh(
+    BrailleTranslatorManager.instance.refresh(
         SettingsManager.getString('brailleTable'));
   }
 }

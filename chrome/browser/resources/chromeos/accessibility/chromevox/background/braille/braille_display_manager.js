@@ -17,11 +17,7 @@ import {PanStrategy} from './pan_strategy.js';
 import {ValueSpan} from './spans.js';
 
 export class BrailleDisplayManager {
-  /**
-   * @param {!BrailleTranslatorManager} translatorManager Keeps track
-   *     of the current translator to use.
-   */
-  constructor(translatorManager) {
+  constructor() {
     /** @private {number|undefined} */
     this.blinkerId_;
 
@@ -57,15 +53,12 @@ export class BrailleDisplayManager {
      */
     this.realDisplayState_ = this.displayState_;
 
-    /** @private {!BrailleTranslatorManager} */
-    this.translatorManager_ = translatorManager;
-
     this.init_();
   }
 
   /** @private */
   init_() {
-    this.translatorManager_.addChangeListener(
+    BrailleTranslatorManager.instance.addChangeListener(
         () => this.translateContent_(this.content_, this.expansionType_));
 
     SettingsManager.addListenerForKey(
@@ -354,7 +347,8 @@ export class BrailleDisplayManager {
       this.refresh_();
     };
 
-    const translator = this.translatorManager_.getExpandingTranslator();
+    const translator =
+        BrailleTranslatorManager.instance.getExpandingTranslator();
     if (!translator) {
       writeTranslatedContent(new ArrayBuffer(0), [], []);
     } else {

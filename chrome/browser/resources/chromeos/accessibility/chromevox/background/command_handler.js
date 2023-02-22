@@ -30,8 +30,8 @@ import {SettingsManager} from '../common/settings_manager.js';
 import {Personality, QueueMode, TtsSettings, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {AutoScrollHandler} from './auto_scroll_handler.js';
-import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCaptionsBackground} from './braille/braille_captions_background.js';
+import {BrailleTranslatorManager} from './braille/braille_translator_manager.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxRange} from './chromevox_range.js';
 import {ChromeVoxState} from './chromevox_state.js';
@@ -1670,7 +1670,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
     SettingsManager.set('brailleTable', SettingsManager.get(brailleTableType));
     SettingsManager.set('brailleTableType', brailleTableType);
-    BrailleBackground.instance.getTranslatorManager().refresh(
+    BrailleTranslatorManager.instance.refresh(
         SettingsManager.getString(brailleTableType));
     new Output().format(output).go();
   }

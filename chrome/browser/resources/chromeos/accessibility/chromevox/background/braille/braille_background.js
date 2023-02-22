@@ -20,23 +20,9 @@ import {BrailleTranslatorManager} from './braille_translator_manager.js';
 
 /** @implements {BrailleInterface} */
 export class BrailleBackground {
-  /**
-   * @param {BrailleDisplayManager=} opt_displayManagerForTest
-   *        Display manager (for mocking in tests).
-   * @param {BrailleInputHandler=} opt_inputHandlerForTest Input handler
-   *        (for mocking in tests).
-   * @param {BrailleTranslatorManager=} opt_translatorManagerForTest
-   *        Braille translator manager (for mocking in tests)
-   */
-  constructor(
-      opt_displayManagerForTest, opt_inputHandlerForTest,
-      opt_translatorManagerForTest) {
-    /** @private {!BrailleTranslatorManager} */
-    this.translatorManager_ =
-        opt_translatorManagerForTest || new BrailleTranslatorManager();
+  constructor() {
     /** @private {!BrailleDisplayManager} */
-    this.displayManager_ = opt_displayManagerForTest ||
-        new BrailleDisplayManager(this.translatorManager_);
+    this.displayManager_ = new BrailleDisplayManager();
     this.displayManager_.setCommandListener(
         (evt, content) => this.onBrailleKeyEvent_(evt, content));
 
@@ -44,8 +30,7 @@ export class BrailleBackground {
     this.frozen_ = false;
 
     /** @private {!BrailleInputHandler} */
-    this.inputHandler_ = opt_inputHandlerForTest ||
-        new BrailleInputHandler(this.translatorManager_);
+    this.inputHandler_ = new BrailleInputHandler();
 
     /** @private {BrailleKeyEventRewriter} */
     this.keyEventRewriter_ = new BrailleKeyEventRewriter();
@@ -57,13 +42,13 @@ export class BrailleBackground {
   }
 
   static init() {
-    BrailleBackground.instance = new BrailleBackground();
+    if (BrailleBackground.instance) {
+      throw new Error('Cannot create two BrailleBackground instances');
+    }
+    // Must be called before BrailleBackground is constructed.
+    BrailleTranslatorManager.init();
 
-    SettingsManager.addListenerForKey(
-        'brailleTable',
-        brailleTable =>
-            BrailleBackground.instance.getTranslatorManager().refresh(
-                brailleTable));
+    BrailleBackground.instance = new BrailleBackground();
   }
 
   /** @override */
@@ -104,14 +89,6 @@ export class BrailleBackground {
     return this.displayManager_.getDisplayState();
   }
 
-  /**
-   * @return {BrailleTranslatorManager} The translator manager used by this
-   *     instance.
-   */
-  getTranslatorManager() {
-    return this.translatorManager_;
-  }
-
   /** @override */
   panLeft() {
     this.displayManager_.panLeft();
@@ -130,7 +107,7 @@ export class BrailleBackground {
   /** @override */
   async backTranslate(cells) {
     return new Promise(resolve => {
-      this.translatorManager_.getDefaultTranslator().backTranslate(
+      BrailleTranslatorManager.instance.getDefaultTranslator().backTranslate(
           cells, resolve);
     });
   }
