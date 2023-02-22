@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -700,6 +701,18 @@ bool IsFrameInPdfViewer(content::RenderFrameHost* rfh) {
   content::RenderFrameHost* parent_rfh = rfh->GetParent();
   return parent_rfh &&
          IsPdfExtensionOrigin(parent_rfh->GetLastCommittedOrigin());
+}
+
+Browser* FindNormalBrowser(const Profile* profile) {
+  const BrowserList* browser_list = BrowserList::GetInstance();
+  for (auto it = browser_list->begin_browsers_ordered_by_activation();
+       it != browser_list->end_browsers_ordered_by_activation(); ++it) {
+    Browser* browser = *it;
+    if (browser->is_type_normal() && browser->profile() == profile) {
+      return browser;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -2655,27 +2668,49 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
   }
 
   switch (id) {
-    case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
-      OpenURLWithExtraHeaders(params_.link_url, GetDocumentURL(params_),
-                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                              ui::PAGE_TRANSITION_LINK, "" /* extra_headers */,
-                              true /* started_from_context_menu */);
+    case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
+      WindowOpenDisposition new_tab_disposition =
+          WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      Browser* browser = nullptr;
+      if (IsInProgressiveWebApp()) {
+        browser = FindNormalBrowser(GetProfile());
+        new_tab_disposition = browser
+                                  ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                                  : WindowOpenDisposition::NEW_WINDOW;
+      }
+
+      OpenURLParams params = GetOpenURLParamsWithExtraHeaders(
+          params_.link_url, GetDocumentURL(params_), new_tab_disposition,
+          ui::PAGE_TRANSITION_LINK, /*extra_headers=*/std::string(),
+          /*started_from_context_menu=*/true);
+
+      if (browser) {
+        browser->OpenURL(params);
+      } else {
+        source_web_contents_->OpenURL(params);
+      }
       break;
+    }
 
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
+      DCHECK(!IsInProgressiveWebApp());
       OpenURLWithExtraHeaders(params_.link_url, GetDocumentURL(params_),
                               WindowOpenDisposition::NEW_WINDOW,
-                              ui::PAGE_TRANSITION_LINK, "" /* extra_headers */,
-                              true /* started_from_context_menu */);
+                              ui::PAGE_TRANSITION_LINK,
+                              /*extra_headers=*/std::string(),
+                              /*started_from_context_menu=*/true);
       break;
 
     case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
       // Pass along the |referring_url| so we can show it in browser UI. Note
       // that this won't and shouldn't be sent via the referrer header.
+      // Note that PWA app windows are never incognito, we always open an
+      // incognito browser tab.
       OpenURLWithExtraHeaders(params_.link_url, GetDocumentURL(params_),
                               WindowOpenDisposition::OFF_THE_RECORD,
-                              ui::PAGE_TRANSITION_LINK, "" /* extra_headers */,
-                              true /* started_from_context_menu */);
+                              ui::PAGE_TRANSITION_LINK,
+                              /*extra_headers=*/std::string(),
+                              /*started_from_context_menu=*/true);
       base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
                                     OpenLinkAs::kOpenLinkAsIncognitoClicked);
       break;

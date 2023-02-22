@@ -263,15 +263,15 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     return profile_manager->GetProfile(profile_path);
   }
 
-  AppId InstallTestWebApp(const GURL& start_url, bool open_as_window = true) {
+  AppId InstallTestWebApp(const GURL& start_url,
+                          web_app::mojom::UserDisplayMode display_mode =
+                              web_app::mojom::UserDisplayMode::kStandalone) {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url;
     web_app_info->title = u"Test app 🐐";
     web_app_info->description = u"Test description 🐐";
-    web_app_info->user_display_mode =
-        open_as_window ? web_app::mojom::UserDisplayMode::kStandalone
-                       : web_app::mojom::UserDisplayMode::kBrowser;
+    web_app_info->user_display_mode = display_mode;
 
     return web_app::test::InstallWebApp(browser()->profile(),
                                         std::move(web_app_info));
@@ -637,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
                        OpenInAppAbsentForURLsInScopeOfNonWindowedWebApp) {
-  InstallTestWebApp(GURL(kAppUrl1), /*open_as_window=*/false);
+  InstallTestWebApp(GURL(kAppUrl1), web_app::mojom::UserDisplayMode::kBrowser);
 
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeNone(GURL(kAppUrl1), GURL(kAppUrl1));
@@ -956,6 +956,96 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, RealMenu) {
 
   // Verify that it's the correct tab.
   EXPECT_EQ(GURL("about:blank"), tab->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       OpenNewTabInChromeFromWebAppWithAnOpenBrowser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL title1(embedded_test_server()->GetURL("/title1.html"));
+  GURL title2(embedded_test_server()->GetURL("/title2.html"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), title1));
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  EXPECT_EQ(tab_strip_model->count(), 1);
+
+  const AppId app_id = InstallTestWebApp(
+      GURL(kAppUrl1), web_app::mojom::UserDisplayMode::kTabbed);
+
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+  Browser* app_browser = OpenTestWebApp(app_id);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
+
+  TabStripModel* app_tab_strip_model = app_browser->tab_strip_model();
+  EXPECT_EQ(app_tab_strip_model->count(), 1);
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = title2;
+  context_menu_params.page_url = title1;
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(*app_browser->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  EXPECT_EQ(title2, tab->GetLastCommittedURL());
+  EXPECT_EQ(tab_strip_model->count(), 2);
+  EXPECT_EQ(app_tab_strip_model->count(), 1);
+  EXPECT_TRUE(chrome::FindBrowserWithWebContents(tab)->is_type_normal());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       OpenNewTabInChromeFromWebAppWithoutAnOpenBrowser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL title1(embedded_test_server()->GetURL("/title1.html"));
+
+  const AppId app_id = InstallTestWebApp(
+      GURL(kAppUrl1), web_app::mojom::UserDisplayMode::kTabbed);
+  Browser* app_browser = OpenTestWebApp(app_id);
+
+  browser()->tab_strip_model()->CloseWebContentsAt(/*index=*/0,
+                                                   TabCloseTypes::CLOSE_NONE);
+  web_app::CloseAndWait(browser());
+  EXPECT_FALSE(web_app::IsBrowserOpen(browser()));
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
+
+  TabStripModel* app_tab_strip_model = app_browser->tab_strip_model();
+  EXPECT_EQ(app_tab_strip_model->count(), 1);
+
+  // Set up menu with link URL.
+  content::ContextMenuParams context_menu_params;
+  context_menu_params.link_url = title1;
+  context_menu_params.page_url =
+      app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
+
+  // Select "Open Link in New Tab" and wait for the new tab to be added.
+  TestRenderViewContextMenu menu(*app_browser->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetPrimaryMainFrame(),
+                                 context_menu_params);
+  menu.Init();
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+  content::WebContents* tab = add_tab.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(tab));
+
+  EXPECT_EQ(title1, tab->GetLastCommittedURL());
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
+  EXPECT_TRUE(chrome::FindBrowserWithWebContents(tab)->is_type_normal());
+
+  TabStripModel* tab_strip_model =
+      chrome::FindBrowserWithWebContents(tab)->tab_strip_model();
+  EXPECT_EQ(app_tab_strip_model->count(), 1);
+  EXPECT_EQ(tab_strip_model->count(), 1);
 }
 
 // Verify that "Open Link in New Tab" doesn't crash for about:blank.
