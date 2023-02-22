@@ -23,6 +23,7 @@ namespace {
 
 using AuthenticationSurface = AuthMetricsRecorder::AuthenticationSurface;
 using AuthenticationOutcome = AuthMetricsRecorder::AuthenticationOutcome;
+using CryptohomeRecoveryResult = AuthMetricsRecorder::CryptohomeRecoveryResult;
 
 // Histogram for tracking the reason of auth failure
 constexpr char kFailureReasonHistogramName[] = "Login.FailureReason";
@@ -39,6 +40,12 @@ constexpr char kLoginFlowHistogramPrefix[] = "Login.Flow.";
 // "Ash.OSAuth.{Login,Lock}.NbPasswordAttempts.{UntilFailure,UntilSuccess}"
 constexpr char kNbPasswordAttemptsHistogramName[] =
     "Ash.OSAuth.%s.NbPasswordAttempts.%s";
+
+constexpr char kRecoveryResultHistogramName[] =
+    "Login.CryptohomeRecoveryResult";
+
+constexpr char kRecoveryDurationHistogramPrefix[] =
+    "Login.CryptohomeRecoveryDuration.";
 
 // Limit definition of "many users"
 constexpr int kManyUserLimit = 5;
@@ -161,6 +168,15 @@ std::string GetConfiguredAuthFactorsHistogramName(
        GetConfiguredAuthFactorsHistogramSuffix(factor).c_str()});
 }
 
+std::string GetRecoveryOutcomeSuffix(CryptohomeRecoveryResult result) {
+  return result == CryptohomeRecoveryResult::kSucceeded ? "Success" : "Failure";
+}
+
+std::string GetRecoveryDurationHistogramName(CryptohomeRecoveryResult result) {
+  return base::StrCat(
+      {kRecoveryDurationHistogramPrefix, GetRecoveryOutcomeSuffix(result)});
+}
+
 }  // namespace
 
 // static
@@ -266,6 +282,12 @@ void AuthMetricsRecorder::RecordUserAuthFactors(
     base::UmaHistogramBoolean(GetConfiguredAuthFactorsHistogramName(factor),
                               base::Contains(auth_factors, factor));
   }
+}
+
+void AuthMetricsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
+                                         const base::TimeDelta& time) {
+  base::UmaHistogramMediumTimes(GetRecoveryDurationHistogramName(result), time);
+  base::UmaHistogramEnumeration(kRecoveryResultHistogramName, result);
 }
 
 void AuthMetricsRecorder::MaybeUpdateUserLoginType() {

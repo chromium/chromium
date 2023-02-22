@@ -109,6 +109,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Login.CryptohomeRecoveryDuration.{Result}" units="ms"
+    expires_after="2023-08-18">
+  <owner>yunkez@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Records the time taken for the Cryptohome recovery when it {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Failure" summary="failed"/>
+    <variant name="Success" summary="succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Login.CryptohomeRecoveryResult"
+    enum="CryptohomeRecoveryResult" expires_after="2023-08-18">
+  <owner>yunkez@google.com</owner>
+  <owner>cros-lurs@google.com</owner>
+  <summary>
+    Tracks the result of the cryptohome recovery and the failure reason.
+    Recorded when the recovery attempt finished.
+  </summary>
+</histogram>
+
 <histogram name="Login.CustomFlags" enum="LoginCustomFlags"
     expires_after="never">
 <!-- expires-never: monitors 'black screen on login' user experience. -->

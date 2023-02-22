@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -202,6 +203,33 @@ TEST_F(AuthMetricsRecorderTest, RecordUserAuthFactors) {
   // The following factors are recorded with `false`.
   histogram_tester.ExpectBucketCount(
       "Ash.OSAuth.Login.ConfiguredAuthFactors.SmartCard", 0, 1);
+}
+
+TEST_F(AuthMetricsRecorderTest, OnRecoveryDone) {
+  base::HistogramTester histogram_tester;
+
+  auto one_second = base::Seconds(1);
+  recorder_->OnRecoveryDone(
+      AuthMetricsRecorder::CryptohomeRecoveryResult::kSucceeded, one_second);
+  histogram_tester.ExpectBucketCount(
+      "Login.CryptohomeRecoveryResult",
+      static_cast<int>(
+          AuthMetricsRecorder::CryptohomeRecoveryResult::kSucceeded),
+      1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Login.CryptohomeRecoveryDuration.Success", one_second, 1);
+
+  auto two_seconds = base::Seconds(2);
+  recorder_->OnRecoveryDone(
+      AuthMetricsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError,
+      two_seconds);
+  histogram_tester.ExpectBucketCount(
+      "Login.CryptohomeRecoveryResult",
+      static_cast<int>(
+          AuthMetricsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError),
+      1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Login.CryptohomeRecoveryDuration.Failure", two_seconds, 1);
 }
 
 }  // namespace ash

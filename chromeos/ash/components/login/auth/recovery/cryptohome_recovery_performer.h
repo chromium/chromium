@@ -5,7 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_RECOVERY_CRYPTOHOME_RECOVERY_PERFORMER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_RECOVERY_CRYPTOHOME_RECOVERY_PERFORMER_H_
 
+#include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -68,6 +70,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   void OnAuthenticateAuthFactor(
       absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
 
+  // Record the result of the recovery and time taken.
+  void RecordRecoveryResult(
+      AuthMetricsRecorder::CryptohomeRecoveryResult result);
+
   std::unique_ptr<UserContext> user_context_;
   AuthOperationCallback callback_;
 
@@ -77,6 +83,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
   const base::raw_ptr<UserDataAuthClient> user_data_auth_client_;
   CryptohomeRecoveryServiceClient service_client_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Used to record time taken for recovery.
+  std::unique_ptr<base::ElapsedTimer> timer_;
 
   base::WeakPtrFactory<CryptohomeRecoveryPerformer> weak_factory_{this};
 };

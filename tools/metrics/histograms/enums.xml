@@ -23946,6 +23946,21 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="4" label="Failed to read response protobuf"/>
 </enum>
 
+<enum name="CryptohomeRecoveryResult">
+  <summary>
+    The possible results and failure reasons of a Cryptohome recovery attempt.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to fetch OAuth token"/>
+  <int value="2" label="Failed to fetch epoch"/>
+  <int value="3" label="Failed to get recovery request"/>
+  <int value="4" label="Failed to fetch recovery response"/>
+  <int value="5" label="Transient error in recovery response"/>
+  <int value="6" label="Fatal error in recovery response"/>
+  <int value="7" label="Failed to authenticate with recovery factor"/>
+  <int value="8" label="Failed to mount Cryptohome"/>
+</enum>
+
 <enum name="CryptohomeTpmResults">
   <int value="1" label="TPM Success"/>
   <int value="2" label="TPM Error Authentication Fail"/>
