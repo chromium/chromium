@@ -6,11 +6,6 @@ package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffColorFilter;
 import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
@@ -1415,21 +1410,7 @@ public class PersonalDataManager {
             // If the image fetching was unsuccessful, silently return.
             if (bitmap == null) return;
 
-            // Create an empty mutable bitmap and set it in a canvas.
-            Bitmap cardArtImageWithOverlay = Bitmap.createBitmap(
-                    bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(cardArtImageWithOverlay);
-
-            // Create a black paint with 4% opacity.
-            Paint paint = new Paint();
-            paint.setColorFilter(new PorterDuffColorFilter(
-                    Color.argb(/* alpha= */ 10, /* red= */ 0, /* green= */ 0, /* blue= */ 0),
-                    Mode.DARKEN));
-
-            // Add the icon and the 4% overlay.
-            canvas.drawBitmap(
-                    /* bitmap= */ bitmap, /* left= */ 0, /* top= */ 0, /* paint= */ paint);
-            mCreditCardArtImages.put(customImageUrl.getSpec(), cardArtImageWithOverlay);
+            mCreditCardArtImages.put(customImageUrl.getSpec(), bitmap);
         });
         return null;
     }
