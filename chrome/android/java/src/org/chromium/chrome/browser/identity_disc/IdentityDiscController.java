@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.ButtonData;
@@ -390,7 +391,10 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
 
     private void onClick() {
         recordIdentityDiscUsed();
-        if (getSignedInAccountInfo() == null) {
+
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                Profile.getLastUsedRegularProfile());
+        if (getSignedInAccountInfo() == null && !signinManager.isSigninDisabledByPolicy()) {
             SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
                     mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);
         } else {
