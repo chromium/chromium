@@ -36,14 +36,18 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:gravity="center_horizontal"
           android:textAppearance="@style/TextAppearance.Headline"
-          android:text="@string/fast_checkout_home_sheet_title"/>
+          android:text="@string/fast_checkout_home_sheet_title"
+          android:clickable="true"
+          android:focusable="true"/>
 
         <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:gravity="center_horizontal"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-          android:text="@string/fast_checkout_home_sheet_subtitle" />
+          android:text="@string/fast_checkout_home_sheet_subtitle"
+          android:clickable="true"
+          android:focusable="true" />
       </LinearLayout>
 
       <!-- Autofill Options -->
