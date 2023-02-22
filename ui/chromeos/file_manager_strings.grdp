@@ -819,8 +819,8 @@
   <message name="IDS_FILE_BROWSER_QUEUED_LABEL" desc="Queued label.">
     Queued
   </message>
-  <message name="IDS_FILE_BROWSER_IN_PROGRESS_LABEL" desc="In progress label.">
-    In progress
+  <message name="IDS_FILE_BROWSER_IN_PROGRESS_LABEL" desc="Syncing in progress label.">
+    Syncing
   </message>
   <message name="IDS_FILE_BROWSER_DISMISS_LABEL" desc="Dismiss label.">
     Dismiss
