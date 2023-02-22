@@ -2280,6 +2280,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
         owner_document->domWindow()->GetAgent()->IsOriginKeyedForInheritance();
   }
 
+  bool inherited_has_storage_access = false;
   // In some rare cases, we'll re-use a LocalDOMWindow for a new Document. For
   // example, when a script calls window.open("..."), the browser gives
   // JavaScript a window synchronously but kicks off the load in the window
@@ -2305,6 +2306,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
     if (has_storage_access_) {
       frame_->DomWindow()->SetHasStorageAccess();
+      inherited_has_storage_access = true;
     }
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
@@ -2334,6 +2336,10 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     // above.
     DCHECK(did_have_policy_container || WillLoadUrlAsEmpty(Url()));
   }
+  base::UmaHistogramBoolean("API.StorageAccess.DocumentLoadedWithStorageAccess",
+                            frame_->DomWindow()->HasStorageAccess());
+  base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
+                            inherited_has_storage_access);
 
   frame_->DomWindow()->SetPolicyContainer(std::move(policy_container_));
   frame_->DomWindow()->SetContentSecurityPolicy(csp);

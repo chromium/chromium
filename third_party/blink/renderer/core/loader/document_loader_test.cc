@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -585,6 +586,7 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
   params->has_storage_access = true;
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  base::HistogramTester histogram_tester;
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
   EXPECT_TRUE(local_frame->DomWindow()->HasStorageAccess());
@@ -592,6 +594,13 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
   EXPECT_TRUE(local_frame->Loader()
                   .GetDocumentLoader()
                   ->LastNavigationHadTrustedInitiator());
+
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccess.DocumentLoadedWithStorageAccess", /*sample=*/true,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccess.DocumentInheritedStorageAccess", /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(DocumentLoaderTest, CrossOriginNavigation) {
@@ -610,6 +619,7 @@ TEST_P(DocumentLoaderTest, CrossOriginNavigation) {
       SecurityOrigin::Create(other_origin_url));
   LocalFrame* local_frame =
       To<LocalFrame>(web_view_impl->GetPage()->MainFrame());
+  base::HistogramTester histogram_tester;
   local_frame->Loader().CommitNavigation(std::move(params), nullptr);
 
   EXPECT_EQ(BlinkStorageKey::CreateFirstParty(
@@ -619,6 +629,13 @@ TEST_P(DocumentLoaderTest, CrossOriginNavigation) {
   EXPECT_FALSE(local_frame->Loader()
                    .GetDocumentLoader()
                    ->LastNavigationHadTrustedInitiator());
+
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccess.DocumentLoadedWithStorageAccess", /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccess.DocumentInheritedStorageAccess", /*sample=*/false,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(DocumentLoaderTest, StorageKeyFromNavigationParams) {

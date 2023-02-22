@@ -55,6 +55,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="API.StorageAccess.DocumentInheritedStorageAccess"
+    enum="BooleanInherited" expires_after="M124">
+  <owner>cfredric@chromium.org</owner>
+  <owner>johannhof@chromium.org</owner>
+  <summary>
+    Records whether or not a document inherited the `has_storage_access` bit
+    from the previous document.
+
+    Recorded once at document commit, for every document.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.DocumentLoadedWithStorageAccess"
+    enum="Boolean" expires_after="M124">
+  <owner>cfredric@chromium.org</owner>
+  <owner>johannhof@chromium.org</owner>
+  <summary>
+    Records whether or not a document was loaded with the `has_storage_access`
+    bit set to true.
+
+    Recorded once at document commit, for every document.
+  </summary>
+</histogram>
+
 <histogram name="API.StorageAccess.GrantIsImplicit" enum="BooleanAvailable"
     expires_after="2023-03-12">
   <owner>mkwst@chromium.org</owner>

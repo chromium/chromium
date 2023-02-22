@@ -12619,6 +12619,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Foreground"/>
 </enum>
 
+<enum name="BooleanInherited">
+  <int value="0" label="Not inherited"/>
+  <int value="1" label="Inherited"/>
+</enum>
+
 <enum name="BooleanInScope">
   <int value="0" label="Not in scope"/>
   <int value="1" label="In scope"/>
