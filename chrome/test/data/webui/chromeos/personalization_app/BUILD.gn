@@ -33,6 +33,7 @@ ts_library("build_ts") {
     "google_photos_collection_element_test.ts",
     "google_photos_photos_by_album_id_element_test.ts",
     "google_photos_photos_element_test.ts",
+    "google_photos_shared_album_dialog_element_test.ts",
     "keyboard_backlight_element_test.ts",
     "local_images_element_test.ts",
     "personalization_app_controller_test.ts",

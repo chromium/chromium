@@ -1,0 +1,37 @@
+<style>
+  #dailyRefreshDialog::part(dialog) {
+    min-width: 288px;
+    width: 288px;
+  }
+
+  /* TODO(b/268566678) use existing cr-button.primary styles */
+  #accept {
+    background-color: var(--cros-button-background-color-primary);
+    border: 0;
+    --text-color: var(--cros-button-label-color-primary);
+  }
+
+  #accept:hover {
+    background-color: var(--cros-button-background-color-primary-hover-preblended);
+  }
+
+  #accept:active {
+    box-shadow: 0 1px 2px rgba(66, 133, 244, 0.3), 0 1px 3px rgba(66, 133, 244, 0.15);
+  }
+
+  cr-button + cr-button {
+    margin-inline-start: 8px;
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="title">$i18n{googlePhotosSharedAlbumDialogTitle}</div>
+  <div slot="body">$i18n{googlePhotosSharedAlbumDialogContent}</div>
+  <div slot="button-container">
+    <cr-button id="close" on-click="onClickClose_">
+      <span>$i18n{googlePhotosSharedAlbumDialogCloseButton}</span>
+    </cr-button>
+    <cr-button id="accept" on-click="onClickAccept_">
+      <span>$i18n{googlePhotosSharedAlbumDialogAcceptButton}</span>
+    </cr-button>
+  </div>
+</cr-dialog>

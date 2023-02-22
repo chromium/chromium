@@ -75,6 +75,10 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
  ['WallpaperObserverTest', 'wallpaper_observer_test.js'],
  ['WallpaperPreviewTest', 'wallpaper_preview_element_test.js'],
  ['WallpaperSelectedTest', 'wallpaper_selected_element_test.js'],
+ [
+   'GooglePhotosSharedAlbumDialogTest',
+   'google_photos_shared_album_dialog_element_test.js'
+ ],
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, caseName) {

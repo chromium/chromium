@@ -70,6 +70,7 @@ build_webui("build") {
     "js/wallpaper/google_photos_collection_element.ts",
     "js/wallpaper/google_photos_photos_by_album_id_element.ts",
     "js/wallpaper/google_photos_photos_element.ts",
+    "js/wallpaper/google_photos_shared_album_dialog_element.ts",
     "js/wallpaper/google_photos_zero_state_element.ts",
     "js/wallpaper/info_svg_element.ts",
     "js/wallpaper/local_images_element.ts",

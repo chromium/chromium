@@ -14,6 +14,7 @@ import '../../common/icons.html.js';
 import '../../css/wallpaper.css.js';
 import '../../css/cros_button_style.css.js';
 import './info_svg_element.js';
+import './google_photos_shared_album_dialog_element.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
@@ -408,7 +409,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
     this.shouldShowDailyRefreshConfirmationDialog_ = false;
   }
 
-  private onClickProceed_() {
+  private onAcceptDailyRefreshDialog_() {
     this.enableGooglePhotosAlbumDailyRefresh_();
     this.closeDailyRefreshConfirmationDialog_();
   }

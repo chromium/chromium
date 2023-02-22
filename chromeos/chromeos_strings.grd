@@ -2247,6 +2247,18 @@
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUM_SHARED" desc="Secondary text for Google Photos shared albums in the wallpaper app.">
           Shared
         </message>
+        <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_SHARED_ALBUM_DIALOG_TITLE" desc="Title for the dialog warning about daily refresh from shared Google Photos albums.">
+          Shared albums can be updated by other users
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_SHARED_ALBUM_DIALOG_CONTENT" desc="Content for the dialog warning about daily refresh from shared Google Photos albums.">
+          Photos in shared albums can be updated by other users. Change daily might show wallpapers not currently in the album.
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_SHARED_ALBUM_DIALOG_CLOSE_BUTTON" desc="Label for the button to close the dialog warning about daily refresh from shared Google Photos albums.">
+          Cancel
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_SHARED_ALBUM_DIALOG_ACCEPT_BUTTON" desc="Label for the button to accept the dialog warning about daily refresh from shared Google Photos albums.">
+          Proceed
+        </message>
         <message name="IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB" desc="Label for the Albums tab in the Google Photos page in the wallpaper app.">
           Albums
         </message>

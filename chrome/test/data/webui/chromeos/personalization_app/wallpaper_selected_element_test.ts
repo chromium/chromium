@@ -7,7 +7,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {CurrentWallpaper, DailyRefreshType, Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {CurrentWallpaper, DailyRefreshType, GooglePhotosSharedAlbumDialog, Paths, WallpaperLayout, WallpaperSelected, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,17 +16,29 @@ import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
-const dailyRefreshDialogId = 'dailyRefreshDialog';
 const descriptionOptionsId = 'descriptionOptions';
 const descriptionDialogId = 'descriptionDialog';
+const dailyRefreshButtonId = 'dailyRefresh';
 
 suite('WallpaperSelectedTest', function() {
   let wallpaperSelectedElement: WallpaperSelected|null;
   let wallpaperProvider: TestWallpaperProvider;
   let personalizationStore: TestPersonalizationStore;
 
-  async function clickButtonById(id: string) {
-    const button = wallpaperSelectedElement!.shadowRoot!.getElementById(id);
+  async function clickDailyRefreshButton() {
+    const button = wallpaperSelectedElement!.shadowRoot!.getElementById(
+        dailyRefreshButtonId);
+    button!.click();
+    await waitAfterNextRender(wallpaperSelectedElement!);
+  }
+
+  async function clickSharedAlbumsDialogButton(id: string) {
+    const dialog = wallpaperSelectedElement!.shadowRoot!
+                       .querySelector<GooglePhotosSharedAlbumDialog>(
+                           GooglePhotosSharedAlbumDialog.is);
+    assertNotEquals(null, dialog, 'dialog element must exist to click button');
+    const button = dialog!.shadowRoot!.getElementById(id);
+    assertNotEquals(null, button, `button with id ${id} must exist`);
     button!.click();
     await waitAfterNextRender(wallpaperSelectedElement!);
   }
@@ -208,8 +220,8 @@ suite('WallpaperSelectedTest', function() {
         initElement(WallpaperSelected, {'path': Paths.COLLECTION_IMAGES});
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const dailyRefresh =
-        wallpaperSelectedElement.shadowRoot!.getElementById('dailyRefresh');
+    const dailyRefresh = wallpaperSelectedElement.shadowRoot!.getElementById(
+        dailyRefreshButtonId);
     assertTrue(!!dailyRefresh);
 
     const refreshWallpaper =
@@ -231,7 +243,8 @@ suite('WallpaperSelectedTest', function() {
         await waitAfterNextRender(wallpaperSelectedElement);
 
         const dailyRefresh =
-            wallpaperSelectedElement.shadowRoot!.getElementById('dailyRefresh');
+            wallpaperSelectedElement.shadowRoot!.getElementById(
+                dailyRefreshButtonId);
         assertTrue(!!dailyRefresh);
 
         const refreshWallpaper =
@@ -369,12 +382,13 @@ suite('WallpaperSelectedTest', function() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
 
-        await clickButtonById('dailyRefresh');
+        await clickDailyRefreshButton();
 
-        const confirmationDialog =
-            wallpaperSelectedElement.shadowRoot!.getElementById(
-                dailyRefreshDialogId);
-        assertFalse(confirmationDialog!.hidden);
+        assertNotEquals(
+            null,
+            wallpaperSelectedElement.shadowRoot!.querySelector(
+                GooglePhotosSharedAlbumDialog.is),
+            'dialog element exists');
       });
 
   test(
@@ -399,16 +413,18 @@ suite('WallpaperSelectedTest', function() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
 
-        await clickButtonById('dailyRefresh');
+        await clickDailyRefreshButton();
 
-        await clickButtonById('dialogCancelButton');
+        await clickSharedAlbumsDialogButton('close');
 
-        const confirmationDialog =
-            wallpaperSelectedElement.shadowRoot!.getElementById(
-                dailyRefreshDialogId);
-        assertFalse(!!confirmationDialog);
         assertEquals(
-            0, wallpaperProvider.getCallCount('selectGooglePhotosAlbum'));
+            null,
+            wallpaperSelectedElement.shadowRoot!.querySelector(
+                GooglePhotosSharedAlbumDialog.is),
+            'cancel button click closes dialog');
+        assertEquals(
+            0, wallpaperProvider.getCallCount('selectGooglePhotosAlbum'),
+            'no requests to select album');
       });
 
   test(
@@ -433,14 +449,15 @@ suite('WallpaperSelectedTest', function() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
 
-        await clickButtonById('dailyRefresh');
+        await clickDailyRefreshButton();
 
-        await clickButtonById('dialogProceedButton');
+        await clickSharedAlbumsDialogButton('accept');
 
-        const confirmationDialog =
-            wallpaperSelectedElement.shadowRoot!.getElementById(
-                dailyRefreshDialogId);
-        assertFalse(!!confirmationDialog);
+        assertEquals(
+            null,
+            wallpaperSelectedElement.shadowRoot!.querySelector(
+                GooglePhotosSharedAlbumDialog.is),
+            'proceed button closes dialog');
         assertEquals(
             album_id,
             await wallpaperProvider.whenCalled('selectGooglePhotosAlbum'));
@@ -472,41 +489,13 @@ suite('WallpaperSelectedTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    await clickButtonById('dailyRefresh');
+    await clickDailyRefreshButton();
 
-    // There should be no confirmation dialog.
-    const confirmationDialog =
-        wallpaperSelectedElement.shadowRoot!.getElementById(
-            dailyRefreshDialogId);
-    assertFalse(!!confirmationDialog);
-  });
-
-  test('does not show confirmation dialog when experiment is off', async () => {
-    loadTimeData.overrideValues({isGooglePhotosSharedAlbumsEnabled: false});
-    personalizationStore.data.wallpaper.currentSelected = {
-      attribution: ['testing attribution'],
-      description: undefined,
-      key: 'key',
-      layout: WallpaperLayout.kStretch,
-      type: WallpaperType.kDefault,
-    };
-    personalizationStore.data.wallpaper.loading.selected = false;
-    const album_id = 'test_album_id';
-
-    wallpaperSelectedElement = initElement(WallpaperSelected, {
-      path: Paths.GOOGLE_PHOTOS_COLLECTION,
-      googlePhotosAlbumId: album_id,
-      isGooglePhotosAlbumShared: false,
-    });
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(wallpaperSelectedElement);
-
-    await clickButtonById('dailyRefresh');
-
-    const confirmationDialog =
-        wallpaperSelectedElement.shadowRoot!.getElementById(
-            dailyRefreshDialogId);
-    assertFalse(!!confirmationDialog);
+    assertEquals(
+        null,
+        wallpaperSelectedElement.shadowRoot!.querySelector(
+            GooglePhotosSharedAlbumDialog.is),
+        'no dialog for turning off daily refresh');
   });
 
   test(
@@ -531,12 +520,13 @@ suite('WallpaperSelectedTest', function() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
 
-        await clickButtonById('dailyRefresh');
+        await clickDailyRefreshButton();
 
-        const confirmationDialog =
-            wallpaperSelectedElement.shadowRoot!.getElementById(
-                dailyRefreshDialogId);
-        assertFalse(!!confirmationDialog);
+        assertEquals(
+            null,
+            wallpaperSelectedElement.shadowRoot!.querySelector(
+                GooglePhotosSharedAlbumDialog.is),
+            'no dialog because album is not shared');
       });
 
   test('shows description options when wallpaper has description', async () => {
