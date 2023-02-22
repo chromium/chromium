@@ -32,7 +32,7 @@ namespace android {
 class ThumbnailLayer;
 
 // A native component of the Java TabContentManager class.
-class TabContentManager : public ThumbnailCacheObserver {
+class TabContentManager : public thumbnail::ThumbnailCacheObserver {
  public:
   static TabContentManager* FromJavaObject(
       const base::android::JavaRef<jobject>& jobj);
@@ -108,7 +108,7 @@ class TabContentManager : public ThumbnailCacheObserver {
   jint GetPendingReadbacksForTesting(JNIEnv* env);
 
   // ThumbnailCacheObserver implementation;
-  void OnFinishedThumbnailRead(TabId tab_id) override;
+  void OnFinishedThumbnailRead(thumbnail::TabId tab_id) override;
 
  private:
   class TabReadbackRequest;
@@ -136,7 +136,7 @@ class TabContentManager : public ThumbnailCacheObserver {
       bool result,
       const SkBitmap& bitmap);
 
-  std::unique_ptr<ThumbnailCache> thumbnail_cache_;
+  std::unique_ptr<thumbnail::ThumbnailCache> thumbnail_cache_;
   ThumbnailLayerMap static_layer_cache_;
   LayerMap live_layer_list_;
   TabReadbackRequestMap pending_tab_readbacks_;

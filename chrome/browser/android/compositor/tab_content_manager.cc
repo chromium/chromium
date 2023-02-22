@@ -130,7 +130,7 @@ TabContentManager::TabContentManager(JNIEnv* env,
                                      jboolean save_jpeg_thumbnails,
                                      jdouble jpeg_aspect_ratio)
     : weak_java_tab_content_manager_(env, obj) {
-  thumbnail_cache_ = std::make_unique<ThumbnailCache>(
+  thumbnail_cache_ = std::make_unique<thumbnail::ThumbnailCache>(
       static_cast<size_t>(default_cache_size),
       static_cast<size_t>(approximation_cache_size),
       static_cast<size_t>(compression_queue_max_size),
@@ -159,10 +159,16 @@ scoped_refptr<ThumbnailLayer> TabContentManager::GetStaticLayer(int tab_id) {
   return static_layer_cache_[tab_id];
 }
 
+// TODO(crbug.com/1402843): ThumbnailCache::PruneCache() shouldn't cause issues
+// with `static_layer_cache_` as Thumbnails referenced by this cache may already
+// expire even without eager pruning. Investigate whether entries in
+// `static_layer_cache_` can and should be removed when their thumbnail is
+// dropped from the ThumbnailCache.
 scoped_refptr<ThumbnailLayer> TabContentManager::GetOrCreateStaticLayer(
     int tab_id,
     bool force_disk_read) {
-  Thumbnail* thumbnail = thumbnail_cache_->Get(tab_id, force_disk_read, true);
+  thumbnail::Thumbnail* thumbnail =
+      thumbnail_cache_->Get(tab_id, force_disk_read, true);
   scoped_refptr<ThumbnailLayer> static_layer = static_layer_cache_[tab_id];
 
   if (!thumbnail || !thumbnail->ui_resource_id()) {

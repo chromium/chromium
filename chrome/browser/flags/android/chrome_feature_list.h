@@ -166,7 +166,6 @@ BASE_DECLARE_FEATURE(kTabStripRedesign);
 BASE_DECLARE_FEATURE(kTabToGTSAnimation);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
-BASE_DECLARE_FEATURE(kThumbnailCacheRefactor);
 BASE_DECLARE_FEATURE(kToolbarMicIphAndroid);
 BASE_DECLARE_FEATURE(kToolbarScrollAblationAndroid);
 BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);

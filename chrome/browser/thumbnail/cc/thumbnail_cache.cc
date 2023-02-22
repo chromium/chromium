@@ -4,24 +4,30 @@
 
 #include "chrome/browser/thumbnail/cc/thumbnail_cache.h"
 
+#include <algorithm>
 #include <cmath>
 #include <utility>
+#include <vector>
 
 #include "base/android/application_status_listener.h"
 #include "base/android/path_utils.h"
 #include "base/big_endian.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/thumbnail/cc/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -39,16 +45,19 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
+namespace thumbnail {
 namespace {
 
-const float kApproximationScaleFactor = 4.f;
-const base::TimeDelta kDefaultCaptureMinRequestTimeMs(base::Milliseconds(1000));
+constexpr float kApproximationScaleFactor = 4.f;
+constexpr base::TimeDelta kDefaultCaptureMinRequestTimeMs(
+    base::Milliseconds(1000));
 
-const int kCompressedKey = 0xABABABAB;
-const int kCurrentExtraVersion = 1;
+constexpr int kKiB = 1024;
+constexpr int kCompressedKey = 0xABABABAB;
+constexpr int kCurrentExtraVersion = 1;
 
 // Indicates whether we prefer to have more free CPU memory over GPU memory.
-const bool kPreferCPUMemory = true;
+constexpr bool kPreferCPUMemory = true;
 
 unsigned int NextPowerOfTwo(int a) {
   DCHECK(a >= 0);
@@ -139,6 +148,15 @@ size_t ETC1RowBytes(int width) {
   return width / 2;
 }
 
+// Borrowed from GetDelayForNextMemoryLog() in browser_metrics.cc.
+//
+// A Poisson distributed delay with a mean of `mean_time` for computing time
+// delta between recording memory metrics.
+base::TimeDelta ComputeDelay(base::TimeDelta mean_time) {
+  double uniform = base::RandDouble();
+  return -std::log(1 - uniform) * mean_time;
+}
+
 }  // anonymous namespace
 
 ThumbnailCache::ThumbnailCache(size_t default_cache_size,
@@ -165,6 +183,7 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
   memory_pressure_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&ThumbnailCache::OnMemoryPressure,
                                      base::Unretained(this)));
+  ScheduleRecordCacheMetrics(base::Minutes(1));
 }
 
 ThumbnailCache::~ThumbnailCache() {
@@ -337,6 +356,7 @@ void ThumbnailCache::UpdateVisibleIds(const TabIdList& priority,
   }
 
   if (!needs_update) {
+    PruneCache();
     return;
   }
 
@@ -356,6 +376,31 @@ void ThumbnailCache::UpdateVisibleIds(const TabIdList& priority,
   }
 
   ReadNextThumbnail();
+
+  PruneCache();
+}
+
+void ThumbnailCache::PruneCache() {
+  if (!base::FeatureList::IsEnabled(kThumbnailCacheRefactor)) {
+    return;
+  }
+  // Intentionally ignore `primary_tab_id_` as it should have a live layer. If
+  // that isn't true or may be slow the caller should include it in
+  // `visible_ids_`.
+  base::flat_set<TabId> ids_to_keep(
+      std::vector<TabId>(visible_ids_.begin(), visible_ids_.end()));
+  std::vector<TabId> ids_to_remove;
+
+  // Only prune `cache_` as `approximation_cache_` is already disabled if this
+  // codepath is called.
+  for (const auto& entry : cache_) {
+    if (!base::Contains(ids_to_keep, entry.first)) {
+      ids_to_remove.push_back(entry.first);
+    }
+  }
+  for (TabId id : ids_to_remove) {
+    cache_.Remove(id);
+  }
 }
 
 void ThumbnailCache::ForkToSaveAsJpeg(
@@ -390,6 +435,37 @@ void ThumbnailCache::DecompressThumbnailFromFile(
   file_sequenced_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ThumbnailCache::ReadTask, true, tab_id,
                                 std::move(decompress_task)));
+}
+
+void ThumbnailCache::ScheduleRecordCacheMetrics(base::TimeDelta mean_delay) {
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ThumbnailCache::RecordCacheMetrics,
+                     weak_factory_.GetWeakPtr()),
+      ComputeDelay(mean_delay));
+}
+
+void ThumbnailCache::RecordCacheMetrics() {
+  base::UmaHistogramCounts100("Android.ThumbnailCache.InMemoryCacheEntries",
+                              cache_.size());
+  base::UmaHistogramMemoryKB("Android.ThumbnailCache.InMemoryCacheSize",
+                             ComputeCacheSize(cache_) / kKiB);
+  base::UmaHistogramCounts100(
+      "Android.ThumbnailCache.InMemoryApproximationCacheEntries",
+      approximation_cache_.size());
+  base::UmaHistogramMemoryKB(
+      "Android.ThumbnailCache.InMemoryApproximationCacheSize",
+      ComputeCacheSize(approximation_cache_) / kKiB);
+  ScheduleRecordCacheMetrics(base::Minutes(5));
+}
+
+// static
+size_t ThumbnailCache::ComputeCacheSize(ExpiringThumbnailCache& cache) {
+  return std::accumulate(
+      cache.begin(), cache.end(), 0U,
+      [](size_t acc, const std::pair<TabId, Thumbnail*>& it) {
+        return acc + it.second->size_in_bytes();
+      });
 }
 
 void ThumbnailCache::RemoveFromDisk(TabId tab_id) {
@@ -1092,3 +1168,5 @@ void ThumbnailCache::OnMemoryPressure(
     approximation_cache_.Clear();
   }
 }
+
+}  // namespace thumbnail

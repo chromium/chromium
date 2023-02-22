@@ -24,6 +24,7 @@
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/share/share_features.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/thumbnail/cc/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/video_tutorials/switches.h"
 #include "chrome/common/chrome_features.h"
@@ -302,7 +303,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabToGTSAnimation,
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
-    &kThumbnailCacheRefactor,
     &kToolbarMicIphAndroid,
     &kToolbarScrollAblationAndroid,
     &kTrustedWebActivityPostMessage,
@@ -392,6 +392,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncEnableHistoryDataType,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
+    &thumbnail::kThumbnailCacheRefactor,
     &video_tutorials::features::kVideoTutorials,
     &webapps::features::kInstallableAmbientBadgeInfoBar,
     &webapps::features::kInstallableAmbientBadgeMessage,
@@ -993,10 +994,6 @@ BASE_FEATURE(kTestDefaultDisabled,
 BASE_FEATURE(kTestDefaultEnabled,
              "TestDefaultEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kThumbnailCacheRefactor,
-             "ThumbnailCacheRefactor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarMicIphAndroid,
              "ToolbarMicIphAndroid",

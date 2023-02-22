@@ -17,6 +17,7 @@
 
 #define MAX_CACHE_SIZE 5u
 
+namespace thumbnail {
 namespace {
 
 unsigned int GenerateValue(unsigned int key) {
@@ -75,8 +76,9 @@ TEST_F(ScopedPtrExpiringCacheTest, SimplePutAndGet) {
   // Test Get as membership test.
   cached_count = 0;
   for (unsigned int i = 0; i < MAX_CACHE_SIZE + 1; i++) {
-    if (cache.Get(i))
+    if (cache.Get(i)) {
       cached_count++;
+    }
   }
   EXPECT_EQ(MAX_CACHE_SIZE, cached_count);
 
@@ -169,3 +171,5 @@ TEST_F(ScopedPtrExpiringCacheTest, Iterator) {
     key_iter++;
   }
 }
+
+}  // namespace thumbnail

@@ -12,7 +12,10 @@ group("thumbnail") {
   public_deps = [ "//chrome/browser/thumbnail/generator" ]
 
   if (is_android) {
-    public_deps += [ "//chrome/browser/thumbnail/cc" ]
+    public_deps += [
+      "//chrome/browser/thumbnail/cc",
+      "//chrome/browser/thumbnail/cc:features",
+    ]
   }
 }
 

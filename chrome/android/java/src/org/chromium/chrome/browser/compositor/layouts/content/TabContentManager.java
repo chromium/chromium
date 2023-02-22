@@ -88,9 +88,13 @@ public class TabContentManager {
     private final Set<Integer> mRefectchedTabIds = new HashSet<>();
 
     private float mThumbnailScale;
+    /**
+     * The limit on the number of fullsized or ETC1 compressed thumbnails in the in-memory cache.
+     * If in future there is a need for more bitmaps to be visible on the screen at once this value
+     * can be increased.
+     */
     private int mFullResThumbnailsMaxSize;
     private final ContentOffsetProvider mContentOffsetProvider;
-    private int[] mPriorityTabIds;
     private long mNativeTabContentManager;
 
     private final ArrayList<ThumbnailChangeListener> mListeners =
@@ -175,8 +179,6 @@ public class TabContentManager {
             }
         }
         mThumbnailScale = thumbnailScale;
-
-        mPriorityTabIds = new int[mFullResThumbnailsMaxSize];
     }
 
     /**
@@ -574,21 +576,21 @@ public class TabContentManager {
 
     /**
      * Update the priority-ordered list of visible tabs.
-     * @param priority The list of tab ids ordered in terms of priority.
+     * @param priority The list of tab ids to load cached thumbnails for. Only the first
+     *                 {@link mFullResThumbnailsMaxSize} thumbnails will be loaded.
+     * @param primaryTabId The id of the current tab this is not loaded under the assumption it will
+     *                     have a live layer. If this is not the case it should be the first tab in
+     *                     the priority list.
      */
     public void updateVisibleIds(List<Integer> priority, int primaryTabId) {
         if (mNativeTabContentManager != 0) {
             int idsSize = min(mFullResThumbnailsMaxSize, priority.size());
-
-            if (idsSize != mPriorityTabIds.length) {
-                mPriorityTabIds = new int[idsSize];
-            }
-
+            int[] priorityIds = new int[idsSize];
             for (int i = 0; i < idsSize; i++) {
-                mPriorityTabIds[i] = priority.get(i);
+                priorityIds[i] = priority.get(i);
             }
             TabContentManagerJni.get().updateVisibleIds(
-                    mNativeTabContentManager, mPriorityTabIds, primaryTabId);
+                    mNativeTabContentManager, priorityIds, primaryTabId);
         }
     }
 

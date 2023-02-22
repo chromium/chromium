@@ -393,7 +393,7 @@ public abstract class Layout {
      * is no primary screen-filling tab.
      */
     protected void updateCacheVisibleIds(List<Integer> visible) {
-        if (mTabContentManager != null) mTabContentManager.updateVisibleIds(visible, -1);
+        updateCacheVisibleIdsAndPrimary(visible, Tab.INVALID_TAB_ID);
     }
 
     /**

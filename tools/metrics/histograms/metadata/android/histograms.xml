@@ -3712,6 +3712,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.ThumbnailCache.InMemoryApproximationCacheEntries"
+    units="thumbnails" expires_after="2023-09-25">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>dtrainor@chromium.com</owner>
+  <summary>
+    Records the number of entries for the in-memory approximation bitmap
+    thumbnail cache. Recorded on a Poisson distributed frequency with a mean of
+    5 minutes starting 1 minute after TabContentManager native initialization.
+  </summary>
+</histogram>
+
+<histogram name="Android.ThumbnailCache.InMemoryApproximationCacheSize"
+    units="KiB" expires_after="2023-09-25">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>dtrainor@chromium.com</owner>
+  <summary>
+    Records the in-memory approximation bitmap thumbnail cache size in KiB.
+    Recorded on a Poisson distributed frequency with a mean of 5 minutes
+    starting 1 minute after TabContentManager native initialization. Note that
+    this memory may be distributed across the GPU process and Browser process.
+  </summary>
+</histogram>
+
+<histogram name="Android.ThumbnailCache.InMemoryCacheEntries"
+    units="thumbnails" expires_after="2023-09-25">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>dtrainor@chromium.com</owner>
+  <summary>
+    Records the number of entries for the in-memory ETC1 and bitmap thumbnail
+    cache. Recorded on a Poisson distributed frequency with a mean of 5 minutes
+    starting 1 minute after TabContentManager native initialization.
+  </summary>
+</histogram>
+
+<histogram name="Android.ThumbnailCache.InMemoryCacheSize" units="KiB"
+    expires_after="2023-09-25">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>dtrainor@chromium.com</owner>
+  <summary>
+    Records the in-memory ETC1 and bitmap thumbnail cache size in KiB. Recorded
+    on a Poisson distributed frequency with a mean of 5 minutes starting 1
+    minute after TabContentManager native initialization. Note that this memory
+    may be distributed across the GPU process and Browser process.
+  </summary>
+</histogram>
+
 <histogram name="Android.ThumbnailDiskStorage.CachedBitmap.Found"
     enum="BooleanFound" expires_after="2020-01-30">
   <owner>shaktisahu@chromium.org</owner>
