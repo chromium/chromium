@@ -35,6 +35,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
@@ -205,9 +206,12 @@ public class FastCheckoutIntegrationTest {
         verify(mMockBridge, never()).onOptionsSelected(any(), any());
     }
 
+    @DisabledTest(message = "Disabled because it's flaky. "
+                    + "Investigation will be tracked in crbug.com/1418362.")
     @Test
     @MediumTest
-    public void testDismissedIfUnableToShow() throws Exception {
+    public void
+    testDismissedIfUnableToShow() throws Exception {
         BottomSheetContent otherBottomSheetContent = runOnUiThreadBlocking(() -> {
             TextView highPriorityBottomSheetContentView =
                     new TextView(mActivityTestRule.getActivity());
