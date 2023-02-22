@@ -27,6 +27,20 @@
 
 namespace cc::slim {
 
+LayerTreeImpl::PresentationCallbackInfo::PresentationCallbackInfo(
+    uint32_t frame_token,
+    std::vector<PresentationCallback> presentation_callbacks,
+    std::vector<SuccessfulCallback> success_callbacks)
+    : frame_token(frame_token),
+      presentation_callbacks(std::move(presentation_callbacks)),
+      success_callbacks(std::move(success_callbacks)) {}
+LayerTreeImpl::PresentationCallbackInfo::~PresentationCallbackInfo() = default;
+LayerTreeImpl::PresentationCallbackInfo::PresentationCallbackInfo(
+    PresentationCallbackInfo&&) = default;
+LayerTreeImpl::PresentationCallbackInfo&
+LayerTreeImpl::PresentationCallbackInfo::operator=(PresentationCallbackInfo&&) =
+    default;
+
 LayerTreeImpl::LayerTreeImpl(LayerTreeClient* client) : client_(client) {}
 
 LayerTreeImpl::~LayerTreeImpl() = default;
@@ -76,12 +90,12 @@ bool LayerTreeImpl::IsVisible() const {
 
 void LayerTreeImpl::RequestPresentationTimeForNextFrame(
     PresentationCallback callback) {
-  // TODO(crbug.com/1408128): Implement.
+  presentation_callback_for_next_frame_.emplace_back(std::move(callback));
 }
 
 void LayerTreeImpl::RequestSuccessfulPresentationTimeForNextFrame(
     SuccessfulCallback callback) {
-  // TODO(crbug.com/1408128): Implement.
+  success_callback_for_next_frame_.emplace_back(std::move(callback));
 }
 
 void LayerTreeImpl::set_display_transform_hint(gfx::OverlayTransform hint) {
@@ -214,7 +228,32 @@ void LayerTreeImpl::DidSubmitCompositorFrame() {
 void LayerTreeImpl::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
-  // TODO(crbug.com/1408128): Implement.
+  const bool success = !details.presentation_feedback.failed();
+  for (auto itr = pending_presentation_callbacks_.begin();
+       itr != pending_presentation_callbacks_.end();) {
+    if (viz::FrameTokenGT(itr->frame_token, frame_token)) {
+      break;
+    }
+    for (auto& callback : itr->presentation_callbacks) {
+      std::move(callback).Run(details.presentation_feedback);
+    }
+    itr->presentation_callbacks.clear();
+
+    // Only run `success_callbacks` if successful.
+    if (success) {
+      for (auto& callback : itr->success_callbacks) {
+        std::move(callback).Run(details.presentation_feedback.timestamp);
+      }
+      itr->success_callbacks.clear();
+    }
+    // Keep the entry of `success_callbacks` is not empty, meaning this frame
+    // wasn't successful, so that it can run on a subsequent successful frame.
+    if (itr->success_callbacks.empty()) {
+      itr = pending_presentation_callbacks_.erase(itr);
+    } else {
+      itr++;
+    }
+  }
 }
 
 void LayerTreeImpl::DidLoseLayerTreeFrameSink() {
@@ -345,6 +384,14 @@ void LayerTreeImpl::GenerateCompositorFrame(
         out_resource_ids.insert(resource_id);
       }
     }
+  }
+
+  if (!presentation_callback_for_next_frame_.empty() ||
+      !success_callback_for_next_frame_.empty()) {
+    pending_presentation_callbacks_.emplace_back(
+        out_frame.metadata.frame_token,
+        std::move(presentation_callback_for_next_frame_),
+        std::move(success_callback_for_next_frame_));
   }
 }
 

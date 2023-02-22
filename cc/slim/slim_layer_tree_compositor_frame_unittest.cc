@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -26,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/presentation_feedback.h"
 
 namespace cc::slim {
 
@@ -71,7 +73,9 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
         BEGINFRAME_FROM_HERE,
         /*source_id=*/1, ++sequence_id_, frame_time, frame_time + interval,
         interval, viz::BeginFrameArgs::NORMAL);
-    frame_sink_->OnBeginFrame(begin_frame_args, {}, /*frame_ack=*/false, {});
+    frame_sink_->OnBeginFrame(begin_frame_args, std::move(next_timing_details_),
+                              /*frame_ack=*/false, {});
+    next_timing_details_.clear();
     viz::CompositorFrame frame = frame_sink_->TakeLastFrame();
     frame_sink_->DidReceiveCompositorFrameAck({});
     return frame;
@@ -86,6 +90,19 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
     return solid_color_layer;
   }
 
+  void SetNextFrameTimingDetailsMap(viz::FrameTimingDetailsMap timing_map) {
+    next_timing_details_ = std::move(timing_map);
+  }
+
+  viz::FrameTimingDetails BuildFrameTimingDetails(uint32_t flags = 0) {
+    viz::FrameTimingDetails details;
+    base::TimeTicks timestamp = base::TimeTicks::Now();
+    base::TimeDelta interval = base::Milliseconds(16.6);
+    gfx::PresentationFeedback feedback(timestamp, interval, flags);
+    details.presentation_feedback = feedback;
+    return details;
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestLayerTreeClient client_;
@@ -93,6 +110,7 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
   base::WeakPtr<TestFrameSinkImpl> frame_sink_;
 
   uint64_t sequence_id_ = 0;
+  viz::FrameTimingDetailsMap next_timing_details_;
 
   gfx::Rect viewport_;
   viz::LocalSurfaceId local_surface_id_;
@@ -306,6 +324,169 @@ TEST_F(SlimLayerTreeCompositorFrameTest, AxisAlignedClip) {
     // Clip is in target space.
     EXPECT_EQ(quad->shared_quad_state->clip_rect.value(),
               gfx::Rect(5, 5, 10, 20));
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, PresentationCallback) {
+  auto solid_color_layer =
+      CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(solid_color_layer);
+
+  absl::optional<gfx::PresentationFeedback> feedback_opt_1;
+  absl::optional<gfx::PresentationFeedback> feedback_opt_2;
+  layer_tree_->RequestPresentationTimeForNextFrame(base::BindLambdaForTesting(
+      [&](const gfx::PresentationFeedback& feedback) {
+        feedback_opt_1 = feedback;
+      }));
+  layer_tree_->RequestPresentationTimeForNextFrame(base::BindLambdaForTesting(
+      [&](const gfx::PresentationFeedback& feedback) {
+        feedback_opt_2 = feedback;
+      }));
+  viz::CompositorFrame frame1 = ProduceFrame();
+
+  viz::FrameTimingDetailsMap timing_map;
+  viz::FrameTimingDetails details = BuildFrameTimingDetails();
+  timing_map[frame1.metadata.frame_token] = details;
+  SetNextFrameTimingDetailsMap(std::move(timing_map));
+  viz::CompositorFrame frame2 = ProduceFrame();
+
+  ASSERT_TRUE(feedback_opt_1);
+  ASSERT_TRUE(feedback_opt_2);
+  EXPECT_EQ(feedback_opt_1.value(), details.presentation_feedback);
+  EXPECT_EQ(feedback_opt_2.value(), details.presentation_feedback);
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, PresentationCallbackMissedFrame) {
+  auto solid_color_layer =
+      CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(solid_color_layer);
+
+  absl::optional<gfx::PresentationFeedback> feedback_opt_1;
+  layer_tree_->RequestPresentationTimeForNextFrame(base::BindLambdaForTesting(
+      [&](const gfx::PresentationFeedback& feedback) {
+        feedback_opt_1 = feedback;
+      }));
+  viz::CompositorFrame frame1 = ProduceFrame();
+
+  absl::optional<gfx::PresentationFeedback> feedback_opt_2;
+  layer_tree_->RequestPresentationTimeForNextFrame(base::BindLambdaForTesting(
+      [&](const gfx::PresentationFeedback& feedback) {
+        feedback_opt_2 = feedback;
+      }));
+  viz::CompositorFrame frame2 = ProduceFrame();
+  viz::CompositorFrame frame3 = ProduceFrame();
+  EXPECT_FALSE(feedback_opt_1);
+  EXPECT_FALSE(feedback_opt_2);
+
+  {
+    // Ack frame 1 which should only run the first callback.
+    viz::FrameTimingDetailsMap timing_map;
+    viz::FrameTimingDetails details = BuildFrameTimingDetails();
+    timing_map[frame1.metadata.frame_token] = details;
+    SetNextFrameTimingDetailsMap(std::move(timing_map));
+    viz::CompositorFrame frame4 = ProduceFrame();
+
+    EXPECT_TRUE(feedback_opt_1);
+    EXPECT_EQ(feedback_opt_1.value(), details.presentation_feedback);
+    EXPECT_FALSE(feedback_opt_2);
+  }
+
+  {
+    // Ack frame 3, skipping frame 2, which should only run the second callback.
+    viz::FrameTimingDetailsMap timing_map;
+    viz::FrameTimingDetails details = BuildFrameTimingDetails();
+    timing_map[frame3.metadata.frame_token] = details;
+    SetNextFrameTimingDetailsMap(std::move(timing_map));
+    viz::CompositorFrame frame4 = ProduceFrame();
+
+    ASSERT_TRUE(feedback_opt_2);
+    EXPECT_EQ(feedback_opt_2.value(), details.presentation_feedback);
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, SuccessPresentationCallback) {
+  auto solid_color_layer =
+      CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(solid_color_layer);
+
+  absl::optional<base::TimeTicks> feedback_time_opt_1;
+  absl::optional<base::TimeTicks> feedback_time_opt_2;
+  layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindLambdaForTesting(
+          [&](base::TimeTicks timeticks) { feedback_time_opt_1 = timeticks; }));
+  layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindLambdaForTesting(
+          [&](base::TimeTicks timeticks) { feedback_time_opt_2 = timeticks; }));
+  viz::CompositorFrame frame1 = ProduceFrame();
+
+  viz::FrameTimingDetailsMap timing_map;
+  viz::FrameTimingDetails details = BuildFrameTimingDetails();
+  timing_map[frame1.metadata.frame_token] = details;
+  SetNextFrameTimingDetailsMap(std::move(timing_map));
+  viz::CompositorFrame frame2 = ProduceFrame();
+
+  ASSERT_TRUE(feedback_time_opt_1);
+  ASSERT_TRUE(feedback_time_opt_2);
+  EXPECT_EQ(feedback_time_opt_1.value(),
+            details.presentation_feedback.timestamp);
+  EXPECT_EQ(feedback_time_opt_2.value(),
+            details.presentation_feedback.timestamp);
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest,
+       SuccessPresentationCallbackNotCalledForFailedFrame) {
+  auto solid_color_layer =
+      CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
+  layer_tree_->SetRoot(solid_color_layer);
+
+  absl::optional<base::TimeTicks> feedback_time_opt_1;
+  layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindLambdaForTesting(
+          [&](base::TimeTicks timeticks) { feedback_time_opt_1 = timeticks; }));
+  viz::CompositorFrame frame1 = ProduceFrame();
+  viz::CompositorFrame frame2 = ProduceFrame();
+
+  absl::optional<base::TimeTicks> feedback_time_opt_2;
+  layer_tree_->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindLambdaForTesting(
+          [&](base::TimeTicks timeticks) { feedback_time_opt_2 = timeticks; }));
+  viz::CompositorFrame frame3 = ProduceFrame();
+
+  // Frame 1 failed. Should not run either callback.
+  {
+    viz::FrameTimingDetailsMap timing_map;
+    viz::FrameTimingDetails details =
+        BuildFrameTimingDetails(gfx::PresentationFeedback::kFailure);
+    timing_map[frame1.metadata.frame_token] = details;
+    SetNextFrameTimingDetailsMap(std::move(timing_map));
+    viz::CompositorFrame frame4 = ProduceFrame();
+    EXPECT_FALSE(feedback_time_opt_1);
+    EXPECT_FALSE(feedback_time_opt_2);
+  }
+
+  // Successful feedback for frame 2. Should run callback 1 but not 2.
+  {
+    viz::FrameTimingDetailsMap timing_map;
+    viz::FrameTimingDetails details = BuildFrameTimingDetails();
+    timing_map[frame2.metadata.frame_token] = details;
+    SetNextFrameTimingDetailsMap(std::move(timing_map));
+    viz::CompositorFrame frame5 = ProduceFrame();
+    ASSERT_TRUE(feedback_time_opt_1);
+    EXPECT_EQ(feedback_time_opt_1.value(),
+              details.presentation_feedback.timestamp);
+    ASSERT_FALSE(feedback_time_opt_2);
+  }
+
+  // Successful feedback for frame 3. Should run 2.
+  {
+    viz::FrameTimingDetailsMap timing_map;
+    viz::FrameTimingDetails details = BuildFrameTimingDetails();
+    timing_map[frame3.metadata.frame_token] = details;
+    SetNextFrameTimingDetailsMap(std::move(timing_map));
+    viz::CompositorFrame frame5 = ProduceFrame();
+    ASSERT_TRUE(feedback_time_opt_2);
+    EXPECT_EQ(feedback_time_opt_2.value(),
+              details.presentation_feedback.timestamp);
   }
 }
 

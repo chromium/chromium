@@ -225,6 +225,9 @@ void FrameSinkImpl::OnBeginFrame(
     }
   }
 
+  // Note order here is expected to be in order w.r.t viz::FrameTokenGT. This
+  // mostly holds because `FrameTimingDetailsMap` is a flat_map which is sorted.
+  // However this doesn't hold when frame token wraps.
   for (const auto& pair : timing_details) {
     client_->DidPresentCompositorFrame(pair.first, pair.second);
   }
