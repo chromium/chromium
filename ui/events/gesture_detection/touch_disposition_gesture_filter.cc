@@ -163,8 +163,13 @@ TouchDispositionGestureFilter::OnGesturePacket(
   if (packet.gesture_source() == GestureEventDataPacket::TOUCH_SEQUENCE_START)
     sequences_.push(GestureSequence());
 
-  if (IsEmpty())
+  if (IsEmpty()) {
+    if (packet.gesture_source() ==
+        GestureEventDataPacket::TOUCH_SEQUENCE_CANCEL) {
+      return EMPTY_GESTURE_SEQUENCE;
+    }
     return INVALID_PACKET_ORDER;
+  }
 
   if (packet.gesture_source() == GestureEventDataPacket::TOUCH_TIMEOUT &&
       Tail().empty()) {

@@ -11,6 +11,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/motion_event_test_utils.h"
+#include "ui/events/types/event_type.h"
 
 using ui::test::MockMotionEvent;
 
@@ -311,6 +312,15 @@ TEST_F(TouchDispositionGestureFilterTest, BasicNoGestures) {
   SendTouchConsumedAck(touch_move_event_id);
   SendTouchConsumedAck(touch_release_event_id);
   EXPECT_FALSE(GesturesSent());
+}
+
+// On some platforms we can get a cancel per touch point. This should result
+// in an empty sequence. https://crbug.com/1407442
+TEST_F(TouchDispositionGestureFilterTest, ExtraCancel) {
+  GestureEventDataPacket packet = GestureEventDataPacket::FromTouch(
+      MockMotionEvent(MotionEvent::Action::CANCEL, base::TimeTicks(), 0, 0));
+  EXPECT_EQ(TouchDispositionGestureFilter::PacketResult::EMPTY_GESTURE_SEQUENCE,
+            SendGesturePacket(packet));
 }
 
 TEST_F(TouchDispositionGestureFilterTest, BasicGestures) {
