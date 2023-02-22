@@ -372,8 +372,12 @@ void WebFrameSerializerImpl::OpenTagToString(Element* element,
   // Do post action for open tag.
   String added_contents = PostActionAfterSerializeOpenTag(element, param);
   // Complete the open tag for element when it has child/children.
-  if (element->HasChildren() || param->have_added_contents_before_end)
+  if (element->HasChildren() || param->have_added_contents_before_end ||
+      (element->AuthorShadowRoot() &&
+       RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled() &&
+       RuntimeEnabledFeatures::SaveAsWithDeclarativeShadowDOMEnabled())) {
     result.Append('>');
+  }
   // Append the added contents generate in  post action of open tag.
   result.Append(added_contents);
   // Save the result to data buffer.
@@ -390,7 +394,10 @@ void WebFrameSerializerImpl::EndTagToString(Element* element,
   if (need_skip)
     return;
   // Write end tag when element has child/children.
-  if (element->HasChildren() || param->have_added_contents_before_end) {
+  if (element->HasChildren() || param->have_added_contents_before_end ||
+      (element->AuthorShadowRoot() &&
+       RuntimeEnabledFeatures::StreamingDeclarativeShadowDOMEnabled() &&
+       RuntimeEnabledFeatures::SaveAsWithDeclarativeShadowDOMEnabled())) {
     result.Append("</");
     result.Append(element->nodeName().DeprecatedLower());
     result.Append('>');

@@ -219,6 +219,11 @@ TEST_F(WebFrameSerializerTest, ShadowDOM) {
 <script>
 host5.attachShadow({mode: 'open'}).innerHTML = '<div>hello world</div>';
 </script>
+<div id="host6"><template shadowrootmode="open"><div>hello world</div></template></div>
+<script>
+host6.attachShadow({mode: 'open'}).innerHTML = '<div>hello world</div>';
+</script>
+<div id="host7"><template shadowrootmode="open"></template></div>
 </body></html>)HTML";
   String actual_html =
       SerializeFile("http://www.test.com", "shadowdom.html", true);
