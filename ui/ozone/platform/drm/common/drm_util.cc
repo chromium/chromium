@@ -744,12 +744,12 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
 }
 
 bool IsAtomic(const DrmWrapper& drm) {
-  uint64_t atomic_cap;
+  uint64_t atomic_cap = 0;
   return drm.GetCapability(DRM_CLIENT_CAP_ATOMIC, &atomic_cap) && atomic_cap;
 }
 
 bool IsAddfb2ModifierCapable(const DrmWrapper& drm) {
-  uint64_t addfb2_mod_cap;
+  uint64_t addfb2_mod_cap = 0;
   return drm.GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &addfb2_mod_cap) &&
          addfb2_mod_cap;
 }
