@@ -54,6 +54,9 @@ BASE_FEATURE(kTrackerTestFeatureQux,
 BASE_FEATURE(kTrackerTestFeatureSnooze,
              "test_snooze",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTrackerTestGroupOne,
+             "test_group_one",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 void RegisterFeatureConfig(EditableConfiguration* configuration,
                            const base::Feature& feature,
@@ -65,12 +68,23 @@ void RegisterFeatureConfig(EditableConfiguration* configuration,
   config.used.name = feature.name + std::string("_used");
   config.trigger.name = feature.name + std::string("_trigger");
   config.trigger.storage = 1u;
+  config.groups = {"test_group_one"};
   config.tracking_only = tracking_only;
   if (snooze_params) {
     config.snooze_params.snooze_interval = 7u;
     config.snooze_params.max_limit = 3u;
   }
   configuration->SetConfiguration(&feature, config);
+}
+
+void RegisterGroupConfig(EditableConfiguration* configuration,
+                         const base::Feature& group,
+                         bool valid) {
+  GroupConfig config;
+  config.valid = valid;
+  config.trigger.name = group.name + std::string("_trigger");
+  config.trigger.storage = 1u;
+  configuration->SetConfiguration(&group, config);
 }
 
 // An OnInitializedCallback that stores whether it has been invoked and what
@@ -252,6 +266,8 @@ class TrackerImplTest : public ::testing::Test {
     RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureSnooze,
                           true /* is_valid */, false /* tracking_only */,
                           true /* snooze_params */);
+    RegisterGroupConfig(configuration.get(), kTrackerTestGroupOne,
+                        true /* is_valid */);
 
     std::unique_ptr<TestTrackerInMemoryEventStore> event_store =
         CreateEventStore();
@@ -281,9 +297,8 @@ class TrackerImplTest : public ::testing::Test {
         std::move(condition_validator), std::move(time_provider));
   }
 
-  void VerifyEventTriggerEvents(const base::Feature& feature, uint32_t count) {
-    Event trigger_event = event_store_->GetEvent(
-        configuration_->GetFeatureConfig(feature).trigger.name);
+  void VerifyEventTrigger(std::string event_name, uint32_t count) {
+    Event trigger_event = event_store_->GetEvent(event_name);
     if (count == 0) {
       EXPECT_EQ(0, trigger_event.events_size());
       return;
@@ -292,6 +307,17 @@ class TrackerImplTest : public ::testing::Test {
     EXPECT_EQ(1, trigger_event.events_size());
     EXPECT_EQ(1u, trigger_event.events(0).day());
     EXPECT_EQ(count, trigger_event.events(0).count());
+  }
+
+  void VerifyEventTriggerEvents(const base::Feature& feature, uint32_t count) {
+    VerifyEventTrigger(configuration_->GetFeatureConfig(feature).trigger.name,
+                       count);
+  }
+
+  void VerifyGroupEventTriggerEvents(const base::Feature& group,
+                                     uint32_t count) {
+    VerifyEventTrigger(configuration_->GetGroupConfig(group).trigger.name,
+                       count);
   }
 
   void VerifyHistogramsForFeature(const std::string& histogram_name,
@@ -750,10 +776,13 @@ TEST_F(TrackerImplTest, TestTriggering) {
   // The first time a feature triggers it should be shown.
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   VerifyUserActionsTriggerChecks(user_action_tester, 2, 0, 0, 1);
   VerifyUserActionsTriggered(user_action_tester, 1, 0, 0, 0);
   VerifyUserActionsNotTriggered(user_action_tester, 1, 0, 0, 1);
@@ -766,8 +795,10 @@ TEST_F(TrackerImplTest, TestTriggering) {
   // shown.
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
   VerifyEventTriggerEvents(kTrackerTestFeatureBar, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   VerifyUserActionsTriggerChecks(user_action_tester, 2, 1, 0, 2);
   VerifyUserActionsTriggered(user_action_tester, 1, 0, 0, 0);
   VerifyUserActionsNotTriggered(user_action_tester, 1, 1, 0, 2);
@@ -780,10 +811,13 @@ TEST_F(TrackerImplTest, TestTriggering) {
   tracker_->Dismissed(kTrackerTestFeatureFoo);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 1u);
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
   VerifyEventTriggerEvents(kTrackerTestFeatureBar, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   VerifyUserActionsTriggerChecks(user_action_tester, 3, 2, 0, 3);
   VerifyUserActionsTriggered(user_action_tester, 1, 1, 0, 0);
   VerifyUserActionsNotTriggered(user_action_tester, 2, 1, 0, 3);
@@ -796,10 +830,13 @@ TEST_F(TrackerImplTest, TestTriggering) {
   tracker_->Dismissed(kTrackerTestFeatureBar);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   VerifyEventTriggerEvents(kTrackerTestFeatureFoo, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
   VerifyEventTriggerEvents(kTrackerTestFeatureBar, 1u);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureQux));
   VerifyEventTriggerEvents(kTrackerTestFeatureQux, 0);
+  VerifyGroupEventTriggerEvents(kTrackerTestGroupOne, 2u);
   VerifyUserActionsTriggerChecks(user_action_tester, 4, 3, 0, 4);
   VerifyUserActionsTriggered(user_action_tester, 1, 1, 0, 0);
   VerifyUserActionsNotTriggered(user_action_tester, 3, 2, 0, 4);

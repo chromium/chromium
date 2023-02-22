@@ -203,6 +203,12 @@ TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
     DCHECK_NE("", feature_config.trigger.name);
     event_model_->IncrementEvent(feature_config.trigger.name,
                                  time_provider_->GetCurrentDay());
+
+    for (auto group : feature_config.groups) {
+      GroupConfig group_config = configuration_->GetGroupConfigByName(group);
+      event_model_->IncrementEvent(group_config.trigger.name,
+                                   time_provider_->GetCurrentDay());
+    }
   }
 
   stats::RecordShouldTriggerHelpUI(feature, feature_config, result);
