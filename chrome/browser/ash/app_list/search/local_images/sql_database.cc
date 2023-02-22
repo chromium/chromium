@@ -71,8 +71,11 @@ bool SqlDatabase::Initialize() {
   if (meta_table_->GetVersionNumber() == kUninitializedDbVersionNumber) {
     const int new_version_number = create_table_schema_.Run(this);
     DCHECK_GT(new_version_number, 1);
-    meta_table_->SetVersionNumber(new_version_number);
-    meta_table_->SetCompatibleVersionNumber(new_version_number);
+    // TODO(crbug.com/1414092): Set the version numbers atomically with the
+    // schema within a transaction and check the return values instead of
+    // ignoring them.
+    std::ignore = meta_table_->SetVersionNumber(new_version_number);
+    std::ignore = meta_table_->SetCompatibleVersionNumber(new_version_number);
     return true;
   }
 
