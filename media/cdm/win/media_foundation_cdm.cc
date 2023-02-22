@@ -225,6 +225,9 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
     input_trust_authorities_.clear();
     last_key_ids_.clear();
 
+    // `CdmEvent::kHardwareContextReset` will be reported in
+    // `hardware_context_reset_cb_` below.
+
     // Must be the last call because `this` could be destructed when running
     // the callback. We are not certain because `this` is ref-counted.
     hardware_context_reset_cb_.Run();
@@ -234,8 +237,8 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
     cdm_event_cb_.Run(CdmEvent::kSignificantPlayback, S_OK);
   }
 
-  void OnPlaybackError(HRESULT hresult) override {
-    cdm_event_cb_.Run(CdmEvent::kPlaybackError, hresult);
+  void OnPlaybackError(HRESULT hr) override {
+    cdm_event_cb_.Run(CdmEvent::kPlaybackError, hr);
   }
 
  private:
@@ -318,16 +321,19 @@ MediaFoundationCdm::~MediaFoundationCdm() {
 }
 
 HRESULT MediaFoundationCdm::Initialize() {
-  HRESULT hresult = E_FAIL;
+  HRESULT hr = E_FAIL;
   ComPtr<IMFContentDecryptionModule> mf_cdm;
-  create_mf_cdm_cb_.Run(hresult, mf_cdm);
+  create_mf_cdm_cb_.Run(hr, mf_cdm);
   if (!mf_cdm) {
-    DCHECK(FAILED(hresult));
-    // Only report CdmEvent::kCdmError here as this is where most failures
-    // happen, and other errors can be easily triggered by sites, e.g. a bad
-    // server certificate or a bad license.
-    OnCdmEvent(CdmEvent::kCdmError, hresult);
-    return hresult;
+    DCHECK(FAILED(hr));
+
+    if (hr == DRM_E_TEE_INVALID_HWDRM_STATE) {
+      OnCdmEvent(CdmEvent::kHardwareContextReset, hr);
+    } else {
+      OnCdmEvent(CdmEvent::kCdmError, hr);
+    }
+
+    return hr;
   }
 
   mf_cdm_.Swap(mf_cdm);
@@ -659,6 +665,8 @@ void MediaFoundationCdm::CloseSessionInternal(
 void MediaFoundationCdm::OnHardwareContextReset() {
   DVLOG_FUNC(1);
 
+  OnCdmEvent(CdmEvent::kHardwareContextReset, DRM_E_TEE_INVALID_HWDRM_STATE);
+
   // Collect all the session IDs to avoid iterating the map while we delete
   // entries in the map (in `CloseSession()`).
   std::vector<std::string> session_ids;
@@ -683,9 +691,9 @@ void MediaFoundationCdm::OnHardwareContextReset() {
   }
 }
 
-void MediaFoundationCdm::OnCdmEvent(CdmEvent event, HRESULT hresult) {
-  DVLOG_FUNC(1);
-  cdm_event_cb_.Run(event, hresult);
+void MediaFoundationCdm::OnCdmEvent(CdmEvent event, HRESULT hr) {
+  DVLOG_FUNC(1) << "event=" << static_cast<int>(event) << ": " << PrintHr(hr);
+  cdm_event_cb_.Run(event, hr);
 }
 
 void MediaFoundationCdm::OnIsTypeSupportedResult(

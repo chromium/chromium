@@ -30,6 +30,8 @@ struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
         return media::mojom::CdmEvent::kPlaybackError;
       case ::media::CdmEvent::kCdmError:
         return media::mojom::CdmEvent::kCdmError;
+      case ::media::CdmEvent::kHardwareContextReset:
+        return media::mojom::CdmEvent::kHardwareContextReset;
     }
 
     NOTREACHED();
@@ -49,6 +51,9 @@ struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
         return true;
       case media::mojom::CdmEvent::kCdmError:
         *output = ::media::CdmEvent::kCdmError;
+        return true;
+      case media::mojom::CdmEvent::kHardwareContextReset:
+        *output = ::media::CdmEvent::kHardwareContextReset;
         return true;
     }
 

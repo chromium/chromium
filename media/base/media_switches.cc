@@ -879,6 +879,12 @@ const base::FeatureParam<int> kHardwareSecureDecryptionFallbackMinDisablingDays{
 const base::FeatureParam<int> kHardwareSecureDecryptionFallbackMaxDisablingDays{
     &kHardwareSecureDecryptionFallback, "max_disabling_days", 180};
 
+// Whether selected HardwareContextReset events should be considered as failures
+// in the hardware secure decryption fallback logic.
+const base::FeatureParam<bool>
+    kHardwareSecureDecryptionFallbackOnHardwareContextReset{
+        &kHardwareSecureDecryptionFallback, "on_hardware_context_reset", true};
+
 BASE_FEATURE(kWakeLockOptimisationHiddenMuted,
              "kWakeLockOptimisationHiddenMuted",
              base::FEATURE_ENABLED_BY_DEFAULT);

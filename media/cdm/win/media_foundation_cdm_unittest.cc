@@ -338,6 +338,8 @@ TEST_F(MediaFoundationCdmTest,
   COM_EXPECT_CALL(mf_cdm_,
                   CreateSession(MF_MEDIAKEYSESSION_TYPE_TEMPORARY, _, _))
       .WillOnce(Return(DRM_E_TEE_INVALID_HWDRM_STATE));
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kHardwareContextReset,
+                                 DRM_E_TEE_INVALID_HWDRM_STATE));
   EXPECT_CALL(cdm_client_,
               OnSessionClosed(StartsWith("DUMMY_"),
                               CdmSessionClosedReason::kHardwareContextReset));
@@ -388,6 +390,8 @@ TEST_F(MediaFoundationCdmTest,
   COM_EXPECT_CALL(mf_cdm_session_,
                   GenerateRequest(StrEq(L"webm"), NotNull(), init_data.size()))
       .WillOnce(Return(DRM_E_TEE_INVALID_HWDRM_STATE));
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kHardwareContextReset,
+                                 DRM_E_TEE_INVALID_HWDRM_STATE));
   EXPECT_CALL(cdm_client_,
               OnSessionClosed(StartsWith("DUMMY_"),
                               CdmSessionClosedReason::kHardwareContextReset));
@@ -510,6 +514,8 @@ TEST_F(MediaFoundationCdmTest, UpdateSession_HardwareContextReset) {
   EXPECT_CALL(cdm_client_,
               OnSessionClosed(kSessionId,
                               CdmSessionClosedReason::kHardwareContextReset));
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kHardwareContextReset,
+                                 DRM_E_TEE_INVALID_HWDRM_STATE));
 
   cdm_->UpdateSession(
       session_id_, response,
@@ -589,6 +595,8 @@ TEST_F(MediaFoundationCdmTest, RemoveSession_HardwareContextReset) {
   EXPECT_CALL(cdm_client_,
               OnSessionClosed(kSessionId,
                               CdmSessionClosedReason::kHardwareContextReset));
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kHardwareContextReset,
+                                 DRM_E_TEE_INVALID_HWDRM_STATE));
 
   cdm_->RemoveSession(
       session_id_, std::make_unique<MockCdmPromise>(/*expect_success=*/true));
@@ -608,6 +616,8 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset) {
   EXPECT_CALL(cdm_client_,
               OnSessionClosed(kSessionId,
                               CdmSessionClosedReason::kHardwareContextReset));
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kHardwareContextReset,
+                                 DRM_E_TEE_INVALID_HWDRM_STATE));
   mf_cdm_proxy_->OnHardwareContextReset();
 
   // Create a new session and expect success.
@@ -631,6 +641,8 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
   EXPECT_CALL(cdm_client_,
               OnSessionClosed(kSessionId,
                               CdmSessionClosedReason::kHardwareContextReset));
+  EXPECT_CALL(cdm_event_cb_, Run(CdmEvent::kHardwareContextReset,
+                                 DRM_E_TEE_INVALID_HWDRM_STATE));
   mf_cdm_proxy_->OnHardwareContextReset();
 
   std::vector<uint8_t> init_data = StringToVector("init_data");

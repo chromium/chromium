@@ -54,6 +54,10 @@ class MediaFoundationServiceMonitor final
   // MediaFoundationCdm.
   void OnSignificantPlayback();
   void OnPlaybackOrCdmError(HRESULT hr);
+  void OnUnexpectedHardwareContextReset();
+
+  // Whether there was any recent power or display change.
+  bool HasRecentPowerOrDisplayChange() const;
 
  private:
   // Make constructor/destructor private since this is a singleton.
