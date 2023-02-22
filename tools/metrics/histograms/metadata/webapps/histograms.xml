@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AppIdentityDialog.AlreadyApproved"
-    enum="AppIdentityDisplayMetric" expires_after="2023-01-15">
+    enum="AppIdentityDisplayMetric" expires_after="2024-01-15">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -193,7 +193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AppIdentityDialog.NotShowing"
-    enum="AppIdentityDisplayMetric" expires_after="2023-08-08">
+    enum="AppIdentityDisplayMetric" expires_after="2024-01-15">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AppIdentityDialog.Showing"
-    enum="AppIdentityDisplayMetric" expires_after="2023-08-08">
+    enum="AppIdentityDisplayMetric" expires_after="2024-01-15">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -697,7 +697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Install.SyncFallbackInstallInitiated"
-    enum="WebAppInstallResultCode" expires_after="M110">
+    enum="WebAppInstallResultCode" expires_after="2024-01-15">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1262,7 +1262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Uninstall.NonSyncIncompleteCount"
-    units="Partially uninstalled webapps" expires_after="2023-01-15">
+    units="Partially uninstalled webapps" expires_after="2024-01-15">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
