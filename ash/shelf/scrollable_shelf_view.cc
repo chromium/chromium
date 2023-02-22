@@ -1824,6 +1824,17 @@ ScrollableShelfView::CalculateTappableIconIndices(
   DCHECK_LT(first_visible_view_index, visible_views_indices.size());
   DCHECK_LT(last_visible_view_index, visible_views_indices.size());
 
+  // Ensure that each visible view index is within the bounds of
+  // `visible_views_indices`.
+  // TODO(b/268401797): Rewrite CalculateTappableIconIndices() as a more
+  // thorough fix for out of bound indices.
+  first_visible_view_index =
+      base::clamp(first_visible_view_index, static_cast<size_t>(0),
+                  visible_views_indices.size() - 1);
+  last_visible_view_index =
+      base::clamp(last_visible_view_index, first_visible_view_index,
+                  visible_views_indices.size() - 1);
+
   return {visible_views_indices[first_visible_view_index],
           visible_views_indices[last_visible_view_index]};
 }
