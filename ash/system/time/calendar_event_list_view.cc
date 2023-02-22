@@ -190,8 +190,8 @@ CalendarEventListView::~CalendarEventListView() = default;
 void CalendarEventListView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto color =
-      features::IsCalendarJellyEnabled()
-          ? GetColorProvider()->GetColor((cros_tokens::kCrosSysSystemOnBase))
+      features::IsCalendarJellyEnabled() && features::IsJellyEnabled()
+          ? GetColorProvider()->GetColor((cros_tokens::kCrosSysSurfaceVariant))
           : GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque);
   SetBackground(views::CreateSolidBackground(color));
 }
