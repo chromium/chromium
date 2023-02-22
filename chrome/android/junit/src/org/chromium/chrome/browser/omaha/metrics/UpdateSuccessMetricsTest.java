@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.omaha.metrics;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.argThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.media.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 
 import android.app.Notification;

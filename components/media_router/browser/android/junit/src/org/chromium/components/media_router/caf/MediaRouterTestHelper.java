@@ -4,7 +4,7 @@
 
 package org.chromium.components.media_router.caf;
 
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 

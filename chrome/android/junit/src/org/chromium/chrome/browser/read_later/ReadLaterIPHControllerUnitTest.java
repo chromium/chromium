@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.read_later;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 

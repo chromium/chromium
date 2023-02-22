@@ -5,7 +5,7 @@
 package org.chromium.components.policy;
 
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;

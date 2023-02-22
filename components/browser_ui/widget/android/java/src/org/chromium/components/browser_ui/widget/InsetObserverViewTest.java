@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.widget;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;

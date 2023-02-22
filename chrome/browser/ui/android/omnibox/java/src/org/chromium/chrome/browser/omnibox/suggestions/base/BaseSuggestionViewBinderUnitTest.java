@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;

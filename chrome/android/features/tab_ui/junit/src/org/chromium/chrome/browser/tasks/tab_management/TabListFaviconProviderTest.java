@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

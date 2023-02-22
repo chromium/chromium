@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Bitmap;

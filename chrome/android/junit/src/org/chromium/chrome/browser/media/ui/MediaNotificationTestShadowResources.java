@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.media.ui;
 
-import static org.mockito.Mockito.anyInt;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 

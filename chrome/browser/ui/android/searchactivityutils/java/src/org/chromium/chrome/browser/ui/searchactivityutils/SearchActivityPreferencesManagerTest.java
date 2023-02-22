@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.ui.searchactivityutils;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
-import static org.mockito.Mockito.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.basic;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 

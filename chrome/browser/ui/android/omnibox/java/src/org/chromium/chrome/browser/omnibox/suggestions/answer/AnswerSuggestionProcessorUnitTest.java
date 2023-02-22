@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
