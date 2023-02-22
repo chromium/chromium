@@ -1611,6 +1611,7 @@ void RasterImplementation::ReadbackImagePixels(
     GLuint dst_row_bytes,
     int src_x,
     int src_y,
+    int plane_index,
     void* dst_pixels) {
   TRACE_EVENT0("gpu", "RasterImplementation::ReadbackImagePixels");
   ReadbackImagePixelsINTERNAL(source_mailbox, dst_info, dst_row_bytes, src_x,

@@ -478,6 +478,7 @@ void RasterImplementationGLES::ReadbackImagePixels(
     GLuint dst_row_bytes,
     int src_x,
     int src_y,
+    int plane_index,
     void* dst_pixels) {
   NOTREACHED();
 }

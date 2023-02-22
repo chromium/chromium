@@ -150,6 +150,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                            GLuint dst_row_bytes,
                            int src_x,
                            int src_y,
+                           int plane_index,
                            void* dst_pixels) override;
 
   // Raster via GrContext.

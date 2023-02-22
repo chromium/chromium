@@ -149,7 +149,7 @@ class LayerTreeHostReadbackPixelTest
         size.width(), size.height(), color_space.ToSkColorSpace()));
 
     ri->ReadbackImagePixels(mailbox, bitmap.info(), bitmap.rowBytes(), 0, 0,
-                            bitmap.getPixels());
+                            /*plane_index=*/0, bitmap.getPixels());
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
 
     return bitmap;
