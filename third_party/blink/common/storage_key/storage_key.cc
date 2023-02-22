@@ -767,11 +767,11 @@ const absl::optional<net::CookiePartitionKey> StorageKey::ToCookiePartitionKey()
 
 bool StorageKey::MatchesOriginForTrustedStorageDeletion(
     const url::Origin& origin) const {
-  if (!IsThirdPartyStoragePartitioningEnabled())
-    return origin_ == origin;
   // TODO(crbug.com/1382138): Address wss:// and https:// resulting in different
   // SchemefulSites.
-  return (ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kSameSite)
+  // TODO(crbug.com/1410196): Test that StorageKeys corresponding to anonymous
+  // iframes are handled appropriately here.
+  return IsFirstPartyContext()
              ? (origin_ == origin)
              : (top_level_site_ == net::SchemefulSite(origin));
 }

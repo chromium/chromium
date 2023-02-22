@@ -202,18 +202,20 @@ class BLINK_COMMON_EXPORT StorageKey {
   // Returns true if ThirdPartyStoragePartitioning feature flag is enabled.
   static bool IsThirdPartyStoragePartitioningEnabled();
 
+  // `IsFirstPartyContext` returns true if the StorageKey is for a context that
+  // is "first-party", i.e. the StorageKey's top-level site and origin have
+  // the same scheme and domain, and all intervening frames in the frame tree
+  // are first-party.
+  //
   // `IsThirdPartyContext` returns true if the StorageKey is for a context that
   // is "third-party", i.e. the StorageKey's top-level site and origin have
   // different schemes and/or domains, or an intervening frame in the frame
-  // tree is third-party.
-  //
-  // `IsThirdPartyContext` returns true if the StorageKey was created with a
-  // nonce or has an AncestorChainBit value of kCrossSite.
-  bool IsThirdPartyContext() const {
-    return ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kCrossSite ||
-           net::SchemefulSite(origin_) != top_level_site_;
+  // tree is third-party. StorageKeys created using a nonce instead of a
+  // top-level site will also be considered third-party.
+  bool IsFirstPartyContext() const {
+    return ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kSameSite;
   }
-  bool IsFirstPartyContext() const { return !IsThirdPartyContext(); }
+  bool IsThirdPartyContext() const { return !IsFirstPartyContext(); }
 
   // Provides a concise string representation suitable for memory dumps.
   // Limits the length to `max_length` chars and strips special characters.
