@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 
-const openedFilesContainer = document.getElementById(
-  "opened-files-container"
-);
-
 const makeFileViewer = async (launchFile) => {
   const readHandle = await launchFile.getFile();
 
@@ -40,6 +36,9 @@ var launchFinishedPromise = new Promise(resolve => {
         return;
       }
 
+      const openedFilesContainer = document.getElementById(
+        "opened-files-container"
+      );
       for (const launchFile of launchParams.files) {
         const editor = await makeFileViewer(launchFile);
         openedFilesContainer.appendChild(editor);
