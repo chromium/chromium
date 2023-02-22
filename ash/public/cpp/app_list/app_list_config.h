@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_CONFIG_H_
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_CONFIG_H_
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/no_destructor.h"
@@ -184,11 +185,13 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int app_title_max_line_height() const { return app_title_max_line_height_; }
   const gfx::FontList& app_title_font() const { return app_title_font_; }
   int folder_bubble_radius() const { return folder_bubble_radius_; }
-  int folder_icon_dimension() const { return folder_icon_dimension_; }
-  int folder_unclipped_icon_dimension() const {
-    return folder_unclipped_icon_dimension_;
-  }
+  int icon_visible_dimension() const { return icon_visible_dimension_; }
+  int unclipped_icon_dimension() const { return unclipped_icon_dimension_; }
   int folder_icon_radius() const { return folder_icon_radius_; }
+  int icon_extended_background_radius() const {
+    DCHECK(features::IsAppCollectionFolderRefreshEnabled());
+    return icon_extended_background_radius_;
+  }
   int item_icon_in_folder_icon_dimension() const {
     return item_icon_in_folder_icon_dimension_;
   }
@@ -203,18 +206,17 @@ class ASH_PUBLIC_EXPORT AppListConfig {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
   }
 
-  gfx::Size folder_icon_size() const {
-    return gfx::Size(folder_icon_dimension_, folder_icon_dimension_);
+  gfx::Size icon_visible_size() const {
+    return gfx::Size(icon_visible_dimension_, icon_visible_dimension_);
   }
 
-  gfx::Size folder_unclipped_icon_size() const {
-    return gfx::Size(folder_unclipped_icon_dimension_,
-                     folder_unclipped_icon_dimension_);
+  gfx::Size unclipped_icon_size() const {
+    return gfx::Size(unclipped_icon_dimension_, unclipped_icon_dimension_);
   }
 
   gfx::Insets folder_icon_insets() const {
     int folder_icon_dimension_diff =
-        folder_unclipped_icon_dimension_ - folder_icon_dimension_;
+        unclipped_icon_dimension_ - icon_visible_dimension_;
     return gfx::Insets::TLBR(folder_icon_dimension_diff / 2,
                              folder_icon_dimension_diff / 2,
                              (folder_icon_dimension_diff + 1) / 2,
@@ -266,18 +268,26 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   // the mini app icons).
   const int folder_bubble_radius_;
 
-  // The size of the folder icon in its usual state (e.g. in the apps grid, not
-  // when the user is dragging an item over it).
-  const int folder_icon_dimension_;
+  // Because the nature of how an app is drawn, the visual size is slightly
+  // smaller than its actual icon size. `icon_visible_dimension_` is used to
+  // cache the visible size of an app. This is also the size of the folder icon
+  // in its usual state (e.g. in the apps grid, not when the user is dragging an
+  // item over it).
+  const int icon_visible_dimension_;
 
-  // The size of the folder icon in its expanded state (e.g. when the user drags
-  // an item on top of the folder). In the non-expanded state, the folder is
-  // actually drawn at this size, then clipped to `folder_icon_dimensions_`.
-  // When animating to the expanded state, the code just animates the clipping.
-  const int folder_unclipped_icon_dimension_;
+  // The size of an item icon background in its expanded state (e.g. when the
+  // user drags an item on top of the folder). In the non-expanded state, the
+  // folder is actually drawn at this size, then clipped to
+  // `icon_visible_dimension_`. When animating to the expanded state, the code
+  // just animates the clipping.
+  const int unclipped_icon_dimension_;
 
   // The corner radius of folder icon.
   const int folder_icon_radius_;
+
+  // The background corner radius of an item icon in extended state.
+  // Only used in app collection folder icon refresh.
+  const int icon_extended_background_radius_;
 
   // The dimension of the item icon in folder icon.
   const int item_icon_in_folder_icon_dimension_;

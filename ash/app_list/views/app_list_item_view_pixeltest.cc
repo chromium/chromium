@@ -22,16 +22,19 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
-class AppListItemViewPixelTest : public AshTestBase,
-                                 public testing::WithParamInterface<
-                                     std::tuple</*use_tablet_mode=*/bool,
-                                                /*use_dense_ui=*/bool,
-                                                /*use_rtl=*/bool,
-                                                /*is_new_install=*/bool,
-                                                /*has_notification=*/bool>> {
+class AppListItemViewPixelTest
+    : public AshTestBase,
+      public testing::WithParamInterface<
+          std::tuple</*use_folder_icon_refresh=*/bool,
+                     /*use_tablet_mode=*/bool,
+                     /*use_dense_ui=*/bool,
+                     /*use_rtl=*/bool,
+                     /*is_new_install=*/bool,
+                     /*has_notification=*/bool>> {
  public:
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -48,6 +51,10 @@ class AppListItemViewPixelTest : public AshTestBase,
     // As per `app_list_config_provider.cc`, dense values are used for screens
     // with width OR height <= 675.
     UpdateDisplay(use_dense_ui() ? "800x600" : "1200x800");
+    if (use_folder_icon_refresh()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kAppCollectionFolderRefresh);
+    }
 
     app_list_test_model_ = std::make_unique<test::AppListTestModel>();
     search_model_ = std::make_unique<SearchModel>();
@@ -111,27 +118,36 @@ class AppListItemViewPixelTest : public AshTestBase,
     return base::JoinString({"app_list_item_view", stringified_params}, ".");
   }
 
-  bool use_tablet_mode() const { return std::get<0>(GetParam()); }
-  bool use_dense_ui() const { return std::get<1>(GetParam()); }
-  bool use_rtl() const { return std::get<2>(GetParam()); }
-  bool is_new_install() const { return std::get<3>(GetParam()); }
-  bool has_notification() const { return std::get<4>(GetParam()); }
+  bool use_folder_icon_refresh() const { return std::get<0>(GetParam()); }
+  bool use_tablet_mode() const { return std::get<1>(GetParam()); }
+  bool use_dense_ui() const { return std::get<2>(GetParam()); }
+  bool use_rtl() const { return std::get<3>(GetParam()); }
+  bool is_new_install() const { return std::get<4>(GetParam()); }
+  bool has_notification() const { return std::get<5>(GetParam()); }
 
  protected:
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     AppListItemViewPixelTest,
-    testing::Combine(/*use_tablet_mode=*/testing::Bool(),
+    testing::Combine(/*use_folder_icon_refresh=*/testing::Bool(),
+                     /*use_tablet_mode=*/testing::Bool(),
                      /*use_dense_ui=*/testing::Bool(),
                      /*use_rtl=*/testing::Bool(),
                      /*is_new_install=*/testing::Bool(),
                      /*has_notification=*/testing::Bool()));
 
 TEST_P(AppListItemViewPixelTest, AppListItemView) {
+  // Folder icon refresh doesn't change the app list item view.
+  if (use_folder_icon_refresh()) {
+    return;
+  }
   CreateAppListItem("App");
   CreateAppListItem("App with a loooooooong name");
 

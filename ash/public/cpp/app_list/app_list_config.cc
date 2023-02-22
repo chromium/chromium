@@ -101,7 +101,7 @@ gfx::FontList AppTitleFontForType(ash::AppListConfigType type) {
 }
 
 // See "App drag over folder" in go/cros-launcher-spec.
-int FolderUnclippedIconDimensionForType(ash::AppListConfigType type) {
+int UnclippedIconDimensionForType(ash::AppListConfigType type) {
   switch (type) {
     case ash::AppListConfigType::kRegular:
       return 76;
@@ -110,12 +110,21 @@ int FolderUnclippedIconDimensionForType(ash::AppListConfigType type) {
   }
 }
 
-int FolderClippedIconDimensionForType(ash::AppListConfigType type) {
+int IconVisibleDimensionForType(ash::AppListConfigType type) {
   switch (type) {
     case ash::AppListConfigType::kRegular:
       return 60;
     case ash::AppListConfigType::kDense:
       return 44;
+  }
+}
+
+int IconExtendedBackgroundRadius(ash::AppListConfigType type) {
+  switch (type) {
+    case ash::AppListConfigType::kRegular:
+      return 24;
+    case ash::AppListConfigType::kDense:
+      return 16;
   }
 }
 
@@ -126,6 +135,10 @@ int ItemIconInFolderIconDimensionForType(ash::AppListConfigType type) {
     case ash::AppListConfigType::kDense:
       return 24;
   }
+}
+
+int ItemIconInFolderIconMargin() {
+  return features::IsAppCollectionFolderRefreshEnabled() ? 2 : 4;
 }
 
 }  // namespace
@@ -170,14 +183,14 @@ AppListConfig::AppListConfig(AppListConfigType type)
       grid_focus_corner_radius_(8),
       app_title_max_line_height_(AppTitleMaxLineHeightForType(type)),
       app_title_font_(AppTitleFontForType(type)),
-      folder_bubble_radius_(FolderUnclippedIconDimensionForType(type) / 2),
-      folder_icon_dimension_(FolderClippedIconDimensionForType(type)),
-      folder_unclipped_icon_dimension_(
-          FolderUnclippedIconDimensionForType(type)),
-      folder_icon_radius_(FolderClippedIconDimensionForType(type) / 2),
+      folder_bubble_radius_(UnclippedIconDimensionForType(type) / 2),
+      icon_visible_dimension_(IconVisibleDimensionForType(type)),
+      unclipped_icon_dimension_(UnclippedIconDimensionForType(type)),
+      folder_icon_radius_(IconVisibleDimensionForType(type) / 2),
+      icon_extended_background_radius_(IconExtendedBackgroundRadius(type)),
       item_icon_in_folder_icon_dimension_(
           ItemIconInFolderIconDimensionForType(type)),
-      item_icon_in_folder_icon_margin_(4),
+      item_icon_in_folder_icon_margin_(ItemIconInFolderIconMargin()),
       folder_dropping_circle_radius_(folder_bubble_radius_) {}
 
 AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
@@ -197,11 +210,14 @@ AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
       app_title_max_line_height_(base_config.app_title_max_line_height_),
       app_title_font_(base_config.app_title_font_),
       folder_bubble_radius_(Scale(base_config.folder_bubble_radius_, scale_x)),
-      folder_icon_dimension_(
-          Scale(base_config.folder_icon_dimension_, scale_x)),
-      folder_unclipped_icon_dimension_(
-          Scale(base_config.folder_unclipped_icon_dimension_, scale_x)),
+      icon_visible_dimension_(
+          Scale(base_config.icon_visible_dimension_, scale_x)),
+      unclipped_icon_dimension_(
+          Scale(base_config.unclipped_icon_dimension_, scale_x)),
       folder_icon_radius_(Scale(base_config.folder_icon_radius_, scale_x)),
+      icon_extended_background_radius_(
+          Scale(base_config.icon_extended_background_radius_, scale_x)),
+
       item_icon_in_folder_icon_dimension_(
           Scale(base_config.item_icon_in_folder_icon_dimension_, scale_x)),
       item_icon_in_folder_icon_margin_(

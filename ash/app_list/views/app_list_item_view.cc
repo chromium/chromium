@@ -51,7 +51,6 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/shadow_value.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
@@ -256,11 +255,15 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   icon_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
 
   if (is_folder_) {
-    icon_->SetPaintToLayer();
-    icon_->layer()->SetFillsBoundsOpaquely(false);
-    icon_->SetBackground(views::CreateThemedSolidBackground(
-        kColorAshControlBackgroundColorInactive));
-
+    if (features::IsAppCollectionFolderRefreshEnabled()) {
+      // Draw the background as part of the icon view.
+      EnsureIconBackgroundLayer();
+    } else {
+      icon_->SetPaintToLayer();
+      icon_->layer()->SetFillsBoundsOpaquely(false);
+      icon_->SetBackground(views::CreateThemedSolidBackground(
+          kColorAshControlBackgroundColorInactive));
+    }
     // Set background blur for folder icon and use mask layer to clip it into
     // circle. Note that blur is only enabled in tablet mode to improve dragging
     // smoothness.
@@ -330,9 +333,8 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   }
   icon_image_ = icon;
 
-  gfx::Size icon_bounds = is_folder_
-                              ? app_list_config_->folder_unclipped_icon_size()
-                              : app_list_config_->grid_icon_size();
+  gfx::Size icon_bounds = is_folder_ ? app_list_config_->unclipped_icon_size()
+                                     : app_list_config_->grid_icon_size();
 
   icon_bounds = gfx::ScaleToRoundedSize(icon_bounds, icon_scale_);
 
@@ -370,6 +372,38 @@ void AppListItemView::ScaleIconImmediatly(float scale_factor) {
   icon_scale_ = scale_factor;
   SetIcon(icon_image_);
   layer()->SetTransform(gfx::Transform());
+}
+
+void AppListItemView::UpdateBackgroundLayerBounds() {
+  auto* background_layer = GetIconBackgroundLayer();
+  if (!background_layer || !features::IsAppCollectionFolderRefreshEnabled() ||
+      icon_->bounds().IsEmpty()) {
+    return;
+  }
+
+  if (is_folder_) {
+    // The folder icon already has the same size as its background layer.
+    background_layer->SetBounds(icon_->layer()->bounds());
+    return;
+  }
+
+  // Set the background layer size of the app icon to `unclipped_icon_dimension`
+  // for the clip rect animation.
+  gfx::Rect background_bounds = icon_->layer()->bounds();
+  int outset_from_icon =
+      (app_list_config_->unclipped_icon_dimension() * icon_scale_ -
+       background_bounds.width()) /
+      2;
+  background_bounds.Outset(outset_from_icon);
+  background_layer->SetBounds(background_bounds);
+
+  // Note that the background size should initially be the folder icon size
+  // instead of the grid icon size. This is because the app icon has a
+  // transparent ring around the visible icon which makes it look smaller.
+  background_bounds.ClampToCenteredSize(gfx::ScaleToRoundedSize(
+      app_list_config_->icon_visible_size(), icon_scale_));
+  background_layer->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(background_bounds.width() / 2));
 }
 
 void AppListItemView::SetUIState(UIState ui_state) {
@@ -784,6 +818,7 @@ void AppListItemView::Layout() {
   const gfx::Rect icon_bounds = GetIconBoundsForTargetViewBounds(
       app_list_config_, rect, icon_->GetImageBounds().size(), icon_scale_);
   icon_->SetBoundsRect(icon_bounds);
+  UpdateBackgroundLayerBounds();
   SetBackgroundExtendedState(is_icon_extended_, /*animate=*/false);
 
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(
@@ -1043,13 +1078,14 @@ void AppListItemView::OnDraggedViewExit() {
 void AppListItemView::SetBackgroundBlurEnabled(bool enabled) {
   DCHECK(is_folder_);
   if (!enabled) {
-    if (icon_->layer()) {
-      icon_->layer()->SetBackgroundBlur(0);
+    if (GetIconBackgroundLayer()) {
+      GetIconBackgroundLayer()->SetBackgroundBlur(0);
     }
     return;
   }
-  icon_->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  icon_->layer()->SetBackdropFilterQuality(
+  GetIconBackgroundLayer()->SetBackgroundBlur(
+      ColorProvider::kBackgroundBlurSigma);
+  GetIconBackgroundLayer()->SetBackdropFilterQuality(
       ColorProvider::kBackgroundBlurQuality);
 }
 
@@ -1159,7 +1195,7 @@ gfx::Rect AppListItemView::GetIconBounds() const {
     // The folder icon is in unclipped size, so clip it before return.
     gfx::Rect folder_icon_bounds = icon_->bounds();
     folder_icon_bounds.ClampToCenteredSize(
-        app_list_config_->folder_icon_size());
+        app_list_config_->icon_visible_size());
     return folder_icon_bounds;
   }
   return icon_->bounds();
@@ -1177,7 +1213,7 @@ gfx::ImageSkia AppListItemView::GetIconImage() const {
   }
 
   return gfx::CanvasImageSource::MakeImageSkia<ClippedFolderIconImageSource>(
-      app_list_config_->folder_icon_size(), icon_->GetImage());
+      app_list_config_->icon_visible_size(), icon_->GetImage());
 }
 
 void AppListItemView::SetIconVisible(bool visible) {
@@ -1284,27 +1320,56 @@ void AppListItemView::ItemBeingDestroyed() {
 
 void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
                                                  bool animate) {
+  // App backgrounds are only created or updated if the extended state changes,
+  // while unchanged folders may update the icon clip rects. Return early for
+  // unchanged apps.
+  if (is_icon_extended_ == extend_icon && !is_folder_) {
+    return;
+  }
+
   is_icon_extended_ = extend_icon;
   EnsureIconBackgroundLayer();
-  ui::Layer* background_layer =
-      is_folder_ ? icon_->layer() : icon_background_layer_.layer();
+  base::AutoReset<bool> auto_reset(&setting_up_icon_animation_, true);
+  ui::Layer* background_layer = GetIconBackgroundLayer();
   DCHECK(background_layer);
 
   views::AnimationBuilder builder;
   const auto animation_tween_type = gfx::Tween::EASE_IN;
 
   builder
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .OnEnded(base::BindOnce(&AppListItemView::OnExtendingAnimationEnded,
                               weak_ptr_factory_.GetWeakPtr(), extend_icon))
       .OnAborted(base::BindOnce(&AppListItemView::OnExtendingAnimationEnded,
                                 weak_ptr_factory_.GetWeakPtr(), extend_icon))
       .Once();
 
+  if (features::IsAppCollectionFolderRefreshEnabled()) {
+    UpdateBackgroundLayerBounds();
+    const int width = extend_icon ? app_list_config_->unclipped_icon_dimension()
+                                  : app_list_config_->icon_visible_dimension();
+    gfx::Rect clip_rect(background_layer->size());
+    clip_rect.ClampToCenteredSize(
+        ScaleToRoundedSize(gfx::Size(width, width), icon_scale_));
+
+    const int corner_radius =
+        extend_icon ? app_list_config_->icon_extended_background_radius()
+                    : width / 2;
+    builder.GetCurrentSequence()
+        .SetDuration(base::Milliseconds(animate ? 125 : 0))
+        .SetClipRect(background_layer, clip_rect, animation_tween_type)
+        .SetRoundedCorners(background_layer,
+                           gfx::RoundedCornersF(corner_radius * icon_scale_),
+                           animation_tween_type);
+    return;
+  }
+
   // Handle folder icons
   if (is_folder_) {
-    int corner_radius =
-        extend_icon ? app_list_config_->folder_unclipped_icon_dimension() / 2
-                    : app_list_config_->folder_icon_dimension() / 2;
+    const int corner_radius =
+        extend_icon ? app_list_config_->unclipped_icon_dimension() / 2
+                    : app_list_config_->icon_visible_dimension() / 2;
 
     gfx::Rect clip_rect = icon_->GetLocalBounds();
     if (!extend_icon) {
@@ -1340,7 +1405,9 @@ void AppListItemView::SetBackgroundExtendedState(bool extend_icon,
 }
 
 void AppListItemView::EnsureIconBackgroundLayer() {
-  if (is_folder_ || icon_background_layer_.OwnsLayer()) {
+  const bool clip_inner_icons =
+      is_folder_ && !features::IsAppCollectionFolderRefreshEnabled();
+  if (clip_inner_icons || icon_background_layer_.OwnsLayer()) {
     return;
   }
 
@@ -1348,15 +1415,26 @@ void AppListItemView::EnsureIconBackgroundLayer() {
       std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR));
   auto* background_layer = icon_background_layer_.layer();
   background_layer->SetName("icon_background_layer");
+  if (GetColorProvider()) {
+    background_layer->SetColor(
+        GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive));
+  }
   icon_->AddLayerToRegion(background_layer, views::LayerRegion::kBelow);
 }
 
 void AppListItemView::OnExtendingAnimationEnded(bool extend_icon) {
-  if (!extend_icon && !is_folder_ &&
-      !icon_background_layer_.layer()->GetAnimator()->is_animating()) {
+  if (!setting_up_icon_animation_ && !extend_icon && !is_folder_) {
     icon_->RemoveLayerFromRegions(icon_background_layer_.layer());
     icon_background_layer_.ReleaseLayer();
   }
+}
+
+ui::Layer* AppListItemView::GetIconBackgroundLayer() {
+  if (is_folder_ && !features::IsAppCollectionFolderRefreshEnabled()) {
+    return icon_->layer();
+  }
+
+  return icon_background_layer_.layer();
 }
 
 BEGIN_METADATA(AppListItemView, views::Button)

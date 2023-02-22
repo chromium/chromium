@@ -295,6 +295,10 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
       enabled_features.push_back(app_list_features::kDragAndDropRefactor);
     }
 
+    if (folder_icon_refresh_) {
+      enabled_features.push_back(features::kAppCollectionFolderRefresh);
+    }
+
     if (enable_shelf_party_) {
       enabled_features.push_back(features::kShelfParty);
     }
@@ -460,6 +464,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   }
 
   bool use_drag_drop_refactor() const { return use_drag_drop_refactor_; }
+
+  bool folder_icon_refresh() const { return folder_icon_refresh_; }
 
   AppsGridView* folder_apps_grid_view() const {
     return app_list_folder_view_->items_grid_view();
@@ -725,6 +731,8 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
   bool create_as_tablet_mode_ = false;
   // True to test with the drag and drop refactor feature enabled.
   bool use_drag_drop_refactor_ = false;
+  // True if the folder icon refresh feature is enabled.
+  bool folder_icon_refresh_ = false;
   // True shelf part feature is enabled.
   bool enable_shelf_party_ = true;
 
@@ -794,6 +802,20 @@ class AppsGridViewDragTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          AppsGridViewDragTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+class AppsGridViewFolderIconRefreshTest
+    : public AppsGridViewDragTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  AppsGridViewFolderIconRefreshTest() {
+    is_rtl_ = std::get<0>(GetParam());
+    folder_icon_refresh_ = std::get<1>(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppsGridViewFolderIconRefreshTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 // Tests for legacy behaviour using the old drag and drop code.
@@ -1745,6 +1767,98 @@ TEST_P(AppsGridViewDragTest, ItemViewsDontHaveLayerAfterDrag) {
   // The layer should be destroyed after the dragging.
   for (size_t i = 0; i < model_->top_level_item_list()->item_count(); ++i)
     EXPECT_FALSE(GetItemViewInTopLevelGrid(i)->layer());
+}
+
+TEST_P(AppsGridViewFolderIconRefreshTest, AppIconExtendState) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  size_t kTotalItems = 2;
+  model_->PopulateApps(kTotalItems);
+  UpdateLayout();
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
+                                     apps_grid_view_);
+  if (!use_drag_drop_refactor()) {
+    EXPECT_EQ(1, GetHapticTickEventsCount());
+  }
+
+  // Drag item_1 over item_0.
+  gfx::Point from = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
+  AppListItemView* extended_app = GetItemViewInAppsGridAt(0, apps_grid_view_);
+
+  EXPECT_TRUE(extended_app->is_icon_extended_for_test());
+  auto* icon_background_layer = extended_app->icon_background_layer_for_test();
+  EXPECT_TRUE(icon_background_layer);
+
+  // Quickly move the dragged app out and back to item_0. Make sure the
+  // background layer is not recreated.
+  UpdateDrag(AppsGridView::MOUSE, from, apps_grid_view_, 1 /*steps*/);
+  EXPECT_FALSE(extended_app->is_icon_extended_for_test());
+  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 1 /*steps*/);
+  EXPECT_TRUE(extended_app->is_icon_extended_for_test());
+  EXPECT_EQ(icon_background_layer,
+            extended_app->icon_background_layer_for_test());
+
+  // Move the dragged app to its original position and check if the background
+  // layer still exists.
+  UpdateDrag(AppsGridView::MOUSE, from, apps_grid_view_, 1 /*steps*/);
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(const_cast<ui::Layer*>(icon_background_layer));
+  EXPECT_FALSE(extended_app->is_icon_extended_for_test());
+  EXPECT_FALSE(extended_app->icon_background_layer_for_test());
+  EndDrag();
+}
+
+TEST_P(AppsGridViewFolderIconRefreshTest, FolderIconExtendState) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create a folder and an app.
+  model_->CreateAndPopulateFolderWithApps(2);
+  model_->PopulateApps(1);
+  UpdateLayout();
+  AppListItemView* folder_view = GetItemViewInAppsGridAt(0, apps_grid_view_);
+  auto* background_layer = folder_view->icon_background_layer_for_test();
+
+  // The icon_background_layer is only created if the icon refresh is enabled.
+  if (folder_icon_refresh()) {
+    EXPECT_TRUE(background_layer);
+  } else {
+    EXPECT_FALSE(background_layer);
+    // Return early as the test below verifies the background layer that isn't
+    // available with legacy folder icons.
+    return;
+  }
+
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 1,
+                                     apps_grid_view_);
+  if (!use_drag_drop_refactor()) {
+    EXPECT_EQ(1, GetHapticTickEventsCount());
+  }
+
+  // Drag the app over the folder.
+  gfx::Point from = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 10 /*steps*/);
+  EXPECT_TRUE(folder_view->is_icon_extended_for_test());
+  EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
+
+  // Quickly move the dragged app out and back to the folder. Make sure the
+  // background layer is not recreated.
+  UpdateDrag(AppsGridView::MOUSE, from, apps_grid_view_, 1 /*steps*/);
+  EXPECT_FALSE(folder_view->is_icon_extended_for_test());
+  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, 1 /*steps*/);
+  EXPECT_TRUE(folder_view->is_icon_extended_for_test());
+  EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
+
+  // Release the drag.
+  EndDrag();
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(const_cast<ui::Layer*>(background_layer));
+  EXPECT_FALSE(folder_view->is_icon_extended_for_test());
+  EXPECT_EQ(background_layer, folder_view->icon_background_layer_for_test());
 }
 
 TEST_P(AppsGridViewDragTest, MouseDragItemIntoFolder) {

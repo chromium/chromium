@@ -259,6 +259,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool has_pending_row_change() { return has_pending_row_change_; }
   void reset_has_pending_row_change() { has_pending_row_change_ = false; }
 
+  const ui::Layer* icon_background_layer_for_test() const {
+    return icon_background_layer_.layer();
+  }
+  bool is_icon_extended_for_test() const { return is_icon_extended_; }
+
  private:
   friend class AppListItemViewTest;
   friend class AppListMainViewTest;
@@ -291,20 +296,17 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Callback used when a menu is closed.
   void OnMenuClosed();
 
-  // Get icon from |item_| and schedule background processing.
-  void UpdateIcon();
-
-  // Update the tooltip text from |item_|.
-  void UpdateTooltip();
-
   void SetUIState(UIState state);
 
   // Scales up app icon if |scale_up| is true; otherwise, scale it back to
   // normal size.
   void ScaleAppIcon(bool scale_up);
 
-  // Scale app icon to |scale_factor| without animation.
+  // Scales app icon to |scale_factor| without animation.
   void ScaleIconImmediatly(float scale_factor);
+
+  // Updates the bounds of the icon background layer.
+  void UpdateBackgroundLayerBounds();
 
   // Sets |touch_dragging_| flag and updates UI.
   void SetTouchDragging(bool touch_dragging);
@@ -381,6 +383,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
   void EnsureIconBackgroundLayer();
 
   void OnExtendingAnimationEnded(bool extend_icon);
+
+  // Returns the layer that paints the icon background.
+  ui::Layer* GetIconBackgroundLayer();
 
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
@@ -486,6 +491,10 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Whether the `icon_` is in the extended state, where a dragged view entered
   // this item view.
   bool is_icon_extended_ = false;
+
+  // Whether the icon background animation is being setup. Used to prevent the
+  // background layer from being deleted during setup.
+  bool setting_up_icon_animation_ = false;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
 };
