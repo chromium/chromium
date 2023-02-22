@@ -254,11 +254,15 @@ interface NativeWidgetNSWindow {
   // Set the cursor type to display.
   SetCursor(ui.mojom.Cursor cursor);
 
-  // Enables immersive fullscreen. Pass the id of the overlay widget which is
-  // hosting top chrome. The callback is run once the top chrome NSView has
-  // been reparented into the AppKit controlled fullscreen NSWindow, indicating
-  // the immersive transition has started.
-  EnableImmersiveFullscreen(uint64 fullscreen_overlay_widget_id) => ();
+  // Enables immersive fullscreen. |fullscreen_overlay_widget_id| is the id of
+  // the overlay widget which is hosting top chrome.
+  // |tab_widget_id| is provided when the ImmersiveFullscreenTabs feature is
+  // enabled. It holds the id of the tab hosting widget.
+  // The callback is run once the top chrome NSView has been reparented into the
+  // AppKit controlled fullscreen NSWindow, indicating the immersive transition
+  // has started.
+  EnableImmersiveFullscreen(uint64 fullscreen_overlay_widget_id,
+                            uint64 tab_widget_id) => ();
 
   // Rollback the immersive transition. The top chrome NSView is reparented into
   // the overlay widget.

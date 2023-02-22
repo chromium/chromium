@@ -919,10 +919,20 @@ void NativeWidgetNSWindowBridge::SetCursor(const ui::Cursor& cursor) {
 
 void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
     uint64_t fullscreen_overlay_widget_id,
+    uint64_t tab_widget_id,
     EnableImmersiveFullscreenCallback callback) {
-  immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
-      ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
-      std::move(callback));
+  NativeWidgetNSWindowBridge* tab_widget_bridge = GetFromId(tab_widget_id);
+  if (tab_widget_bridge) {
+    NSWindow* tab_window = tab_widget_bridge->ns_window();
+    immersive_mode_controller_ =
+        std::make_unique<ImmersiveModeTabbedController>(
+            ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
+            tab_window, std::move(callback));
+  } else {
+    immersive_mode_controller_ = std::make_unique<ImmersiveModeController>(
+        ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
+        std::move(callback));
+  }
   immersive_mode_controller_->Enable();
 
   // Reveal locks can outlive immersive_mode_controller_, re-establish any

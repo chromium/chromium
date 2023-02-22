@@ -13,8 +13,11 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
+#include "chrome/common/chrome_features.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_observer.h"
@@ -65,6 +68,9 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // Immersive fullscreen has started.
   void FullScreenOverlayViewWillAppear();
 
+  // Set the widget id of the tab hosting widget. Set before calling SetEnabled.
+  void SetTabNativeWidgetID(uint64_t widget_id);
+
   // views::FocusChangeListener implementation.
   void OnWillChangeFocus(views::View* focused_before,
                          views::View* focused_now) override;
@@ -76,6 +82,8 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // views::WidgetObserver implementation
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  BrowserView* browser_view() { return browser_view_; }
 
  private:
   friend class RevealedLock;
@@ -97,6 +105,11 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   // NativeWidgetMacNSWindowHost::GetNSWindowMojo().
   raw_ptr<remote_cocoa::mojom::NativeWidgetNSWindow> ns_window_mojo_ =
       nullptr;  // weak
+
+  // Used to hold the widget id for the tab hosting widget. This will be passed
+  // to the remote_cocoa immersive mode controller where the tab strip will be
+  // placed in the titlebar.
+  uint64_t tab_native_widget_id_ = 0;
 
   base::WeakPtrFactory<ImmersiveModeControllerMac> weak_ptr_factory_;
 };
@@ -150,7 +163,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
         views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
             browser_view_->overlay_widget()->GetNativeWindow());
     ns_window_mojo_->EnableImmersiveFullscreen(
-        overlay_host->bridged_native_widget_id(),
+        overlay_host->bridged_native_widget_id(), tab_native_widget_id_,
         base::BindOnce(
             &ImmersiveModeControllerMac::FullScreenOverlayViewWillAppear,
             base::Unretained(this)));
@@ -256,6 +269,57 @@ void ImmersiveModeControllerMac::LockDestroyed() {
   ns_window_mojo_->ImmersiveFullscreenRevealUnlock();
 }
 
+void ImmersiveModeControllerMac::SetTabNativeWidgetID(uint64_t widget_id) {
+  tab_native_widget_id_ = widget_id;
+}
+
+// A derived class of ImmersiveModeControllerMac that peels off the tab strip
+// from the top container.
+class ImmersiveModeTabbedControllerMac : public ImmersiveModeControllerMac {
+ public:
+  ImmersiveModeTabbedControllerMac() = default;
+
+  ImmersiveModeTabbedControllerMac(const ImmersiveModeTabbedControllerMac&) =
+      delete;
+  ImmersiveModeTabbedControllerMac& operator=(
+      const ImmersiveModeTabbedControllerMac&) = delete;
+
+  // ImmersiveModeControllerMac overrides:
+  void SetEnabled(bool enabled) override;
+
+ private:
+};
+
+void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
+  BrowserView* browser_view = ImmersiveModeControllerMac::browser_view();
+  if (enabled) {
+    browser_view->tab_overlay_widget()->GetRootView()->AddChildView(
+        browser_view->tab_strip_region_view());
+
+    // TODO(https://crbug.com/1414521): The +8 height here is just a
+    // placeholder. Instead we need to move the top_container background to the
+    // tab_overlay_widget.
+    gfx::Size tab_region_size = browser_view->tab_strip_region_view()->size();
+    tab_region_size.set_height(tab_region_size.height() + 8);
+    browser_view->tab_overlay_widget()->SetSize(tab_region_size);
+    browser_view->tab_overlay_widget()->Show();
+
+    views::NativeWidgetMacNSWindowHost* tab_overlay_host =
+        views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+            browser_view->tab_overlay_widget()->GetNativeWindow());
+    SetTabNativeWidgetID(tab_overlay_host->bridged_native_widget_id());
+    ImmersiveModeControllerMac::SetEnabled(enabled);
+  } else {
+    browser_view->tab_overlay_widget()->Hide();
+    browser_view->top_container()->AddChildViewAt(
+        browser_view->tab_strip_region_view(), 0);
+    ImmersiveModeControllerMac::SetEnabled(enabled);
+  }
+}
+
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac() {
+  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreenTabs)) {
+    return std::make_unique<ImmersiveModeTabbedControllerMac>();
+  }
   return std::make_unique<ImmersiveModeControllerMac>();
 }

@@ -342,11 +342,11 @@ bool IsNSToolbarFullScreenWindow(NSWindow* window) {
   return [window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")];
 }
 
-ImmersiveModeController::ImmersiveModeController(NSWindow* browser_widget,
-                                                 NSWindow* overlay_widget,
+ImmersiveModeController::ImmersiveModeController(NSWindow* browser_window,
+                                                 NSWindow* overlay_window,
                                                  base::OnceClosure callback)
-    : browser_window_(browser_widget),
-      overlay_window_(overlay_widget),
+    : browser_window_(browser_window),
+      overlay_window_(overlay_window),
       weak_ptr_factory_(this) {
   immersive_mode_window_observer_.reset([[ImmersiveModeWindowObserver alloc]
       initWithController:weak_ptr_factory_.GetWeakPtr()]);
