@@ -1039,7 +1039,7 @@ HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
              GetAppVersionWebString(next_version_web_dispatch), L"]"});
 
         if (!done) {
-          EXPECT_HRESULT_SUCCEEDED(bundle->install());
+          EXPECT_HRESULT_SUCCEEDED(bundle->download());
         }
         break;
       }

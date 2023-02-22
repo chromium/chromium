@@ -671,7 +671,9 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
       return E_UNEXPECTED;
     }
 
-    return app_web_->Update(/*do_update_check_only=*/true);
+    // TODO(crbug.com/1396103): Implement checkForUpdate to only check for
+    // updates.
+    return app_web_->Update(/*do_update_check_only=*/false);
   }
 
   IFACEMETHODIMP download() override {

@@ -1077,7 +1077,8 @@ TEST_F(IntegrationTestLegacyUpdate3Web, DisabledPolicy) {
                                  GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY);
 }
 
-TEST_F(IntegrationTestLegacyUpdate3Web, CheckForUpdate) {
+// TODO(crbug.com/1396103): Re-enable after implementing `checkForUpdate`.
+TEST_F(IntegrationTestLegacyUpdate3Web, DISABLED_CheckForUpdate) {
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(test_server_.get(), kAppId,
                                                     "", base::Version("0.1"),
                                                     base::Version("0.2")));
@@ -1086,9 +1087,13 @@ TEST_F(IntegrationTestLegacyUpdate3Web, CheckForUpdate) {
 }
 
 TEST_F(IntegrationTestLegacyUpdate3Web, Update) {
+// TODO(crbug.com/1396103): Re-enable after implementing `checkForUpdate`.
+#if 0
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateCheckSequence(test_server_.get(), kAppId,
                                                     "", base::Version("0.1"),
                                                     base::Version("0.2")));
+#endif  // #if 0
+
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(test_server_.get(), kAppId, "",
                                                base::Version("0.1"),
                                                base::Version("0.2")));
