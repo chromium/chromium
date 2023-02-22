@@ -86,4 +86,14 @@ sqlite_common_configuration_flags = [
 
   # Uses isnan() in the C99 standard library.
   "SQLITE_HAVE_ISNAN",
+
+  # Chrome uses SQLite's built-in corruption recovery module.
+  # See https://www.sqlite.org/recovery.html
+  # Use of this module requires compiling a separate "sqlite3r.c" target, which
+  # generates "sqlite3r.c" and "sqlite3r.h", versions of the amalgamation files
+  # that include the recover extension. We then map this back to "sqlite3.h"
+  # when generating amalgamations to hide this detail from the rest of the
+  # platform. If this changes, or if we ever remove this flag, we would need to
+  # update the mapping in scripts/generate_amalgamation.py.
+  "SQLITE_HAVE_SQLITE3R",
 ]
