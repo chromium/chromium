@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
 
@@ -410,15 +411,15 @@ void CameraEffectsController::InitializeEffectControls() {
     effect->set_id(
         static_cast<int>(cros::mojom::CameraEffect::kBackgroundBlur));
     AddBackgroundBlurStateToEffect(
-        effect.get(),
+        effect.get(), kVideoConferenceBackgroundBlurOffIcon,
         /*state_value=*/BackgroundBlurEffectState::kOff,
         /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF);
     AddBackgroundBlurStateToEffect(
-        effect.get(),
+        effect.get(), kVideoConferenceBackgroundBlurLightIcon,
         /*state_value=*/BackgroundBlurEffectState::kLight,
         /*string_id=*/IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT);
     AddBackgroundBlurStateToEffect(
-        effect.get(),
+        effect.get(), kVideoConferenceBackgroundBlurMaximumIcon,
         /*state_value=*/BackgroundBlurEffectState::kMaximum,
         /*string_id=*/
         IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL);
@@ -462,12 +463,12 @@ void CameraEffectsController::InitializeEffectControls() {
 
 void CameraEffectsController::AddBackgroundBlurStateToEffect(
     VcHostedEffect* effect,
+    const gfx::VectorIcon& icon,
     int state_value,
     int string_id) {
   DCHECK(effect);
-  // TODO(b/265200087): Replace the icon with the proper icon per effect.
   effect->AddState(std::make_unique<VcEffectState>(
-      /*icon=*/&ash::kPrivacyIndicatorsCameraIcon,
+      &icon,
       /*label_text=*/l10n_util::GetStringUTF16(string_id),
       /*accessible_name_id=*/string_id,
       /*button_callback=*/

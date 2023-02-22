@@ -21,6 +21,10 @@ class PrefRegistrySimple;
 class PrefService;
 class PrefChangeRegistrar;
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace ash {
 
 // CameraEffectsController is the interface for any object in ash to
@@ -118,6 +122,7 @@ class ASH_EXPORT CameraEffectsController : public SessionObserver,
   // Adds a `std::unique_ptr<VcEffectState>` to `effect`, where `effect` is
   // assumed to be that of camera background blur.
   void AddBackgroundBlurStateToEffect(VcHostedEffect* effect,
+                                      const gfx::VectorIcon& icon,
                                       int state_value,
                                       int string_id);
 
