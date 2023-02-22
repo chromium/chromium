@@ -353,6 +353,12 @@
           'isolated_scripts': 'chrome_isolated_script_tests',
         },
       },
+      'win-branded-rel': {
+        'additional_compile_targets': [
+          'chrome',
+          'chrome_official_builder',
+        ],
+      },
       'win-chrome': {
         'additional_compile_targets': [
           'chrome',

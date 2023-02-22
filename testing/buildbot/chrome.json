@@ -4133,6 +4133,12 @@
       }
     ]
   },
+  "win-branded-rel": {
+    "additional_compile_targets": [
+      "chrome",
+      "chrome_official_builder"
+    ]
+  },
   "win-chrome": {
     "additional_compile_targets": [
       "chrome",

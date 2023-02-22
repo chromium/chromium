@@ -38,6 +38,7 @@
       'linux-chrome': 'official_reclient',
       'linux-chromeos-chrome': 'official_reclient_chromeos_include_unwind_tables',
       'mac-chrome': 'official_reclient_mac',
+      'win-branded-rel': 'chrome_branded_goma_minimal_symbols',
       'win-chrome': 'official_reclient_x86',
       'win64-chrome': 'official_reclient_x64',
     },
@@ -949,11 +950,11 @@
       'mac-chrome': 'official_goma_mac',
       'mac-chrome-beta': 'official_goma_mac',
       'mac-chrome-stable': 'official_goma_mac',
+      'win-branded-rel': 'chrome_branded_goma_minimal_symbols',
       'win-celab-try-rel': 'official_celab_release_bot',
       'win-chrome': 'official_goma_x86',
       'win-chrome-beta': 'official_goma_x86',
       'win-chrome-stable': 'official_goma_x86',
-      'win-compile-chrome': 'official_goma_x86_minimal_symbols',
       'win-finch-smoke-chrome': 'official_goma',
       'win64-chrome': 'official_goma_x64',
       'win64-chrome-beta': 'official_goma_x64',
@@ -1940,6 +1941,10 @@
 
     'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient': [
       'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on', 'reclient',
+    ],
+
+    'chrome_branded_goma_minimal_symbols': [
+      'chrome_branded', 'goma', 'minimal_symbols', 'release_bot',
     ],
 
     'chromeos_amd64-generic-vm_lacros_rel_reclient': [
@@ -3236,10 +3241,6 @@
       'official', 'goma', 'x86',
     ],
 
-    'official_goma_x86_minimal_symbols': [
-      'official', 'goma', 'x86', 'minimal_symbols',
-    ],
-
     'official_goma_x86_pgo': [
       'official', 'goma', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
@@ -3889,6 +3890,10 @@
 
     'cfm': {
       'gn_args': 'is_cfm=true',
+    },
+
+    'chrome_branded': {
+      'gn_args': 'is_chrome_branded=true'
     },
 
     'chrome_for_testing': {
