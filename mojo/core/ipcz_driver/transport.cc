@@ -197,9 +197,11 @@ Transport::Transport(EndpointTypes endpoint_types,
 // static
 scoped_refptr<Transport> Transport::Create(EndpointTypes endpoint_types,
                                            Channel::Endpoint endpoint,
-                                           base::Process remote_process) {
+                                           base::Process remote_process,
+                                           bool is_remote_process_untrusted) {
   return base::MakeRefCounted<Transport>(endpoint_types, std::move(endpoint),
-                                         std::move(remote_process));
+                                         std::move(remote_process),
+                                         is_remote_process_untrusted);
 }
 
 // static
