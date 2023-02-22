@@ -15,14 +15,18 @@ namespace syncer {
 FakeSyncedSessionClientAsh::FakeSyncedSessionClientAsh() = default;
 FakeSyncedSessionClientAsh::~FakeSyncedSessionClientAsh() = default;
 
+void FakeSyncedSessionClientAsh::BindReceiver(
+    mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver) {
+  receivers_.Add(this, std::move(receiver));
+}
+
 void FakeSyncedSessionClientAsh::OnForeignSyncedPhoneSessionsUpdated(
     std::vector<crosapi::mojom::SyncedSessionPtr> sessions) {
   NOTIMPLEMENTED();
 }
 
-void FakeSyncedSessionClientAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver) {
-  receivers_.Add(this, std::move(receiver));
+void FakeSyncedSessionClientAsh::OnSessionSyncEnabledChanged(bool enabled) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace syncer

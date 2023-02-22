@@ -57,12 +57,19 @@ class TestSyncedSessionClientObserver
     read_sessions_ = sessions;
   }
 
+  void OnSessionSyncEnabledChanged(bool enabled) override {
+    is_session_sync_enabled_ = enabled;
+  }
+
   const std::vector<ForeignSyncedSessionAsh>& GetLastReadSessions() const {
     return read_sessions_;
   }
 
+  bool IsSessionSyncEnabled() const { return is_session_sync_enabled_; }
+
  private:
   std::vector<ForeignSyncedSessionAsh> read_sessions_;
+  bool is_session_sync_enabled_ = false;
 };
 
 }  // namespace
@@ -119,6 +126,13 @@ TEST_F(SyncedSessionClientAshTest, OnForeignSyncedPhoneSessionsUpdated) {
             kTestLastModifiedTimestamp);
   EXPECT_EQ(observed_sessions[0].windows[0].tabs[0].current_navigation_title,
             kTestTitle);
+}
+
+TEST_F(SyncedSessionClientAshTest, OnSessionSyncEnabledChanged) {
+  client()->OnSessionSyncEnabledChanged(/*enabled=*/true);
+  EXPECT_TRUE(test_observer()->IsSessionSyncEnabled());
+  client()->OnSessionSyncEnabledChanged(/*enabled=*/false);
+  EXPECT_FALSE(test_observer()->IsSessionSyncEnabled());
 }
 
 }  // namespace ash

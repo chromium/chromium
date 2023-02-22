@@ -21,10 +21,13 @@ class FakeSyncedSessionClientAsh : public crosapi::mojom::SyncedSessionClient {
   FakeSyncedSessionClientAsh();
   ~FakeSyncedSessionClientAsh() override;
 
-  void BindReceiver(
-      mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver);
+  // crosapi::mojom::SyncedSessionClient:
   void OnForeignSyncedPhoneSessionsUpdated(
       std::vector<crosapi::mojom::SyncedSessionPtr> sessions) override;
+  void OnSessionSyncEnabledChanged(bool enabled) override;
+
+  void BindReceiver(
+      mojo::PendingReceiver<crosapi::mojom::SyncedSessionClient> receiver);
 
  private:
   mojo::ReceiverSet<crosapi::mojom::SyncedSessionClient> receivers_;
