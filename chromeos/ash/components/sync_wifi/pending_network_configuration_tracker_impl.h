@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_PENDING_NETWORK_CONFIGURATION_TRACKER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_SYNC_WIFI_PENDING_NETWORK_CONFIGURATION_TRACKER_IMPL_H_
 
+#include "base/values.h"
 #include "chromeos/ash/components/sync_wifi/pending_network_configuration_tracker.h"
 #include "components/prefs/pref_service.h"
 
@@ -46,7 +47,7 @@ class PendingNetworkConfigurationTrackerImpl
 
  private:
   PrefService* pref_service_;
-  base::Value dict_;
+  base::Value::Dict dict_;
 };
 
 }  // namespace ash::sync_wifi

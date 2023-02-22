@@ -46,18 +46,20 @@ class PendingNetworkConfigurationTrackerImplTest : public testing::Test {
 
   PendingNetworkConfigurationTrackerImpl* tracker() { return tracker_.get(); }
 
-  const base::Value* GetPref() const {
-    return test_pref_service_.get()->GetUserPref(
-        kPendingNetworkConfigurationsPref);
+  const base::Value::Dict* GetPref() const {
+    return &test_pref_service_.get()
+                ->GetUserPref(kPendingNetworkConfigurationsPref)
+                ->GetDict();
   }
 
   bool DoesPrefContainPendingUpdate(const NetworkIdentifier& id,
                                     const std::string& update_guid) const {
-    const base::Value* dict = GetPref()->FindPath(id.SerializeToString());
-    if (!dict)
+    const base::Value::Dict* dict = GetPref()->FindDict(id.SerializeToString());
+    if (!dict) {
       return false;
+    }
 
-    const std::string* found_guid = dict->FindStringKey(kChangeGuidKey);
+    const std::string* found_guid = dict->FindString(kChangeGuidKey);
     return found_guid && *found_guid == update_guid;
   }
 
@@ -100,11 +102,11 @@ TEST_F(PendingNetworkConfigurationTrackerImplTest, TestMarkComplete) {
   std::string change_guid = tracker()->TrackPendingUpdate(
       fred_network_id(), /*specifics=*/absl::nullopt);
   AssertTrackerHasMatchingUpdate(change_guid, fred_network_id());
-  EXPECT_EQ(1u, GetPref()->DictSize());
+  EXPECT_EQ(1u, GetPref()->size());
   EXPECT_TRUE(DoesPrefContainPendingUpdate(fred_network_id(), change_guid));
   tracker()->MarkComplete(change_guid, fred_network_id());
   EXPECT_FALSE(tracker()->GetPendingUpdate(change_guid, fred_network_id()));
-  EXPECT_EQ(0u, GetPref()->DictSize());
+  EXPECT_EQ(0u, GetPref()->size());
 }
 
 TEST_F(PendingNetworkConfigurationTrackerImplTest, TestTwoChangesSameNetwork) {
@@ -114,7 +116,7 @@ TEST_F(PendingNetworkConfigurationTrackerImplTest, TestTwoChangesSameNetwork) {
   tracker()->IncrementCompletedAttempts(change_guid, fred_network_id());
   AssertTrackerHasMatchingUpdate(change_guid, fred_network_id(),
                                  /*completed_attempts=*/1);
-  EXPECT_EQ(1u, GetPref()->DictSize());
+  EXPECT_EQ(1u, GetPref()->size());
   EXPECT_EQ(1, tracker()
                    ->GetPendingUpdate(change_guid, fred_network_id())
                    ->completed_attempts());
@@ -127,7 +129,7 @@ TEST_F(PendingNetworkConfigurationTrackerImplTest, TestTwoChangesSameNetwork) {
   EXPECT_EQ(0, tracker()
                    ->GetPendingUpdate(second_change_guid, fred_network_id())
                    ->completed_attempts());
-  EXPECT_EQ(1u, GetPref()->DictSize());
+  EXPECT_EQ(1u, GetPref()->size());
 }
 
 TEST_F(PendingNetworkConfigurationTrackerImplTest,
@@ -137,7 +139,7 @@ TEST_F(PendingNetworkConfigurationTrackerImplTest,
                                     /*specifics=*/absl::nullopt);
   AssertTrackerHasMatchingUpdate(change_guid, fred_network_id());
   EXPECT_TRUE(DoesPrefContainPendingUpdate(fred_network_id(), change_guid));
-  EXPECT_EQ(1u, GetPref()->DictSize());
+  EXPECT_EQ(1u, GetPref()->size());
   std::string second_change_guid =
       tracker()->TrackPendingUpdate(mango_network_id(),
                                     /*specifics=*/absl::nullopt);
@@ -146,7 +148,7 @@ TEST_F(PendingNetworkConfigurationTrackerImplTest,
   EXPECT_TRUE(DoesPrefContainPendingUpdate(fred_network_id(), change_guid));
   EXPECT_TRUE(
       DoesPrefContainPendingUpdate(mango_network_id(), second_change_guid));
-  EXPECT_EQ(2u, GetPref()->DictSize());
+  EXPECT_EQ(2u, GetPref()->size());
 }
 
 TEST_F(PendingNetworkConfigurationTrackerImplTest, TestGetPendingUpdates) {
@@ -186,7 +188,7 @@ TEST_F(PendingNetworkConfigurationTrackerImplTest, TestRetryCounting) {
       tracker()->TrackPendingUpdate(fred_network_id(),
                                     /*specifics=*/absl::nullopt);
   AssertTrackerHasMatchingUpdate(change_guid, fred_network_id());
-  EXPECT_EQ(1u, GetPref()->DictSize());
+  EXPECT_EQ(1u, GetPref()->size());
   EXPECT_EQ(0, tracker()
                    ->GetPendingUpdate(change_guid, fred_network_id())
                    ->completed_attempts());
