@@ -824,22 +824,8 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     init->setInfo(ongoing_navigation_->GetInfo());
   init->setSignal(MakeGarbageCollected<AbortSignal>(window_));
   init->setDownloadRequest(params->download_filename);
-  // This unique_ptr needs to be in the function's scope, to maintain the
-  // SoftNavigationEventScope until the event handler runs.
-  std::unique_ptr<SoftNavigationEventScope> soft_navigation_scope;
-  auto* soft_navigation_heuristics = SoftNavigationHeuristics::From(*window_);
-  if (soft_navigation_heuristics && init->userInitiated() &&
-      !init->downloadRequest() && init->canIntercept()) {
-    // If these conditions are met, create a SoftNavigationEventScope to
-    // consider this a "user initiated click", and the dispatched event handlers
-    // as potential soft navigation tasks.
-    soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
-        soft_navigation_heuristics, script_state);
-  }
   auto* navigate_event =
-      NavigateEvent::Create(window_, event_type_names::kNavigate, init);
-  navigate_event->SetUrl(params->url);
-  navigate_event->SaveStateFromDestinationItem(params->destination_item);
+      MakeGarbageCollected<NavigateEvent>(window_, init, params, script_state);
 
   DCHECK(!ongoing_navigate_event_);
   ongoing_navigate_event_ = navigate_event;
@@ -860,33 +846,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   if (navigate_event->HasNavigationActions()) {
     transition_ = MakeGarbageCollected<NavigationTransition>(
         script_state, navigation_type, currentEntry());
-
-    DCHECK(!params->destination_item || !params->state_object);
-    auto* state_object = params->destination_item
-                             ? params->destination_item->StateObject()
-                             : params->state_object.get();
-
-    // In the spec, the URL and history update steps are not called for reloads.
-    // In our implementation, we call the corresponding function anyway, but
-    // |type| being a reload type makes it do none of the spec-relevant
-    // steps. Instead it does stuff like the loading spinner and use counters.
-    window_->document()->Loader()->RunURLAndHistoryUpdateSteps(
-        params->url, params->destination_item,
-        mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
-        state_object, params->frame_load_type, params->is_browser_initiated,
-        params->is_synchronously_committed_same_document);
-
-    // This is considered a soft navigation URL change at this point, when the
-    // user visible URL change happens, and before the interception handler
-    // runs. We're skipping the descendant check because the the URL change
-    // doesn't happen in a JS task, and we know this URL change is related to
-    // the user initiated click event from the fact that
-    // `soft_navigation_scope` is not nullptr.
-    if (soft_navigation_scope) {
-      soft_navigation_heuristics->SawURLChange(script_state,
-                                               /*url=*/params->url,
-                                               /*skip_descendant_check=*/true);
-    }
+    navigate_event->DoCommit();
   }
 
   if (navigate_event->HasNavigationActions() ||
