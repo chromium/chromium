@@ -35,8 +35,10 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
 
   StyleScope* CopyWithParent(const StyleScope*) const;
 
-  const CSSSelectorList* From() const { return from_; }
-  const CSSSelectorList* To() const { return to_; }
+  // From() and To() both return the first CSSSelector in a list, or nullptr
+  // if there is no list.
+  const CSSSelector* From() const;
+  const CSSSelector* To() const;
   const StyleScope* Parent() const { return parent_; }
 
   // https://drafts.csswg.org/css-cascade-6/#implicit-scope

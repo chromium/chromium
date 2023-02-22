@@ -15,11 +15,11 @@ class StyleScopeTest : public PageTestBase, private ScopedCSSScopeForTest {
  public:
   StyleScopeTest() : ScopedCSSScopeForTest(true) {}
 
-  String ToString(const CSSSelectorList* from) {
-    if (!from) {
+  String ToString(const CSSSelector* selector_list) {
+    if (!selector_list) {
       return "";
     }
-    return from->SelectorsText();
+    return CSSSelectorList::SelectorsText(selector_list);
   }
 };
 

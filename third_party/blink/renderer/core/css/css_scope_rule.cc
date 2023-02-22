@@ -21,17 +21,16 @@ String CSSScopeRule::PreludeText() const {
   const StyleScope& scope =
       To<StyleRuleScope>(*group_rule_.Get()).GetStyleScope();
 
-  if (scope.From()) {
+  if (!scope.IsImplicit()) {
     result.Append('(');
-    result.Append(scope.From()->SelectorsText());
+    result.Append(CSSSelectorList::SelectorsText(scope.From()));
     result.Append(')');
-  }
 
-  if (scope.To()) {
-    DCHECK(scope.From());
-    result.Append(" to (");
-    result.Append(scope.To()->SelectorsText());
-    result.Append(')');
+    if (scope.To()) {
+      result.Append(" to (");
+      result.Append(CSSSelectorList::SelectorsText(scope.To()));
+      result.Append(')');
+    }
   }
 
   return result.ReleaseString();

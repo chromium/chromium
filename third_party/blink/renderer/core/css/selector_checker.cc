@@ -2357,11 +2357,11 @@ const StyleScopeActivations* SelectorChecker::CalculateActivations(
 }
 
 bool SelectorChecker::MatchesWithScope(Element& element,
-                                       const CSSSelectorList& selector_list,
+                                       const CSSSelector& selector_list,
                                        const ContainerNode* scope) const {
   SelectorCheckingContext context(&element);
   context.scope = scope;
-  for (context.selector = selector_list.First(); context.selector;
+  for (context.selector = &selector_list; context.selector;
        context.selector = CSSSelectorList::Next(*context.selector)) {
     SelectorChecker::MatchResult ignore_result;
     if (MatchSelector(context, ignore_result) ==

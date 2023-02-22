@@ -28,6 +28,20 @@ StyleScope* StyleScope::CopyWithParent(const StyleScope* parent) const {
   return copy;
 }
 
+const CSSSelector* StyleScope::From() const {
+  if (from_) {
+    return from_->First();
+  }
+  return nullptr;
+}
+
+const CSSSelector* StyleScope::To() const {
+  if (to_) {
+    return to_->First();
+  }
+  return nullptr;
+}
+
 bool StyleScope::HasImplicitRoot(Element* element) const {
   if (!contents_) {
     return false;
