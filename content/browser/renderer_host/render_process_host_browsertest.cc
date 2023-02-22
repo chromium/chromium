@@ -1100,8 +1100,8 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   RenderProcessHostImpl* rph = static_cast<RenderProcessHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
   // 1 for the service worker.
-  EXPECT_EQ(rph->worker_ref_count(), 1u);
-  EXPECT_EQ(rph->keep_alive_ref_count(), 0u);
+  EXPECT_EQ(rph->worker_ref_count(), 1);
+  EXPECT_EQ(rph->keep_alive_ref_count(), 0);
 
   // We use /workers/send-beacon.html, not send-beacon.html, due to the
   // service worker scope rule.
@@ -1112,8 +1112,8 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // We are still using the same process.
   ASSERT_EQ(shell()->web_contents()->GetPrimaryMainFrame()->GetProcess(), rph);
   // 1 for the service worker, 1 for the keepalive fetch.
-  EXPECT_EQ(rph->keep_alive_ref_count(), 1u);
-  EXPECT_EQ(rph->worker_ref_count(), 1u);
+  EXPECT_EQ(rph->keep_alive_ref_count(), 1);
+  EXPECT_EQ(rph->worker_ref_count(), 1);
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179

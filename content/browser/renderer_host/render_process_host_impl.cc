@@ -1499,18 +1499,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
     BrowserContext* browser_context,
     StoragePartitionImpl* storage_partition_impl,
     int flags)
-    : fast_shutdown_started_(false),
-      deleting_soon_(false),
-#ifndef NDEBUG
-      is_self_deleted_(false),
-#endif
-      pending_views_(0),
-      keep_alive_ref_count_(0),
-      worker_ref_count_(0),
-      shutdown_delay_ref_count_(0),
-      are_ref_counts_disabled_(false),
-      visible_clients_(0),
-      priority_(!blink::kLaunchingProcessIsBackgrounded,
+    : priority_(!blink::kLaunchingProcessIsBackgrounded,
                 false /* has_media_stream */,
                 false /* has_foreground_service_worker */,
                 frame_depth_,
@@ -2665,7 +2654,7 @@ bool RenderProcessHostImpl::IsProcessBackgrounded() {
 
 void RenderProcessHostImpl::IncrementKeepAliveRefCount(uint64_t handle_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!are_ref_counts_disabled_);
+  CHECK(!are_ref_counts_disabled_);
   if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
     CHECK(!deleting_soon_);
   }
@@ -2681,8 +2670,8 @@ bool RenderProcessHostImpl::AreAllRefCountsZero() {
 
 void RenderProcessHostImpl::DecrementKeepAliveRefCount(uint64_t handle_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!are_ref_counts_disabled_);
-  DCHECK_GT(keep_alive_ref_count_, 0U);
+  CHECK(!are_ref_counts_disabled_);
+  CHECK_GT(keep_alive_ref_count_, 0);
   --keep_alive_ref_count_;
   DCHECK(keep_alive_start_times_.contains(handle_id));
   keep_alive_start_times_.erase(handle_id);
@@ -2743,7 +2732,7 @@ void RenderProcessHostImpl::UnregisterRenderFrameHost(
 
 void RenderProcessHostImpl::IncrementWorkerRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!are_ref_counts_disabled_);
+  CHECK(!are_ref_counts_disabled_);
   if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
     CHECK(!deleting_soon_);
   }
@@ -2752,8 +2741,8 @@ void RenderProcessHostImpl::IncrementWorkerRefCount() {
 
 void RenderProcessHostImpl::DecrementWorkerRefCount() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!are_ref_counts_disabled_);
-  DCHECK_GT(worker_ref_count_, 0U);
+  CHECK(!are_ref_counts_disabled_);
+  CHECK_GT(worker_ref_count_, 0);
   --worker_ref_count_;
   if (AreAllRefCountsZero())
     Cleanup();
@@ -5313,8 +5302,8 @@ void RenderProcessHostImpl::CancelProcessShutdownDelay(
   }
 
   // Decrement shutdown delay ref count.
-  DCHECK(!are_ref_counts_disabled_);
-  DCHECK_GT(shutdown_delay_ref_count_, 0U);
+  CHECK(!are_ref_counts_disabled_);
+  CHECK_GT(shutdown_delay_ref_count_, 0);
   shutdown_delay_ref_count_--;
   if (AreAllRefCountsZero())
     Cleanup();

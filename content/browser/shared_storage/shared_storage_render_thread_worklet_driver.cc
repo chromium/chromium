@@ -16,11 +16,9 @@ SharedStorageRenderThreadWorkletDriver::SharedStorageRenderThreadWorkletDriver(
     : agent_scheduling_group_host_(agent_scheduling_group_host) {
   agent_scheduling_group_host_->GetProcess()->AddObserver(this);
 
-  // The RefCount could be disabled only when the browsing context is being
-  // destroyed. Since this driver will always be created when the browsing
-  // context is alive, it's fine to DCHECK that the RefCount is enabled.
-  DCHECK(!agent_scheduling_group_host_->GetProcess()->AreRefCountsDisabled());
-  agent_scheduling_group_host_->GetProcess()->IncrementWorkerRefCount();
+  if (!agent_scheduling_group_host_->GetProcess()->AreRefCountsDisabled()) {
+    agent_scheduling_group_host_->GetProcess()->IncrementWorkerRefCount();
+  }
 }
 
 SharedStorageRenderThreadWorkletDriver::
@@ -31,12 +29,9 @@ SharedStorageRenderThreadWorkletDriver::
 
   agent_scheduling_group_host_->GetProcess()->RemoveObserver(this);
 
-  // The RefCount could be disabled only when the browsing context is being
-  // destroyed. In that case, the `RenderProcessHostDestroyed` is guaranteed to
-  // be called first to set `agent_scheduling_group_host_` to nullptr. Thus,
-  // here it's fine to DCHECK that the RefCount is enabled.
-  DCHECK(!agent_scheduling_group_host_->GetProcess()->AreRefCountsDisabled());
-  agent_scheduling_group_host_->GetProcess()->DecrementWorkerRefCount();
+  if (!agent_scheduling_group_host_->GetProcess()->AreRefCountsDisabled()) {
+    agent_scheduling_group_host_->GetProcess()->DecrementWorkerRefCount();
+  }
 }
 
 void SharedStorageRenderThreadWorkletDriver::StartWorkletService(

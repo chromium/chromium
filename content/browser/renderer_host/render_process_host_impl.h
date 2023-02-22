@@ -726,8 +726,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
                            base::ScopedFD log_file_descriptor) override;
 #endif
 
-  size_t keep_alive_ref_count() const { return keep_alive_ref_count_; }
-  size_t worker_ref_count() const { return worker_ref_count_; }
+  int keep_alive_ref_count() const { return keep_alive_ref_count_; }
+  int worker_ref_count() const { return worker_ref_count_; }
 
   // Allows overriding the URLLoaderFactory creation via CreateURLLoaderFactory.
   // Passing a null callback will restore the default behavior.
@@ -755,23 +755,23 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<IPC::ChannelProxy> channel_;
 
   // True if fast shutdown has been performed on this RenderProcessHost.
-  bool fast_shutdown_started_;
+  bool fast_shutdown_started_ = false;
 
   // True if shutdown from started by the |Shutdown()| method.
   bool shutdown_requested_ = false;
 
   // True if we've posted a DeleteTask and will be deleted soon.
-  bool deleting_soon_;
+  bool deleting_soon_ = false;
 
 #ifndef NDEBUG
   // True if this object has deleted itself.
-  bool is_self_deleted_;
+  bool is_self_deleted_ = false;
 #endif
 
   // The count of currently swapped out but pending `blink::WebView`s.  We have
   // started to swap these in, so the renderer process should not exit if
   // this count is non-zero.
-  int32_t pending_views_;
+  int32_t pending_views_ = 0;
 
  private:
   friend class ChildProcessLauncherBrowserTest_ChildSpawnFail_Test;
@@ -1026,16 +1026,16 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // These cover mutually-exclusive cases. While keep-alive is time-based,
   // workers are not. Shutdown-delay is also time-based, but uses a different
   // delay time. Attached documents are tracked via |listeners_| below.
-  size_t keep_alive_ref_count_;
-  size_t worker_ref_count_;
-  size_t shutdown_delay_ref_count_;
+  int keep_alive_ref_count_ = 0;
+  int worker_ref_count_ = 0;
+  int shutdown_delay_ref_count_ = 0;
   // We track the start-time for each |handle_id|, for crashkey reporting.
   base::flat_map<uint64_t, base::Time> keep_alive_start_times_;
 
   // Set in DisableRefCounts(). When true, |keep_alive_ref_count_| and
   // |worker_ref_count_|, and |shutdown_delay_ref_count_| must no longer be
   // modified.
-  bool are_ref_counts_disabled_;
+  bool are_ref_counts_disabled_ = false;
 
   // The registered IPC listener objects. When this list is empty, we should
   // delete ourselves.
@@ -1050,7 +1050,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // UpdateProcessPriorityInputs, and are used to compute priority sent to
   // ChildProcessLauncher.
   // |visible_clients_| is the count of currently visible clients.
-  int32_t visible_clients_;
+  int32_t visible_clients_ = 0;
   // |frame_depth_| can be used to rank processes of the same visibility, ie it
   // is the lowest depth of all visible clients, or if there are no visible
   // widgets the lowest depth of all hidden clients. Initialized to max depth
@@ -1129,11 +1129,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // allowed to be shutdown suddenly by checking their
   // SuddenTerminationAllowed() flag.  This can occur if one WebContents has an
   // unload event listener but another WebContents in the same process doesn't.
-  bool sudden_termination_allowed_;
+  bool sudden_termination_allowed_ = true;
 
   // Set to true if this process is blocked and shouldn't be sent input events.
   // The checking of this actually happens in the RenderWidgetHost.
-  bool is_blocked_;
+  bool is_blocked_ = false;
 
   // The clients who want to know when the blocked state has changed.
   BlockStateChangedCallbackList blocked_state_changed_callback_list_;
@@ -1147,15 +1147,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Indicates whether this RenderProcessHost is unused, meaning that it has
   // not committed any web content, and it has not been given to a SiteInstance
   // that has a site assigned.
-  bool is_unused_;
+  bool is_unused_ = true;
 
   // Set if a call to Cleanup is required once the RenderProcessHostImpl is no
   // longer within the RenderProcessHostObserver::RenderProcessExited callbacks.
-  bool delayed_cleanup_needed_;
+  bool delayed_cleanup_needed_ = false;
 
   // Indicates whether RenderProcessHostImpl::ProcessDied is currently iterating
   // and calling through RenderProcessHostObserver::RenderProcessExited.
-  bool within_process_died_observer_;
+  bool within_process_died_observer_ = false;
 
   std::unique_ptr<P2PSocketDispatcherHost> p2p_socket_dispatcher_host_;
 
@@ -1185,8 +1185,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // The memory allocator, if any, in which the renderer will write its metrics.
   std::unique_ptr<base::PersistentMemoryAllocator> metrics_allocator_;
 
-  bool channel_connected_;
-  bool sent_render_process_ready_;
+  bool channel_connected_ = false;
+  bool sent_render_process_ready_ = false;
 
   std::unique_ptr<FileSystemManagerImpl, BrowserThread::DeleteOnIOThread>
       file_system_manager_impl_;
@@ -1228,7 +1228,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // If the RenderProcessHost is being shutdown via Shutdown(), this records the
   // exit code.
-  int shutdown_exit_code_;
+  int shutdown_exit_code_ = -1;
 
   IpcSendWatcher ipc_send_watcher_for_testing_;
 
