@@ -29,11 +29,10 @@ namespace {
 // Endpoint Info version number, currently version 1.
 constexpr uint8_t kEndpointInfoVersion = 1;
 
-// Smart Setup verification style, e.g. shapes, pin, etc.
-// 0 = "Default", since there isn't yet a QR code option.
-// Values come from this enum:
-// http://google3/logs/proto/wireless/android/smartsetup/smart_setup_extension.proto;l=876;rcl=458110957
-constexpr uint8_t kEndpointInfoVerificationStyle = 0;
+// Smart Setup verification style, e.g. QR code, pin, etc.
+// 6 = "DIGITS", which tells the phone to display a code for the user to match.
+// Values come from the TargetConnectionInfo VerificationStyle enum:
+constexpr uint8_t kEndpointInfoVerificationStyle = 6;
 
 // Device Type for Smart Setup, e.g. phone, tablet.  8 = "Chrome"
 // Values come from the DiscoveryEvent DeviceType enum:

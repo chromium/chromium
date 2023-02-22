@@ -28,7 +28,7 @@ namespace ash::quick_start {
 namespace {
 
 constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
-constexpr uint8_t kEndpointInfoVerificationStyle = 0u;
+constexpr uint8_t kEndpointInfoVerificationStyle = 6u;
 constexpr uint8_t kEndpointInfoDeviceType = 8u;
 
 constexpr size_t kEndpointInfoRandomSessionIdLength = 10;
