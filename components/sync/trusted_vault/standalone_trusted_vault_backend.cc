@@ -172,6 +172,21 @@ base::flat_set<std::string> GetGaiaIDs(
   return result;
 }
 
+// Note that it returns false upon transition from kUnknown to
+// kNoPersistentAuthErrors.
+bool PersistentAuthErrorWasResolved(
+    StandaloneTrustedVaultBackend::RefreshTokenErrorState
+        previous_refresh_token_error_state,
+    StandaloneTrustedVaultBackend::RefreshTokenErrorState
+        current_refresh_token_error_state) {
+  return previous_refresh_token_error_state ==
+             StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+                 kPersistentAuthError &&
+         current_refresh_token_error_state ==
+             StandaloneTrustedVaultBackend::RefreshTokenErrorState::
+                 kNoPersistentAuthErrors;
+}
+
 TrustedVaultDeviceRegistrationOutcomeForUMA
 GetDeviceRegistrationOutcomeForUMAFromResponse(
     TrustedVaultRegistrationStatus response_status) {
@@ -390,10 +405,9 @@ void StandaloneTrustedVaultBackend::FetchKeys(
     FulfillOngoingFetchKeys(/*status_for_uma=*/absl::nullopt);
     return;
   }
-  // TODO(crbug.com/1413179): currently there is no guarantee that
-  // |primary_account_| is set before FetchKeys() call and this may cause
-  // redundant sync error in the UI (for key retrieval), especially during the
-  // browser startup. Try to find a way to avoid this issue.
+  // TODO(crbug.com/1413179): This check seems redundant with the current
+  // SetPrimaryAccount() logic. Replace with DCHECK() once some confirming UMA
+  // data available.
   if (!primary_account_.has_value() ||
       primary_account_->gaia != account_info.gaia) {
     // Keys download attempt is not possible because there is no primary
@@ -485,9 +499,10 @@ void StandaloneTrustedVaultBackend::StoreKeys(
 
 void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     const absl::optional<CoreAccountInfo>& primary_account,
-    bool has_persistent_auth_error) {
-  const bool had_persistent_auth_error_before = has_persistent_auth_error_;
-  has_persistent_auth_error_ = has_persistent_auth_error;
+    RefreshTokenErrorState refresh_token_error_state) {
+  const RefreshTokenErrorState previous_refresh_token_error_state =
+      refresh_token_error_state_;
+  refresh_token_error_state_ = refresh_token_error_state;
 
   if (primary_account == primary_account_) {
     // Still need to complete deferred deletion, e.g. if primary account was
@@ -495,7 +510,8 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
 
     // A persistent auth error could have just been resolved.
-    if (had_persistent_auth_error_before && !has_persistent_auth_error) {
+    if (PersistentAuthErrorWasResolved(previous_refresh_token_error_state,
+                                       refresh_token_error_state_)) {
       MaybeProcessPendingTrustedRecoveryMethod();
       MaybeRegisterDevice();
 
@@ -541,6 +557,11 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
             per_user_vault->degraded_recoverability_state());
     // Should process `pending_get_is_recoverability_degraded_` if it belongs to
     // the current primary account.
+    // TODO(crbug.com/1413179): |pending_get_is_recoverability_degraded_| should
+    // be redundant now. GetRecoverabilityIsDegraded() should be called after
+    // SetPrimaryAccount(). This logic is similar to FetchKeys() reporting
+    // kNoPrimaryAccount, once there is data confirming that this bucked is not
+    // recorded, it should be safe to remove.
     if (pending_get_is_recoverability_degraded_.has_value() &&
         pending_get_is_recoverability_degraded_->account_info ==
             primary_account_) {
@@ -664,8 +685,13 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     return;
   }
 
-  if (!primary_account_.has_value() || has_persistent_auth_error_) {
-    // Defer until SetPrimaryAccount() gets called.
+  if (!primary_account_.has_value() ||
+      refresh_token_error_state_ ==
+          RefreshTokenErrorState::kPersistentAuthError) {
+    // Defer until SetPrimaryAccount() gets called and there are no persistent
+    // auth errors. Note that the latter is important, because this method can
+    // be called while the auth error is being resolved and there is no order
+    // guarantee.
     pending_trusted_recovery_method_ = PendingTrustedRecoveryMethod();
     pending_trusted_recovery_method_->gaia_id = gaia_id;
     pending_trusted_recovery_method_->public_key = public_key;
@@ -883,7 +909,9 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
 }
 
 void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
-  if (!primary_account_.has_value() || has_persistent_auth_error_ ||
+  if (!primary_account_.has_value() ||
+      refresh_token_error_state_ ==
+          RefreshTokenErrorState::kPersistentAuthError ||
       !pending_trusted_recovery_method_.has_value() ||
       pending_trusted_recovery_method_->gaia_id != primary_account_->gaia) {
     return;
