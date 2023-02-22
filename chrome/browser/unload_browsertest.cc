@@ -125,6 +125,10 @@ class UnloadResults {
 
 class UnloadTest : public InProcessBrowserTest {
  public:
+  UnloadTest() {
+    scoped_feature_list.InitAndEnableFeature(
+        blink::features::kBeforeunloadEventCancelByPreventDefault);
+  }
   void SetUpCommandLine(base::CommandLine* command_line) override {
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
@@ -247,6 +251,9 @@ class UnloadTest : public InProcessBrowserTest {
         "</body></html>";
     return result;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
 };
 
 // Navigate to a page with an infinite unload handler.
