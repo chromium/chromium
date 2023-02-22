@@ -7,7 +7,7 @@
 [Exposed=Window, HTMLConstructor, RuntimeEnabled=FencedFrames]
 interface HTMLFencedFrameElement : HTMLElement {
     [CEReactions, Reflect, URL] attribute USVString src;
-    [CEReactions, RuntimeEnabled=FencedFramesAPIChanges] attribute FencedFrameConfig config;
+    [CEReactions, RuntimeEnabled=FencedFramesAPIChanges, MeasureAs=FencedFrameConfigAttribute] attribute FencedFrameConfig config;
     [CEReactions, Reflect] attribute DOMString width;
     [CEReactions, Reflect] attribute DOMString height;
     [CEReactions, Reflect, ReflectOnly=("default", "opaque-ads"), ReflectMissing="default", ReflectInvalid="default"] attribute DOMString mode;
