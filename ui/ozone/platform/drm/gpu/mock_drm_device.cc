@@ -647,7 +647,7 @@ bool MockDrmDevice::CloseBufferHandle(uint32_t handle) {
   return true;
 }
 
-bool MockDrmDevice::CommitPropertiesInternal(
+bool MockDrmDevice::CommitProperties(
     drmModeAtomicReq* request,
     uint32_t flags,
     uint32_t crtc_count,
@@ -711,6 +711,10 @@ bool MockDrmDevice::CommitPropertiesInternal(
     if (!res)
       return false;
   }
+
+  // Increment modeset sequence ID upon success.
+  if (flags == DRM_MODE_ATOMIC_ALLOW_MODESET)
+    ++modeset_sequence_id_;
 
   // Count all committed planes at the end just before returning true to
   // reflect the number of planes that have successfully been committed.
@@ -806,6 +810,10 @@ bool MockDrmDevice::ValidatePropertyValue(uint32_t id, uint64_t value) {
     return base::Contains(allocated_property_blobs_, value);
 
   return true;
+}
+
+int MockDrmDevice::modeset_sequence_id() const {
+  return modeset_sequence_id_;
 }
 
 }  // namespace ui

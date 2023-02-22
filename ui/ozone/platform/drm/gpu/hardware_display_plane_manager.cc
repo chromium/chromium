@@ -274,7 +274,7 @@ void HardwareDisplayPlaneManager::ResetConnectorsCache(
       continue;
     }
     GetDrmPropertyForName(drm_, props.get(), "CRTC_ID", &state_props.crtc_id);
-    DCHECK(!drm_->is_atomic() || state_props.crtc_id.id);
+    DCHECK(!IsAtomic(*drm_) || state_props.crtc_id.id);
     GetDrmPropertyForName(drm_, props.get(), "link-status",
                           &state_props.link_status);
 
@@ -394,10 +394,10 @@ bool HardwareDisplayPlaneManager::InitializeCrtcState() {
 
     GetDrmPropertyForName(drm_, props.get(), "ACTIVE",
                           &state.properties.active);
-    DCHECK(!drm_->is_atomic() || state.properties.active.id);
+    DCHECK(!IsAtomic(*drm_) || state.properties.active.id);
     GetDrmPropertyForName(drm_, props.get(), "MODE_ID",
                           &state.properties.mode_id);
-    DCHECK(!drm_->is_atomic() || state.properties.mode_id.id);
+    DCHECK(!IsAtomic(*drm_) || state.properties.mode_id.id);
     // These properties are optional. If they don't exist we can tell by the
     // invalid ID.
     GetDrmPropertyForName(drm_, props.get(), "CTM", &state.properties.ctm);

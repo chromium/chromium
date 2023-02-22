@@ -41,6 +41,11 @@ class DrmDevice : public DrmWrapper,
   // Open device.
   bool Initialize() override;
 
+  bool SetCrtc(uint32_t crtc_id,
+               uint32_t framebuffer,
+               std::vector<uint32_t> connectors,
+               const drmModeModeInfo& mode) override;
+
   // Schedules a pageflip for CRTC |crtc_id|. This function will return
   // immediately. Upon completion of the pageflip event, the CRTC will be
   // displaying the buffer with ID |framebuffer| and will have a DRM event
@@ -54,14 +59,16 @@ class DrmDevice : public DrmWrapper,
 
   // On success, true is returned and |page_flip_request| will receive a
   // callback signalling completion of the flip, if provided.
-  bool CommitProperties(drmModeAtomicReq* properties,
-                        uint32_t flags,
-                        uint32_t crtc_count,
-                        scoped_refptr<PageFlipRequest> page_flip_request);
+  virtual bool CommitProperties(
+      drmModeAtomicReq* properties,
+      uint32_t flags,
+      uint32_t crtc_count,
+      scoped_refptr<PageFlipRequest> page_flip_request);
 
   // Adds trace records to |context|.
   void WriteIntoTrace(perfetto::TracedDictionary dict) const override;
 
+  virtual int modeset_sequence_id() const;
   HardwareDisplayPlaneManager* plane_manager() { return plane_manager_.get(); }
   GbmDevice* gbm_device() const { return gbm_.get(); }
 
@@ -72,17 +79,16 @@ class DrmDevice : public DrmWrapper,
 
   ~DrmDevice() override;
 
-  virtual bool CommitPropertiesInternal(
-      drmModeAtomicReq* properties,
-      uint32_t flags,
-      uint32_t crtc_count,
-      scoped_refptr<PageFlipRequest> page_flip_request);
-
   std::unique_ptr<HardwareDisplayPlaneManager> plane_manager_;
 
  private:
   class IOWatcher;
   class PageFlipManager;
+
+  // Sequence ID incremented at each modeset.
+  // Currently used by DRM Framebuffer to indicate when was the fb initialized
+  // wrt the preceding modeset.
+  int modeset_sequence_id_ = 0;
 
   std::unique_ptr<PageFlipManager> page_flip_manager_;
 

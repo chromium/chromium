@@ -743,6 +743,17 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
   return path;
 }
 
+bool IsAtomic(const DrmWrapper& drm) {
+  uint64_t atomic_cap;
+  return drm.GetCapability(DRM_CLIENT_CAP_ATOMIC, &atomic_cap) && atomic_cap;
+}
+
+bool IsAddfb2ModifierCapable(const DrmWrapper& drm) {
+  uint64_t addfb2_mod_cap;
+  return drm.GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &addfb2_mod_cap) &&
+         addfb2_mod_cap;
+}
+
 std::string GetEnumNameForProperty(
     const drmModePropertyRes& property,
     const drmModeObjectProperties& property_values) {

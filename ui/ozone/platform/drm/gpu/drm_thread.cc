@@ -9,17 +9,13 @@
 #include <memory>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/display/types/display_mode.h"
-#include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/linux/drm_util_linux.h"
-#include "ui/gfx/linux/gbm_defines.h"
 #include "ui/gfx/linux/gbm_device.h"
 #include "ui/gfx/linux/gbm_util.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -28,15 +24,10 @@
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
-#include "ui/ozone/platform/drm/gpu/drm_dumb_buffer.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_display_manager.h"
 #include "ui/ozone/platform/drm/gpu/drm_window.h"
-#include "ui/ozone/platform/drm/gpu/drm_window_proxy.h"
 #include "ui/ozone/platform/drm/gpu/gbm_pixmap.h"
-#include "ui/ozone/platform/drm/gpu/gbm_surface_factory.h"
-#include "ui/ozone/platform/drm/gpu/proxy_helpers.h"
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
-#include "ui/ozone/public/ozone_switches.h"
 
 namespace ui {
 
@@ -264,7 +255,7 @@ void DrmThread::IsDeviceAtomic(gfx::AcceleratedWidget widget, bool* is_atomic) {
   scoped_refptr<ui::DrmDevice> drm_device =
       device_manager_->GetDrmDevice(widget);
 
-  *is_atomic = drm_device && drm_device->is_atomic();
+  *is_atomic = drm_device && IsAtomic(*drm_device);
 }
 
 void DrmThread::CreateWindow(gfx::AcceleratedWidget widget,

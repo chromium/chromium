@@ -94,14 +94,10 @@ bool DrmWrapper::Initialize() {
   }
 
   // Set atomic capabilities.
-  is_atomic_ = SetCapability(DRM_CLIENT_CAP_ATOMIC, 1);
+  SetCapability(DRM_CLIENT_CAP_ATOMIC, 1);
 
   // Expose all planes (overlay, primary, and cursor) to userspace.
   SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
-
-  uint64_t value;
-  allow_addfb2_modifiers_ =
-      GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &value) && value;
 
   return true;
 }
@@ -125,14 +121,9 @@ bool DrmWrapper::SetCrtc(uint32_t crtc_id,
   TRACE_EVENT2("drm", "DrmWrapper::SetCrtc", "crtc", crtc_id, "size",
                gfx::Size(mode.hdisplay, mode.vdisplay).ToString());
 
-  if (!drmModeSetCrtc(drm_fd_.get(), crtc_id, framebuffer, 0, 0,
-                      connectors.data(), connectors.size(),
-                      const_cast<drmModeModeInfo*>(&mode))) {
-    ++modeset_sequence_id_;
-    return true;
-  }
-
-  return false;
+  return !drmModeSetCrtc(drm_fd_.get(), crtc_id, framebuffer, 0, 0,
+                         connectors.data(), connectors.size(),
+                         const_cast<drmModeModeInfo*>(&mode));
 }
 
 bool DrmWrapper::DisableCrtc(uint32_t crtc_id) {
@@ -511,6 +502,48 @@ absl::optional<std::string> DrmWrapper::GetDriverName() const {
 
 base::ScopedFD DrmWrapper::ToScopedFD(std::unique_ptr<DrmWrapper> drm) {
   return std::move(drm->drm_fd_);
+}
+
+// Protected
+
+bool DrmWrapper::CommitProperties(drmModeAtomicReq* properties,
+                                  uint32_t flags,
+                                  uint64_t page_flip_id) {
+  DCHECK(drm_fd_.is_valid());
+  int result = drmModeAtomicCommit(drm_fd_.get(), properties, flags,
+                                   reinterpret_cast<void*>(page_flip_id));
+
+  // TODO(gildekel): Revisit b/174844386 and see if this case is still relevant,
+  // given significant work has been done around failing pageflips.
+  if (result && errno == EBUSY && (flags & DRM_MODE_ATOMIC_NONBLOCK)) {
+    VLOG(1) << "Nonblocking atomic commit failed with EBUSY, retry without "
+               "nonblock";
+    // There have been cases where we get back EBUSY when attempting a
+    // non-blocking atomic commit. If we return false from here, that will cause
+    // the GPU process to CHECK itself. These are likely due to kernel bugs,
+    // which should be fixed, but rather than crashing we should retry the
+    // commit without the non-blocking flag and then it should work. This will
+    // cause a slight delay, but that should be imperceptible and better than
+    // crashing. We still do want the underlying driver bugs fixed, but this
+    // provide a better user experience.
+    flags &= ~DRM_MODE_ATOMIC_NONBLOCK;
+    result = drmModeAtomicCommit(drm_fd_.get(), properties, flags,
+                                 reinterpret_cast<void*>(page_flip_id));
+  }
+
+  return !result;
+}
+
+bool DrmWrapper::PageFlip(uint32_t crtc_id,
+                          uint32_t framebuffer,
+                          uint64_t page_flip_id) {
+  DCHECK(drm_fd_.is_valid());
+  TRACE_EVENT2("drm", "DrmWrapper::PageFlip", "crtc", crtc_id, "framebuffer",
+               framebuffer);
+
+  return !drmModePageFlip(drm_fd_.get(), crtc_id, framebuffer,
+                          DRM_MODE_PAGE_FLIP_EVENT,
+                          reinterpret_cast<void*>(page_flip_id));
 }
 
 }  // namespace ui
