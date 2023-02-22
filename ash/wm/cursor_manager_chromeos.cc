@@ -35,21 +35,19 @@ void CursorManager::Init() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceShowCursor)) {
     // Set a custom cursor so users know that the switch is turned on.
-    gfx::NativeCursor cursor(ui::mojom::CursorType::kCustom);
     const gfx::ImageSkia custom_icon =
         gfx::CreateVectorIcon(kTouchIndicatorIcon, SK_ColorBLACK);
     const float dsf =
         display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
     SkBitmap bitmap = custom_icon.GetRepresentation(dsf).GetBitmap();
     gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
-    auto* cursor_factory = ui::CursorFactory::GetInstance();
+    ui::Cursor cursor =
+        ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot), dsf);
     cursor.SetPlatformCursor(
-        cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot));
-    cursor.set_custom_bitmap(bitmap);
-    cursor.set_custom_hotspot(hotspot);
-    cursor.set_image_scale_factor(dsf);
+        ui::CursorFactory::GetInstance()->CreateImageCursor(
+            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot()));
 
-    SetCursor(cursor);
+    SetCursor(std::move(cursor));
     LockCursor();
     return;
   }

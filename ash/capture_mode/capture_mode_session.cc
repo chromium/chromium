@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 
 #include <tuple>
+#include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/magnifier_glass.h"
@@ -228,7 +229,6 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
 // image icon if we're capturing image, or a video record image icon if we're
 // capturing video.
 ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           capture_mode_util::GetPreferredRootWindow());
@@ -240,11 +240,10 @@ ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
   gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
   wm::ScaleAndRotateCursorBitmapAndHotpoint(
       device_scale_factor, display.panel_rotation(), &bitmap, &hotspot);
-  auto* cursor_factory = ui::CursorFactory::GetInstance();
-  cursor.SetPlatformCursor(
-      cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot));
-  cursor.set_custom_bitmap(bitmap);
-  cursor.set_custom_hotspot(hotspot);
+  ui::Cursor cursor = ui::Cursor::NewCustom(
+      std::move(bitmap), std::move(hotspot), device_scale_factor);
+  cursor.SetPlatformCursor(ui::CursorFactory::GetInstance()->CreateImageCursor(
+      cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot()));
 
   return cursor;
 }

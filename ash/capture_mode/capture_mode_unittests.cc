@@ -112,7 +112,6 @@
 #include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -5130,18 +5129,15 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayBoundsAccountForCursorScaleFactor) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   auto set_cursor = [cursor_manager](const gfx::Size& cursor_image_size,
                                      float cursor_image_scale_factor) {
-    const auto cursor_type = CursorType::kCustom;
-    gfx::NativeCursor cursor{cursor_type};
     SkBitmap cursor_image;
     cursor_image.allocN32Pixels(cursor_image_size.width(),
                                 cursor_image_size.height());
-    cursor.set_image_scale_factor(cursor_image_scale_factor);
-    cursor.set_custom_bitmap(cursor_image);
-    auto* platform_cursor_factory =
-        ui::OzonePlatform::GetInstance()->GetCursorFactory();
-    cursor.SetPlatformCursor(platform_cursor_factory->CreateImageCursor(
-        cursor_type, cursor_image, cursor.custom_hotspot()));
-    cursor_manager->SetCursor(cursor);
+    ui::Cursor cursor = ui::Cursor::NewCustom(
+        std::move(cursor_image), gfx::Point(), cursor_image_scale_factor);
+    cursor.SetPlatformCursor(
+        ui::CursorFactory::GetInstance()->CreateImageCursor(
+            cursor.type(), cursor.custom_bitmap(), cursor.custom_hotspot()));
+    cursor_manager->SetCursor(std::move(cursor));
   };
 
   struct {

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <tuple>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -2423,13 +2424,12 @@ TEST_F(RenderWidgetHostTest, OnVerticalScrollDirectionChanged) {
 }
 
 TEST_F(RenderWidgetHostTest, SetCursorWithBitmap) {
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-
   SkBitmap bitmap;
   bitmap.allocN32Pixels(1, 1);
   bitmap.eraseColor(SK_ColorGREEN);
-  cursor.set_custom_bitmap(bitmap);
 
+  const ui::Cursor cursor =
+      ui::Cursor::NewCustom(std::move(bitmap), gfx::Point());
   host_->SetCursor(cursor);
   EXPECT_EQ(cursor, view_->last_cursor());
 }

@@ -652,13 +652,9 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
         image = svg_image_holder.get();
       }
 
-      ui::Cursor cursor(ui::mojom::blink::CursorType::kCustom);
-      cursor.set_custom_bitmap(
-          image->AsSkBitmapForCurrentFrame(kRespectImageOrientation));
-      cursor.set_custom_hotspot(
-          DetermineHotSpot(*image, hot_spot_specified, hot_spot));
-      cursor.set_image_scale_factor(scale);
-      return cursor;
+      return ui::Cursor::NewCustom(
+          image->AsSkBitmapForCurrentFrame(kRespectImageOrientation),
+          DetermineHotSpot(*image, hot_spot_specified, hot_spot), scale);
     }
   }
 

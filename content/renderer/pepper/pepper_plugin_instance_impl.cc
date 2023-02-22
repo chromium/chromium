@@ -2155,21 +2155,17 @@ PP_Bool PepperPluginInstanceImpl::SetCursor(PP_Instance instance,
   if (!auto_mapper.is_valid())
     return PP_FALSE;
 
-  auto custom_cursor =
-      std::make_unique<ui::Cursor>(ui::mojom::CursorType::kCustom);
-  custom_cursor->set_custom_hotspot(gfx::Point(hot_spot->x, hot_spot->y));
-
   SkBitmap bitmap(image_data->GetMappedBitmap());
   // Make a deep copy, so that the cursor remains valid even after the original
   // image data gets freed.
-  SkBitmap dst = custom_cursor->custom_bitmap();
+  SkBitmap dst;
   if (!dst.tryAllocPixels(bitmap.info()) ||
       !bitmap.readPixels(dst.info(), dst.getPixels(), dst.rowBytes(), 0, 0)) {
     return PP_FALSE;
   }
-  custom_cursor->set_custom_bitmap(dst);
 
-  DoSetCursor(std::move(custom_cursor));
+  DoSetCursor(std::make_unique<ui::Cursor>(ui::Cursor::NewCustom(
+      std::move(dst), gfx::Point(hot_spot->x, hot_spot->y))));
   return PP_TRUE;
 }
 

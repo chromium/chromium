@@ -30,10 +30,8 @@ bool StructTraits<ui::mojom::CursorDataView, ui::Cursor>::Read(
   if (!data.ReadHotspot(&hotspot) || !data.ReadBitmap(&bitmap))
     return false;
 
-  *out = ui::Cursor(type);
-  out->set_custom_bitmap(bitmap);
-  out->set_custom_hotspot(hotspot);
-  out->set_image_scale_factor(data.image_scale_factor());
+  *out = ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot),
+                               data.image_scale_factor());
   return true;
 }
 

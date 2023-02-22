@@ -43,10 +43,8 @@ TEST(WebCursorTest, WebCursorCursorConstructor) {
 }
 
 TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_custom_bitmap(CreateTestBitmap(32, 32));
-  cursor.set_custom_hotspot(gfx::Point(10, 20));
-  cursor.set_image_scale_factor(2.f);
+  const ui::Cursor cursor =
+      ui::Cursor::NewCustom(CreateTestBitmap(32, 32), gfx::Point(10, 20), 2.0f);
   WebCursor webcursor(cursor);
   EXPECT_EQ(cursor, webcursor.cursor());
 
@@ -87,9 +85,8 @@ TEST(WebCursorTest, WebCursorCursorConstructorCustom) {
 
 TEST(WebCursorTest, ClampHotspot) {
   // Initialize a cursor with an invalid hotspot; it should be clamped.
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_custom_hotspot(gfx::Point(100, 100));
-  cursor.set_custom_bitmap(CreateTestBitmap(5, 7));
+  ui::Cursor cursor =
+      ui::Cursor::NewCustom(CreateTestBitmap(5, 7), gfx::Point(100, 100));
   WebCursor webcursor(cursor);
   EXPECT_EQ(gfx::Point(4, 6), webcursor.cursor().custom_hotspot());
   // SetCursor should also clamp the hotspot.
@@ -101,48 +98,44 @@ TEST(WebCursorTest, SetCursor) {
   WebCursor webcursor;
   EXPECT_TRUE(webcursor.SetCursor(ui::Cursor()));
   EXPECT_TRUE(webcursor.SetCursor(ui::Cursor(ui::mojom::CursorType::kHand)));
-  EXPECT_TRUE(webcursor.SetCursor(ui::Cursor(ui::mojom::CursorType::kCustom)));
+  EXPECT_TRUE(
+      webcursor.SetCursor(ui::Cursor::NewCustom(SkBitmap(), gfx::Point())));
 
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_custom_bitmap(CreateTestBitmap(32, 32));
-  cursor.set_custom_hotspot(gfx::Point(10, 20));
-  cursor.set_image_scale_factor(1.5f);
+  const SkBitmap kBitmap = CreateTestBitmap(32, 32);
+  const gfx::Point kHotspot = gfx::Point(10, 20);
+  ui::Cursor cursor = ui::Cursor::NewCustom(kBitmap, kHotspot, 1.5f);
   EXPECT_TRUE(webcursor.SetCursor(cursor));
 
   // SetCursor should return false when the scale factor is too small.
-  cursor.set_image_scale_factor(0.001f);
+  cursor = ui::Cursor::NewCustom(kBitmap, kHotspot, 0.001f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 
   // SetCursor should return false when the scale factor is too large.
-  cursor.set_image_scale_factor(1000.f);
+  cursor = ui::Cursor::NewCustom(kBitmap, kHotspot, 1000.0f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 
   // SetCursor should return false when the unscaled bitmap width is too large.
-  cursor.set_image_scale_factor(10.f);
-  cursor.set_custom_bitmap(CreateTestBitmap(1025, 5));
+  cursor = ui::Cursor::NewCustom(CreateTestBitmap(1025, 5), kHotspot, 10.0f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 
   // SetCursor should return false when the unscaled bitmap height is too large.
-  cursor.set_custom_bitmap(CreateTestBitmap(5, 1025));
+  cursor = ui::Cursor::NewCustom(CreateTestBitmap(5, 1025), kHotspot, 10.0f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 
   // SetCursor should return false when the 1x scaled image width is too large.
-  cursor.set_image_scale_factor(1.f);
-  cursor.set_custom_bitmap(CreateTestBitmap(151, 3));
+  cursor = ui::Cursor::NewCustom(CreateTestBitmap(151, 3), kHotspot, 1.0f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 
   // SetCursor should return false when the 1x scaled image height is too large.
-  cursor.set_custom_bitmap(CreateTestBitmap(3, 151));
+  cursor = ui::Cursor::NewCustom(CreateTestBitmap(3, 151), kHotspot, 1.0f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 
   // SetCursor should return false when the scaled image width is too large.
-  cursor.set_image_scale_factor(0.02f);
-  cursor.set_custom_bitmap(CreateTestBitmap(50, 5));
+  cursor = ui::Cursor::NewCustom(CreateTestBitmap(50, 5), kHotspot, 0.02f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 
   // SetCursor should return false when the scaled image height is too large.
-  cursor.set_image_scale_factor(0.1f);
-  cursor.set_custom_bitmap(CreateTestBitmap(5, 20));
+  cursor = ui::Cursor::NewCustom(CreateTestBitmap(5, 20), kHotspot, 0.1f);
   EXPECT_FALSE(webcursor.SetCursor(cursor));
 }
 
@@ -151,11 +144,8 @@ TEST(WebCursorTest, CursorScaleFactor) {
   constexpr float kImageScale = 2.0f;
   constexpr float kDeviceScale = 4.2f;
 
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_custom_hotspot(gfx::Point(0, 1));
-  cursor.set_image_scale_factor(kImageScale);
-  cursor.set_custom_bitmap(CreateTestBitmap(128, 128));
-  WebCursor webcursor(cursor);
+  WebCursor webcursor(ui::Cursor::NewCustom(CreateTestBitmap(128, 128),
+                                            gfx::Point(0, 1), kImageScale));
 
   display::Display display;
   display.set_device_scale_factor(kDeviceScale);
@@ -183,10 +173,8 @@ TEST(WebCursorTest, CursorScaleFactor) {
 
 #if BUILDFLAG(IS_WIN)
 void ScaleCursor(float scale, int hotspot_x, int hotspot_y) {
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_custom_hotspot(gfx::Point(hotspot_x, hotspot_y));
-  cursor.set_custom_bitmap(CreateTestBitmap(10, 10));
-  WebCursor webcursor(cursor);
+  WebCursor webcursor(ui::Cursor::NewCustom(CreateTestBitmap(10, 10),
+                                            gfx::Point(hotspot_x, hotspot_y)));
 
   display::Display display;
   display.set_device_scale_factor(scale);

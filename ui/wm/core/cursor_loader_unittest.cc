@@ -108,11 +108,9 @@ TEST_F(CursorLoaderTest, GetCursorData) {
   EXPECT_FALSE(GetCursorHotspot(wait_cursor).IsOrigin());
   EXPECT_EQ(GetCursorHotspot(wait_cursor), wait_cursor_data->hotspot);
 
-  ui::Cursor custom_cursor(CursorType::kCustom);
   const SkBitmap kBitmap = GetTestBitmap();
   constexpr gfx::Point kHotspot = gfx::Point(10, 10);
-  custom_cursor.set_custom_bitmap(kBitmap);
-  custom_cursor.set_custom_hotspot(kHotspot);
+  const ui::Cursor custom_cursor = ui::Cursor::NewCustom(kBitmap, kHotspot);
   EXPECT_EQ(GetCursorBitmaps(custom_cursor)[0].getGenerationID(),
             kBitmap.getGenerationID());
   EXPECT_EQ(GetCursorHotspot(custom_cursor), kHotspot);

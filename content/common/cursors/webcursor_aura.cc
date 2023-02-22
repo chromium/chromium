@@ -16,18 +16,17 @@ namespace content {
 gfx::NativeCursor WebCursor::GetNativeCursor() {
   if (cursor_.type() == ui::mojom::CursorType::kCustom) {
     if (!custom_cursor_) {
-      custom_cursor_.emplace(ui::mojom::CursorType::kCustom);
       SkBitmap bitmap = cursor_.custom_bitmap();
       gfx::Point hotspot = cursor_.custom_hotspot();
       float scale = GetCursorScaleFactor(&bitmap);
       wm::ScaleAndRotateCursorBitmapAndHotpoint(scale, rotation_, &bitmap,
                                                 &hotspot);
-      custom_cursor_->set_custom_bitmap(bitmap);
-      custom_cursor_->set_custom_hotspot(hotspot);
-      custom_cursor_->set_image_scale_factor(device_scale_factor_);
+      custom_cursor_ = ui::Cursor::NewCustom(
+          std::move(bitmap), std::move(hotspot), device_scale_factor_);
       custom_cursor_->SetPlatformCursor(
           ui::CursorFactory::GetInstance()->CreateImageCursor(
-              ui::mojom::CursorType::kCustom, bitmap, hotspot));
+              custom_cursor_->type(), custom_cursor_->custom_bitmap(),
+              custom_cursor_->custom_hotspot()));
     }
     return *custom_cursor_;
   }

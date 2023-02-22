@@ -78,8 +78,7 @@ void DevToolsEyeDropper::AttachToHost(content::RenderFrameHost* frame_host) {
 
 void DevToolsEyeDropper::DetachFromHost() {
   host_->RemoveMouseEventCallback(mouse_event_callback_);
-  ui::Cursor cursor(ui::mojom::CursorType::kPointer);
-  host_->SetCursor(cursor);
+  host_->SetCursor(ui::mojom::CursorType::kPointer);
   video_capturer_.reset();
   host_ = nullptr;
 }
@@ -276,12 +275,12 @@ void DevToolsEyeDropper::UpdateCursor() {
   paint.setAntiAlias(true);
   canvas.drawCircle(kCursorSize / 2, kCursorSize / 2, kDiameter / 2, paint);
 
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_image_scale_factor(device_scale_factor);
-  cursor.set_custom_bitmap(result);
-  cursor.set_custom_hotspot(gfx::Point(kHotspotOffset * device_scale_factor,
-                                       kHotspotOffset * device_scale_factor));
-  host_->SetCursor(cursor);
+  ui::Cursor cursor =
+      ui::Cursor::NewCustom(std::move(result),
+                            gfx::Point(kHotspotOffset * device_scale_factor,
+                                       kHotspotOffset * device_scale_factor),
+                            device_scale_factor);
+  host_->SetCursor(std::move(cursor));
 }
 
 void DevToolsEyeDropper::OnFrameCaptured(
