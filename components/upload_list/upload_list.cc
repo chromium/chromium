@@ -95,12 +95,6 @@ void UploadList::GetUploads(size_t max_count,
             std::back_inserter(*uploads));
 }
 
-void UploadList::RequestSingleUpload(const std::string& local_id) {
-  // Manual uploads for not-yet uploaded crash reports are only available for
-  // Crashpad systems and for Android.
-  NOTREACHED();
-}
-
 void UploadList::OnLoadComplete(const std::vector<UploadInfo>& uploads) {
   uploads_ = uploads;
   if (!load_callback_.is_null())

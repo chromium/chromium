@@ -259,3 +259,7 @@ void TextLogUploadList::ParseLogEntries(
       uploads->push_back(*info);
   }
 }
+
+void TextLogUploadList::RequestSingleUpload(const std::string& local_id) {
+  // Do nothing.
+}
