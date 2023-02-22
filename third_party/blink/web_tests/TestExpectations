@@ -6887,7 +6887,7 @@ external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-
 crbug.com/1289550 fast/block/float/4145535-crash.html [ Failure Pass ]
 
 # WPT for checking if the browser supports lazy loading of non matching media queries
-crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.html [ Failure ]
+crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
 
 crbug.com/1412910 [ Mac ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 crbug.com/1412910 [ Mac ] virtual/view-transition/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
