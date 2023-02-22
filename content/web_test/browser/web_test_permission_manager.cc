@@ -23,6 +23,35 @@
 
 namespace content {
 
+namespace {
+
+std::vector<ContentSettingPatternSource> GetContentSettings(
+    const GURL& permission_origin,
+    const GURL& embedding_origin,
+    blink::mojom::PermissionStatus status) {
+  absl::optional<ContentSetting> setting;
+  switch (status) {
+    case blink::mojom::PermissionStatus::GRANTED:
+      setting = ContentSetting::CONTENT_SETTING_ALLOW;
+      break;
+    case blink::mojom::PermissionStatus::DENIED:
+      setting = ContentSetting::CONTENT_SETTING_BLOCK;
+      break;
+    case blink::mojom::PermissionStatus::ASK:
+      break;
+  }
+  std::vector<ContentSettingPatternSource> patterns;
+  if (setting) {
+    patterns.emplace_back(ContentSettingsPattern::FromURL(permission_origin),
+                          ContentSettingsPattern::FromURL(embedding_origin),
+                          base::Value(*setting), /*source=*/"",
+                          /*incognito=*/false);
+  }
+  return patterns;
+}
+
+}  // namespace
+
 struct WebTestPermissionManager::Subscription {
   PermissionDescription permission;
   base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback;
@@ -335,36 +364,30 @@ void WebTestPermissionManager::OnPermissionChanged(
   for (auto& callback : callbacks)
     std::move(callback).Run();
 
-  if (permission.type != blink::PermissionType::STORAGE_ACCESS_GRANT) {
-    std::move(permission_callback).Run(true);
-    return;
-  }
-
   // The network service expects to hear about any new storage-access permission
-  // grants, so we have to inform it.
-  absl::optional<ContentSetting> setting;
-  switch (status) {
-    case blink::mojom::PermissionStatus::GRANTED:
-      setting = ContentSetting::CONTENT_SETTING_ALLOW;
+  // grants, so we have to inform it. This is true for "regular" or top-level
+  // storage access permission changes.
+  switch (permission.type) {
+    case blink::PermissionType::STORAGE_ACCESS_GRANT:
+      browser_context_->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess()
+          ->SetStorageAccessGrantSettings(
+              GetContentSettings(permission.origin, permission.embedding_origin,
+                                 status),
+              base::BindOnce(std::move(permission_callback), /*success=*/true));
       break;
-    case blink::mojom::PermissionStatus::DENIED:
-      setting = ContentSetting::CONTENT_SETTING_BLOCK;
+    case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+      browser_context_->GetDefaultStoragePartition()
+          ->GetCookieManagerForBrowserProcess()
+          ->SetTopLevelStorageAccessSettings(
+              GetContentSettings(permission.origin, permission.embedding_origin,
+                                 status),
+              base::BindOnce(std::move(permission_callback), /*success=*/true));
       break;
-    case blink::mojom::PermissionStatus::ASK:
+    default:
+      std::move(permission_callback).Run(true);
       break;
   }
-  std::vector<ContentSettingPatternSource> patterns;
-  if (setting) {
-    patterns.emplace_back(
-        ContentSettingsPattern::FromURL(permission.origin),
-        ContentSettingsPattern::FromURL(permission.embedding_origin),
-        base::Value(*setting), /*source=*/"", /*incognito=*/false);
-  }
-  browser_context_->GetDefaultStoragePartition()
-      ->GetCookieManagerForBrowserProcess()
-      ->SetStorageAccessGrantSettings(
-          patterns,
-          base::BindOnce(std::move(permission_callback), /*success=*/true));
 }
 
 }  // namespace content
