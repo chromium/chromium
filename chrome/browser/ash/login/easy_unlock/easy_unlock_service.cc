@@ -22,7 +22,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/chrome_proximity_auth_client.h"
-#include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager_factory.h"
@@ -428,45 +427,6 @@ void EasyUnlockService::HandleAuthFailure(const AccountId& account_id) {
       SmartLockStateHandler::LOGIN_FAILED);
 }
 
-void EasyUnlockService::CheckCryptohomeKeysAndMaybeHardlock() {
-  const AccountId& account_id = GetAccountId();
-  if (!account_id.is_valid() || !IsChromeOSLoginEnabled())
-    return;
-
-  const base::Value::List* device_list = GetRemoteDevices();
-  std::set<std::string> paired_devices;
-  if (device_list) {
-    EasyUnlockDeviceKeyDataList parsed_paired;
-    EasyUnlockKeyManager::RemoteDeviceRefListToDeviceDataList(*device_list,
-                                                              &parsed_paired);
-    for (const auto& device_key_data : parsed_paired)
-      paired_devices.insert(device_key_data.psk);
-  }
-  if (paired_devices.empty()) {
-    SetHardlockState(SmartLockStateHandler::NO_PAIRING);
-    return;
-  }
-
-  // No need to compare if a change is already recorded.
-  if (GetHardlockState() == SmartLockStateHandler::PAIRING_CHANGED ||
-      GetHardlockState() == SmartLockStateHandler::PAIRING_ADDED) {
-    return;
-  }
-
-  EasyUnlockKeyManager* key_manager =
-      UserSessionManager::GetInstance()->GetEasyUnlockKeyManager();
-  DCHECK(key_manager);
-
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->FindUser(account_id);
-  DCHECK(user);
-  key_manager->GetDeviceDataList(
-      UserContext(*user),
-      base::BindOnce(&EasyUnlockService::OnCryptohomeKeysFetchedForChecking,
-                     weak_ptr_factory_.GetWeakPtr(), account_id,
-                     paired_devices));
-}
-
 void EasyUnlockService::Shutdown() {
   if (shut_down_)
     return;
@@ -749,31 +709,6 @@ void EasyUnlockService::SetProximityAuthDevices(
   proximity_auth_system_->SetRemoteDevicesForUser(account_id, remote_devices,
                                                   local_device);
   proximity_auth_system_->Start();
-}
-
-void EasyUnlockService::OnCryptohomeKeysFetchedForChecking(
-    const AccountId& account_id,
-    const std::set<std::string> paired_devices,
-    bool success,
-    const EasyUnlockDeviceKeyDataList& key_data_list) {
-  DCHECK(account_id.is_valid() && !paired_devices.empty());
-
-  if (!success) {
-    SetHardlockStateForUser(account_id, SmartLockStateHandler::NO_PAIRING);
-    return;
-  }
-
-  std::set<std::string> devices_in_cryptohome;
-  for (const auto& device_key_data : key_data_list)
-    devices_in_cryptohome.insert(device_key_data.psk);
-
-  if (paired_devices != devices_in_cryptohome ||
-      GetHardlockState() == SmartLockStateHandler::NO_PAIRING) {
-    SetHardlockStateForUser(account_id,
-                            devices_in_cryptohome.empty()
-                                ? SmartLockStateHandler::PAIRING_ADDED
-                                : SmartLockStateHandler::PAIRING_CHANGED);
-  }
 }
 
 void EasyUnlockService::PrepareForSuspend() {
