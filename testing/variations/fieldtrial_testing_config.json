@@ -11318,10 +11318,20 @@
             ],
             "experiments": [
                 {
-                    "name": "FindRegistrationImprovements_20230216",
+                    "name": "FindRegistrationImprovements_20230222",
                     "enable_features": [
                         "ServiceWorkerMergeFindRegistrationForClientUrl",
-                        "ServiceWorkerScopeCacheLimitPerKey",
+                        "ServiceWorkerScopeCache",
+                        "ServiceWorkerStorageControlOnThreadPool",
+                        "ServiceWorkerStorageControlResponseUseHighPriority"
+                    ],
+                    "disable_features": [
+                        "SpeculativeServiceWorkerStartup"
+                    ]
+                },
+                {
+                    "name": "FindRegistrationImprovements_20221130",
+                    "enable_features": [
                         "ServiceWorkerStorageControlOnThreadPool",
                         "ServiceWorkerStorageControlResponseUseHighPriority"
                     ],
