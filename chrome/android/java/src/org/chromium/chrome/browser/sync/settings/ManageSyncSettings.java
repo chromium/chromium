@@ -262,15 +262,18 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        MenuItem help =
-                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(R.drawable.ic_help_and_feedback);
+        // MenuItem help =
+        //         menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
+        // help.setIcon(R.drawable.ic_help_and_feedback);
         if (mIsFromSigninScreen) {
-            ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+            /*
+             * 您正在自定义您的同步设置。如需完成开启同步功能的操作，请点按屏幕底部附近的“确认”按钮。转到上一层级
+             * ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
             assert actionBar != null;
             actionBar.setHomeActionContentDescription(
                     R.string.prefs_manage_sync_settings_content_description);
             RecordUserAction.record("Signin_Signin_ShowAdvancedSyncSettings");
+            */
         }
     }
 

@@ -167,13 +167,14 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                             },
 
                             /* buttonAction= */ () -> {
-                                if (sadTab.showSendFeedbackView()) {
-                                    mTab.getActivity().startHelpAndFeedback(mTab.getUrl().getSpec(),
-                                            "MobileSadTabFeedback",
-                                            Profile.fromWebContents(mTab.getWebContents()));
-                                } else {
-                                    mTab.reload();
-                                }
+                                // if (sadTab.showSendFeedbackView()) {
+                                //     mTab.getActivity().startHelpAndFeedback(mTab.getUrl().getSpec(),
+                                //             "MobileSadTabFeedback",
+                                //             Profile.fromWebContents(mTab.getWebContents()));
+                                // } else {
+                                    
+                                // }
+                                mTab.reload();
                             });
                 });
                 // This is necessary to correlate histogram data with stability counts.

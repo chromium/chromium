@@ -36,7 +36,7 @@ class MenuDirectActionHandler implements DirectActionHandler {
         map.put(ChromeDirectActionIds.RELOAD, R.id.reload_menu_id);
         map.put(ChromeDirectActionIds.BOOKMARK_THIS_PAGE, R.id.bookmark_this_page_id);
         map.put(ChromeDirectActionIds.DOWNLOADS, R.id.downloads_menu_id);
-        map.put(ChromeDirectActionIds.HELP, R.id.help_id);
+        // map.put(ChromeDirectActionIds.HELP, R.id.help_id);
         map.put(ChromeDirectActionIds.NEW_TAB, R.id.new_tab_menu_id);
         map.put(ChromeDirectActionIds.OPEN_HISTORY, R.id.open_history_menu_id);
         map.put(ChromeDirectActionIds.PREFERENCES, R.id.preferences_id);
@@ -92,7 +92,7 @@ class MenuDirectActionHandler implements DirectActionHandler {
         }
 
         availableItemIds.add(R.id.downloads_menu_id);
-        availableItemIds.add(R.id.help_id);
+        // availableItemIds.add(R.id.help_id);
         availableItemIds.add(R.id.new_tab_menu_id);
         availableItemIds.add(R.id.preferences_id);
 

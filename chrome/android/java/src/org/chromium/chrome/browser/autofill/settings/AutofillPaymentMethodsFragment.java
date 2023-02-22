@@ -58,9 +58,9 @@ public class AutofillPaymentMethodsFragment extends PreferenceFragmentCompat
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        MenuItem help =
-                menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
-        help.setIcon(R.drawable.ic_help_and_feedback);
+        // MenuItem help =
+        //         menu.add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
+        // help.setIcon(R.drawable.ic_help_and_feedback);
     }
 
     @Override

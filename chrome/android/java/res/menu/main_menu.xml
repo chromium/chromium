@@ -150,9 +150,11 @@ found in the LICENSE file.
         <item android:id="@+id/preferences_id"
             android:title="@string/menu_settings"
             android:icon="@drawable/settings_cog" />
-        <item android:id="@+id/help_id"
+        <!--
+            <item android:id="@+id/help_id"
             android:title="@string/menu_help"
             android:icon="@drawable/help_outline" />
+        -->
         <item android:id="@+id/enter_vr_id"
             android:title="@string/enter_vr"
             android:icon="@drawable/gm_filled_cardboard_24" />
