@@ -377,8 +377,13 @@ GPUCommandBuffer* GPUCommandEncoder::finish(
     dawn_desc.label = label.c_str();
   }
 
-  return MakeGarbageCollected<GPUCommandBuffer>(
+  GPUCommandBuffer* command_buffer = MakeGarbageCollected<GPUCommandBuffer>(
       device_, GetProcs().commandEncoderFinish(GetHandle(), &dawn_desc));
+  if (descriptor->hasLabel()) {
+    command_buffer->setLabel(descriptor->label());
+  }
+
+  return command_buffer;
 }
 
 }  // namespace blink
