@@ -20,6 +20,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/profiler/native_unwinder_android_map_delegate_impl.h"
 #include "chrome/common/profiler/process_type.h"
 #include "components/metrics/call_stack_profile_params.h"
 #include "components/version_info/channel.h"
@@ -120,31 +121,11 @@ class ChromeUnwinderCreator {
 #endif                                   // ANDROID_ARM32_UNWINDING_SUPPORTED
 
 #if ANDROID_UNWINDING_SUPPORTED
-// Encapsulates the setup required to create the Android native unwinder.
-class NativeUnwinderCreator {
- public:
-  explicit NativeUnwinderCreator(stack_unwinder::Module* stack_unwinder_module)
-      : module_(stack_unwinder_module),
-        memory_regions_map_(module_->CreateMemoryRegionsMap()) {}
-  NativeUnwinderCreator(const NativeUnwinderCreator&) = delete;
-  NativeUnwinderCreator& operator=(const NativeUnwinderCreator&) = delete;
-
-  std::unique_ptr<base::Unwinder> Create() {
-    return module_->CreateNativeUnwinder(
-        memory_regions_map_.get(),
-        reinterpret_cast<uintptr_t>(&__executable_start));
-  }
-
- private:
-  const raw_ptr<stack_unwinder::Module> module_;
-  const std::unique_ptr<stack_unwinder::MemoryRegionsMap> memory_regions_map_;
-};
-
 std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
     stack_unwinder::Module* const stack_unwinder_module) {
   DCHECK_NE(getpid(), gettid());
 
-  static base::NoDestructor<NativeUnwinderCreator> native_unwinder_creator(
+  static base::NoDestructor<NativeUnwinderAndroidMapDelegateImpl> map_delegate(
       stack_unwinder_module);
   static std::conditional<
       std::is_trivially_destructible_v<ChromeUnwinderCreator>,
@@ -154,7 +135,8 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateCoreUnwinders(
   // Note order matters: the more general unwinder must appear first in the
   // vector.
   std::vector<std::unique_ptr<base::Unwinder>> unwinders;
-  unwinders.push_back(native_unwinder_creator->Create());
+  unwinders.push_back(stack_unwinder_module->CreateNativeUnwinder(
+      map_delegate.get(), reinterpret_cast<uintptr_t>(&__executable_start)));
   unwinders.push_back(chrome_unwinder_creator->Create());
   return unwinders;
 }
