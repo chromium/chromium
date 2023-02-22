@@ -515,12 +515,25 @@ template("test") {
 
     # Collate the complete set of elements to include in the test component's
     # manifest.
+
     _manifest_fragments = [
-      "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
-      "//build/config/fuchsia/test/minimum.shard.test-cml",
       _test_program_fragment,
       _test_runner_shard,
     ]
+
+    # Select the Fuchsia test realm in which to run the test.
+    if (defined(invoker.run_as_chromium_system_test) &&
+        invoker.run_as_chromium_system_test) {
+      _manifest_fragments += [
+        "//build/config/fuchsia/test/chromium_system_test_facet.shard.test-cml",
+        "//build/config/fuchsia/test/system_test_minimum.shard.test-cml",
+      ]
+    } else {
+      _manifest_fragments += [
+        "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
+        "//build/config/fuchsia/test/minimum.shard.test-cml",
+      ]
+    }
 
     _test_component_manifest = "${target_out_dir}/${target_name}.cml"
     _merged_manifest_name = "${_output_name}.cml"

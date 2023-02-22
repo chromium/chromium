@@ -1,0 +1,47 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+{
+  include: [
+    "syslog/client.shard.cml",
+  ],
+  use: [
+    {
+      directory: "config-data",
+      rights: [ "r*" ],
+      path: "/config/data",
+    },
+    {
+      storage: "cache",
+      path: "/cache",
+    },
+    {
+      storage: "custom_artifacts",
+      path: "/custom_artifacts",
+    },
+    {
+      storage: "data",
+      path: "/data",
+    },
+    {
+      storage: "tmp",
+      path: "/tmp",
+    },
+    {
+      protocol: [
+        "fuchsia.buildinfo.Provider",
+        "fuchsia.intl.PropertyProvider",
+        "fuchsia.hwinfo.Product",
+        "fuchsia.media.ProfileProvider",
+        "fuchsia.process.Launcher",
+        "fuchsia.sys.Loader",
+      ],
+    },
+    {
+      protocol: [
+        "fuchsia.tracing.perfetto.ProducerConnector",
+      ],
+      availability: "optional",
+    },
+  ],
+}

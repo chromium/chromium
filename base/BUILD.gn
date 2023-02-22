@@ -2718,6 +2718,11 @@ test("base_perftests") {
     shard_timeout = 600
   }
 
+  if (is_fuchsia) {
+    # Run these performance tests against the actual system.
+    run_as_chromium_system_test = true
+  }
+
   if (!is_official_build) {
     # The extra data tables required by stack traces are turned off for official
     # build, only do stack trace perftest for unofficial build
