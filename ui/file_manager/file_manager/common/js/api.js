@@ -256,6 +256,10 @@ export async function getEntry(directory, filename, isFile, options) {
  * @returns {!Promise<!number>}
  */
 export async function startIOTask(type, entries, params) {
+  if (params.destinationFolder) {
+    params.destinationFolder = /** @type {!DirectoryEntry} */ (
+        util.unwrapEntry(params.destinationFolder));
+  }
   return promisify(
       chrome.fileManagerPrivate.startIOTask, type,
       entries.map(e => util.unwrapEntry(e)), params);

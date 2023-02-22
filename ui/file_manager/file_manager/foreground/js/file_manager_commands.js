@@ -1929,15 +1929,16 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] =
         event.command.disabled = !fileManager.ui.actionbar.contains(
             /** @type {Node} */ (event.target));
 
-        chrome.fileManagerPrivate.sharesheetHasTargets(entries, hasTargets => {
-          if (chrome.runtime.lastError) {
-            console.warn(chrome.runtime.lastError.message);
-            return;
-          }
-          event.command.setHidden(!hasTargets);
-          event.canExecute = hasTargets;
-          event.command.disabled = !hasTargets;
-        });
+        chrome.fileManagerPrivate.sharesheetHasTargets(
+            entries.map(e => util.unwrapEntry(e)), hasTargets => {
+              if (chrome.runtime.lastError) {
+                console.warn(chrome.runtime.lastError.message);
+                return;
+              }
+              event.command.setHidden(!hasTargets);
+              event.canExecute = hasTargets;
+              event.command.disabled = !hasTargets;
+            });
       }
     })();
 

@@ -76,7 +76,8 @@ export class FileWatcher extends EventTarget {
    */
   changeWatchedDirectory(entry) {
     if (!util.isFakeEntry(entry)) {
-      return this.changeWatchedEntry_(/** @type {!DirectoryEntry} */ (entry));
+      return this.changeWatchedEntry_(
+          /** @type {!DirectoryEntry} */ (util.unwrapEntry(entry)));
     } else {
       return this.resetWatchedEntry_();
     }
