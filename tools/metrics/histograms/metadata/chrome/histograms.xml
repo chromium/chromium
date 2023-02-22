@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.KAnonymityService.JoinSetLatency" units="ms"
+<histogram name="Chrome.KAnonymityService.JoinSet.Latency" units="ms"
     expires_after="M113">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
@@ -58,16 +58,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
-    expires_after="2023-08-08">
-  <owner>behamilton@google.com</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <summary>
-    Records the number of elements queried per call for each call to QuerySet.
-  </summary>
-</histogram>
-
-<histogram name="Chrome.KAnonymityService.QuerySetsLatency" units="ms"
+<histogram name="Chrome.KAnonymityService.QuerySet.Latency" units="ms"
     expires_after="M113">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
@@ -77,6 +68,15 @@ chromium-metrics-reviews@google.com.
     formatting the request, performing the request, waiting for the response,
     and parsing the response. This metric is only measured for successful
     requests.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
+    expires_after="2023-08-08">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of elements queried per call for each call to QuerySet.
   </summary>
 </histogram>
 
