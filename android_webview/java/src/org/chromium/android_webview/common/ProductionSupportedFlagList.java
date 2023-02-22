@@ -383,6 +383,9 @@ public final class ProductionSupportedFlagList {
                             + "FLEDGE, Topics."),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_STATS_REPORT_IDL,
                     "Backs the WebRTC stats report object with generated objects defined in IDL"),
+            Flag.baseFeature(BlinkFeatures.RENDER_BLOCKING_FONTS,
+                    "When enabled, blocks rendering on font preloads to reduce CLS. "
+                            + "See go/critical-font-analysis"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
