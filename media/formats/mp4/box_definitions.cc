@@ -110,22 +110,6 @@ bool ReadFixedPoint32(float fixed_point_divisor,
   return true;
 }
 
-VideoColorSpace ConvertColorParameterInformationToColorSpace(
-    const ColorParameterInformation& info) {
-  auto primary_id =
-      static_cast<VideoColorSpace::PrimaryID>(info.colour_primaries);
-  auto transfer_id =
-      static_cast<VideoColorSpace::TransferID>(info.transfer_characteristics);
-  auto matrix_id =
-      static_cast<VideoColorSpace::MatrixID>(info.matrix_coefficients);
-
-  // Note that we don't check whether the embedded ids are valid.  We rely on
-  // the underlying video decoder to reject any ids that it doesn't support.
-  return VideoColorSpace(primary_id, transfer_id, matrix_id,
-                         info.full_range ? gfx::ColorSpace::RangeID::FULL
-                                         : gfx::ColorSpace::RangeID::LIMITED);
-}
-
 gfx::ColorVolumeMetadata ConvertMdcvToColorVolumeMetadata(
     const MasteringDisplayColorVolume& mdcv) {
   gfx::ColorVolumeMetadata color_volume_metadata;
@@ -1089,6 +1073,17 @@ FourCC VideoSampleEntry::BoxType() const {
   DCHECK(false) << "VideoSampleEntry should be parsed according to the "
                 << "handler type recovered in its Media ancestor.";
   return FOURCC_NULL;
+}
+
+// static
+VideoColorSpace VideoSampleEntry::ConvertColorParameterInformationToColorSpace(
+    const ColorParameterInformation& info) {
+  // Note that we don't check whether the embedded ids are valid.  We rely on
+  // the underlying video decoder to reject any ids that it doesn't support.
+  return VideoColorSpace(info.colour_primaries, info.transfer_characteristics,
+                         info.matrix_coefficients,
+                         info.full_range ? gfx::ColorSpace::RangeID::FULL
+                                         : gfx::ColorSpace::RangeID::LIMITED);
 }
 
 bool VideoSampleEntry::Parse(BoxReader* reader) {
