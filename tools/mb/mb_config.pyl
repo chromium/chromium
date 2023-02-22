@@ -1071,9 +1071,9 @@
     },
 
     'tryserver.chromium.cft': {
-      'linux-rel-cft': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing',
-      'mac-rel-cft': 'gpu_tests_release_trybot_no_symbols_mac_chrome_for_testing',
-      'win-rel-cft': 'gpu_tests_release_trybot_resource_allowlisting_chrome_for_testing',
+      'linux-rel-cft': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient',
+      'mac-rel-cft': 'gpu_tests_release_trybot_no_symbols_mac_chrome_for_testing_reclient',
+      'win-rel-cft': 'gpu_tests_release_trybot_resource_allowlisting_chrome_for_testing_reclient',
     },
 
     'tryserver.chromium.chromiumos': {
@@ -2748,8 +2748,8 @@
       'gpu_tests', 'release_trybot_minimal_symbols_reclient',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_mac_chrome_for_testing': [
-      'gpu_tests', 'release_trybot', 'no_symbols',
+    'gpu_tests_release_trybot_no_symbols_mac_chrome_for_testing_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_symbols',
       'chrome_for_testing',
     ],
 
@@ -2770,8 +2770,8 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing': [
-      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
+    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'devtools_do_typecheck', 'chrome_for_testing',
     ],
 
@@ -2800,8 +2800,8 @@
     # TODO(crbug.com/1004523) Delete this once coverage mode is enabled on the
     # standard Windows trybot and the dedicated coverage trybot is no longer
     # needed.
-    'gpu_tests_release_trybot_resource_allowlisting_chrome_for_testing': [
-      'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
+    'gpu_tests_release_trybot_resource_allowlisting_chrome_for_testing_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting',
       'chrome_for_testing',
     ],
 
