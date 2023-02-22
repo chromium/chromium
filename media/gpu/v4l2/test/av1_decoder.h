@@ -18,15 +18,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
-// TODO(stevecho): RESTORATION_TILESIZE_MAX in the spec is not available in the
-// AV1 uAPI. It was recommended to be added in the userspace code. If the uAPI
-// stays as it is for upstreaming, then #ifndef can be removed. If the uAPI ends
-// up adding this constant, then we can remove this define at that time.
-// https://patchwork.linuxtv.org/project/linux-media/patch/20210810220552.298140-2-daniel.almeida@collabora.com/
-#ifndef V4L2_AV1_RESTORATION_TILESIZE_MAX
-#define V4L2_AV1_RESTORATION_TILESIZE_MAX 256
-#endif
-
 struct v4l2_ctrl_av1_frame;
 
 namespace media {
@@ -46,7 +37,6 @@ class Av1Decoder : public VideoDecoder {
   static std::unique_ptr<Av1Decoder> Create(
       const base::MemoryMappedFile& stream);
 
-  // TODO(stevecho): implement DecodeNextFrame() function
   // Parses next frame from IVF stream and decodes the frame. This method will
   // place the Y, U, and V values into the respective vectors and update the
   // size with the display area size of the decoded frame.

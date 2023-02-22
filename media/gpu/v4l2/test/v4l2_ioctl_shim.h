@@ -61,12 +61,9 @@ class MmapedBuffer : public base::RefCounted<MmapedBuffer> {
 
   MmapedPlanes mmaped_planes_;
   const uint32_t num_planes_;
-  // TODO(stevecho): might be better to use constructor for default value
-  uint32_t buffer_id_ = 0;
+  uint32_t buffer_id_;
   // Indicates which frame in input bitstream corresponds to this MmapedBuffer
   // in OUTPUT queue.
-  // TODO(stevecho): might need to consider |show_frame| flag in the frame
-  // header.
   uint32_t frame_number_;
 };
 

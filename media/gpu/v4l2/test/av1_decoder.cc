@@ -162,7 +162,6 @@ void FillSequenceParams(
 // Section 5.9.11. Loop filter params syntax.
 // Note that |update_ref_delta| and |update_mode_delta| flags in the spec
 // are not needed for V4L2 AV1 API.
-// TODO(stevecho): sanity check data structures in libgav1 against the AV1 spec.
 void FillLoopFilterParams(struct v4l2_av1_loop_filter* v4l2_lf,
                           const libgav1::LoopFilter& lf) {
   conditionally_set_flags(&v4l2_lf->flags, lf.delta_enabled,
@@ -368,9 +367,11 @@ void FillLoopRestorationParams(v4l2_av1_loop_restoration* v4l2_lr,
   v4l2_lr->lr_unit_shift = lr.unit_size_log2[0] - 6;
   v4l2_lr->lr_uv_shift = lr.unit_size_log2[0] - lr.unit_size_log2[1];
 
+  constexpr uint32_t kAv1RestorationTileSizeMax = 256;
+
   // AV1 spec (p.52) uses this formula with hard coded value 2.
   v4l2_lr->loop_restoration_size[0] =
-      V4L2_AV1_RESTORATION_TILESIZE_MAX >> (2 - v4l2_lr->lr_unit_shift);
+      kAv1RestorationTileSizeMax >> (2 - v4l2_lr->lr_unit_shift);
   v4l2_lr->loop_restoration_size[1] =
       v4l2_lr->loop_restoration_size[0] >> v4l2_lr->lr_uv_shift;
   v4l2_lr->loop_restoration_size[2] =
@@ -591,7 +592,6 @@ std::unique_ptr<Av1Decoder> Av1Decoder::Create(
   uint32_t uncompressed_fourcc = V4L2_PIX_FMT_NV12;
   int num_planes = 1;
 
-  // TODO(stevecho): this might need some driver patches to support AV1F
   if (!v4l2_ioctl->VerifyCapabilities(kDriverCodecFourcc,
                                       uncompressed_fourcc)) {
     // Fall back to MM21 for MediaTek platforms

@@ -103,7 +103,7 @@ void LogIoctlResult(int ret, int request_code) {
 
 MmapedBuffer::MmapedBuffer(const base::PlatformFile ioctl_fd,
                            const struct v4l2_buffer& v4l2_buffer)
-    : num_planes_(v4l2_buffer.length) {
+    : num_planes_(v4l2_buffer.length), buffer_id_(0) {
   for (uint32_t i = 0; i < num_planes_; ++i) {
     void* start_addr =
         mmap(NULL, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
