@@ -382,9 +382,8 @@ void AppListClientImpl::GetContextMenuModel(
 }
 
 void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
-  app_list_target_visibility_ = visible;
-  if (!visible && search_controller_) {
-    search_controller_->AppListClosing();
+  if (search_controller_) {
+    search_controller_->AppListViewChanging(visible);
   }
 }
 
