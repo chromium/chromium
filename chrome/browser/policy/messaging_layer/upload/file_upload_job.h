@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_UPLOAD_FILE_UPLOAD_JOB_H_
 
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -43,28 +44,33 @@ class FileUploadJob {
    public:
     virtual ~Delegate() = default;
 
-    // Initializes upload.
-    // Populates `total` and `session_token`, sets `uploaded` to 0.
-    virtual Status DoInitiate(base::StringPiece origin_path,        // IN
-                              base::StringPiece upload_parameters,  // IN
-                              int64_t* total,                       // OUT
-                              std::string* session_token            // OUT
-                              ) = 0;
+    // Asynchronously initializes upload.
+    // Calls back with `total` and `session_token` are set, or Status in case
+    // of error.
+    virtual void DoInitiate(
+        base::StringPiece origin_path,
+        base::StringPiece upload_parameters,
+        base::OnceCallback<
+            void(StatusOr<std::pair<int64_t /*total*/,
+                                    std::string /*session_token*/>>)> cb) = 0;
 
-    // Performs upload of the next chunk.
-    // Updates `uploaded` and optionally `session_token`.
-    // Returns status in case of an error.
-    virtual Status DoNextStep(int64_t total,              // IN
-                              int64_t* uploaded,          // INOUT
-                              std::string* session_token  // INOUT
-                              ) = 0;
+    // Asynchronously uploads the next chunk.
+    // Calls back with new `uploaded` and `session_token` (could be the same),
+    // or Status in case of an error.
+    virtual void DoNextStep(
+        int64_t total,
+        int64_t uploaded,
+        base::StringPiece session_token,
+        base::OnceCallback<
+            void(StatusOr<std::pair<int64_t /*uploaded*/,
+                                    std::string /*session_token*/>>)> cb) = 0;
 
-    // Finalizes upload (once uploaded reached total).
-    // Populates `access_parameters`.
-    // Returns status in case of an error.
-    virtual Status DoFinalize(base::StringPiece session_token,  // IN
-                              std::string* access_parameters    // OUT
-                              ) = 0;
+    // Asynchronously finalizes upload (once `uploaded` reached `total`).
+    // Calls back with `access_parameters`, or Status in case of error.
+    virtual void DoFinalize(
+        base::StringPiece session_token,
+        base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
+            cb) = 0;
 
    protected:
     Delegate() = default;
@@ -154,19 +160,18 @@ class FileUploadJob {
 
  private:
   // The next three methods complement `Initiate`, `NextStep` and `Finalize` -
-  // they are called after delegate calls are executed on a thread pool, and
+  // they are invoked after delegate calls are executed on a thread pool, and
   // resume execution on the Job's default task runner.
-  void DoneInitiate(base::ScopedClosureRunner done,
-                    Status status,
-                    int64_t total,
-                    std::string session_token);
-  void DoneNextStep(base::ScopedClosureRunner done,
-                    Status status,
-                    int64_t uploaded,
-                    std::string session_token);
+  void DoneInitiate(
+      base::ScopedClosureRunner done,
+      StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>
+          result);
+  void DoneNextStep(
+      base::ScopedClosureRunner done,
+      StatusOr<std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>
+          result);
   void DoneFinalize(base::ScopedClosureRunner done,
-                    Status status,
-                    std::string access_parameters);
+                    StatusOr<std::string /*access_parameters*/> result);
 
   // Unowned delegate that performs actual actions.
   // It must outlive the job (the same delegate may be used by multiple jobs).

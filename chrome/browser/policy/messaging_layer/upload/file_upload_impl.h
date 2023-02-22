@@ -19,20 +19,33 @@ class FileUploadDelegate : public FileUploadJob::Delegate {
 
  private:
   // Delegate implementation.
-  Status DoInitiate(base::StringPiece origin_path,        // IN
-                    base::StringPiece upload_parameters,  // IN
-                    int64_t* total,                       // OUT
-                    std::string* session_token            // OUT
-                    ) override;
+  // Asynchronously initializes upload.
+  // Calls back with `total` and `session_token` are set, or Status in case
+  // of error.
+  void DoInitiate(
+      base::StringPiece origin_path,
+      base::StringPiece upload_parameters,
+      base::OnceCallback<void(
+          StatusOr<std::pair<int64_t /*total*/,
+                             std::string /*session_token*/>>)> cb) override;
 
-  Status DoNextStep(int64_t total,              // IN
-                    int64_t* uploaded,          // INOUT
-                    std::string* session_token  // INOUT
-                    ) override;
+  // Asynchronously uploads the next chunk.
+  // Calls back with new `uploaded` and `session_token` (could be the same),
+  // or Status in case of an error.
+  void DoNextStep(
+      int64_t total,
+      int64_t uploaded,
+      base::StringPiece session_token,
+      base::OnceCallback<void(
+          StatusOr<std::pair<int64_t /*uploaded*/,
+                             std::string /*session_token*/>>)> cb) override;
 
-  Status DoFinalize(base::StringPiece session_token,  // IN
-                    std::string* access_parameters    // OUT
-                    ) override;
+  // Asynchronously finalizes upload (once `uploaded` reached `total`).
+  // Calls back with `access_parameters`, or Status in case of error.
+  void DoFinalize(
+      base::StringPiece session_token,
+      base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)> cb)
+      override;
 };
 }  // namespace reporting
 

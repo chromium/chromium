@@ -4,8 +4,6 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
-#include <tuple>
-
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -52,13 +50,14 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Between;
 using ::testing::Eq;
+using ::testing::Ge;
 using ::testing::Gt;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::Lt;
 using ::testing::Not;
 using ::testing::NotNull;
 using ::testing::Property;
-using ::testing::Return;
 using ::testing::StrEq;
 using ::testing::WithArgs;
 
@@ -86,29 +85,32 @@ MATCHER_P(ResponseEquals,
 
 class MockFileUploadDelegate : public FileUploadJob::Delegate {
  public:
-  MOCK_METHOD(Status,
+  MOCK_METHOD(void,
               DoInitiate,
-              (base::StringPiece origin_path,        // IN
-               base::StringPiece upload_parameters,  // IN
-               int64_t* total,                       // OUT
-               std::string* session_token            // OUT
-               ),
+              (base::StringPiece origin_path,
+               base::StringPiece upload_parameters,
+               base::OnceCallback<void(
+                   StatusOr<std::pair<int64_t /*total*/,
+                                      std::string /*session_token*/>>)> cb),
               (override));
 
-  MOCK_METHOD(Status,
+  MOCK_METHOD(void,
               DoNextStep,
-              (int64_t total,              // IN
-               int64_t* uploaded,          // INOUT
-               std::string* session_token  // INOUT
-               ),
+              (int64_t total,
+               int64_t uploaded,
+               base::StringPiece session_token,
+               base::OnceCallback<void(
+                   StatusOr<std::pair<int64_t /*uploaded*/,
+                                      std::string /*session_token*/>>)> cb),
               (override));
 
-  MOCK_METHOD(Status,
-              DoFinalize,
-              (base::StringPiece session_token,  // IN
-               std::string* access_parameters    // OUT
-               ),
-              (override));
+  MOCK_METHOD(
+      void,
+      DoFinalize,
+      (base::StringPiece session_token,
+       base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
+           cb),
+      (override));
 };
 
 // Tests for generic events handling.
@@ -242,16 +244,14 @@ TEST_F(RecordHandlerUploadTest, SuccessfulInitiation) {
   test::TestEvent<CompletionResponse> responder_event;
 
   auto delegate = std::make_unique<MockFileUploadDelegate>();
-  EXPECT_CALL(*delegate,
-              DoInitiate(StrEq("/tmp/file"), _, NotNull(), NotNull()))
-      .WillOnce(Invoke([](base::StringPiece origin_path,
-                          base::StringPiece upload_parameters, int64_t* total,
-                          std::string* session_token) {
-        EXPECT_THAT(*session_token, IsEmpty());
-        *total = 300L;
-        *session_token = "ABC";
-        return Status::StatusOK();
-      }));
+  EXPECT_CALL(*delegate, DoInitiate(StrEq("/tmp/file"), Not(IsEmpty()), _))
+      .WillOnce(Invoke(
+          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+             base::OnceCallback<void(
+                 StatusOr<std::pair<int64_t /*total*/,
+                                    std::string /*session_token*/>>)> cb) {
+            std::move(cb).Run(std::make_pair(300L, "ABC"));
+          }));
   EXPECT_CALL(*delegate, DoNextStep).Times(0);
   EXPECT_CALL(*delegate, DoFinalize).Times(0);
 
@@ -300,14 +300,15 @@ TEST_F(RecordHandlerUploadTest, SuccessfulNextStep) {
 
   auto delegate = std::make_unique<MockFileUploadDelegate>();
   EXPECT_CALL(*delegate, DoInitiate).Times(0);
-  EXPECT_CALL(*delegate, DoNextStep(Eq(300L), NotNull(), NotNull()))
-      .WillOnce(Invoke(
-          [](int64_t total, int64_t* uploaded, std::string* session_token) {
-            EXPECT_THAT(*session_token, StrEq("ABC"));
-            EXPECT_THAT(*uploaded, Eq(100L));
-            *uploaded += 100L;
-            return Status::StatusOK();
-          }));
+  EXPECT_CALL(*delegate, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _))
+      .WillOnce(
+          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             base::OnceCallback<void(
+                 StatusOr<std::pair<int64_t /*uploaded*/,
+                                    std::string /*session_token*/>>)> cb) {
+            std::move(cb).Run(
+                std::make_pair(uploaded + 100L, std::string(session_token)));
+          });
   EXPECT_CALL(*delegate, DoFinalize).Times(0);
 
   auto storage = base::MakeRefCounted<test::TestStorageModule>();
@@ -355,11 +356,12 @@ TEST_F(RecordHandlerUploadTest, SuccessfulFinalize) {
   auto delegate = std::make_unique<MockFileUploadDelegate>();
   EXPECT_CALL(*delegate, DoInitiate).Times(0);
   EXPECT_CALL(*delegate, DoNextStep).Times(0);
-  EXPECT_CALL(*delegate, DoFinalize(StrEq("ABC"), NotNull()))
-      .WillOnce(Invoke(
-          [](base::StringPiece session_token, std::string* access_parameters) {
-            *access_parameters = "http://destination";
-            return Status::StatusOK();
+  EXPECT_CALL(*delegate, DoFinalize(StrEq("ABC"), _))
+      .WillOnce(
+          Invoke([](base::StringPiece session_token,
+                    base::OnceCallback<void(
+                        StatusOr<std::string /*access_parameters*/>)> cb) {
+            std::move(cb).Run("http://destination");
           }));
 
   auto storage = base::MakeRefCounted<test::TestStorageModule>();
@@ -454,8 +456,14 @@ TEST_F(RecordHandlerUploadTest, FailedProcessing) {
 
   auto delegate = std::make_unique<MockFileUploadDelegate>();
   EXPECT_CALL(*delegate, DoInitiate).Times(0);
-  EXPECT_CALL(*delegate, DoNextStep(Eq(300L), NotNull(), NotNull()))
-      .WillOnce(Return(Status(error::CANCELLED, "Failure by test")));
+  EXPECT_CALL(*delegate, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _))
+      .WillOnce(
+          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             base::OnceCallback<void(
+                 StatusOr<std::pair<int64_t /*uploaded*/,
+                                    std::string /*session_token*/>>)> cb) {
+            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+          });
   EXPECT_CALL(*delegate, DoFinalize).Times(0);
 
   auto storage = base::MakeRefCounted<test::TestStorageModule>();
@@ -498,16 +506,14 @@ TEST_F(RecordHandlerUploadTest, RepeatedInitiationAttempts) {
           std::move(ResponseBuilder().SetSuccess(true))));
 
   auto delegate = std::make_unique<MockFileUploadDelegate>();
-  EXPECT_CALL(*delegate,
-              DoInitiate(StrEq("/tmp/file"), _, NotNull(), NotNull()))
-      .WillOnce(Invoke([](base::StringPiece origin_path,
-                          base::StringPiece upload_parameters, int64_t* total,
-                          std::string* session_token) {
-        EXPECT_THAT(*session_token, IsEmpty());
-        *total = 300L;
-        *session_token = "ABC";
-        return Status::StatusOK();
-      }));
+  EXPECT_CALL(*delegate, DoInitiate(StrEq("/tmp/file"), Not(IsEmpty()), _))
+      .WillOnce(Invoke(
+          [](base::StringPiece origin_path, base::StringPiece upload_parameters,
+             base::OnceCallback<void(
+                 StatusOr<std::pair<int64_t /*total*/,
+                                    std::string /*session_token*/>>)> cb) {
+            std::move(cb).Run(std::make_pair(300L, "ABC"));
+          }));
   EXPECT_CALL(*delegate, DoNextStep).Times(0);
   EXPECT_CALL(*delegate, DoFinalize).Times(0);
 
@@ -566,14 +572,15 @@ TEST_F(RecordHandlerUploadTest, RepeatedNextStepAttempts) {
 
   auto delegate = std::make_unique<MockFileUploadDelegate>();
   EXPECT_CALL(*delegate, DoInitiate).Times(0);
-  EXPECT_CALL(*delegate, DoNextStep(Eq(300L), NotNull(), NotNull()))
-      .WillOnce(Invoke(
-          [](int64_t total, int64_t* uploaded, std::string* session_token) {
-            EXPECT_THAT(*session_token, StrEq("ABC"));
-            EXPECT_THAT(*uploaded, Eq(100L));
-            *uploaded += 100L;
-            return Status::StatusOK();
-          }));
+  EXPECT_CALL(*delegate, DoNextStep(Eq(300L), Eq(100L), StrEq("ABC"), _))
+      .WillOnce(
+          [](int64_t total, int64_t uploaded, base::StringPiece session_token,
+             base::OnceCallback<void(
+                 StatusOr<std::pair<int64_t /*uploaded*/,
+                                    std::string /*session_token*/>>)> cb) {
+            std::move(cb).Run(
+                std::make_pair(uploaded + 100L, std::string(session_token)));
+          });
   EXPECT_CALL(*delegate, DoFinalize).Times(0);
 
   auto storage = base::MakeRefCounted<test::TestStorageModule>();
@@ -634,11 +641,12 @@ TEST_F(RecordHandlerUploadTest, RepeatedFinalizeAttempts) {
   auto delegate = std::make_unique<MockFileUploadDelegate>();
   EXPECT_CALL(*delegate, DoInitiate).Times(0);
   EXPECT_CALL(*delegate, DoNextStep).Times(0);
-  EXPECT_CALL(*delegate, DoFinalize(StrEq("ABC"), NotNull()))
-      .WillOnce(Invoke(
-          [](base::StringPiece session_token, std::string* access_parameters) {
-            *access_parameters = "http://destination";
-            return Status::StatusOK();
+  EXPECT_CALL(*delegate, DoFinalize(StrEq("ABC"), _))
+      .WillOnce(
+          Invoke([](base::StringPiece session_token,
+                    base::OnceCallback<void(
+                        StatusOr<std::string /*access_parameters*/>)> cb) {
+            std::move(cb).Run("http://destination");
           }));
 
   auto storage = base::MakeRefCounted<test::TestStorageModule>();

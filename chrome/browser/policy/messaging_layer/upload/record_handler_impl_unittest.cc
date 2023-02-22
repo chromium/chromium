@@ -4,7 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
-#include <tuple>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
@@ -72,29 +72,32 @@ MATCHER_P(ResponseEquals,
 
 class MockFileUploadDelegate : public FileUploadJob::Delegate {
  public:
-  MOCK_METHOD(Status,
+  MOCK_METHOD(void,
               DoInitiate,
-              (base::StringPiece origin_path,        // IN
-               base::StringPiece upload_parameters,  // IN
-               int64_t* total,                       // OUT
-               std::string* session_token            // OUT
-               ),
+              (base::StringPiece origin_path,
+               base::StringPiece upload_parameters,
+               base::OnceCallback<void(
+                   StatusOr<std::pair<int64_t /*total*/,
+                                      std::string /*session_token*/>>)> cb),
               (override));
 
-  MOCK_METHOD(Status,
+  MOCK_METHOD(void,
               DoNextStep,
-              (int64_t total,              // IN
-               int64_t* uploaded,          // INOUT
-               std::string* session_token  // INOUT
-               ),
+              (int64_t total,
+               int64_t uploaded,
+               base::StringPiece session_token,
+               base::OnceCallback<void(
+                   StatusOr<std::pair<int64_t /*uploaded*/,
+                                      std::string /*session_token*/>>)> cb),
               (override));
 
-  MOCK_METHOD(Status,
-              DoFinalize,
-              (base::StringPiece session_token,  // IN
-               std::string* access_parameters    // OUT
-               ),
-              (override));
+  MOCK_METHOD(
+      void,
+      DoFinalize,
+      (base::StringPiece session_token,
+       base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)>
+           cb),
+      (override));
 };
 
 // Tests for generic events handling.
