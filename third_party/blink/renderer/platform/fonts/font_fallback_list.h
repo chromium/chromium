@@ -89,6 +89,8 @@ class PLATFORM_EXPORT FontFallbackList : public RefCounted<FontFallbackList> {
 
   const SimpleFontData* PrimarySimpleFontData(
       const FontDescription& font_description) {
+    recordreplay::Assert("[RUN-1219-1406] FontFallbackList::PrimarySimpleFontData %d",
+      (int) !!cached_primary_simple_font_data_);
     if (!cached_primary_simple_font_data_) {
       cached_primary_simple_font_data_ =
           DeterminePrimarySimpleFontData(font_description);
