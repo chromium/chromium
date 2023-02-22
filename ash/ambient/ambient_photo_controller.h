@@ -276,13 +276,6 @@ class ASH_EXPORT AmbientPhotoController : public AmbientViewDelegateObserver {
   // last transitioned to the |kPreparingNextTopicSet| state.
   size_t num_topics_prepared_ = 0;
 
-  // This is purely for development purposes and does not contribute to the
-  // user-facing business logic. It validates that only one topic is prepared at
-  // a time. If multiple topics are prepared simultaneously, they may clobber
-  // variables like |cache_entry_|, |image_|, etc and result in unpredictable
-  // behavior.
-  bool is_actively_preparing_topic_ = false;
-
   base::ScopedObservation<AmbientViewDelegate, AmbientViewDelegateObserver>
       scoped_view_delegate_observation_{this};
 

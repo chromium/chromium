@@ -84,20 +84,7 @@ MATCHER_P(BackedBySameImageAs, photo_with_details, "") {
 }  // namespace
 
 class AmbientPhotoControllerTest : public AmbientAshTestBase {
- protected:
-  void SetUp() override {
-    AmbientAshTestBase::SetUp();
-    // This is common to all AmbientPhotoConfigs and mimics real-world behavior:
-    // When OnImagesReady() is called, the UI synchronously starts rendering.
-    ON_CALL(images_ready_observer_, OnImagesReady)
-        .WillByDefault(::testing::Invoke([this]() {
-          photo_controller()->OnMarkerHit(
-              AmbientPhotoConfig::Marker::kUiStartRendering);
-        }));
-    images_ready_observation_.Observe(
-        photo_controller()->ambient_backend_model());
-  }
-
+ public:
   std::vector<int> GetSavedCacheIndices(bool backup = false) {
     std::vector<int> result;
     const auto& map = backup ? GetBackupCachedFiles() : GetCachedFiles();
@@ -190,10 +177,6 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
             }));
     loop.Run();
   }
-
-  testing::NiceMock<MockAmbientBackendModelObserver> images_ready_observer_;
-  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
-      images_ready_observation_{&images_ready_observer_};
 };
 
 // Has 2 positions in the animation for photos and 2 dynamic assets per
@@ -201,7 +184,7 @@ class AmbientPhotoControllerTest : public AmbientAshTestBase {
 class AmbientPhotoControllerAnimationTest : public AmbientPhotoControllerTest {
  protected:
   void SetUp() override {
-    AmbientPhotoControllerTest::SetUp();
+    AmbientAshTestBase::SetUp();
 
     cc::SkottieResourceMetadataMap resource_metadata;
     std::array<std::string, 4> all_dynamic_asset_ids = {
@@ -232,7 +215,7 @@ class AmbientPhotoControllerEmptyConfigTest
     : public AmbientPhotoControllerTest {
  protected:
   void SetUp() override {
-    AmbientPhotoControllerTest::SetUp();
+    AmbientAshTestBase::SetUp();
     photo_controller()->ambient_backend_model()->SetPhotoConfig(
         AmbientPhotoConfig());
   }
@@ -759,10 +742,15 @@ TEST_F(AmbientPhotoControllerAnimationTest,
        AnimationRefreshesTopicSetEachCycle) {
   photo_controller()->StartScreenUpdate(
       std::make_unique<AmbientTopicQueueTestDelegate>());
-  // Animation starts rendering. This should trigger an image refresh.
   RunUntilImagesReady();
   base::circular_deque<PhotoWithDetails> old_photos =
       photo_controller()->ambient_backend_model()->all_decoded_topics();
+
+  // Start rendering animation.
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  // Simulate cycle ending. This should trigger an image refresh.
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
   RunUntilNextTopicsAdded(photo_config().topic_set_size);
   base::circular_deque<PhotoWithDetails> new_photos =
       photo_controller()->ambient_backend_model()->all_decoded_topics();
@@ -777,7 +765,7 @@ TEST_F(AmbientPhotoControllerAnimationTest,
   EXPECT_THAT(old_photos, Not(Contains(BackedBySameImageAs(new_photos[3]))));
   old_photos = new_photos;
 
-  // Animation cycle ends and another image refresh starts.
+  // One more cycle.
   photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
   RunUntilNextTopicsAdded(photo_config().topic_set_size);
   new_photos =
@@ -795,6 +783,10 @@ TEST_F(AmbientPhotoControllerAnimationTest,
   photo_controller()->StartScreenUpdate(
       std::make_unique<AmbientTopicQueueTestDelegate>());
   RunUntilImagesReady();
+
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
   RunUntilNextTopicsAdded(photo_config().topic_set_size);
 
   // Fast forward time to make sure no more images are prepared after
@@ -817,6 +809,9 @@ TEST_F(AmbientPhotoControllerAnimationTest,
   base::circular_deque<PhotoWithDetails> old_photos =
       photo_controller()->ambient_backend_model()->all_decoded_topics();
 
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
+  photo_controller()->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
   RunUntilNextTopicsAdded(photo_config().topic_set_size / 2);
   base::circular_deque<PhotoWithDetails> new_photos =
       photo_controller()->ambient_backend_model()->all_decoded_topics();
@@ -861,6 +856,8 @@ TEST_F(AmbientPhotoControllerAnimationTest,
   // UI starts rendering when only 3/4 of the initial topic set is prepared.
   // The controller should immediately start preparing another 2 topics (the
   // size of 1 topic set).
+  photo_controller()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
   task_environment()->FastForwardBy(kPhotoDownloadDelay * 2);
   ASSERT_THAT(photo_controller()->ambient_backend_model()->all_decoded_topics(),
               SizeIs(photo_config().GetNumDecodedTopicsToBuffer()));
