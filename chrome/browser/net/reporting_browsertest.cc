@@ -432,12 +432,9 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_CrashReport CrashReport
 
 // Flaky on Mac (multiple versions), see https://crbug.com/1261749
-#if BUILDFLAG(IS_MAC)
+// Flaky on other platforms as well, see https://crbug.com/1377031
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
-#else
-#define MAYBE_CrashReportUnresponsive CrashReportUnresponsive
-#endif
-#endif
+#endif  // defined(ADDRESS_SANITIZER)
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
   content::WebContents* contents =
