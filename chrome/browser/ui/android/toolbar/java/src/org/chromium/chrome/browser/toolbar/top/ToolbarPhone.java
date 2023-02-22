@@ -130,7 +130,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     static final int LOCATION_BAR_TRANSPARENT_BACKGROUND_ALPHA = 51;
 
-    private TabCountProvider mTabCountProvider;
+    private @Nullable TabCountProvider mTabCountProvider;
 
     protected LocationBarCoordinator mLocationBar;
 

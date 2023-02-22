@@ -17,19 +17,22 @@ import java.lang.annotation.RetentionPolicy;
  **/
 @IntDef({ToolbarSnapshotDifference.NONE, ToolbarSnapshotDifference.NULL,
         ToolbarSnapshotDifference.TINT, ToolbarSnapshotDifference.TAB_COUNT,
-        ToolbarSnapshotDifference.OPTIONAL_BUTTON_DATA, ToolbarSnapshotDifference.VISUAL_STATE,
+        ToolbarSnapshotDifference.OPTIONAL_BUTTON, ToolbarSnapshotDifference.VISUAL_STATE,
         ToolbarSnapshotDifference.SECURITY_ICON, ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE,
         ToolbarSnapshotDifference.PAINT_PREVIEW, ToolbarSnapshotDifference.PROGRESS,
         ToolbarSnapshotDifference.LOCATION_BAR_WIDTH, ToolbarSnapshotDifference.URL_TEXT,
-        ToolbarSnapshotDifference.HOME_BUTTON_COLOR, ToolbarSnapshotDifference.TITLE_TEXT,
-        ToolbarSnapshotDifference.CCT_ANIMATION, ToolbarSnapshotDifference.NUM_ENTRIES})
+        ToolbarSnapshotDifference.HOME_BUTTON, ToolbarSnapshotDifference.TITLE_TEXT,
+        ToolbarSnapshotDifference.CCT_ANIMATION, ToolbarSnapshotDifference.BOOKMARK_BUTTON,
+        ToolbarSnapshotDifference.HOME_BUTTON, ToolbarSnapshotDifference.BACK_BUTTON,
+        ToolbarSnapshotDifference.FORWARD_BUTTON, ToolbarSnapshotDifference.RELOAD_BUTTON,
+        ToolbarSnapshotDifference.NUM_ENTRIES})
 @Retention(RetentionPolicy.SOURCE)
 public @interface ToolbarSnapshotDifference {
     int NONE = 0;
     int NULL = 1;
     int TINT = 2;
     int TAB_COUNT = 3;
-    int OPTIONAL_BUTTON_DATA = 4;
+    int OPTIONAL_BUTTON = 4;
     int VISUAL_STATE = 5;
     int SECURITY_ICON = 6;
     int SHOWING_UPDATE_BADGE = 7;
@@ -37,8 +40,12 @@ public @interface ToolbarSnapshotDifference {
     int PROGRESS = 9;
     int LOCATION_BAR_WIDTH = 10;
     int URL_TEXT = 11;
-    int HOME_BUTTON_COLOR = 12;
+    int HOME_BUTTON = 12;
     int TITLE_TEXT = 13;
     int CCT_ANIMATION = 14;
-    int NUM_ENTRIES = 15;
+    int BOOKMARK_BUTTON = 15;
+    int BACK_BUTTON = 16;
+    int FORWARD_BUTTON = 17;
+    int RELOAD_BUTTON = 18;
+    int NUM_ENTRIES = 19;
 }

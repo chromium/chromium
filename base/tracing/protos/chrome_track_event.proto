@@ -948,7 +948,7 @@ message AndroidToolbar {
     DIFF_NULL = 1;
     DIFF_TINT = 2;
     DIFF_TAB_COUNT = 3;
-    DIFF_OPTIONAL_BUTTON_DATA = 4;
+    DIFF_OPTIONAL_BUTTON = 4;
     DIFF_VISUAL_STATE = 5;
     DIFF_SECURITY_ICON = 6;
     DIFF_SHOWING_UPDATE_BADGE = 7;
@@ -956,9 +956,13 @@ message AndroidToolbar {
     DIFF_PROGRESS = 9;
     DIFF_LOCATION_BAR_WIDTH = 10;
     DIFF_URL_TEXT = 11;
-    DIFF_HOME_BUTTON_COLOR = 12;
+    DIFF_HOME_BUTTON = 12;
     DIFF_TITLE_TEXT = 13;
     DIFF_CCT_ANIMATION = 14;
+    DIFF_BOOKMARK_BUTTON = 15;
+    DIFF_BACK_BUTTON = 16;
+    DIFF_FORWARD_BUTTON = 17;
+    DIFF_RELOAD_BUTTON = 18;
   }
 
   optional BlockCaptureReason block_capture_reason = 1;

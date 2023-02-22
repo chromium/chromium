@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +42,8 @@ import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
+import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -268,6 +271,77 @@ public final class ToolbarTabletUnitTest {
                 mActivity.getResources().getString(R.string.accessibility_btn_refresh),
                 btn.getContentDescription());
         assertTrue("Button should be enabled", btn.isEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_SCROLL_ABLATION_ANDROID)
+    public void testIsReadyForTextureCapture_Ablation() {
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(TopToolbarBlockCaptureReason.SCROLL_ABLATION, result.blockReason);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testIsReadyForTextureCapture_NoSuppression() {
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertTrue(result.isReady);
+        Assert.assertEquals(TopToolbarAllowCaptureReason.UNKNOWN, result.allowReason);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testIsReadyForTextureCapture_HasFocus() {
+        mToolbarTablet.onUrlFocusChange(/*hasFocus*/ true);
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS, result.blockReason);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testIsReadyForTextureCapture_InTabSwitcher() {
+        mToolbarTablet.setTabSwitcherMode(/*inTabSwitcherMode*/ true, /*showToolbar*/ true,
+                /*delayAnimation*/ false, /*menuButtonCoordinator*/ null);
+        CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(TopToolbarBlockCaptureReason.TAB_SWITCHER_MODE, result.blockReason);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
+    public void testIsReadyForTextureCapture_Snapshot() {
+        {
+            CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+            Assert.assertTrue(result.isReady);
+            Assert.assertEquals(
+                    TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE, result.allowReason);
+            Assert.assertEquals(ToolbarSnapshotDifference.NULL, result.snapshotDifference);
+        }
+
+        {
+            CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+            Assert.assertTrue(result.isReady);
+        }
+
+        mToolbarTablet.setTextureCaptureMode(/*textureMode*/ true);
+
+        {
+            CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+            Assert.assertFalse(result.isReady);
+            Assert.assertEquals(TopToolbarBlockCaptureReason.SNAPSHOT_SAME, result.blockReason);
+        }
+
+        mToolbarTablet.updateBookmarkButton(/*isBookmarked*/ true, /*editingAllowed*/ true);
+
+        {
+            CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
+            Assert.assertTrue(result.isReady);
+            Assert.assertEquals(
+                    TopToolbarAllowCaptureReason.SNAPSHOT_DIFFERENCE, result.allowReason);
+            Assert.assertEquals(
+                    ToolbarSnapshotDifference.BOOKMARK_BUTTON, result.snapshotDifference);
+        }
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {

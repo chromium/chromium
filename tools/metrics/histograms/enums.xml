@@ -100703,7 +100703,7 @@ would be helpful to identify which type is being sent.
   <int value="1" label="NULL"/>
   <int value="2" label="TINT"/>
   <int value="3" label="TAB_COUNT"/>
-  <int value="4" label="OPTIONAL_BUTTON_DATA"/>
+  <int value="4" label="OPTIONAL_BUTTON"/>
   <int value="5" label="VISUAL_STATE"/>
   <int value="6" label="SECURITY_ICON"/>
   <int value="7" label="SHOWING_UPDATE_BADGE"/>
@@ -100711,9 +100711,13 @@ would be helpful to identify which type is being sent.
   <int value="9" label="PROGRESS"/>
   <int value="10" label="LOCATION_BAR_WIDTH"/>
   <int value="11" label="URL_TEXT"/>
-  <int value="12" label="HOME_BUTTON_COLOR"/>
+  <int value="12" label="HOME_BUTTON"/>
   <int value="13" label="TITLE_TEXT"/>
   <int value="14" label="CCT_ANIMATION"/>
+  <int value="15" label="BOOKMARK_BUTTON"/>
+  <int value="16" label="BACK_BUTTON"/>
+  <int value="17" label="FORWARD_BUTTON"/>
+  <int value="18" label="RELOAD_BUTTON"/>
 </enum>
 
 <enum name="TopToolbarAllowCaptureReason">

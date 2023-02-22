@@ -731,7 +731,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 return CaptureReadinessResult.readyWithSnapshotDifference(difference);
             }
         } else {
-            return super.isReadyForTextureCapture();
+            return CaptureReadinessResult.unknown(/*isReady=*/true);
         }
     }
 
