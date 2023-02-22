@@ -77,8 +77,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   // Use the system accent color as the Chrome accent color, if present.
   if (const auto accent_color = AccentColorObserver::Get()->accent_color();
       accent_color.has_value()) {
-    mixer[kColorAccent] =
-        PickGoogleColor({accent_color.value()}, kColorPrimaryBackground);
+    mixer[kColorAccent] = PickGoogleColor(accent_color.value());
   }
 
   if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)
