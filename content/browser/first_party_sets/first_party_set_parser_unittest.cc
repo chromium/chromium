@@ -42,6 +42,8 @@ constexpr char kParsedSuccessfullyHistogram[] =
     "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully";
 constexpr char kNonfatalErrorsHistogram[] =
     "Cookie.FirstPartySets.ComponentSetsNonfatalErrors";
+constexpr char kProcessedComponentHistogram[] =
+    "Cookie.FirstPartySets.ProcessedEntireComponent";
 
 }  // namespace
 
@@ -58,14 +60,21 @@ TEST(FirstPartySetParser, RejectsNonemptyMalformed) {
               Pair(IsEmpty(), IsEmpty()));
   EXPECT_EQ(histogram_tester.GetTotalSum(kParsedSuccessfullyHistogram), 0);
   EXPECT_EQ(histogram_tester.GetTotalSum(kNonfatalErrorsHistogram), 0);
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, AcceptsTrivial) {
   base::HistogramTester histogram_tester;
   EXPECT_THAT(ParseSets(""), Pair(IsEmpty(), IsEmpty()));
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       kParsedSuccessfullyHistogram, /*sample=*/0, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
                                       /*expected_bucket_count=*/1);
 }
 
@@ -141,11 +150,18 @@ TEST(FirstPartySetParser, AcceptsMinimal_AllSubsets_WithCcTLDs) {
       kParsedSuccessfullyHistogram, /*sample=*/1, /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
                                       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsMissingPrimary) {
+  base::HistogramTester histogram_tester;
   EXPECT_THAT(ParseSets(R"({"associatedSites": ["https://aaaa.test"]})"),
               Pair(IsEmpty(), IsEmpty()));
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST(FirstPartySetParser, RejectsTypeUnsafePrimary) {
@@ -198,6 +214,9 @@ TEST(FirstPartySetParser, SkipsSetOnNonOriginPrimary) {
   histogram_tester.ExpectUniqueSample(
       kParsedSuccessfullyHistogram, /*sample=*/2, /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/1,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
                                       /*expected_bucket_count=*/1);
 }
 
@@ -327,6 +346,9 @@ TEST(FirstPartySetParser, AcceptsMultipleSets) {
   histogram_tester.ExpectUniqueSample(
       kParsedSuccessfullyHistogram, /*sample=*/2, /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(kNonfatalErrorsHistogram, /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/1,
                                       /*expected_bucket_count=*/1);
 }
 
@@ -511,6 +533,17 @@ TEST(FirstPartySetParser, Rejects_NondisjointCcTLDAliases) {
                 "}"                                                     //
                 "}"),
       Pair(IsEmpty(), IsEmpty()));
+}
+
+TEST(FirstPartySetParser, Logs_MultipleRejections) {
+  // 2 rejections should show up on the histogram as separate instances
+  base::HistogramTester histogram_tester;
+  EXPECT_THAT(ParseSets("certainly not valid JSON"),
+              Pair(IsEmpty(), IsEmpty()));
+  EXPECT_THAT(ParseSets("also not valid JSON"), Pair(IsEmpty(), IsEmpty()));
+  histogram_tester.ExpectUniqueSample(kProcessedComponentHistogram,
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/2);
 }
 
 TEST(FirstPartySetParser_ParseSetsFromEnterprisePolicyTest,

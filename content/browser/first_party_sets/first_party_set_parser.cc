@@ -449,6 +449,10 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
     absl::optional<base::Value> maybe_value = base::JSONReader::Read(
         trimmed, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
     if (!maybe_value.has_value()) {
+      if (emit_metrics) {
+        base::UmaHistogramBoolean(
+            "Cookie.FirstPartySets.ProcessedEntireComponent", false);
+      }
       return {};
     }
     base::expected<SetsAndAliases, ParseError> parsed = ParseSet(
@@ -462,6 +466,10 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
         continue;
       }
       // Abort, something is wrong with the component.
+      if (emit_metrics) {
+        base::UmaHistogramBoolean(
+            "Cookie.FirstPartySets.ProcessedEntireComponent", false);
+      }
       return {};
     }
 
@@ -470,6 +478,8 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
     successfully_parsed_sets++;
   }
   if (emit_metrics) {
+    base::UmaHistogramBoolean("Cookie.FirstPartySets.ProcessedEntireComponent",
+                              true);
     base::UmaHistogramCounts1000(
         "Cookie.FirstPartySets.ComponentSetsParsedSuccessfully",
         successfully_parsed_sets);

@@ -523,6 +523,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.FirstPartySets.ProcessedEntireComponent"
+    enum="BooleanSuccess" expires_after="M124">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chrome-first-party-sets@chromium.org</owner>
+  <summary>
+    This histogram tracks whether the First-Party Sets component was able to
+    process all sets while starting up, or if it had to abort during the process
+    due to encountering a fatal error.
+
+    The metric will be recorded at most once each time the client starts up.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.FromStorageWithValidLength" enum="BooleanValid"
     expires_after="2023-08-08">
   <owner>bingler@chromium.org</owner>
