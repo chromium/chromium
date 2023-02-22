@@ -23,7 +23,7 @@ namespace ash {
 namespace {
 
 // The dimensions of the area that can activate the multitask menu.
-constexpr gfx::SizeF kTargetAreaSize(200.f, 40.f);
+constexpr gfx::SizeF kTargetAreaSize(200.f, 16.f);
 
 }  // namespace
 
@@ -129,9 +129,10 @@ void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
       if (!initial_drag_data_) {
         return;
       }
-      if (multitask_menu_ && !initial_drag_data_->is_drag) {
+      if (!initial_drag_data_->is_drag) {
         // If the touch was pressed and released immediately without dragging,
-        // it may have been a button press and we do not handle here.
+        // it may have been a press in the target area and we do not handle
+        // here.
         initial_drag_data_.reset();
         return;
       }

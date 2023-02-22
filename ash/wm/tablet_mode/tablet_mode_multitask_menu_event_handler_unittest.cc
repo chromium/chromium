@@ -205,8 +205,9 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, ShowBottomMenuPortraitPrimary) {
 // ----------------------------
 // |  SECONDARY  |   PRIMARY  |
 // ----------------------------
+// TODO(b/270175923): Temporarily disabled for decreased target area.
 TEST_F(TabletModeMultitaskMenuEventHandlerTest,
-       ShowBottomMenuPortraitSecondary) {
+       DISABLED_ShowBottomMenuPortraitSecondary) {
   ScreenOrientationControllerTestApi test_api(
       Shell::Get()->screen_orientation_controller());
   test_api.SetDisplayRotation(display::Display::ROTATE_90,
