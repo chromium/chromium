@@ -55,8 +55,17 @@ var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   }
 };
 
-TEST_F(
-    'OSSettingsDevicePageV3Test', 'All',
+// TODO(https://crbug.com/1411677): Re-enable in debug builds once test suite
+// does not time out anymore.
+TEST_F_WITH_PREAMBLE(
+    `
+#if !defined(NDEBUG)
+#define MAYBE_All DISABLED_All
+#else
+#define MAYBE_All All
+#endif
+    `,
+    'OSSettingsDevicePageV3Test', 'MAYBE_All',
     () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
 
 // TODO(crbug.com/1347746): move this to the generic test lists below after the
