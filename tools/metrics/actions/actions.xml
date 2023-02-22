@@ -3534,6 +3534,30 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AppHome_LaunchDeprecatedApp">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User launches a deprecated app (chrome app, built on extensions system) by
+    clicking on the app icon from the new chrome://apps page. This will result
+    in the launch being interrupted with a dialog that post-m112 will block the
+    actual launch of the app. After m114, the admin policy allowing the bypass
+    of this dialog will expire as well. If the user ends up launching the app
+    itself, the web app's start_url opening up in a dedicated window or in a
+    browser tab, depending on the user's preference.
+  </description>
+</action>
+
+<action name="AppHome_LaunchWebApp">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <description>
+    User launches a web app by clicking on the app icon from the new
+    chrome://apps page. This results in the web app's start_url opening up in a
+    dedicated window or in a browser tab, depending on the user's preference.
+  </description>
+</action>
+
 <action name="AppHome_NavigationComplete">
   <owner>dibyapal@chromium.org</owner>
   <owner>desktop-pwas-team@chromium.org</owner>

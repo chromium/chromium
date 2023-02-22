@@ -77,6 +77,12 @@ export class AppItemElement extends PolymerElement {
       metaKey: e.metaKey,
       shiftKey: e.shiftKey,
     };
+
+    if (this.appInfo.isDeprecatedApp) {
+      recordUserAction(AppHomeUserAction.LAUNCH_DEPRECATED_APP);
+    } else {
+      recordUserAction(AppHomeUserAction.LAUNCH_WEB_APP);
+    }
     BrowserProxy.getInstance().handler.launchApp(this.appInfo.id, clickEvent);
 
     e.preventDefault();

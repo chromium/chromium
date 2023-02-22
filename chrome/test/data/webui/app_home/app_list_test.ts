@@ -554,6 +554,11 @@ suite('AppListTest', () => {
     assertEquals(clickEvent.ctrlKey, mouseEvent.ctrlKey);
     assertEquals(clickEvent.metaKey, mouseEvent.metaKey);
     assertEquals(clickEvent.shiftKey, mouseEvent.shiftKey);
+
+    assertEquals(
+        1,
+        metricsPrivateMock.getUserActionCount(
+            AppHomeUserAction.LAUNCH_WEB_APP));
   });
 
   test(
@@ -676,32 +681,36 @@ suite('AppListTest', () => {
     });
   });
 
-  test('Deprecated app means deprecation ux', async () => {
-    // Test adding an app.
-    callbackRouterRemote.addApp(deprecatedAppInfo);
+  test('Deprecated link', async () => {
     testBrowserProxy.fakeHandler.addAppToList(deprecatedAppInfo);
-    await callbackRouterRemote.$.flushForTesting();
-    flush();
 
     const deprecatedAppsLink: DeprecatedAppsLinkElement =
         document.createElement('deprecated-apps-link');
     document.body.appendChild(deprecatedAppsLink);
     await waitAfterNextRender(deprecatedAppsLink);
-
     assertTrue(!!deprecatedAppsLink);
     const linkContainer: HTMLElement =
         deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
             '#container')!;
     assertFalse(
         linkContainer.hidden, 'Removal link is hidden when it shouldn\'t be.');
+  });
 
-    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+  test('Deprecated app icon', async () => {
+    // Test adding an app.
+    callbackRouterRemote.addApp(deprecatedAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+
+    const appItems = appListElement.shadowRoot!.querySelectorAll('.item')!;
     assertTrue(!!appItems, 'No apps.');
 
+    let found = false;
     appItems.forEach((item) => {
       const deprecatedIcon: HTMLElement =
           item!.shadowRoot!.querySelector<HTMLImageElement>('#deprecatedIcon')!;
-      if (item.id === deprecatedAppInfo.id) {
+      if (item!.id === deprecatedAppInfo.id) {
+        found = true;
         assertFalse(
             deprecatedIcon.hidden,
             'Deprecated app should have deprecated icon visible');
@@ -711,6 +720,34 @@ suite('AppListTest', () => {
             'Non-deprecated app should not have deprecation icon');
       }
     });
+    assertTrue(found, 'Deprecated item not found.');
+  });
+
+  test('Clicking deprecated app', async () => {
+    // Test adding an app.
+    callbackRouterRemote.addApp(deprecatedAppInfo);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    waitAfterNextRender(appListElement);
+
+    const appItem =
+        appListElement.shadowRoot!.querySelector('#' + deprecatedAppInfo.id)!;
+    assertTrue(!!appItem, 'No apps.');
+
+    const mouseEvent: MouseEvent = new MouseEvent('click', {
+      button: 0,
+      altKey: false,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: false,
+    });
+    appItem.dispatchEvent(mouseEvent);
+
+    await testBrowserProxy.fakeHandler.whenCalled('launchApp');
+    assertEquals(
+        1,
+        metricsPrivateMock.getUserActionCount(
+            AppHomeUserAction.LAUNCH_DEPRECATED_APP));
   });
 
   test('Clicking deprecation link calls handler', async () => {

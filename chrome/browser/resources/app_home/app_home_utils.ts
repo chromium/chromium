@@ -15,6 +15,8 @@ export enum AppHomeUserAction {
   INSTALL_APP_LOCALLY = 'AppHome_InstallAppLocally',
   UNINSTALL = 'AppHome_Uninstall',
   OPEN_APP_SETTINGS = 'AppHome_OpenAppSettings',
+  LAUNCH_WEB_APP = 'AppHome_LaunchApp',
+  LAUNCH_DEPRECATED_APP = 'AppHome_LaunchDeprecatedApp',
 }
 
 export function recordUserAction(metricName: AppHomeUserAction): void {
