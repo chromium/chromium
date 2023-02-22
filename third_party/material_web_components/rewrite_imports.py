@@ -56,7 +56,7 @@ def main(argv):
             match = re.match(r'^(import .*["\'])(.*)(["\'];)$', line)
             if match and _map_import(match.group(2)):
                 new_import = _map_import(match.group(2))
-                line = f"{match.group(1)}{new_import}{match.group(3)};\n"
+                line = f"{match.group(1)}{new_import}{match.group(3)}\n"
             output.append(line)
         with open(os.path.join(args.out_dir, f), 'w') as out_file:
             out_file.write(''.join(output))
