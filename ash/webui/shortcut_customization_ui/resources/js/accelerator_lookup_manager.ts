@@ -151,6 +151,10 @@ export class AcceleratorLookupManager {
   }
 
   setAcceleratorLookup(acceleratorConfig: MojoAcceleratorConfig): void {
+    // Reset the lookup maps every time we update the accelerator mappings.
+    this.reverseAcceleratorLookup.clear();
+    this.standardAcceleratorLookup.clear();
+
     for (const [source, accelInfoMap] of Object.entries(acceleratorConfig)) {
       // When calling Object.entries on an object with optional enum keys,
       // TypeScript considers the values to be possibly undefined.

@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
+import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
+import {AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
@@ -12,8 +16,16 @@ import {AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoL
  * Implements a fake version of the FakeShortcutProvider mojo interface.
  */
 
+// Method names.
+const ON_ACCELERATORS_UPDATED_METHOD_NAME =
+    'AcceleratorsUpdatedObserver_OnAcceleratorsUpdated';
+
 export class FakeShortcutProvider implements ShortcutProviderInterface {
   private methods: FakeMethodResolver;
+  private observables: FakeObservables = new FakeObservables();
+  private acceleratorsUpdatedRemote: AcceleratorsUpdatedObserverRemote|null =
+      null;
+  private acceleratorsUpdatedPromise: Promise<void>|null = null;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -27,6 +39,18 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('removeAccelerator');
     this.methods.register('restoreAllDefaults');
     this.methods.register('restoreActionDefaults');
+    this.methods.register('addObserver');
+    this.registerObservables();
+  }
+
+  registerObservables(): void {
+    this.observables.register(ON_ACCELERATORS_UPDATED_METHOD_NAME);
+  }
+
+  // Disable all observers and reset provider to initial state.
+  reset(): void {
+    this.observables = new FakeObservables();
+    this.registerObservables();
   }
 
   getAcceleratorLayoutInfos(): Promise<{layoutInfos: MojoLayoutInfo[]}> {
@@ -43,8 +67,25 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     return this.methods.resolveMethod('isMutable');
   }
 
-  // Return nothing because this method has a void return type.
-  addObserver(): void {}
+  addObserver(observer: AcceleratorsUpdatedObserverRemote): void {
+    this.acceleratorsUpdatedPromise = this.observe(
+        ON_ACCELERATORS_UPDATED_METHOD_NAME,
+        (config: MojoAcceleratorConfig) => {
+          observer.onAcceleratorsUpdated(config);
+        });
+  }
+
+  getAcceleratorsUpdatedPromiseForTesting(): Promise<void> {
+    assert(this.acceleratorsUpdatedPromise);
+    return this.acceleratorsUpdatedPromise;
+  }
+
+  // Set the value that will be retuned when `onAcceleratorsUpdated()` is
+  // called.
+  setFakeAcceleratorsUpdated(config: MojoAcceleratorConfig[]): void {
+    this.observables.setObservableData(
+        ON_ACCELERATORS_UPDATED_METHOD_NAME, config);
+  }
 
   addUserAccelerator(): Promise<AcceleratorConfigResult> {
     // Always return kSuccess in this fake.
@@ -95,5 +136,14 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
    */
   setFakeAcceleratorLayoutInfos(layoutInfos: MojoLayoutInfo[]): void {
     this.methods.setResult('getAcceleratorLayoutInfos', {layoutInfos});
+  }
+
+  // Sets up an observer for methodName.
+  private observe(methodName: string, callback: (T: any) => void):
+      Promise<void> {
+    return new Promise((resolve) => {
+      this.observables.observe(methodName, callback);
+      resolve();
+    });
   }
 }

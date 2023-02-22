@@ -14,9 +14,11 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
 import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
-import {setShortcutProviderForTesting, setupFakeShortcutProvider} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
+import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
+import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
+import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import {AcceleratorCategory, AcceleratorSubcategory, LayoutInfo, Modifier, ShortcutProviderInterface} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorSubcategory, LayoutInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getCategoryNameStringId, getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -37,15 +39,25 @@ suite('shortcutCustomizationAppTest', function() {
 
   let manager: AcceleratorLookupManager|null = null;
 
-  let provider: ShortcutProviderInterface;
+  let provider: FakeShortcutProvider;
 
   setup(() => {
     manager = AcceleratorLookupManager.getInstance();
-    provider = setupFakeShortcutProvider();
+    provider = new FakeShortcutProvider();
+    provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
+    provider.setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
+    // `onAcceleratorsUpdated` gets observed as soon as the layouts are
+    //  initialized.
+    // TODO(jimmyxgong): Triggering the observer in tests is difficult
+    // with how Mojo handles union types, we will need to refactor
+    // the fake data to support the correct Mojo types for OnAceleratorsUpdated.
+    provider.setFakeAcceleratorsUpdated([fakeAcceleratorConfig]);
+
     setShortcutProviderForTesting(provider);
   });
 
   teardown(() => {
+    provider.reset();
     if (manager) {
       manager.reset();
     }

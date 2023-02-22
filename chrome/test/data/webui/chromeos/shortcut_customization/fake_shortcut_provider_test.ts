@@ -6,7 +6,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {AcceleratorConfigResult, AcceleratorSource, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorsUpdatedObserverRemote} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('fakeShortcutProviderTest', function() {
@@ -19,6 +20,16 @@ suite('fakeShortcutProviderTest', function() {
   teardown(() => {
     provider = null;
   });
+
+  // Fake class that overrides the `onAcceleratorsUpdated` function. This
+  // allows us to intercept the request send from the remote and validate
+  // the data received.
+  class FakeAcceleratorsUpdatedRemote extends
+      AcceleratorsUpdatedObserverRemote {
+    public override onAcceleratorsUpdated(config: MojoAcceleratorConfig) {
+      assertDeepEquals(fakeAcceleratorConfig, config);
+    }
+  }
 
   function getProvider(): FakeShortcutProvider {
     assertTrue(!!provider);
@@ -54,6 +65,17 @@ suite('fakeShortcutProviderTest', function() {
     return getProvider().getAcceleratorLayoutInfos().then((result) => {
       assertDeepEquals(fakeLayoutInfo, result.layoutInfos);
     });
+  });
+
+  test('ObserveAcceleratorsUpdated', () => {
+    // Set the expected value to be returned when `onAcceleratorsUpdated()` is
+    // called.
+    getProvider().setFakeAcceleratorsUpdated([fakeAcceleratorConfig]);
+
+    const remote = new FakeAcceleratorsUpdatedRemote();
+    getProvider().addObserver(remote);
+    // Simulate `onAcceleratorsUpdated()` being called by an observer.
+    return getProvider().getAcceleratorsUpdatedPromiseForTesting();
   });
 
   test('IsMutableDefaultFake', () => {
