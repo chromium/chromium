@@ -1097,6 +1097,7 @@ component("ash") {
     "style/style_viewer/system_ui_components_style_viewer_view.cc",
     "style/style_viewer/system_ui_components_style_viewer_view.h",
     "style/style_viewer/tab_slider_instances_grid_view_factory.cc",
+    "style/style_viewer/typography_instances_grid_view_factory.cc",
     "style/system_shadow.cc",
     "style/system_shadow.h",
     "style/system_shadow_on_nine_patch_layer.cc",
