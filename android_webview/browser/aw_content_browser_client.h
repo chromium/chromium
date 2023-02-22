@@ -247,6 +247,16 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldPreconnectNavigation(
       content::BrowserContext* browser_context) override;
   void OnDisplayInsecureContent(content::WebContents* web_contents) override;
+  // Allows the embedder to control if Attribution Reporting API operations can
+  // happen in a given context.
+  // For WebView Browser Attribution is explicitly disabled.
+  bool IsAttributionReportingOperationAllowed(
+      content::BrowserContext* browser_context,
+      AttributionReportingOperation operation,
+      content::RenderFrameHost* rfh,
+      const url::Origin* source_origin,
+      const url::Origin* destination_origin,
+      const url::Origin* reporting_origin) override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;

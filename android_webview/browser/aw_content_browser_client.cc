@@ -1089,4 +1089,14 @@ void AwContentBrowserClient::DisableCreatingThreadPool() {
   g_should_create_thread_pool = false;
 }
 
+bool AwContentBrowserClient::IsAttributionReportingOperationAllowed(
+    content::BrowserContext* browser_context,
+    AttributionReportingOperation operation,
+    content::RenderFrameHost* rfh,
+    const url::Origin* source_origin,
+    const url::Origin* destination_origin,
+    const url::Origin* reporting_origin) {
+  return false;
+}
+
 }  // namespace android_webview
