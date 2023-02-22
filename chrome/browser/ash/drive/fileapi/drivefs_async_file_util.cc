@@ -150,12 +150,12 @@ class DeleteOperation {
   using Id = PinManager::Id;
 
   DeleteOperation(Profile* profile,
-                  const base::FilePath& path,
+                  base::FilePath path,
                   storage::AsyncFileUtil::StatusCallback callback,
                   scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
                   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
       : profile_(profile),
-        path_(path),
+        path_(std::move(path)),
         callback_(std::move(callback)),
         origin_task_runner_(std::move(origin_task_runner)),
         blocking_task_runner_(std::move(blocking_task_runner)) {
@@ -235,23 +235,30 @@ class DeleteOperation {
 
     if (deleted) {
       VLOG(1) << "Deleted '" << path_ << "'";
-      DCHECK(drive_);
-      if (PinManager* const pin_manager = drive_->GetPinManager()) {
-        // TODO(b/267225898): Local delete events are currently not sent via
-        // DriveFS, so for now notify the `PinManager` for local deletes.
-        content::GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(&PinManager::NotifyDelete, pin_manager->GetWeakPtr(),
-                           id_, drive_path_));
-      }
     } else {
       LOG(ERROR) << "Cannot delete '" << path_ << "'";
     }
+
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DeleteOperation::OnDeleted,
+                                  base::Unretained(this), deleted));
 
     origin_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_),
                                   deleted ? base::File::FILE_OK
                                           : base::File::FILE_ERROR_FAILED));
+  }
+
+  void OnDeleted(const bool deleted) {
+    if (deleted) {
+      DCHECK(drive_);
+      if (PinManager* const pin_manager = drive_->GetPinManager()) {
+        // Local delete events are currently not sent via DriveFS, so for now
+        // we notify the `PinManager` for local deletes.
+        pin_manager->NotifyDelete(id_, drive_path_);
+      }
+    }
+
     origin_task_runner_->DeleteSoon(FROM_HERE, this);
   }
 

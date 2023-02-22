@@ -181,9 +181,7 @@ class DriveIntegrationService : public KeyedService,
   drivefs::DriveFsHost* GetDriveFsHost() const;
 
   // Returns the PinManager if DriveFS is mounted and bulk-pinning is enabled.
-  drivefs::pinning::PinManager* GetPinManager() const {
-    return pin_manager_.get();
-  }
+  drivefs::pinning::PinManager* GetPinManager() const;
 
   // Returns the mojo interface to the DriveFs daemon if it is enabled and
   // connected.

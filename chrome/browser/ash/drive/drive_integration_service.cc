@@ -82,11 +82,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
-using content::BrowserContext;
-using content::BrowserThread;
-
 namespace drive {
 namespace {
+
+using content::BrowserContext;
+using content::BrowserThread;
+using drivefs::pinning::PinManager;
 
 // Name of the directory used to store metadata.
 const base::FilePath::CharType kMetadataDirectory[] = FILE_PATH_LITERAL("meta");
@@ -1087,8 +1088,9 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
   }
 
   if (ash::features::IsDriveFsBulkPinningEnabled()) {
-    pin_manager_ = std::make_unique<drivefs::pinning::PinManager>(
-        profile_->GetPath(), GetDriveFsInterface());
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    pin_manager_ = std::make_unique<PinManager>(profile_->GetPath(),
+                                                GetDriveFsInterface());
     pin_manager_->ShouldCheckStalledFiles(true);
     GetDriveFsHost()->AddObserver(pin_manager_.get());
     ToggleBulkPinning();
@@ -1199,6 +1201,7 @@ void DriveIntegrationService::PinFiles(
 }
 
 void DriveIntegrationService::ToggleBulkPinning() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!pin_manager_) {
     VLOG(1) << "No bulk-pinning manager";
     return;
@@ -1600,6 +1603,11 @@ void DriveIntegrationService::GetReadOnlyAuthenticationToken(
   }
 
   auth_service_->StartAuthentication(std::move(callback));
+}
+
+PinManager* DriveIntegrationService::GetPinManager() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return pin_manager_.get();
 }
 
 //===================== DriveIntegrationServiceFactory =======================
