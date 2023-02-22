@@ -14,14 +14,15 @@ import './nearby_shared_icons.html.js';
 import './nearby_device_icon.js';
 
 import {ShareTarget} from '/mojo/nearby_share.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_device.html.js';
+import {NearbyDeviceIconElement} from './nearby_device_icon.js';
 
-/** @polymer */
 export class NearbyDeviceElement extends PolymerElement {
   static get is() {
-    return 'nearby-device';
+    return 'nearby-device' as const;
   }
 
   static get template() {
@@ -33,7 +34,6 @@ export class NearbyDeviceElement extends PolymerElement {
       /**
        * Expected to start as null, then change to a valid object before this
        * component is shown.
-       * @type {?ShareTarget}
        */
       shareTarget: {
         type: Object,
@@ -42,14 +42,13 @@ export class NearbyDeviceElement extends PolymerElement {
 
       /**
        * Whether this share target is selected.
-       * @type {boolean}
        */
       isSelected: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      /** @const {number} Size of the target image/icon in pixels. */
+      /** Size of the target image/icon in pixels. */
       targetImageSize: {
         type: Number,
         readOnly: true,
@@ -58,18 +57,18 @@ export class NearbyDeviceElement extends PolymerElement {
     };
   }
 
-  ready() {
+  isSelected: boolean;
+  shareTarget: ShareTarget|null;
+  targetImageSize: number;
+
+  override ready(): void {
     super.ready();
 
     this.updateStyles({'--target-image-size': this.targetImageSize + 'px'});
     this.listenToTargetImageLoad_();
   }
 
-  /**
-   * @return {!string} The URL of the target image.
-   * @private
-   */
-  getTargetImageUrl_() {
+  private getTargetImageUrl_(): string {
     if (!(this.shareTarget && this.shareTarget.imageUrl &&
           this.shareTarget.imageUrl.url &&
           this.shareTarget.imageUrl.url.length)) {
@@ -80,9 +79,10 @@ export class NearbyDeviceElement extends PolymerElement {
     return this.shareTarget.imageUrl.url + '=s' + this.targetImageSize;
   }
 
-  /** @private */
-  listenToTargetImageLoad_() {
-    const autoImg = this.shadowRoot.querySelector('#share-target-image');
+  private listenToTargetImageLoad_(): void {
+    const autoImg =
+        this.shadowRoot!.querySelector<HTMLImageElement>('#share-target-image');
+    assert(autoImg);
     if (autoImg.complete && autoImg.naturalHeight !== 0) {
       this.onTargetImageLoad_();
     } else {
@@ -92,11 +92,17 @@ export class NearbyDeviceElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onTargetImageLoad_() {
-    this.shadowRoot.querySelector('#share-target-image').style.display =
-        'inline';
-    this.shadowRoot.querySelector('#icon').style.display = 'none';
+  private onTargetImageLoad_(): void {
+    this.shadowRoot!.querySelector<HTMLImageElement>(
+                        '#share-target-image')!.style.display = 'inline';
+    this.shadowRoot!.querySelector<NearbyDeviceIconElement>(
+                        '#icon')!.style.display = 'none';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NearbyDeviceElement.is]: NearbyDeviceElement;
   }
 }
 

@@ -68,6 +68,7 @@ ts_library("build_ts") {
   allow_js = true
   tsconfig_base = "tsconfig_base.json"
   deps = [
+    "//chrome/browser/resources/nearby_share/shared:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
@@ -84,7 +85,6 @@ ts_library("build_ts") {
     ":preprocess",
     "//ash/webui/common/resources:generate_definitions",
     "//chrome/browser/resources/nearby_share:generate_definitions",
-    "//chrome/browser/resources/nearby_share/shared:preprocess",
   ]
   path_mappings = [
     # Additional path mappings for Nearby share Mojo files
@@ -95,7 +95,7 @@ ts_library("build_ts") {
   definitions = ts_definition_files
   root_dir = tsc_input_dir
   in_files = src_ts_files + html_wrapper_files + css_wrapper_files +
-             mojom_webui_files + nearby_share_shared_files
+             mojom_webui_files + shared_nearby_share_files
   out_dir = tsc_output_dir
 }
 

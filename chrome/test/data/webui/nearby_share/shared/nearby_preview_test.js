@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://nearby/shared/nearby_preview.js';
+
 import {ShareType} from 'chrome://nearby/mojo/nearby_share_share_type.mojom-webui.js';
-import {NearbyPreviewElement} from 'chrome://nearby/shared/nearby_preview.js';
 
 import {assertEquals} from '../../chromeos/chai_assert.js';
 

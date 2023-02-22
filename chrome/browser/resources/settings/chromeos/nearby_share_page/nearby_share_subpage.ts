@@ -29,7 +29,7 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {getContactManager} from '../../shared/nearby_contact_manager.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_mixin.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
