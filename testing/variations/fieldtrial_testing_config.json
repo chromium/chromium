@@ -1338,30 +1338,6 @@
             ]
         }
     ],
-    "AutofillRetrieveOverallPredictionsFromCacheV2": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithoutCleanup2022-01-20",
-                    "enable_features": [
-                        "AutofillRetrieveOverallPredictionsFromCache"
-                    ],
-                    "disable_features": [
-                        "AutofillDontPreserveAutofillState"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillServerCommunication": [
         {
             "platforms": [
