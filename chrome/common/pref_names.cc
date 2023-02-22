@@ -1030,10 +1030,8 @@ const char kPerAppTimeLimitsPolicy[] = "child_user.per_app_time_limits.policy";
 
 // Dictionary pref containing the allowed urls, schemes and applications
 // that would not be blocked by per app time limits.
-// Note that this used to be `kPerAppTimeLimitsWhitelistPolicy`, hence the
-// difference between the variable name and the string value.
 const char kPerAppTimeLimitsAllowlistPolicy[] =
-    "child_user.per_app_time_limits.whitelist";
+    "child_user.per_app_time_limits.allowlist";
 
 // Integer pref to record the day id (number of days since origin of time) when
 // family user metrics were last recorded.

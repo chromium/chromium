@@ -45,8 +45,8 @@ const char kInstallAllowList[] = "extensions.install.allowlist";
 const char kInstallDenyList[] = "extensions.install.denylist";
 const char kInstallForceList[] = "extensions.install.forcelist";
 const char kLastChromeVersion[] = "extensions.last_chrome_version";
-const char kNativeMessagingBlocklist[] = "native_messaging.blacklist";
-const char kNativeMessagingAllowlist[] = "native_messaging.whitelist";
+const char kNativeMessagingBlocklist[] = "native_messaging.blocklist";
+const char kNativeMessagingAllowlist[] = "native_messaging.allowlist";
 const char kNativeMessagingUserLevelHosts[] =
     "native_messaging.user_level_hosts";
 const char kManifestV2Availability[] = "extensions.manifest_v2";

@@ -10846,7 +10846,7 @@
           ]
         },
         "prefs": {
-          "native_messaging.blacklist": {}
+          "native_messaging.blocklist": {}
         }
       }
     ]
@@ -10869,7 +10869,7 @@
           ]
         },
         "prefs": {
-          "native_messaging.whitelist": {}
+          "native_messaging.allowlist": {}
         }
       }
     ]
@@ -15966,7 +15966,7 @@
           }
         },
         "prefs": {
-          "child_user.per_app_time_limits.whitelist": {}
+          "child_user.per_app_time_limits.allowlist": {}
         }
       }
     ]
