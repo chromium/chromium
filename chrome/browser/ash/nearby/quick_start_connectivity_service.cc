@@ -13,7 +13,7 @@ namespace ash::quick_start {
 
 namespace {
 
-constexpr char kServiceId[] = "QuickStart";
+constexpr char kServiceId[] = "com.google.android.gms.smartdevice.NC_ID";
 
 }  // namespace
 

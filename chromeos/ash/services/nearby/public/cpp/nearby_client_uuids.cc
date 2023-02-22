@@ -16,7 +16,7 @@ namespace nearby {
 namespace {
 const char kNearbySharingUuid[] = "a82efa21-ae5c-3dde-9bbc-f16da7b16c5a";
 const char kSecureChannelUuid[] = "a384bd4f-41ea-3b02-8901-8c2ed9a79970";
-const char kQuickStartUuid[] = "3274b583-0b06-30df-a317-072a899af6d6";
+const char kQuickStartUuid[] = "5e164731-1999-3405-9061-08a610fd3787";
 }  // namespace
 
 const std::vector<device::BluetoothUUID>& GetNearbyClientUuids() {
