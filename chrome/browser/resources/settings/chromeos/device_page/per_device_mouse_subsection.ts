@@ -23,7 +23,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Mouse} from './input_device_settings_types.js';
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, Mouse} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_mouse_subsection.html.js';
 
 export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
@@ -162,6 +163,8 @@ export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
   private scrollSensitivityPref: chrome.settingsPrivate.PrefObject;
   private reverseScrollValue: boolean;
   private isInitialized: boolean = false;
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
 
   private updateSettingsToCurrentPrefs(): void {
     this.set('primaryRightPref.value', this.mouse.settings.swapRight);
@@ -196,6 +199,17 @@ export class SettingsPerDeviceMouseSubsectionElement extends PolymerElement {
     if (!this.isInitialized) {
       return;
     }
+    this.mouse.settings = {
+      ...this.mouse.settings,
+      swapRight: this.primaryRightPref.value,
+      accelerationEnabled: this.accelerationPref.value,
+      sensitivity: this.sensitivityPref.value,
+      scrollAcceleration: this.scrollAccelerationPref.value,
+      scrollSensitivity: this.scrollSensitivityPref.value,
+      reverseScrolling: this.reverseScrollValue,
+    };
+    this.inputDeviceSettingsProvider.setMouseSettings(
+        this.mouse.id, this.mouse.settings);
   }
 }
 
