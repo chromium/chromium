@@ -28,6 +28,21 @@ constexpr char kPosixErrnoUMA[] = "Ash.BrowserDataBackMigrator.PosixErrno.";
 constexpr char kSuccessfulMigrationTimeUMA[] =
     "Ash.BrowserDataBackMigrator.SuccessfulMigrationTime";
 
+constexpr char kPreMigrationCleanUpTimeUMA[] =
+    "Ash.BrowserDataBackMigrator.ElapsedTimePreMigrationCleanUp";
+constexpr char kMergeSplitItemsTimeUMA[] =
+    "Ash.BrowserDataBackMigrator.ElapsedTimeMergeSplitItems";
+constexpr char kDeleteAshItemsTimeUMA[] =
+    "Ash.BrowserDataBackMigrator.ElapsedTimeDeleteAshItems";
+constexpr char kMoveLacrosItemsToAshDirTimeUMA[] =
+    "Ash.BrowserDataBackMigrator.ElapsedTimeMoveLacrosItemsToAshDir";
+constexpr char kMoveMergedItemsBackToAshTimeUMA[] =
+    "Ash.BrowserDataBackMigrator.ElapsedTimeMoveMergedItemsBackToAsh";
+constexpr char kDeleteLacrosDirTimeUMA[] =
+    "Ash.BrowserDataBackMigrator.ElapsedTimeDeleteLacrosDir";
+constexpr char kDeleteTmpDirTimeUMA[] =
+    "Ash.BrowserDataBackMigrator.ElapsedTimeDeleteTmpDir";
+
 // Injects the restart function called from
 // `BrowserDataBackMigrator::AttemptRestart()` in RAII manner.
 class ScopedBackMigratorRestartAttemptForTesting {

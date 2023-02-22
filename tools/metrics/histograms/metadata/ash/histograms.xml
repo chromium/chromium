@@ -447,6 +447,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeDeleteAshItems"
+    units="ms" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The time in ms that elapsed while DeleteAshItems() was run. Recorded once
+    when browser data backward migration happens if the step succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeDeleteLacrosDir"
+    units="ms" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The time in ms that elapsed while DeleteLacrosDir() was run. Recorded once
+    when browser data backward migration happens if the step succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeDeleteTmpDir"
+    units="ms" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The time in ms that elapsed while DeleteTmpDir() was run. Recorded once when
+    browser data backward migration happens if the step succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimeMergeSplitItems"
+    units="ms" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The time in ms that elapsed while MergeSplitItems() was run. Recorded once
+    when browser data backward migration happens if the step succeeds.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.BrowserDataBackMigrator.ElapsedTimeMoveLacrosItemsToAshDir"
+    units="ms" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The time in ms that elapsed while MoveLacrosItemsToAshDir() was run.
+    Recorded once when browser data backward migration happens if the step
+    succeeds.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.BrowserDataBackMigrator.ElapsedTimeMoveMergedItemsBackToAsh"
+    units="ms" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The time in ms that elapsed while MoveMergedItemsBackToAsh() was run.
+    Recorded once when browser data backward migration happens if the step
+    succeeds.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataBackMigrator.ElapsedTimePreMigrationCleanUp"
+    units="ms" expires_after="2023-12-01">
+  <owner>janagrill@google.com</owner>
+  <owner>artyomchen@google.com</owner>
+  <summary>
+    The time in ms that elapsed while PreMigrationCleanUp() was run. Recorded
+    once when browser data backward migration happens if the step succeeds.
+  </summary>
+</histogram>
+
 <histogram name="Ash.BrowserDataBackMigrator.FinalStatus"
     enum="BrowserDataBackMigratorFinalStatus" expires_after="2023-12-01">
   <owner>janagrill@google.com</owner>

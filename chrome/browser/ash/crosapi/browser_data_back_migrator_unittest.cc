@@ -455,12 +455,16 @@ TEST_F(BrowserDataBackMigratorTest, PreMigrationCleanUp) {
   // Create the temporary directory to make sure it is deleted during cleanup.
   ASSERT_TRUE(base::CreateDirectory(tmp_profile_dir_));
 
+  base::HistogramTester histogram_tester;
+
   BrowserDataBackMigrator::TaskResult result =
       BrowserDataBackMigrator::PreMigrationCleanUp(ash_profile_dir_,
                                                    lacros_profile_dir_);
   ASSERT_EQ(result.status, BrowserDataBackMigrator::TaskStatus::kSucceeded);
 
   ASSERT_FALSE(base::PathExists(tmp_profile_dir_));
+
+  histogram_tester.ExpectTotalCount(kPreMigrationCleanUpTimeUMA, 1);
 }
 
 TEST_F(BrowserDataBackMigratorTest, MergeCommonExtensionsDataFiles) {

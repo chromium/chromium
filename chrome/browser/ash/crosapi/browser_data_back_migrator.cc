@@ -25,6 +25,7 @@
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -129,6 +130,7 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
     const base::FilePath& ash_profile_dir,
     const base::FilePath& lacros_profile_dir) {
   LOG(WARNING) << "Running PreMigrationCleanUp()";
+  base::ElapsedTimer timer;
 
   const base::FilePath tmp_profile_dir =
       ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
@@ -169,6 +171,8 @@ BrowserDataBackMigrator::PreMigrationCleanUp(
     }
   }
 
+  base::UmaHistogramMediumTimes(kPreMigrationCleanUpTimeUMA, timer.Elapsed());
+
   return {TaskStatus::kSucceeded};
 }
 
@@ -195,6 +199,7 @@ void BrowserDataBackMigrator::OnPreMigrationCleanUp(
 BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running MergeSplitItems()";
+  base::ElapsedTimer timer;
 
   const base::FilePath tmp_profile_dir =
       ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
@@ -309,6 +314,8 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
     return {TaskStatus::kMergeSplitItemsMergeSyncDataFailed};
   }
 
+  base::UmaHistogramMediumTimes(kMergeSplitItemsTimeUMA, timer.Elapsed());
+
   return {TaskStatus::kSucceeded};
 }
 
@@ -335,6 +342,7 @@ void BrowserDataBackMigrator::OnMergeSplitItems(
 BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteAshItems(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running DeleteAshItems()";
+  base::ElapsedTimer timer;
 
   // For extensions that exist in both Ash and Lacros, take the Lacros version
   // and delete the Ash version.
@@ -366,6 +374,8 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteAshItems(
     }
   }
 
+  base::UmaHistogramMediumTimes(kDeleteAshItemsTimeUMA, timer.Elapsed());
+
   return {TaskStatus::kSucceeded};
 }
 
@@ -392,6 +402,7 @@ BrowserDataBackMigrator::TaskResult
 BrowserDataBackMigrator::MoveLacrosItemsToAshDir(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running MoveLacrosItemsToAshDir()";
+  base::ElapsedTimer timer;
 
   const base::FilePath lacros_profile_dir =
       ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir)
@@ -418,6 +429,9 @@ BrowserDataBackMigrator::MoveLacrosItemsToAshDir(
       return {TaskStatus::kMoveLacrosItemsToAshDirFailed, errno};
     }
   }
+
+  base::UmaHistogramMediumTimes(kMoveLacrosItemsToAshDirTimeUMA,
+                                timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -446,6 +460,7 @@ BrowserDataBackMigrator::TaskResult
 BrowserDataBackMigrator::MoveMergedItemsBackToAsh(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running MoveMergedItemsBackToAsh()";
+  base::ElapsedTimer timer;
 
   const base::FilePath tmp_profile_dir =
       ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
@@ -455,6 +470,9 @@ BrowserDataBackMigrator::MoveMergedItemsBackToAsh(
                 << ash_profile_dir.value();
     return {TaskStatus::kMoveMergedItemsBackToAshMoveFileFailed, errno};
   }
+
+  base::UmaHistogramMediumTimes(kMoveMergedItemsBackToAshTimeUMA,
+                                timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -544,6 +562,7 @@ void BrowserDataBackMigrator::OnMoveMergedItemsBackToAsh(
 BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteLacrosDir(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running DeleteLacrosDir()";
+  base::ElapsedTimer timer;
 
   const base::FilePath lacros_profile_dir =
       ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir);
@@ -554,6 +573,8 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteLacrosDir(
       return {TaskStatus::kDeleteLacrosDirDeleteFailed, errno};
     }
   }
+
+  base::UmaHistogramMediumTimes(kDeleteLacrosDirTimeUMA, timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
@@ -580,6 +601,7 @@ void BrowserDataBackMigrator::OnDeleteLacrosDir(
 BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteTmpDir(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running DeleteTmpDir()";
+  base::ElapsedTimer timer;
 
   const base::FilePath tmp_user_dir =
       ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
@@ -589,6 +611,8 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteTmpDir(
       return {TaskStatus::kDeleteTmpDirDeleteFailed, errno};
     }
   }
+
+  base::UmaHistogramMediumTimes(kDeleteTmpDirTimeUMA, timer.Elapsed());
 
   return {TaskStatus::kSucceeded};
 }
