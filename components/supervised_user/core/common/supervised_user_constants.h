@@ -39,6 +39,9 @@ extern const char* const kCustodianInfoPrefs[10];
 // Filenames.
 extern const base::FilePath::CharType kSupervisedUserSettingsFilename[];
 
+// Filename for denylist.
+extern const base::FilePath::CharType kDenylistFilename[];
+
 // URLs for RPCs in the KidsManagement service.
 GURL KidsManagementGetFamilyProfileURL();
 GURL KidsManagementGetFamilyMembersURL();

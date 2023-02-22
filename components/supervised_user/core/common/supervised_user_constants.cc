@@ -56,6 +56,9 @@ const char* const kCustodianInfoPrefs[] = {
 const base::FilePath::CharType kSupervisedUserSettingsFilename[] =
     FILE_PATH_LITERAL("Managed Mode Settings");
 
+const base::FilePath::CharType kDenylistFilename[] =
+    FILE_PATH_LITERAL("su-denylist.bin");
+
 GURL KidsManagementGetFamilyProfileURL() {
   return KidsManagementBaseURL().Resolve(kGetFamilyProfileURL);
 }
