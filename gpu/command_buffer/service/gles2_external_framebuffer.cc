@@ -246,6 +246,9 @@ class GLES2ExternalFramebuffer::Attachment {
 
   void OnContextLost() { context_lost_ = true; }
 
+  GLenum format() const { return format_; }
+  int samples_count() const { return samples_count_; }
+
  private:
   void AttachImpl(GLenum attachment, bool is_texture, GLuint object) {
     if (is_texture) {
@@ -552,12 +555,77 @@ void GLES2ExternalFramebuffer::ResolveAndDetach() {
   shared_image_representation_.reset();
 }
 
-GLuint GLES2ExternalFramebuffer::GetFramebufferId() {
+GLuint GLES2ExternalFramebuffer::GetFramebufferId() const {
   return fbo_;
 }
 
-bool GLES2ExternalFramebuffer::IsSharedImageAttached() {
+bool GLES2ExternalFramebuffer::IsSharedImageAttached() const {
   return !!scoped_access_;
+}
+
+gfx::Size GLES2ExternalFramebuffer::GetSize() const {
+  DCHECK(IsSharedImageAttached());
+  return shared_image_representation_->size();
+}
+
+GLenum GLES2ExternalFramebuffer::GetColorFormat() const {
+  DCHECK(IsSharedImageAttached());
+  auto it = attachments_.find(GL_COLOR_ATTACHMENT0);
+  DCHECK(it != attachments_.end());
+  return it->second->format();
+}
+
+GLenum GLES2ExternalFramebuffer::GetDepthFormat() const {
+  DCHECK(IsSharedImageAttached());
+  if (auto it = attachments_.find(GL_DEPTH_STENCIL_ATTACHMENT);
+      it != attachments_.end()) {
+    return it->second->format();
+  }
+
+  if (auto it = attachments_.find(GL_DEPTH_ATTACHMENT);
+      it != attachments_.end()) {
+    return it->second->format();
+  }
+
+  return GL_NONE;
+}
+
+GLenum GLES2ExternalFramebuffer::GetStencilFormat() const {
+  DCHECK(IsSharedImageAttached());
+  DCHECK(IsSharedImageAttached());
+  if (auto it = attachments_.find(GL_DEPTH_STENCIL_ATTACHMENT);
+      it != attachments_.end()) {
+    return it->second->format();
+  }
+
+  if (auto it = attachments_.find(GL_STENCIL_ATTACHMENT);
+      it != attachments_.end()) {
+    return it->second->format();
+  }
+
+  return GL_NONE;
+}
+
+int GLES2ExternalFramebuffer::GetSamplesCount() const {
+  DCHECK(IsSharedImageAttached());
+  auto it = attachments_.find(GL_COLOR_ATTACHMENT0);
+  DCHECK(it != attachments_.end());
+  return it->second->samples_count();
+}
+
+bool GLES2ExternalFramebuffer::HasAlpha() const {
+  DCHECK(IsSharedImageAttached());
+  auto it = attachments_.find(GL_COLOR_ATTACHMENT0);
+  DCHECK(it != attachments_.end());
+  return it->second->format() == GL_RGBA8;
+}
+
+bool GLES2ExternalFramebuffer::HasDepth() const {
+  return GetDepthFormat() != GL_NONE;
+}
+
+bool GLES2ExternalFramebuffer::HasStencil() const {
+  return GetStencilFormat() != GL_NONE;
 }
 
 }  // namespace gpu::gles2
