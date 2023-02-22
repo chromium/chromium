@@ -154,9 +154,6 @@ try_.builder(
     cores = 16,
     ssd = True,
     main_list_view = "try",
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     properties = {
         "$build/binary_size": {
             "analyze_targets": [
