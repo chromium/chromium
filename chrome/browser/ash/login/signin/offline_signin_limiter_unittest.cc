@@ -5,17 +5,16 @@
 #include "chrome/browser/ash/login/signin/offline_signin_limiter.h"
 
 #include <memory>
-#include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/power_monitor_test.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
-#include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -32,8 +31,8 @@
 namespace ash {
 namespace {
 
-const char kTestGaiaUser[] = "user@example.com";
-const char kTestSAMLUser[] = "user@saml.example.com";
+constexpr char kTestGaiaUser[] = "user@example.com";
+constexpr char kTestSAMLUser[] = "user@saml.example.com";
 
 }  // namespace
 
@@ -48,6 +47,7 @@ class OfflineSigninLimiterTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override;
+  void TearDown() override;
 
   void DestroyLimiter();
   void CreateLimiter();
@@ -62,7 +62,8 @@ class OfflineSigninLimiterTest : public testing::Test {
   const AccountId test_saml_account_id_ =
       AccountId::FromUserEmail(kTestSAMLUser);
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   extensions::QuotaService::ScopedDisablePurgeForTesting
       disable_purge_for_testing_;
 
@@ -70,51 +71,49 @@ class OfflineSigninLimiterTest : public testing::Test {
       std::make_unique<FakeChromeUserManager>()};
 
   std::unique_ptr<TestingProfile> profile_;
-  base::WallClockTimer* timer_ = nullptr;  // Not owned.
-  base::WallClockTimer* lockscreen_timer_ = nullptr;  // Not owned.
+  base::raw_ptr<base::WallClockTimer> timer_ = nullptr;
+  base::raw_ptr<base::WallClockTimer> lockscreen_timer_ = nullptr;
 
-  OfflineSigninLimiter* limiter_ = nullptr;  // Owned.
+  std::unique_ptr<OfflineSigninLimiter> limiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
-  base::test::ScopedFeatureList feature_list_;
+  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 };
 
-OfflineSigninLimiterTest::OfflineSigninLimiterTest()
-    : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  local_state_ = std::make_unique<ScopedTestingLocalState>(
-      TestingBrowserProcess::GetGlobal());
-}
+OfflineSigninLimiterTest::OfflineSigninLimiterTest() = default;
 
 OfflineSigninLimiterTest::~OfflineSigninLimiterTest() {
-  DestroyLimiter();
-  profile_ = nullptr;
   // Finish any pending tasks before deleting the TestingBrowserProcess.
   task_environment_.RunUntilIdle();
-  local_state_.reset();
-  TestingBrowserProcess::DeleteInstance();
 }
 
 void OfflineSigninLimiterTest::DestroyLimiter() {
   if (limiter_) {
     limiter_->Shutdown();
-    delete limiter_;
-    limiter_ = nullptr;
+    limiter_.reset();
     timer_ = nullptr;
     lockscreen_timer_ = nullptr;
   }
 }
 
 void OfflineSigninLimiterTest::CreateLimiter() {
+  DCHECK(profile_.get());
+
   DestroyLimiter();
-  limiter_ = new OfflineSigninLimiter(profile_.get(),
-                                      task_environment_.GetMockClock());
+  // OfflineSigninLimiter has a private constructor.
+  limiter_ = base::WrapUnique(new OfflineSigninLimiter(
+      profile_.get(), task_environment_.GetMockClock()));
   timer_ = limiter_->GetTimerForTesting();
   lockscreen_timer_ = limiter_->GetLockscreenTimerForTesting();
 }
 
 void OfflineSigninLimiterTest::SetUp() {
   profile_ = std::make_unique<TestingProfile>();
+}
+
+void OfflineSigninLimiterTest::TearDown() {
+  DestroyLimiter();
+  profile_.reset();
 }
 
 FakeChromeUserManager* OfflineSigninLimiterTest::GetFakeChromeUserManager() {
