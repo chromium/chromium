@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
@@ -22,6 +23,19 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_matcher/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace {
+
+// Checks if the host contains an * (asterik) that would have no effect on the
+// domain or subdomain. It is a common mistake that admins allow sites with * as
+// a wildcard in the hostname although it has no effect on the domain and
+// subdomains. Two example for such a common mistake are: 1- *.android.com 2-
+// developer.*.com which allow neither android.com nor developer.android.com
+bool ValidateHost(const std::string& host) {
+  return host == "*" || host.find('*') == std::string::npos;
+}
+
+}  // namespace
 
 namespace policy {
 
@@ -136,12 +150,13 @@ void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   }
 }
 
-bool URLBlocklistPolicyHandler::ValidatePolicy(const std::string& policy) {
+bool URLBlocklistPolicyHandler::ValidatePolicy(const std::string& url_pattern) {
   url_matcher::util::FilterComponents components;
   return url_matcher::util::FilterToComponents(
-      policy, &components.scheme, &components.host,
-      &components.match_subdomains, &components.port, &components.path,
-      &components.query);
+             url_pattern, &components.scheme, &components.host,
+             &components.match_subdomains, &components.port, &components.path,
+             &components.query) &&
+         ValidateHost(components.host);
 }
 
 }  // namespace policy

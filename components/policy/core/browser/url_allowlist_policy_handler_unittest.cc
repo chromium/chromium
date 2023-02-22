@@ -173,6 +173,20 @@ TEST_F(URLAllowlistPolicyHandlerTest, ValidatePolicy) {
   EXPECT_TRUE(ValidatePolicy("127.0.0.1:1"));
   EXPECT_TRUE(ValidatePolicy("127.0.0.1:65535"));
   EXPECT_FALSE(ValidatePolicy("127.0.0.1:65536"));
+
+  EXPECT_TRUE(ValidatePolicy("*"));
+  EXPECT_FALSE(ValidatePolicy("*.developers.com"));
+}
+
+// When the invalid sequence with '*' in the host is added to the allowlist, the
+// policy can still be applied, but an error is added to the error map to
+// indicate an invalid URL.
+TEST_F(URLAllowlistPolicyHandlerTest, CheckPolicyURLHostWithAsterik) {
+  base::Value::List allowed_urls;
+  allowed_urls.Append("*.developers.com");
+  EXPECT_TRUE(
+      CheckPolicy(key::kURLAllowlist, base::Value(std::move(allowed_urls))));
+  EXPECT_EQ(1U, errors_.size());
 }
 
 }  // namespace policy

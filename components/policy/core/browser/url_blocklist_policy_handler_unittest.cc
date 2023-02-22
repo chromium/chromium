@@ -319,6 +319,20 @@ TEST_F(URLBlocklistPolicyHandlerTest, ValidatePolicy) {
   EXPECT_TRUE(ValidatePolicy("127.0.0.1:1"));
   EXPECT_TRUE(ValidatePolicy("127.0.0.1:65535"));
   EXPECT_FALSE(ValidatePolicy("127.0.0.1:65536"));
+
+  EXPECT_TRUE(ValidatePolicy("*"));
+  EXPECT_FALSE(ValidatePolicy("*.developers.com"));
+}
+
+// When the invalid sequence with '*' in the host is added to the blocklist, the
+// policy can still be applied, but an error is added to the error map to
+// indicate an invalid URL.
+TEST_F(URLBlocklistPolicyHandlerTest, CheckPolicyURLHostWithAsterik) {
+  base::Value::List blocked_urls;
+  blocked_urls.Append("android.*.com");
+  EXPECT_TRUE(
+      CheckPolicy(key::kURLBlocklist, base::Value(std::move(blocked_urls))));
+  EXPECT_EQ(1U, errors_.size());
 }
 
 }  // namespace policy
