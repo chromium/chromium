@@ -34,16 +34,18 @@ std::string GetNetworkName(const std::string& service_path) {
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->GetNetworkState(
           service_path);
-  if (!network)
+  if (!network) {
     return std::string();
+  }
   return network->name();
 }
 
 base::Value::Dict ConvertAppToDict(KioskAppManagerBase::App app) {
   base::Value::Dict out_info;
 
-  if (app.name.empty())
+  if (app.name.empty()) {
     app.name = l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME);
+  }
 
   if (app.icon.isNull()) {
     app.icon = *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -74,8 +76,9 @@ AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
 
 AppLaunchSplashScreenHandler::~AppLaunchSplashScreenHandler() {
   network_state_informer_->RemoveObserver(this);
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnDeletingSplashScreenView();
+  }
 }
 
 void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
@@ -105,8 +108,13 @@ void AppLaunchSplashScreenHandler::Show() {
     DoToggleNetworkConfig(toggle_network_config_on_show_.value());
     toggle_network_config_on_show_.reset();
   }
-  if (network_config_shown_)
+  if (network_config_shown_) {
     ShowNetworkConfigureUI();
+  }
+}
+
+void AppLaunchSplashScreenHandler::SetNetworkRequired() {
+  is_network_required_ = true;
 }
 
 void AppLaunchSplashScreenHandler::RegisterMessages() {
@@ -127,8 +135,9 @@ void AppLaunchSplashScreenHandler::ToggleNetworkConfig(bool visible) {
 }
 
 void AppLaunchSplashScreenHandler::UpdateAppLaunchState(AppLaunchState state) {
-  if (state == state_)
+  if (state == state_) {
     return;
+  }
 
   state_ = state;
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
@@ -147,7 +156,7 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI() {
 
   // We should not block users when the network was not required by the
   // controller.
-  if (!delegate_->IsNetworkRequired()) {
+  if (!is_network_required_) {
     state = NetworkStateInformer::ONLINE;
   }
 
@@ -188,8 +197,9 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI() {
       break;
   }
 
-  if (GetCurrentScreen() != ErrorScreenView::kScreenId)
+  if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
     error_screen_->SetParentScreen(kScreenId);
+  }
   error_screen_->Show(nullptr);
 }
 
@@ -205,8 +215,9 @@ bool AppLaunchSplashScreenHandler::IsNetworkReady() {
 
 void AppLaunchSplashScreenHandler::UpdateState(
     NetworkError::ErrorReason reason) {
-  if (!delegate_)
+  if (!delegate_) {
     return;
+  }
   bool new_online_state =
       network_state_informer_->state() == NetworkStateInformer::ONLINE;
   delegate_->OnNetworkStateChanged(new_online_state);
@@ -244,15 +255,17 @@ int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
 }
 
 void AppLaunchSplashScreenHandler::HandleConfigureNetwork() {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnConfigureNetwork();
-  else
+  } else {
     LOG(WARNING) << "No delegate set to handle network configuration.";
+  }
 }
 
 void AppLaunchSplashScreenHandler::ContinueAppLaunch() {
-  if (!delegate_)
+  if (!delegate_) {
     return;
+  }
 
   network_config_shown_ = false;
   delegate_->OnNetworkConfigFinished();

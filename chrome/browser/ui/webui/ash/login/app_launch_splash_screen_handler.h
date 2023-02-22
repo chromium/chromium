@@ -37,9 +37,6 @@ class AppLaunchSplashScreenView {
 
     // Returns the data needed to be displayed on the splash screen.
     virtual KioskAppManagerBase::App GetAppData() = 0;
-
-    // Tells whether the network connection is required for app launch.
-    virtual bool IsNetworkRequired() = 0;
   };
 
   enum class AppLaunchState {
@@ -84,6 +81,9 @@ class AppLaunchSplashScreenView {
 
   // Continues app launch after error screen is shown.
   virtual void ContinueAppLaunch() = 0;
+
+  // Tells the splash screen view that network is required.
+  virtual void SetNetworkRequired() = 0;
 };
 
 // A class that handles the WebUI hooks for the app launch splash screen.
@@ -121,6 +121,7 @@ class AppLaunchSplashScreenHandler
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
   void ContinueAppLaunch() override;
+  void SetNetworkRequired() override;
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void UpdateState(NetworkError::ErrorReason reason) override;
@@ -133,6 +134,7 @@ class AppLaunchSplashScreenHandler
 
   Delegate* delegate_ = nullptr;
   bool is_shown_ = false;
+  bool is_network_required_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;

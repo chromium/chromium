@@ -174,7 +174,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnNetworkConfigFinished() override;
   void OnNetworkStateChanged(bool online) override;
   KioskAppManagerBase::App GetAppData() override;
-  bool IsNetworkRequired() override;
 
   // `KioskAppLauncher::NetworkDelegate`
   void InitializeNetwork() override;

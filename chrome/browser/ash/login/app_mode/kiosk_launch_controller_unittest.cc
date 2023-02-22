@@ -305,6 +305,15 @@ TEST_F(KioskLaunchControllerTest, AppLaunchedShouldStartSession) {
 }
 
 TEST_F(KioskLaunchControllerTest,
+       InitializeLauncherShouldSignalNetworkRequired) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+  profile_controls().OnProfileLoaded(profile());
+
+  network_delegate().InitializeNetwork();
+  EXPECT_TRUE(view().IsNetworkRequired());
+}
+
+TEST_F(KioskLaunchControllerTest,
        NetworkPresentShouldInvokeContinueWithNetworkReady) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);
   profile_controls().OnProfileLoaded(profile());

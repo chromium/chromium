@@ -445,10 +445,6 @@ KioskAppManagerBase::App KioskLaunchController::GetAppData() {
   return KioskAppManagerBase::App();
 }
 
-bool KioskLaunchController::IsNetworkRequired() {
-  return network_required_;
-}
-
 void KioskLaunchController::CleanUp() {
   DCHECK(!cleaned_up_);
   cleaned_up_ = true;
@@ -539,6 +535,7 @@ void KioskLaunchController::InitializeNetwork() {
   // When we are asked to initialize network, we should remember that this app
   // requires network.
   network_required_ = true;
+  splash_screen_view_->SetNetworkRequired();
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork);
