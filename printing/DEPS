@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/paint",
+  "+chromeos/crosapi/mojom/local_printer.mojom.h",
   "+mojo/public",
   "+printing/printing_jni_headers",
   "+services/data_decoder/public/cpp",

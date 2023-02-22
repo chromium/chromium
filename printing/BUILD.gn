@@ -278,7 +278,10 @@ component("printing") {
       "print_settings_conversion_chromeos.h",
     ]
 
-    deps += [ "//third_party/re2" ]
+    deps += [
+      "//chromeos/crosapi/mojom:mojom",
+      "//third_party/re2",
+    ]
   }
 
   if (use_cups) {

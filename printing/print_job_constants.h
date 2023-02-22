@@ -171,6 +171,8 @@ COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingIppClientVersion[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kSettingPrinterManuallySelected[];
+COMPONENT_EXPORT(PRINTING_BASE)
+extern const char kSettingPrinterStatusReason[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Specifies the horizontal alignment of the headers and footers.
