@@ -39,6 +39,7 @@ const CGFloat kPinnedCellHorizontalPadding = 8.0f;
 const CGFloat kPinnedCellTitleLeadingPadding = 4.0f;
 const CGFloat kPinnedCellSnapshotTopPadding = 32.0f;
 const CGFloat kPinnedCellFaviconWidth = 16.0f;
+const CGFloat kPinnedCellFaviconSymbolPointSize = 18.0f;
 const CGFloat kPinnedCellFaviconContainerWidth = 24.0f;
 const CGFloat kPinnedCellFaviconBorderWidth = 1.5f;
 const CGFloat kPinnedCellFaviconContainerCornerRadius = 9.0f;

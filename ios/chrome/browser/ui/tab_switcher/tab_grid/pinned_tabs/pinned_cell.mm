@@ -156,7 +156,12 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (void)setIcon:(UIImage*)icon {
-  _faviconView.image = icon;
+  if (icon) {
+    _faviconView.image = icon;
+  } else {
+    _faviconView.image = CustomSymbolWithPointSize(
+        kChromeProductSymbol, kPinnedCellFaviconSymbolPointSize);
+  }
 }
 
 - (UIImage*)snapshot {
@@ -325,6 +330,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
   faviconView.clipsToBounds = YES;
   faviconView.layer.cornerRadius = kPinnedCellFaviconCornerRadius;
   faviconView.layer.masksToBounds = YES;
+  faviconView.tintColor = [UIColor colorNamed:kTextPrimaryColor];
 
   [NSLayoutConstraint activateConstraints:@[
     [faviconView.widthAnchor constraintEqualToConstant:kPinnedCellFaviconWidth],

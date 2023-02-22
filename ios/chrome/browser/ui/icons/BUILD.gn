@@ -62,6 +62,7 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:camera_lens",
     "//ios/chrome/browser/ui/icons/resources:checkerboard_shield",
     "//ios/chrome/browser/ui/icons/resources:checkermark_shield",
+    "//ios/chrome/browser/ui/icons/resources:chrome_product",
     "//ios/chrome/browser/ui/icons/resources:dino",
     "//ios/chrome/browser/ui/icons/resources:incognito",
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill",
