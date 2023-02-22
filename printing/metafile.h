@@ -18,7 +18,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreGraphics/CoreGraphics.h>
 #include "base/mac/scoped_cftyperef.h"
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(PRINTING_METAFILE) MetafilePlayer {
   // details.
   virtual bool SafePlayback(printing::NativeDrawingContext hdc) const = 0;
 
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   // Renders the given page into `rect` in the given context.
   // Pages use a 1-based index. `autorotate` determines whether the source PDF
   // should be autorotated to fit on the destination page. `fit_to_page`

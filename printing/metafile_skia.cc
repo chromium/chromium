@@ -35,7 +35,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "printing/pdf_metafile_cg_mac.h"
 #endif
 
@@ -87,7 +87,7 @@ struct MetafileSkiaData {
   SkSize size;
   mojom::SkiaDocumentType type;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   PdfMetafileCg pdf_cg;
 #endif
 };
@@ -301,7 +301,7 @@ bool MetafileSkia::SafePlayback(printing::NativeDrawingContext hdc) const {
   return false;
 }
 
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 /* TODO(caryclark): The set up of PluginInstance::PrintPDFOutput may result in
    rasterized output.  Even if that flow uses PdfMetafileCg::RenderPage,
    the drawing of the PDF into the canvas may result in a rasterized output.
