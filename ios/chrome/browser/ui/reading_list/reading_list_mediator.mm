@@ -274,7 +274,6 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
         oldItem.entryURL = newItem.entryURL;
         oldItem.distillationState = newItem.distillationState;
         oldItem.distillationDateText = newItem.distillationDateText;
-        oldItem.distillationSizeText = newItem.distillationSizeText;
       }
       if (oldItem.faviconPageURL != newItem.faviconPageURL) {
         oldItem.faviconPageURL = newItem.faviconPageURL;

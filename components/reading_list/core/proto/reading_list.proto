@@ -43,6 +43,7 @@ message ReadingListLocal {
   optional int64 failed_download_counter = 9;
   optional string backoff = 10;
   optional int64 distillation_time_us = 14;
+  // TODO(crbug.com/1418290): Remove after M115
   optional int64 distillation_size = 15;
   reserved 16;
   optional int32 estimated_read_time_seconds = 17;

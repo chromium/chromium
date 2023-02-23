@@ -24,8 +24,6 @@ class GURL;
 @property(nonatomic, assign) GURL faviconPageURL;
 // Status of the offline version.
 @property(nonatomic, assign) ReadingListUIDistillationStatus distillationState;
-// The string that displays the distillation size.
-@property(nonatomic, copy) NSString* distillationSizeText;
 // The string that displays the estimated read time.
 @property(nonatomic, copy) NSString* estimatedReadTimeText;
 // The string that displays the distillation date.

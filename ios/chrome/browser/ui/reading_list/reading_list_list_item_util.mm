@@ -34,14 +34,6 @@ NSString* GetReadingListCellAccessibilityLabel(
                                  base::SysNSStringToUTF16(subtitle));
 }
 
-NSString* GetReadingListCellDistillationSizeText(int64_t distillation_size) {
-  if (!distillation_size)
-    return nil;
-  return [NSByteCountFormatter
-      stringFromByteCount:distillation_size
-               countStyle:NSByteCountFormatterCountStyleFile];
-}
-
 NSString* GetReadingListCellDistillationDateText(int64_t distillation_date) {
   if (!distillation_date)
     return nil;
@@ -68,7 +60,5 @@ BOOL AreReadingListListItemsEqual(id<ReadingListListItem> first,
       [first.title isEqualToString:second.title] &&
       first.entryURL.host() == second.entryURL.host() &&
       first.distillationState == second.distillationState &&
-      [first.distillationSizeText
-          isEqualToString:second.distillationSizeText] &&
       [first.distillationDateText isEqualToString:second.distillationDateText];
 }

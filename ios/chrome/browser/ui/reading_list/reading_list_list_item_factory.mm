@@ -73,15 +73,11 @@
       reading_list::UIStatusFromModelStatus(entry->DistilledState());
   BOOL hasDistillationDetails =
       entry->DistilledState() == ReadingListEntry::PROCESSED &&
-      entry->DistillationSize() != 0 && entry->DistillationTime() != 0;
+      entry->DistillationTime() != 0;
   int64_t distillationDate =
       hasDistillationDetails ? entry->DistillationTime() : 0;
   item.distillationDateText =
       GetReadingListCellDistillationDateText(distillationDate);
-  int64_t distillationSize =
-      hasDistillationDetails ? entry->DistillationSize() : 0;
-  item.distillationSizeText =
-      GetReadingListCellDistillationSizeText(distillationSize);
   item.customActionFactory = self.customActionFactory;
   return item;
 }

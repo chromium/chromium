@@ -18,10 +18,6 @@ NSString* GetReadingListCellAccessibilityLabel(
     NSString* subtitle,
     ReadingListUIDistillationStatus distillation_status);
 
-// Returns the string to use for the distillation size label of reading list
-// cells.
-NSString* GetReadingListCellDistillationSizeText(int64_t distillation_size);
-
 // Returns the string to use to display the distillation date in reading list
 // cells.  The date is in microseconds since Jan 1st 1970.
 NSString* GetReadingListCellDistillationDateText(int64_t distillation_date);

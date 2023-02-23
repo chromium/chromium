@@ -54,7 +54,6 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
 @synthesize entryURL = _entryURL;
 @synthesize faviconPageURL = _faviconPageURL;
 @synthesize distillationState = _distillationState;
-@synthesize distillationSizeText = _distillationSizeText;
 @synthesize distillationDateText = _distillationDateText;
 @synthesize estimatedReadTimeText = _estimatedReadTimeText;
 @synthesize customActionFactory = _customActionFactory;
@@ -105,7 +104,6 @@ NSString* const kURLAndDistillationDateFormat = @"%@ • %@";
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
   URLCell.titleLabel.text = [self titleLabelText];
   URLCell.URLLabel.text = [self URLLabelText];
-  URLCell.metadataLabel.text = self.distillationSizeText;
   URLCell.cellUniqueIdentifier = base::SysUTF8ToNSString(self.entryURL.host());
   URLCell.accessibilityTraits |= UIAccessibilityTraitButton;
 
