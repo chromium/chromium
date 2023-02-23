@@ -176,7 +176,6 @@ export class HelpBubbleController {
       return;
     }
     this.bubble_.show(this.anchor_);
-    this.anchor_.focus();
     this.isBubbleShowing_ = true;
     this.setAnchorHighlight_(true);
   }
@@ -255,6 +254,10 @@ export class HelpBubbleController {
     assert(
         this.anchor_, 'Set anchor highlight: expected valid anchor element.');
     this.anchor_.classList.toggle(ANCHOR_HIGHLIGHT_CLASS, highlight);
+    if (highlight) {
+      this.anchor_.focus();
+      this.anchor_.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }
   }
 
   /**
