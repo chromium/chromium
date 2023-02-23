@@ -829,13 +829,29 @@ void AttributionManagerImpl::ClearData(
     bool delete_rate_limit_data,
     base::OnceClosure done) {
 #if BUILDFLAG(IS_ANDROID)
-  const bool should_clear_from_os = attribution_os_level_manager_ != nullptr;
-#else
-  const bool should_clear_from_os = false;
-#endif
+  if (attribution_os_level_manager_) {
+    auto barrier = base::BarrierClosure(2, std::move(done));
+    done = barrier;
 
-  auto on_done =
-      base::BarrierClosure(should_clear_from_os ? 2 : 1, std::move(done));
+    if (filter_builder) {
+      auto* filter_builder_impl =
+          static_cast<BrowsingDataFilterBuilderImpl*>(filter_builder);
+      attribution_os_level_manager_->ClearData(
+          delete_begin, delete_end, filter_builder_impl->GetOrigins(),
+          filter_builder_impl->GetRegisterableDomains(),
+          filter_builder->GetMode(), delete_rate_limit_data,
+          std::move(barrier));
+    } else {
+      // When there is not filter_builder, we clear all the data.
+      attribution_os_level_manager_->ClearData(
+          delete_begin, delete_end, /*origins=*/{}, /*domains=*/{},
+          // By preserving data only from an empty list, we are effectively
+          // clearing all the data.
+          BrowsingDataFilterBuilder::Mode::kPreserve, delete_rate_limit_data,
+          std::move(barrier));
+    }
+  }
+#endif
 
   // When a clear data task is queued or running, we use a higher priority.
   ++num_pending_clear_data_tasks_;
@@ -844,32 +860,9 @@ void AttributionManagerImpl::ClearData(
   attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter),
                 delete_rate_limit_data)
-      .Then(base::OnceClosure(on_done).Then(
+      .Then(std::move(done).Then(
           base::BindOnce(&AttributionManagerImpl::OnClearDataComplete,
                          weak_factory_.GetWeakPtr())));
-
-#if BUILDFLAG(IS_ANDROID)
-  if (!should_clear_from_os) {
-    return;
-  }
-
-  if (filter_builder) {
-    auto* filter_builder_impl =
-        static_cast<BrowsingDataFilterBuilderImpl*>(filter_builder);
-    attribution_os_level_manager_->ClearData(
-        delete_begin, delete_end, filter_builder_impl->GetOrigins(),
-        filter_builder_impl->GetRegisterableDomains(),
-        filter_builder->GetMode(), delete_rate_limit_data, std::move(on_done));
-  } else {
-    // When there is not filter_builder, we clear all the data.
-    attribution_os_level_manager_->ClearData(
-        delete_begin, delete_end, /*origins=*/{}, /*domains=*/{},
-        // By preserving data only from an empty list, we are effectively
-        // clearing all the data.
-        BrowsingDataFilterBuilder::Mode::kPreserve, delete_rate_limit_data,
-        std::move(on_done));
-  }
-#endif
 }
 
 void AttributionManagerImpl::OnClearDataComplete() {
