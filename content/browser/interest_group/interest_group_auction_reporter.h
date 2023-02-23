@@ -22,6 +22,7 @@
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -230,12 +231,6 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   base::RepeatingClosure OnNavigateToWinningAdCallback();
 
   const std::vector<std::string>& errors() const { return errors_; }
-
-  // TODO(mmenke): Remove this method, and report these directly.
-  std::map<std::string, PrivateAggregationRequests>
-  TakeNonReservedPrivateAggregationRequests() {
-    return std::move(private_aggregation_requests_non_reserved_);
-  }
 
   // The FencedFrameReporter that `this` will pass event-level ad beacon
   // information received from reporting worklets to, as they're received.

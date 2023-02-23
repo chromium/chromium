@@ -7,17 +7,21 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
@@ -28,6 +32,7 @@
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/aggregatable_report.mojom.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/common/private_aggregation_host.mojom.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -88,6 +93,10 @@ class InterestGroupAuctionReporterTest
       public AuctionWorkletManager::Delegate {
  public:
   InterestGroupAuctionReporterTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        content::kPrivateAggregationApi,
+        {{"fledge_extensions_enabled", "true"}});
+
     mojo::SetDefaultProcessErrorHandler(
         base::BindRepeating(&InterestGroupAuctionReporterTest::OnBadMessage,
                             base::Unretained(this)));
@@ -198,24 +207,25 @@ class InterestGroupAuctionReporterTest
   }
 
   void SetUpReporterAndStart() {
-    interest_group_auction_reporter_ = std::make_unique<
-        InterestGroupAuctionReporter>(
-        interest_group_manager_impl_.get(), &auction_worklet_manager_,
-        /*attribution_data_host_manager=*/nullptr,
-        &private_aggregation_manager_,
-        private_aggregation_manager_.GetLogPrivateAggregationRequestsCallback(),
-        std::move(auction_config_), kTopFrameOrigin, kFrameOrigin,
-        frame_client_security_state_.Clone(),
-        dummy_report_shared_url_loader_factory_, std::move(winning_bid_info_),
-        std::move(seller_winning_bid_info_),
-        std::move(component_seller_winning_bid_info_),
-        /*interest_groups_that_bid=*/
-        blink::InterestGroupSet{{kWinningBidderOrigin, kWinningBidderName},
-                                {kLosingBidderOrigin, kLosingBidderName}},
-        std::move(debug_win_report_urls_), std::move(debug_loss_report_urls_),
-        k_anon_keys_to_join_, std::move(private_aggregation_requests_reserved_),
-        std::map<std::string,
-                 InterestGroupAuctionReporter::PrivateAggregationRequests>());
+    interest_group_auction_reporter_ =
+        std::make_unique<InterestGroupAuctionReporter>(
+            interest_group_manager_impl_.get(), &auction_worklet_manager_,
+            /*attribution_data_host_manager=*/nullptr,
+            &private_aggregation_manager_,
+            private_aggregation_manager_
+                .GetLogPrivateAggregationRequestsCallback(),
+            std::move(auction_config_), kTopFrameOrigin, kFrameOrigin,
+            frame_client_security_state_.Clone(),
+            dummy_report_shared_url_loader_factory_,
+            std::move(winning_bid_info_), std::move(seller_winning_bid_info_),
+            std::move(component_seller_winning_bid_info_),
+            /*interest_groups_that_bid=*/
+            blink::InterestGroupSet{{kWinningBidderOrigin, kWinningBidderName},
+                                    {kLosingBidderOrigin, kLosingBidderName}},
+            std::move(debug_win_report_urls_),
+            std::move(debug_loss_report_urls_), k_anon_keys_to_join_,
+            std::move(private_aggregation_requests_reserved_),
+            std::move(private_aggregation_event_map_));
     interest_group_auction_reporter_->Start(
         base::BindOnce(&InterestGroupAuctionReporterTest::OnCompleteCallback,
                        base::Unretained(this)));
@@ -371,6 +381,8 @@ class InterestGroupAuctionReporterTest
     errors_ = interest_group_auction_reporter_->errors();
   }
 
+  base::test::ScopedFeatureList feature_list_;
+
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://top_frame_origin.test/"));
   const url::Origin kFrameOrigin =
@@ -456,6 +468,48 @@ class InterestGroupAuctionReporterTest
                           New(/*bucket=*/42, /*value=*/24)),
               content::mojom::AggregationServiceMode::kDefault,
               content::mojom::DebugModeDetails::New());
+  const auction_worklet::mojom::PrivateAggregationRequestPtr
+      kWinningBidderGenerateBidNonReservedPrivateAggregationRequest =
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewForEventContribution(
+                      auction_worklet::mojom::
+                          AggregatableReportForEventContribution::New(
+                              auction_worklet::mojom::ForEventSignalBucket::
+                                  NewIdBucket(1),
+                              auction_worklet::mojom::ForEventSignalValue::
+                                  NewIntValue(2),
+                              "event_type")),
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
+  const auction_worklet::mojom::PrivateAggregationRequestPtr
+      kBonusNonReservedPrivateAggregationRequest =
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewForEventContribution(
+                      auction_worklet::mojom::
+                          AggregatableReportForEventContribution::New(
+                              auction_worklet::mojom::ForEventSignalBucket::
+                                  NewIdBucket(42),
+                              auction_worklet::mojom::ForEventSignalValue::
+                                  NewIntValue(24),
+                              "event_type2")),
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
+  const auction_worklet::mojom::PrivateAggregationRequestPtr
+      kReportWinNonReservedPrivateAggregationRequest =
+          auction_worklet::mojom::PrivateAggregationRequest::New(
+              auction_worklet::mojom::AggregatableReportContribution::
+                  NewForEventContribution(
+                      auction_worklet::mojom::
+                          AggregatableReportForEventContribution::New(
+                              auction_worklet::mojom::ForEventSignalBucket::
+                                  NewIdBucket(3),
+                              auction_worklet::mojom::ForEventSignalValue::
+                                  NewIntValue(4),
+                              "event_type")),
+              content::mojom::AggregationServiceMode::kDefault,
+              content::mojom::DebugModeDetails::New());
 
   std::vector<GURL> debug_win_report_urls_;
   std::vector<GURL> debug_loss_report_urls_;
@@ -517,6 +571,11 @@ class InterestGroupAuctionReporterTest
   std::map<url::Origin,
            InterestGroupAuctionReporter::PrivateAggregationRequests>
       private_aggregation_requests_reserved_;
+
+  // The non-reserved private aggregation requests passed in to the constructor.
+  std::map<std::string,
+           InterestGroupAuctionReporter::PrivateAggregationRequests>
+      private_aggregation_event_map_;
 
   std::unique_ptr<TestInterestGroupManagerImpl> interest_group_manager_impl_ =
       std::make_unique<TestInterestGroupManagerImpl>(
@@ -1289,8 +1348,8 @@ TEST_F(InterestGroupAuctionReporterTest, PrivateAggregationRequests) {
               ElementsAreRequests(
                   kLosingBidderGenerateBidPrivateAggregationRequest))));
 
-  // The aggregation request from the seller's reportResult() method should be
-  // immediately passed along.
+  // The reserved aggregation requests from the seller's reportResult() method
+  // should be immediately passed along.
   WaitForReportResultAndRunCallback(
       kSellerScriptUrl, /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
       MakeRequestPtrVector(kReportResultPrivateAggregationRequest.Clone(),
@@ -1301,8 +1360,8 @@ TEST_F(InterestGroupAuctionReporterTest, PrivateAggregationRequests) {
                   ElementsAreRequests(kReportResultPrivateAggregationRequest,
                                       kBonusPrivateAggregationRequest))));
 
-  // The aggregation request from the bidder's reportWin() method should be
-  // immediately passed along.
+  // The reserved aggregation requests from the bidder's reportWin() method
+  // should be immediately passed along.
   WaitForReportWinAndRunCallback(
       /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
       MakeRequestPtrVector(kReportWinPrivateAggregationRequest.Clone(),
@@ -1368,6 +1427,110 @@ TEST_F(InterestGroupAuctionReporterTest,
               kLosingBidderOrigin,
               ElementsAreRequests(
                   kLosingBidderGenerateBidPrivateAggregationRequest))));
+
+  WaitForCompletion();
+}
+
+// Check that private aggregation requests of non-reserved event types are
+// passed along as expected. This creates an auction which is both passed
+// aggregation reports from the bidding and scoring phase of the auction, and
+// receives more from each reporting worklet that's invoked. This covers the
+// case where a navigation occurs before the seller's reporting script
+// completes.
+TEST_F(InterestGroupAuctionReporterTest,
+       PrivateAggregationRequestsNonReserved) {
+  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
+  private_aggregation_event_map_["event_type"].push_back(
+      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_event_map_["event_type2"].push_back(
+      kBonusPrivateAggregationRequest.Clone());
+
+  SetUpAndStartSingleSellerAuction();
+
+  // Nothing should be sent when the auction is started.
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  // On navigation, the requests from the bidding and scoring phase of the
+  // auction should be passed along.
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetPrivateAggregationEventMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              "event_type",
+              ElementsAreRequests(
+                  kWinningBidderGenerateBidPrivateAggregationRequest)),
+          testing::Pair("event_type2",
+                        ElementsAreRequests(kBonusPrivateAggregationRequest))));
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl,
+                                    /*report_url=*/absl::nullopt);
+
+  // The non-reserved aggregation requests from the bidder's
+  // reportWin() method should be immediately passed along.
+  WaitForReportWinAndRunCallback(
+      /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+      MakeRequestPtrVector(
+          kReportWinNonReservedPrivateAggregationRequest.Clone()));
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetPrivateAggregationEventMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair("event_type",
+                        ElementsAreRequests(
+                            kWinningBidderGenerateBidPrivateAggregationRequest,
+                            kReportWinPrivateAggregationRequest)),
+          testing::Pair("event_type2",
+                        ElementsAreRequests(kBonusPrivateAggregationRequest))));
+
+  WaitForCompletion();
+}
+
+// Check that private aggregation requests of non-reserved event types are
+// passed along as expected. This creates an auction which is both passed
+// aggregation reports from the bidding and scoring phase of the auction, and
+// receives more from each reporting worklet that's invoked. This covers the
+// case where a navigation occurs after all reporting scripts have completed.
+TEST_F(InterestGroupAuctionReporterTest,
+       PrivateAggregationRequestsNonReservedLateNavigation) {
+  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
+  private_aggregation_event_map_["event_type"].push_back(
+      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_event_map_["event_type2"].push_back(
+      kBonusPrivateAggregationRequest.Clone());
+
+  SetUpAndStartSingleSellerAuction();
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl,
+                                    /*report_url=*/absl::nullopt);
+
+  WaitForReportWinAndRunCallback(
+      /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+      MakeRequestPtrVector(
+          kReportWinNonReservedPrivateAggregationRequest.Clone()));
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  // When the navigation finally occurs, all previously queued aggregated
+  // requests should be passed along.
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetPrivateAggregationEventMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair("event_type",
+                        ElementsAreRequests(
+                            kWinningBidderGenerateBidPrivateAggregationRequest,
+                            kReportWinPrivateAggregationRequest)),
+          testing::Pair("event_type2",
+                        ElementsAreRequests(kBonusPrivateAggregationRequest))));
 
   WaitForCompletion();
 }
@@ -1465,14 +1628,21 @@ TEST_F(InterestGroupAuctionReporterTest, DestroyedDuringReportWin) {
 TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
   private_aggregation_requests_reserved_[kWinningBidderOrigin].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_event_map_["event_type"].push_back(
+      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
 
   SetUpAndStartSingleSellerAuction();
+  scoped_refptr<FencedFrameReporter> fenced_frame_reporter =
+
+      interest_group_auction_reporter_->fenced_frame_reporter();
   WaitForReportResultAndRunCallback(
       kSellerScriptUrl, kSellerReportUrl, /*ad_beacon_map=*/{},
       MakeRequestPtrVector(kReportResultPrivateAggregationRequest.Clone()));
   WaitForReportWinAndRunCallback(
       kBidderReportUrl, /*ad_beacon_map=*/{},
-      MakeRequestPtrVector(kReportWinPrivateAggregationRequest.Clone()));
+      MakeRequestPtrVector(
+          kReportWinPrivateAggregationRequest.Clone(),
+          kReportWinNonReservedPrivateAggregationRequest.Clone()));
   interest_group_auction_reporter_.reset();
 
   // Have to spin all message loops to flush any k-anon set join events.
@@ -1484,6 +1654,8 @@ TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
               testing::UnorderedElementsAre());
   EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
               testing::UnorderedElementsAre());
+  EXPECT_TRUE(
+      fenced_frame_reporter->GetPrivateAggregationEventMapForTesting().empty());
   interest_group_manager_impl_->ExpectReports({});
   histogram_tester_.ExpectUniqueSample(
       "Ads.InterestGroup.Auction.FinalReporterState",
@@ -1494,6 +1666,8 @@ TEST_F(InterestGroupAuctionReporterTest, NoNavigation) {
 // metadata being recorded exactly once once by the InterestGroupManager.
 TEST_F(InterestGroupAuctionReporterTest, MultipleNavigations) {
   private_aggregation_requests_reserved_[kWinningBidderOrigin].push_back(
+      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_event_map_["event_type"].push_back(
       kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
 
   SetUpAndStartSingleSellerAuction();
@@ -1510,7 +1684,9 @@ TEST_F(InterestGroupAuctionReporterTest, MultipleNavigations) {
 
   WaitForReportWinAndRunCallback(
       kBidderReportUrl, /*ad_beacon_map=*/{},
-      MakeRequestPtrVector(kReportWinPrivateAggregationRequest.Clone()));
+      MakeRequestPtrVector(
+          kReportWinPrivateAggregationRequest.Clone(),
+          kReportWinNonReservedPrivateAggregationRequest.Clone()));
   callback.Run();
   callback.Run();
 
@@ -1519,6 +1695,15 @@ TEST_F(InterestGroupAuctionReporterTest, MultipleNavigations) {
   callback.Run();
   callback.Run();
 
+  // Non reserved private aggregation requests should have been passed along
+  // only once.
+  EXPECT_THAT(
+      interest_group_auction_reporter_->fenced_frame_reporter()
+          ->GetPrivateAggregationEventMapForTesting(),
+      testing::UnorderedElementsAre(testing::Pair(
+          "event_type", ElementsAreRequests(
+                            kWinningBidderGenerateBidPrivateAggregationRequest,
+                            kReportWinPrivateAggregationRequest))));
   interest_group_auction_reporter_.reset();
   // It should be safe to invoke the callback after the reporter has been
   // destroyed.
@@ -1554,6 +1739,121 @@ TEST_F(InterestGroupAuctionReporterTest, MultipleNavigations) {
       {{InterestGroupManagerImpl::ReportType::kSendReportTo, kSellerReportUrl},
        {InterestGroupManagerImpl::ReportType::kSendReportTo,
         kBidderReportUrl}});
+}
+
+// Disable feature kPrivateAggregationApi.
+class InterestGroupAuctionReporterPrivateAggregationDisabledTest
+    : public InterestGroupAuctionReporterTest {
+ public:
+  InterestGroupAuctionReporterPrivateAggregationDisabledTest() {
+    feature_list_.InitAndDisableFeature(content::kPrivateAggregationApi);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(InterestGroupAuctionReporterPrivateAggregationDisabledTest,
+       PrivateAggregationRequestsNonReserved) {
+  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
+  // This is possible currently because we're not checking the feature flags
+  // when collecting PA requests and sending to InterestGroupAuctionReporter,
+  // and a compromised worklet can send PA requests to browser process when
+  // featrue kPrivateAggregationApi is disabled.
+  private_aggregation_event_map_["event_type"].push_back(
+      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_event_map_["event_type2"].push_back(
+      kBonusPrivateAggregationRequest.Clone());
+
+  SetUpAndStartSingleSellerAuction();
+
+  // Nothing should be sent when the auction is started.
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  // The requests from the bidding and scoring phase of the auction should not
+  // be passed along.
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl,
+                                    /*report_url=*/absl::nullopt);
+
+  // The non-reserved aggregation requests from the bidder's reportWin() method
+  // should not be passed along neither. reportWin() could only return PA
+  // requests if the worklet is compromised when featrue kPrivateAggregationApi
+  // is disabled.
+  WaitForReportWinAndRunCallback(
+      /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+      MakeRequestPtrVector(
+          kReportWinNonReservedPrivateAggregationRequest.Clone()));
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  WaitForCompletion();
+}
+
+// Disable FLEDGE-specific extensions of Private Aggregation API.
+class InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest
+    : public InterestGroupAuctionReporterTest {
+ public:
+  InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        content::kPrivateAggregationApi,
+        {{"fledge_extensions_enabled", "false"}});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(
+    InterestGroupAuctionReporterPrivateAggregationFledgeExtensionDisabledTest,
+    PrivateAggregationRequestsNonReserved) {
+  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
+  // This is possible currently because we're not checking the feature flags
+  // when collecting PA requests and sending to InterestGroupAuctionReporter,
+  // and a compromised worklet can send PA requests to browser process when
+  // featrue parameter "fledge_extensions_enabled" is set to false.
+  private_aggregation_event_map_["event_type"].push_back(
+      kWinningBidderGenerateBidPrivateAggregationRequest.Clone());
+  private_aggregation_event_map_["event_type2"].push_back(
+      kBonusPrivateAggregationRequest.Clone());
+
+  SetUpAndStartSingleSellerAuction();
+
+  // Nothing should be sent when the auction is started.
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  // The requests from the bidding and scoring phase of the auction should not
+  // be passed along.
+  interest_group_auction_reporter_->OnNavigateToWinningAdCallback().Run();
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  WaitForReportResultAndRunCallback(kSellerScriptUrl,
+                                    /*report_url=*/absl::nullopt);
+
+  // The non-reserved aggregation requests from the bidder's reportWin() method
+  // should not be passed along neither. reportWin() could only return PA
+  // requests if the worklet is compromised when feature parameter
+  // "fledge_extensions_enabled" is set to false.
+  WaitForReportWinAndRunCallback(
+      /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
+      MakeRequestPtrVector(
+          kReportWinNonReservedPrivateAggregationRequest.Clone()));
+  EXPECT_TRUE(interest_group_auction_reporter_->fenced_frame_reporter()
+                  ->GetPrivateAggregationEventMapForTesting()
+                  .empty());
+
+  WaitForCompletion();
 }
 
 }  // namespace

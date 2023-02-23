@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -128,7 +129,10 @@ scoped_refptr<FencedFrameReporter> CreateReporter() {
   return FencedFrameReporter::CreateForFledge(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(nullptr),
       /*attribution_data_host_manager=*/nullptr,
-      /*direct_seller_is_seller=*/false);
+      /*direct_seller_is_seller=*/false,
+      /*private_aggregation_manager=*/nullptr,
+      /*main_frame_origin=*/url::Origin(),
+      /*winner_origin=*/url::Origin());
 }
 
 }  // namespace

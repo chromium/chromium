@@ -1137,7 +1137,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
                    FencedFrameReporter::ReportingUrlMap>
         ad_beacon_map;
     std::map<std::string, PrivateAggregationRequests>
-        private_aggregation_requests_non_reserved;
+        private_aggregation_event_map;
     std::vector<blink::InterestGroupKey> interest_groups_that_bid;
 
     std::vector<std::string> errors;
@@ -1532,8 +1532,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     result_.debug_win_report_urls =
         interest_group_manager_->TakeReportUrlsOfType(
             InterestGroupManagerImpl::ReportType::kDebugWin);
-    result_.private_aggregation_requests_non_reserved =
-        reporter_->TakeNonReservedPrivateAggregationRequests();
+    result_.private_aggregation_event_map =
+        reporter_->fenced_frame_reporter()
+            ->GetPrivateAggregationEventMapForTesting();
     result_.interest_groups_that_bid =
         interest_group_manager_->TakeInterestGroupsThatBid();
     const auto& report_errors = reporter_->errors();
@@ -2500,7 +2501,7 @@ TEST_F(AuctionRunnerTest, Basic) {
                             kExpectedReportResultPrivateAggregationRequest))));
 
   EXPECT_THAT(
-      res.private_aggregation_requests_non_reserved,
+      res.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -2696,9 +2697,8 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
                              kExpectedScoreAdPrivateAggregationRequest,
                              kExpectedScoreAdPrivateAggregationRequest,
                              kExpectedReportResultPrivateAggregationRequest))));
-
     EXPECT_THAT(
-        result_.private_aggregation_requests_non_reserved,
+        result_.private_aggregation_event_map,
         testing::UnorderedElementsAre(testing::Pair(
             "click",
             ElementsAreRequests(
@@ -2786,7 +2786,7 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -2869,7 +2869,7 @@ TEST_F(AuctionRunnerTest, PauseSeller) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -2934,7 +2934,7 @@ TEST_F(AuctionRunnerTest, ComponentAuction) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -3114,7 +3114,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -3249,7 +3249,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneComponentTwoBidders) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -3601,7 +3601,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionOneSeller) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -3632,7 +3632,7 @@ TEST_F(AuctionRunnerTest, DisallowedBuyers) {
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre());
   CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
@@ -3699,7 +3699,7 @@ TEST_F(AuctionRunnerTest, DisallowedSingleBuyer) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -3740,7 +3740,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionBuyers) {
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre());
   CheckHistograms(InterestGroupAuction::AuctionResult::kNoInterestGroups,
@@ -3804,7 +3804,7 @@ TEST_F(AuctionRunnerTest, DisallowedComponentAuctionSingleBuyer) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -3916,7 +3916,7 @@ TEST_F(AuctionRunnerTest, OneBidOne404) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -3999,7 +3999,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneSeller404) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -4075,7 +4075,7 @@ TEST_F(AuctionRunnerTest, OneBidOneNotMade) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -4119,7 +4119,7 @@ TEST_F(AuctionRunnerTest, NoBids) {
   EXPECT_TRUE(res.ad_component_urls.empty());
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(res.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(res.private_aggregation_event_map.empty());
   EXPECT_THAT(res.interest_groups_that_bid, testing::UnorderedElementsAre());
   EXPECT_THAT(res.errors,
               testing::UnorderedElementsAre(
@@ -4160,7 +4160,7 @@ TEST_F(AuctionRunnerTest, NoBidMadeByScript) {
   EXPECT_TRUE(res.ad_component_urls.empty());
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(res.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(res.private_aggregation_event_map.empty());
   EXPECT_THAT(res.interest_groups_that_bid, testing::UnorderedElementsAre());
   EXPECT_THAT(
       res.errors,
@@ -4216,7 +4216,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsAll) {
           testing::Pair(kBidder2,
                         ElementsAreRequests(
                             kExpectedGenerateBidPrivateAggregationRequest))));
-  EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
   EXPECT_THAT(res.errors, testing::UnorderedElementsAre(
@@ -4293,7 +4293,7 @@ TEST_F(AuctionRunnerTest, SellerRejectsOne) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -4321,7 +4321,7 @@ TEST_F(AuctionRunnerTest, NoSellerScript) {
   EXPECT_TRUE(res.ad_component_urls.empty());
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(res.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(res.private_aggregation_event_map.empty());
 
   EXPECT_EQ(0, url_loader_factory_.NumPending());
   EXPECT_THAT(res.interest_groups_that_bid, testing::UnorderedElementsAre());
@@ -4394,7 +4394,7 @@ TEST_F(AuctionRunnerTest, NoTrustedBiddingSignals) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -4471,7 +4471,7 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignals404) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -4558,7 +4558,7 @@ TEST_F(AuctionRunnerTest, NoReportResultUrl) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -4635,7 +4635,7 @@ TEST_F(AuctionRunnerTest, NoReportWinUrl) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
-  EXPECT_THAT(result_.private_aggregation_requests_non_reserved,
+  EXPECT_THAT(result_.private_aggregation_event_map,
               testing::UnorderedElementsAre(testing::Pair(
                   "click", ElementsAreRequests(BuildPrivateAggregationRequest(
                                /*bucket=*/10, /*value=*/22)))));
@@ -4702,10 +4702,11 @@ TEST_F(AuctionRunnerTest, NeitherReportUrl) {
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
-  EXPECT_THAT(result_.private_aggregation_requests_non_reserved,
+  EXPECT_THAT(result_.private_aggregation_event_map,
               testing::UnorderedElementsAre(testing::Pair(
                   "click", ElementsAreRequests(BuildPrivateAggregationRequest(
                                /*bucket=*/10, /*value=*/22)))));
+
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
@@ -4772,7 +4773,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                             // ReportWin script override doesn't send a report.
                             kExpectedGenerateBidPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -4921,12 +4922,13 @@ function reportResult(auctionConfig, browserSignals) {
                         ElementsAreRequests(
                             kExpectedGenerateBidPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
               BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/21),
               BuildPrivateAggregationRequest(/*bucket=*/30, /*value=*/41)))));
+
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
   EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -6376,7 +6378,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerBlocksWorkletCreation) {
                       kExpectedScoreAdPrivateAggregationRequest,
                       kExpectedReportResultPrivateAggregationRequest))));
       EXPECT_THAT(
-          result_.private_aggregation_requests_non_reserved,
+          result_.private_aggregation_event_map,
           testing::UnorderedElementsAre(testing::Pair(
               "click", ElementsAreRequests(BuildPrivateAggregationRequest(
                                                /*bucket=*/10, /*value=*/22),
@@ -6581,7 +6583,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionProcessManagerBlocksWorkletCreation) {
                       kExpectedScoreAdPrivateAggregationRequest,
                       kExpectedReportResultPrivateAggregationRequest))));
       EXPECT_THAT(
-          result_.private_aggregation_requests_non_reserved,
+          result_.private_aggregation_event_map,
           testing::UnorderedElementsAre(testing::Pair(
               "click", ElementsAreRequests(BuildPrivateAggregationRequest(
                                                /*bucket=*/10, /*value=*/22),
@@ -6755,7 +6757,7 @@ TEST_F(AuctionRunnerTest,
                             kExpectedScoreAdPrivateAggregationRequest,
                             kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_THAT(
-      result_.private_aggregation_requests_non_reserved,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(testing::Pair(
           "click",
           ElementsAreRequests(
@@ -6954,7 +6956,7 @@ TEST_F(AuctionRunnerTest, ReusedBidderWorkletBatchesSignalsRequests) {
               testing::UnorderedElementsAreArray(kEmptyAdBeaconMap));
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(result_.private_aggregation_event_map.empty());
 }
 
 TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
@@ -7012,7 +7014,7 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
   EXPECT_TRUE(result_.ad_component_urls.empty());
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre());
 
@@ -7119,7 +7121,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
                 testing::UnorderedElementsAreArray(kEmptyAdBeaconMap));
     EXPECT_TRUE(
         private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-    EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+    EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre(kBidder2Key));
     EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
@@ -7215,7 +7217,7 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     EXPECT_TRUE(result_.ad_component_urls.empty());
     EXPECT_TRUE(
         private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-    EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+    EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre());
     CheckHistograms(InterestGroupAuction::AuctionResult::kSellerWorkletCrashed,
@@ -7641,7 +7643,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
                   testing::UnorderedElementsAreArray(kEmptyAdBeaconMap));
       EXPECT_TRUE(private_aggregation_manager_.TakePrivateAggregationRequests()
                       .empty());
-      EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+      EXPECT_TRUE(result_.private_aggregation_event_map.empty());
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre(kBidder1Key));
       EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -7663,7 +7665,7 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
       EXPECT_TRUE(result_.ad_component_urls.empty());
       EXPECT_TRUE(private_aggregation_manager_.TakePrivateAggregationRequests()
                       .empty());
-      EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+      EXPECT_TRUE(result_.private_aggregation_event_map.empty());
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre());
       CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
@@ -7743,7 +7745,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
                   testing::UnorderedElementsAreArray(kEmptyAdBeaconMap));
       EXPECT_TRUE(private_aggregation_manager_.TakePrivateAggregationRequests()
                       .empty());
-      EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+      EXPECT_TRUE(result_.private_aggregation_event_map.empty());
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre(kBidder1Key));
       EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
@@ -7765,7 +7767,7 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
       EXPECT_TRUE(result_.ad_component_urls.empty());
       EXPECT_TRUE(private_aggregation_manager_.TakePrivateAggregationRequests()
                       .empty());
-      EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+      EXPECT_TRUE(result_.private_aggregation_event_map.empty());
       EXPECT_THAT(result_.interest_groups_that_bid,
                   testing::UnorderedElementsAre());
       CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
@@ -7917,7 +7919,7 @@ TEST_F(AuctionRunnerTest, BadBid) {
     EXPECT_TRUE(result_.ad_component_urls.empty());
     EXPECT_TRUE(
         private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-    EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+    EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre());
     CheckHistograms(InterestGroupAuction::AuctionResult::kNoBids,
@@ -7985,7 +7987,7 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
               testing::UnorderedElementsAreArray(kEmptyAdBeaconMap));
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(result_.private_aggregation_event_map.empty());
   EXPECT_THAT(result_.interest_groups_that_bid,
               testing::UnorderedElementsAre(kBidder2Key));
   EXPECT_EQ(R"({"render_url":"https://ad2.com/"})",
@@ -8100,7 +8102,7 @@ TEST_F(AuctionRunnerTest, Tie) {
                 testing::UnorderedElementsAreArray(kEmptyAdBeaconMap));
     EXPECT_TRUE(
         private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-    EXPECT_TRUE(result_.private_aggregation_requests_non_reserved.empty());
+    EXPECT_TRUE(result_.private_aggregation_event_map.empty());
     EXPECT_THAT(result_.interest_groups_that_bid,
                 testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
     CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
@@ -9463,9 +9465,8 @@ TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventContributionEvents) {
                   // reportResult() "reserved.win".
                   BuildPrivateAggregationRequest(/*bucket=*/71,
                                                  /*value=*/81)))));
-
   EXPECT_THAT(
-      res.private_aggregation_requests_non_reserved,
+      res.private_aggregation_event_map,
       testing::UnorderedElementsAre(
           testing::Pair("arbitrary", ElementsAreRequests(
                                          BuildPrivateAggregationRequest(
@@ -9608,7 +9609,7 @@ TEST_F(AuctionRunnerTest,
                   BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/131),
                   BuildPrivateAggregationRequest(/*bucket=*/0,
                                                  /*value=*/132)))));
-  EXPECT_TRUE(res.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(res.private_aggregation_event_map.empty());
 }
 
 // Similar to `PrivateAggregationRequestForEventContributionBucketBaseValue()`
@@ -12473,7 +12474,7 @@ TEST_F(AuctionRunnerPrivateAggregationAPIDisabledTest, ReportsNotSent) {
   const Result& res = RunStandardAuction();
   EXPECT_TRUE(
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
-  EXPECT_TRUE(res.private_aggregation_requests_non_reserved.empty());
+  EXPECT_TRUE(res.private_aggregation_event_map.empty());
 }
 
 class AuctionRunnerKAnonTest : public AuctionRunnerTest,

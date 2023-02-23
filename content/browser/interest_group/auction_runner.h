@@ -105,10 +105,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //  Incognito mode or in test.
   //
   // `log_private_aggregation_requests_callback` will be invoked with private
-  // aggregation
-  //  requests before they're uploaded, allowing them to be logged. It may be
-  //  invoked multiple times. It may be invoked ether directly by AuctionRunner
-  //  (when an auction has no winner) or by the returned
+  //  aggregation requests before they're uploaded, allowing them to be logged.
+  //  It may be invoked multiple times. It may be invoked ether directly by
+  //  AuctionRunner (when an auction has no winner) or by the returned
   //  InterestGroupAuctionReporter (when an auction has a winner). It will never
   //  be passed an empty set of pending reports.
   //
@@ -116,8 +115,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //  the renderer in order to initiate the auction.
   //
   // `main_frame_origin` is the origin of the main frame where the auction is
-  // running. Used for
-  //  issuing reports.
+  //  running. Used for issuing reports.
   //
   // `frame_origin` is the origin of the frame running the auction. Used for
   //  issuing reports.

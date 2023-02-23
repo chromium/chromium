@@ -76,6 +76,14 @@ class TestInterestGroupPrivateAggregationManager
            InterestGroupAuctionReporter::PrivateAggregationRequests>
   TakePrivateAggregationRequests();
 
+  // Non-reserved requests are not saved to
+  // `logged_private_aggregation_requests_`, so should set
+  // `should_match_logged_requests_` to false to avoid checking whether
+  // `private_aggregation_requests_` and `logged_private_aggregation_requests_`
+  // match. `logged_private_aggregation_requests_` should be empty when
+  // `should_match_logged_requests_` is false.
+  void SetShouldMatchLoggedRequests(bool should_match_logged_requests);
+
  private:
   void LogPrivateAggregationRequests(
       const std::map<
@@ -101,6 +109,10 @@ class TestInterestGroupPrivateAggregationManager
   // Bound receivers received by BindNewReceiver. Each one is associated with
   // the worklet origin passed in to BindNewReceiver().
   mojo::ReceiverSet<mojom::PrivateAggregationHost, url::Origin> receiver_set_;
+
+  // `private_aggregation_requests_` and `logged_private_aggregation_requests_`
+  // are required to match if `should_match_logged_requests_` is true.
+  bool should_match_logged_requests_ = true;
 };
 
 }  // namespace content

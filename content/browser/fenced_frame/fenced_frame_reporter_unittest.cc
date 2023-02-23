@@ -4,16 +4,23 @@
 
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 
+#include <functional>
+#include <map>
 #include <string>
+#include <type_traits>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/aggregatable_report.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
@@ -22,12 +29,52 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
+namespace {
+
+using PrivateAggregationRequests =
+    FencedFrameReporter::PrivateAggregationRequests;
+
+const auction_worklet::mojom::PrivateAggregationRequestPtr
+    kPrivateAggregationRequest =
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            auction_worklet::mojom::AggregatableReportContribution::
+                NewHistogramContribution(
+                    content::mojom::AggregatableReportHistogramContribution::
+                        New(
+                            /*bucket=*/1,
+                            /*value=*/2)),
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New());
+
+const auction_worklet::mojom::PrivateAggregationRequestPtr
+    kPrivateAggregationRequest2 =
+        auction_worklet::mojom::PrivateAggregationRequest::New(
+            auction_worklet::mojom::AggregatableReportContribution::
+                NewHistogramContribution(
+                    content::mojom::AggregatableReportHistogramContribution::
+                        New(
+                            /*bucket=*/3,
+                            /*value=*/4)),
+            content::mojom::AggregationServiceMode::kDefault,
+            content::mojom::DebugModeDetails::New());
+
+// Helper to avoid excess boilerplate.
+template <typename... Ts>
+auto ElementsAreRequests(Ts&... requests) {
+  static_assert(
+      std::conjunction<std::is_same<
+          std::remove_const_t<Ts>,
+          auction_worklet::mojom::PrivateAggregationRequestPtr>...>::value);
+  // Need to use `std::ref` as `mojo::StructPtr`s are move-only.
+  return testing::UnorderedElementsAre(testing::Eq(std::ref(requests))...);
+}
 
 class FencedFrameReporterTest : public RenderViewHostTestHarness {
  public:
@@ -84,10 +131,18 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
   }
 
   network::TestURLLoaderFactory test_url_loader_factory_;
+
   const GURL request_initiator_{"https://initiator.test/"};
   const GURL report_destination_{"https://report_destination.test"};
   const GURL report_destination2_{"https://report_destination2.test"};
   const GURL report_destination3_{"https://report_destination3.test"};
+  const url::Origin main_frame_origin_ =
+      url::Origin::Create(request_initiator_);
+  const url::Origin report_destination_origin_ =
+      url::Origin::Create(report_destination_);
+
+  TestInterestGroupPrivateAggregationManager private_aggregation_manager_{
+      main_frame_origin_};
 };
 
 // ReportingDestination has no map.
@@ -130,7 +185,9 @@ TEST_F(FencedFrameReporterTest, NoReportNoMap) {
   // A FLEDGE FencedFrameReporter has no map for Shared Storage.
   reporter = FencedFrameReporter::CreateForFledge(
       shared_url_loader_factory(), attribution_data_host_manager(),
-      /*direct_seller_is_seller=*/false);
+      /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+      main_frame_origin_,
+      /*winner_origin=*/report_destination_origin_);
   EXPECT_FALSE(reporter->SendReport(
       "event_type", "event_data",
       blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
@@ -253,9 +310,11 @@ TEST_F(FencedFrameReporterTest, SendReports) {
 // SendReport() calls.
 TEST_F(FencedFrameReporterTest, SendFledgeReportsAfterMapsReceived) {
   scoped_refptr<FencedFrameReporter> reporter =
-      FencedFrameReporter::CreateForFledge(shared_url_loader_factory(),
-                                           attribution_data_host_manager(),
-                                           /*direct_seller_is_seller=*/false);
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), attribution_data_host_manager(),
+          /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+          main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_);
 
   // Receive all mappings.
   reporter->OnUrlMappingReady(
@@ -309,9 +368,11 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsAfterMapsReceived) {
 // SendReport() calls.
 TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
   scoped_refptr<FencedFrameReporter> reporter =
-      FencedFrameReporter::CreateForFledge(shared_url_loader_factory(),
-                                           attribution_data_host_manager(),
-                                           /*direct_seller_is_seller=*/true);
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), attribution_data_host_manager(),
+          /*direct_seller_is_seller=*/true, &private_aggregation_manager_,
+          main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_);
 
   // Make reports. They should be queued, since mappings haven't been received
   // yet.
@@ -369,9 +430,11 @@ TEST_F(FencedFrameReporterTest, SendReportsFledgeBeforeMapsReceived) {
 // because there's nowhere to pass them
 TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
   scoped_refptr<FencedFrameReporter> reporter =
-      FencedFrameReporter::CreateForFledge(shared_url_loader_factory(),
-                                           attribution_data_host_manager(),
-                                           /*direct_seller_is_seller=*/false);
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), attribution_data_host_manager(),
+          /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+          main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_);
 
   // SendReport() is called, and then a mapping is received that doesn't have
   // the report's event type. No request should be made.
@@ -408,6 +471,199 @@ TEST_F(FencedFrameReporterTest, SendFledgeReportsBeforeMapsReceivedWithErrors) {
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
+// Test sending non-reserved private aggregation requests, when events from
+// fenced frame is received after FLEDGE non-reserved PA requests are ready.
+TEST_F(FencedFrameReporterTest, FledgeEventsReceivedAfterRequestsReady) {
+  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
+  scoped_refptr<FencedFrameReporter> reporter =
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), attribution_data_host_manager(),
+          /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+          main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_);
+
+  // Receive all non-reserved private aggregation requests.
+  std::map<std::string, PrivateAggregationRequests>
+      private_aggregation_event_map;
+  private_aggregation_event_map["event_type"].push_back(
+      kPrivateAggregationRequest.Clone());
+  private_aggregation_event_map["event_type2"].push_back(
+      kPrivateAggregationRequest2.Clone());
+
+  std::map<std::string, PrivateAggregationRequests>
+      private_aggregation_event_map2;
+  private_aggregation_event_map2["event_type"].push_back(
+      kPrivateAggregationRequest2.Clone());
+  private_aggregation_event_map2["event_type3"].push_back(
+      kPrivateAggregationRequest2.Clone());
+
+  reporter->OnForEventPrivateAggregationRequestsReceived(
+      std::move(private_aggregation_event_map));
+  reporter->OnForEventPrivateAggregationRequestsReceived(
+      std::move(private_aggregation_event_map2));
+  // Reporter received private_aggregation_event_map.
+  EXPECT_THAT(
+      reporter->GetPrivateAggregationEventMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair("event_type",
+                        ElementsAreRequests(kPrivateAggregationRequest,
+                                            kPrivateAggregationRequest2)),
+          testing::Pair("event_type2",
+                        ElementsAreRequests(kPrivateAggregationRequest2)),
+          testing::Pair("event_type3",
+                        ElementsAreRequests(kPrivateAggregationRequest2))));
+  // No event received from fenced frame yet, so no PA request gets sent.
+  EXPECT_TRUE(
+      private_aggregation_manager_.TakePrivateAggregationRequests().empty());
+
+  // Each call to SendPrivateAggregationRequestsForEvent() should send
+  // corresponding PA requests immediately, and the entry for the event type
+  // should be removed from reporter's private_aggregation_event_map.
+  reporter->SendPrivateAggregationRequestsForEvent("event_type");
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  report_destination_origin_,
+                  ElementsAreRequests(kPrivateAggregationRequest,
+                                      kPrivateAggregationRequest2))));
+  EXPECT_THAT(
+      reporter->GetPrivateAggregationEventMapForTesting(),
+      testing::UnorderedElementsAre(
+          testing::Pair("event_type2",
+                        ElementsAreRequests(kPrivateAggregationRequest2)),
+          testing::Pair("event_type3",
+                        ElementsAreRequests(kPrivateAggregationRequest2))));
+
+  reporter->SendPrivateAggregationRequestsForEvent("event_type2");
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  report_destination_origin_,
+                  ElementsAreRequests(kPrivateAggregationRequest2))));
+  EXPECT_THAT(
+      reporter->GetPrivateAggregationEventMapForTesting(),
+      testing::UnorderedElementsAre(testing::Pair(
+          "event_type3", ElementsAreRequests(kPrivateAggregationRequest2))));
+
+  // Private aggregation requests for "event_type" has already been sent and
+  // cleared, so no more such requests for the type to send when receiving it
+  // again.
+  reporter->SendPrivateAggregationRequestsForEvent("event_type");
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
+
+  // No private aggregation requests for "event_type4", so there's no effect
+  // when "event_type4" is received.
+  reporter->SendPrivateAggregationRequestsForEvent("event_type4");
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
+}
+
+// Test sending non-reserved private aggregation requests, when events from
+// fenced frame is received before FLEDGE non-reserved PA requests are ready.
+TEST_F(FencedFrameReporterTest, FledgeEventsReceivedBeforeRequestsReady) {
+  private_aggregation_manager_.SetShouldMatchLoggedRequests(false);
+  scoped_refptr<FencedFrameReporter> reporter =
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), attribution_data_host_manager(),
+          /*direct_seller_is_seller=*/false, &private_aggregation_manager_,
+          main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_);
+
+  // Calls SendPrivateAggregationRequestsForEvent() with event types. The event
+  // types should be queued, since non-reserved private aggregation requests
+  // haven't been received yet.
+  reporter->SendPrivateAggregationRequestsForEvent("event_type");
+  reporter->SendPrivateAggregationRequestsForEvent("event_type");
+  reporter->SendPrivateAggregationRequestsForEvent("event_type3");
+  // ReceivedPaEvents is a std::set, so duplicate event types are only stored
+  // once.
+  EXPECT_THAT(reporter->GetReceivedPaEventsForTesting(),
+              testing::UnorderedElementsAre("event_type", "event_type3"));
+  EXPECT_TRUE(
+      private_aggregation_manager_.TakePrivateAggregationRequests().empty());
+
+  // Receive all non-reserved private aggregation requests.
+  std::map<std::string, PrivateAggregationRequests>
+      private_aggregation_event_map;
+  private_aggregation_event_map["event_type"].push_back(
+      kPrivateAggregationRequest.Clone());
+  private_aggregation_event_map["event_type2"].push_back(
+      kPrivateAggregationRequest2.Clone());
+
+  reporter->OnForEventPrivateAggregationRequestsReceived(
+      std::move(private_aggregation_event_map));
+
+  // `received_pa_events_` is kept, in case needed for new private aggregation
+  // requests from reportWin().
+  EXPECT_THAT(reporter->GetReceivedPaEventsForTesting(),
+              testing::UnorderedElementsAre("event_type", "event_type3"));
+  // All pending pa events' PA requests in private_aggregation_event_map should
+  // be sent after private_aggregation_event_map is ready.
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  report_destination_origin_,
+                  ElementsAreRequests(kPrivateAggregationRequest))));
+
+  // Calling SendPrivateAggregationRequestsForEvent() should send
+  // corresponding PA requests immediately.
+  reporter->SendPrivateAggregationRequestsForEvent("event_type2");
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  report_destination_origin_,
+                  ElementsAreRequests(kPrivateAggregationRequest2))));
+  // Although requests for "event_type2" are sent immediately, still store
+  // "event_type2" in reporter's `received_pa_events_`, so that further
+  // received PA requests of the type can still be triggered.
+  EXPECT_THAT(reporter->GetReceivedPaEventsForTesting(),
+              testing::UnorderedElementsAre("event_type", "event_type3",
+                                            "event_type2"));
+
+  // Private aggregation requests for "event_type" has already been sent and
+  // cleared, so no more such requests for the type to sends.
+  reporter->SendPrivateAggregationRequestsForEvent("event_type");
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre());
+
+  // Receive more non-reserved private aggregation requests. It happens when
+  // reportWin() completes and then
+  // OnForEventPrivateAggregationRequestsReceived() is called.
+  std::map<std::string, PrivateAggregationRequests>
+      private_aggregation_event_map2;
+  private_aggregation_event_map2["event_type"].push_back(
+      kPrivateAggregationRequest2.Clone());
+  private_aggregation_event_map2["event_type2"].push_back(
+      kPrivateAggregationRequest.Clone());
+
+  reporter->OnForEventPrivateAggregationRequestsReceived(
+      std::move(private_aggregation_event_map2));
+
+  // Requests for both event types are sent immediately since there were such
+  // pending PA events.
+  EXPECT_THAT(private_aggregation_manager_.TakePrivateAggregationRequests(),
+              testing::UnorderedElementsAre(testing::Pair(
+                  report_destination_origin_,
+                  ElementsAreRequests(kPrivateAggregationRequest,
+                                      kPrivateAggregationRequest2))));
+}
+
+// FencedFrameReporter's `private_aggregation_manager` is nullptr but fenced
+// frame sends events unexpectedly. This could happen if the renderer is
+// compromised. Should just ignore the events.
+TEST_F(FencedFrameReporterTest, FledgeEventsReceivedUnexpectedly) {
+  scoped_refptr<FencedFrameReporter> reporter =
+      FencedFrameReporter::CreateForFledge(
+          shared_url_loader_factory(), attribution_data_host_manager(),
+          /*direct_seller_is_seller=*/false,
+          /*private_aggregation_manager=*/nullptr, main_frame_origin_,
+          /*winner_origin=*/report_destination_origin_);
+
+  // Calls SendPrivateAggregationRequestsForEvent() with "event_type".
+  // "event_type" should be ignored and not be queued.
+  reporter->SendPrivateAggregationRequestsForEvent("event_type");
+  EXPECT_TRUE(reporter->GetReceivedPaEventsForTesting().empty());
+  EXPECT_TRUE(
+      private_aggregation_manager_.TakePrivateAggregationRequests().empty());
+}
+
 TEST_F(FencedFrameReporterTest, AttributionManagerShutDown_NoCrash) {
   EXPECT_TRUE(attribution_data_host_manager());
 
@@ -435,4 +691,5 @@ TEST_F(FencedFrameReporterTest, AttributionManagerShutDown_NoCrash) {
       report_destination_.spec(), ""));
 }
 
+}  // namespace
 }  // namespace content

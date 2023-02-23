@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +34,7 @@
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
+#include "content/common/private_aggregation_features.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -126,7 +128,10 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
           url_loader_factory_,
           attribution_data_host_manager,
           /*direct_seller_is_seller=*/
-          !component_seller_winning_bid_info.has_value())) {
+          !component_seller_winning_bid_info.has_value(),
+          private_aggregation_manager_,
+          main_frame_origin_,
+          winning_bid_info_.storage_interest_group->interest_group.owner)) {
   DCHECK(interest_group_manager_);
   DCHECK(auction_worklet_manager_);
   DCHECK(url_loader_factory_);
@@ -693,6 +698,18 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
       private_aggregation_manager_, log_private_aggregation_requests_callback_,
       main_frame_origin_, std::move(private_aggregation_requests_reserved_));
   private_aggregation_requests_reserved_.clear();
+
+  if (base::FeatureList::IsEnabled(content::kPrivateAggregationApi) &&
+      content::kPrivateAggregationApiEnabledInFledge.Get() &&
+      content::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+    fenced_frame_reporter_->OnForEventPrivateAggregationRequestsReceived(
+        std::move(private_aggregation_requests_non_reserved_));
+  }
+  // TODO(qingxinwu): Check the feature flags when collecting PA requests in
+  // browser process, and report a bad message if PA requests are received when
+  // the feature flags are disabled. Then CHECK that
+  // `private_aggregation_requests_non_reserved_` is empty here.
+  private_aggregation_requests_non_reserved_.clear();
 }
 
 }  // namespace content

@@ -30,6 +30,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -74,6 +75,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -1718,7 +1720,12 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
             ->GetURLLoaderFactoryForBrowserProcess(),
         AttributionDataHostManager::FromBrowserContext(
             web_contents()->GetBrowserContext()),
-        /*direct_seller_is_seller=*/false);
+        /*direct_seller_is_seller=*/false,
+        PrivateAggregationManager::GetManager(
+            *web_contents()->GetBrowserContext()),
+        /*main_frame_origin=*/
+        web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")));
   }
 
  private:

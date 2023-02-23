@@ -5,6 +5,7 @@
 #include "content/browser/interest_group/test_interest_group_private_aggregation_manager.h"
 
 #include <map>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -56,13 +57,22 @@ void TestInterestGroupPrivateAggregationManager::SendHistogramReport(
     mojom::AggregationServiceMode aggregation_mode,
     mojom::DebugModeDetailsPtr debug_mode_details) {
   EXPECT_EQ(1u, contributions.size());
+  const url::Origin& worklet_origin = receiver_set_.current_context();
   auction_worklet::mojom::PrivateAggregationRequestPtr request =
       auction_worklet::mojom::PrivateAggregationRequest::New(
           auction_worklet::mojom::AggregatableReportContribution::
               NewHistogramContribution(std::move(contributions[0])),
           aggregation_mode, std::move(debug_mode_details));
 
-  const url::Origin& worklet_origin = receiver_set_.current_context();
+  if (!should_match_logged_requests_) {
+    // Currently non-reserved private aggregation requests are not passed to
+    // LogPrivateAggregationRequestsCallback(), and not stored in
+    // `logged_private_aggregation_requests_`.
+    DCHECK(logged_private_aggregation_requests_.empty());
+    private_aggregation_requests_[worklet_origin].push_back(std::move(request));
+    return;
+  }
+
   bool found_matching_logged_request = false;
   InterestGroupAuctionReporter::PrivateAggregationRequests&
       logged_requests_for_origin =
@@ -100,11 +110,17 @@ TestInterestGroupPrivateAggregationManager::TakePrivateAggregationRequests() {
   return std::exchange(private_aggregation_requests_, {});
 }
 
+void TestInterestGroupPrivateAggregationManager::SetShouldMatchLoggedRequests(
+    bool should_match_logged_requests) {
+  should_match_logged_requests_ = should_match_logged_requests;
+}
+
 void TestInterestGroupPrivateAggregationManager::LogPrivateAggregationRequests(
     const std::map<
         url::Origin,
         std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>>&
         private_aggregation_requests) {
+  DCHECK(should_match_logged_requests_ || private_aggregation_requests.empty());
   for (auto& pair : private_aggregation_requests) {
     auto& requests_for_origin =
         logged_private_aggregation_requests_[pair.first];

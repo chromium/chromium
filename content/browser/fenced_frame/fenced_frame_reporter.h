@@ -5,14 +5,21 @@
 #ifndef CONTENT_BROWSER_FENCED_FRAME_FENCED_FRAME_REPORTER_H_
 #define CONTENT_BROWSER_FENCED_FRAME_FENCED_FRAME_REPORTER_H_
 
+#include <map>
+#include <set>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/common/content_export.h"
+#include "content/common/private_aggregation_host.mojom.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
@@ -22,6 +29,7 @@
 namespace content {
 
 class AttributionDataHostManager;
+class PrivateAggregationManager;
 class RenderFrameHostImpl;
 
 struct CONTENT_EXPORT AutomaticBeaconInfo {
@@ -50,10 +58,8 @@ class CONTENT_EXPORT FencedFrameReporter
  public:
   using ReportingUrlMap = base::flat_map<std::string, GURL>;
 
-  FencedFrameReporter(
-      base::PassKey<FencedFrameReporter> pass_key,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AttributionDataHostManager* attribution_data_host_manager);
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
   // Creates a FencedFrameReporter that only maps kSharedStorageSelectUrl
   // destinations, using the passed in map.
@@ -72,12 +78,37 @@ class CONTENT_EXPORT FencedFrameReporter
   // the corresponding mappings are passed in via OnUrlMappingReady().
   //
   // `url_loader_factory` is used to send all reports, and must not be null.
+  //
   // `attribution_data_host_manager` is used to notify Attribution Reporting API
   // for the beacons.
+  //
+  // `private_aggregation_manager` is used to send private aggregation requests
+  // for fenced frame events. See comment above declaration of
+  // `private_aggregation_manager_` for more details.
+  //
+  // `main_frame_origin` is the main frame of the page where the auction is
+  // running. Can be an opaque origin in test iff the test does not have for
+  // event private aggregation requests.
+  //
+  // `winner_origin` is the winning buyer's origin. Can be an opaque origin in
+  // test iff the test does not have for event private aggregation requests.
   static scoped_refptr<FencedFrameReporter> CreateForFledge(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       AttributionDataHostManager* attribution_data_host_manager,
-      bool direct_seller_is_seller);
+      bool direct_seller_is_seller,
+      PrivateAggregationManager* private_aggregation_manager,
+      const url::Origin& main_frame_origin,
+      const url::Origin& winner_origin);
+
+  // Don't use this constructor directly, but use factory methods instead.
+  // See factory methods for details.
+  FencedFrameReporter(
+      base::PassKey<FencedFrameReporter> pass_key,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      AttributionDataHostManager* attribution_data_host_manager,
+      PrivateAggregationManager* private_aggregation_manager = nullptr,
+      const absl::optional<url::Origin>& main_frame_origin = absl::nullopt,
+      const absl::optional<url::Origin>& winner_origin = absl::nullopt);
 
   // Called when a mapping for reports of type `reporting_destination` is ready.
   // The reporter must currently be considering maps of type
@@ -134,6 +165,28 @@ class CONTENT_EXPORT FencedFrameReporter
       std::string& error_message,
       absl::optional<int64_t> navigation_id = absl::nullopt);
 
+  // Called when a mapping for private aggregation requests of non-reserved
+  // event types is received. Currently it is only called inside
+  // `InterestGroupAuctionReporter::SendPendingReportsIfNavigated()`, which is
+  // called after any of the following:
+  // * the winning ad has been navigated to.
+  // * reportWin() completes.
+  // * reportResult() completes.
+  // The first two cases can have non-empty `private_aggregation_event_map`.
+  // When invoked, any pending non-reserved event type will trigger sending
+  // corresponding private aggregation request in
+  // `private_aggregation_event_map` if it has a matching key. Any future
+  // reports of that type will be immediately sent using the provided map.
+  void OnForEventPrivateAggregationRequestsReceived(
+      std::map<std::string, PrivateAggregationRequests>
+          private_aggregation_event_map);
+
+  // Uses `pa_event_type` to send a private aggregation request. The
+  // non-reserved PA event type is added to `received_pa_events_` because more
+  // private aggregation requests associated with this event may be received and
+  // need to be sent after this is called.
+  void SendPrivateAggregationRequestsForEvent(const std::string& pa_event_type);
+
   // Stores the payload that will be sent as part of the
   // `reserved.top_navigation` automatic beacon.
   void UpdateAutomaticBeaconData(
@@ -146,6 +199,15 @@ class CONTENT_EXPORT FencedFrameReporter
   // is not included in the returned map.
   base::flat_map<blink::FencedFrame::ReportingDestination, ReportingUrlMap>
   GetAdBeaconMapForTesting();
+
+  // Returns `received_pa_events_`, so that it can be validated in tests. Should
+  // only be called from tests.
+  std::set<std::string> GetReceivedPaEventsForTesting();
+
+  // Returns a copy of `private_aggregation_event_map_`, so that it can be
+  // validated in tests. Should only be called from tests.
+  std::map<std::string, PrivateAggregationRequests>
+  GetPrivateAggregationEventMapForTesting();
 
   const absl::optional<AutomaticBeaconInfo>& automatic_beacon_info() {
     return automatic_beacon_info_;
@@ -207,6 +269,16 @@ class CONTENT_EXPORT FencedFrameReporter
       BeaconId beacon_id,
       std::string& error_message);
 
+  // Helper to send private aggregation requests in
+  // `private_aggregation_event_map_` with key `pa_event_type`.
+  void SendPrivateAggregationRequestsForEventInternal(
+      const std::string& pa_event_type);
+
+  // Binds a receiver to `private_aggregation_manager_`. Binds Remote
+  // `private_aggregation_host_` and connects it to the receiver, if it has not
+  // been bound.
+  void MaybeBindPrivateAggregationHost();
+
   // Used by FencedFrameURLMappingTestPeer.
   const base::flat_map<blink::FencedFrame::ReportingDestination,
                        ReportingDestinationInfo>&
@@ -218,7 +290,7 @@ class CONTENT_EXPORT FencedFrameReporter
 
   // Bound to the lifetime of the browser context. Could be null in Incognito
   // mode or in test.
-  raw_ptr<AttributionDataHostManager> attribution_data_host_manager_;
+  const raw_ptr<AttributionDataHostManager> attribution_data_host_manager_;
 
   base::flat_map<blink::FencedFrame::ReportingDestination,
                  ReportingDestinationInfo>
@@ -227,6 +299,33 @@ class CONTENT_EXPORT FencedFrameReporter
   // True if the "directSeller" alias maps to the Seller destination. False if
   // it maps to the "ComponentSeller" destination.
   bool direct_seller_is_seller_ = false;
+
+  // Bound to the lifetime of the browser context. Can be nullptr if:
+  // * It's for non-FLEDGE reporter.
+  // * In tests that does not trigger private aggregation reports.
+  // * When feature `kPrivateAggregationApi` is not enabled.
+  const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
+
+  // The main frame of the page where the auction is running. Set to
+  // absl::nullopt for non-FLEDGE reporter.
+  const absl::optional<url::Origin> main_frame_origin_;
+
+  // The winning buyer's origin. Set to absl::nullopt for non-FLEDGE reporter.
+  const absl::optional<url::Origin> winner_origin_;
+
+  // Private aggregation requests for non-reserved event types registered in
+  // bidder worklets, keyed by event type.
+  // OnForEventPrivateAggregationRequestsReceived() builds this map up.
+  std::map<std::string, PrivateAggregationRequests>
+      private_aggregation_event_map_;
+
+  // Fenced frame events for private aggregation API. An event is not removed
+  // from the set even after corresponding non-reserved private aggregation
+  // requests are sent, because more requests associated with this event might
+  // be received and need to be sent later.
+  std::set<std::string> received_pa_events_;
+
+  mojo::Remote<mojom::PrivateAggregationHost> private_aggregation_host_;
 
   // Stores data registered by one of the documents in a FencedFrame using
   // the `Fence.setReportEventDataForAutomaticBeacons` API.

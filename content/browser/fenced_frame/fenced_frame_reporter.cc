@@ -4,12 +4,17 @@
 
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 
+#include <iterator>
+#include <map>
 #include <memory>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -23,8 +28,12 @@
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/private_aggregation/private_aggregation_budget_key.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
@@ -159,21 +168,12 @@ FencedFrameReporter::ReportingDestinationInfo&
 FencedFrameReporter::ReportingDestinationInfo::operator=(
     ReportingDestinationInfo&&) = default;
 
-FencedFrameReporter::FencedFrameReporter(
-    base::PassKey<FencedFrameReporter> pass_key,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AttributionDataHostManager* attribution_data_host_manager)
-    : url_loader_factory_(std::move(url_loader_factory)),
-      attribution_data_host_manager_(attribution_data_host_manager) {
-  DCHECK(url_loader_factory_);
-}
-
-FencedFrameReporter::~FencedFrameReporter() = default;
-
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AttributionDataHostManager* attribution_data_host_manager,
     ReportingUrlMap reporting_url_map) {
+  // `private_aggregation_manager_`, `main_frame_origin_`, and `winner_origin_`
+  // are only needed by FLEDGE.
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
           base::PassKey<FencedFrameReporter>(), std::move(url_loader_factory),
@@ -187,11 +187,15 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AttributionDataHostManager* attribution_data_host_manager,
-    bool direct_seller_is_seller) {
+    bool direct_seller_is_seller,
+    PrivateAggregationManager* private_aggregation_manager,
+    const url::Origin& main_frame_origin,
+    const url::Origin& winner_origin) {
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
           base::PassKey<FencedFrameReporter>(), std::move(url_loader_factory),
-          attribution_data_host_manager);
+          attribution_data_host_manager, private_aggregation_manager,
+          main_frame_origin, winner_origin);
   reporter->direct_seller_is_seller_ = direct_seller_is_seller;
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kBuyer,
@@ -204,6 +208,26 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
       ReportingDestinationInfo());
   return reporter;
 }
+
+FencedFrameReporter::FencedFrameReporter(
+    base::PassKey<FencedFrameReporter> pass_key,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    AttributionDataHostManager* attribution_data_host_manager,
+    PrivateAggregationManager* private_aggregation_manager,
+    const absl::optional<url::Origin>& main_frame_origin,
+    const absl::optional<url::Origin>& winner_origin)
+    : url_loader_factory_(std::move(url_loader_factory)),
+      attribution_data_host_manager_(attribution_data_host_manager),
+      private_aggregation_manager_(private_aggregation_manager),
+      main_frame_origin_(main_frame_origin),
+      winner_origin_(winner_origin) {
+  DCHECK(url_loader_factory_);
+  // These should both be nullopt for non-FLEDGE fenced frames, and populated
+  // for FLEDGE fenced frames.
+  DCHECK_EQ(main_frame_origin_.has_value(), winner_origin_.has_value());
+}
+
+FencedFrameReporter::~FencedFrameReporter() = default;
 
 void FencedFrameReporter::OnUrlMappingReady(
     blink::FencedFrame::ReportingDestination reporting_destination,
@@ -407,6 +431,92 @@ bool FencedFrameReporter::SendReportInternal(
   return true;
 }
 
+void FencedFrameReporter::OnForEventPrivateAggregationRequestsReceived(
+    std::map<std::string, PrivateAggregationRequests>
+        private_aggregation_event_map) {
+  MaybeBindPrivateAggregationHost();
+
+  for (auto& [event_type, requests] : private_aggregation_event_map) {
+    PrivateAggregationRequests& destination_vector =
+        private_aggregation_event_map_[event_type];
+    destination_vector.insert(destination_vector.end(),
+                              std::move_iterator(requests.begin()),
+                              std::move_iterator(requests.end()));
+  }
+
+  for (const std::string& pa_event_type : received_pa_events_) {
+    SendPrivateAggregationRequestsForEventInternal(pa_event_type);
+  }
+}
+
+void FencedFrameReporter::SendPrivateAggregationRequestsForEvent(
+    const std::string& pa_event_type) {
+  if (!private_aggregation_manager_) {
+    // `private_aggregation_manager_` is nullptr when private aggregation
+    // feature flag is disabled, but a compromised renderer might still send
+    // events when it should not be able to. Simply ignores the events.
+    return;
+  }
+  MaybeBindPrivateAggregationHost();
+
+  // Always insert `pa_event_type` to `received_pa_events_`, since
+  // `private_aggregation_event_map_` might grow with more entries when
+  // reportWin() completes.
+  received_pa_events_.emplace(pa_event_type);
+
+  SendPrivateAggregationRequestsForEventInternal(pa_event_type);
+}
+
+void FencedFrameReporter::SendPrivateAggregationRequestsForEventInternal(
+    const std::string& pa_event_type) {
+  DCHECK(private_aggregation_host_.is_bound());
+
+  auto it = private_aggregation_event_map_.find(pa_event_type);
+  if (it == private_aggregation_event_map_.end()) {
+    return;
+  }
+
+  // Send PA requests of `pa_event_type`.
+  for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+       it->second) {
+    DCHECK(request);
+    // All for-event contributions have already been converted to histogram
+    // contributions by filling in post auction signals before reaching here.
+    DCHECK(request->contribution->is_histogram_contribution());
+    std::vector<mojom::AggregatableReportHistogramContributionPtr>
+        contributions;
+    contributions.push_back(
+        std::move(request->contribution->get_histogram_contribution()));
+    private_aggregation_host_->SendHistogramReport(
+        std::move(contributions), request->aggregation_mode,
+        std::move(request->debug_mode_details));
+  }
+
+  // Remove the entry of key `pa_event_type` from
+  // `private_aggregation_event_map_` to avoid possibly sending the same
+  // requests more than once. As a result, receiving the same event type
+  // multiple times only triggers sending the event's requests once.
+  private_aggregation_event_map_.erase(it);
+}
+
+void FencedFrameReporter::MaybeBindPrivateAggregationHost() {
+  if (private_aggregation_host_.is_bound()) {
+    return;
+  }
+  DCHECK(private_aggregation_manager_);
+  DCHECK(winner_origin_.has_value() &&
+         winner_origin_.value().scheme() == url::kHttpsScheme);
+  DCHECK(main_frame_origin_.has_value() &&
+         main_frame_origin_.value().scheme() == url::kHttpsScheme);
+  bool bound = private_aggregation_manager_->BindNewReceiver(
+      winner_origin_.value(), main_frame_origin_.value(),
+      PrivateAggregationBudgetKey::Api::kFledge,
+      private_aggregation_host_.BindNewPipeAndPassReceiver());
+  // FLEDGE's worklets should all be trustworthy, including `winner_origin_`, so
+  // the receiver `private_aggregation_host_` should be accepted.
+  DCHECK(bound);
+}
+
 void FencedFrameReporter::UpdateAutomaticBeaconData(
     const std::string& event_data,
     const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
@@ -421,6 +531,22 @@ FencedFrameReporter::GetAdBeaconMapForTesting() {
     if (reporting_metadata.second.reporting_url_map) {
       out.emplace(reporting_metadata.first,
                   *reporting_metadata.second.reporting_url_map);
+    }
+  }
+  return out;
+}
+
+std::set<std::string> FencedFrameReporter::GetReceivedPaEventsForTesting() {
+  return received_pa_events_;
+}
+
+std::map<std::string, FencedFrameReporter::PrivateAggregationRequests>
+FencedFrameReporter::GetPrivateAggregationEventMapForTesting() {
+  std::map<std::string, FencedFrameReporter::PrivateAggregationRequests> out;
+  for (auto& [event_type, requests] : private_aggregation_event_map_) {
+    for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+         requests) {
+      out[event_type].emplace_back(request.Clone());
     }
   }
   return out;

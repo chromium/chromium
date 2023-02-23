@@ -20,6 +20,7 @@
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -62,6 +63,7 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -4645,7 +4647,12 @@ class FencedFrameReportEventBrowserTest
             ->GetURLLoaderFactoryForBrowserProcess(),
         AttributionDataHostManager::FromBrowserContext(
             web_contents()->GetBrowserContext()),
-        /*direct_seller_is_seller=*/false);
+        /*direct_seller_is_seller=*/false,
+        PrivateAggregationManager::GetManager(
+            *web_contents()->GetBrowserContext()),
+        /*main_frame_origin=*/
+        web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")));
   }
 
   // A helper function for specifying reportEvent tests. Each step consists of a
@@ -6072,7 +6079,13 @@ class FencedFrameAutomaticBeaconBrowserTest
             ->GetURLLoaderFactoryForBrowserProcess(),
         AttributionDataHostManager::FromBrowserContext(
             web_contents()->GetBrowserContext()),
-        /*direct_seller_is_seller=*/false);
+        /*direct_seller_is_seller=*/false,
+        static_cast<StoragePartitionImpl*>(
+            web_contents()->GetPrimaryMainFrame()->GetStoragePartition())
+            ->GetPrivateAggregationManager(),
+        /*main_frame_origin=*/
+        web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+        /*winner_origin=*/url::Origin::Create(GURL("https://a.test")));
   }
 
   void SendBasicRequest(GURL url) {
