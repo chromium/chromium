@@ -8360,7 +8360,7 @@
 <translation id="8642947597466641025">放大文字</translation>
 <translation id="8643443571868262066"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 高级保护进行扫描？</translation>
 <translation id="8644047503904673749">{COUNT,plural, =0{无 Cookie}=1{屏蔽了 1 个 Cookie}other{屏蔽了 # 个 Cookie}}</translation>
-<translation id="864423554496711319">设备已保存到您的帐号中</translation>
+<translation id="864423554496711319">已保存在您帐号下的设备</translation>
 <translation id="8644655801811752511">无法重置此安全密钥。请尝试在插入此密钥后立即重置它。</translation>
 <translation id="8645354835496065562">继续允许使用传感器</translation>
 <translation id="8645920082661222035">预测危险事件并在此类事件发生前向您发出警告</translation>
