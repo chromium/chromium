@@ -18,8 +18,6 @@ try_.defaults.set(
     execution_timeout = 15 * time.minute,
     main_list_view = "try",
 
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     # Default priority for buildbucket is 30, see
     # https://chromium.googlesource.com/infra/infra/+/bb68e62b4380ede486f65cd32d9ff3f1bbe288e4/appengine/cr-buildbucket/creation.py#42
     # This will improve our turnaround time for landing infra/config changes
@@ -130,6 +128,9 @@ presubmit_builder(
     branch_selector = branches.selector.ALL_BRANCHES,
     executable = "recipe:presubmit",
     execution_timeout = 40 * time.minute,
+
+    # TODO(crbug.com/1366979): remove this.
+    omit_python2 = False,
     properties = {
         "$depot_tools/presubmit": {
             "runhooks": True,
