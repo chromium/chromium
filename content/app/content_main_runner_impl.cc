@@ -838,7 +838,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
 // On Android, AtExitManager is set up when library is loaded.
 // A consequence of this is that you can't use the ctor/dtor-based
 // TRACE_EVENT methods on Linux or iOS builds till after we set this up.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (!content_main_params_->ui_task) {
     // When running browser tests, don't create a second AtExitManager as that
     // interfers with shutdown when objects created before ContentMain is
@@ -1113,9 +1113,6 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
   main_params.sandbox_info = content_main_params_->sandbox_info;
 #elif BUILDFLAG(IS_MAC)
   main_params.autorelease_pool = content_main_params_->autorelease_pool;
-#elif BUILDFLAG(IS_IOS)
-  main_params.argc = content_main_params_->argc;
-  main_params.argv = content_main_params_->argv;
 #endif
 
   const bool start_minimal_browser = content_main_params_->minimal_browser_mode;

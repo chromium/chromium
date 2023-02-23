@@ -246,11 +246,11 @@ absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventBrowserProcessSortIndex);
 
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, we defer to the system message loop when the stack unwinds.
-  // So here we only create (and leak) a BrowserMainRunner. The shutdown
-  // of BrowserMainRunner doesn't happen in Chrome Android and doesn't work
-  // properly on Android at all.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Android and iOS, we defer to the system message loop when the stack
+  // unwinds. So here we only create (and leak) a BrowserMainRunner. The
+  // shutdown of BrowserMainRunner doesn't happen in Chrome Android/iOS and
+  // doesn't work properly on Android/iOS at all.
   std::unique_ptr<BrowserMainRunner> main_runner = BrowserMainRunner::Create();
   // In browser tests, the |main_function_params| contains a |ui_task| which
   // will execute the testing. The task will be executed synchronously inside
@@ -260,24 +260,6 @@ absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in ShellMainDelegate";
   std::ignore = main_runner.release();
-  // Return 0 as BrowserMain() should not be called after this, bounce up to
-  // the system message loop for ContentShell, and we're already done thanks
-  // to the |ui_task| for browser tests.
-  return 0;
-#elif BUILDFLAG(IS_IOS)
-  // On iOS, we need to create the UIApplication which owns the main event
-  // loop.
-  std::unique_ptr<BrowserMainRunner> main_runner = BrowserMainRunner::Create();
-  // In browser tests, the |main_function_params| contains a |ui_task| which
-  // will execute the testing. The task will be executed synchronously inside
-  // Initialize() so we don't depend on the BrowserMainRunner being Run().
-  int initialize_exit_code =
-      main_runner->Initialize(std::move(main_function_params));
-  DCHECK_LT(initialize_exit_code, 0)
-      << "BrowserMainRunner::Initialize failed in ShellMainDelegate";
-
-  RunShellApplication(main_function_params.argc, main_function_params.argv);
-
   // Return 0 as BrowserMain() should not be called after this, bounce up to
   // the system message loop for ContentShell, and we're already done thanks
   // to the |ui_task| for browser tests.

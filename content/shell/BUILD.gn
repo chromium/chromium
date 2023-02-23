@@ -579,6 +579,8 @@ if (is_android) {
 
     deps = [
       ":content_shell_app",
+      ":content_shell_lib",
+      "//base",
       "//content/public/app",
     ]
     bundle_deps = [
