@@ -1610,6 +1610,7 @@ IN_PROC_BROWSER_TEST_F(
                                        av1_codecs(), SessionType::kTemporary,
                                        "HW_SECURE_ALL"));
 
+#if BUILDFLAG(IS_WIN)
   EXPECT_WV(IsSupportedByKeySystem(kWidevineExperiment2, kVideoWebMMimeType,
                                    video_webm_codecs(), SessionType::kTemporary,
                                    "HW_SECURE_ALL"));
@@ -1619,6 +1620,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_WV_AV1(IsSupportedByKeySystem(kWidevineExperiment2, kVideoMP4MimeType,
                                        av1_codecs(), SessionType::kTemporary,
                                        "HW_SECURE_ALL"));
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(
