@@ -32,6 +32,10 @@ class HatsFinchHelper {
   // provided as a param via the finch seed under the key "custom_client_data".
   static std::string GetCustomClientDataAsString(const HatsConfig& config);
 
+  // Returns true if and only if the finch parameter "enabled_for_googlers"
+  // is set to "true".
+  static bool IsEnabledForGooglers(const HatsConfig& config);
+
   explicit HatsFinchHelper(Profile* profile, const HatsConfig& config);
   ~HatsFinchHelper();
 
@@ -47,6 +51,7 @@ class HatsFinchHelper {
   FRIEND_TEST_ALL_PREFIXES(HatsFinchHelperTest, ResetSurveyCycle);
   FRIEND_TEST_ALL_PREFIXES(HatsFinchHelperTest, ResetHats);
 
+  static const char kEnabledForGooglersParam[];
   static const char kCustomClientDataParam[];
   static const char kProbabilityParam[];
   static const char kResetAllParam[];

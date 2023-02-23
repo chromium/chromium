@@ -42,7 +42,8 @@ class HatsFinchHelperTest : public testing::Test {
       std::string reset_survey,
       std::string reset,
       std::string trigger_id,
-      std::string custom_client_data = std::string()) {
+      std::string custom_client_data = std::string(),
+      std::string enabled_for_googlers = std::string()) {
     base::FieldTrialParams params;
     params[HatsFinchHelper::kProbabilityParam] = prob;
     params[HatsFinchHelper::kSurveyCycleLengthParam] = cycle_length;
@@ -51,6 +52,7 @@ class HatsFinchHelperTest : public testing::Test {
     params[HatsFinchHelper::kResetAllParam] = reset;
     params[HatsFinchHelper::kTriggerIdParam] = trigger_id;
     params[HatsFinchHelper::kCustomClientDataParam] = custom_client_data;
+    params[HatsFinchHelper::kEnabledForGooglersParam] = enabled_for_googlers;
     return params;
   }
 
@@ -196,6 +198,27 @@ TEST_F(HatsFinchHelperTest, CustomClientData) {
 
   EXPECT_EQ(hats_finch_helper.GetCustomClientDataAsString(kHatsGeneralSurvey),
             "12345");
+}
+
+TEST_F(HatsFinchHelperTest, NoEnabledForGooglersConfig) {
+  base::FieldTrialParams params = CreateParamMap(
+      "1.0", "7", "1475613895337", "false", "false", kValidTriggerId);
+  SetFeatureParams(params);
+
+  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+
+  EXPECT_EQ(hats_finch_helper.IsEnabledForGooglers(kHatsGeneralSurvey), false);
+}
+
+TEST_F(HatsFinchHelperTest, EnabledForGooglers) {
+  base::FieldTrialParams params =
+      CreateParamMap("1.0", "7", "1475613895337", "false", "false",
+                     kValidTriggerId, "", "true");
+  SetFeatureParams(params);
+
+  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+
+  EXPECT_EQ(hats_finch_helper.IsEnabledForGooglers(kHatsGeneralSurvey), true);
 }
 
 }  // namespace ash
