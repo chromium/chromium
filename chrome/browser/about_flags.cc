@@ -2721,29 +2721,6 @@ constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kReadLaterUseRootBookmarkAsDefault[] = {
-    {"use_root_bookmark_as_default", "true"}};
-const FeatureEntry::FeatureParam kReadLaterInAppMenu[] = {
-    {"use_root_bookmark_as_default", "true"},
-    {"reading_list_in_app_menu", "true"},
-    {"allow_bookmark_type_swapping", "true"}};
-const FeatureEntry::FeatureParam kReadLaterSemiIntegrated[] = {
-    {"use_root_bookmark_as_default", "true"},
-    {"allow_bookmark_type_swapping", "true"}};
-const FeatureEntry::FeatureParam kReadLaterNoCustomTab[] = {
-    {"use_root_bookmark_as_default", "true"},
-    {"use_cct", "false"}};
-
-const FeatureEntry::FeatureVariation kReadLaterVariations[] = {
-    {"(use root bookmark as default)", kReadLaterUseRootBookmarkAsDefault,
-     std::size(kReadLaterUseRootBookmarkAsDefault), nullptr},
-    {"(with app menu item)", kReadLaterInAppMenu,
-     std::size(kReadLaterInAppMenu), nullptr},
-    {"(bookmarks semi-integration)", kReadLaterSemiIntegrated,
-     std::size(kReadLaterSemiIntegrated), nullptr},
-    {"(no custom tab)", kReadLaterNoCustomTab, std::size(kReadLaterNoCustomTab),
-     nullptr}};
-
 const FeatureEntry::FeatureParam kBookmarksRefreshVisuals[] = {
     {"bookmark_visuals_enabled", "true"}};
 const FeatureEntry::FeatureParam kBookmarksRefreshCompactVisuals[] = {
@@ -5648,14 +5625,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQuickSettingsPWANotificationsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kQuickSettingsPWANotifications)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_ANDROID)
-    {flag_descriptions::kReadLaterFlagId, flag_descriptions::kReadLaterName,
-     flag_descriptions::kReadLaterDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(reading_list::switches::kReadLater,
-                                    kReadLaterVariations,
-                                    "Collections")},
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
     {"read-later-reminder-notification",

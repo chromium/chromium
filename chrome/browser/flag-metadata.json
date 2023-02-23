@@ -6029,11 +6029,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "read-later",
-    "owners": [ "chrome-desktop-ui-sea@google.com", "corising", "wylieb", "chrome-collections@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "read-later-reminder-notification",
     "owners": [ "wylieb" ],
     "expiry_milestone": 110

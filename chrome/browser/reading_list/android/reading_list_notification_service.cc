@@ -26,9 +26,8 @@ ReadingListNotificationService::Config::~Config() = default;
 
 // static
 bool ReadingListNotificationService::IsEnabled() {
-  return base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
-         base::FeatureList::IsEnabled(
-             reading_list::switches::kReadLaterReminderNotification);
+  return base::FeatureList::IsEnabled(
+      reading_list::switches::kReadLaterReminderNotification);
 }
 
 ReadingListNotificationServiceImpl::ReadingListNotificationServiceImpl(

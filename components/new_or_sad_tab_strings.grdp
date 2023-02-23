@@ -152,9 +152,11 @@
       <message name="IDS_NEW_TAB_OTR_TITLE" desc="Title of the Incognito new tab page. The Incognito mode provides private browsing experience by hiding browsing activity from other people using the same device. However, it does not make the user completely invisible or anonymous; please don't translate it as such." formatter_data="android_java">
         You’ve gone Incognito
       </message>
-      <message name="IDS_NEW_TAB_OTR_SUBTITLE" desc="Subtitle of the Incognito new tab page, explaining to the user that the Incognito mode hides their browsing activity from other people using the same device. The second sentence clarifies that there are two important exceptions from this rule - downloaded files and added bookmarks will be persisted even after the Incognito session is closed." formatter_data="android_java">
-        Now you can browse privately, and other people who use this device won’t see your activity. However, downloads and bookmarks will be saved.
-      </message>
+      <if expr="not is_android">
+        <message name="IDS_NEW_TAB_OTR_SUBTITLE" desc="Subtitle of the Incognito new tab page, explaining to the user that the Incognito mode hides their browsing activity from other people using the same device. The second sentence clarifies that there are two important exceptions from this rule - downloaded files and added bookmarks will be persisted even after the Incognito session is closed.">
+          Now you can browse privately, and other people who use this device won’t see your activity. However, downloads and bookmarks will be saved.
+        </message>
+      </if>
       <message name="IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST" desc="Subtitle of the Incognito new tab page, explaining to the user that the Incognito mode hides their browsing activity from other people using the same device. The second sentence clarifies that there are two important exceptions from this rule - downloaded files and added bookmarks will be persisted even after the Incognito session is closed." formatter_data="android_java">
         Now you can browse privately, and other people who use this device won’t see your activity. However, downloads, bookmarks and reading list items will be saved.
       </message>

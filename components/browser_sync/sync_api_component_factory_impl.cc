@@ -406,8 +406,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
   }
 
   // Register reading list unless explicitly disabled.
-  if (!disabled_types.Has(syncer::READING_LIST) &&
-      reading_list::switches::IsReadingListEnabled()) {
+  if (!disabled_types.Has(syncer::READING_LIST)) {
     // The transport-mode delegate may or may not be null depending on
     // platform and feature toggle state.
     syncer::ModelTypeControllerDelegate* delegate_for_transport_mode =

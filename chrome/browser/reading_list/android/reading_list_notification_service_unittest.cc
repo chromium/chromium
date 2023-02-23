@@ -27,7 +27,6 @@
 using notifications::ClientOverview;
 using notifications::SchedulerClientType;
 using notifications::test::MockNotificationScheduleService;
-using reading_list::switches::kReadLater;
 using reading_list::switches::kReadLaterReminderNotification;
 using testing::_;
 using testing::Invoke;
@@ -231,20 +230,12 @@ TEST_F(ReadingListNotificationServiceTest, CacheClosure) {
 TEST_F(ReadingListNotificationServiceTest, IsEnabled) {
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({kReadLater},
-                                  {kReadLaterReminderNotification});
+    feature_list.InitWithFeatures({}, {kReadLaterReminderNotification});
     EXPECT_FALSE(ReadingListNotificationService::IsEnabled());
   }
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({},
-                                  {kReadLater, kReadLaterReminderNotification});
-    EXPECT_FALSE(ReadingListNotificationService::IsEnabled());
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures({kReadLater, kReadLaterReminderNotification},
-                                  {});
+    feature_list.InitWithFeatures({kReadLaterReminderNotification}, {});
     EXPECT_TRUE(ReadingListNotificationService::IsEnabled());
   }
 }

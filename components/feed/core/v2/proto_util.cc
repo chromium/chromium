@@ -162,11 +162,7 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(Capability::AMP_GROUP_DATASTORE);
   }
 
-  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
-    feed_request.add_client_capability(Capability::READ_LATER);
-  } else {
-    feed_request.add_client_capability(Capability::DOWNLOAD_LINK);
-  }
+  feed_request.add_client_capability(Capability::READ_LATER);
 
 #if BUILDFLAG(IS_ANDROID)
   // Note that the Crow feature is referenced as THANK_CREATOR within the feed.

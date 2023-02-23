@@ -347,11 +347,8 @@ public class BookmarkBridgeTest {
     @SmallTest
     @UiThreadTest
     @RequiresRestart
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
     @DisabledTest(message = "Broken on official bot, crbug.com/1165869")
     public void testAddToReadingList() {
-        Assert.assertTrue("Read later feature is not loaded properly.",
-                ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER));
         Assert.assertNull("Should return null for non http/https URLs.",
                 mBookmarkBridge.addToReadingList("a", new GURL("chrome://flags")));
         BookmarkId readingListId =
