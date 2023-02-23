@@ -23,16 +23,11 @@ void MathMLFractionElement::AddMathFractionBarThicknessIfNeeded(
 
 void MathMLFractionElement::ParseAttribute(
     const AttributeModificationParams& param) {
-  if (GetLayoutObject() && GetLayoutObject()->IsMathML() &&
-      param.name == mathml_names::kLinethicknessAttr &&
+  if (param.name == mathml_names::kLinethicknessAttr &&
       param.new_value != param.old_value) {
-    // TODO(crbug.com/1121113): Isn't it enough to set needs style recalc and
-    // let the style system perform proper layout and paint invalidation?
     SetNeedsStyleRecalc(
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));
-    GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
-        layout_invalidation_reason::kAttributeChanged);
   }
   MathMLElement::ParseAttribute(param);
 }

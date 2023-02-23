@@ -50,18 +50,10 @@ void MathMLPaddedElement::ParseAttribute(
     const AttributeModificationParams& param) {
   if (param.name == mathml_names::kLspaceAttr ||
       param.name == mathml_names::kVoffsetAttr) {
-    // TODO(crbug.com/1121113): Isn't it enough to set needs style recalc and
-    // let the style system perform proper layout and paint invalidation?
     SetNeedsStyleRecalc(
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));
-    if (GetLayoutObject() && GetLayoutObject()->IsMathML()) {
-      GetLayoutObject()
-          ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
-              layout_invalidation_reason::kAttributeChanged);
-    }
   }
-
   MathMLRowElement::ParseAttribute(param);
 }
 

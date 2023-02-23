@@ -97,6 +97,8 @@
                 "grid-row-start", "grid-row-end", "grid-column-start", "grid-column-end",
                 "column-gap", "column-width",
                 "column-count", "HasAutoColumnCount", "HasAutoColumnWidth", "column-fill", "column-span",
+                "MathFractionBarThickness", "MathLSpace", "MathMaxSize", "MathMinSize",
+                "MathPaddedVOffset", "MathRSpace",
                 "cx", "cy", "d", "rx", "ry", "x", "y", "r", "alignment-baseline", "vector-effect",
                 "BaselineShiftType", "baseline-shift", "dominant-baseline",
                 "CssDominantBaseline", "text-anchor",
