@@ -664,7 +664,7 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
     }
     if (content_type == ContentSettingsType::COOKIES) {
       base::UmaHistogramCustomCounts(
-          "ContentSettings.RegaularProfile.Exceptions.cookies.AllowThirdParty",
+          "ContentSettings.RegularProfile.Exceptions.cookies.AllowThirdParty",
           num_third_party_cookie_allow_exceptions, 1, 1000, 30);
     }
   }
