@@ -121,15 +121,17 @@ class NetworkTasksTest : public testing::Test {
   }
 
   ~NetworkTasksTest() override {
-    PostToNetworkThreadSync(
-        base::BindLambdaForTesting([&]() { delete network_tasks_; }));
+    PostToNetworkThreadSync(base::BindOnce(
+        // Deletion ocurrs as a result of the argument going out of scope.
+        [](std::unique_ptr<CronetContext::NetworkTasks> tasks_to_be_deleted) {},
+        std::move(network_tasks_)));
   }
 
   void Initialize() {
     PostToNetworkThreadSync(
         base::BindOnce(&CronetContext::NetworkTasks::Initialize,
-                       base::Unretained(network_tasks_), network_task_runner_,
-                       file_task_runner_,
+                       base::Unretained(network_tasks_.get()),
+                       network_task_runner_, file_task_runner_,
                        std::make_unique<net::ProxyConfigServiceFixed>(
                            net::ProxyConfigWithAnnotation::CreateDirect())));
   }
@@ -188,7 +190,7 @@ class NetworkTasksTest : public testing::Test {
   std::unique_ptr<base::Thread> file_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
-  raw_ptr<CronetContext::NetworkTasks> network_tasks_;
+  std::unique_ptr<CronetContext::NetworkTasks> network_tasks_;
   std::unique_ptr<net::URLRequest> url_request_;
 };
 
