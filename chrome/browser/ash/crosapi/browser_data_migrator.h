@@ -200,10 +200,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
                            ManipulateMigrationAttemptCount);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, Migrate);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateCancelled);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
-                           MigrateOutOfDiskForCopy);
-  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest,
-                           MigrateOutOfDiskForMove);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorImplTest, MigrateOutOfDisk);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
                            MaybeRestartToMigrateWithMigrationStep);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorRestartTest,
