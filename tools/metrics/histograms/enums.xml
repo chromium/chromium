@@ -26248,6 +26248,12 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="10" label="ZIndex"/>
 </enum>
 
+<enum name="DevToolsCSSPropertyDocumentation">
+  <int value="0" label="Documentation shown"/>
+  <int value="1" label="Feature toggled on"/>
+  <int value="2" label="Feature toggled off"/>
+</enum>
+
 <enum name="DevToolsDeveloperResourceLoaded">
   <int value="0" label="LoadThroughPageViaTarget"/>
   <int value="1" label="LoadThroughPageViaFrame"/>
