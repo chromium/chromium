@@ -431,8 +431,10 @@ void PinManager::Remove(const Files::iterator it,
 
     if (file.pinned) {
       progress_.syncing_files--;
+      DCHECK_EQ(files_to_pin_.count(id), 0u);
     } else {
-      files_to_pin_.erase(id);
+      const size_t erased = files_to_pin_.erase(id);
+      DCHECK_EQ(erased, 1u);
     }
   }
 

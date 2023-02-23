@@ -774,19 +774,22 @@ TEST_F(DriveFsPinManagerTest, Remove) {
 
   // Put in place a file to track.
   {
-    const auto [it, ok] = manager.files_to_track_.try_emplace(
-        id1, PinManager::File{.path = path1,
-                              .transferred = 1200,
-                              .total = 3000,
-                              .pinned = false,
-                              .in_progress = true});
-    ASSERT_TRUE(ok);
+    ASSERT_TRUE(manager.files_to_track_
+                    .try_emplace(id1, PinManager::File{.path = path1,
+                                                       .transferred = 1200,
+                                                       .total = 3000,
+                                                       .pinned = false,
+                                                       .in_progress = true})
+                    .second);
+    ASSERT_TRUE(manager.files_to_pin_.insert(id1).second);
   }
 
+  EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(id1));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
   // Remove file while setting size to zero.
   EXPECT_TRUE(manager.Remove(id1, path2, 0));
+  EXPECT_THAT(manager.files_to_pin_, IsEmpty());
   EXPECT_THAT(manager.files_to_track_, IsEmpty());
 
   {
