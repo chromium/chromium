@@ -180,42 +180,9 @@ void mergeDevices(CrasDevice& old_dev, CrasDevice& new_dev) {
   old_dev.active |= new_dev.active;
 }
 
-CrasUtil::CrasUtil() {
-  cras_effects_cached_ = CacheEffects();
-}
+CrasUtil::CrasUtil() = default;
 
 CrasUtil::~CrasUtil() = default;
-
-bool CrasUtil::CacheEffects() {
-  libcras_client* client = CrasConnect();
-  if (!client) {
-    LOG(ERROR) << "Failed to cache effects";
-    return false;
-  }
-  if (libcras_client_get_aec_supported(client, &aec_supported_) < 0) {
-    LOG(ERROR) << "Fail to query AEC supported";
-    aec_supported_ = false;
-  }
-  if (libcras_client_get_agc_supported(client, &agc_supported_) < 0) {
-    LOG(ERROR) << "Fail to query AGC supported";
-    agc_supported_ = false;
-  }
-  if (libcras_client_get_ns_supported(client, &ns_supported_) < 0) {
-    LOG(ERROR) << "Fail to query NS supported";
-    ns_supported_ = false;
-  }
-  if (libcras_client_get_aec_group_id(client, &aec_group_id_) < 0) {
-    LOG(ERROR) << "Fail to query AEC group ID";
-    aec_group_id_ = -1;  // The default group ID is -1
-  }
-  if (libcras_client_get_default_output_buffer_size(
-          client, &default_output_buffer_size_) < 0) {
-    LOG(ERROR) << "Fail to query default output buffer size";
-    default_output_buffer_size_ = 0;
-  }
-  CrasDisconnect(&client);
-  return true;
-}
 
 std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
   std::vector<CrasDevice> devices;
@@ -269,38 +236,42 @@ std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
 }
 
 int CrasUtil::CrasGetAecSupported() {
-  if (!cras_effects_cached_) {
-    cras_effects_cached_ = CacheEffects();
+  libcras_client* client = CrasConnect();
+  if (!client) {
+    return 0;
   }
-  return aec_supported_;
-}
 
-int CrasUtil::CrasGetAgcSupported() {
-  if (!cras_effects_cached_) {
-    cras_effects_cached_ = CacheEffects();
-  }
-  return agc_supported_;
-}
+  int supported;
+  libcras_client_get_aec_supported(client, &supported);
+  CrasDisconnect(&client);
 
-int CrasUtil::CrasGetNsSupported() {
-  if (!cras_effects_cached_) {
-    cras_effects_cached_ = CacheEffects();
-  }
-  return ns_supported_;
+  return supported;
 }
 
 int CrasUtil::CrasGetAecGroupId() {
-  if (!cras_effects_cached_) {
-    cras_effects_cached_ = CacheEffects();
+  libcras_client* client = CrasConnect();
+  if (!client) {
+    return -1;
   }
-  return aec_group_id_;
+
+  int id;
+  int rc = libcras_client_get_aec_group_id(client, &id);
+  CrasDisconnect(&client);
+
+  return rc < 0 ? rc : id;
 }
 
 int CrasUtil::CrasGetDefaultOutputBufferSize() {
-  if (!cras_effects_cached_) {
-    cras_effects_cached_ = CacheEffects();
+  libcras_client* client = CrasConnect();
+  if (!client) {
+    return -1;
   }
-  return default_output_buffer_size_;
+
+  int size;
+  int rc = libcras_client_get_default_output_buffer_size(client, &size);
+  CrasDisconnect(&client);
+
+  return rc < 0 ? rc : size;
 }
 
 }  // namespace media

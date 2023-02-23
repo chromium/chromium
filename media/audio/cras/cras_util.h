@@ -48,40 +48,17 @@ class MEDIA_EXPORT CrasUtil {
   virtual ~CrasUtil();
 
   // Enumerates all devices of |type|.
-  // Virtual for testing.
   virtual std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type);
 
   // Returns if system AEC is supported in CRAS.
-  // Virtual for testing.
   virtual int CrasGetAecSupported();
-
-  // Returns if system AGC is supported in CRAS.
-  // Virtual for testing.
-  virtual int CrasGetAgcSupported();
-
-  // Returns if system NS is supported in CRAS.
-  // Virtual for testing.
-  virtual int CrasGetNsSupported();
 
   // Returns the system AEC group ID. If no group ID is specified, -1 is
   // returned.
-  // Virtual for testing.
   virtual int CrasGetAecGroupId();
 
   // Returns the default output buffer size.
-  // Virtual for testing.
   virtual int CrasGetDefaultOutputBufferSize();
-
- private:
-  int aec_supported_ = false;
-  int agc_supported_ = false;
-  int ns_supported_ = false;
-  int aec_group_id_ = -1;
-  int default_output_buffer_size_ = 0;
-  bool cras_effects_cached_ = false;
-
-  // Caches constant effect config from CRAS.
-  bool CacheEffects();
 };
 
 }  // namespace media
