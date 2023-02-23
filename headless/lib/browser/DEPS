@@ -31,6 +31,9 @@ specific_include_rules = {
     "+components/keyed_service/content",
     "+services/device/public/cpp/geolocation/system_geolocation_source_mac.h",
   ],
+  "headless_browser_main_parts_posix.cc": [
+    "+device/bluetooth",
+  ],
   "headless_browser_context_impl.cc": [
     "+components/keyed_service/content",
     "+components/origin_trials",

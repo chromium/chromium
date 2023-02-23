@@ -18,6 +18,8 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
+assert(!is_ios && !is_android)
+
 if (headless_use_policy) {
   assert(headless_use_prefs,
          "'headless_use_policy' requires 'headless_use_prefs'.")
@@ -379,8 +381,8 @@ component("headless_non_renderer") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
-    sources += [ "lib/browser/headless_browser_main_parts_linux.cc" ]
+  if (is_posix) {
+    sources += [ "lib/browser/headless_browser_main_parts_posix.cc" ]
   }
 
   if (is_win) {

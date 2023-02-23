@@ -48,7 +48,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 #if BUILDFLAG(IS_MAC)
   void PreCreateMainMessageLoop() override;
 #endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
   void PostCreateMainMessageLoop() override;
 #endif
   void QuitMainMessageLoop();

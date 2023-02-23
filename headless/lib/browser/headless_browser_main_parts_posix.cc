@@ -19,16 +19,17 @@
 #include "content/public/browser/browser_thread.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX)
 #include "base/command_line.h"
 #include "components/os_crypt/key_storage_config_linux.h"
 #include "components/os_crypt/os_crypt.h"
 #include "headless/public/switches.h"
-#endif
 
-#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(USE_DBUS)
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #endif
+
+#endif  // BUILDFLAG(IS_LINUX)
 
 namespace headless {
 
@@ -119,7 +120,7 @@ class BrowserShutdownHandler {
 
 }  // namespace
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX)
 constexpr char kProductName[] = "HeadlessChrome";
 #endif
 
@@ -127,11 +128,12 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
   BrowserShutdownHandler::Install(
       base::BindOnce(&HeadlessBrowserImpl::Shutdown, browser_->GetWeakPtr()));
 
-#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX)
+
+#if defined(USE_DBUS)
   bluez::BluezDBusManager::Initialize(/*system_bus=*/nullptr);
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // Set up crypt config. This needs to be done before anything starts the
   // network service, as the raw encryption key needs to be shared with the
   // network service for encrypted cookie storage.
@@ -149,7 +151,7 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
   config->should_use_preference = false;
   config->user_data_path = base::FilePath();
   OSCrypt::SetConfig(std::move(config));
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace headless
