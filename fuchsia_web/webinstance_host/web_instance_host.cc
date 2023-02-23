@@ -158,8 +158,8 @@ class InstanceBuilder {
   // directory.
   void ServeCommandLine();
 
-  // Adds offers from `void` for any offered directories that are not being
-  // served for the invoker.
+  // Adds offers from `void` for any optionally-offered directories that are not
+  // being served for the invoker.
   void OfferMissingDirectoriesFromVoid();
 
   // The directories that are optionally offered to `web_instance.cm` based on
@@ -170,7 +170,6 @@ class InstanceBuilder {
     kCommandLineConfig,
     kContentDirectories,
     kData,
-    kSvc,
     kTmp,
     kCount,
   };
@@ -196,12 +195,19 @@ class InstanceBuilder {
 
   // Serves `directory` as `offer` in the instance's subtree as a read-only or
   // a read-write (if `writeable`) directory.
-  void ServeDirectory(OptionalDirectory directory,
-                      std::unique_ptr<vfs::internal::Directory> fs_directory,
-                      bool writeable);
+  void ServeOptionalDirectory(
+      OptionalDirectory directory,
+      std::unique_ptr<vfs::internal::Directory> fs_directory,
+      bool writeable);
 
   // Offers the directory `directory` from `void`.
-  void OfferDirectoryFromVoid(OptionalDirectory directory);
+  void OfferOptionalDirectoryFromVoid(OptionalDirectory directory);
+
+  // Serves the directory `name` as `offer` in the instance's subtree as a
+  // read-only or a read-write (if `writeable`) directory.
+  void ServeDirectory(base::StringPiece name,
+                      std::unique_ptr<vfs::internal::Directory> fs_directory,
+                      bool writeable);
 
   // Offers the read-only directory capability named `name` from the parent.
   void OfferDirectoryFromParent(base::StringPiece name);
@@ -285,7 +291,7 @@ void InstanceBuilder::AppendOffersForServices(
 void InstanceBuilder::ServeServiceDirectory(
     fidl::InterfaceHandle<fuchsia::io::Directory> service_directory) {
   DCHECK(instance_dir_);
-  ServeDirectory(OptionalDirectory::kSvc,
+  ServeDirectory("svc",
                  std::make_unique<vfs::RemoteDir>(std::move(service_directory)),
                  /*writeable=*/true);
 }
@@ -298,9 +304,10 @@ void InstanceBuilder::ServeRootSslCertificates() {
 void InstanceBuilder::ServeDataDirectory(
     fidl::InterfaceHandle<fuchsia::io::Directory> data_directory) {
   DCHECK(instance_dir_);
-  ServeDirectory(OptionalDirectory::kData,
-                 std::make_unique<vfs::RemoteDir>(std::move(data_directory)),
-                 /*writeable=*/true);
+  ServeOptionalDirectory(
+      OptionalDirectory::kData,
+      std::make_unique<vfs::RemoteDir>(std::move(data_directory)),
+      /*writeable=*/true);
 }
 
 zx_status_t InstanceBuilder::ServeContentDirectories(
@@ -320,25 +327,25 @@ zx_status_t InstanceBuilder::ServeContentDirectories(
     }
   }
 
-  ServeDirectory(OptionalDirectory::kContentDirectories,
-                 std::move(content_dirs),
-                 /*writeable=*/false);
+  ServeOptionalDirectory(OptionalDirectory::kContentDirectories,
+                         std::move(content_dirs),
+                         /*writeable=*/false);
   return ZX_OK;
 }
 
 void InstanceBuilder::ServeCdmDataDirectory(
     fidl::InterfaceHandle<fuchsia::io::Directory> cdm_data_directory) {
   DCHECK(instance_dir_);
-  ServeDirectory(
+  ServeOptionalDirectory(
       OptionalDirectory::kCdmData,
       std::make_unique<vfs::RemoteDir>(std::move(cdm_data_directory)),
       /*writeable=*/true);
 }
 
 void InstanceBuilder::ServeTmpDirectory(fuchsia::io::DirectoryHandle tmp_dir) {
-  ServeDirectory(OptionalDirectory::kTmp,
-                 std::make_unique<vfs::RemoteDir>(std::move(tmp_dir)),
-                 /*writeable=*/true);
+  ServeOptionalDirectory(OptionalDirectory::kTmp,
+                         std::make_unique<vfs::RemoteDir>(std::move(tmp_dir)),
+                         /*writeable=*/true);
 }
 
 void InstanceBuilder::SetDebugRequest(
@@ -418,8 +425,9 @@ void InstanceBuilder::ServeCommandLine() {
           }));
   ZX_DCHECK(status == ZX_OK, status);
 
-  ServeDirectory(OptionalDirectory::kCommandLineConfig, std::move(config_dir),
-                 /*writeable=*/false);
+  ServeOptionalDirectory(OptionalDirectory::kCommandLineConfig,
+                         std::move(config_dir),
+                         /*writeable=*/false);
 }
 
 void InstanceBuilder::OfferMissingDirectoriesFromVoid() {
@@ -428,7 +436,7 @@ void InstanceBuilder::OfferMissingDirectoriesFromVoid() {
        directory =
            static_cast<OptionalDirectory>(static_cast<int>(directory) + 1)) {
     if (!is_directory_served(directory)) {
-      OfferDirectoryFromVoid(directory);
+      OfferOptionalDirectoryFromVoid(directory);
     }
   }
 }
@@ -442,14 +450,13 @@ base::StringPiece InstanceBuilder::GetDirectoryName(
           {OptionalDirectory::kCommandLineConfig, "command-line-config"},
           {OptionalDirectory::kContentDirectories, "content-directories"},
           {OptionalDirectory::kData, "data"},
-          {OptionalDirectory::kSvc, "svc"},
           {OptionalDirectory::kTmp, "tmp"},
       });
   static_assert(kNames.size() == static_cast<int>(OptionalDirectory::kCount));
   return kNames.at(directory);
 }
 
-void InstanceBuilder::ServeDirectory(
+void InstanceBuilder::ServeOptionalDirectory(
     OptionalDirectory directory,
     std::unique_ptr<vfs::internal::Directory> fs_directory,
     bool writeable) {
@@ -457,8 +464,29 @@ void InstanceBuilder::ServeDirectory(
   DCHECK(!is_directory_served(directory));
 
   set_directory_served(directory);
-  const auto name = GetDirectoryName(directory);
+  ServeDirectory(GetDirectoryName(directory), std::move(fs_directory),
+                 writeable);
+}
 
+void InstanceBuilder::OfferOptionalDirectoryFromVoid(
+    OptionalDirectory directory) {
+  DCHECK(!is_directory_served(directory));
+
+  const auto name = GetDirectoryName(directory);
+  dynamic_offers_.push_back(fcdecl::Offer::WithDirectory(
+      std::move(fcdecl::OfferDirectory()
+                    .set_source(fcdecl::Ref::WithVoidType({}))
+                    .set_source_name(std::string(name))
+                    .set_target_name(std::string(name))
+                    .set_dependency_type(fcdecl::DependencyType::STRONG)
+                    .set_availability(fcdecl::Availability::OPTIONAL))));
+}
+
+void InstanceBuilder::ServeDirectory(
+    base::StringPiece name,
+    std::unique_ptr<vfs::internal::Directory> fs_directory,
+    bool writeable) {
+  DCHECK(instance_dir_);
   zx_status_t status =
       instance_dir_->AddEntry(std::string(name), std::move(fs_directory));
   ZX_DCHECK(status == ZX_OK, status);
@@ -473,22 +501,6 @@ void InstanceBuilder::ServeDirectory(
                     .set_subdir(base::StrCat({name_, "/", name}))
                     .set_dependency_type(fcdecl::DependencyType::STRONG)
                     .set_availability(fcdecl::Availability::REQUIRED))));
-}
-
-void InstanceBuilder::OfferDirectoryFromVoid(OptionalDirectory directory) {
-  DCHECK(!is_directory_served(directory));
-
-  // TODO(fxbug.dev/121722): Enable this once dynamic offer-from-void is
-  // supported in Fuchsia.
-#if 0
-  const auto name = GetDirectoryName(directory);
-  dynamic_offers_.push_back(fcdecl::Offer::WithDirectory(
-      std::move(fcdecl::OfferDirectory()
-                    .set_source(fcdecl::Ref::WithVoidType({}))
-                    .set_target_name(std::string(name))
-                    .set_dependency_type(fcdecl::DependencyType::STRONG)
-                    .set_availability(fcdecl::Availability::OPTIONAL))));
-#endif
 }
 
 void InstanceBuilder::OfferDirectoryFromParent(base::StringPiece name) {
