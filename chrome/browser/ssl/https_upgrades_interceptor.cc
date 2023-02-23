@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -233,6 +234,15 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   }
 
   // Don't upgrade navigation if it is allowlisted.
+  // First, check the enterprise policy HTTP allowlist.
+  if (IsHostnameInAllowlist(tentative_resource_request.url,
+                            prefs->GetList(prefs::kHttpAllowlist))) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Then check whether the host has been allowlisted by the user (or by a
+  // previous upgrade attempt failing).
   // TODO(crbug.com/1394910): Distinguish HTTPS-First Mode and HTTPS-Upgrades
   // allowlist entries, and ensure that HTTPS-Upgrades allowlist entries don't
   // downgrade Page Info.

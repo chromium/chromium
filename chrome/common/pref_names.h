@@ -1310,6 +1310,8 @@ extern const char kOutOfProcessSystemDnsResolutionEnabled[];
 extern const char kQuickDeleteDialogSuppressed[];
 #endif
 
+extern const char kHttpAllowlist[];
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

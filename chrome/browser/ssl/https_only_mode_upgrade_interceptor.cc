@@ -10,8 +10,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_only_mode_upgrade_url_loader.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
@@ -98,6 +100,13 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
     return;
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // Check if the hostname is in the enterprise policy HTTP allowlist.
+  if (IsHostnameInAllowlist(tentative_resource_request.url,
+                            prefs->GetList(prefs::kHttpAllowlist))) {
+    std::move(callback).Run({});
+    return;
+  }
 
   // Check whether this host would be upgraded to HTTPS by HSTS. This requires a
   // Mojo call to the network service, so set up a callback to continue the rest

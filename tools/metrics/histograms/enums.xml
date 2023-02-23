@@ -32884,6 +32884,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1079" label="EnforceLocalAnchorConstraintsEnabled"/>
   <int value="1080" label="ShowTouchpadScrollScreenEnabled"/>
   <int value="1081" label="DeviceSystemAecEnabled"/>
+  <int value="1082" label="HttpAllowlist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

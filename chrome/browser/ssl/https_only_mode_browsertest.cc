@@ -933,6 +933,88 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, PreferHstsOverHttpsFirstMode) {
   histograms()->ExpectTotalCount(kEventHistogram, 0);
 }
 
+// Tests that if the HttpAllowlist enterprise policy is set, then HTTPS upgrades
+// are skipped for hosts in the allowlist.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       EnterpriseAllowlistDisablesUpgrades) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Without any policy allowlist, navigate to HTTP URL on foo.test. It *should*
+  // get upgraded to HTTPS.
+  auto http_url = http_server()->GetURL("foo.test", "/simple.html");
+  auto https_url = https_server()->GetURL("foo.test", "/simple.html");
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // Artificially add the pref that gets mapped from the enterprise policy.
+  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  auto* prefs = profile->GetPrefs();
+  base::Value::List allowlist;
+  allowlist.Append("foo.test");
+  allowlist.Append("[*.]bar.test");
+  allowlist.Append(http_server()->GetIPLiteralString());
+  // These cases should not work, but the policy->pref mapping won't immediately
+  // reject them.
+  allowlist.Append("[*]");
+  allowlist.Append("*");
+  prefs->SetList(prefs::kHttpAllowlist, std::move(allowlist));
+
+  // Navigate to HTTP URL on foo.test. It should not get upgraded to HTTPS and
+  // no interstitial should be shown.
+  http_url = http_server()->GetURL("foo.test", "/simple.html");
+  https_url = https_server()->GetURL("foo.test", "/simple.html");
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Navigate to HTTP URL on bar.test. Same result.
+  http_url = http_server()->GetURL("bar.test", "/simple.html");
+  https_url = https_server()->GetURL("bar.test", "/simple.html");
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Navigate to HTTP URL on bar.bar.test. Same result as subdomain wildcard
+  // was specified.
+  http_url = http_server()->GetURL("bar.bar.test", "/simple.html");
+  https_url = https_server()->GetURL("bar.bar.test", "/simple.html");
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Navigate to HTTP URL on foo.foo.test. Subdomains of foo.test should not be
+  // considered as being in the allowlist as no wildcard was specified. This
+  // should get upgraded to HTTPS.
+  http_url = http_server()->GetURL("foo.foo.test", "/simple.html");
+  https_url = https_server()->GetURL("foo.foo.test", "/simple.html");
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // Navigate to HTTP URL on baz.test, which is not on the allowlist. Should get
+  // upgraded to HTTPS.
+  http_url = http_server()->GetURL("baz.test", "/simple.html");
+  https_url = https_server()->GetURL("baz.test", "/simple.html");
+  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // Navigate to HTTP URL on the HTTP test server's IP address. It should not
+  // get upgraded ot HTTPS and no interstitial should be shown.
+  http_url = http_server()->GetURL("/simple.html");
+  https_url = https_server()->GetURL("/simple.html");
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+}
+
 // A simple test fixture that ensures the kHttpsOnlyMode feature is enabled and
 // constructs a HistogramTester (so that it gets initialized before browser
 // startup). Used for testing pref tracking logic.

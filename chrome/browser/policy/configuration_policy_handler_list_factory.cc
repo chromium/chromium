@@ -293,6 +293,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kNewBaseUrlInheritanceBehaviorAllowed,
     prefs::kNewBaseUrlInheritanceBehaviorAllowed,
     base::Value::Type::BOOLEAN },
+  { key::kHttpAllowlist,
+    prefs::kHttpAllowlist,
+    base::Value::Type::LIST },
 // Policies for all platforms - End
 #if BUILDFLAG(IS_ANDROID)
   { key::kAuthAndroidNegotiateAccountType,

@@ -1720,6 +1720,8 @@ static_library("browser") {
     "ssl/https_upgrades_interceptor.h",
     "ssl/https_upgrades_navigation_throttle.cc",
     "ssl/https_upgrades_navigation_throttle.h",
+    "ssl/https_upgrades_util.cc",
+    "ssl/https_upgrades_util.h",
     "ssl/insecure_form/insecure_form_controller_client.cc",
     "ssl/insecure_form/insecure_form_controller_client.h",
     "ssl/known_interception_disclosure_infobar_delegate.cc",

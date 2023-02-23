@@ -10,8 +10,6 @@ example_value: disallowed
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 items:
 - caption: Allow users to enable HTTPS-Only Mode
   name: allowed
@@ -35,5 +33,6 @@ supported_on:
 - chrome.*:94-
 - chrome_os:94-
 - android:94-
+- fuchsia:112-
 tags: []
 type: string-enum

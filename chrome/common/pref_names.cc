@@ -3672,4 +3672,7 @@ const char kOutOfProcessSystemDnsResolutionEnabled[] =
 const char kQuickDeleteDialogSuppressed[] = "quick_delete.dialog_suppressed";
 #endif
 
+// A list of hostnames to disable HTTPS Upgrades / HTTPS-First Mode warnings on.
+const char kHttpAllowlist[] = "https_upgrades.policy.http_allowlist";
+
 }  // namespace prefs
