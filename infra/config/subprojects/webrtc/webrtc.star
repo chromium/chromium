@@ -155,7 +155,6 @@ builder(
         build_gs_bucket = "chromium-webrtc",
     ),
     os = os.MAC_ANY,
-    reclient_scandeps_server = True,
     xcode = xcode.x14main,
 )
 

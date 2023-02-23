@@ -405,7 +405,6 @@ ci.builder(
         category = "mac",
         short_name = "bld",
     ),
-    reclient_scandeps_server = True,
 )
 
 linux_memory_builder(
@@ -653,6 +652,5 @@ ci.builder(
         category = "iOS",
         short_name = "asn",
     ),
-    reclient_scandeps_server = True,
     xcode = xcode.x14main,
 )

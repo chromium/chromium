@@ -954,7 +954,6 @@ ci.builder(
         short_name = "64rel",
     ),
     notifies = ["chrome-memory-safety"],
-    reclient_scandeps_server = True,
 )
 
 ci.builder(
