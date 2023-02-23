@@ -18,6 +18,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -52,7 +54,6 @@ class AggregatableReportRequest;
 class AttributionCookieChecker;
 class AttributionDataHostManager;
 class AttributionDebugReport;
-class AttributionOsLevelManager;
 class AttributionStorage;
 class AttributionStorageDelegate;
 class CreateReportResult;
@@ -61,6 +62,10 @@ class StoredSource;
 
 struct GlobalRenderFrameHostId;
 struct SendResult;
+
+#if BUILDFLAG(IS_ANDROID)
+class AttributionOsLevelManager;
+#endif
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionVerboseDebugReporting);
 
@@ -115,8 +120,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
       StoragePartitionImpl* storage_partition,
-      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner,
-      std::unique_ptr<AttributionOsLevelManager> os_level_manager);
+      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
   static std::unique_ptr<AttributionManagerImpl> CreateWithNewDbForTesting(
       StoragePartitionImpl* storage_partition,
@@ -190,8 +194,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
       std::unique_ptr<AttributionReportSender> report_sender,
       std::unique_ptr<AttributionDataHostManager> data_host_manager,
-      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner,
-      std::unique_ptr<AttributionOsLevelManager> os_level_manager);
+      scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
   void MaybeEnqueueEvent(SourceOrTriggerRFH event);
   void ProcessEvents();
@@ -259,6 +262,11 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void OnClearDataComplete();
 
+#if BUILDFLAG(IS_ANDROID)
+  void OverrideOsLevelManagerForTesting(
+      std::unique_ptr<AttributionOsLevelManager>);
+#endif
+
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;
 
@@ -305,7 +313,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   base::ObserverList<AttributionObserver> observers_;
 
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AttributionOsLevelManager> attribution_os_level_manager_;
+#endif
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };

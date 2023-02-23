@@ -31,6 +31,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -41,7 +42,6 @@
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
-#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -69,6 +69,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#endif
 
 namespace content {
 
@@ -199,6 +203,7 @@ class MockCookieChecker : public AttributionCookieChecker {
   base::circular_deque<base::OnceCallback<void(bool)>> callbacks_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
 class MockAttributionOsLevelManager : public AttributionOsLevelManager {
  public:
   ~MockAttributionOsLevelManager() override = default;
@@ -226,6 +231,7 @@ class MockAttributionOsLevelManager : public AttributionOsLevelManager {
               (),
               (override));
 };
+#endif
 
 }  // namespace
 
@@ -260,7 +266,7 @@ class AttributionManagerImplTest : public testing::Test {
     CreateAggregationService();
   }
 
-  void CreateManager(bool create_os_level_manager = false) {
+  void CreateManager() {
     CHECK(!attribution_manager_);
 
     auto storage_delegate = std::make_unique<ConfigurableStorageDelegate>();
@@ -281,25 +287,18 @@ class AttributionManagerImplTest : public testing::Test {
     auto report_sender = std::make_unique<MockReportSender>();
     report_sender_ = report_sender.get();
 
-    auto os_level_manager =
-        create_os_level_manager
-            ? std::make_unique<MockAttributionOsLevelManager>()
-            : nullptr;
-    os_level_manager_ = os_level_manager.get();
-
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
         dir_.GetPath(), kMaxPendingEvents, mock_storage_policy_,
         std::move(storage_delegate), std::move(cookie_checker),
         std::move(report_sender),
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetDefaultStoragePartition()),
-        storage_task_runner_, std::move(os_level_manager));
+        storage_task_runner_);
   }
 
   void ShutdownManager() {
     cookie_checker_ = nullptr;
     report_sender_ = nullptr;
-    os_level_manager_ = nullptr;
     attribution_manager_.reset();
   }
 
@@ -318,6 +317,14 @@ class AttributionManagerImplTest : public testing::Test {
     aggregation_service_ = nullptr;
     partition->OverrideAggregationServiceForTesting(nullptr);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void OverrideOsLevelManager(
+      std::unique_ptr<AttributionOsLevelManager> os_level_manager) {
+    attribution_manager_->OverrideOsLevelManagerForTesting(
+        std::move(os_level_manager));
+  }
+#endif
 
   std::vector<StoredSource> StoredSources() {
     std::vector<StoredSource> result;
@@ -360,7 +367,6 @@ class AttributionManagerImplTest : public testing::Test {
   raw_ptr<MockCookieChecker> cookie_checker_;
   raw_ptr<MockReportSender> report_sender_;
   raw_ptr<MockAggregationService> aggregation_service_;
-  raw_ptr<MockAttributionOsLevelManager> os_level_manager_;
   scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner_;
 };
 
@@ -1014,9 +1020,11 @@ TEST_F(AttributionManagerImplTest, ClearDataFromBrowserOnly) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(AttributionManagerImplTest, ClearDataFromBrowserAndOs) {
-  ShutdownManager();
-  CreateManager(/*create_os_level_manager=*/true);
+  auto os_level_manager = std::make_unique<MockAttributionOsLevelManager>();
+  auto* os_level_manager_ptr = os_level_manager.get();
+  OverrideOsLevelManager(std::move(os_level_manager));
 
   base::Time start = base::Time::Now();
   base::Time end = start + base::Minutes(1);
@@ -1028,7 +1036,7 @@ TEST_F(AttributionManagerImplTest, ClearDataFromBrowserAndOs) {
   filter_builder.AddOrigin(origin);
   filter_builder.AddRegisterableDomain(domain);
 
-  EXPECT_CALL(*os_level_manager_,
+  EXPECT_CALL(*os_level_manager_ptr,
               ClearData(start, end, std::set<url::Origin>({origin}),
                         std::set<std::string>({domain}), mode,
                         /*delete_rate_limit_data=*/true, _))
@@ -1049,13 +1057,14 @@ TEST_F(AttributionManagerImplTest, ClearDataFromBrowserAndOs) {
 }
 
 TEST_F(AttributionManagerImplTest, ClearAllDataFromBrowserAndOs) {
-  ShutdownManager();
-  CreateManager(/*create_os_level_manager=*/true);
+  auto os_level_manager = std::make_unique<MockAttributionOsLevelManager>();
+  auto* os_level_manager_ptr = os_level_manager.get();
+  OverrideOsLevelManager(std::move(os_level_manager));
 
   base::Time start = base::Time::Now();
   base::Time end = start + base::Minutes(1);
 
-  EXPECT_CALL(*os_level_manager_,
+  EXPECT_CALL(*os_level_manager_ptr,
               ClearData(start, end, std::set<url::Origin>({}),
                         std::set<std::string>({}),
                         BrowsingDataFilterBuilder::Mode::kPreserve,
@@ -1076,6 +1085,7 @@ TEST_F(AttributionManagerImplTest, ClearAllDataFromBrowserAndOs) {
 
   EXPECT_THAT(StoredReports(), IsEmpty());
 }
+#endif
 
 TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   Checkpoint checkpoint;

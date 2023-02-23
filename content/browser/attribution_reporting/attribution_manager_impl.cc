@@ -49,7 +49,6 @@
 #include "content/browser/attribution_reporting/attribution_metrics.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
-#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
@@ -80,6 +79,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
 #endif
 
@@ -439,14 +439,12 @@ AttributionManagerImpl::CreateForTesting(
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     StoragePartitionImpl* storage_partition,
-    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner,
-    std::unique_ptr<AttributionOsLevelManager> os_level_manager) {
+    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner) {
   return base::WrapUnique(new AttributionManagerImpl(
       storage_partition, user_data_directory, max_pending_events,
       std::move(special_storage_policy), std::move(storage_delegate),
       std::move(cookie_checker), std::move(report_sender),
-      /*data_host_manager=*/nullptr, std::move(storage_task_runner),
-      std::move(os_level_manager)));
+      /*data_host_manager=*/nullptr, std::move(storage_task_runner)));
 }
 
 AttributionManagerImpl::AttributionManagerImpl(
@@ -472,16 +470,7 @@ AttributionManagerImpl::AttributionManagerImpl(
               base::TaskTraits(base::TaskPriority::BEST_EFFORT,
                                base::MayBlock(),
                                base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-                               base::ThreadPolicy::MUST_USE_FOREGROUND)),
-#if BUILDFLAG(IS_ANDROID)
-          base::FeatureList::IsEnabled(
-              blink::features::kAttributionReportingCrossAppWeb)
-              ? std::make_unique<AttributionOsLevelManagerAndroid>()
-              : nullptr
-#else
-          /*os_level_manager=*/nullptr
-#endif
-      ) {
+                               base::ThreadPolicy::MUST_USE_FOREGROUND))) {
 }  // namespace content
 
 AttributionManagerImpl::AttributionManagerImpl(
@@ -493,8 +482,7 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     std::unique_ptr<AttributionDataHostManager> data_host_manager,
-    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner,
-    std::unique_ptr<AttributionOsLevelManager> os_level_manager)
+    scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner)
     : storage_partition_(storage_partition),
       max_pending_events_(max_pending_events),
       storage_task_runner_(std::move(storage_task_runner)),
@@ -509,20 +497,24 @@ AttributionManagerImpl::AttributionManagerImpl(
       data_host_manager_(std::move(data_host_manager)),
       special_storage_policy_(std::move(special_storage_policy)),
       cookie_checker_(std::move(cookie_checker)),
-      report_sender_(std::move(report_sender)),
-      attribution_os_level_manager_(std::move(os_level_manager)) {
+      report_sender_(std::move(report_sender)) {
   DCHECK(storage_partition_);
   DCHECK_GT(max_pending_events_, 0u);
   DCHECK(storage_task_runner_);
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);
 
-  if (attribution_os_level_manager_) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          blink::features::kAttributionReportingCrossAppWeb)) {
+    attribution_os_level_manager_ =
+        std::make_unique<AttributionOsLevelManagerAndroid>();
     // The measurement API status can only change when user changes the setting
     // on the device, therefore it's fine to update the global variable to keep
     // track of the latest setting.
     SetOsSupport(attribution_os_level_manager_->GetOsSupport());
   }
+#endif
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
@@ -836,7 +828,11 @@ void AttributionManagerImpl::ClearData(
     BrowsingDataFilterBuilder* filter_builder,
     bool delete_rate_limit_data,
     base::OnceClosure done) {
+#if BUILDFLAG(IS_ANDROID)
   const bool should_clear_from_os = attribution_os_level_manager_ != nullptr;
+#else
+  const bool should_clear_from_os = false;
+#endif
 
   auto on_done =
       base::BarrierClosure(should_clear_from_os ? 2 : 1, std::move(done));
@@ -852,6 +848,7 @@ void AttributionManagerImpl::ClearData(
           base::BindOnce(&AttributionManagerImpl::OnClearDataComplete,
                          weak_factory_.GetWeakPtr())));
 
+#if BUILDFLAG(IS_ANDROID)
   if (!should_clear_from_os) {
     return;
   }
@@ -872,6 +869,7 @@ void AttributionManagerImpl::ClearData(
         BrowsingDataFilterBuilder::Mode::kPreserve, delete_rate_limit_data,
         std::move(on_done));
   }
+#endif
 }
 
 void AttributionManagerImpl::OnClearDataComplete() {
@@ -1215,5 +1213,12 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
                        weak_factory_.GetWeakPtr()));
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void AttributionManagerImpl::OverrideOsLevelManagerForTesting(
+    std::unique_ptr<AttributionOsLevelManager> os_level_manager) {
+  attribution_os_level_manager_ = std::move(os_level_manager);
+}
+#endif
 
 }  // namespace content
