@@ -229,61 +229,6 @@ void ReceivedBadMessage(T* bad_message_sender,
   extensions::bad_message::ReceivedBadMessage(bad_message_sender, reason);
 }
 
-class ArgumentListResponseValue
-    : public ExtensionFunction::ResponseValueObject {
- public:
-  ArgumentListResponseValue(ExtensionFunction* function,
-                            base::Value::List result) {
-    SetFunctionResults(function, std::move(result));
-    // It would be nice to DCHECK(error.empty()) but some legacy extension
-    // function implementations... I'm looking at chrome.input.ime... do this
-    // for some reason.
-  }
-
-  ~ArgumentListResponseValue() override = default;
-
-  bool Apply() override { return true; }
-};
-
-class ErrorWithArgumentsResponseValue : public ArgumentListResponseValue {
- public:
-  ErrorWithArgumentsResponseValue(ExtensionFunction* function,
-                                  base::Value::List result,
-                                  const std::string& error)
-      : ArgumentListResponseValue(function, std::move(result)) {
-    SetFunctionError(function, error);
-  }
-
-  ~ErrorWithArgumentsResponseValue() override = default;
-
-  bool Apply() override { return false; }
-};
-
-class ErrorResponseValue : public ExtensionFunction::ResponseValueObject {
- public:
-  ErrorResponseValue(ExtensionFunction* function, std::string error) {
-    // It would be nice to DCHECK(!error.empty()) but too many legacy extension
-    // function implementations don't set error but signal failure.
-    SetFunctionError(function, std::move(error));
-  }
-
-  ~ErrorResponseValue() override {}
-
-  bool Apply() override { return false; }
-};
-
-class BadMessageResponseValue : public ExtensionFunction::ResponseValueObject {
- public:
-  explicit BadMessageResponseValue(ExtensionFunction* function) {
-    function->SetBadMessage();
-    NOTREACHED() << function->name() << ": bad message";
-  }
-
-  ~BadMessageResponseValue() override {}
-
-  bool Apply() override { return false; }
-};
-
 class RespondNowAction : public ExtensionFunction::ResponseActionObject {
  public:
   typedef base::OnceCallback<void(bool)> SendResponseCallback;
@@ -292,7 +237,7 @@ class RespondNowAction : public ExtensionFunction::ResponseActionObject {
       : result_(std::move(result)), send_response_(std::move(send_response)) {}
   ~RespondNowAction() override = default;
 
-  void Execute() override { std::move(send_response_).Run(result_->Apply()); }
+  void Execute() override { std::move(send_response_).Run(result_.success()); }
 
  private:
   ExtensionFunction::ResponseValue result_;
@@ -385,22 +330,6 @@ void ExtensionFunction::EnsureShutdownNotifierFactoryBuilt() {
   BrowserContextShutdownNotifierFactory::GetInstance();
 }
 
-void ExtensionFunction::ResponseValueObject::SetFunctionResults(
-    ExtensionFunction* function,
-    base::Value::List results) {
-  DCHECK(!function->results_)
-      << "Function " << function->name_ << " already has results set.";
-  function->results_ = std::move(results);
-}
-
-void ExtensionFunction::ResponseValueObject::SetFunctionError(
-    ExtensionFunction* function,
-    std::string error) {
-  DCHECK(function->error_.empty()) << "Function " << function->name_
-                                   << "already has an error.";
-  function->error_ = std::move(error);
-}
-
 // static
 bool ExtensionFunction::ignore_all_did_respond_for_testing_do_not_use = false;
 
@@ -437,6 +366,12 @@ class ExtensionFunction::RenderFrameHostTracker
 
   raw_ptr<ExtensionFunction> function_;  // Owns us.
 };
+
+ExtensionFunction::ResponseValue::ResponseValue(bool success, PassKey)
+    : success_(success) {}
+ExtensionFunction::ResponseValue::ResponseValue(ResponseValue&& other) =
+    default;
+ExtensionFunction::ResponseValue::~ResponseValue() = default;
 
 ExtensionFunction::ExtensionFunction() {
   EnsureMemoryDumpProviderExists();
@@ -658,15 +593,14 @@ void ExtensionFunction::OnServiceWorkerAck() {
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::NoArguments() {
-  return ResponseValue(
-      new ArgumentListResponseValue(this, base::Value::List()));
+  return CreateArgumentListResponse(base::Value::List());
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::OneArgument(
     base::Value arg) {
   base::Value::List args;
   args.Append(std::move(arg));
-  return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
+  return CreateArgumentListResponse(std::move(args));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
@@ -675,31 +609,30 @@ ExtensionFunction::ResponseValue ExtensionFunction::TwoArguments(
   base::Value::List args;
   args.Append(std::move(arg1));
   args.Append(std::move(arg2));
-  return ResponseValue(new ArgumentListResponseValue(this, std::move(args)));
+  return CreateArgumentListResponse(std::move(args));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
     base::Value::List results) {
-  return ResponseValue(new ArgumentListResponseValue(this, std::move(results)));
+  return CreateArgumentListResponse(std::move(results));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::Error(std::string error) {
-  return ResponseValue(new ErrorResponseValue(this, std::move(error)));
+  return CreateErrorResponseValue(std::move(error));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::Error(
     const std::string& format,
     const std::string& s1) {
-  return ResponseValue(
-      new ErrorResponseValue(this, ErrorUtils::FormatErrorMessage(format, s1)));
+  return CreateErrorResponseValue(ErrorUtils::FormatErrorMessage(format, s1));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::Error(
     const std::string& format,
     const std::string& s1,
     const std::string& s2) {
-  return ResponseValue(new ErrorResponseValue(
-      this, ErrorUtils::FormatErrorMessage(format, s1, s2)));
+  return CreateErrorResponseValue(
+      ErrorUtils::FormatErrorMessage(format, s1, s2));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::Error(
@@ -707,19 +640,18 @@ ExtensionFunction::ResponseValue ExtensionFunction::Error(
     const std::string& s1,
     const std::string& s2,
     const std::string& s3) {
-  return ResponseValue(new ErrorResponseValue(
-      this, ErrorUtils::FormatErrorMessage(format, s1, s2, s3)));
+  return CreateErrorResponseValue(
+      ErrorUtils::FormatErrorMessage(format, s1, s2, s3));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(
     base::Value::List args,
     const std::string& error) {
-  return ResponseValue(
-      new ErrorWithArgumentsResponseValue(this, std::move(args), error));
+  return CreateErrorWithArgumentsResponse(std::move(args), error);
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::BadMessage() {
-  return ResponseValue(new BadMessageResponseValue(this));
+  return CreateBadMessageResponse();
 }
 
 ExtensionFunction::ResponseAction ExtensionFunction::RespondNow(
@@ -746,7 +678,7 @@ ExtensionFunction::ResponseAction ExtensionFunction::ValidationFailure(
 }
 
 void ExtensionFunction::Respond(ResponseValue result) {
-  SendResponseImpl(result->Apply());
+  SendResponseImpl(result.success());
 }
 
 void ExtensionFunction::OnResponded() {}
@@ -824,4 +756,47 @@ ExtensionFunction::ScopedUserGestureForTests::ScopedUserGestureForTests() {
 
 ExtensionFunction::ScopedUserGestureForTests::~ScopedUserGestureForTests() {
   UserGestureForTests::GetInstance()->DecrementCount();
+}
+
+// static
+ExtensionFunction::ResponseValue ExtensionFunction::CreateArgumentListResponse(
+    base::Value::List result) {
+  SetFunctionResults(std::move(result));
+  // It would be nice to DCHECK(error.empty()) but some legacy extension
+  // function implementations... I'm looking at chrome.input.ime... do this
+  // for some reason.
+  return ResponseValue(true, PassKey());
+}
+
+// static
+ExtensionFunction::ResponseValue
+ExtensionFunction::CreateErrorWithArgumentsResponse(base::Value::List result,
+                                                    const std::string& error) {
+  SetFunctionResults(std::move(result));
+  SetFunctionError(error);
+  return ResponseValue(false, PassKey());
+}
+
+ExtensionFunction::ResponseValue ExtensionFunction::CreateErrorResponseValue(
+    std::string error) {
+  // It would be nice to DCHECK(!error.empty()) but too many legacy extension
+  // function implementations don't set error but signal failure.
+  SetFunctionError(std::move(error));
+  return ResponseValue(false, PassKey());
+}
+
+ExtensionFunction::ResponseValue ExtensionFunction::CreateBadMessageResponse() {
+  SetBadMessage();
+  NOTREACHED() << name() << ": bad message";
+  return ResponseValue(false, PassKey());
+}
+
+void ExtensionFunction::SetFunctionResults(base::Value::List results) {
+  DCHECK(!results_) << "Function " << name() << " already has results set.";
+  results_ = std::move(results);
+}
+
+void ExtensionFunction::SetFunctionError(std::string error) {
+  DCHECK(error_.empty()) << "Function " << name() << "already has an error.";
+  error_ = std::move(error);
 }

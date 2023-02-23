@@ -1173,7 +1173,7 @@ class AutotestPrivateWaitForDisplayRotationFunction
   ~AutotestPrivateWaitForDisplayRotationFunction() override;
   ResponseAction Run() override;
 
-  ResponseValue CheckScreenRotationAnimation();
+  absl::optional<ResponseValue> CheckScreenRotationAnimation();
 
   int64_t display_id_ = display::kInvalidDisplayId;
   absl::optional<display::Display::Rotation> target_rotation_;

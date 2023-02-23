@@ -1778,11 +1778,8 @@ void DeveloperPrivateLoadDirectoryFunction::ReadDirectoryByFileSystemAPICb(
     pending_copy_operations_count_--;
 
     if (!pending_copy_operations_count_) {
-      ExtensionFunction::ResponseValue response;
-      if (success_)
-        response = NoArguments();
-      else
-        response = Error(error_);
+      ExtensionFunction::ResponseValue response =
+          success_ ? NoArguments() : Error(error_);
       content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
           base::BindOnce(&DeveloperPrivateLoadDirectoryFunction::Respond, this,

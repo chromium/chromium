@@ -67,7 +67,7 @@ ExtensionFunction::ResponseAction BookmarksFunction::Run() {
   }
 
   ResponseValue response = RunOnReady();
-  return response ? RespondNow(std::move(response)) : RespondLater();
+  return RespondNow(std::move(response));
 }
 
 BookmarkModel* BookmarksFunction::GetBookmarkModel() {
@@ -194,9 +194,7 @@ void BookmarksFunction::BookmarkModelLoaded(BookmarkModel* model,
   model->RemoveObserver(this);
 
   ResponseValue response = RunOnReady();
-  if (response)
-    Respond(std::move(response));
-  // else, the function will Respond() on its own later.
+  Respond(std::move(response));
 
   Release();  // Balanced in Run().
 }

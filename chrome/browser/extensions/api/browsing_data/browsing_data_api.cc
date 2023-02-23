@@ -307,15 +307,21 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
   }
 
   if (origins) {
-    ResponseValue error_response;
-    if (!ParseOrigins(*origins, &origins_, &error_response))
-      return RespondNow(std::move(error_response));
+    OriginParsingResult result = ParseOrigins(*origins);
+    if (result.has_value()) {
+      origins_ = std::move(*result);
+    } else {
+      return RespondNow(std::move(result.error()));
+    }
     mode_ = content::BrowsingDataFilterBuilder::Mode::kDelete;
   } else {
     if (exclude_origins) {
-      ResponseValue error_response;
-      if (!ParseOrigins(*exclude_origins, &origins_, &error_response))
-        return RespondNow(std::move(error_response));
+      OriginParsingResult result = ParseOrigins(*exclude_origins);
+      if (result.has_value()) {
+        origins_ = std::move(*result);
+      } else {
+        return RespondNow(std::move(result.error()));
+      }
     }
     mode_ = content::BrowsingDataFilterBuilder::Mode::kPreserve;
   }
@@ -459,26 +465,23 @@ bool BrowsingDataRemoverFunction::ParseOriginTypeMask(
   return true;
 }
 
-bool BrowsingDataRemoverFunction::ParseOrigins(
-    const base::Value::List& list_value,
-    std::vector<url::Origin>* result,
-    ResponseValue* error_response) {
-  result->reserve(list_value.size());
+BrowsingDataRemoverFunction::OriginParsingResult
+BrowsingDataRemoverFunction::ParseOrigins(const base::Value::List& list_value) {
+  std::vector<url::Origin> result;
+  result.reserve(list_value.size());
   for (const auto& value : list_value) {
     if (!value.is_string()) {
-      *error_response = BadMessage();
-      return false;
+      return base::unexpected(BadMessage());
     }
     url::Origin origin = url::Origin::Create(GURL(value.GetString()));
     if (origin.opaque()) {
-      *error_response = Error(base::StringPrintf(
+      return base::unexpected(Error(base::StringPrintf(
           extension_browsing_data_api_constants::kInvalidOriginError,
-          value.GetString().c_str()));
-      return false;
+          value.GetString().c_str())));
     }
-    result->push_back(std::move(origin));
+    result.push_back(std::move(origin));
   }
-  return true;
+  return result;
 }
 
 // Parses the |dataToRemove| argument to generate the removal mask.

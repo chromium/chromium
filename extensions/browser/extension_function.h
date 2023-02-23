@@ -19,6 +19,7 @@
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/quota_service.h"
@@ -130,23 +131,27 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Sends |error| as an error response.
   void RespondWithError(std::string error);
 
+  using PassKey = base::PassKey<ExtensionFunction>;
+
   // The result of a function call.
   //
   // Use NoArguments(), OneArgument(), ArgumentList(), or Error()
   // rather than this class directly.
-  class ResponseValueObject {
+  class ResponseValue {
    public:
-    virtual ~ResponseValueObject() {}
+    ResponseValue(bool success, PassKey);
+    ResponseValue(ResponseValue&& other);
+    ResponseValue& operator=(ResponseValue&& other) = delete;
+    ResponseValue(const ResponseValue&) = delete;
+    ResponseValue& operator=(const ResponseValue&) = delete;
+    ~ResponseValue();
 
     // Returns true for success, false for failure.
-    virtual bool Apply() = 0;
+    bool success() const { return success_; }
 
-   protected:
-    void SetFunctionResults(ExtensionFunction* function,
-                            base::Value::List results);
-    void SetFunctionError(ExtensionFunction* function, std::string error);
+   private:
+    const bool success_;
   };
-  typedef std::unique_ptr<ResponseValueObject> ResponseValue;
 
   // The action to use when returning from RunAsync.
   //
@@ -513,6 +518,15 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   scoped_refptr<const extensions::Extension> extension_;
 
  private:
+  ResponseValue CreateArgumentListResponse(base::Value::List result);
+  ResponseValue CreateErrorWithArgumentsResponse(base::Value::List result,
+                                                 const std::string& error);
+  ResponseValue CreateErrorResponseValue(std::string error);
+  ResponseValue CreateBadMessageResponse();
+
+  void SetFunctionResults(base::Value::List results);
+  void SetFunctionError(std::string error);
+
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<ExtensionFunction>;

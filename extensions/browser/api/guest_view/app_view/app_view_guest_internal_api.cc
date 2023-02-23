@@ -25,15 +25,13 @@ AppViewGuestInternalAttachFrameFunction::Run() {
   GURL url = extension()->GetResourceURL(params->url);
   EXTENSION_FUNCTION_VALIDATE(url.is_valid());
 
-  ResponseValue response;
   if (AppViewGuest::CompletePendingRequest(
           browser_context(), url, params->guest_instance_id, extension_id(),
           render_frame_host()->GetProcess())) {
-    response = NoArguments();
+    return RespondNow(NoArguments());
   } else {
-    response = Error("could not complete");
+    return RespondNow(Error("could not complete"));
   }
-  return RespondNow(std::move(response));
 }
 
 AppViewGuestInternalDenyRequestFunction::
@@ -48,15 +46,13 @@ AppViewGuestInternalDenyRequestFunction::Run() {
 
   // Since the URL passed into AppViewGuest:::CompletePendingRequest is invalid,
   // a new <appview> WebContents will not be created.
-  ResponseValue response;
   if (AppViewGuest::CompletePendingRequest(
           browser_context(), GURL(), params->guest_instance_id, extension_id(),
           render_frame_host()->GetProcess())) {
-    response = NoArguments();
+    return RespondNow(NoArguments());
   } else {
-    response = Error("could not complete");
+    return RespondNow(Error("could not complete"));
   }
-  return RespondNow(std::move(response));
 }
 
 }  // namespace extensions

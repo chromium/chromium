@@ -85,11 +85,11 @@ ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
   // If none of the listeners intend to respond, or one has already responded,
   // finish the function. We always reply to the message, even if it's just an
   // empty string.
-  if (!listener_will_respond || response_.get()) {
+  if (!listener_will_respond || response_) {
     if (!response_) {
-      response_ = OneArgument(base::Value(std::string()));
+      response_.emplace(WithArguments(std::string()));
     }
-    return RespondNow(std::move(response_));
+    return RespondNow(std::move(*response_));
   }
   // Otherwise, wait for a reply.
   waiting_ = true;
@@ -100,16 +100,16 @@ TestSendMessageFunction::~TestSendMessageFunction() = default;
 
 void TestSendMessageFunction::Reply(const std::string& message) {
   DCHECK(!response_);
-  response_ = OneArgument(base::Value(message));
+  response_.emplace(WithArguments(message));
   if (waiting_)
-    Respond(std::move(response_));
+    Respond(std::move(*response_));
 }
 
 void TestSendMessageFunction::ReplyWithError(const std::string& error) {
   DCHECK(!response_);
-  response_ = Error(error);
+  response_.emplace(Error(error));
   if (waiting_)
-    Respond(std::move(response_));
+    Respond(std::move(*response_));
 }
 
 TestSendScriptResultFunction::TestSendScriptResultFunction() = default;

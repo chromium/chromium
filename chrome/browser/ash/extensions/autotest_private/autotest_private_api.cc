@@ -4395,7 +4395,7 @@ AutotestPrivateWaitForDisplayRotationFunction::Run() {
 
   auto result = CheckScreenRotationAnimation();
   if (result)
-    return RespondNow(std::move(result));
+    return RespondNow(std::move(*result));
   return RespondLater();
 }
 
@@ -4427,10 +4427,10 @@ void AutotestPrivateWaitForDisplayRotationFunction::
   auto result = CheckScreenRotationAnimation();
   // Wait for the rotation if unlocking causes rotation.
   if (result)
-    Respond(std::move(result));
+    Respond(std::move(*result));
 }
 
-ExtensionFunction::ResponseValue
+absl::optional<ExtensionFunction::ResponseValue>
 AutotestPrivateWaitForDisplayRotationFunction::CheckScreenRotationAnimation() {
   auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id_);
   if (!root_window) {
@@ -4451,7 +4451,7 @@ AutotestPrivateWaitForDisplayRotationFunction::CheckScreenRotationAnimation() {
   self_ = this;
 
   animator->AddObserver(this);
-  return nullptr;
+  return absl::nullopt;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
