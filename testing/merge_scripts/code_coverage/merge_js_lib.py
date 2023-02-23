@@ -21,6 +21,8 @@ import coverage_modules
 logging.basicConfig(format='[%(asctime)s %(levelname)s] %(message)s',
                     level=logging.DEBUG)
 
+_PREFIXES_TO_CHECK = ['//', 'import ', '/*', '*']
+
 
 def _parse_json_file(path):
     """Opens file and parses data into JSON
@@ -144,6 +146,19 @@ def write_parsed_scripts(task_output_dir, source_dir=_SRC_PATH):
 
     return output_dir
 
+def should_exclude(line_contents):
+    """Whether we exclude the line from coverage map."""
+    line_contents = line_contents.strip()
+    # Exclude empty lines.
+    if line_contents == '':
+        return True
+
+    # Exclude comments and imports.
+    for prefix in _PREFIXES_TO_CHECK:
+        if line_contents.startswith(prefix):
+            return True
+
+    return False
 
 def exclude_uninteresting_lines(coverage_file_path):
     """Removes lines from Istanbul coverage reports that correspond to lines in
@@ -179,21 +194,7 @@ def exclude_uninteresting_lines(coverage_file_path):
                 assert statement_map['start']['line'] == statement_map['end'][
                     'line']
 
-                line_contents = lines[line_num - 1].strip()
-
-                # Exclude empty lines
-                if line_contents == '':
-                    exclude_line(istanbul_coverage, key)
-                    continue
-
-                # Exclude lines that start with a full line comment.
-                # e.g. // comment.
-                if line_contents.startswith('//'):
-                    exclude_line(istanbul_coverage, key)
-                    continue
-
-                # Exclude any lines that start with an import statement.
-                if line_contents.startswith('import '):
+                if should_exclude(lines[line_num - 1]):
                     exclude_line(istanbul_coverage, key)
                     continue
 

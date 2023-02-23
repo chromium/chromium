@@ -5,13 +5,13 @@
 
 import base64
 import json
-import mock
 import os
 import shutil
 import tempfile
 import unittest
 
 import merge_js_lib as merger
+from parameterized import parameterized
 
 
 class MergeJSLibTest(unittest.TestCase):
@@ -164,7 +164,14 @@ class MergeJSLibTest(unittest.TestCase):
 // found in the LICENSE file.
 
 import './iframe.js';
-export const add = (a, b) => a + b;
+
+/*
+ * function comment should be excluded.
+ */
+export const add = (a, b) => a + b; // should not be excluded
+
+/* should be excluded */
+
 """
 
         test_istanbul_file = """{
@@ -177,7 +184,14 @@ export const add = (a, b) => a + b;
     "3":{"start":{"line":3,"column":0},"end":{"line":3,"column":29}},
     "4":{"start":{"line":4,"column":0},"end":{"line":4,"column":0}},
     "5":{"start":{"line":5,"column":0},"end":{"line":5,"column":21}},
-    "6":{"start":{"line":6,"column":0},"end":{"line":6,"column":35}}
+    "6":{"start":{"line":6,"column":0},"end":{"line":6,"column":0}},
+    "7":{"start":{"line":7,"column":0},"end":{"line":7,"column":2}},
+    "8":{"start":{"line":8,"column":0},"end":{"line":8,"column":39}},
+    "9":{"start":{"line":9,"column":0},"end":{"line":9,"column":3}},
+    "10":{"start":{"line":10,"column":0},"end":{"line":10,"column":61}},
+    "11":{"start":{"line":11,"column":0},"end":{"line":11,"column":0}},
+    "12":{"start":{"line":12,"column":0},"end":{"line":12,"column":24}},
+    "13":{"start":{"line":13,"column":0},"end":{"line":13,"column":0}}
   },
   "s":{
     "1": 1,
@@ -185,7 +199,14 @@ export const add = (a, b) => a + b;
     "3": 1,
     "4": 1,
     "5": 1,
-    "6": 1
+    "6": 1,
+    "7": 1,
+    "8": 1,
+    "9": 1,
+    "10": 1,
+    "11": 1,
+    "12": 1,
+    "13": 1
   }
 }
         }"""
@@ -195,19 +216,19 @@ export const add = (a, b) => a + b;
                 "path": "%s",
                 "all": false,
                 "statementMap": {
-                    "6": {
+                    "10": {
                         "start": {
-                            "line": 6,
+                            "line": 10,
                             "column": 0
                         },
                         "end": {
-                            "line": 6,
-                            "column": 35
+                            "line": 10,
+                            "column": 61
                         }
                     }
                 },
                 "s": {
-                    "6": 1
+                    "10": 1
                 }
             }
         }"""
@@ -280,6 +301,18 @@ export const add = (a, b) => a + b;
 
         finally:
             shutil.rmtree(test_dir)
+
+    @parameterized.expand([
+        ('// test', True),
+        ('/* test', True),
+        ('*/ test', True),
+        (' * test', True),
+        ('import test', True),
+        (' x = 5 /* comment */', False),
+        ('x = 5', False),
+    ])
+    def test_should_exclude(self, line, exclude):
+        self.assertEqual(merger.should_exclude(line), exclude)
 
 
 if __name__ == '__main__':
