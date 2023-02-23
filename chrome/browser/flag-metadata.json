@@ -2985,6 +2985,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "enable-projector-server-side-speech-recognition",
+    "owners": ["yilkal", "cros-projector@google.com"],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-pwas-default-offline-page",
     "owners": [ "finnur@google.com", "beverloo@google.com" ],
     "expiry_milestone": 120

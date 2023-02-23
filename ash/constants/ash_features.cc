@@ -1233,6 +1233,11 @@ BASE_FEATURE(kInternalServerSideSpeechRecognition,
              "InternalServerSideSpeechRecognition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature overrides the `InternalServerSideSpeechRecognition` flag if disabled.
+BASE_FEATURE(kInternalServerSideSpeechRecognitionControl,
+             "InternalServerSideSpeechRecognitionControl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables sending `client-info` values to IPP printers on ChromeOS.
 BASE_FEATURE(kIppClientInfo, "IppClientInfo", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2699,8 +2704,18 @@ bool IsInternalServerSideSpeechRecognitionEnabled() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(b/245614967): Once ready, enable this feature under
   // kProjectorBleedingEdgeExperience flag as well.
-  return ShouldForceEnableServerSideSpeechRecognitionForDev() ||
-         base::FeatureList::IsEnabled(kInternalServerSideSpeechRecognition);
+  return IsInternalServerSideSpeechRecognitionControlEnabled() &&
+         (ShouldForceEnableServerSideSpeechRecognitionForDev() ||
+          base::FeatureList::IsEnabled(kInternalServerSideSpeechRecognition));
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+bool IsInternalServerSideSpeechRecognitionControlEnabled() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return base::FeatureList::IsEnabled(
+      kInternalServerSideSpeechRecognitionControl);
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

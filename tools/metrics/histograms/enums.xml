@@ -58830,6 +58830,8 @@ from previous Chrome versions.
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
   <int value="-1704022650" label="EnableDangerousDownloadDialog:enabled"/>
   <int value="-1703709912" label="enable-new-ntp"/>
+  <int value="-1703479539"
+      label="InternalServerSideSpeechRecognition:disabled"/>
   <int value="-1703308540" label="disable-webaudio"/>
   <int value="-1701123067" label="ShowManagedUi:enabled"/>
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
@@ -62536,6 +62538,7 @@ from previous Chrome versions.
   <int value="365068212" label="PiexWasm:disabled"/>
   <int value="365467768" label="prefetch-search-results"/>
   <int value="365737168" label="SingleTouchSelect:disabled"/>
+  <int value="366860338" label="InternalServerSideSpeechRecognition:enabled"/>
   <int value="367063319" label="PasswordImport:disabled"/>
   <int value="368224960" label="FedCmRpContext:disabled"/>
   <int value="368854020" label="ash-screen-rotation-animation"/>

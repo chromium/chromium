@@ -5886,6 +5886,11 @@ const char kProjectorAppDebugName[] = "Enable Projector app debug";
 const char kProjectorAppDebugDescription[] =
     "Adds more informative error messages to the Projector app for debugging";
 
+const char kProjectorServerSideSpeechRecognitionName[] =
+    "Enable server side speech recognition for Projector";
+const char kProjectorServerSideSpeechRecognitionDescription[] =
+    "Adds server side speech recognition capability to Projector.";
+
 const char kQsRevampName[] = "Quick Settings Revamp";
 const char kQsRevampDescription[] =
     "Enable QS UI revamp with separated message center.";
