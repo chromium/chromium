@@ -8,7 +8,7 @@
 ##
 ## Top level settings
 ##
-version_id: 58
+version_id: 59
 sampled_ping_probability: 0.01
 max_archived_binaries_to_report: 10
 default_file_type {
@@ -1012,6 +1012,7 @@ file_types {
     platform: PLATFORM_TYPE_WINDOWS
     danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
+    file_weight: 10
   }
 }
 file_types {
@@ -2238,6 +2239,7 @@ file_types {
     platform: PLATFORM_TYPE_WINDOWS
     danger_level: ALLOW_ON_USER_GESTURE
     auto_open_hint: DISALLOW_AUTO_OPEN
+    file_weight: 10
   }
 }
 file_types {

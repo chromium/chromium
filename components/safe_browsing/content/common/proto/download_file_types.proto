@@ -11,7 +11,7 @@ package safe_browsing;
 // See //chrome/browser/resources/safe_browsing/README.md for guidelines
 // on how to set fields in this file.
 
-// Next id: 5
+// Next id: 7
 message DownloadFileType {
   optional string extension = 1;  // required, except in default_file_type.
   optional int64 uma_value = 2;   // required
@@ -45,13 +45,17 @@ message DownloadFileType {
     PLATFORM_TYPE_FUCHSIA = 6;
   }
 
-  // Next id: 5
+  // Next id: 6
   message PlatformSettings {
     optional PlatformType platform = 1 [default = PLATFORM_TYPE_ANY];
     optional DangerLevel danger_level = 2;     // required
     optional AutoOpenHint auto_open_hint = 3;  // required
     optional uint64 max_file_size_to_analyze = 4
         [default = 18446744073709551615];  // (2^64)-1]
+
+    // `file_weight` determines how likely the given file type is to be included
+    // in a ping to Safe Browsing when downloading an archive.
+    optional int64 file_weight = 5;
   };
 
   // Protos parsed by Chrome should have exactly one entry here.
