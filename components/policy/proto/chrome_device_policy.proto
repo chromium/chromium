@@ -1152,24 +1152,10 @@ message DeviceScreensaverImageDisplayIntervalSecondsProto {
   optional int64 device_screensaver_image_display_interval_seconds = 1;
 };
 
-// Specifies the images to be displayed in the device-level screensaver.
-// Represented as a JSON string that must follow the following schema:
-// {
-//   "items": {
-//     "properties": {
-//       "hash": {
-//         "type": "string"
-//       },
-//       "url": {
-//         "type": "string"
-//       }
-//     },
-//     "type": "object"
-//   },
-//   "type": "array"
-// }
+// A list of URLs referencing the images to be displayed on the
+// sign-in screen screensaver.
 message DeviceScreensaverImagesProto {
-  optional string device_screensaver_images = 1;
+  repeated string device_screensaver_images = 1;
 };
 
 message DeviceSystemAecEnabledProto {
