@@ -10,7 +10,6 @@
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/values.h"
-#import "ios/web/annotations/annotations_java_script_feature.h"
 #import "ios/web/public/annotations/annotations_text_observer.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"

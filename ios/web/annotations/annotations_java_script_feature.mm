@@ -10,7 +10,7 @@
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/shared_highlighting/ios/parsing_utils.h"
-#import "ios/web/annotations/annotations_text_manager.h"
+#import "ios/web/annotations/annotations_text_manager_impl.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -97,7 +97,9 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  auto* manager = AnnotationsTextManager::FromWebState(web_state);
+  AnnotationsTextManagerImpl* manager =
+      static_cast<AnnotationsTextManagerImpl*>(
+          AnnotationsTextManager::FromWebState(web_state));
   if (!manager) {
     return;
   }
