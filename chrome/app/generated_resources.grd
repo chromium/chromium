@@ -13634,7 +13634,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Submit Feedback
       </message>
       <message name="IDS_SIDE_SEARCH_PROMO" desc="Promo UI shown next to the side search button to encourage its use.">
-        See more search results in side panel
+        Compare search resuls faster from the new side panel
+      </message>
+      <message name="IDS_SIDE_SEARCH_TUTORIAL_OPEN_SIDE_PANEL" desc="Tutorial bubble shown next to the side search button to instruct users to open side panel">
+        Click the "G" button to see more search results in a side panel
+      </message>
+      <message name="IDS_SIDE_SEARCH_TUTORIAL_OPEN_A_LINK_TO_TAB" desc="Tutorial bubble shown next to the side panel to instruct users to open a link to main tab">
+        Click on a result and the page will open in your current tab
+      </message>
+      <message name="IDS_SIDE_SEARCH_TUTORIAL_CLOSE_SIDE_PANEL" desc="Tutorial bubble shown next to the side panel close button to instruct users to close side panel">
+        Click the "X" button to close the side panel
       </message>
       <message name="IDS_SIDE_SEARCH_ENTRYPOINT_LABEL" desc="The label text that is animated-in when the omnibox entrypoint is first shown.">
         See more search results

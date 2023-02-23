@@ -288,6 +288,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
                                       kFirstNonDefaultButtonIdForTesting);
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView, kBodyTextIdForTesting);
+
 // Explicitly don't use the default DIALOG_SHADOW as it will show a black
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
 // the same for all other platforms.
@@ -381,14 +383,18 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
     labels_.push_back(
         top_text_container->AddChildView(std::make_unique<views::Label>(
             params.title_text, delegate->GetTitleTextContext())));
-    labels_.push_back(
+    views::Label* label =
         AddChildViewAt(std::make_unique<views::Label>(
                            params.body_text, delegate->GetBodyTextContext()),
-                       GetIndexOf(button_container).value()));
+                       GetIndexOf(button_container).value());
+    labels_.push_back(label);
+    label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
   } else {
-    labels_.push_back(
+    views::Label* label =
         top_text_container->AddChildView(std::make_unique<views::Label>(
-            params.body_text, delegate->GetBodyTextContext())));
+            params.body_text, delegate->GetBodyTextContext()));
+    labels_.push_back(label);
+    label->SetProperty(views::kElementIdentifierKey, kBodyTextIdForTesting);
   }
 
   // Set common label properties.

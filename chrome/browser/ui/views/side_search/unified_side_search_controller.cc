@@ -27,6 +27,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
@@ -35,6 +36,12 @@ namespace {
 class SideSearchWebView : public views::WebView {
  public:
   using WebView::WebView;
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
+        kSideSearchResultsClickedCustomEventId, this);
+  }
 
   ~SideSearchWebView() override {
     if (!web_contents())
