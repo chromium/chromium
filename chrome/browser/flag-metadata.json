@@ -2063,6 +2063,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "enable-cros-ime-us-english-model-update",
+    "owners": [ "curtismcmullan", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-cros-multilingual-typing",
     "owners": [ "tranbaoduy", "essential-inputs-team@google.com" ],
     "expiry_milestone": 116

@@ -1180,6 +1180,11 @@ BASE_FEATURE(kVirtualKeyboardNewHeader,
 // features (e.g. auto-correct).
 BASE_FEATURE(kImeRuleConfig, "ImeRuleConfig", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled use the updated US English IME language models.
+BASE_FEATURE(kImeUsEnglishModelUpdate,
+             "ImeUsEnglishModelUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable system emoji picker falling back to clipboard.
 BASE_FEATURE(kImeSystemEmojiPickerClipboard,
              "SystemEmojiPickerClipboard",

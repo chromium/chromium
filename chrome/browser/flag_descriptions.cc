@@ -5654,6 +5654,11 @@ const char kImeStylusHandwritingName[] = "Stylus Handwriting";
 const char kImeStylusHandwritingDescription[] =
     "Enable VK UI for stylus in text fields";
 
+const char kImeUsEnglishModelUpdateName[] =
+    "Enable US English IME model update";
+const char kImeUsEnglishModelUpdateDescription[] =
+    "Enable updated US English IME language models for native IME";
+
 const char kJellyColorsName[] = "Jelly Colors";
 const char kJellyColorsDescription[] = "Enable Jelly coloring";
 
