@@ -3788,6 +3788,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"multi-zone-rgb-keyboard", flag_descriptions::kMultiZoneRgbKeyboardName,
      flag_descriptions::kMultiZoneRgbKeyboardDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMultiZoneRgbKeyboard)},
+    {"policy-provided-trust-anchors-allowed-at-lock-screen",
+     flag_descriptions::kPolicyProvidedTrustAnchorsAllowedAtLockScreenName,
+     flag_descriptions::
+         kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kPolicyProvidedTrustAnchorsAllowedAtLockScreen)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -1587,6 +1587,12 @@ BASE_FEATURE(kPhoneHubPingOnBubbleOpen,
              "PhoneHubPingOnBubbleOpen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether policy provided trust anchors are allowed at the lock
+// screen.
+BASE_FEATURE(kPolicyProvidedTrustAnchorsAllowedAtLockScreen,
+             "PolicyProvidedTrustAnchorsAllowedAtLockScreen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the preference of using constant frame rate for camera
 // when streaming.
 BASE_FEATURE(kPreferConstantFrameRate,
@@ -2234,6 +2240,11 @@ bool AreContextualNudgesEnabled() {
 
 bool AreDesksTemplatesEnabled() {
   return base::FeatureList::IsEnabled(kDesksTemplates);
+}
+
+bool ArePolicyProvidedTrustAnchorsAllowedAtLockScreen() {
+  return base::FeatureList::IsEnabled(
+      kPolicyProvidedTrustAnchorsAllowedAtLockScreen);
 }
 
 bool ArePromiseIconsEnabled() {

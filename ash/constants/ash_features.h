@@ -452,6 +452,8 @@ BASE_DECLARE_FEATURE(kPhoneHubMonochromeNotificationIcons);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPhoneHubNudge);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kPhoneHubPingOnBubbleOpen);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kPolicyProvidedTrustAnchorsAllowedAtLockScreen);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPreferConstantFrameRate);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kPrintingPpdChannel);
 enum class PrintingPpdChannel { kProduction, kStaging, kDev, kLocalhost };
@@ -606,6 +608,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWmMode);
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreCaptureModeDemoToolsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreContextualNudgesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreDesksTemplatesEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool ArePolicyProvidedTrustAnchorsAllowedAtLockScreen();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ArePromiseIconsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreSystemSoundsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutocompleteExtendedSuggestionsEnabled();

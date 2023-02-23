@@ -5767,6 +5767,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "policy-provided-trust-anchors-allowed-at-lock-screen",
+    "owners": [ "acostinas", "suprnet@google.com" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "popout-omnibox-ipad",
     "owners": [ "stkhapugin", "christianxu", "bling-flags@google.com" ],
     "expiry_milestone": 120

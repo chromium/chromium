@@ -3351,6 +3351,9 @@ extern const char kPhoneHubFeatureSetupErrorHandlingDescription[];
 extern const char kPhoneHubNudgeName[];
 extern const char kPhoneHubNudgeDescription[];
 
+extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenName[];
+extern const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription[];
+
 extern const char kPreferDcheckName[];
 extern const char kPreferDcheckDescription[];
 

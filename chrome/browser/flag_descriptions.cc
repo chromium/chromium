@@ -5835,6 +5835,11 @@ const char kPhoneHubNudgeName[] = "Phone Hub nudge";
 const char kPhoneHubNudgeDescription[] =
     "Enables a nudge to direct eligible users to open Phone Hub.";
 
+const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenName[] =
+    "Policy-provided trust anchors at lock screen";
+const char kPolicyProvidedTrustAnchorsAllowedAtLockScreenDescription[] =
+    "Enables using the policy-provided trust anchors at lock screen";
+
 const char kPreferDcheckName[] = "Prefer DCHECK-enabled build";
 const char kPreferDcheckDescription[] =
     "Use a DCHECK-enabled build when available.";
