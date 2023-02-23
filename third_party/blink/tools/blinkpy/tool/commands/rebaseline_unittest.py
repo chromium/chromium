@@ -144,12 +144,13 @@ class BaseTestCase(unittest.TestCase):
 
         self._mocks = contextlib.ExitStack()
         self._mocks.enter_context(
-            mock.patch('blinkpy.common.message_pool.get',
-                       return_value=self._pool_mock()))
+            mock.patch.object(self.tool, 'main', create=True))
+        self._mocks.enter_context(
+            mock.patch('blinkpy.common.message_pool.get', self._get_mock_pool))
         self._mocks.enter_context(
             mock.patch.object(self.tool.port_factory, 'get', get_test_port))
 
-    def _pool_mock(self):
+    def _get_mock_pool(self, caller, worker_factory, num_workers):
         message_pool = mock.Mock()
         message_pool.run = self._pool_run
         message_pool = contextlib.nullcontext(message_pool)
@@ -408,15 +409,14 @@ class TestRebaseline(BaseTestCase):
                               'MOCK Win7',
                               '--step-name',
                               'blink_web_tests (with patch)',
-                          ]],
-                          [[
-                              'python',
-                              'echo',
-                              'optimize-baselines',
-                              '--no-manifest-update',
-                              '--verbose',
-                              'userscripts/first-test.html',
                           ]]])
+        self.tool.main.assert_called_once_with([
+            'echo',
+            'optimize-baselines',
+            '--no-manifest-update',
+            '--verbose',
+            'userscripts/first-test.html',
+        ])
 
     def test_rebaseline_debug(self):
         test_baseline_set = TestBaselineSet(self.tool)
@@ -453,15 +453,14 @@ class TestRebaseline(BaseTestCase):
                               'MOCK Win7 (dbg)',
                               '--step-name',
                               'blink_web_tests (with patch)',
-                          ]],
-                          [[
-                              'python',
-                              'echo',
-                              'optimize-baselines',
-                              '--no-manifest-update',
-                              '--verbose',
-                              'userscripts/first-test.html',
                           ]]])
+        self.tool.main.assert_called_once_with([
+            'echo',
+            'optimize-baselines',
+            '--no-manifest-update',
+            '--verbose',
+            'userscripts/first-test.html',
+        ])
 
     def test_no_optimize(self):
         test_baseline_set = TestBaselineSet(self.tool)
@@ -578,15 +577,14 @@ class TestRebaseline(BaseTestCase):
                               'MOCK Win7',
                               '--step-name',
                               'blink_web_tests (with patch)',
-                          ]],
-                          [[
-                              'python',
-                              'echo',
-                              'optimize-baselines',
-                              '--no-manifest-update',
-                              '--verbose',
-                              'userscripts/first-test.html',
                           ]]])
+        self.tool.main.assert_called_once_with([
+            'echo',
+            'optimize-baselines',
+            '--no-manifest-update',
+            '--verbose',
+            'userscripts/first-test.html',
+        ])
 
 
 @unittest.skip('Disabled because this does not reflect the behavior of '

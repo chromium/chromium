@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 import optparse
+from unittest import mock
 
 from blinkpy.tool.commands.optimize_baselines import OptimizeBaselines
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
@@ -15,8 +17,20 @@ class TestOptimizeBaselines(BaseTestCase):
         abs_path = self.tool.filesystem.join(port.web_tests_dir(), path)
         self.tool.filesystem.write_text_file(abs_path, contents)
 
-    def setUp(self):
-        super(TestOptimizeBaselines, self).setUp()
+    def _get_mock_pool(self, caller, worker_factory, num_workers):
+        worker_process = mock.Mock()
+        worker_process.host = self.tool
+        worker = worker_factory(worker_process)
+        message_pool = mock.Mock()
+
+        def run(tasks):
+            worker.start()
+            for message_name, *args in tasks:
+                worker.handle(message_name, 'manager', *args)
+
+        message_pool.run = run
+        message_pool = contextlib.nullcontext(message_pool)
+        return message_pool
 
     def test_optimize_all_suffixes_by_default(self):
         test_port = self.tool.port_factory.get('test')

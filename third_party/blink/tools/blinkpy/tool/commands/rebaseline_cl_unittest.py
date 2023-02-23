@@ -671,14 +671,13 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                               '5000',
                               '--step-name',
                               'blink_web_tests (with patch)',
-                          ]],
-                          [[
-                              'python',
-                              'echo',
-                              'optimize-baselines',
-                              '--no-manifest-update',
-                              'one/flaky-fail.html',
                           ]]])
+        self.tool.main.assert_called_once_with([
+            'echo',
+            'optimize-baselines',
+            '--no-manifest-update',
+            'one/flaky-fail.html',
+        ])
 
     def test_rebaseline_command_invocations_multiple_steps(self):
         """Test the rebaseline tool handles multiple steps on the same builder.
@@ -744,10 +743,12 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'not_site_per_process_blink_web_tests (with patch)'
             ],
         ])
-        self.assertEqual(self.tool.executive.calls[2], [[
-            'python', 'echo', 'optimize-baselines', '--no-manifest-update',
-            'one/text-fail.html'
-        ]])
+        self.tool.main.assert_called_once_with([
+            'echo',
+            'optimize-baselines',
+            '--no-manifest-update',
+            'one/text-fail.html',
+        ])
 
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
         self.tool.results_fetcher.set_results(

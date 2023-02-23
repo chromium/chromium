@@ -48,10 +48,6 @@ _log = logging.getLogger(__name__)
 # the leading dot.
 # TODO(robertma): Investigate changing the CLI.
 BASELINE_SUFFIX_LIST = tuple(ext[1:] for ext in base.Port.BASELINE_EXTENSIONS)
-# When large number of tests need to be optimized, limit the length of the commandline to 128 tests
-# to not run into issues with any commandline size limitations with popen. In windows CreateProcess()
-# arg length limit is 32768. With 250 chars in test path length, choosing a chunk size of 128.
-MAX_TESTS_IN_OPTIMIZE_CMDLINE = 128
 
 
 class AbstractRebaseliningCommand(Command):
@@ -461,7 +457,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
 
         return copy_baseline_commands, rebaseline_commands, lines_to_remove
 
-    def _optimize_commands(self, test_baseline_set, verbose=False):
+    def _optimize_command(self, test_baseline_set, verbose=False):
         """Returns a list of commands to run in parallel to de-duplicate baselines."""
         test_set = set()
         baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
@@ -483,35 +479,16 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         ])
         test_set -= virtual_tests_to_exclude
 
-        # Process the test_list so that each list caps at MAX_TESTS_IN_OPTIMIZE_CMDLINE tests
-        capped_test_list = []
-        test_list = list(test_set)
-        for i in range(0, len(test_set), MAX_TESTS_IN_OPTIMIZE_CMDLINE):
-            capped_test_list.append(test_list[i:i +
-                                              MAX_TESTS_IN_OPTIMIZE_CMDLINE])
-
-        optimize_commands = []
-        path_to_blink_tool = self._tool.path()
-
-        # Build one optimize-baselines invocation command for each flag_spec.
-        # All the tests in the test list will be optimized iteratively.
-        for test_list in capped_test_list:
-            command = [
-                self._tool.executable,
-                path_to_blink_tool,
-                'optimize-baselines',
-                # FIXME: We should propagate the platform options as well.
-                # Prevent multiple baseline optimizer to race updating the manifest.
-                # The manifest has already been updated when listing tests.
-                '--no-manifest-update',
-            ]
-            if verbose:
-                command.append('--verbose')
-
-            command.extend(test_list)
-            optimize_commands.append(command)
-
-        return optimize_commands
+        command = [
+            self._tool.path(),
+            'optimize-baselines',
+            # The manifest has already been updated when listing tests.
+            '--no-manifest-update',
+        ]
+        if verbose:
+            command.append('--verbose')
+        command.extend(sorted(test_set))
+        return command
 
     def _update_expectations_files(self, lines_to_remove):
         tests = list(lines_to_remove.keys())
@@ -558,9 +535,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()
 
-    def _message_pool(self):
+    def _message_pool(self, worker_factory):
         num_workers = min(self.MAX_WORKERS, self._tool.executive.cpu_count())
-        return message_pool.get(self, self._worker_factory, num_workers)
+        return message_pool.get(self, worker_factory, num_workers)
 
     def _worker_factory(self, worker_connection):
         return Worker(worker_connection,
@@ -595,30 +572,30 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         # lines_to_remove are unexpected passes.
         copy_baseline_commands, rebaseline_commands, lines_to_remove = self._rebaseline_commands(
             test_baseline_set, options)
-        with self._message_pool() as pool:
+        with self._message_pool(self._worker_factory) as pool:
             pool.run([('copy_existing_baselines', command)
                       for command in copy_baseline_commands])
-        with self._message_pool() as pool:
+        with self._message_pool(self._worker_factory) as pool:
             pool.run([('rebaseline', command)
                       for command in rebaseline_commands])
 
         if lines_to_remove:
             self._update_expectations_files(lines_to_remove)
 
+        exit_code = 0
         if options.optimize:
             # No point in optimizing during a dry run where no files were
             # downloaded.
             if self._dry_run:
                 _log.info('Skipping optimization during dry run.')
             else:
-                optimize_commands = self._optimize_commands(
+                optimize_command = self._optimize_command(
                     test_baseline_set, options.verbose)
-                with self._message_pool() as pool:
-                    pool.run([('optimize_baselines', command)
-                              for command in optimize_commands])
+                exit_code = exit_code or self._tool.main(optimize_command)
 
         if not self._dry_run:
             self._tool.git().add_list(self.unstaged_baselines())
+        return exit_code
 
     def unstaged_baselines(self):
         """Returns absolute paths for unstaged (including untracked) baselines."""
