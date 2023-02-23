@@ -5,7 +5,7 @@ function processQueryParams() {
   const queryParams = url.searchParams;
   return {
     secure: url.protocol === "https:",
-    topLevelDocument: queryParams.get("rootdocument") != "false",
+    topLevelDocument: window === window.top,
     testPrefix: queryParams.get("testCase") || "top-level-context",
   };
 }

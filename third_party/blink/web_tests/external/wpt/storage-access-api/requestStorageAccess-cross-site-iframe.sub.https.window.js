@@ -5,5 +5,5 @@
 
 (async function() {
   // Create a test with a single-child cross-site iframe.
-  RunTestsInIFrame('https://{{hosts[alt][www]}}:{{ports[https][0]}}/storage-access-api/resources/requestStorageAccess-iframe.https.html?testCase=cross-site-frame&rootdocument=false');
+  RunTestsInIFrame('https://{{hosts[alt][www]}}:{{ports[https][0]}}/storage-access-api/resources/requestStorageAccess-iframe.https.html?testCase=cross-site-frame');
 })();

@@ -12,7 +12,7 @@
 // don't want to recurse forever.
 const {testPrefix, topLevelDocument} = processQueryParams();
 
-if (window !== window.top) {
+if (!topLevelDocument) {
   // WPT synthesizes a top-level HTML test for this JS file, and in that case we
   // don't want to, or need to, call set_test_context.
   test_driver.set_test_context(window.top);
