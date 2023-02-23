@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/web/image_fetch/image_fetch_java_script_feature.h"
 
+#import <string>
+
 #import "base/base64.h"
 #import "base/no_destructor.h"
 #import "base/values.h"
@@ -12,6 +14,7 @@
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -82,24 +85,24 @@ void ImageFetchJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const base::Value* id_key = message->FindKey("id");
-  if (!id_key || !id_key->is_double()) {
+  const base::Value::Dict& message_dict = message->GetDict();
+  const absl::optional<double> id_key = message_dict.FindDouble("id");
+  if (!id_key) {
     return;
   }
-  int call_id = static_cast<int>(id_key->GetDouble());
+  int call_id = static_cast<int>(id_key.value());
 
   std::string decoded_data;
-  const base::Value* data = message->FindKey("data");
-  if (!data || !data->is_string() ||
-      !base::Base64Decode(data->GetString(), &decoded_data)) {
+  const std::string* data = message_dict.FindString("data");
+  if (!data || !base::Base64Decode(*data, &decoded_data)) {
     handler->HandleJsFailure(call_id);
     return;
   }
 
   std::string from;
-  const base::Value* from_value = message->FindKey("from");
-  if (from_value && from_value->is_string()) {
-    from = from_value->GetString();
+  const std::string* from_value = message_dict.FindString("from");
+  if (from_value) {
+    from = *from_value;
   }
 
   DCHECK(!decoded_data.empty());
