@@ -127,16 +127,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.DesktopScreenshot.Action"
-    enum="SharingDesktopScreenshotAction" expires_after="2023-02-26">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Logged when actions are taken in the sharing desktop screenshot image
-    editing feature.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.DeviceRegistrationResult"
     enum="SharingDeviceRegistrationResult" expires_after="M97">
   <owner>knollr@chromium.org</owner>

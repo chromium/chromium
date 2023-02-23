@@ -93976,35 +93976,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="App"/>
 </enum>
 
-<enum name="SharingDesktopScreenshotAction">
-<!--
-  SharingScreenshotAction must be kept in sync with SharingScreenshotAction defined
-  in /chrome/browser/ui/webui/image_editor/image_editor.mojom
--->
-
-  <int value="0" label="Crop tool selected"/>
-  <int value="1" label="Text tool selected"/>
-  <int value="2" label="Draw tool selected"/>
-  <int value="3" label="Circle tool selected"/>
-  <int value="4" label="Rectangle tool selected"/>
-  <int value="5" label="Line tool selected"/>
-  <int value="6" label="Arrow tool selected"/>
-  <int value="7" label="Emoji tool selected"/>
-  <int value="8" label="Highlight tool selected"/>
-  <int value="9" label="Zoom in selected"/>
-  <int value="10" label="Zoom out selected"/>
-  <int value="11" label="Screenshot Copied"/>
-  <int value="12" label="Screenshot Saved"/>
-  <int value="13" label="Screenshot Shared"/>
-  <int value="14" label="Text tool: color changed"/>
-  <int value="15" label="Text tool: font changed"/>
-  <int value="16" label="Text tool: size changed"/>
-  <int value="17" label="Draw tool: size changed"/>
-  <int value="18" label="Draw tool: color changed"/>
-  <int value="19" label="Highlight tool: color changed"/>
-  <int value="20" label="Fallback webui loaded"/>
-</enum>
-
 <enum name="SharingDeviceRegistrationResult">
   <int value="0" label="Operation is successful"/>
   <int value="1" label="Failed with Sync not ready"/>
