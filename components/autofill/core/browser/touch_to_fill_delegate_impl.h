@@ -6,6 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_TOUCH_TO_FILL_DELEGATE_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
@@ -49,7 +52,13 @@ enum class TouchToFillCreditCardTriggerOutcome {
   // TouchToFill is not supported for this field type. This value is not logged
   // to UMA.
   kUnsupportedFieldType = 9,
-  kMaxValue = kUnsupportedFieldType
+  // Keyboard is not suppressed (anymore). This can happen due to race
+  // conditions involving the form parse that may happen between
+  // OnBeforeAskForValuesToFill() and TryToShowTouchToFill(). In particular, the
+  // focused field's type may change (changing DryRun()'s value from a
+  // non-`kShown` value to `kShown`).
+  kKeyboardNotSuppressed = 10,
+  kMaxValue = kKeyboardNotSuppressed
 };
 
 constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
@@ -70,7 +79,8 @@ class BrowserAutofillManager;
 //
 // Public methods are marked virtual for testing.
 // TODO(crbug.com/1324900): Consider using more descriptive name.
-class TouchToFillDelegateImpl : public TouchToFillDelegate {
+class TouchToFillDelegateImpl : public TouchToFillDelegate,
+                                public AutofillManager::Observer {
  public:
   explicit TouchToFillDelegateImpl(BrowserAutofillManager* manager);
   TouchToFillDelegateImpl(const TouchToFillDelegateImpl&) = delete;
@@ -99,6 +109,15 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   void ShowCreditCardSettings() override;
   void SuggestionSelected(std::string unique_id) override;
   void OnDismissed(bool dismissed_by_user) override;
+
+  // AutofillManager::Observer:
+  void OnAutofillManagerDestroyed(AutofillManager& manager) override;
+  void OnBeforeAskForValuesToFill(AutofillManager& manager,
+                                  FormGlobalId form_id,
+                                  FieldGlobalId field_id) override;
+  void OnAfterAskForValuesToFill(AutofillManager& manager,
+                                 FormGlobalId form_id,
+                                 FieldGlobalId field_id) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) const;
 
@@ -134,6 +153,10 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
   // Sets whether or not to suppress the on-screen keyboard in following
   // requests that would usually display the keyboard.
   //
+  // If `suppress == true` and had been false before, starts a timer to reset it
+  // again. This timer is stopped by subsequent calls where `suppress == false`
+  // or when TTF is indeed shown.
+  //
   // No-op if `suppress` if the previous call had the same value as `suppress`.
   void SetShouldSuppressKeyboard(bool suppress);
 
@@ -151,10 +174,13 @@ class TouchToFillDelegateImpl : public TouchToFillDelegate {
 
   const raw_ptr<BrowserAutofillManager> manager_;
   bool keyboard_is_suppressed_ = false;
+  base::OneShotTimer keyboard_unsuppress_timer_;
   FormData query_form_;
   FormFieldData query_field_;
   bool dismissed_by_user_;
 
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      autofill_manager_observation_{this};
   base::WeakPtrFactory<TouchToFillDelegateImpl> weak_ptr_factory_{this};
 };
 

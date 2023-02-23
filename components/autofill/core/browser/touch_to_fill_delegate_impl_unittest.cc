@@ -102,12 +102,19 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormFieldData& field),
               (override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
+  MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool suppress), (override));
 };
 
 }  // namespace
 
 class TouchToFillDelegateImplUnitTest : public testing::Test {
- protected:
+ public:
+  TouchToFillDelegateImplUnitTest() {
+    // Some date after in the 2000s because Autofill doesn't allow expiration
+    // dates before 2000.
+    task_environment_.AdvanceClock(base::Days(365 * 50));
+  }
+
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.GetPersonalDataManager()->SetPrefService(
@@ -161,17 +168,23 @@ class TouchToFillDelegateImplUnitTest : public testing::Test {
     if (!browser_autofill_manager_->FindCachedFormById(form_.global_id())) {
       browser_autofill_manager_->OnFormsSeen({form_}, {});
     }
+    touch_to_fill_delegate_->OnBeforeAskForValuesToFill(
+        *browser_autofill_manager_, form_.global_id(),
+        form_.fields[0].global_id());
     EXPECT_EQ(expected_success, touch_to_fill_delegate_->TryToShowTouchToFill(
                                     form_, form_.fields[0]));
+    touch_to_fill_delegate_->OnAfterAskForValuesToFill(
+        *browser_autofill_manager_, form_.global_id(),
+        form_.fields[0].global_id());
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->IsShowingTouchToFill());
   }
 
   FormData form_;
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillEnvironment autofill_environment_;
-  TestAutofillClock test_autofill_clock_{AutofillClock::Now()};
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
   std::unique_ptr<MockBrowserAutofillManager> browser_autofill_manager_;
@@ -221,7 +234,7 @@ TEST_F(TouchToFillDelegateImplUnitTest,
        TryToShowTouchToFillFailsIfNotSupported) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(autofill_client_, IsTouchToFillCreditCardSupported)
-      .WillOnce(Return(false));
+      .WillRepeatedly(Return(false));
 
   TryToShowTouchToFill(/*expected_success=*/false);
 }
@@ -274,8 +287,14 @@ TEST_F(TouchToFillDelegateImplUnitTest,
       autofill_client_,
       HideAutofillPopup(PopupHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
+  touch_to_fill_delegate_->OnBeforeAskForValuesToFill(
+      *browser_autofill_manager_, form_.global_id(),
+      form_.fields[0].global_id());
   EXPECT_FALSE(
       touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields[0]));
+  touch_to_fill_delegate_->OnAfterAskForValuesToFill(
+      *browser_autofill_manager_, form_.global_id(),
+      form_.fields[0].global_id());
 }
 
 TEST_F(TouchToFillDelegateImplUnitTest, TryToShowTouchToFillFailsIfWasShown) {
@@ -398,7 +417,7 @@ TEST_F(TouchToFillDelegateImplUnitTest,
        TryToShowTouchToFillFailsIfCanNotShowUi) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
   EXPECT_CALL(*browser_autofill_manager_, CanShowAutofillUi)
-      .WillOnce(Return(false));
+      .WillRepeatedly(Return(false));
 
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
@@ -448,9 +467,9 @@ TEST_F(TouchToFillDelegateImplUnitTest,
   autofill_client_.GetPersonalDataManager()->ClearCreditCards();
   CreditCard credit_card = autofill::test::GetCreditCard();
   CreditCard disused_expired_card = test::GetExpiredCreditCard();
-  disused_expired_card.set_use_date(AutofillClock::Now());
-  test_autofill_clock_.Advance(kDisusedDataModelTimeDelta * 2);
   credit_card.set_use_date(AutofillClock::Now());
+  disused_expired_card.set_use_date(AutofillClock::Now() -
+                                    kDisusedDataModelTimeDelta * 2);
   autofill_client_.GetPersonalDataManager()->AddCreditCard(credit_card);
   autofill_client_.GetPersonalDataManager()->AddCreditCard(
       disused_expired_card);
@@ -585,6 +604,90 @@ TEST_F(TouchToFillDelegateImplUnitTest, AutofillUsedAfterTouchToFillDismissal) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal",
       true, 1);
+}
+
+class TouchToFillDelegateImplUnitTest_KeyboardSuppression
+    : public TouchToFillDelegateImplUnitTest {
+ public:
+  // Parses a form and triggers the On{Before,After}AskForValuesToFill() events
+  // and runs TryToShowTouchToFill() in between. Before TryToShowTouchToFill(),
+  // the simulated parse takes `parse_duration`.
+  void TriggerTouchToFill(
+      const FormData& form,
+      base::TimeDelta parsing_duration,
+      base::OnceCallback<void(FormStructure*)> mutate_form) {
+    browser_autofill_manager_->OnFormsSeen({form}, {});
+    FormStructure* form_structure =
+        browser_autofill_manager_->FindCachedFormById(form.global_id());
+    ASSERT_TRUE(form_structure);
+
+    touch_to_fill_delegate_->OnBeforeAskForValuesToFill(
+        *browser_autofill_manager_, form.global_id(),
+        form.fields[0].global_id());
+    task_environment_.FastForwardBy(parsing_duration);
+    std::move(mutate_form).Run(form_structure);
+    touch_to_fill_delegate_->TryToShowTouchToFill(form, form.fields[0]);
+    touch_to_fill_delegate_->OnAfterAskForValuesToFill(
+        *browser_autofill_manager_, form.global_id(),
+        form.fields[0].global_id());
+    task_environment_.RunUntilIdle();
+  }
+};
+
+TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
+       SuppressedIfAllGoesWell) {
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true));
+  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard);
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false))
+      .Times(0);
+  TriggerTouchToFill(form_, base::Milliseconds(30), base::DoNothing());
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
+       UnsuppressedIfFormIsNonCreditCard) {
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true))
+      .Times(0);
+  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard).Times(0);
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false))
+      .Times(0);
+  FormData address_form;
+  test::CreateTestAddressFormData(&address_form);
+  TriggerTouchToFill(address_form, base::Milliseconds(30), base::DoNothing());
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
+       UnsuppressedIfFormBecomesNonCreditCard) {
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true))
+      .Times(1);
+  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard).Times(0);
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false))
+      .Times(1);
+  TriggerTouchToFill(form_, base::Milliseconds(30),
+                     base::BindOnce([](FormStructure* form_structure) {
+                       for (auto& field : *form_structure) {
+                         field->SetTypeTo(AutofillType(NAME_FIRST));
+                       }
+                     }));
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
+       UnsuppressedIfControllerFails) {
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true));
+  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard)
+      .Times(1)
+      .WillOnce(Return(false));
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false));
+  TriggerTouchToFill(form_, base::Milliseconds(30), base::DoNothing());
+}
+
+TEST_F(TouchToFillDelegateImplUnitTest_KeyboardSuppression,
+       UnsuppressedIfParseIsSlow) {
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(true))
+      .Times(1);
+  EXPECT_CALL(autofill_client_, ShowTouchToFillCreditCard).Times(0);
+  EXPECT_CALL(*browser_autofill_manager_, SetShouldSuppressKeyboard(false))
+      .Times(1);
+  TriggerTouchToFill(form_, base::Seconds(2), base::DoNothing());
 }
 
 }  // namespace autofill

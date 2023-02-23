@@ -33,6 +33,7 @@ TouchToFillDelegateImpl::TouchToFillDelegateImpl(
     BrowserAutofillManager* manager)
     : manager_(manager) {
   DCHECK(manager);
+  autofill_manager_observation_.Observe(manager);
 }
 
 TouchToFillDelegateImpl::~TouchToFillDelegateImpl() {
@@ -104,6 +105,45 @@ void TouchToFillDelegateImpl::SetShouldSuppressKeyboard(bool suppress) {
   }
   manager_->SetShouldSuppressKeyboard(suppress);
   keyboard_is_suppressed_ = suppress;
+  if (suppress) {
+    keyboard_unsuppress_timer_.Start(
+        FROM_HERE, base::Seconds(1),
+        base::BindOnce(
+            [](base::WeakPtr<TouchToFillDelegateImpl> self) {
+              if (self) {
+                self->SetShouldSuppressKeyboard(false);
+              }
+            },
+            GetWeakPtr()));
+  } else {
+    keyboard_unsuppress_timer_.Stop();
+  }
+}
+
+void TouchToFillDelegateImpl::OnAutofillManagerDestroyed(
+    AutofillManager& manager) {
+  autofill_manager_observation_.Reset();
+}
+
+void TouchToFillDelegateImpl::OnBeforeAskForValuesToFill(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) {
+  if (ttf_credit_card_state_ != TouchToFillState::kIsShowing) {
+    SetShouldSuppressKeyboard(DryRun(form_id, field_id).outcome ==
+                              TriggerOutcome::kShown);
+  }
+}
+
+void TouchToFillDelegateImpl::OnAfterAskForValuesToFill(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id) {
+  if (ttf_credit_card_state_ != TouchToFillState::kIsShowing) {
+    SetShouldSuppressKeyboard(false);
+  } else {
+    keyboard_unsuppress_timer_.Stop();
+  }
 }
 
 bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
@@ -114,21 +154,16 @@ bool TouchToFillDelegateImpl::TryToShowTouchToFill(const FormData& form,
   query_form_ = form;
   query_field_ = field;
   DryRunResult dry_run = DryRun(form.global_id(), field.global_id());
-  if (dry_run.outcome == TriggerOutcome::kShown) {
-    SetShouldSuppressKeyboard(true);
-    if (manager_->client()->ShowTouchToFillCreditCard(
-            GetWeakPtr(), std::move(dry_run.cards_to_suggest))) {
-      // Success.
-    } else {
-      dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
-    }
+  if (dry_run.outcome == TriggerOutcome::kShown && keyboard_is_suppressed_ &&
+      !manager_->client()->ShowTouchToFillCreditCard(
+          GetWeakPtr(), std::move(dry_run.cards_to_suggest))) {
+    dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;
   }
   if (dry_run.outcome != TriggerOutcome::kUnsupportedFieldType) {
     base::UmaHistogramEnumeration(kUmaTouchToFillCreditCardTriggerOutcome,
                                   dry_run.outcome);
   }
   if (dry_run.outcome != TriggerOutcome::kShown) {
-    SetShouldSuppressKeyboard(false);
     return false;
   }
 
