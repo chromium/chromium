@@ -39,6 +39,8 @@
 @property(nonatomic, strong) UIView* headerBackgroundView;
 // Header containing navigation buttons and |field|.
 @property(nonatomic, strong) UIView* headerContentView;
+// Height constraint for `headerContentView`.
+@property(nonatomic, strong) NSLayoutConstraint* headerHeightConstraint;
 // Button to navigate backwards.
 @property(nonatomic, strong) UIButton* backButton;
 // Button to navigate forwards.
@@ -77,6 +79,7 @@
 @synthesize menuButton = _menuButton;
 @synthesize headerBackgroundView = _headerBackgroundView;
 @synthesize headerContentView = _headerContentView;
+@synthesize headerHeightConstraint = _headerHeightConstraint;
 @synthesize tracingHandler = _tracingHandler;
 
 + (UIColor*)backgroundColorDefault {
@@ -178,6 +181,8 @@
   ]];
 
   _headerContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  _headerHeightConstraint =
+      [_headerContentView.heightAnchor constraintEqualToConstant:56.0];
   [NSLayoutConstraint activateConstraints:@[
     [_headerContentView.topAnchor
         constraintEqualToAnchor:_headerBackgroundView.safeAreaLayoutGuide
@@ -188,7 +193,7 @@
     [_headerContentView.trailingAnchor
         constraintEqualToAnchor:_headerBackgroundView.safeAreaLayoutGuide
                                     .trailingAnchor],
-    [_headerContentView.heightAnchor constraintEqualToConstant:56.0],
+    _headerHeightConstraint,
   ]];
 
   _contentView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -448,6 +453,7 @@ namespace content {
 
 struct ShellPlatformDelegate::ShellData {
   UIWindow* window;
+  bool fullscreen = false;
 };
 
 struct ShellPlatformDelegate::PlatformData {};
@@ -561,6 +567,34 @@ bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
 
   [shell_data.window resignKeyWindow];
   return true;  // The performClose() will do the destruction of Shell.
+}
+
+void ShellPlatformDelegate::ToggleFullscreenModeForTab(
+    Shell* shell,
+    WebContents* web_contents,
+    bool enter_fullscreen) {
+  DCHECK(base::Contains(shell_data_map_, shell));
+  ShellData& shell_data = shell_data_map_[shell];
+
+  if (shell_data.fullscreen == enter_fullscreen) {
+    return;
+  }
+  shell_data.fullscreen = enter_fullscreen;
+  float height = enter_fullscreen ? 0.0 : 56.0;
+  [((ContentShellWindowDelegate*)shell_data.window.rootViewController)
+      headerHeightConstraint]
+      .constant = height;
+  [((ContentShellWindowDelegate*)shell_data.window.rootViewController)
+      headerContentView]
+      .hidden = enter_fullscreen;
+}
+
+bool ShellPlatformDelegate::IsFullscreenForTabOrPending(
+    Shell* shell,
+    const WebContents* web_contents) const {
+  DCHECK(base::Contains(shell_data_map_, shell));
+  auto iter = shell_data_map_.find(shell);
+  return iter->second.fullscreen;
 }
 
 }  // namespace content
