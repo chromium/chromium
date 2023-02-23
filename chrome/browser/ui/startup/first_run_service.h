@@ -47,8 +47,8 @@ class FirstRunService : public KeyedService {
   explicit FirstRunService(Profile* profile);
   ~FirstRunService() override;
 
-  // Returns whether first run experience (including sync promo) should be
-  // opened on startup.
+  // Runs `::ShouldOpenFirstRun(Profile*)` with the profile associated with this
+  // service instance.
   bool ShouldOpenFirstRun() const;
 
   // This function takes the user through the browser FRE.
@@ -113,6 +113,7 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
 
  private:
   friend class base::NoDestructor<FirstRunServiceFactory>;
+  friend class FirstRunServiceBrowserTest;
 
   FirstRunServiceFactory();
   ~FirstRunServiceFactory() override;
@@ -122,8 +123,12 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
-// Helper to call `FirstRunService::ShouldOpenFirstRun()` without having
-// to first obtain the service instance.
+// Returns whether the first run experience (including sync promo) might be
+// opened for `profile`. It should be checked before
+// `FirstRunService::OpenFirstRunIfNeeded()` is called.
+//
+// Even if this method returns `true`, the FRE can still be skipped if for
+// example the feature is disabled, a policy suppresses it, etc.
 bool ShouldOpenFirstRun(Profile* profile);
 
 #endif  // CHROME_BROWSER_UI_STARTUP_FIRST_RUN_SERVICE_H_
