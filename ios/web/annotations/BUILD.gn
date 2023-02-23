@@ -23,8 +23,6 @@ source_set("annotations") {
     "annotations_java_script_feature.mm",
     "annotations_text_manager.h",
     "annotations_text_manager.mm",
-    "annotations_utils.h",
-    "annotations_utils.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
