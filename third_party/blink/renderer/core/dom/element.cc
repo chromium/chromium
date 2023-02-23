@@ -6344,6 +6344,15 @@ const ComputedStyle* Element::EnsureComputedStyle(
   DCHECK(
       !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this));
 
+  // EnsureComputedStyle is called even for rendered elements which have a non-
+  // null ComputedStyle already. Early out to avoid the expensive setup below.
+  if (pseudo_element_specifier == kPseudoIdNone) {
+    if (const ComputedStyle* style =
+            ComputedStyle::NullifyEnsured(GetComputedStyle())) {
+      return style;
+    }
+  }
+
   // Retrieve a list of (non-inclusive) ancestors that we need to ensure the
   // ComputedStyle for *before* we can ensure the ComputedStyle for this
   // element. Note that the list of ancestors can be empty if |this| is the
