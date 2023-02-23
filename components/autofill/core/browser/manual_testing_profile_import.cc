@@ -9,12 +9,14 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -24,6 +26,13 @@
 namespace autofill {
 
 namespace {
+
+constexpr base::StringPiece kKeyProfiles = "profiles";
+constexpr base::StringPiece kKeySource = "source";
+constexpr auto kSourceMapping =
+    base::MakeFixedFlatMap<base::StringPiece, AutofillProfile::Source>(
+        {{"account", AutofillProfile::Source::kAccount},
+         {"localOrSyncable", AutofillProfile::Source::kLocalOrSyncable}});
 
 using FieldTypeLookupTable = base::flat_map<std::string, ServerFieldType>;
 
@@ -54,6 +63,22 @@ bool IsFullyStructuredProfile(const AutofillProfile& profile) {
   return profile == finalized_profile;
 }
 
+// Extracts the `kKeySource` value of the `dict` and translates it into an
+// AutofillProfile::Source. If no source is present, Source::kLocalOrSyncable is
+// returned. If a source with invalid value is specified, nullopt is returned.
+absl::optional<AutofillProfile::Source> GetProfileSourceFromDict(
+    const base::Value::Dict& dict) {
+  if (!dict.contains(kKeySource)) {
+    return AutofillProfile::Source::kLocalOrSyncable;
+  }
+  if (const std::string* source_value = dict.FindString(kKeySource)) {
+    auto* it = kSourceMapping.find(*source_value);
+    return it != kSourceMapping.end() ? absl::make_optional(it->second)
+                                      : absl::nullopt;
+  }
+  return absl::nullopt;
+}
+
 // Given a `dict` of "field-type" : "value" mappings, constructs an
 // AutofillProfile where each "field-type"  is set to the provided "value".
 // "field-type"s are converted to ServerFieldTypes using the `lookup_table`.
@@ -63,9 +88,17 @@ bool IsFullyStructuredProfile(const AutofillProfile& profile) {
 absl::optional<AutofillProfile> MakeProfile(
     const base::Value::Dict& dict,
     const FieldTypeLookupTable& lookup_table) {
-  AutofillProfile profile;
+  absl::optional<AutofillProfile::Source> source =
+      GetProfileSourceFromDict(dict);
+  if (!source) {
+    return absl::nullopt;
+  }
+  AutofillProfile profile(*source);
   // `dict` is a dictionary of std::string -> base::Value.
   for (const auto [key, value] : dict) {
+    if (key == kKeySource) {
+      continue;
+    }
     if (!lookup_table.contains(key)) {
       return absl::nullopt;
     }
@@ -110,7 +143,8 @@ absl::optional<std::vector<AutofillProfile>> AutofillProfilesFromJSON(
   if (!json.is_dict()) {
     return absl::nullopt;
   }
-  const base::Value::List* profiles_json = json.GetDict().FindList("profiles");
+  const base::Value::List* profiles_json =
+      json.GetDict().FindList(kKeyProfiles);
   if (!profiles_json) {
     return absl::nullopt;
   }

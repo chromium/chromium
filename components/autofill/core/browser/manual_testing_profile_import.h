@@ -21,12 +21,17 @@ namespace autofill {
 // {
 //   "profiles" : [
 //     {
+//       "source" : "localOrSyncable",
 //       "field-type" : "value",
 //       ...
 //     },
 //     ...
 //   ]
 // }
+// The "source" is optional and can either be "account" or "localOrSyncable".
+// This corresponds to the AutofillProfile::Source of the resulting profile. It
+// default to "localOrSyncable".
+// "field-type" corresponds to ServerFieldTypes like "NAME_FULL".
 // All profiles specified in the file are imported. They replace any existing
 // profiles.
 // The profiles are expected to be fully structured
