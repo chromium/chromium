@@ -28,10 +28,11 @@ const CGFloat kSymbolSize = 18;
     _symbolView = [[UIImageView alloc] init];
     _symbolView.translatesAutoresizingMaskIntoConstraints = NO;
     _symbolView.contentMode = UIViewContentModeCenter;
-    _symbolView.tintColor = [UIColor colorNamed:kSolidWhiteColor];
     [self addSubview:_symbolView];
 
     self.layer.cornerRadius = kColorfulBackgroundSymbolCornerRadius;
+
+    [self resetView];
 
     AddSameConstraints(self, _symbolView);
   }
@@ -67,8 +68,24 @@ const CGFloat kSymbolSize = 18;
   _symbolView.image = symbol;
 }
 
+- (UIColor*)symbolTintColor {
+  return _symbolView.tintColor;
+}
+
 - (void)setSymbolTintColor:(UIColor*)color {
+  if (!color) {
+    color = [UIColor colorNamed:kSolidWhiteColor];
+  }
   _symbolView.tintColor = color;
+}
+
+#pragma mark - Public
+
+- (void)resetView {
+  self.symbolTintColor = nil;
+  _symbolView.image = nil;
+  self.borderColor = nil;
+  self.backgroundColor = nil;
 }
 
 #pragma mark - UIView

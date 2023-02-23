@@ -46,7 +46,6 @@ source_set("omnibox_suggestion_icon_util") {
     "resources:answer_sunrise",
     "resources:answer_translation",
     "resources:answer_when_is",
-    "resources:background_solid",
     "resources:favicon_fallback",
     "resources:omnibox_popup_recent_query",
     "resources:pedal_clear_browsing_data",

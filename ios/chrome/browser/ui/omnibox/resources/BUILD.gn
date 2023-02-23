@@ -85,14 +85,6 @@ imageset("answer_translation") {
   ]
 }
 
-imageset("background_solid") {
-  sources = [
-    "background_solid.imageset/Contents.json",
-    "background_solid.imageset/background_solid@2x.png",
-    "background_solid.imageset/background_solid@3x.png",
-  ]
-}
-
 imageset("omnibox_popup_recent_query") {
   sources = [
     "omnibox_popup_recent_query.imageset/Contents.json",

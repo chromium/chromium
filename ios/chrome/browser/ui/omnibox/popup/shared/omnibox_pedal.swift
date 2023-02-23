@@ -15,6 +15,9 @@ import UIKit
   public let hint: String
   /// The image for the Pedal.
   public let image: UIImage
+  public let imageTintColor: UIColor?
+  public let backgroundColor: UIColor?
+  public let imageBorderColor: UIColor?
   /// Action to run when the pedal is executed.
   public let action: () -> Void
   /// Action type for metrics collection. Int-casted OmniboxPedalId
@@ -22,13 +25,21 @@ import UIKit
 
   public init(
     title: String, subtitle: String,
-    accessibilityHint: String, image: UIImage, type: Int,
+    accessibilityHint: String,
+    image: UIImage,
+    imageTintColor: UIColor?,
+    backgroundColor: UIColor?,
+    imageBorderColor: UIColor?,
+    type: Int,
     action: @escaping () -> Void
   ) {
     self.title = title
     self.subtitle = subtitle
     self.hint = accessibilityHint
     self.image = image
+    self.imageTintColor = imageTintColor
+    self.backgroundColor = backgroundColor
+    self.imageBorderColor = imageBorderColor
     self.type = type
     self.action = action
   }
@@ -45,8 +56,17 @@ extension OmniboxPedalData: OmniboxIcon {
   }
 
   public var imageURL: CrURL? { return nil }
-  public var iconImageTintColor: UIColor? { return nil }
-  public var backgroundImage: UIImage? { return nil }
-  public var backgroundImageTintColor: UIColor? { return nil }
+
+  public var iconImageTintColor: UIColor? {
+    return imageTintColor
+  }
+
+  public var backgroundImageTintColor: UIColor? {
+    return backgroundColor
+  }
+
+  public var borderColor: UIColor? {
+    return imageBorderColor
+  }
 
 }

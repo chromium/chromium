@@ -113,21 +113,6 @@
   }
 }
 
-- (UIImage*)backgroundImage {
-  switch (self.iconType) {
-    case OmniboxIconTypeImage:
-      return nil;
-    case OmniboxIconTypeSuggestionIcon:
-      if ([self hasCustomAnswerIcon]) {
-        return [[UIImage imageNamed:@"background_solid"]
-            imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-      }
-      return nil;
-    case OmniboxIconTypeFavicon:
-      return nil;
-  }
-}
-
 - (UIColor*)backgroundImageTintColor {
   switch (self.iconType) {
     case OmniboxIconTypeImage:
@@ -140,6 +125,10 @@
     case OmniboxIconTypeFavicon:
       return nil;
   }
+}
+
+- (UIColor*)borderColor {
+  return nil;
 }
 
 @end

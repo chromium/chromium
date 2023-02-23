@@ -18,6 +18,10 @@
 // The color of the border. If nil, then there is no border (default is nil).
 @property(nonatomic, strong) UIColor* borderColor;
 
+// Sets the tint color of the symbol (default is white, setting it to nil also
+// make it white).
+@property(nonatomic, strong) UIColor* symbolTintColor;
+
 // Sets the symbol to the symbol named `symbolName`, `systemSymbol` is used to
 // check if it is a symbol provided by the system or not. When using this
 // method, the default size is used.
@@ -28,8 +32,8 @@
 // Use this setter when your symbol needs to be of a custom size.
 - (void)setSymbol:(UIImage*)symbol;
 
-// Sets the tint color of the symbol (default is white).
-- (void)setSymbolTintColor:(UIColor*)color;
+// Resets all the properties of the view, making it ready to be used again.
+- (void)resetView;
 
 @end
 

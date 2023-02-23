@@ -32,6 +32,7 @@ namespace {
 /// sync with kChromeUIScheme in `content/public/common/url_constants.h`.
 const char kChromeUIScheme[] = "chrome";
 
+const CGFloat kSymbolSize = 18;
 }
 
 @implementation OmniboxPedalAnnotator
@@ -64,10 +65,23 @@ const char kChromeUIScheme[] = "chrome";
 
   OmniboxPedalId pedalId = static_cast<OmniboxPedalId>(pedalAction->GetID());
 
-  UIImage* image = [self pedalIconForPedalId:pedalId incognito:incognito];
+  UIImage* image;
+
+  // Dark mode is set explicitly if incognito is enabled.
+  UITraitCollection* traitCollection =
+      [UITraitCollection traitCollectionWithUserInterfaceStyle:
+                             incognito ? UIUserInterfaceStyleDark
+                                       : UIUserInterfaceStyleUnspecified];
 
   switch (pedalId) {
     case OmniboxPedalId::PLAY_CHROME_DINO_GAME: {
+      if (UseSymbolsInOmnibox()) {
+        image = CustomSymbolWithPointSize(kDinoSymbol, kSymbolSize);
+      } else {
+        image = [UIImage imageNamed:@"pedal_dino"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       NSString* urlStr = [NSString
           stringWithFormat:@"%s://%s", kChromeUIScheme, kChromeUIDinoHost];
       GURL url(base::SysNSStringToUTF8(urlStr));
@@ -76,6 +90,9 @@ const char kChromeUIScheme[] = "chrome";
                    subtitle:urlStr
           accessibilityHint:suggestionContents
                       image:image
+             imageTintColor:UIColor.blackColor
+            backgroundColor:UIColor.whiteColor
+           imageBorderColor:[UIColor colorNamed:kGrey200Color]
                        type:pedalType
                      action:^{
                        OpenNewTabCommand* command =
@@ -85,6 +102,13 @@ const char kChromeUIScheme[] = "chrome";
                      }];
     }
     case OmniboxPedalId::CLEAR_BROWSING_DATA: {
+      if (UseSymbolsInOmnibox()) {
+        image = DefaultSymbolTemplateWithPointSize(kTrashSymbol, kSymbolSize);
+      } else {
+        image = [UIImage imageNamed:@"pedal_clear_browsing_data"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       return [[OmniboxPedalData alloc]
               initWithTitle:hint
                    subtitle:
@@ -92,6 +116,9 @@ const char kChromeUIScheme[] = "chrome";
                            IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_CLEAR_BROWSING_DATA)
           accessibilityHint:suggestionContents
                       image:image
+             imageTintColor:nil
+            backgroundColor:[UIColor colorNamed:kBlue500Color]
+           imageBorderColor:nil
                        type:pedalType
                      action:^{
                        [omniboxCommandHandler cancelOmniboxEdit];
@@ -99,6 +126,19 @@ const char kChromeUIScheme[] = "chrome";
                      }];
     }
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
+      if (UseSymbolsInOmnibox()) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+        image = MakeSymbolMulticolor(
+            CustomSymbolWithPointSize(kChromeSymbol, kSymbolSize));
+#else
+        image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
+                                                   kSymbolSize);
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+      } else {
+        image = [UIImage imageNamed:@"pedal_default_browser"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       ProceduralBlock action = ^{
         [omniboxCommandHandler cancelOmniboxEdit];
         [pedalsEndpoint
@@ -113,16 +153,35 @@ const char kChromeUIScheme[] = "chrome";
                                 IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_DEFAULT_BROWSER)
           accessibilityHint:suggestionContents
                       image:image
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+             imageTintColor:nil
+            backgroundColor:UIColor.whiteColor
+           imageBorderColor:[UIColor colorNamed:kGrey200Color]
+#else
+             imageTintColor:nil
+            backgroundColor:[UIColor colorNamed:kPurple500Color]
+           imageBorderColor:nil
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
                        type:pedalType
                      action:action];
     }
     case OmniboxPedalId::MANAGE_PASSWORDS: {
+      if (UseSymbolsInOmnibox()) {
+        image = CustomSymbolWithPointSize(kPasswordSymbol, kSymbolSize);
+      } else {
+        image = [UIImage imageNamed:@"pedal_passwords"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       return [[OmniboxPedalData alloc]
               initWithTitle:hint
                    subtitle:l10n_util::GetNSString(
                                 IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_PASSWORDS)
           accessibilityHint:suggestionContents
                       image:image
+             imageTintColor:nil
+            backgroundColor:[UIColor colorNamed:kYellow500Color]
+           imageBorderColor:nil
                        type:pedalType
                      action:^{
                        [omniboxCommandHandler cancelOmniboxEdit];
@@ -132,6 +191,14 @@ const char kChromeUIScheme[] = "chrome";
                      }];
     }
     case OmniboxPedalId::UPDATE_CREDIT_CARD: {
+      if (UseSymbolsInOmnibox()) {
+        image =
+            DefaultSymbolTemplateWithPointSize(kCreditCardSymbol, kSymbolSize);
+      } else {
+        image = [UIImage imageNamed:@"pedal_payments"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       return [[OmniboxPedalData alloc]
               initWithTitle:hint
                    subtitle:
@@ -139,6 +206,9 @@ const char kChromeUIScheme[] = "chrome";
                            IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_UPDATE_CREDIT_CARD)
           accessibilityHint:suggestionContents
                       image:image
+             imageTintColor:nil
+            backgroundColor:[UIColor colorNamed:kYellow500Color]
+           imageBorderColor:nil
                        type:pedalType
                      action:^{
                        [omniboxCommandHandler cancelOmniboxEdit];
@@ -146,12 +216,22 @@ const char kChromeUIScheme[] = "chrome";
                      }];
     }
     case OmniboxPedalId::LAUNCH_INCOGNITO: {
+      if (UseSymbolsInOmnibox()) {
+        image = CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolSize);
+      } else {
+        image = [UIImage imageNamed:@"pedal_incognito"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       return [[OmniboxPedalData alloc]
               initWithTitle:hint
                    subtitle:l10n_util::GetNSString(
                                 IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_LAUNCH_INCOGNITO)
           accessibilityHint:suggestionContents
                       image:image
+             imageTintColor:nil
+            backgroundColor:[UIColor colorNamed:kGrey800Color]
+           imageBorderColor:nil
                        type:pedalType
                      action:^{
                        [omniboxCommandHandler cancelOmniboxEdit];
@@ -161,6 +241,13 @@ const char kChromeUIScheme[] = "chrome";
                      }];
     }
     case OmniboxPedalId::RUN_CHROME_SAFETY_CHECK: {
+      if (UseSymbolsInOmnibox()) {
+        image = CustomSymbolWithPointSize(kSafetyCheckSymbol, kSymbolSize);
+      } else {
+        image = [UIImage imageNamed:@"pedal_safety_check"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       NSString* subtitle = l10n_util::GetNSString(
           IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_RUN_CHROME_SAFETY_CHECK);
       return [[OmniboxPedalData alloc]
@@ -168,6 +255,9 @@ const char kChromeUIScheme[] = "chrome";
                    subtitle:subtitle
           accessibilityHint:suggestionContents
                       image:image
+             imageTintColor:nil
+            backgroundColor:[UIColor colorNamed:kBlue500Color]
+           imageBorderColor:nil
                        type:pedalType
                      action:^{
                        [omniboxCommandHandler cancelOmniboxEdit];
@@ -176,6 +266,14 @@ const char kChromeUIScheme[] = "chrome";
                      }];
     }
     case OmniboxPedalId::MANAGE_CHROME_SETTINGS: {
+      if (UseSymbolsInOmnibox()) {
+        image =
+            DefaultSymbolTemplateWithPointSize(kSettingsSymbol, kSymbolSize);
+      } else {
+        image = [UIImage imageNamed:@"pedal_settings"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       NSString* subtitle = l10n_util::GetNSString(
           IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_CHROME_SETTINGS);
       return [[OmniboxPedalData alloc]
@@ -183,6 +281,9 @@ const char kChromeUIScheme[] = "chrome";
                    subtitle:subtitle
           accessibilityHint:suggestionContents
                       image:image
+             imageTintColor:nil
+            backgroundColor:[UIColor colorNamed:kGrey500Color]
+           imageBorderColor:nil
                        type:pedalType
                      action:^{
                        [omniboxCommandHandler cancelOmniboxEdit];
@@ -190,6 +291,13 @@ const char kChromeUIScheme[] = "chrome";
                      }];
     }
     case OmniboxPedalId::VIEW_CHROME_HISTORY: {
+      if (UseSymbolsInOmnibox()) {
+        image = DefaultSymbolTemplateWithPointSize(kHistorySymbol, kSymbolSize);
+      } else {
+        image = [UIImage imageNamed:@"pedal_history"
+                                 inBundle:nil
+            compatibleWithTraitCollection:traitCollection];
+      }
       return [[OmniboxPedalData alloc]
               initWithTitle:hint
                    subtitle:
@@ -197,6 +305,9 @@ const char kChromeUIScheme[] = "chrome";
                            IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_VIEW_CHROME_HISTORY)
           accessibilityHint:suggestionContents
                       image:image
+             imageTintColor:nil
+            backgroundColor:[UIColor colorNamed:kBlue500Color]
+           imageBorderColor:nil
                        type:pedalType
                      action:^{
                        [omniboxCommandHandler cancelOmniboxEdit];
@@ -206,139 +317,6 @@ const char kChromeUIScheme[] = "chrome";
       // If a new case is added here, make sure to update the method returning
       // the icon.
     default:
-      return nil;
-  }
-}
-
-#pragma mark - Private
-
-// Returns the image associated with `pedalId`, for `incognito` or not.
-- (UIImage*)pedalIconForPedalId:(OmniboxPedalId)pedalId
-                      incognito:(BOOL)incognito {
-  ColorfulBackgroundSymbolView* symbolView =
-      [[ColorfulBackgroundSymbolView alloc] init];
-  if (incognito) {
-    // Dark mode is set explicitly if incognito is enabled.
-    symbolView.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-  }
-
-  // Dark mode is set explicitly if incognito is enabled.
-  UITraitCollection* traitCollection =
-      [UITraitCollection traitCollectionWithUserInterfaceStyle:
-                             incognito ? UIUserInterfaceStyleDark
-                                       : UIUserInterfaceStyleUnspecified];
-
-  switch (pedalId) {
-    case OmniboxPedalId::PLAY_CHROME_DINO_GAME: {
-      if (UseSymbolsInOmnibox()) {
-        [symbolView setSymbol:CustomSymbolWithPointSize(kDinoSymbol, 22)];
-        symbolView.backgroundColor = UIColor.whiteColor;
-        [symbolView setSymbolTintColor:UIColor.blackColor];
-        symbolView.borderColor = [UIColor colorNamed:kGrey200Color];
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_dino"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    case OmniboxPedalId::CLEAR_BROWSING_DATA: {
-      if (UseSymbolsInOmnibox()) {
-        [symbolView setSymbolName:kTrashSymbol systemSymbol:YES];
-        symbolView.backgroundColor = [UIColor colorNamed:kBlue500Color];
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_clear_browsing_data"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
-      if (UseSymbolsInOmnibox()) {
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-        symbolView.backgroundColor = UIColor.whiteColor;
-        [symbolView setSymbol:MakeSymbolMulticolor(CustomSymbolWithPointSize(
-                                  kChromeSymbol, 22))];
-        symbolView.borderColor = [UIColor colorNamed:kGrey200Color];
-#else
-        [symbolView setSymbolName:kDefaultBrowserSymbol systemSymbol:YES];
-        symbolView.backgroundColor = [UIColor colorNamed:kPurple500Color];
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_default_browser"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    case OmniboxPedalId::MANAGE_PASSWORDS: {
-      if (UseSymbolsInOmnibox()) {
-        [symbolView setSymbolName:kPasswordSymbol systemSymbol:NO];
-        symbolView.backgroundColor = [UIColor colorNamed:kYellow500Color];
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_passwords"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    case OmniboxPedalId::UPDATE_CREDIT_CARD: {
-      if (UseSymbolsInOmnibox()) {
-        [symbolView setSymbolName:kCreditCardSymbol systemSymbol:YES];
-        symbolView.backgroundColor = [UIColor colorNamed:kYellow500Color];
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_payments"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    case OmniboxPedalId::LAUNCH_INCOGNITO: {
-      if (UseSymbolsInOmnibox()) {
-        [symbolView setSymbolName:kIncognitoSymbol systemSymbol:NO];
-        symbolView.backgroundColor = [UIColor colorNamed:kGrey800Color];
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_incognito"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    case OmniboxPedalId::RUN_CHROME_SAFETY_CHECK: {
-      if (UseSymbolsInOmnibox()) {
-        [symbolView setSymbolName:kSafetyCheckSymbol systemSymbol:NO];
-        symbolView.backgroundColor = [UIColor colorNamed:kBlue500Color];
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_safety_check"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    case OmniboxPedalId::MANAGE_CHROME_SETTINGS: {
-      if (UseSymbolsInOmnibox()) {
-        [symbolView setSymbolName:kSettingsSymbol systemSymbol:YES];
-        symbolView.backgroundColor = [UIColor colorNamed:kGrey500Color];
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_settings"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    case OmniboxPedalId::VIEW_CHROME_HISTORY: {
-      if (UseSymbolsInOmnibox()) {
-        [symbolView setSymbolName:kHistorySymbol systemSymbol:YES];
-        symbolView.backgroundColor = [UIColor colorNamed:kBlue500Color];
-        return ImageFromView(symbolView, nil, UIEdgeInsetsZero);
-      } else {
-        return [UIImage imageNamed:@"pedal_history"
-                                 inBundle:nil
-            compatibleWithTraitCollection:traitCollection];
-      }
-    }
-    default:
-      NOTREACHED();
       return nil;
   }
 }
