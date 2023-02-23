@@ -5811,12 +5811,12 @@
   {
     "name": "print-with-postscript-type42-fonts",
     "owners": [ "thestig" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 122
   },
   {
     "name": "print-with-reduced-rasterization",
     "owners": [ "thestig" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 122
   },
   {
     "name": "printing-ppd-channel",
