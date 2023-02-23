@@ -3101,7 +3101,10 @@ void SkiaRenderer::FinishDrawingQuadList() {
     DrawDelegatedInkTrail();
 
   current_canvas_ = nullptr;
-  EndPaint(/*failed=*/false);
+  // Non-root render passes that are scheduled as overlays will be painted in
+  // PrepareRenderPassOverlay().
+  bool is_overlay = buffer_queue_ && is_root_render_pass;
+  EndPaint(/*failed=*/false, is_overlay);
 
   // Defer flushing drawing task for root render pass, to avoid extra
   // MakeCurrent() call. It is expensive on GL.
@@ -3530,7 +3533,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       if (!content_image) {
         DLOG(ERROR) << "MakePromiseSkImageFromRenderPass() in "
                        "PrepareRenderPassOverlay() failed.";
-        EndPaint(/*failed=*/true);
+        EndPaint(/*failed=*/true, /*is_overlay=*/true);
         return;
       }
 
@@ -3552,7 +3555,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     }
 
     current_canvas_ = nullptr;
-    EndPaint(/*failed=*/false);
+    EndPaint(/*failed=*/false, /*is_overlay=*/true);
   }
 
 #if BUILDFLAG(IS_APPLE)
@@ -3589,7 +3592,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 }
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
-void SkiaRenderer::EndPaint(bool failed) {
+void SkiaRenderer::EndPaint(bool failed, bool is_overlay) {
   base::OnceClosure on_finished_callback;
   base::OnceCallback<void(gfx::GpuFenceHandle)> on_return_release_fence_cb;
   // If SkiaRenderer has not failed, prepare callbacks and pass them to
@@ -3621,8 +3624,6 @@ void SkiaRenderer::EndPaint(bool failed) {
       resource_provider()->SetReleaseFence(current_release_fence_.get());
     }
   }
-  bool is_overlay = buffer_queue_ && current_frame()->current_render_pass ==
-                                         current_frame()->root_render_pass;
   skia_output_surface_->EndPaint(std::move(on_finished_callback),
                                  std::move(on_return_release_fence_cb),
                                  is_overlay);

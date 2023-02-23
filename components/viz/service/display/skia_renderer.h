@@ -303,7 +303,9 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // Sets up callbacks for frame resource fences and passes them to
   // SkiaOutputSurface by calling EndPaint on that. If |failed|,
   // SkiaOutputSurface::EndPaint will be called with null callbacks.
-  void EndPaint(bool failed);
+  // |is_overlay| should be true for render passes that are scheduled as
+  // overlays.
+  void EndPaint(bool failed, bool is_overlay);
 
   DisplayResourceProviderSkia* resource_provider() {
     return static_cast<DisplayResourceProviderSkia*>(resource_provider_);
