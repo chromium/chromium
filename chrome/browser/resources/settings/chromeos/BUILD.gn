@@ -128,6 +128,7 @@ group("generate_mojom_webui") {
   public_deps = [
     ":copy_mojom_ts",
     ":generate_ash_search_mojo_webui",
+    ":generate_input_device_settings_mojom",
     ":generate_personalization_search_mojom",
     ":generate_settings_mojo_webui",
   ]
@@ -142,6 +143,20 @@ copy("copy_mojom_ts") {
   sources = [
     "$root_gen_dir/chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-webui.ts",
+  ]
+  outputs = [ "$tsc_input_dir/mojom-webui/{{source_file_part}}" ]
+}
+
+copy("generate_input_device_settings_mojom") {
+  deps = [
+    "//ash/public/mojom:input_device_settings_webui_js",
+    "//chrome/browser/ui/webui/settings/ash/input_device_settings:mojom_ts__generator",
+    "//ui//chromeos/events/mojom:mojom_webui_js",
+  ]
+  sources = [
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom-webui.ts",
+    "$root_gen_dir/mojom-webui/ash/public/mojom/input_device_settings.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/chromeos/events/mojom/modifier_key.mojom-webui.js",
   ]
   outputs = [ "$tsc_input_dir/mojom-webui/{{source_file_part}}" ]
 }

@@ -12,8 +12,11 @@ mojom("mojom") {
 
   sources = [ "input_device_settings_provider.mojom" ]
 
+  webui_module_path = "/"
+  use_typescript_sources = true
+
   public_deps = [
-    "//ash/public/mojom:mojom",
+    "//ash/public/mojom:input_device_settings",
     "//mojo/public/mojom/base",
   ]
 }

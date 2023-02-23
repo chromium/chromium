@@ -421,6 +421,9 @@ non_web_component_files = [
 mojom_webui_files = [
   "mojom-webui/cros_audio_config.mojom-webui.ts",
   "mojom-webui/app_notification_handler.mojom-webui.ts",
+  "mojom-webui/input_device_settings_provider.mojom-webui.ts",
+  "mojom-webui/input_device_settings.mojom-webui.js",
+  "mojom-webui/modifier_key.mojom-webui.js",
   "mojom-webui/routes.mojom-webui.js",
   "mojom-webui/search/personalization_search.mojom-webui.ts",
   "mojom-webui/search/search.mojom-webui.js",
