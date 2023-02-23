@@ -2453,15 +2453,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.SystemTray.OpenHelpPageForManaged"
-    enum="CrosSystemTrayManagedType" expires_after="M83">
-  <owner>yamaguchi@chromium.org</owner>
-  <summary>
-    Type of the support page which user opened by clicking the indicator of
-    managed device type in the unified system tray bubble.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.SystemTray.ShelfPodCount" units="count"
     expires_after="2023-08-08">
   <owner>amehfooz@chromium.org</owner>

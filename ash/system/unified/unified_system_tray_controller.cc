@@ -303,8 +303,6 @@ void UnifiedSystemTrayController::HandleOpenPowerSettingsAction() {
 }
 
 void UnifiedSystemTrayController::HandleEnterpriseInfoAction() {
-  UMA_HISTOGRAM_ENUMERATION("ChromeOS.SystemTray.OpenHelpPageForManaged",
-                            MANAGED_TYPE_ENTERPRISE, MANAGED_TYPE_COUNT);
   Shell::Get()->system_tray_model()->client()->ShowEnterpriseInfo();
 }
 

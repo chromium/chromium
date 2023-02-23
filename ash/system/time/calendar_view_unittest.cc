@@ -56,7 +56,6 @@ using ::google_apis::calendar::EventList;
 
 constexpr char kTestUser[] = "user@test";
 constexpr int kLoadingBarIndex = 2;
-constexpr char kManagedPage[] = "ChromeOS.SystemTray.OpenHelpPageForManaged";
 
 }  // namespace
 
@@ -1305,7 +1304,6 @@ TEST_F(CalendarViewTest, AdminDisabledTest) {
 }
 
 TEST_F(CalendarViewTest, ManagedButtonTest) {
-  base::HistogramTester histogram_tester;
   base::Time date;
   // Create a monthview based on Jun,7th 2021.
   ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
@@ -1320,9 +1318,6 @@ TEST_F(CalendarViewTest, ManagedButtonTest) {
 
   // Click on managed button to open chrome://management.
   GestureTapOn(managed_button());
-
-  // Expect increment to UMA histogram count for managed page - enterprise.
-  histogram_tester.ExpectBucketCount(kManagedPage, 0, 1);
 }
 
 // A test class for testing animation. This class cannot set fake now since it's
