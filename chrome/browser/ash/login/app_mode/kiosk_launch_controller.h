@@ -173,7 +173,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnDeletingSplashScreenView() override;
   void OnNetworkConfigFinished() override;
   void OnNetworkStateChanged(bool online) override;
-  KioskAppManagerBase::App GetAppData() override;
 
   // `KioskAppLauncher::NetworkDelegate`
   void InitializeNetwork() override;
@@ -194,6 +193,7 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
   void OnOldEncryptionDetected(
       std::unique_ptr<UserContext> user_context) override;
 
+  KioskAppManagerBase::App GetAppData();
   void OnOwnerSigninSuccess();
 
   // Whether the network could be configured during launching.

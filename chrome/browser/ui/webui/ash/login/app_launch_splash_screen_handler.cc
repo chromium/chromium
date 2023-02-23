@@ -93,14 +93,14 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
                                           product_os_name));
 }
 
-void AppLaunchSplashScreenHandler::Show() {
+void AppLaunchSplashScreenHandler::Show(KioskAppManagerBase::App app_data) {
   is_shown_ = true;
 
   base::Value::Dict data;
   data.Set("shortcutEnabled",
            !KioskAppManager::Get()->GetDisableBailoutShortcut());
 
-  data.Set("appInfo", ConvertAppToDict(delegate_->GetAppData()));
+  data.Set("appInfo", ConvertAppToDict(app_data));
 
   SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
   ShowInWebUI(std::move(data));
@@ -269,7 +269,6 @@ void AppLaunchSplashScreenHandler::ContinueAppLaunch() {
 
   network_config_shown_ = false;
   delegate_->OnNetworkConfigFinished();
-  Show();
 }
 
 void AppLaunchSplashScreenHandler::DoToggleNetworkConfig(bool visible) {

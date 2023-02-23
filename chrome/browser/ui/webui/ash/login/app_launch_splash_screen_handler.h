@@ -34,9 +34,6 @@ class AppLaunchSplashScreenView {
 
     // Invoked when the splash screen view is being deleted.
     virtual void OnDeletingSplashScreenView() {}
-
-    // Returns the data needed to be displayed on the splash screen.
-    virtual KioskAppManagerBase::App GetAppData() = 0;
   };
 
   enum class AppLaunchState {
@@ -59,7 +56,7 @@ class AppLaunchSplashScreenView {
   virtual void SetDelegate(Delegate* delegate) = 0;
 
   // Shows the contents of the screen.
-  virtual void Show() = 0;
+  virtual void Show(KioskAppManagerBase::App app_data) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
@@ -112,7 +109,7 @@ class AppLaunchSplashScreenHandler
   void RegisterMessages() override;
 
   // AppLaunchSplashScreenView implementation:
-  void Show() override;
+  void Show(KioskAppManagerBase::App app_data) override;
   void Hide() override;
   void ToggleNetworkConfig(bool visible) override;
   void UpdateAppLaunchState(AppLaunchState state) override;

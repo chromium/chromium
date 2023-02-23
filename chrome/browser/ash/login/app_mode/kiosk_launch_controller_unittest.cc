@@ -17,7 +17,9 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -39,6 +41,7 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -46,6 +49,7 @@ namespace {
 
 using ::testing::Eq;
 
+const char kInstallUrl[] = "https://install.url";
 const char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kInvalidExtensionId[] = "invalid-extension-id";
 const char kExtensionName[] = "extension_name";
@@ -117,13 +121,15 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     // the initial state to `KioskLaunchState::kStartLaunch` before testing.
     SetKioskLaunchStateCrashKey(KioskLaunchState::kStartLaunch);
 
-    kiosk_app_id_ = KioskAppId::ForWebApp(EmptyAccountId());
+    SetUpKioskAppInAppManager();
 
     extensions::ExtensionServiceTestBase::SetUp();
   }
 
   void TearDown() override {
     extensions::ExtensionServiceTestBase::TearDown();
+
+    kiosk_app_manager_.reset();
 
     policy::BrowserPolicyConnectorBase::SetPolicyServiceForTesting(nullptr);
   }
@@ -191,6 +197,17 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   }
 
  private:
+  void SetUpKioskAppInAppManager() {
+    std::string email = policy::GenerateDeviceLocalAccountUserId(
+        kInstallUrl, policy::DeviceLocalAccount::Type::TYPE_WEB_KIOSK_APP);
+    AccountId account_id(AccountId::FromUserEmail(email));
+    kiosk_app_id_ = KioskAppId::ForWebApp(account_id);
+
+    kiosk_app_manager_ = std::make_unique<WebKioskAppManager>();
+    kiosk_app_manager_->AddAppForTesting(kiosk_app_id_.account_id.value(),
+                                         GURL(kInstallUrl));
+  }
+
   std::unique_ptr<KioskAppLauncher> BuildFakeKioskAppLauncher(
       Profile*,
       const KioskAppId& kiosk_app_id,
@@ -205,6 +222,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   session_manager::SessionManager session_manager_;
   std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
       keyboard_controller_client_;
+  std::unique_ptr<WebKioskAppManager> kiosk_app_manager_;
 
   ScopedCanConfigureNetwork can_configure_network_for_testing_{true, false};
   std::unique_ptr<base::AutoReset<bool>>
@@ -215,6 +233,12 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
   std::unique_ptr<KioskLaunchController> controller_;
   KioskAppId kiosk_app_id_;
 };
+
+TEST_F(KioskLaunchControllerTest, StartShouldShowAppDataOnSplashScreen) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+
+  EXPECT_EQ(view().last_app_data().url, GURL(kInstallUrl));
+}
 
 TEST_F(KioskLaunchControllerTest, ProfileLoadedShouldInitializeLauncher) {
   controller().Start(kiosk_app_id(), /*auto_launch=*/false);

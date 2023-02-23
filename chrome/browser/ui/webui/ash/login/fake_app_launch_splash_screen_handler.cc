@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/login/fake_app_launch_splash_screen_handler.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 
 namespace ash {
+
+void FakeAppLaunchSplashScreenHandler::Show(KioskAppManagerBase::App app_data) {
+  last_app_data_ = app_data;
+}
 
 void FakeAppLaunchSplashScreenHandler::ShowErrorMessage(
     KioskAppLaunchError::Error error) {
