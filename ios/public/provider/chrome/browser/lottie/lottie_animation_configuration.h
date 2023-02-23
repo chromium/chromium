@@ -12,6 +12,8 @@
 
 // Path to the json animation file.
 @property(nonatomic, copy) NSString* path;
+// Name of the animation file.
+@property(nonatomic, copy) NSString* animationName;
 // Subdirectory to the json animation file.
 @property(nonatomic, copy) NSString* subdirectory;
 // Configuration parameters for LottieAnimation.
