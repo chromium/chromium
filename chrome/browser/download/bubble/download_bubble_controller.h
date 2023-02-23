@@ -70,8 +70,10 @@ class DownloadBubbleUIController
                                   bool is_main_view);
 
   // Notify when a new download is ready to be shown on UI, and if the window
-  // this controller belongs to should show the partial view.
-  void OnNewItem(download::DownloadItem* item, bool show_details);
+  // this controller belongs to may show the animation. (Whether the animation
+  // is actually shown may depend on the download and the device's graphics
+  // capabilities.)
+  void OnNewItem(download::DownloadItem* item, bool may_show_animation);
 
   // Notify when a download toolbar button (in any window) is pressed.
   void HandleButtonPressed();

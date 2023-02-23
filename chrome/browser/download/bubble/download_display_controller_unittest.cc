@@ -213,7 +213,6 @@ class DownloadDisplayControllerTest : public testing::Test {
 
   void InitDownloadItem(const base::FilePath::CharType* path,
                         DownloadState state,
-                        bool show_details = true,
                         base::FilePath target_file_path =
                             base::FilePath(FILE_PATH_LITERAL("foo"))) {
     size_t index = items_.size();
@@ -260,7 +259,6 @@ class DownloadDisplayControllerTest : public testing::Test {
     content::DownloadItemUtils::AttachInfoForTesting(&(item(index)), profile_,
                                                      nullptr);
     controller().OnNewItem(
-        (state == download::DownloadItem::IN_PROGRESS) && show_details,
         /*show_animation=*/false);
   }
 
@@ -268,23 +266,25 @@ class DownloadDisplayControllerTest : public testing::Test {
     OfflineItem item;
     item.state = state;
     bubble_controller().AddOfflineItem(item);
-    controller().OnNewItem(state == OfflineItemState::IN_PROGRESS,
-                           /*show_animation=*/false);
+    controller().OnNewItem(/*show_animation=*/false);
   }
 
-  void UpdateOfflineItem(int item_index, OfflineItemState state) {
+  void UpdateOfflineItem(int item_index,
+                         OfflineItemState state,
+                         bool is_pending_deep_scanning) {
     if (state == OfflineItemState::COMPLETE) {
       bubble_controller().UpdateOfflineItem(item_index, state);
     }
     controller().OnUpdatedItem(state == OfflineItemState::COMPLETE,
-                               /*show_details_if_done=*/false);
+                               is_pending_deep_scanning,
+                               /*may_show_details=*/true);
   }
 
   void UpdateDownloadItem(int item_index,
                           DownloadState state,
                           download::DownloadDangerType danger_type =
                               download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-                          bool show_details_if_done = false) {
+                          bool may_show_details = true) {
     DCHECK_GT(items_.size(), static_cast<size_t>(item_index));
 
     EXPECT_CALL(item(item_index), GetState()).WillRepeatedly(Return(state));
@@ -300,8 +300,10 @@ class DownloadDisplayControllerTest : public testing::Test {
     } else {
       EXPECT_CALL(item(item_index), IsDone()).WillRepeatedly(Return(false));
     }
-    controller().OnUpdatedItem(state == DownloadState::COMPLETE,
-                               show_details_if_done);
+    controller().OnUpdatedItem(
+        state == DownloadState::COMPLETE,
+        danger_type == download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
+        may_show_details);
   }
 
   void OnRemovedItem(const ContentId& id) { controller().OnRemovedItem(id); }
@@ -412,38 +414,50 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState) {
                                  /*is_active=*/false));
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
-                   download::DownloadItem::IN_PROGRESS,
-                   /*show_details=*/false);
+                   download::DownloadItem::IN_PROGRESS);
+  // No details are shown on download initiation.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  // No details are shown on download initiation.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
+  // Pause download 0.
   EXPECT_CALL(item(0), IsPaused()).WillRepeatedly(Return(true));
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
+  // Pause download 1.
   EXPECT_CALL(item(1), IsPaused()).WillRepeatedly(Return(true));
   UpdateDownloadItem(/*item_index=*/1, DownloadState::IN_PROGRESS);
   // The download display is not active anymore, because all in progress
-  // downloads are paused.
+  // downloads are paused. Details are not shown because the updated download
+  // is not done.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/false));
+  // Unpause download 0.
+  EXPECT_CALL(item(0), IsPaused()).WillRepeatedly(Return(false));
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+  // Complete download 0.
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  // Details are shown because the only in-progress download is still paused.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/false));
-  EXPECT_CALL(item(0), IsPaused()).WillRepeatedly(Return(false));
-  UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
-                                 /*icon_state=*/DownloadIconState::kProgress,
-                                 /*is_active=*/true));
 
-  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  // Complete download 1.
   UpdateDownloadItem(/*item_index=*/1, DownloadState::COMPLETE);
+  // Now details are shown because all downloads are complete.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
@@ -477,56 +491,52 @@ TEST_F(DownloadDisplayControllerTest,
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
-  // Reset details_shown before the second download starts. This can happen if
-  // the user clicks somewhere else to dismiss the download bubble.
-  display().HideDetails();
-
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar2.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  // The download icon state is still kProgress because not all downloads are
+  // completed. details_shown is still false, because the details are only
+  // popped up when all in-progress downloads are complete.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/1, DownloadState::COMPLETE);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
 
   // Reset details_shown while the downloads are in progress. This can happen if
   // the user clicks somewhere else to dismiss the download bubble.
   display().HideDetails();
 
-  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
-  // The download icon state is still kProgress because not all downloads are
-  // completed. details_shown is still false, because the details are only
-  // popped up when the download is created.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kProgress,
-                                 /*is_active=*/true));
-
-  UpdateDownloadItem(/*item_index=*/1, DownloadState::COMPLETE);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
-                                 /*icon_state=*/DownloadIconState::kComplete,
-                                 /*is_active=*/true));
-
   InitOfflineItem(OfflineItemState::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  // Do not show details because the offline item is not complete.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
-  display().HideDetails();
 
-  UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+  UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE,
+                    /*is_pending_deep_scanning=*/false);
+  // Details are shown because all items are complete.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar3.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  display().HideDetails();
-  // Don't pop up the view on completed download.
   UpdateDownloadItem(/*item_index=*/2, DownloadState::COMPLETE,
-                     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-                     /*show_details_if_done=*/true);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+  // Pop up the partial view because all downloads are complete.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
 }
@@ -552,18 +562,31 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_DeepScanning) {
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
+                     download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING);
+  // Details are shown because the scan is pending.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  // Reset details_shown while the downloads are in progress. This can happen if
+  // the user clicks somewhere else to dismiss the download bubble.
+  display().HideDetails();
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
                      download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING);
+  // Details are not shown because the scan is ongoing.
   EXPECT_TRUE(
-      VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+      VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                          /*icon_state=*/DownloadIconState::kDeepScanning,
                          /*is_active=*/true));
 
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  // Details are shown because all downloads are now complete.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
@@ -575,7 +598,7 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_EmptyFilePath) {
                                  /*is_active=*/false));
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
-                   download::DownloadItem::IN_PROGRESS, /*show_details=*/false,
+                   download::DownloadItem::IN_PROGRESS,
                    /*target_file_path=*/base::FilePath(FILE_PATH_LITERAL("")));
   // Empty file path should not be reflected in the UI.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/false, /*detail_shown=*/false,
@@ -585,8 +608,8 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_EmptyFilePath) {
   EXPECT_CALL(item(0), GetTargetFilePath())
       .WillRepeatedly(
           ReturnRefOfCopy(base::FilePath(FILE_PATH_LITERAL("bar.pdf"))));
-  controller().OnNewItem(/*show_details=*/true, /*show_animation=*/false);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  controller().OnNewItem(/*show_animation=*/false);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 }
@@ -599,22 +622,22 @@ TEST_F(DownloadDisplayControllerTest,
 
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
   EXPECT_CALL(item(0), IsDangerous()).WillRepeatedly(Return(true));
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
-                     download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST,
-                     /*show_details_if_done=*/true);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                     download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST);
+  // Details are not shown for most dangerous reasons.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/false));
 
-  // Downloads prompted for deep scanning should be considered in progress.
+  // Downloads prompted for deep scanning should be considered in progress and
+  // should display details.
   UpdateDownloadItem(/*item_index=*/0, DownloadState::IN_PROGRESS,
-                     download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING,
-                     /*show_details_if_done=*/true);
+                     download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING);
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
@@ -629,8 +652,9 @@ TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_OnRemovedItem) {
 
   OnRemovedItem(ContentId("LEGACY_DOWNLOAD", different_id));
   // The download display is still shown, because the removed download is
-  // different.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  // different. Details are not shown because there is still a download in
+  // progress.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
@@ -653,9 +677,10 @@ TEST_F(DownloadDisplayControllerTest,
   EXPECT_CALL(item(1), GetGuid()).WillRepeatedly(ReturnRef(ids[1]));
 
   // The download display is still shown, because there are multiple downloads
-  // in the list.
+  // in the list. Details are not shown because there is still a download in
+  // progress.
   OnRemovedItem(ContentId("LEGACY_DOWNLOAD", ids[0]));
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
@@ -670,11 +695,12 @@ TEST_F(DownloadDisplayControllerTest,
        UpdateToolbarButtonState_DownloadWasActionedOn) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  // Details are shown because the last in-progress download has completed.
   EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
@@ -689,16 +715,33 @@ TEST_F(DownloadDisplayControllerTest,
 TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_OnResume) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
   EXPECT_CALL(item(0), IsPaused()).WillRepeatedly(Return(true));
   controller().OnResume();
   // is_active state should be updated after OnResume is called.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/false));
+}
+
+TEST_F(DownloadDisplayControllerTest,
+       UpdateToolbarButtonState_DontShowDetailsIfNotAllowed) {
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE,
+                     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+                     /*may_show_details=*/false);
+  // Details are not shown because may_show_details is false.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+                                 /*icon_state=*/DownloadIconState::kComplete,
+                                 /*is_active=*/true));
 }
 
 TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
@@ -795,20 +838,20 @@ TEST_F(DownloadDisplayControllerTest, OnButtonPressed_IconStateComplete) {
 TEST_F(DownloadDisplayControllerTest, OnButtonPressed_IconStateInProgress) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 
   controller().OnButtonPressed();
 
   // Keep is_active to true because the download is still in progress.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 }
 
 TEST_F(DownloadDisplayControllerTest,
-       Fullscreen_ShowsDetailsForInProgressOnExitFullscreen) {
+       Fullscreen_DoesNotShowDetailsForInProgressOnExitFullscreen) {
   display().SetIsFullscreen(true);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
@@ -819,14 +862,14 @@ TEST_F(DownloadDisplayControllerTest,
 
   display().SetIsFullscreen(false);
   controller().OnFullscreenStateChanged();
-  // Show bubble for in-progress download when exiting full screen mode.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  // Do not show bubble for in-progress download when exiting full screen mode.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
                                  /*is_active=*/true));
 }
 
 TEST_F(DownloadDisplayControllerTest,
-       Fullscreen_ShowsIconForCompletedOnExitFullscreen) {
+       Fullscreen_ShowsIconAndDetailsForCompletedOnExitFullscreen) {
   display().SetIsFullscreen(true);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
@@ -835,8 +878,7 @@ TEST_F(DownloadDisplayControllerTest,
                                  /*is_active=*/true));
 
   UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE,
-                     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-                     /*show_details_if_done=*/true);
+                     download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
   // While the bubble does not pop up, and the toolbar not shown, the icon
   // state is still updated. So |is_active| should be true for one minute
   // after completed download.
@@ -852,10 +894,12 @@ TEST_F(DownloadDisplayControllerTest,
 
   display().SetIsFullscreen(false);
   controller().OnFullscreenStateChanged();
-  // On exiting full screen, show download icon as active for 1 minute.
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
+  // On exiting full screen, show download icon as active for 1 minute and show
+  // details, as they were missed while in fullscreen.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
                                  /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
+  display().HideDetails();
 
   task_environment_.FastForwardBy(base::Minutes(1));
   // The display is still showing but the state has changed to inactive.
@@ -870,7 +914,11 @@ TEST_F(DownloadDisplayControllerTest,
       .WillRepeatedly(Return(true));
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS);
-  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/false,
                                  /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+  UpdateDownloadItem(0, download::DownloadItem::COMPLETE);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kComplete,
                                  /*is_active=*/true));
 }
