@@ -41,6 +41,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
@@ -485,6 +486,15 @@ HoverHighlightView* TrayDetailedView::AddScrollListItem(
                       AshColorProvider::ContentLayerType::kIconColorPrimary)),
         text);
   }
+
+  if (features::IsQsRevampEnabled()) {
+    views::FocusRing::Install(item);
+    views::InstallRoundRectHighlightPathGenerator(item, gfx::Insets(2),
+                                                  /*corner_radius=*/0);
+    // Unset the focus painter set by `ActionableView`.
+    item->SetFocusPainter(nullptr);
+  }
+
   return item;
 }
 
