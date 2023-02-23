@@ -15,4 +15,10 @@ interface SocketBroker {
   // SocketDescriptor and the net::Error.
   CreateTcpSocket(AddressFamily address_family)
       => (TransferableSocket created_socket, int32 rv);
+
+  // Creates a UDP socket. Returns the
+  // SocketDescriptor and the net::Error.
+  CreateUdpSocket(AddressFamily address_family)
+      => (TransferableSocket created_socket, int32 rv);
+
 };
