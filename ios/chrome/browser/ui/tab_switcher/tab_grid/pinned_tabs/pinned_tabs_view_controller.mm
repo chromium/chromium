@@ -443,13 +443,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)collectionView:(UICollectionView*)collectionView
     didEndDisplayingCell:(UICollectionViewCell*)cell
       forItemAtIndexPath:(NSIndexPath*)indexPath {
-  DCHECK([cell isKindOfClass:[PinnedCell class]]);
-
-  // Stop animation of PinnedCells when removing them from the collection
-  // view. This is important to prevent cells from animating indefinitely.
-  // This is safe because the animation state of GridCells is set in
-  // `configureCell:withItem:` whenever a cell is used.
-  [base::mac::ObjCCastStrict<PinnedCell>(cell) hideActivityIndicator];
+  if ([cell isKindOfClass:[PinnedCell class]]) {
+    // Stop animation of PinnedCells when removing them from the collection
+    // view. This is important to prevent cells from animating indefinitely.
+    // This is safe because the animation state of GridCells is set in
+    // `configureCell:withItem:` whenever a cell is used.
+    [base::mac::ObjCCastStrict<PinnedCell>(cell) hideActivityIndicator];
+  }
 }
 
 #pragma mark - UICollectionViewDragDelegate
