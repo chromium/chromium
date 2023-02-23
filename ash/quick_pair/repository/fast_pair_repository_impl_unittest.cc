@@ -401,8 +401,6 @@ TEST_F(FastPairRepositoryImplTest, UpdateStaleUserDeviceCache) {
                                                              kAccountKey1);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
-  ASSERT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 
   auto run_loop = base::RunLoop();
 
@@ -448,8 +446,6 @@ TEST_F(FastPairRepositoryImplTest, UseStaleCache) {
                                                              kAccountKey1);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
-  ASSERT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 
   auto run_loop = base::RunLoop();
 
@@ -491,8 +487,6 @@ TEST_F(FastPairRepositoryImplTest, GetDeviceNameFromCache) {
                                                              kAccountKey1);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
-  ASSERT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 
   auto run_loop = base::RunLoop();
 
@@ -1458,8 +1452,6 @@ TEST_F(FastPairRepositoryImplTest,
                                                              kAccountKey1);
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
-  ASSERT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 
   // After a successful Footprints write, pending writes list should be empty.
   ASSERT_EQ(0u, pending_write_store_->GetPendingWrites().size());
@@ -1479,11 +1471,10 @@ TEST_F(FastPairRepositoryImplTest, RetriesWriteDevice_AfterNetworkAvailable) {
   base::RunLoop().RunUntilIdle();
 
   // The failed write should save as pending write.
-  ASSERT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   std::vector<PendingWriteStore::PendingWrite> pending_writes =
       pending_write_store_->GetPendingWrites();
   ASSERT_EQ(1u, pending_writes.size());
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
 
   // Parse device account key from device fast pair info.
   const std::string& account_key_str =
@@ -1502,9 +1493,8 @@ TEST_F(FastPairRepositoryImplTest, RetriesWriteDevice_AfterNetworkAvailable) {
   base::RunLoop().RunUntilIdle();
 
   // The write should still be pending after a failed retry.
-  ASSERT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   ASSERT_EQ(1u, pending_write_store_->GetPendingWrites().size());
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
 
   // Reconnect to the Network, but within the 1 minute timeout.
   footprints_fetcher_->SetAddUserFastPairInfoResult(true);
@@ -1513,9 +1503,8 @@ TEST_F(FastPairRepositoryImplTest, RetriesWriteDevice_AfterNetworkAvailable) {
   base::RunLoop().RunUntilIdle();
 
   // Since we don't try within 1 minute, the write should still be pending.
-  ASSERT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   ASSERT_EQ(1u, pending_write_store_->GetPendingWrites().size());
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
 
   // Mock waiting out the 1 minute timeout.
   task_environment()->FastForwardBy(base::Minutes(1));
@@ -1528,9 +1517,8 @@ TEST_F(FastPairRepositoryImplTest, RetriesWriteDevice_AfterNetworkAvailable) {
   base::RunLoop().RunUntilIdle();
 
   // The write, after a successful retry, should no longer be pending.
-  ASSERT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   ASSERT_EQ(0u, pending_write_store_->GetPendingWrites().size());
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
 }
 
 TEST_F(FastPairRepositoryImplTest,
@@ -1548,11 +1536,10 @@ TEST_F(FastPairRepositoryImplTest,
   base::RunLoop().RunUntilIdle();
 
   // The failed write should save as pending write.
-  ASSERT_FALSE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   std::vector<PendingWriteStore::PendingWrite> pending_writes =
       pending_write_store_->GetPendingWrites();
   ASSERT_EQ(1u, pending_writes.size());
+  ASSERT_FALSE(footprints_fetcher_->ContainsKey(kAccountKey1));
 
   // Mock waiting out the 1 minute timeout.
   task_environment()->FastForwardBy(base::Minutes(1));
@@ -1565,8 +1552,6 @@ TEST_F(FastPairRepositoryImplTest,
   base::RunLoop().RunUntilIdle();
 
   // The write, after a successful retry, should no longer be pending.
-  ASSERT_TRUE(
-      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
   ASSERT_EQ(0u, pending_write_store_->GetPendingWrites().size());
   ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
 
@@ -1576,6 +1561,21 @@ TEST_F(FastPairRepositoryImplTest,
                 kRetroactiveSuccessFunnelMetric,
                 FastPairRetroactiveSuccessFunnelEvent::kSaveComplete),
             0);
+}
+
+// `WriteAccountAssociationToFootprints()` previously wrote the association
+// locally as well. This unit test ensures it does not anymore.
+TEST_F(FastPairRepositoryImplTest,
+       AccountAssociationWriteToFootprints_NoLocalWrite) {
+  auto device = base::MakeRefCounted<Device>(kValidModelId, kTestBLEAddress,
+                                             Protocol::kFastPairRetroactive);
+  device->set_classic_address(kTestClassicAddress1);
+  device->set_display_name(kDeviceDisplayName);
+  fast_pair_repository_->WriteAccountAssociationToFootprints(device,
+                                                             kAccountKey1);
+  ASSERT_TRUE(footprints_fetcher_->ContainsKey(kAccountKey1));
+  ASSERT_FALSE(
+      saved_device_registry_->IsAccountKeySavedToRegistry(kAccountKey1));
 }
 
 }  // namespace quick_pair

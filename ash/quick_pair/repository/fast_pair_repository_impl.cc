@@ -446,18 +446,6 @@ void FastPairRepositoryImpl::OnWriteAccountAssociationToFootprintsComplete(
 
   // Remove pending write on successful Footprints write.
   pending_write_store_->OnPairedDeviceSaved(mac_address);
-
-  // Save/Update account key in the saved device registry.
-  if (saved_device_registry_->SaveAccountAssociation(mac_address,
-                                                     account_key)) {
-    QP_LOG(VERBOSE) << __func__
-                    << ": paired device at address = " << mac_address
-                    << " added to local registry.";
-    return;
-  }
-
-  QP_LOG(WARNING) << __func__ << ": failed to add paired device at address = "
-                  << mac_address << " to local registry.";
 }
 
 void FastPairRepositoryImpl::CheckOptInStatus(
