@@ -48,6 +48,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
+#include "chrome/common/channel_info.h"
+#include "components/version_info/version_info.h"
+#include "third_party/cros_system_api/switches/chrome_switches.h"
 #endif
 
 using content::DevToolsAgentHost;
@@ -181,6 +184,19 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
     content::WebContents* web_contents) {
   const extensions::Extension* extension = nullptr;
   if (web_contents) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    GURL url = web_contents->GetLastCommittedURL();
+    if ((url.SchemeIs("chrome") && url.host() != "inspect") ||
+        url.SchemeIs("os")) {
+      base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+      if (chrome::GetChannel() != version_info::Channel::CANARY &&
+          !command_line->HasSwitch(chromeos::switches::kSystemInDevMode) &&
+          !command_line->HasSwitch(ash::switches::kForceDevToolsAvailable)) {
+        return false;
+      }
+    }
+#endif
+
     if (auto* process_manager = extensions::ProcessManager::Get(
             web_contents->GetBrowserContext())) {
       extension = process_manager->GetExtensionForWebContents(web_contents);
