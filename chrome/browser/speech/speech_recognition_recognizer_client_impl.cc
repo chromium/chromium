@@ -16,6 +16,7 @@
 #include "chrome/browser/speech/cros_speech_recognition_service.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/speech_recognizer_delegate.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -128,22 +129,20 @@ SpeechRecognitionRecognizerClientImpl::GetServerBasedRecognitionAvailability(
         kServerBasedRecognitionNotAvailable;
   }
 
+  // This is an explicit list of locales that we support in addition to the list
+  // of languages below.
   static constexpr auto kSupportedLocales =
-      base::MakeFixedFlatSet<base::StringPiece>(
-          {"ar-x-maghrebi", "cmn-hant-tw", "cs-cz", "da-dk", "de-de", "en-au",
-           "en-gb",         "en-in",       "en-us", "es-es", "es-us", "fi-fi",
-           "fr-fr",         "hi-in",       "id-id", "it-it", "ja-jp", "ko-kr",
-           "nl-nl",         "pt-br",       "ru-ru", "sv-se", "tr-tr", "vi-vn"});
+      base::MakeFixedFlatSet<base::StringPiece>({"ar-x-maghrebi", "zh-tw"});
 
-  // The locals that we get come from ui/base/l10n/l10n_util.cc and can
-  // therefore just be language names.
-  static constexpr auto kDefaultLanguages =
+  // All locales under the following languages are supported. The locales are
+  // automatically routed to their appropriate recognizer on the server side.
+  static constexpr auto kSupportedLangauges =
       base::MakeFixedFlatSet<base::StringPiece>(
           {"cs", "da", "de", "en", "es", "fi", "fr", "hi", "id", "it", "ja",
            "ko", "nl", "pt", "ru", "sv", "tr", "vi"});
 
-  if (kSupportedLocales.contains(base::ToLowerASCII(language)) ||
-      kDefaultLanguages.contains(base::ToLowerASCII(language))) {
+  if (kSupportedLangauges.contains(language::ExtractBaseLanguage(language)) ||
+      kSupportedLocales.contains(base::ToLowerASCII(language))) {
     return ash::ServerBasedRecognitionAvailability::kAvailable;
   }
 

@@ -239,6 +239,9 @@ const char kArabic[] = "ar";
 const char kFrench[] = "fr";
 const char kChinese[] = "zh-TW";
 const char kUnsupportedLanguage[] = "am";
+const char kSpanishLatam[] = "es-419";
+const char kSpanishMexican[] = "es-mx";
+const char kEnglishNewZealand[] = "en-nz";
 
 bool IsEqualAvailability(const SpeechRecognitionAvailability& first,
                          const SpeechRecognitionAvailability& second) {
@@ -274,6 +277,18 @@ TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
         projector_client_->GetSpeechRecognitionAvailability(), availability));
 
     SetLocale(kChinese);
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
+
+    SetLocale(kSpanishLatam);
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
+
+    SetLocale(kSpanishMexican);
+    EXPECT_TRUE(IsEqualAvailability(
+        projector_client_->GetSpeechRecognitionAvailability(), availability));
+
+    SetLocale(kEnglishNewZealand);
     EXPECT_TRUE(IsEqualAvailability(
         projector_client_->GetSpeechRecognitionAvailability(), availability));
   } else {

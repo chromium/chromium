@@ -55,22 +55,11 @@ inline const std::string& GetLocale() {
 
 inline const std::string GetLocaleOrLanguageForServerSideRecognition() {
   const std::string& locale = g_browser_process->GetApplicationLocale();
-
   // Some languages and locales need to be mapped to the default
   // languages/locales provided by the server side speech recognition service.
-  static constexpr auto kSupportedLanguagesAndLocales =
-      base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
-          {{"zh", "cmn-hant-tw"},
-           {"zh-tw", "cmn-hant-tw"},
-           {"ar", "ar-x-maghrebi"}});
-
-  base::fixed_flat_map<base::StringPiece, base::StringPiece,
-                       /*size_t=*/3>::const_iterator it =
-      kSupportedLanguagesAndLocales.find(base::ToLowerASCII(locale));
-  if (it != kSupportedLanguagesAndLocales.end()) {
-    return std::string(it->second);
+  if (locale == "ar") {
+    return "ar-x-maghrebi";
   }
-
   return locale;
 }
 
