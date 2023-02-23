@@ -3808,8 +3808,6 @@ static_library("ui") {
       "cocoa/applescript/element_applescript.mm",
       "cocoa/applescript/error_applescript.h",
       "cocoa/applescript/error_applescript.mm",
-      "cocoa/applescript/metrics_applescript.h",
-      "cocoa/applescript/metrics_applescript.mm",
       "cocoa/applescript/tab_applescript.h",
       "cocoa/applescript/tab_applescript.mm",
       "cocoa/applescript/window_applescript.h",

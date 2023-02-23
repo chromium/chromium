@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #include "chrome/browser/ui/cocoa/applescript/error_applescript.h"
-#include "chrome/browser/ui/cocoa/applescript/metrics_applescript.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/url_constants.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -111,8 +110,9 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
       [[NSNumber alloc] initWithInt:session_tab_helper->session_id().id()]);
   [self setUniqueID:numID];
 
-  if ([self tempURL])
+  if ([self tempURL]) {
     [self setURL:[self tempURL]];
+  }
 }
 
 - (NSString*)URL {
@@ -151,8 +151,9 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   }
 
   NavigationEntry* entry = _webContents->GetController().GetActiveEntry();
-  if (!entry)
+  if (!entry) {
     return;
+  }
 
   const GURL& previousURL = entry->GetVirtualURL();
   _webContents->OpenURL(OpenURLParams(
@@ -163,8 +164,9 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 
 - (NSString*)title {
   NavigationEntry* entry = _webContents->GetController().GetActiveEntry();
-  if (!entry)
+  if (!entry) {
     return nil;
+  }
 
   std::u16string title = entry ? entry->GetTitle() : std::u16string();
   return base::SysUTF16ToNSString(title);
@@ -176,65 +178,54 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 }
 
 - (void)handlesUndoScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_UNDO);
   _webContents->Undo();
 }
 
 - (void)handlesRedoScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_REDO);
   _webContents->Redo();
 }
 
 - (void)handlesCutScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_CUT);
   _webContents->Cut();
 }
 
 - (void)handlesCopyScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_COPY);
   _webContents->Copy();
 }
 
 - (void)handlesPasteScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_PASTE);
   _webContents->Paste();
 }
 
 - (void)handlesSelectAllScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(
-      AppleScript::AppleScriptCommand::TAB_SELECT_ALL);
   _webContents->SelectAll();
 }
 
 - (void)handlesGoBackScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_GO_BACK);
   NavigationController& navigationController = _webContents->GetController();
-  if (navigationController.CanGoBack())
+  if (navigationController.CanGoBack()) {
     navigationController.GoBack();
+  }
 }
 
 - (void)handlesGoForwardScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(
-      AppleScript::AppleScriptCommand::TAB_GO_FORWARD);
   NavigationController& navigationController = _webContents->GetController();
-  if (navigationController.CanGoForward())
+  if (navigationController.CanGoForward()) {
     navigationController.GoForward();
+  }
 }
 
 - (void)handlesReloadScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_RELOAD);
   NavigationController& navigationController = _webContents->GetController();
   const bool checkForRepost = true;
   navigationController.Reload(content::ReloadType::NORMAL, checkForRepost);
 }
 
 - (void)handlesStopScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_STOP);
   _webContents->Stop();
 }
 
 - (void)handlesPrintScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_PRINT);
   bool initiated = printing::PrintViewManager::FromWebContents(_webContents)
                        ->PrintNow(_webContents->GetPrimaryMainFrame());
   if (!initiated) {
@@ -243,7 +234,6 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 }
 
 - (void)handlesSaveScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_SAVE);
   NSDictionary* dictionary = [command evaluatedArguments];
 
   NSURL* fileURL = dictionary[@"File"];
@@ -279,13 +269,10 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 }
 
 - (void)handlesCloseScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_CLOSE);
   _webContents->GetDelegate()->CloseContents(_webContents);
 }
 
 - (void)handlesViewSourceScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(
-      AppleScript::AppleScriptCommand::TAB_VIEW_SOURCE);
   NavigationEntry* entry =
       _webContents->GetController().GetLastCommittedEntry();
   if (entry) {
@@ -298,9 +285,6 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 }
 
 - (id)handlesExecuteJavascriptScriptCommand:(NSScriptCommand*)command {
-  AppleScript::LogAppleScriptUMA(
-      AppleScript::AppleScriptCommand::TAB_EXECUTE_JAVASCRIPT);
-
   if (!chrome::mac::IsJavaScriptEnabledForProfile(_profile)) {
     AppleScript::SetError(AppleScript::errJavaScriptUnsupported);
     return nil;
