@@ -153,17 +153,6 @@ void FakeCrosHealthd::SetCallbackDelay(base::TimeDelta delay) {
   callback_delay_ = delay;
 }
 
-void FakeCrosHealthd::EmitUsbAddEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  mojom::UsbEventInfo info;
-  for (auto& observer : usb_observers_) {
-    observer->OnAdd(info.Clone());
-  }
-}
-
 void FakeCrosHealthd::EmitEventForCategory(mojom::EventCategoryEnum category,
                                            mojom::EventInfoPtr info) {
   // Flush the receiver, so any pending observers are registered before the
@@ -741,7 +730,7 @@ void FakeCrosHealthd::AddThunderboltObserver(
 
 void FakeCrosHealthd::AddUsbObserver(
     mojo::PendingRemote<mojom::CrosHealthdUsbObserver> observer) {
-  usb_observers_.Add(std::move(observer));
+  NOTREACHED();
 }
 
 void FakeCrosHealthd::AddEventObserver(

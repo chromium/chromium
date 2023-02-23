@@ -12,10 +12,9 @@ namespace reporting {
 
 using ::ash::cros_healthd::mojom::UsbEventInfoPtr;
 
-class UsbEventsObserver
-    : public MojoServiceEventsObserverBase<
-          ash::cros_healthd::mojom::CrosHealthdUsbObserver>,
-      public ash::cros_healthd::mojom::CrosHealthdUsbObserver {
+class UsbEventsObserver : public MojoServiceEventsObserverBase<
+                              ash::cros_healthd::mojom::EventObserver>,
+                          public ash::cros_healthd::mojom::EventObserver {
  public:
   UsbEventsObserver();
 
@@ -24,17 +23,15 @@ class UsbEventsObserver
 
   ~UsbEventsObserver() override;
 
-  // ash::cros_healthd::mojom::CrosHealthdUsbObserver:
-  void OnAdd(UsbEventInfoPtr info) override;
-
-  void OnRemove(UsbEventInfoPtr info) override;
+  // ash::cros_healthd::mojom::EventObserver:
+  void OnEvent(const ash::cros_healthd::mojom::EventInfoPtr info) override;
 
  protected:
   // CrosHealthdEventsObserverBase
   void AddObserver() override;
 
  private:
-  void FillUsbTelemetry(UsbTelemetry* data, UsbEventInfoPtr info);
+  void FillUsbTelemetry(UsbTelemetry* data, const UsbEventInfoPtr& info);
 };
 
 }  // namespace reporting

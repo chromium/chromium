@@ -138,6 +138,14 @@ class UsbEventsBrowserTest : public ::policy::DevicePolicyCrosBrowserTest {
     return telemetry_info;
   }
 
+  void EmitUsbAddEventForTesting() {
+    cros_healthd::mojom::UsbEventInfo info;
+    info.state = cros_healthd::mojom::UsbEventInfo::State::kAdd;
+    cros_healthd::FakeCrosHealthd::Get()->EmitEventForCategory(
+        cros_healthd::mojom::EventCategoryEnum::kUsb,
+        cros_healthd::mojom::EventInfo::NewUsbEventInfo(info.Clone()));
+  }
+
   const AccountId test_account_id_ = AccountId::FromUserEmailGaiaId(
       kTestUserEmail,
       signin::GetTestGaiaIdForEmail(kTestUserEmail));
@@ -163,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
       usb_telemetry);
 
   // Any USB event should trigger event driven telemetry collection
-  cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
+  EmitUsbAddEventForTesting();
 
   Record record = std::get<1>(missive_observer_.GetNextEnqueuedRecord());
   MetricData record_data;
@@ -192,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(
   chromeos::MissiveClientTestObserver missive_observer_(
       Destination::PERIPHERAL_EVENTS);
 
-  cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
+  EmitUsbAddEventForTesting();
   std::tuple<Priority, Record> entry =
       missive_observer_.GetNextEnqueuedRecord();
   Record record = std::get<1>(entry);
@@ -253,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(
 
   LoginUnaffiliatedUser();
 
-  cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
+  EmitUsbAddEventForTesting();
   EXPECT_TRUE(NoUsbEventsEnqueued(
       chromeos::MissiveClient::Get()->GetTestInterface()->GetEnqueuedRecords(
           Priority::SECURITY)));
@@ -266,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(
 
   LoginAffiliatedUser();
 
-  cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
+  EmitUsbAddEventForTesting();
 
   // Shouldn't be any USB event related records in the MissiveClient queue
   EXPECT_TRUE(NoUsbEventsEnqueued(
@@ -281,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(
 
   LoginUnaffiliatedUser();
 
-  cros_healthd::FakeCrosHealthd::Get()->EmitUsbAddEventForTesting();
+  EmitUsbAddEventForTesting();
 
   // Shouldn't be any USB event related records in the MissiveClient queue
   EXPECT_TRUE(NoUsbEventsEnqueued(

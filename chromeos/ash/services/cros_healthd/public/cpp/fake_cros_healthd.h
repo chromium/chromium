@@ -149,9 +149,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Adds a delay before the passed callback is called.
   void SetCallbackDelay(base::TimeDelta delay);
 
-  // Calls the USB event OnAdd on all registered USB observers.
-  void EmitUsbAddEventForTesting();
-
   // Calls the `OnEvent` method with `info` on all observers registered for
   // `category`.
   void EmitEventForCategory(mojom::EventCategoryEnum category,
@@ -355,8 +352,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Collection of registered network observers.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
       network_observers_;
-  // Collection of registered USB observers.
-  mojo::RemoteSet<mojom::CrosHealthdUsbObserver> usb_observers_;
   // Collection of registered general observers grouped by category.
   std::map<mojom::EventCategoryEnum, mojo::RemoteSet<mojom::EventObserver>>
       event_observers_;
