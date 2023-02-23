@@ -828,6 +828,9 @@
   <message name="IDS_KSV_DESCRIPTION_FLOAT" desc="Description of the command in keyboard shortcut viewer.">
     Float active window on top
   </message>
+  <message name="IDS_KSV_DESCRIPTION_TOGGLE_MULTITASK_MENU" desc="Description of the command in keyboard shortcut viewer.">
+    Open window layout options
+  </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_GOOGLE_ASSISTANT" desc="Description of the command in keyboard shortcut viewer.">
     Open Google Assistant
   </message>

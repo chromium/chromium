@@ -210,6 +210,7 @@ bool ShouldExcludeItem(const ash::KeyboardShortcutItem& item) {
     case IDS_KSV_DESCRIPTION_PRIVACY_SCREEN_TOGGLE:
       return !ash::Shell::Get()->privacy_screen_controller()->IsSupported();
     case IDS_KSV_DESCRIPTION_FLOAT:
+    case IDS_KSV_DESCRIPTION_TOGGLE_MULTITASK_MENU:
       return !chromeos::wm::features::IsWindowLayoutMenuEnabled();
   }
 

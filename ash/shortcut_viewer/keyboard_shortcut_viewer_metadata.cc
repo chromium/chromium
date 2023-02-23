@@ -1279,6 +1279,13 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {{ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
 
       {// |categories|
+       {ShortcutCategory::kTabAndWindow},
+       IDS_KSV_DESCRIPTION_TOGGLE_MULTITASK_MENU,
+       {},
+       // |accelerator_ids|
+       {{ui::VKEY_Z, ui::EF_COMMAND_DOWN}}},
+
+      {// |categories|
        {ShortcutCategory::kPageAndBrowser},
        IDS_KSV_DESCRIPTION_SHOW_IDC_FOCUS_MENU_BAR,
        {},
