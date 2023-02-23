@@ -242,8 +242,6 @@ class PLATFORM_EXPORT CanvasResource
   const scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
  private:
-  // Sync token that was provided when resource was released
-  gpu::SyncToken sync_token_for_release_;
   base::WeakPtr<CanvasResourceProvider> provider_;
   SkColorInfo info_;
   cc::PaintFlags::FilterQuality filter_quality_;
