@@ -411,8 +411,9 @@ size_t NetworkListViewControllerImpl::ShowConnectionWarningIfNetworkMonitored(
       MaybeShowConnectionWarningManagedIcon(using_proxy);
     }
 
+    // The warning messages are shown in the ethernet section.
     network_detailed_network_view()
-        ->GetNetworkList(NetworkType::kAll)
+        ->GetNetworkList(NetworkType::kEthernet)
         ->ReorderChildView(connection_warning_, index++);
   } else if (connected_vpn_guid_.empty() && !using_proxy) {
     HideConnectionWarning();
@@ -934,8 +935,9 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
 
   connection_warning->SetID(static_cast<int>(
       NetworkListViewControllerViewChildId::kConnectionWarning));
+  // The warning messages are shown in the ethernet section.
   connection_warning_ = network_detailed_network_view()
-                            ->GetNetworkList(NetworkType::kAll)
+                            ->GetNetworkList(NetworkType::kEthernet)
                             ->AddChildView(std::move(connection_warning));
 }
 
@@ -985,7 +987,7 @@ void NetworkListViewControllerImpl::RequestScan() {
 void NetworkListViewControllerImpl::FocusLastSelectedView() {
   views::View* selected_view = nullptr;
   views::View* parent_view =
-      network_detailed_network_view()->GetNetworkList(NetworkType::kWiFi);
+      network_detailed_network_view()->GetNetworkList(NetworkType::kAll);
   for (const auto& [network_id, view] : network_id_to_view_map_) {
     // The within_bounds check is necessary when the network list goes beyond
     // the visible area (i.e. scrolling) and the mouse is below the tray pop-up.
