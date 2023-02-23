@@ -42,9 +42,8 @@ PowerBookmarkSyncBridge::PowerBookmarkSyncBridge(
 PowerBookmarkSyncBridge::~PowerBookmarkSyncBridge() = default;
 
 void PowerBookmarkSyncBridge::Init() {
-  auto batch = std::make_unique<syncer::MetadataBatch>();
-  bool success = meta_db_->GetAllEntityMetadata(batch.get());
-  if (success) {
+  std::unique_ptr<syncer::MetadataBatch> batch = meta_db_->GetAllSyncMetadata();
+  if (batch) {
     change_processor()->ModelReadyToSync(std::move(batch));
   } else {
     change_processor()->ReportError({FROM_HERE, "Failed to load metadata"});

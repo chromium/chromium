@@ -59,11 +59,20 @@ class PowerBookmarkSyncMetadataDatabase : public syncer::SyncMetadataStore {
       const sync_pb::ModelTypeState& model_type_state) override;
   bool ClearModelTypeState(syncer::ModelType model_type) override;
 
-  // Reads all sync_pb::EntityMetadata and fills `metadata_batch` with it.
-  bool GetAllEntityMetadata(syncer::MetadataBatch* metadata_batch);
+  // Creates a sync::MetadataBatch and fills it with entity metadata and
+  // ModelTypeState information.
+  std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata();
 
  private:
   friend class PowerBookmarkSyncMetadataDatabaseTest;
+
+  // Reads all sync_pb::EntityMetadata and fills `metadata_batch` with it.
+  // Returns whether the call succeeded.
+  bool GetAllSyncEntityMetadata(syncer::MetadataBatch* metadata_batch);
+
+  // Reads the stored ModelTypeState and fills `metadata_batch` with it.
+  // Returns whether the call succeeded.
+  bool GetModelTypeState(syncer::MetadataBatch* metadata_batch) const;
 
   const raw_ptr<sql::Database> db_;
   const raw_ptr<sql::MetaTable> meta_table_;
