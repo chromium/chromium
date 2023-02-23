@@ -201,6 +201,7 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
     LocalAnalysisSettings local_settings;
     local_settings.local_path = analysis_config_->local_path;
     local_settings.user_specific = analysis_config_->user_specific;
+    local_settings.subject_names = analysis_config_->subject_names;
     local_settings.verification_signatures = verification_signatures_;
 
     settings.cloud_or_local_settings =

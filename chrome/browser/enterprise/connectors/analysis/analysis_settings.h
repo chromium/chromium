@@ -66,6 +66,7 @@ struct LocalAnalysisSettings {
 
   std::string local_path;
   bool user_specific;
+  base::span<const char* const> subject_names;
 
   // Arrays of base64 encoded signing key signatures.
   std::vector<std::string> verification_signatures;
@@ -97,6 +98,7 @@ class CloudOrLocalAnalysisSettings
   const LocalAnalysisSettings& local_settings() const;
   const std::string local_path() const;
   bool user_specific() const;
+  base::span<const char* const> subject_names() const;
 };
 
 // Main struct holding settings data for the content analysis Connector.

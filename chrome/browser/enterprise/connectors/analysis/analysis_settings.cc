@@ -85,6 +85,12 @@ bool CloudOrLocalAnalysisSettings::user_specific() const {
   return absl::get<LocalAnalysisSettings>(*this).user_specific;
 }
 
+base::span<const char* const> CloudOrLocalAnalysisSettings::subject_names()
+    const {
+  DCHECK(absl::holds_alternative<LocalAnalysisSettings>(*this));
+  return absl::get<LocalAnalysisSettings>(*this).subject_names;
+}
+
 AnalysisSettings::AnalysisSettings() = default;
 AnalysisSettings::AnalysisSettings(AnalysisSettings&&) = default;
 AnalysisSettings& AnalysisSettings::operator=(AnalysisSettings&&) = default;
