@@ -28,9 +28,10 @@
                                   webState:(web::WebState*)webState {
   DCHECK(webState);
 
-  const std::string* selectedText = value.FindStringKey("selectedText");
+  const base::Value::Dict& dict = value.GetDict();
+  const std::string* selectedText = dict.FindString("selectedText");
   absl::optional<CGRect> sourceRect =
-      shared_highlighting::ParseRect(value.FindKey("selectionRect"));
+      shared_highlighting::ParseRect(dict.Find("selectionRect"));
 
   // All values must be present to have a valid payload.
   if (!selectedText || !sourceRect) {
