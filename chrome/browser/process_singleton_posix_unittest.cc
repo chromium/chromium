@@ -524,7 +524,7 @@ TEST_F(ProcessSingletonPosixTest, CreateRespectsOldMacLock) {
 TEST_F(ProcessSingletonPosixTest, CreateReplacesOldMacLock) {
   std::unique_ptr<TestableProcessSingleton> process_singleton(
       CreateProcessSingleton());
-  EXPECT_EQ(0, base::WriteFile(lock_path_, "", 0));
+  EXPECT_TRUE(base::WriteFile(lock_path_, base::StringPiece()));
   EXPECT_TRUE(process_singleton->Create());
   VerifyFiles();
 }
