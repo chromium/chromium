@@ -503,11 +503,11 @@ NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
                                                 base::BlockingType::MAY_BLOCK);
 
   CertInfoList certs_info;
-  CERTCertList* cert_list = nullptr;
+  crypto::ScopedCERTCertList cert_list = nullptr;
   if (slot)
-    cert_list = PK11_ListCertsInSlot(slot.get());
+    cert_list.reset(PK11_ListCertsInSlot(slot.get()));
   else
-    cert_list = PK11_ListCerts(PK11CertListUnique, nullptr);
+    cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
   // PK11_ListCerts[InSlot] can return nullptr, e.g. because the PKCS#11 token
   // that was backing the specified slot is not available anymore.
   // Treat it as no certificates being present on the slot.
@@ -532,7 +532,6 @@ NSSCertDatabase::CertInfoList NSSCertDatabase::ListCertsInfoImpl(
 
     certs_info.push_back(std::move(cert_info));
   }
-  CERT_DestroyCertList(cert_list);
   return certs_info;
 }
 

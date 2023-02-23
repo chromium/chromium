@@ -43,9 +43,9 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
   // |validOnly| in CERT_CreateSubjectCertList controls whether to return only
   // certs that are valid at |sorttime|. Expiration isn't meaningful for trust
   // anchors, so request all the matches.
-  CERTCertList* found_certs = CERT_CreateSubjectCertList(
+  crypto::ScopedCERTCertList found_certs(CERT_CreateSubjectCertList(
       nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
-      PR_Now() /* sorttime */, PR_FALSE /* validOnly */);
+      PR_Now() /* sorttime */, PR_FALSE /* validOnly */));
   if (!found_certs)
     return;
 
@@ -67,7 +67,6 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
 
     issuers->push_back(std::move(cur_cert));
   }
-  CERT_DestroyCertList(found_certs);
 }
 
 CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert,

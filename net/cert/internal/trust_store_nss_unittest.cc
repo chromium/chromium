@@ -36,7 +36,7 @@ namespace {
 bool IsBuiltInRootSlot(PK11SlotInfo* slot) {
   if (!PK11_IsPresent(slot) || !PK11_HasRootCerts(slot))
     return false;
-  CERTCertList* cert_list = PK11_ListCertsInSlot(slot);
+  crypto::ScopedCERTCertList cert_list(PK11_ListCertsInSlot(slot));
   if (!cert_list)
     return false;
   bool built_in_cert_found = false;
@@ -47,7 +47,6 @@ bool IsBuiltInRootSlot(PK11SlotInfo* slot) {
       break;
     }
   }
-  CERT_DestroyCertList(cert_list);
   return built_in_cert_found;
 }
 
@@ -76,7 +75,8 @@ std::shared_ptr<const ParsedCertificate> GetASSLTrustedBuiltinRoot() {
 
   scoped_refptr<X509Certificate> ssl_trusted_root;
 
-  CERTCertList* cert_list = PK11_ListCertsInSlot(root_certs_slot.get());
+  crypto::ScopedCERTCertList cert_list(
+      PK11_ListCertsInSlot(root_certs_slot.get()));
   if (!cert_list)
     return nullptr;
   for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
@@ -91,7 +91,6 @@ std::shared_ptr<const ParsedCertificate> GetASSLTrustedBuiltinRoot() {
       break;
     }
   }
-  CERT_DestroyCertList(cert_list);
   if (!ssl_trusted_root)
     return nullptr;
 
