@@ -42,7 +42,8 @@ import java.util.List;
 /**
  * WebLayer is responsible for initializing state necessary to use any of the classes in web layer.
  */
-class WebLayer {
+@VisibleForTesting
+public class WebLayer {
     private static final String TAG = "WebLayer";
     // This metadata key, if defined, overrides the default behaviour of loading WebLayer from the
     // current WebView implementation. This is only intended for testing, and does not enforce any

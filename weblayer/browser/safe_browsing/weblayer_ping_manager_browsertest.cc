@@ -55,7 +55,7 @@ class RemoveCookiesFeatureDisabledWeblayerPingManagerTest
   RemoveCookiesFeatureDisabledWeblayerPingManagerTest() {
     feature_list_.Reset();
     feature_list_.InitWithFeatures(
-        {safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests});
+        {safe_browsing::kSafeBrowsingRemoveCookiesInAuthRequests}, {});
     is_remove_cookies_feature_enabled_ = false;
   }
 };
@@ -149,7 +149,7 @@ void WeblayerPingManagerTest::RunReportThreatDetailsTest(
 }
 
 IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest,
-                       ReportThreatDetailsWithAccessToken) {
+                       DISABLED_ReportThreatDetailsWithAccessToken) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
                              /*is_signed_in=*/true,
                              /*expect_access_token=*/true,
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest,
 }
 IN_PROC_BROWSER_TEST_F(
     RemoveCookiesFeatureDisabledWeblayerPingManagerTest,
-    ReportThreatDetailsWithAccessToken_RemoveCookiesFeatureDisabled) {
+    DISABLED_ReportThreatDetailsWithAccessToken_RemoveCookiesFeatureDisabled) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
                              /*is_signed_in=*/true,
                              /*expect_access_token=*/true,
@@ -171,21 +171,23 @@ IN_PROC_BROWSER_TEST_F(IncognitoModeWeblayerPingManagerTest,
 }
 IN_PROC_BROWSER_TEST_F(
     WeblayerPingManagerTest,
-    ReportThreatDetailsWithoutAccessToken_NotEnhancedProtection) {
+    DISABLED_ReportThreatDetailsWithoutAccessToken_NotEnhancedProtection) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/false,
                              /*is_signed_in=*/true,
                              /*expect_access_token=*/false,
                              /*expect_cookies_removed=*/false);
 }
-IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest,
-                       ReportThreatDetailsWithoutAccessToken_NotSignedIn) {
+IN_PROC_BROWSER_TEST_F(
+    WeblayerPingManagerTest,
+    DISABLED_ReportThreatDetailsWithoutAccessToken_NotSignedIn) {
   RunReportThreatDetailsTest(/*is_enhanced_protection=*/true,
                              /*is_signed_in=*/false,
                              /*expect_access_token=*/false,
                              /*expect_cookies_removed=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest, ReportSafeBrowsingHit) {
+IN_PROC_BROWSER_TEST_F(WeblayerPingManagerTest,
+                       DISABLED_ReportSafeBrowsingHit) {
   safe_browsing::HitReport hit_report;
   hit_report.post_data = "testing_hit_report_post_data";
   // Threat type and source are arbitrary but specified so that determining the

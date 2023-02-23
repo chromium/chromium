@@ -227,7 +227,9 @@ const net::HttpResponseHeaders* NavigationImpl::GetResponseHeaders() {
 
 std::string NavigationImpl::GetNormalizedHeader(const std::string& name) {
   std::string header_value;
-  GetResponseHeaders()->GetNormalizedHeader(name, &header_value);
+  if (GetResponseHeaders()) {
+    GetResponseHeaders()->GetNormalizedHeader(name, &header_value);
+  }
   return header_value;
 }
 

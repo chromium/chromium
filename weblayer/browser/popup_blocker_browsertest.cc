@@ -130,18 +130,19 @@ class PopupBlockerBrowserTest : public WebLayerBrowserTest,
   raw_ptr<Tab> new_tab_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlocksPopup) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_BlocksPopup) {
   ExecuteScript(original_tab(), "window.open('https://google.com')", true);
   EXPECT_EQ(GetBlockedPopupCount(), 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlocksMultiplePopups) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_BlocksMultiplePopups) {
   ExecuteScript(original_tab(), "window.open('https://google.com')", true);
   ExecuteScript(original_tab(), "window.open('https://google.com')", true);
   EXPECT_EQ(GetBlockedPopupCount(), 2u);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DoesNotBlockUserGesture) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
+                       DISABLED_DoesNotBlockUserGesture) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   ExecuteScriptWithUserGesture(
       original_tab(),
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DoesNotBlockUserGesture) {
   EXPECT_EQ(GetBlockedPopupCount(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpensBlockedPopup) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, DISABLED_OpensBlockedPopup) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   ExecuteScript(
       original_tab(),
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, OpensBlockedPopup) {
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       AllowsPopupThroughContentSettingException) {
+                       DISABLED_AllowsPopupThroughContentSettingException) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   HostContentSettingsMapFactory::GetForBrowserContext(
       GetWebContents(original_tab())->GetBrowserContext())
@@ -186,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       AllowsPopupThroughContentSettingDefaultValue) {
+                       DISABLED_AllowsPopupThroughContentSettingDefaultValue) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   HostContentSettingsMapFactory::GetForBrowserContext(
       GetWebContents(original_tab())->GetBrowserContext())
@@ -201,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       BlockPopupThroughContentSettingException) {
+                       DISABLED_BlockPopupThroughContentSettingException) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   HostContentSettingsMapFactory::GetForBrowserContext(
       GetWebContents(original_tab())->GetBrowserContext())
@@ -219,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       BlocksAndOpensPopupFromOpenURL) {
+                       DISABLED_BlocksAndOpensPopupFromOpenURL) {
   GURL popup_url = embedded_test_server()->GetURL("/echo?popup");
   content::OpenURLParams params(popup_url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,

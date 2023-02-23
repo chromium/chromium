@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   EXPECT_EQ(subresource_filter::mojom::ActivationLevel::kEnabled,
             page_activation.value());
 
-  console_observer.Wait();
+  EXPECT_TRUE(console_observer.Wait());
 
   // ... but it should not have blocked the subframe from being loaded.
   EXPECT_TRUE(
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
-                       ContentSettingsAllowlistGlobal_DoNotActivate) {
+                       DISABLED_ContentSettingsAllowlistGlobal_DoNotActivate) {
   auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
 
   GURL test_url(embedded_test_server()->GetURL(

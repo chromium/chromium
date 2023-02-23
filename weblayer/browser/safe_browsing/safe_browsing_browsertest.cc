@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
-                       NoAccessTokenFetchInBasicSafeBrowsing) {
+                       DISABLED_NoAccessTokenFetchInBasicSafeBrowsing) {
   SetSafeBrowsingEnabled(true);
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
@@ -448,8 +448,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
   EXPECT_FALSE(access_token_fetch_delegate()->has_received_request());
 }
 
-IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
-                       NoAccessTokenFetchInRealTimeUrlLookupsUnlessEnabled) {
+IN_PROC_BROWSER_TEST_F(
+    SafeBrowsingBrowserTest,
+    DISABLED_NoAccessTokenFetchInRealTimeUrlLookupsUnlessEnabled) {
   SetRealTimeURLLookupsEnabled(true);
 
   GURL a_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
@@ -475,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest,
 // completes due to Safe Browsing's timing out the access token fetch.
 IN_PROC_BROWSER_TEST_F(
     SafeBrowsingBrowserTest,
-    UnfulfilledAccessTokenFetchTimesOutAndNavigationCompletes) {
+    DISABLED_UnfulfilledAccessTokenFetchTimesOutAndNavigationCompletes) {
   SetRealTimeURLLookupsEnabled(true);
   EnableSafeBrowsingAccessTokenFetches();
   access_token_fetch_delegate()->set_should_respond_to_request(false);

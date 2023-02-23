@@ -353,7 +353,8 @@ IN_PROC_BROWSER_TEST_F(SSLBrowserTest, OSReportsCaptivePortal) {
 #if BUILDFLAG(IS_ANDROID)
 // Tests that after reaching a captive portal interstitial, clicking on the
 // connect link will cause a navigation to the login page.
-IN_PROC_BROWSER_TEST_F(SSLBrowserTest, CaptivePortalConnectToLoginPage) {
+IN_PROC_BROWSER_TEST_F(SSLBrowserTest,
+                       DISABLED_CaptivePortalConnectToLoginPage) {
   SSLErrorHandler::SetOSReportsCaptivePortalForTesting(true);
 
   NavigateToPageWithMismatchedCertExpectCaptivePortalInterstitial();

@@ -228,6 +228,7 @@ group("gn_all") {
     deps += [
       "//weblayer/browser/android/javatests:webengine_support_instrumentation_test_apk",
       "//weblayer/browser/java:weblayer_junit_tests",
+      "//weblayer/test:weblayer_browsertests",
     ]
   }
 

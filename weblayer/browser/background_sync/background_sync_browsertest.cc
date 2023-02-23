@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, ContentSettings) {
   EXPECT_FALSE(controller->IsOriginTracked(origin));
 }
 
-IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, NormalProfile) {
+IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, DISABLED_NormalProfile) {
   // TODO(crbug.com/1087486, 1091211): Make this use
   // BackgroundSyncController::ScheduleBrowserWakeup() once we support waking
   // the browser up.

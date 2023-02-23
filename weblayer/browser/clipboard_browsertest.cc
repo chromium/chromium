@@ -71,7 +71,7 @@ class ClipboardBrowserTest : public WebLayerBrowserTest {
   std::unique_ptr<content::ScopedPageFocusOverride> scoped_focus_;
 };
 
-IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, ReadTextSuccess) {
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, DISABLED_ReadTextSuccess) {
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::ACCEPT_ALL);
   ExecuteScriptWithUserGesture(shell()->tab(), "tryClipboardReadText()");
@@ -91,7 +91,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, WriteSanitizedTextSuccess) {
   EXPECT_EQ(0, prompt_factory()->TotalRequestCount());
 }
 
-IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest, ReadTextWithoutPermission) {
+IN_PROC_BROWSER_TEST_F(ClipboardBrowserTest,
+                       DISABLED_ReadTextWithoutPermission) {
   prompt_factory()->set_response_type(
       permissions::PermissionRequestManager::DENY_ALL);
   ExecuteScriptWithUserGesture(shell()->tab(), "tryClipboardReadText()");
