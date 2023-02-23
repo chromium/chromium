@@ -62,6 +62,9 @@ class GFX_EXPORT SurfaceControl {
   // Returns true if APIs to convert Java SurfaceControl to ASurfaceControl.
   static GFX_EXPORT bool SupportsSurfacelessControl();
 
+  // Returns true if API to enable back pressure is supported.
+  static GFX_EXPORT bool SupportsSetEnableBackPressure();
+
   // Applies transaction. Used to emulate webview functor interface, where we
   // pass raw ASurfaceTransaction object. For use inside Chromium use
   // Transaction class below instead.
@@ -160,6 +163,7 @@ class GFX_EXPORT SurfaceControl {
     void SetScale(const Surface& surface, float sx, float sy);
     void SetCrop(const Surface& surface, const gfx::Rect& rect);
     void SetFrameTimelineId(int64_t vsync_id);
+    void SetEnableBackPressure(const Surface& surface, bool enable);
 
     // Sets the callback which will be dispatched when the transaction is acked
     // by the framework.

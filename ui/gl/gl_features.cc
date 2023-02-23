@@ -102,6 +102,7 @@ bool IsAndroidFrameDeadlineEnabled() {
       base::android::BuildInfo::GetInstance()->is_at_least_t() &&
       gfx::AChoreographerCompat33::Get().supported &&
       gfx::SurfaceControl::SupportsSetFrameTimeline() &&
+      gfx::SurfaceControl::SupportsSetEnableBackPressure() &&
       base::FeatureList::IsEnabled(kAndroidFrameDeadline);
   return enabled;
 #else

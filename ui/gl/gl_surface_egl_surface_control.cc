@@ -319,6 +319,10 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
                                     overlay_plane_data.z_order);
   }
 
+  if (uninitialized && use_target_deadline_) {
+    pending_transaction_->SetEnableBackPressure(*surface_state.surface, true);
+  }
+
   AHardwareBuffer* hardware_buffer = nullptr;
   base::ScopedFD fence_fd;
   auto scoped_hardware_buffer = std::move(image);
