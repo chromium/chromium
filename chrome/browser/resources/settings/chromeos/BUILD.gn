@@ -35,10 +35,7 @@ if (optimize_webui) {
     ]
     out_manifest = "$target_gen_dir/$build_manifest_v3"
 
-    deps = [
-      ":build_ts",
-      "//ash/webui/common/resources/hotspot:build_ts",
-    ]
+    deps = [ ":build_ts" ]
     excludes = [
       "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
       "chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js",
@@ -68,6 +65,7 @@ ts_library("build_ts") {
   allow_js = true
   tsconfig_base = "tsconfig_base.json"
   deps = [
+    "//ash/webui/common/resources/hotspot:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
@@ -97,6 +95,8 @@ ts_library("build_ts") {
   in_files = src_ts_files + html_wrapper_files + css_wrapper_files +
              mojom_webui_files + nearby_share_shared_files
   out_dir = tsc_output_dir
+
+  composite = true
 }
 
 preprocess_if_expr("preprocess") {

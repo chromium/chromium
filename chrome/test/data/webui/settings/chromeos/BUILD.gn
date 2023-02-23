@@ -252,8 +252,11 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   in_files = [ "test_api.test-mojom-webui.js" ] + test_files
   deps = [
+    "//ash/webui/common/resources/hotspot:build_ts",
+    "//chrome/browser/resources/settings/chromeos:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//ui/webui/resources/cr_components/app_management:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
