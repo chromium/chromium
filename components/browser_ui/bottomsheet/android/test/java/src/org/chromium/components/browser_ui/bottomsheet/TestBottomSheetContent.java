@@ -68,9 +68,10 @@ public class TestBottomSheetContent implements BottomSheetContent {
      * @param context A context to inflate views with.
      * @param priority The content's priority.
      * @param hasCustomLifecycle Whether the content is browser specific.
+     * @param contentView The view filling the sheet.
      */
-    public TestBottomSheetContent(
-            Context context, @ContentPriority int priority, boolean hasCustomLifecycle) {
+    public TestBottomSheetContent(Context context, @ContentPriority int priority,
+            boolean hasCustomLifecycle, View contentView) {
         mPeekHeight = BottomSheetContent.HeightMode.DEFAULT;
         mHalfHeight = BottomSheetContent.HeightMode.DEFAULT;
         mFullHeight = BottomSheetContent.HeightMode.DEFAULT;
@@ -83,12 +84,26 @@ public class TestBottomSheetContent implements BottomSheetContent {
             mToolbarView.setLayoutParams(params);
             mToolbarView.setBackground(new ColorDrawable(Color.WHITE));
 
-            mContentView = new View(context);
-            params = new ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            mContentView.setLayoutParams(params);
+            if (contentView == null) {
+                mContentView = new View(context);
+                params = new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                mContentView.setLayoutParams(params);
+            } else {
+                mContentView = contentView;
+            }
             mToolbarView.setBackground(new ColorDrawable(Color.WHITE));
         });
+    }
+
+    /**
+     * @param context A context to inflate views with.
+     * @param priority The content's priority.
+     * @param hasCustomLifecycle Whether the content is browser specific.
+     */
+    public TestBottomSheetContent(
+            Context context, @ContentPriority int priority, boolean hasCustomLifecycle) {
+        this(context, priority, hasCustomLifecycle, null);
     }
 
     /**

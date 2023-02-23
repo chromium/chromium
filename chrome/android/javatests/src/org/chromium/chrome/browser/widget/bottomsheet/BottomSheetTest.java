@@ -16,6 +16,11 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
+import android.view.View;
+import android.view.View.OnLayoutChangeListener;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -32,6 +37,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -263,6 +269,58 @@ public class BottomSheetTest {
 
         assertEquals("The sheet should be restored to the peek state.", SheetState.PEEK,
                 mSheetController.getSheetState());
+    }
+
+    @Test
+    @MediumTest
+    public void testWrapContentHeightChange() throws ExecutionException, TimeoutException {
+        final int startingHeight = 300;
+        final int endingHeight = 400;
+
+        // Set up content view.
+        LinearLayout content = new LinearLayout(mTestRule.getActivity());
+        final CallbackHelper callbackHelper = new CallbackHelper();
+        content.addOnLayoutChangeListener(new OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(
+                    View view, int l, int t, int r, int b, int ol, int ot, int or, int ob) {
+                callbackHelper.notifyCalled();
+            }
+        });
+        LinearLayout child = new LinearLayout(mTestRule.getActivity());
+        child.setLayoutParams(
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, startingHeight));
+        int callCount = callbackHelper.getCallCount();
+        content.addView(child);
+        content.layout(0, 0, 100, 100);
+        callbackHelper.waitForCallback(callCount);
+
+        // Set up bottom sheet.
+        TestBottomSheetContent sizeChangingContent = new TestBottomSheetContent(
+                mTestRule.getActivity(), ContentPriority.HIGH, false, content);
+        sizeChangingContent.setFullHeightRatio(HeightMode.WRAP_CONTENT);
+        sizeChangingContent.setHalfHeightRatio(HeightMode.DISABLED);
+        sizeChangingContent.setPeekHeight(HeightMode.DISABLED);
+
+        runOnUiThreadBlocking(
+                () -> mSheetController.requestShowContent(sizeChangingContent, false));
+
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+        assertEquals(startingHeight, mSheetController.getCurrentOffset());
+
+        // Change the size of the content to make sure the sheet's height reflects the change.
+        runOnUiThreadBlocking(() -> {
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) child.getLayoutParams();
+            params.height = endingHeight;
+            child.setLayoutParams(params);
+        });
+        // Expect SCROLLING state to be reached to the animation caused by the height change.
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.SCROLLING);
+
+        // The bottom sheet should reach FULL state again after the animation is finished.
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
+
+        assertEquals(endingHeight, mSheetController.getCurrentOffset());
     }
 
     @Test

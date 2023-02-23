@@ -944,7 +944,9 @@ class BottomSheet extends FrameLayout
         cancelAnimation();
         mTargetState = state;
 
-        if (animate && state != mCurrentState) {
+        if (animate
+                && (state != mCurrentState
+                        || mCurrentOffsetPx != getSheetHeightForState(mTargetState))) {
             createSettleAnimation(state, reason);
         } else {
             setSheetOffsetFromBottom(getSheetHeightForState(state), reason);
