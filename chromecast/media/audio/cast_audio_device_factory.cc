@@ -81,6 +81,7 @@ class NonSwitchableAudioRendererSink
       output_device_ =
           NewOutputDevice(frame_token_, sink_params_, kAuthorizationTimeout);
     } else {
+      LOG(INFO) << "Use cast audio output device.";
       output_device_ = base::MakeRefCounted<CastAudioOutputDevice>(
           std::move(audio_socket_broker_), std::move(app_media_info_manager_));
     }

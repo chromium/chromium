@@ -18,10 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace media {
-class AudioBus;
-}  // namespace media
-
 namespace chromecast {
 namespace media {
 
@@ -64,19 +60,13 @@ class CastAudioOutputDevice : public ::media::AudioRendererSink {
   bool IsOptimizedForHardwareParameters() override;
   bool CurrentThreadIsRenderingThread() override;
 
-  void OnBackendError();
-  int ReadBuffer(base::TimeDelta delay, ::media::AudioBus* audio_bus);
-
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  const base::SequenceBound<Internal> internal_;
+  base::SequenceBound<std::unique_ptr<Internal>> internal_;
+  Internal* internal_ptr_ = nullptr;
 
-  // Callback to get audio data. Once set in Initialize, it won't change.
-  RenderCallback* render_callback_ = nullptr;
-
-  base::Lock callback_lock_;
-
-  // Nullable callback that is only available before Stop.
-  RenderCallback* active_render_callback_ GUARDED_BY(callback_lock_) = nullptr;
+  mojo::PendingRemote<mojom::AudioSocketBroker> pending_socket_broker_;
+  mojo::PendingRemote<::media::mojom::CastApplicationMediaInfoManager>
+      pending_app_media_info_manager_;
 };
 
 }  // namespace media
