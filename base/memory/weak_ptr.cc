@@ -10,8 +10,7 @@
 #include "base/debug/stack_trace.h"
 #endif
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 WeakReference::Flag::Flag() {
   // Flags only become bound when checked for validity, or invalidated,
@@ -53,14 +52,19 @@ void WeakReference::Flag::DetachFromSequence() {
 WeakReference::Flag::~Flag() = default;
 
 WeakReference::WeakReference() = default;
-
 WeakReference::WeakReference(const scoped_refptr<Flag>& flag) : flag_(flag) {}
-
 WeakReference::~WeakReference() = default;
 
-WeakReference::WeakReference(WeakReference&& other) noexcept = default;
-
 WeakReference::WeakReference(const WeakReference& other) = default;
+WeakReference& WeakReference::operator=(const WeakReference& other) = default;
+
+WeakReference::WeakReference(WeakReference&& other) noexcept = default;
+WeakReference& WeakReference::operator=(WeakReference&& other) noexcept =
+    default;
+
+void WeakReference::Reset() {
+  flag_ = nullptr;
+}
 
 bool WeakReference::IsValid() const {
   return flag_ && flag_->IsValid();
@@ -92,15 +96,6 @@ void WeakReferenceOwner::Invalidate() {
   flag_ = MakeRefCounted<WeakReference::Flag>();
 }
 
-WeakPtrBase::WeakPtrBase() : ptr_(0) {}
-
-WeakPtrBase::~WeakPtrBase() = default;
-
-WeakPtrBase::WeakPtrBase(const WeakReference& ref, uintptr_t ptr)
-    : ref_(ref), ptr_(ptr) {
-  DCHECK(ptr_);
-}
-
 WeakPtrFactoryBase::WeakPtrFactoryBase(uintptr_t ptr) : ptr_(ptr) {
   DCHECK(ptr_);
 }
@@ -109,5 +104,4 @@ WeakPtrFactoryBase::~WeakPtrFactoryBase() {
   ptr_ = 0;
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

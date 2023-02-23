@@ -50,88 +50,113 @@ class SafeRef {
   // SafeRef if the pointer may not be present.
 
   // Copy construction and assignment.
-  SafeRef(const SafeRef& p) : w_(p.w_) {
+  SafeRef(const SafeRef& other) : ref_(other.ref_), ptr_(other.ptr_) {
     // Avoid use-after-move.
-    CHECK(w_);
+    CHECK(ref_.IsValid());
   }
-  SafeRef& operator=(const SafeRef& p) {
-    w_ = p.w_;
+  SafeRef& operator=(const SafeRef& other) {
+    ref_ = other.ref_;
+    ptr_ = other.ptr_;
     // Avoid use-after-move.
-    CHECK(w_);
+    CHECK(ref_.IsValid());
     return *this;
   }
 
   // Move construction and assignment.
-  SafeRef(SafeRef&& p) : w_(std::move(p.w_)) { CHECK(w_); }
-  SafeRef& operator=(SafeRef&& p) {
-    w_ = std::move(p.w_);
+  SafeRef(SafeRef&& other)
+      : ref_(std::move(other.ref_)), ptr_(std::move(other.ptr_)) {
     // Avoid use-after-move.
-    CHECK(w_);
+    CHECK(ref_.IsValid());
+  }
+  SafeRef& operator=(SafeRef&& other) {
+    ref_ = std::move(other.ref_);
+    ptr_ = std::move(other.ptr_);
+    // Avoid use-after-move.
+    CHECK(ref_.IsValid());
     return *this;
   }
 
   // Copy conversion from SafeRef<U>.
-  template <typename U>
+  template <typename U,
+            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  SafeRef(const SafeRef<U>& p) : w_(p.w_) {
+  SafeRef(const SafeRef<U>& other)
+      : ref_(other.ref_),
+        ptr_(other.ptr_)  // raw_ptr<U> converts to raw_ptr<T>.
+  {
     // Avoid use-after-move.
-    CHECK(w_);
+    CHECK(ref_.IsValid());
   }
   template <typename U>
-  SafeRef& operator=(const SafeRef<U>& p) {
-    w_ = p.w_;
+  SafeRef& operator=(const SafeRef<U>& other) {
+    ref_ = other.ref_;
+    ptr_ = other.ptr_;  // raw_ptr<U> converts to raw_ptr<T>.
     // Avoid use-after-move.
-    CHECK(w_);
+    CHECK(ref_.IsValid());
     return *this;
   }
 
   // Move conversion from SafeRef<U>.
   template <typename U>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  SafeRef(SafeRef<U>&& p) : w_(std::move(p.w_)) {
+  SafeRef(SafeRef<U>&& other)
+      : ref_(std::move(other.ref_)),
+        ptr_(std::move(other.ptr_))  // raw_ptr<U> converts to raw_ptr<T>.
+  {
     // Avoid use-after-move.
-    CHECK(w_);
+    CHECK(ref_.IsValid());
   }
   template <typename U>
-  SafeRef& operator=(SafeRef<U>&& p) {
-    w_ = std::move(p.w_);
+  SafeRef& operator=(SafeRef<U>&& other) {
+    ref_ = std::move(other.ref_);
+    ptr_ = std::move(other.ptr_);  // raw_ptr<U> converts to raw_ptr<T>.
     // Avoid use-after-move.
-    CHECK(w_);
+    CHECK(ref_.IsValid());
     return *this;
-  }
-
-  // Call methods on the underlying T. Will CHECK() if the T pointee is no
-  // longer alive.
-  T* operator->() const {
-    // We rely on WeakPtr<T> to CHECK() on a bad deref; tests verify this.
-    return w_.operator->();
   }
 
   // Provide access to the underlying T as a reference. Will CHECK() if the T
   // pointee is no longer alive.
-  T& operator*() const { return *operator->(); }
+  T& operator*() const {
+    CHECK(ref_.IsValid());
+    return *ptr_;
+  }
+
+  // Used to call methods on the underlying T. Will CHECK() if the T pointee is
+  // no longer alive.
+  T* operator->() const {
+    CHECK(ref_.IsValid());
+    return &*ptr_;
+  }
 
  private:
   template <typename U>
   friend class SafeRef;
   template <typename U>
   friend SafeRef<U> internal::MakeSafeRefFromWeakPtrInternals(
-      const internal::WeakReference& ref,
+      internal::WeakReference&& ref,
       U* ptr);
 
-  // Construction from a from WeakPtr. Will CHECK() if the WeakPtr is already
-  // invalid.
-  explicit SafeRef(WeakPtr<T> w) : w_(std::move(w)) { CHECK(w_); }
+  // Construction from a from a WeakPtr's internals. Will CHECK() if the WeakPtr
+  // is already invalid.
+  explicit SafeRef(internal::WeakReference&& ref, T* ptr)
+      : ref_(std::move(ref)), ptr_(ptr) {
+    CHECK(ref_.IsValid());
+  }
 
-  WeakPtr<T> w_;
+  internal::WeakReference ref_;
+
+  // This pointer is only valid when ref_.is_valid() is true.  Otherwise, its
+  // value is undefined (as opposed to nullptr). Unlike WeakPtr, this raw_ptr is
+  // not allowed to dangle.
+  raw_ptr<T> ptr_;
 };
 
 namespace internal {
 template <typename T>
-SafeRef<T> MakeSafeRefFromWeakPtrInternals(const internal::WeakReference& ref,
+SafeRef<T> MakeSafeRefFromWeakPtrInternals(internal::WeakReference&& ref,
                                            T* ptr) {
-  CHECK(ptr);
-  return SafeRef<T>(WeakPtr<T>(ref, ptr));
+  return SafeRef<T>(std::move(ref), ptr);
 }
 }  // namespace internal
 

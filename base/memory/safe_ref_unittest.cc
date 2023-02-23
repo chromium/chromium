@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gtest_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -18,17 +19,22 @@ namespace base {
 namespace {
 
 struct ReallyBaseClass {};
-struct BaseClass : ReallyBaseClass {};
+struct BaseClass : ReallyBaseClass {
+  virtual ~BaseClass() = default;
+  void VirtualMethod() {}
+};
+struct OtherBaseClass {
+  virtual ~OtherBaseClass() = default;
+  virtual void VirtualMethod() {}
+};
 
-struct WithWeak : BaseClass {
-  ~WithWeak() { self = nullptr; }
+struct WithWeak final : BaseClass, OtherBaseClass {
+  ~WithWeak() final { self = nullptr; }
 
   void Method() {}
 
   int i = 1;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION WithWeak* self{this};
+  raw_ptr<WithWeak> self{this};
   base::WeakPtrFactory<WithWeak> factory{this};
 };
 
@@ -118,18 +124,34 @@ TEST(SafeRefDeathTest, StarOperatorCrashIfBadPointer) {
   EXPECT_CHECK_DEATH(safe.operator*());  // Will crash since not live.
 }
 
+TEST(SafeRefTest, ConversionToBaseClassFromCopyConstruct) {
+  WithWeak with;
+  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
+  SafeRef<OtherBaseClass> base_safe = safe;
+  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe), &with);
+}
+
+TEST(SafeRefTest, ConversionToBaseClassFromMoveConstruct) {
+  WithWeak with;
+  SafeRef<WithWeak> safe(with.factory.GetSafeRef());
+  SafeRef<OtherBaseClass> base_safe = std::move(safe);
+  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe), &with);
+}
+
 TEST(SafeRefTest, ConversionToBaseClassFromCopyAssign) {
   WithWeak with;
   SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<BaseClass> base_safe = safe;
-  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe)->self, &with);
+  SafeRef<OtherBaseClass> base_safe(with.factory.GetSafeRef());
+  base_safe = safe;
+  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe), &with);
 }
 
 TEST(SafeRefTest, ConversionToBaseClassFromMoveAssign) {
   WithWeak with;
   SafeRef<WithWeak> safe(with.factory.GetSafeRef());
-  SafeRef<BaseClass> base_safe = std::move(safe);
-  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe)->self, &with);
+  SafeRef<OtherBaseClass> base_safe(with.factory.GetSafeRef());
+  base_safe = std::move(safe);
+  EXPECT_EQ(static_cast<WithWeak*>(&*base_safe), &with);
 }
 
 TEST(SafeRefTest, CanDerefConst) {
@@ -265,6 +287,16 @@ TEST(SafeRefTest, Bind) {
   WithWeak with;
   BindOnce(&WithWeak::Method, with.factory.GetSafeRef()).Run();
 }
+
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+// TODO(crbug.com/1416264): Test this when we are able to.
+TEST(SafeRefDeathTest, DISABLED_DanglingPointerDetector) {
+  auto with = std::make_unique<WithWeak>();
+  SafeRef<WithWeak> safe(with->factory.GetSafeRef());
+  BASE_EXPECT_DEATH({ with.reset(); },
+                    testing::HasSubstr("Detected dangling raw_ptr"));
+}
+#endif
 
 }  // namespace
 }  // namespace base
