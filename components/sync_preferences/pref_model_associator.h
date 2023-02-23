@@ -182,10 +182,10 @@ class PrefModelAssociator : public syncer::SyncableService,
 
   // The preferences that are currently synced (excludes those preferences
   // that have never had sync data and currently have default values).
-  // Note: this set never decreases, only grows to eventually match
-  // `registered_preferences_` as more preferences are synced. It determines
-  // whether a preference change should update an existing sync node or create
-  // a new sync node.
+  // Note: As long as Sync remains enabled, this set never decreases, only grows
+  // to eventually match `registered_preferences_` as more preferences are
+  // synced. It determines whether a preference change should update an existing
+  // sync node or create a new sync node.
   std::set<std::string> synced_preferences_;
 
   // Preferences that have migrated to a new ModelType. They are included here

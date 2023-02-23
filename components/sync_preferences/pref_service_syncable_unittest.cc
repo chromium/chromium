@@ -67,6 +67,25 @@ const char kDefaultCharsetPrefName[] = "default_charset";
 const char kNonDefaultCharsetValue[] = "foo";
 const char kDefaultCharsetValue[] = "utf-8";
 
+// Searches for a preference matching `name` and, if specified,`change_type`,
+// within `list`. Returns the value of the first matching pref, or nullopt if
+// none is found.
+absl::optional<base::Value> FindValue(
+    const std::string& name,
+    const syncer::SyncChangeList& list,
+    absl::optional<syncer::SyncChange::SyncChangeType> change_type =
+        absl::nullopt) {
+  for (const SyncChange& change : list) {
+    if ((!change_type || change.change_type() == *change_type) &&
+        change.sync_data().GetClientTagHash() ==
+            syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, name)) {
+      return base::JSONReader::Read(
+          change.sync_data().GetSpecifics().preference().value());
+    }
+  }
+  return absl::nullopt;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr ModelTypeSet kAllPreferenceModelTypes(
     syncer::PREFERENCES,
@@ -233,19 +252,6 @@ class PrefServiceSyncableTest : public testing::Test {
     const PrefService::Preference* preference =
         prefs_.FindPreference(name.c_str());
     return *preference->GetValue();
-  }
-
-  absl::optional<base::Value> FindValue(const std::string& name,
-                                        const syncer::SyncChangeList& list) {
-    auto it = list.begin();
-    for (; it != list.end(); ++it) {
-      if (it->sync_data().GetClientTagHash() ==
-          syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, name)) {
-        return base::JSONReader::Read(
-            it->sync_data().GetSpecifics().preference().value());
-      }
-    }
-    return absl::nullopt;
   }
 
   bool IsRegistered(const std::string& pref_name) {
@@ -484,19 +490,6 @@ class PrefServiceSyncableMergeTest : public testing::Test {
     return *preference->GetValue();
   }
 
-  absl::optional<base::Value> FindValue(const std::string& name,
-                                        const syncer::SyncChangeList& list) {
-    auto it = list.begin();
-    for (; it != list.end(); ++it) {
-      if (it->sync_data().GetClientTagHash() ==
-          syncer::ClientTagHash::FromUnhashed(syncer::PREFERENCES, name)) {
-        return base::JSONReader::Read(
-            it->sync_data().GetSpecifics().preference().value());
-      }
-    }
-    return absl::nullopt;
-  }
-
  protected:
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_ =
       base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
@@ -689,6 +682,71 @@ TEST_F(PrefServiceSyncableTest, UpdatedPreferenceWithValue) {
   absl::optional<base::Value> actual(FindValue(kStringPrefName, out));
   ASSERT_TRUE(actual);
   EXPECT_EQ(expected, *actual);
+}
+
+TEST_F(PrefServiceSyncableTest, AddAndUpdatePreference) {
+  syncer::SyncChangeList out;
+  InitWithSyncDataTakeOutput(syncer::SyncDataList(), &out);
+
+  base::Value expected_add(kExampleUrl1);
+  GetPrefs()->Set(kStringPrefName, expected_add);
+
+  // This should have resulted in an ACTION_ADD.
+  absl::optional<base::Value> actual_add(
+      FindValue(kStringPrefName, out, syncer::SyncChange::ACTION_ADD));
+  ASSERT_TRUE(actual_add);
+  EXPECT_EQ(expected_add, *actual_add);
+
+  base::Value expected_update(kExampleUrl2);
+  GetPrefs()->Set(kStringPrefName, expected_update);
+
+  // Since a synced value already existed, this time it should have resulted in
+  // an ACTION_UPDATE.
+  absl::optional<base::Value> actual_update(
+      FindValue(kStringPrefName, out, syncer::SyncChange::ACTION_UPDATE));
+  ASSERT_TRUE(actual_update);
+  EXPECT_EQ(expected_update, *actual_update);
+}
+
+TEST_F(PrefServiceSyncableTest, StopAndRestartSync) {
+  {
+    syncer::SyncChangeList out;
+    InitWithSyncDataTakeOutput(syncer::SyncDataList(), &out);
+    ASSERT_TRUE(out.empty());
+
+    base::Value expected_add1(kExampleUrl1);
+    GetPrefs()->Set(kStringPrefName, expected_add1);
+
+    // This should have resulted in an ACTION_ADD.
+    ASSERT_TRUE(pref_sync_service_->IsPrefSyncedForTesting(kStringPrefName));
+    absl::optional<base::Value> actual_add1(
+        FindValue(kStringPrefName, out, syncer::SyncChange::ACTION_ADD));
+    ASSERT_TRUE(actual_add1);
+    EXPECT_EQ(expected_add1, *actual_add1);
+  }
+
+  // Stop sync, clear the pref, then restart sync.
+  pref_sync_service_->StopSyncing(syncer::PREFERENCES);
+  GetPrefs()->ClearPref(kStringPrefName);
+
+  {
+    syncer::SyncChangeList out2;
+    InitWithSyncDataTakeOutput(syncer::SyncDataList(), &out2);
+    ASSERT_TRUE(out2.empty());
+
+    // The pref should not be considered synced anymore.
+    EXPECT_FALSE(pref_sync_service_->IsPrefSyncedForTesting(kStringPrefName));
+
+    // Set a new value.
+    base::Value expected_add2(kExampleUrl2);
+    GetPrefs()->Set(kStringPrefName, expected_add2);
+
+    // This should have resulted in an ACTION_ADD again.
+    absl::optional<base::Value> actual_add2(
+        FindValue(kStringPrefName, out2, syncer::SyncChange::ACTION_ADD));
+    ASSERT_TRUE(actual_add2);
+    EXPECT_EQ(expected_add2, *actual_add2);
+  }
 }
 
 TEST_F(PrefServiceSyncableTest, UpdatedSyncNodeActionUpdate) {

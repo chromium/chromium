@@ -296,6 +296,7 @@ void PrefModelAssociator::StopSyncing(syncer::ModelType type) {
   DCHECK_EQ(type_, type);
   models_associated_ = false;
   sync_processor_.reset();
+  synced_preferences_.clear();
   pref_service_->OnIsSyncingChanged();
 }
 
