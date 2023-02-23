@@ -17,6 +17,8 @@ source_set("alarms") {
     "alarms_api_constants.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//extensions/common",

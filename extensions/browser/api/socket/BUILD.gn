@@ -24,6 +24,8 @@ source_set("socket") {
     "udp_socket.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//build:chromeos_buildflags",
     "//content/public/browser",

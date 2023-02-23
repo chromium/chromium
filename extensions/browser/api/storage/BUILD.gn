@@ -31,6 +31,8 @@ source_set("storage") {
     "weak_unlimited_settings_storage.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/keyed_service/content",

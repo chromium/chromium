@@ -18,6 +18,8 @@ source_set("file_system") {
     "saved_files_service_interface.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//build:chromeos_buildflags",

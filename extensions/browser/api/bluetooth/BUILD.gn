@@ -23,6 +23,8 @@ source_set("bluetooth") {
     "bluetooth_private_api.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//build:chromeos_buildflags",
     "//components/device_event_log",

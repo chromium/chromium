@@ -21,6 +21,8 @@ source_set("lock_screen_data") {
     "operation_result.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//components/keyed_service/content",

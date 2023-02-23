@@ -23,6 +23,8 @@ source_set("webcam_private") {
     "webcam_private_api_chromeos.cc",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//chromeos/dbus/ip_peripheral",
     "//extensions/browser/api/serial",

@@ -16,6 +16,8 @@ source_set("system_cpu") {
     "system_cpu_api.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//build:chromeos_buildflags",
     "//extensions/browser/api/system_info",

@@ -15,6 +15,8 @@ source_set("system_info") {
     "system_info_provider.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//components/storage_monitor",
     "//content/public/browser",

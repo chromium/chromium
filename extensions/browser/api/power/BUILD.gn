@@ -13,6 +13,8 @@ source_set("power") {
     "power_api.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//content/public/browser",
     "//content/public/common",

@@ -23,6 +23,8 @@ source_set("messaging") {
     "messaging_delegate.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":native_messaging",
     "//base",
@@ -45,6 +47,8 @@ source_set("native_messaging") {
     "native_message_host.h",
     "native_messaging_channel.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//base",

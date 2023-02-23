@@ -13,6 +13,8 @@ source_set("virtual_keyboard_private") {
     "virtual_keyboard_private_api.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [ "//extensions/common/api" ]
 
   public_deps = [
@@ -23,6 +25,8 @@ source_set("virtual_keyboard_private") {
 
 source_set("virtual_keyboard_delegate") {
   sources = [ "virtual_keyboard_delegate.h" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
     "//content/public/browser",
