@@ -2644,7 +2644,6 @@ chromium-metrics-reviews@google.com.
     Captures the response parsing error rate whenever collecting {Signal}.
   </summary>
   <token key="Signal">
-    <variant name="WMI.AntiVirus" summary="AntiVirus info from WMI"/>
     <variant name="WMI.Hotfixes" summary="Hotfixes info from WMI"/>
     <variant name="WSC.AntiVirus" summary="AntiVirus info from WSC"/>
   </token>
