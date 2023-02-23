@@ -42895,8 +42895,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Foreground feed start"/>
   <int value="4" label="Foreground account change"/>
   <int value="5" label="Foreground user triggered"/>
-  <int value="6" label="Foreground forced">
-    A server request is made even if the feed model is considered fresh.
+  <int value="6" label="Foreground feed visible other">
+    The feed is visible and trigger is not already one of the other triggers.
   </int>
   <int value="7" label="Foreground not forced">
     A server request is only made if the feed model is considered stale.
