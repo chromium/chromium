@@ -130,6 +130,8 @@ class FeatureTilesContainerViewTest : public AshTestBase,
 
   int GetPageCount() { return container()->page_count(); }
 
+  int GetVisibleCount() { return container()->GetVisibleFeatureTileCount(); }
+
   // Fills the container with a number of `pages` given the max amount of
   // displayable primary tiles per page.
   void FillContainerWithPrimaryTiles(int pages) {
@@ -182,7 +184,8 @@ TEST_F(FeatureTilesContainerViewTest, FeatureTileRows) {
   two_primary_tiles.push_back(mock_controller->CreateTile());
   two_primary_tiles.push_back(mock_controller->CreateTile());
   container()->AddTiles(std::move(two_primary_tiles));
-  EXPECT_EQ(GetRowCount(), 1);
+  EXPECT_EQ(1, GetRowCount());
+  EXPECT_EQ(2, GetVisibleCount());
 
   // Expect one other row by adding a primary and two compact tiles.
   std::vector<std::unique_ptr<FeatureTile>> one_primary_two_compact_tiles;
@@ -192,13 +195,15 @@ TEST_F(FeatureTilesContainerViewTest, FeatureTileRows) {
   one_primary_two_compact_tiles.push_back(
       mock_controller->CreateTile(/*compact=*/true));
   container()->AddTiles(std::move(one_primary_two_compact_tiles));
-  EXPECT_EQ(GetRowCount(), 2);
+  EXPECT_EQ(2, GetRowCount());
+  EXPECT_EQ(5, GetVisibleCount());
 
   // Expect one other row by adding a single primary tile.
   std::vector<std::unique_ptr<FeatureTile>> one_primary_tile;
   one_primary_tile.push_back(mock_controller->CreateTile());
   container()->AddTiles(std::move(one_primary_tile));
-  EXPECT_EQ(GetRowCount(), 3);
+  EXPECT_EQ(3, GetRowCount());
+  EXPECT_EQ(6, GetVisibleCount());
 }
 
 TEST_F(FeatureTilesContainerViewTest, ChangeTileVisibility) {
@@ -220,15 +225,18 @@ TEST_F(FeatureTilesContainerViewTest, ChangeTileVisibility) {
   AddTiles(std::move(tiles));
 
   // Only one row is created because the first tile is not visible.
-  EXPECT_EQ(GetRowCount(), 1);
+  EXPECT_EQ(1, GetRowCount());
+  EXPECT_EQ(2, GetVisibleCount());
 
   // Making the tile visible causes a second row to be created.
   tile1_ptr->SetVisible(true);
-  EXPECT_EQ(GetRowCount(), 2);
+  EXPECT_EQ(2, GetRowCount());
+  EXPECT_EQ(3, GetVisibleCount());
 
   // Making the tile invisible causes the second row to be removed.
   tile1_ptr->SetVisible(false);
-  EXPECT_EQ(GetRowCount(), 1);
+  EXPECT_EQ(1, GetRowCount());
+  EXPECT_EQ(2, GetVisibleCount());
 }
 
 TEST_F(FeatureTilesContainerViewTest, PageCountUpdated) {
@@ -252,16 +260,19 @@ TEST_F(FeatureTilesContainerViewTest, PageCountUpdated) {
   // Since a row fits two primary tiles, expect two pages for five primary
   // tiles.
   AddTiles(std::move(tiles));
-  EXPECT_EQ(GetPageCount(), 2);
+  EXPECT_EQ(2, GetPageCount());
+  EXPECT_EQ(5, GetVisibleCount());
 
   // Expect change in page count after updating visibility of a tile.
   tile1_ptr->SetVisible(false);
-  EXPECT_EQ(GetPageCount(), 1);
+  EXPECT_EQ(1, GetPageCount());
+  EXPECT_EQ(4, GetVisibleCount());
 
   // Expect change in page count after updating max displayable rows by updating
   // the available height.
   SetRowsFromHeight(kFeatureTileHeight);
-  EXPECT_EQ(GetPageCount(), 2);
+  EXPECT_EQ(2, GetPageCount());
+  EXPECT_EQ(4, GetVisibleCount());
 }
 
 // TODO(b/263185068): Use EventGenerator.

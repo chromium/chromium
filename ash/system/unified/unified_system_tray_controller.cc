@@ -56,6 +56,7 @@
 #include "ash/system/unified/feature_pod_controller_base.h"
 #include "ash/system/unified/feature_pods_container_view.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/system/unified/feature_tiles_container_view.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/quiet_mode_feature_pod_controller.h"
@@ -746,6 +747,11 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               feature_pod_controllers_, tiles);
 
   quick_settings_view_->AddTiles(std::move(tiles));
+
+  quick_settings_metrics_util::RecordQsFeaturePodCount(
+      quick_settings_view_->feature_tiles_container()
+          ->GetVisibleFeatureTileCount(),
+      Shell::Get()->tablet_mode_controller()->InTabletMode());
 }
 
 void UnifiedSystemTrayController::AddFeaturePodItem(

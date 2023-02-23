@@ -277,6 +277,21 @@ void FeatureTilesContainerView::UpdateTotalPages() {
   pagination_model_->SelectPage(0, false /*animate*/);
 }
 
+int FeatureTilesContainerView::GetVisibleFeatureTileCount() const {
+  int count = 0;
+  for (PageContainer* page : pages_) {
+    for (auto* row : page->children()) {
+      for (views::View* child : row->children()) {
+        DCHECK(views::IsViewClass<FeatureTile>(child));
+        if (child->GetVisible()) {
+          ++count;
+        }
+      }
+    }
+  }
+  return count;
+}
+
 BEGIN_METADATA(FeatureTilesContainerView, views::View)
 END_METADATA
 
