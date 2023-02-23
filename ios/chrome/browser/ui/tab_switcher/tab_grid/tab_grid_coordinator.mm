@@ -1060,10 +1060,9 @@
     return;
   }
 
-  // TODO(crbug.com/1414536): Pass the inactive tabs browser instead.
   self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
       initWithBaseViewController:self.baseViewController
-                         browser:self.regularBrowser];
+                         browser:_inactiveBrowser];
   self.inactiveTabsCoordinator.delegate = self;
   [self.inactiveTabsCoordinator start];
 }
