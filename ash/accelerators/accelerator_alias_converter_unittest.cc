@@ -306,13 +306,13 @@ INSTANTIATE_TEST_SUITE_P(
         {ui::Accelerator{ui::VKEY_LEFT, ui::EF_ALT_DOWN}, absl::nullopt},
         // key_code not as reversed six pack key prevent remapping.
         {ui::Accelerator{ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN}, absl::nullopt},
-        // [Search] as the only modifier prevents remapping.
-        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN}, absl::nullopt},
-        // [Back] + [Shift] + [Search] only prevents remapping, which is just
-        // the reverse of [Insert].
+        // [Back] + [Search] -> [Delete]
+        {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN},
+         ui::Accelerator{ui::VKEY_DELETE, ui::EF_NONE}},
+        // [Back] + [Shift] + [Search] -> [Insert].
         {ui::Accelerator{ui::VKEY_BACK,
                          ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN},
-         absl::nullopt},
+         ui::Accelerator{ui::VKEY_INSERT, ui::EF_NONE}},
         // [Back] + [Shift] + [Search] + [Alt] -> [Insert] + [Alt].
         {ui::Accelerator{ui::VKEY_BACK, ui::EF_COMMAND_DOWN |
                                             ui::EF_SHIFT_DOWN |

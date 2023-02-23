@@ -122,11 +122,6 @@ AcceleratorAliasConverter::CreateReversedSixPackAliases(
   }
 
   int modifiers = accelerator.modifiers() & ~ui::EF_COMMAND_DOWN;
-  // If modifiers only contain [Search] key, no reversed alias exists.
-  if (modifiers == 0) {
-    return std::vector<ui::Accelerator>();
-  }
-
   // [Back] maps back to [Insert] if modifier contains [Shift]. Otherwise,
   // it maps back to [Delete].
   if (accelerator.key_code() == ui::KeyboardCode::VKEY_BACK) {
@@ -136,14 +131,8 @@ AcceleratorAliasConverter::CreateReversedSixPackAliases(
     }
 
     modifiers &= ~ui::EF_SHIFT_DOWN;
-    if (modifiers == 0) {
-      // Handles an edge case if the accelerator is just the reverse of
-      // [Insert].
-      return std::vector<ui::Accelerator>();
-    } else {
-      return {ui::Accelerator(ui::KeyboardCode::VKEY_INSERT, modifiers,
-                              accelerator.key_state())};
-    }
+    return {ui::Accelerator(ui::KeyboardCode::VKEY_INSERT, modifiers,
+                            accelerator.key_state())};
   }
 
   // Handle modifiers other than [Back].

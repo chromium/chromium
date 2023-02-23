@@ -668,7 +668,7 @@ TEST_F(AcceleratorConfigurationProviderTest,
       {/*trigger_on_press=*/true, ui::VKEY_LEFT,
        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
        TAKE_WINDOW_SCREENSHOT},
-      {/*trigger_on_press=*/true, ui::VKEY_PRIOR,
+      {/*trigger_on_press=*/true, ui::VKEY_UP,
        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, DESKS_NEW_DESK},
       {/*trigger_on_press=*/true, ui::VKEY_RIGHT,
        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
@@ -690,9 +690,9 @@ TEST_F(AcceleratorConfigurationProviderTest,
       // done. [Left]+[Alt]>[Left]+[Alt].
       {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_ALT_DOWN,
        CYCLE_BACKWARD_MRU},
-      // When [Search] is the only modifier, no remapping is done.
-      // [Left]+[Search]->[Left]+[Search].
+      // When [Search] is the only modifier, [Left]+[Search]->[Home].
       {/*trigger_on_press=*/true, ui::VKEY_LEFT, ui::EF_COMMAND_DOWN, NEW_TAB},
+      {/*trigger_on_press=*/true, ui::VKEY_HOME, ui::EF_NONE, NEW_TAB},
       // When key code is not reversed six pack key, no remapping is done.
       // [Tab]+[Search]+[Alt]->[Tab]+[Search]+[Alt].
       {/*trigger_on_press=*/true, ui::VKEY_TAB,
@@ -709,10 +709,11 @@ TEST_F(AcceleratorConfigurationProviderTest,
        TAKE_WINDOW_SCREENSHOT},
       {/*trigger_on_press=*/true, ui::VKEY_HOME,
        ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, TAKE_WINDOW_SCREENSHOT},
-      // [Prior]+[Search]+[Alt]->[Up]+[Alt].
-      {/*trigger_on_press=*/true, ui::VKEY_PRIOR,
+      // [Up]+[Search]+[Alt]->[Prior]+[Alt].
+      {/*trigger_on_press=*/true, ui::VKEY_UP,
        ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, DESKS_NEW_DESK},
-      {/*trigger_on_press=*/true, ui::VKEY_UP, ui::EF_ALT_DOWN, DESKS_NEW_DESK},
+      {/*trigger_on_press=*/true, ui::VKEY_PRIOR, ui::EF_ALT_DOWN,
+       DESKS_NEW_DESK},
       // [Right]+[Search]+[Shift]+[Alt]->[End]+[Shift]+[Alt].
       {/*trigger_on_press=*/true, ui::VKEY_RIGHT,
        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
@@ -736,11 +737,10 @@ TEST_F(AcceleratorConfigurationProviderTest,
        SHOW_TASK_MANAGER},
       {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_ALT_DOWN,
        SHOW_TASK_MANAGER},
-
-      // If the accelerator is just the reverse of [Insert], no remapping is
-      // done. [Back]+[Search]+[Shift] -> [Back]+[Search]+[Shift].
+      // [Back]+[Search]+[Shift] -> [Insert].
       {/*trigger_on_press=*/true, ui::VKEY_BACK,
        ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, BRIGHTNESS_UP},
+      {/*trigger_on_press=*/true, ui::VKEY_INSERT, ui::EF_NONE, BRIGHTNESS_UP},
   };
 
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
