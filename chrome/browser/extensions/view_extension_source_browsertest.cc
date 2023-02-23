@@ -17,7 +17,24 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-typedef extensions::ExtensionBrowserTest ViewExtensionSourceTest;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#endif
+
+class ViewExtensionSourceTest : public extensions::ExtensionBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // These tests use chrome:// URLs and are written on the assumption devtools
+    // are always available, so guarantee that assumption holds. Tests that
+    // check if devtools can be disabled should use a test fixture without the
+    // kForceDevToolsAvailable switch set.
+    command_line->AppendSwitch(ash::switches::kForceDevToolsAvailable);
+#endif
+  }
+};
 
 // Verify that restoring a view-source tab for a Chrome extension works
 // properly.  See https://crbug.com/699428.

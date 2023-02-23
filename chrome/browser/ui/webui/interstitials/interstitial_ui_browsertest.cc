@@ -19,10 +19,26 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#endif
+
 class InterstitialUITest : public InProcessBrowserTest {
  public:
   InterstitialUITest() {}
   ~InterstitialUITest() override {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // These tests use chrome:// URLs and are written on the assumption devtools
+    // are always available, so guarantee that assumption holds. Tests that
+    // check if devtools can be disabled should use a test fixture without the
+    // kForceDevToolsAvailable switch set.
+    command_line->AppendSwitch(ash::switches::kForceDevToolsAvailable);
+#endif
+  }
 
  protected:
   // Tests interstitial displayed at url to verify that it has the given

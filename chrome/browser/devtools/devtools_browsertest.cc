@@ -672,6 +672,21 @@ class DevToolsExtensionTest : public DevToolsTest {
   const base::FilePath test_extensions_dir_;
 };
 
+class DevToolsExtensionChromeUrlTest : public DevToolsExtensionTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DevToolsExtensionTest::SetUpCommandLine(command_line);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // These tests use chrome:// URLs and are written on the assumption devtools
+    // are always available, so guarantee that assumption holds. Tests that
+    // check if devtools can be disabled should use a test fixture without the
+    // kForceDevToolsAvailable switch set.
+    command_line->AppendSwitch(ash::switches::kForceDevToolsAvailable);
+#endif
+  }
+};
+
 class DevToolsExperimentalExtensionTest : public DevToolsExtensionTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -996,7 +1011,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 }
 
 // Tests that chrome.devtools extension is correctly exposed.
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestExtensionOnNewTab) {
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionChromeUrlTest, TestExtensionOnNewTab) {
   // Install the dynamically-generated devtools extension.
   const Extension* devtools_extension = LoadExtensionForTest(
       "Devtools Extension", "panel_devtools_page.html", "");
@@ -2582,11 +2597,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
                                   "  window.abc = 239;\n"
                                   "  console.log(abc);\n"
                                   "</script>");
-  test_factory.AddFactoryOverride(GURL("chrome://dummyurl").host(),
+  test_factory.AddFactoryOverride(GURL("https://a.com/dummyurl").host(),
                                   &mock_provider);
 
   ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("chrome://dummyurl")));
+      ui_test_utils::NavigateToURL(browser(), GURL("https://a.com/dummyurl")));
   DevToolsWindow* window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), true);
   chrome::DuplicateTab(browser());

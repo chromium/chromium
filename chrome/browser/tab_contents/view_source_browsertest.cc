@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   // the original tab is navigated cross-process. This is required for the
   // original bug to reproduce.
   {
-    GURL url = embedded_test_server()->GetURL("/title1.html");
+    GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
     ui_test_utils::UrlLoadObserver load_complete(
         url, content::NotificationService::AllSources());
     EXPECT_TRUE(content::ExecuteScript(
@@ -217,8 +217,8 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest,
   browser()->tab_strip_model()->ActivateTabAt(
       0, TabStripUserGestureDetails(
              TabStripUserGestureDetails::GestureType::kOther));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIVersionURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("b.com", "/title1.html")));
   EXPECT_TRUE(chrome::CanViewSource(browser()));
 
   // Navigate back in session history to ensure view-source mode is still
