@@ -438,7 +438,6 @@ crbug.com/1377822 external/wpt/editing/crashtests/inserthorizontalrule-in-textar
 
 # This test depends on synchronous focus() which does not exist (anymore?).
 crbug.com/1074482 external/wpt/html/interaction/focus/the-autofocus-attribute/update-the-rendering.html [ Failure ]
-crbug.com/1104125 [ Debug Mac12 ] external/wpt/clipboard-apis/feature-policy/clipboard-read/clipboard-read-enabled-on-self-origin-by-feature-policy.tentative.https.sub.html [ Failure Pass ]
 crbug.com/1104125 [ Mac10.13 Release ] external/wpt/clipboard-apis/feature-policy/clipboard-read/clipboard-read-enabled-on-self-origin-by-feature-policy.tentative.https.sub.html [ Failure Pass ]
 
 # This test has a bug in it that prevents it from being able to deal with order
@@ -1651,7 +1650,6 @@ crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-002.ht
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-003.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/grammar-error-color-dynamic-004.html [ Failure ]
 crbug.com/1147859 external/wpt/css/css-pseudo/target-text-004.html [ Failure ]
-crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-001.html [ Failure ]
 crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-003.html [ Failure ]
 crbug.com/1035708 external/wpt/css/css-pseudo/target-text-dynamic-004.html [ Failure ]
 crbug.com/1353352 fast/css3-text/css3-text-decoration/text-decoration-line-grammar-error.html [ Failure ]
@@ -2827,9 +2825,8 @@ crbug.com/1074547 external/wpt/css/css-transitions/transitioncancel-002.html [ T
 crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-004.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/cascade-highlight-005.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-cascade-002.html [ Failure ]
-crbug.com/1024156 external/wpt/css/css-pseudo/highlight-cascade-007.html [ Failure ]
+crbug.com/1024156 [ Debug Mac12 ] external/wpt/css/css-pseudo/highlight-cascade-007.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-003.html [ Failure ]
-crbug.com/1024156 external/wpt/css/css-pseudo/highlight-paired-cascade-006.html [ Failure ]
 crbug.com/1024156 external/wpt/css/css-pseudo/highlight-styling-002.html [ Failure ]
 crbug.com/1113004 external/wpt/css/css-pseudo/active-selection-043.html [ Failure ]
 crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-051.html [ Failure ]
@@ -2955,7 +2952,6 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 # Disable temporarily while updating WebRTC
 crbug.com/webrtc/10567 external/wpt/webrtc-extensions/RTCRtpParameters-maxFramerate.html [ Failure Pass ]
 crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Failure Pass ]
-crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop-opacity.html [ Failure ]
@@ -6032,8 +6028,6 @@ crbug.com/1343674 editing/deleting/460938.html [ Failure Pass ]
 # and once landed, this line can be removed.
 crbug.com/878133 external/wpt/media-source/idlharness.window.html [ Failure Pass ]
 
-# Sheriff 2022-07-13
-crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure Pass ]
 
 # Sheriff 2022-07-15
 crbug.com/1344652 [ Mac ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
@@ -6251,7 +6245,6 @@ crbug.com/1375147 [ Win ] virtual/media-foundation-for-clear-dcomp/media/control
 # TODO(crbug.com/1394559): Re-enable this test
 crbug.com/1394559 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Failure ]
 crbug.com/1395120 [ Mac11-arm64 ] fast/frames/sandboxed-iframe-plugins.html [ Failure ]
-crbug.com/1395450 [ Debug Linux ] virtual/plz-dedicated-worker/http/tests/devtools/layers/layer-tree-model.js [ Failure ]
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
 crbug.com/1395840 [ Mac10.15 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1395840 [ Mac11 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]

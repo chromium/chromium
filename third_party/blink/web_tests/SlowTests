@@ -336,7 +336,6 @@ crbug.com/1312081 [ Linux ] virtual/gpu/fast/canvas/canvas-blend-solid.html [ Sl
 crbug.com/1221326 virtual/gpu/fast/canvas/canvas-composite-image.html [ Slow ]
 
 # Media controls tests have to wait for panel to fade out.
-crbug.com/722825 [ Debug Linux ] media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
 crbug.com/722825 [ Debug Mac12 ] media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
 crbug.com/722825 [ Release ] media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
 
@@ -581,7 +580,6 @@ crbug.com/874695 http/tests/credentialmanagement/register-then-sign.html [ Slow 
 crbug.com/874695 [ Debug Linux ] http/tests/fetch/serviceworker/body-mixin-base-https-other-https.html [ Slow ]
 crbug.com/874695 [ Debug Mac12 ] http/tests/fetch/serviceworker/body-mixin-base-https-other-https.html [ Slow ]
 crbug.com/874695 [ Release ] http/tests/fetch/serviceworker/body-mixin-base-https-other-https.html [ Slow ]
-crbug.com/874695 [ Debug Linux ] http/tests/fetch/serviceworker/body-mixin.html [ Slow ]
 crbug.com/874695 [ Release ] http/tests/fetch/serviceworker/body-mixin.html [ Slow ]
 crbug.com/874695 [ Debug Linux ] http/tests/fetch/serviceworker/stream-reader-base-https-other-https.html [ Slow ]
 crbug.com/874695 [ Release ] http/tests/fetch/serviceworker/stream-reader-base-https-other-https.html [ Slow ]
@@ -666,7 +664,6 @@ crbug.com/874695 [ Release ] images/image-page-injected-script-crash.html [ Slow
 crbug.com/874695 images/yuv-decode-eligible/color-profile-layer-filter.html [ Slow ]
 crbug.com/874695 http/tests/inspector-protocol/accessibility/accessibility-nameSources-input-buttons.js [ Slow ]
 crbug.com/874695 inspector-protocol/debugger/debugger-evaluate-in-worker-while-pause-in-page.js [ Slow ]
-crbug.com/874695 [ Debug Mac12 ] media/audio-controls-do-not-fade-out.html [ Slow ]
 crbug.com/874695 [ Release ] media/audio-controls-do-not-fade-out.html [ Slow ]
 crbug.com/874695 media/autoplay-muted.html [ Slow ]
 crbug.com/874695 media/color-profile-video-seek-filter.html [ Slow ]

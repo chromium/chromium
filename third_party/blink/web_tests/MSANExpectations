@@ -39,7 +39,6 @@ crbug.com/1400717 [ Linux ] webexposed/element-instance-property-listing.html [ 
 
 # Tests timing out on WebKit Linux Trusty MSAN
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Pass Timeout ]
-crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/oopif/oopif-performance-cpu-profiles.js [ Pass Timeout ]
 
 # Memory allocation hooks are disabled on ASAN/MSAN
