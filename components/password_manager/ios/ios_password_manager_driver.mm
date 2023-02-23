@@ -74,6 +74,12 @@ void IOSPasswordManagerDriver::GeneratedPasswordAccepted(
   NOTIMPLEMENTED();
 }
 
+void IOSPasswordManagerDriver::PasswordFieldHasNoAssociatedUsername(
+    autofill::FieldRendererId password_element_renderer_id) {
+  // Outside of iOS this is used as an instrumentation for DevTools.
+  // No need to do anything here as there's no DevTools on iOS.
+}
+
 void IOSPasswordManagerDriver::FillSuggestion(const std::u16string& username,
                                               const std::u16string& password) {
   NOTIMPLEMENTED();

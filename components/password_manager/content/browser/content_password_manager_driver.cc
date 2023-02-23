@@ -133,6 +133,13 @@ void ContentPasswordManagerDriver::SetPasswordFillData(
   }
 }
 
+void ContentPasswordManagerDriver::PasswordFieldHasNoAssociatedUsername(
+    autofill::FieldRendererId password_element_renderer_id) {
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->PasswordFieldHasNoAssociatedUsername(password_element_renderer_id);
+  }
+}
+
 void ContentPasswordManagerDriver::InformNoSavedCredentials(
     bool should_show_popup_without_passwords) {
   GetPasswordAutofillManager()->OnNoCredentialsFound();

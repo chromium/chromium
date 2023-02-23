@@ -58,6 +58,8 @@ class ContentPasswordManagerDriver
 
   // PasswordManagerDriver implementation.
   int GetId() const override;
+  void PasswordFieldHasNoAssociatedUsername(
+      autofill::FieldRendererId password_element_renderer_id) override;
   void SetPasswordFillData(
       const autofill::PasswordFormFillData& form_data) override;
   void InformNoSavedCredentials(

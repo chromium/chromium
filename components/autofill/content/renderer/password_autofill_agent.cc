@@ -1492,6 +1492,19 @@ void PasswordAutofillAgent::SetPasswordFillData(
                           logger.get());
 }
 
+void PasswordAutofillAgent::PasswordFieldHasNoAssociatedUsername(
+    autofill::FieldRendererId password_element_renderer_id) {
+  WebDocument doc = render_frame()->GetWebFrame()->GetDocument();
+  WebFormControlElement element = FindFormControlElementByUniqueRendererId(
+      doc, password_element_renderer_id);
+  if (!element.IsNull()) {
+    element.GetDocument().GetFrame()->AddGenericIssue(
+        blink::mojom::GenericIssueErrorType::
+            kFormHasPasswordFieldWithoutUsernameFieldError,
+        element.GetDevToolsNodeId());
+  }
+}
+
 void PasswordAutofillAgent::SetLoggingState(bool active) {
   logging_state_active_ = active;
 }

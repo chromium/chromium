@@ -96,7 +96,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // Returns data received via mojo interface method
-  // mojom::AutofillAent::FieldTypePredictionsAvailable().
+  // mojom::AutofillAgent::FieldTypePredictionsAvailable().
   bool GetFieldTypePredictionsAvailable(
       std::vector<FormDataPredictions>* predictions) {
     if (!predictions_)

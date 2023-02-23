@@ -18,6 +18,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -1047,6 +1048,12 @@ std::unique_ptr<PasswordForm> PasswordFormManager::ParseFormAndMakeLogging(
       logger.LogPasswordForm(Logger::STRING_FORM_PARSING_OUTPUT,
                              *password_form);
     }
+  }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableDevtoolsIssues) &&
+      password_form && password_form->username_element_renderer_id.is_null()) {
+    driver_->PasswordFieldHasNoAssociatedUsername(
+        password_form->password_element_renderer_id);
   }
   return password_form;
 }

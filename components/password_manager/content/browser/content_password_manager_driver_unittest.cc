@@ -90,6 +90,10 @@ class FakePasswordAutofillAgent
               SetPasswordFillData,
               (const PasswordFormFillData&),
               (override));
+  MOCK_METHOD(void,
+              PasswordFieldHasNoAssociatedUsername,
+              (autofill::FieldRendererId password_element_renderer_id),
+              (override));
   MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
   MOCK_METHOD(void,
               FillIntoFocusedField,

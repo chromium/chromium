@@ -124,6 +124,7 @@
 //content/test/data/attribution_reporting/register_trigger_source_trigger.html.mock-http-headers
 //content/test/data/attribution_reporting/service_worker.js
 //content/test/data/autofill/autofill_form_devtools_issues_test.html
+//content/test/data/autofill/autofill_password_form_without_username_field_devtools_issue.html
 //content/test/data/back_forward_cache/allowed_path.html
 //content/test/data/back_forward_cache/charset_utf-8.html
 //content/test/data/back_forward_cache/charset_windows-1250.html

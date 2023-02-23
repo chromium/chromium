@@ -18,6 +18,9 @@ int StubPasswordManagerDriver::GetId() const {
 void StubPasswordManagerDriver::SetPasswordFillData(
     const autofill::PasswordFormFillData& form_data) {}
 
+void StubPasswordManagerDriver::PasswordFieldHasNoAssociatedUsername(
+    autofill::FieldRendererId password_element_renderer_id) {}
+
 void StubPasswordManagerDriver::GeneratedPasswordAccepted(
     const std::u16string& password) {}
 

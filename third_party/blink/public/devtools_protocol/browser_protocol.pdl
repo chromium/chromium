@@ -752,6 +752,7 @@ experimental domain Audits
       FormInputAssignedAutocompleteValueToIdOrNameAttributeError
       FormLabelHasNeitherForNorNestedInput
       FormLabelForMatchesNonExistingIdError
+      FormHasPasswordFieldWithoutUsernameFieldError
 
   # Depending on the concrete errorType, different properties are set.
   type GenericIssueDetails extends object
