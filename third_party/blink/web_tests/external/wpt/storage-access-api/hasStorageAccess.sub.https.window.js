@@ -10,12 +10,14 @@ test(() => {
 
 promise_test(async () => {
   const hasAccess = await document.hasStorageAccess();
-  if (secure) {
-    assert_true(hasAccess, "Access should be granted by default.");
-  } else {
+  if (!secure) {
     assert_false(hasAccess, "Access should not be granted in insecure contexts.");
+  } else if (topLevelDocument || testPrefix.includes('same-origin')) {
+    assert_true(hasAccess, "Access should be granted in top-level frame or same-origin iframe by default.");
+  } else {
+    assert_false(hasAccess, "Access should not be granted in secure cross-origin iframes.");
   }
-}, `[${testPrefix}] document.hasStorageAccess() should be ${secure ? "allowed" : "disallowed"} by default.`);
+}, "[" + testPrefix + "] document.hasStorageAccess() should not be allowed by default unless in top-level frame or same-origin iframe.");
 
 promise_test(async (t) => {
   const description = "Promise should reject when called on a generated document not part of the DOM.";

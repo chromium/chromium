@@ -66,6 +66,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -324,6 +325,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -6078,8 +6080,7 @@ void Document::PermissionServiceConnectionError() {
   data_->permission_service_.reset();
 }
 
-// TODO(crbug.com/1401089): This method currently always returns false since
-// nothing sets the HasStorageAccess member in `dom_window_`. It's not tied
+// TODO(crbug.com/1401089): The caller of this method is not tied
 // to an end point yet thus not affecting current behavior.
 bool Document::HasStorageAccess() const {
   DCHECK(GetExecutionContext());
@@ -6090,7 +6091,7 @@ bool Document::HasStorageAccess() const {
   // https://privacycg.github.io/storage-access/#dom-document-hasstorageaccess.
 
   // #3: if doc's origin is opaque, return false.
-  if (!GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
+  if (GetExecutionContext()->GetSecurityOrigin()->IsOpaque()) {
     return false;
   }
 
@@ -6121,8 +6122,6 @@ bool Document::HasStorageAccess() const {
   return dom_window_->HasStorageAccess();
 }
 
-// TODO(crbug.com/1401089): Update the method to return the result from
-// `HasStorageAccess()`;
 ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
   if (!GetFrame()) {
     // Note that in detached frames, resolvers are not able to return a promise.
@@ -6133,20 +6132,11 @@ ScriptPromise Document::hasStorageAccess(ScriptState* script_state) {
                           "document is fully active."));
   }
 
-  const bool has_access =
-      TopFrameOrigin() && GetExecutionContext() &&
-      !GetExecutionContext()->GetSecurityOrigin()->IsOpaque() &&
-      dom_window_->isSecureContext() &&
-      (IsInOutermostMainFrame() ||
-       (!TopFrameOrigin()->IsOpaque() &&
-        (GetExecutionContext()->GetSecurityOrigin()->IsSameOriginWith(
-             &*TopFrameOrigin()) ||
-         CookiesEnabled())));
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   ScriptPromise promise = resolver->Promise();
-  resolver->Resolve(has_access);
+  resolver->Resolve(HasStorageAccess());
   return promise;
 }
 
@@ -6276,7 +6266,6 @@ ScriptPromise Document::requestStorageAccessForOrigin(
 
                 switch (status) {
                   case mojom::blink::PermissionStatus::GRANTED:
-                    document->expressly_denied_storage_access_ = false;
                     FireRequestStorageAccessForOriginHistogram(
                         RequestStorageResult::APPROVED_NEW_GRANT);
                     resolver->Resolve();
@@ -6284,7 +6273,6 @@ ScriptPromise Document::requestStorageAccessForOrigin(
                   case mojom::blink::PermissionStatus::DENIED:
                     LocalFrame::ConsumeTransientUserActivation(
                         document->GetFrame());
-                    document->expressly_denied_storage_access_ = true;
                     [[fallthrough]];
                   case mojom::blink::PermissionStatus::ASK:
                   default:
@@ -6343,23 +6331,6 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     // If this is the outermost frame we no longer need to make a request and
     // can resolve the promise.
     resolver->Resolve();
-    dom_window_->SetHasStorageAccess();
-    return promise;
-  }
-
-  const bool has_user_gesture =
-      LocalFrame::HasTransientUserActivation(GetFrame());
-  if (!has_user_gesture) {
-    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "requestStorageAccess: Must be handling a user gesture to use."));
-    FireRequestStorageAccessHistogram(
-        RequestStorageResult::REJECTED_NO_USER_GESTURE);
-
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccess not allowed"));
     return promise;
   }
 
@@ -6410,57 +6381,112 @@ ScriptPromise Document::requestStorageAccess(ScriptState* script_state) {
     return promise;
   }
 
-  if (expressly_denied_storage_access_) {
+  if (HasStorageAccess()) {
     FireRequestStorageAccessHistogram(
-        RequestStorageResult::REJECTED_EXISTING_DENIAL);
+        RequestStorageResult::APPROVED_EXISTING_ACCESS);
 
-    // If a previous rejection has been received the promise can be immediately
-    // rejected without further action.
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-        "requestStorageAccess not allowed"));
+    // If there is current access to storage for this document we no longer need
+    // to make a request and can resolve the promise.
+    resolver->Resolve();
     return promise;
   }
 
   auto descriptor = mojom::blink::PermissionDescriptor::New();
   descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
   GetPermissionService(ExecutionContext::From(script_state))
-      ->RequestPermission(
-          std::move(descriptor), has_user_gesture,
-          WTF::BindOnce(
-              [](ScriptPromiseResolver* resolver, Document* document,
-                 mojom::blink::PermissionStatus status) {
-                DCHECK(resolver);
-                DCHECK(document->GetFrame());
-
-                switch (status) {
-                  case mojom::blink::PermissionStatus::GRANTED:
-                    document->expressly_denied_storage_access_ = false;
-                    FireRequestStorageAccessHistogram(
-                        RequestStorageResult::APPROVED_NEW_GRANT);
-                    document->dom_window_->SetHasStorageAccess();
-                    resolver->Resolve();
-                    break;
-                  case mojom::blink::PermissionStatus::DENIED:
-                    LocalFrame::ConsumeTransientUserActivation(
-                        document->GetFrame());
-                    document->expressly_denied_storage_access_ = true;
-                    [[fallthrough]];
-                  case mojom::blink::PermissionStatus::ASK:
-                  default:
-                    FireRequestStorageAccessHistogram(
-                        RequestStorageResult::REJECTED_GRANT_DENIED);
-                    ScriptState* state = resolver->GetScriptState();
-                    DCHECK(state->ContextIsValid());
-                    ScriptState::Scope scope(state);
-                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                        state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-                        "requestStorageAccess not allowed"));
-                }
-              },
-              WrapPersistent(resolver), WrapPersistent(this)));
+      ->HasPermission(
+          std::move(descriptor),
+          WTF::BindOnce(&Document::OnGotExistingStorageAccessPermissionState,
+                        WrapPersistent(this), WrapPersistent(resolver),
+                        LocalFrame::HasTransientUserActivation(GetFrame())));
 
   return promise;
+}
+
+void Document::OnGotExistingStorageAccessPermissionState(
+    ScriptPromiseResolver* resolver,
+    bool has_user_gesture,
+    mojom::blink::PermissionStatus previous_status) {
+  DCHECK(resolver);
+  DCHECK(GetFrame());
+  ScriptState* script_state = resolver->GetScriptState();
+  DCHECK(script_state);
+  ScriptState::Scope scope(script_state);
+
+  if (previous_status != mojom::blink::PermissionStatus::ASK) {
+    // Permission state already exists, resolve with the existing value.
+    ProcessStorageAccessPermissionState(resolver, /*use_existing_status=*/true,
+                                        previous_status);
+    return;
+  }
+  // Proceed to request permission.
+  if (!has_user_gesture) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccess: Must be handling a user gesture to use."));
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::REJECTED_NO_USER_GESTURE);
+
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
+    return;
+  }
+
+  auto descriptor = mojom::blink::PermissionDescriptor::New();
+  descriptor->name = mojom::blink::PermissionName::STORAGE_ACCESS;
+  GetPermissionService(ExecutionContext::From(resolver->GetScriptState()))
+      ->RequestPermission(
+          std::move(descriptor), has_user_gesture,
+          WTF::BindOnce(&Document::OnRequestedStorageAccessPermissionState,
+                        WrapPersistent(this), WrapPersistent(resolver)));
+}
+
+void Document::OnRequestedStorageAccessPermissionState(
+    ScriptPromiseResolver* resolver,
+    mojom::blink::PermissionStatus status) {
+  DCHECK(resolver);
+  DCHECK(GetFrame());
+  ScriptState* script_state = resolver->GetScriptState();
+  DCHECK(script_state);
+  ScriptState::Scope scope(script_state);
+
+  ProcessStorageAccessPermissionState(resolver,
+                                      /*use_existing_status=*/false, status);
+}
+
+void Document::ProcessStorageAccessPermissionState(
+    ScriptPromiseResolver* resolver,
+    bool use_existing_status,
+    mojom::blink::PermissionStatus status) {
+  DCHECK(resolver);
+  DCHECK(GetFrame());
+
+  if (status == mojom::blink::PermissionStatus::GRANTED) {
+    if (use_existing_status) {
+      FireRequestStorageAccessHistogram(
+          RequestStorageResult::APPROVED_EXISTING_ACCESS);
+    } else {
+      FireRequestStorageAccessHistogram(
+          RequestStorageResult::APPROVED_NEW_GRANT);
+    }
+    dom_window_->SetHasStorageAccess();
+    resolver->Resolve();
+  } else {
+    LocalFrame::ConsumeTransientUserActivation(GetFrame());
+    FireRequestStorageAccessHistogram(
+        RequestStorageResult::REJECTED_GRANT_DENIED);
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccess: Permission denied."));
+    ScriptState* script_state = resolver->GetScriptState();
+    DCHECK(script_state);
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccess not allowed"));
+  }
 }
 
 FragmentDirective& Document::fragmentDirective() const {

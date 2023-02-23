@@ -30,14 +30,14 @@ promise_setup(async () => {
 });
 
 promise_test(async t => {
-  if (topLevelDocument) {
+  if (topLevelDocument || testPrefix.includes('same-origin')) {
     await document.requestStorageAccess()
-    .catch(t.unreached_func("document.requestStorageAccess() call should resolve in top-level frame"));
+    .catch(t.unreached_func("document.requestStorageAccess() call should resolve in top-level frame or same-origin iframe."));
   } else {
     return promise_rejects_dom(t, "NotAllowedError", document.requestStorageAccess(),
-    "document.requestStorageAccess() call without user gesture");
+    "document.requestStorageAccess() call without user gesture.");
   }
-}, "[" + testPrefix + "] document.requestStorageAccess() should resolve in top-level frame or otherwise reject with a NotAllowedError with no user gesture");
+}, "[" + testPrefix + "] document.requestStorageAccess() should resolve in top-level frame or same-origin iframe, otherwise reject with a NotAllowedError with no user gesture.");
 
 promise_test(
     async (t) => {
@@ -47,7 +47,7 @@ promise_test(
         await test_driver.delete_all_cookies();
       });
 
-      await RunCallbackWithGesture(() => document.requestStorageAccess());
+      await document.requestStorageAccess();
 
       await fetch(`${window.location.origin}/cookies/resources/set-cookie.py?name=cookie&path=/&samesite=None&secure=`)
           .then((resp) => resp.text());
@@ -57,7 +57,7 @@ promise_test(
           'After obtaining storage access, subresource requests from the frame should send and set cookies.');
     },
     '[' + testPrefix +
-        '] document.requestStorageAccess() should be resolved when called properly with a user gesture, and ' +
+        '] document.requestStorageAccess() should be resolved with no user gesture when a permission grant exists, and ' +
         'should allow cookie access');
 
 if (!topLevelDocument && !testPrefix.includes('same-origin')) {

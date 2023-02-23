@@ -50,6 +50,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
@@ -217,6 +218,7 @@ class SVGDocumentExtensions;
 class SVGUseElement;
 class ScriptElementBase;
 class ScriptPromise;
+class ScriptPromiseResolver;
 class ScriptRegexp;
 class ScriptRunner;
 class ScriptRunnerDelayer;
@@ -2139,6 +2141,27 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void RunPostPrerenderingActivationSteps();
 
+  // Resolves/rejects the promise if an existing permission grant can
+  // approve/deny; otherwise rejects if without user gesture, or
+  // resolves/rejects based on the requested status.
+  void OnGotExistingStorageAccessPermissionState(
+      ScriptPromiseResolver* resolver,
+      bool has_user_gesture,
+      mojom::blink::PermissionStatus previous_status);
+
+  // Wraps `ProcessStorageAccessPermissionState` to handle the requested
+  // permission status.
+  void OnRequestedStorageAccessPermissionState(
+      ScriptPromiseResolver* resolver,
+      mojom::blink::PermissionStatus status);
+
+  // Resolves the promise if the `status` can approve; rejects the promise
+  // otherwise, and consumes user activation.
+  void ProcessStorageAccessPermissionState(
+      ScriptPromiseResolver* resolver,
+      bool use_existing_status,
+      mojom::blink::PermissionStatus status);
+
   const DocumentToken token_;
 
   // Bitfield used for tracking UKM sampling of media features such that each
@@ -2564,11 +2587,6 @@ class CORE_EXPORT Document : public ContainerNode,
   bool had_find_in_page_beforematch_expanded_hidden_matchable_ = false;
 
   bool dir_attribute_dirty_ = false;
-
-  // To reduce the API noisiness an explicit deny decision will set a
-  // flag that auto rejects the promise without the need for an IPC
-  // call or potential user prompt.
-  bool expressly_denied_storage_access_ = false;
 
   // True if the developer supplied a media query indicating that
   // the site has support for reduced motion.
