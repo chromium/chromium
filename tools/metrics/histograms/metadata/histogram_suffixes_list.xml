@@ -114,7 +114,6 @@ chromium-metrics-reviews@google.com.
              supported css, html, image, javascript, or video mime types."/>
   <suffix name="Video" label="Resources identified by video/*."/>
   <affected-histogram name="Ads.ResourceUsage.Size.Cache2.Mime"/>
-  <affected-histogram name="Ads.ResourceUsage.Size.Network.Mime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AdResourceSizes" separator=".">
@@ -129,7 +128,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Subframe.VanillaResource"
       label="Subframe resources not tagged as ads."/>
   <affected-histogram name="Ads.ResourceUsage.Size.Cache2"/>
-  <affected-histogram name="Ads.ResourceUsage.Size.Network"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AdsPageLoadMetricsBytes" separator=".">

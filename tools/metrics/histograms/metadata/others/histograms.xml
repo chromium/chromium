@@ -888,24 +888,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ads.ResourceUsage.Size.Network" units="KB"
-    expires_after="2020-10-02">
-  <obsolete>
-    Removed 11/2020.
-  </obsolete>
-  <owner>johnidel@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    For a given resource fetched from the network, logs the network bytes used
-    to load the resource (including headers), even if the resource request was
-    canceled or incomplete. Recorded when the resource request is complete, or
-    when the page is destroyed/navigated for incomplete resources. The sum of
-    samples across a page load may differ substatially from the true sum due to
-    per-sample rounding. These are not intended to be compared to page level
-    histograms.
-  </summary>
-</histogram>
-
 <histogram name="AnchorElementMetrics.Clicked.OnDSE.SameHost"
     enum="BooleanAnchorElementSameHost" expires_after="2021-08-09">
   <obsolete>

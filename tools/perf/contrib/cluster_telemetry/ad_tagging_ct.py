@@ -68,10 +68,6 @@ class AdTaggingClusterTelemetry(perf_benchmark.PerfBenchmark):
       tbm_options = timeline_based_measurement.Options(category_filter)
 
     uma_histograms = [
-        'Ads.ResourceUsage.Size.Network.Mainframe.AdResource',
-        'Ads.ResourceUsage.Size.Network.Mainframe.VanillaResource',
-        'Ads.ResourceUsage.Size.Network.Subframe.AdResource',
-        'Ads.ResourceUsage.Size.Network.Subframe.VanillaResource',
         'PageLoad.Clients.Ads.AllPages.NonAdNetworkBytes',
         'PageLoad.Clients.Ads.AllPages.PercentNetworkBytesAds',
         'PageLoad.Clients.Ads.Cpu.AdFrames.Aggregate.TotalUsage',
