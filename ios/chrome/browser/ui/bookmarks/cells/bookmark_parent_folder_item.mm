@@ -29,6 +29,7 @@
   self = [super initWithType:type];
   if (self) {
     self.accessibilityIdentifier = @"Change Folder";
+    self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     self.cellClass = [BookmarkParentFolderCell class];
   }
   return self;
@@ -114,16 +115,6 @@
                                   kBookmarkCellHorizontalLeadingInset,
                                   kBookmarkCellVerticalInset,
                                   kBookmarkCellHorizontalAccessoryViewSpacing));
-
-  // Chevron accessory view.
-  UIImageView* navigationChevronImage = [[UIImageView alloc]
-      initWithImage:[UIImage imageNamed:@"table_view_cell_chevron"]];
-  self.accessoryView = navigationChevronImage;
-  // TODO(crbug.com/870841): Use default accessory type.
-  if (base::i18n::IsRTL()) {
-    self.accessoryView.transform = CGAffineTransformMakeRotation(M_PI);
-  }
-
   [self applyContentSizeCategoryStyles];
 
   return self;
