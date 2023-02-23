@@ -303,11 +303,13 @@ class PrintRenderFrameHelper
   // Finalize the print ready preview document.
   bool FinalizePrintReadyDocument();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called after a preview document has been created by a PrintRenderer.
   void OnPreviewDocumentCreated(
       int document_cookie,
       base::TimeTicks begin_time,
       base::ReadOnlySharedMemoryRegion preview_document_region);
+#endif
 
   // Finish processing the preview document created by a PrintRenderer (record
   // the render time, update the PrintPreviewContext, and finalize the print

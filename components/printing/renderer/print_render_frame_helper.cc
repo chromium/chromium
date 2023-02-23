@@ -1974,6 +1974,7 @@ bool PrintRenderFrameHelper::FinalizePrintReadyDocument() {
   return true;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PrintRenderFrameHelper::OnPreviewDocumentCreated(
     int document_cookie,
     base::TimeTicks begin_time,
@@ -1990,6 +1991,7 @@ void PrintRenderFrameHelper::OnPreviewDocumentCreated(
       ProcessPreviewDocument(begin_time, std::move(preview_document_region));
   DidFinishPrinting(success ? OK : FAIL_PREVIEW);
 }
+#endif
 
 bool PrintRenderFrameHelper::ProcessPreviewDocument(
     base::TimeTicks begin_time,
