@@ -169,6 +169,7 @@ source_set("unit_tests") {
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/libvpx:libvpx",
     "//third_party/libyuv:libyuv",
     "//ui/gfx",
   ]
