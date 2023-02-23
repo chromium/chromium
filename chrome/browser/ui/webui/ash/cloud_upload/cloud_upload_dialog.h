@@ -44,6 +44,11 @@ enum class CloudProvider {
   kOneDrive,
 };
 
+// Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for
+// the user, otherwise return False. A user is eligible if they are not managed
+// or a Google employee.
+bool IsEligibleAndEnabledUploadOfficeToCloud();
+
 // Receive user's dialog response and acts accordingly. The `user_response` is
 // either an ash::cloud_upload::mojom::UserAction or the id (position) of the
 // task in `tasks` to launch.

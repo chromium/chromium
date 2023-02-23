@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
+#include "chrome/browser/ash/file_system_provider/mount_path_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
@@ -24,9 +27,12 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/types_util.h"
+#include "components/user_manager/user_manager.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -314,6 +320,43 @@ void LaunchLocalFileTask(
           profile, file_urls, task));
 }
 }  // namespace
+
+bool IsEligibleAndEnabledUploadOfficeToCloud() {
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  if (!user_manager) {
+    return false;
+  }
+
+  user_manager::User* user = user_manager->GetActiveUser();
+  if (!user) {
+    return false;
+  }
+
+  // |profile_manager| can be null in unit tests, even though a user was
+  // created. If it is null, `GetBrowserContextByUser` call will cause crash.
+  auto* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+  if (!profile) {
+    return false;
+  }
+
+  // Managed users, e.g. enterprise account, child account, are not eligible
+  // with the exception of Google employees. `GetUserCloudPolicyManagerAsh`
+  // returns non-nullptr if a profile is a managed account. This approach is
+  // taken in `UserTypeByDeviceTypeMetricsProvider::GetUserSegment`.
+  if (profile->GetUserCloudPolicyManagerAsh() &&
+      !gaia::IsGoogleInternalAccountEmail(
+          user->GetAccountId().GetUserEmail())) {
+    return false;
+  }
+
+  return features::IsUploadOfficeToCloudEnabled();
+}
 
 void OnDialogComplete(
     Profile* profile,

@@ -23,10 +23,12 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -38,6 +40,7 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
+#include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -45,6 +48,7 @@
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -58,6 +62,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
@@ -740,6 +745,159 @@ IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
   TestExpectationsAgainstDlp(expectations);
 }
 
+// |InProcessBrowserTest| which allows a fake user to login. Login a non-managed
+// or Google user to ensure |IsEligibleAndEnabledUploadOfficeToCloud| returns
+// the result of |IsUploadOfficeToCloudEnabled|.
+class TestAccountBrowserTest : public MixinBasedInProcessBrowserTest {
+ public:
+  TestAccountBrowserTest(TestAccountType test_account_type,
+                         bool is_google_account) {
+    ash::LoggedInUserMixin::LogInType log_in_type;
+    absl::optional<AccountId> account_id;
+    if (is_google_account) {
+      log_in_type = ash::LoggedInUserMixin::LogInType::kRegular;
+      account_id = AccountId::FromUserEmailGaiaId("user@google.com", "12345");
+    } else {
+      log_in_type = LogInTypeFor(test_account_type);
+      account_id = AccountIdFor(test_account_type);
+    }
+
+    logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
+        &mixin_host_, log_in_type, embedded_test_server(), this,
+        /*should_launch_browser=*/true, account_id);
+  }
+
+ protected:
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    logged_in_user_mixin_->LogInUser();
+  }
+
+ private:
+  std::unique_ptr<ash::LoggedInUserMixin> logged_in_user_mixin_;
+};
+
+class NonManagedAccount : public TestAccountBrowserTest {
+ public:
+  NonManagedAccount()
+      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
+    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+  }
+
+  void SetUpOnMainThread() override {
+    TestAccountBrowserTest::SetUpOnMainThread();
+    app_service_test_.SetUp(browser()->profile());
+  }
+  apps::AppServiceProxy* app_service_proxy() {
+    apps::AppServiceProxy* app_service_proxy =
+        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+    CHECK(app_service_proxy);
+    return app_service_proxy;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  apps::AppServiceTest app_service_test_;
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns true when a
+// non-managed user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(NonManagedAccount,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_TRUE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
+// Test that the office PWA file handler is hidden from the available file
+// handlers when opening an office file and the |kUploadOfficeToCloud| flag is
+// enabled.
+IN_PROC_BROWSER_TEST_F(NonManagedAccount, OfficePwaHandlerHidden) {
+  struct FakeOfficeFileType {
+    std::string file_extension;
+    std::string mime_type;
+  };
+
+  std::vector<FakeOfficeFileType> fake_office_file_types = {
+      {"ppt", "application/vnd.ms-powerpoint"},
+      {"pptx",
+       "application/"
+       "vnd.openxmlformats-officedocument.presentationml.presentation"},
+      {"xls", "application/vnd.ms-excel"},
+      {"xlsx",
+       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+      {"doc", "application/msword"},
+      {"docx",
+       "application/"
+       "vnd.openxmlformats-officedocument.wordprocessingml.document"}};
+
+  for (FakeOfficeFileType& fake_office_file_type : fake_office_file_types) {
+    file_manager::test::AddFakeWebApp(extension_misc::kOfficePwaAppId,
+                                      fake_office_file_type.mime_type,
+                                      fake_office_file_type.file_extension,
+                                      "something", true, app_service_proxy());
+
+    base::FilePath test_file_path = web_app::CreateTestFileWithExtension(
+        fake_office_file_type.file_extension);
+
+    std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
+        file_manager::test::GetTasksForFile(browser()->profile(),
+                                            test_file_path);
+
+    for (FullTaskDescriptor& task : tasks) {
+      EXPECT_NE(extension_misc::kOfficePwaAppId, task.task_descriptor.app_id)
+          << " for extension: " << fake_office_file_type.file_extension;
+    }
+  }
+}
+
+class ManagedAccount : public TestAccountBrowserTest {
+ public:
+  ManagedAccount()
+      : TestAccountBrowserTest(kEnterprise, /*is_google_account=*/false) {
+    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
+// managed user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(ManagedAccount,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
+class GoogleAccount : public TestAccountBrowserTest {
+ public:
+  GoogleAccount()
+      : TestAccountBrowserTest(kTestAccountTypeNotSet,
+                               /*is_google_account=*/true) {
+    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns true when a
+// google user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(GoogleAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_TRUE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
+class NonManagedAccountNoFlag : public TestAccountBrowserTest {
+ public:
+  NonManagedAccountNoFlag()
+      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {}
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
+// non-managed user is logged in but |kUploadOfficeToCloud| is disabled.
+IN_PROC_BROWSER_TEST_F(NonManagedAccountNoFlag,
+                       IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
 // TODO(cassycc): move this class to a more appropriate spot.
 // Fake DriveFs specific to the `DriveTest`. Allows a test file to
 // be "added" to the DriveFs via `SetMetadata()`. The `alternate_url` of the
@@ -807,9 +965,10 @@ class FakeSimpleDriveFsHelper : public drive::FakeDriveFsHelper {
 // testing with a fake DriveFs.
 // Tests the office fallback flow that occurs when
 // a user fails to open an office file from Drive.
-class DriveTest : public InProcessBrowserTest {
+class DriveTest : public TestAccountBrowserTest {
  public:
-  DriveTest() {
+  DriveTest()
+      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
     feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     drive_mount_point_ = temp_dir_.GetPath();
@@ -831,7 +990,7 @@ class DriveTest : public InProcessBrowserTest {
   }
 
   void TearDown() override {
-    InProcessBrowserTest::TearDown();
+    TestAccountBrowserTest::TearDown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }
 
@@ -1202,9 +1361,10 @@ class FakeWebAppPublisher : public apps::AppPublisher {
 // testing with a fake ODFS.
 // Tests the office fallback flow that occurs when a
 // user fails to open an office file from ODFS.
-class OneDriveTest : public InProcessBrowserTest {
+class OneDriveTest : public TestAccountBrowserTest {
  public:
-  OneDriveTest() {
+  OneDriveTest()
+      : TestAccountBrowserTest(kNonManaged, /*is_google_account=*/false) {
     feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
     test_file_name_ = "text.docx";
     // Relative path for a file on ODFS and Android OneDrive.
@@ -1219,7 +1379,7 @@ class OneDriveTest : public InProcessBrowserTest {
   OneDriveTest& operator=(const OneDriveTest&) = delete;
 
   void TearDown() override {
-    InProcessBrowserTest::TearDown();
+    TestAccountBrowserTest::TearDown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
   }
 

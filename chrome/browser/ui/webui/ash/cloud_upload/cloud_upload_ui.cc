@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,7 +20,7 @@ namespace ash::cloud_upload {
 
 bool CloudUploadUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::features::IsUploadOfficeToCloudEnabled();
+  return cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud();
 }
 
 CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)

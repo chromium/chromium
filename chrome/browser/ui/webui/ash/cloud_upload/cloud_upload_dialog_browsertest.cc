@@ -4,9 +4,13 @@
 
 #include <unistd.h>
 #include <algorithm>
+#include <cstddef>
 #include <string>
 
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog_browsertest.h"
+
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/json/json_parser.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
@@ -129,6 +133,16 @@ std::string ScriptFillPlaceholder(const char script_with_placeholder[],
   return base::StringPrintf(script_with_placeholder, element_script.c_str());
 }
 
+// Set email (using a domain from |kNonManagedDomainPatterns|) to login a
+// non-managed user. Intended to be used in the override of |SetUpCommandLine|
+// from |InProcessBrowserTest| to ensure
+// |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+// |IsUploadOfficeToCloudEnabled| in browser tests.
+void SetUpCommandLineForNonManagedUser(base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(switches::kLoginUser, "testuser@gmail.com");
+  command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
+}
+
 }  // namespace
 
 // Tests the `kFileHandlerDialog` dialog page of the `CloudUploadDialog`.
@@ -169,6 +183,13 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  // Use a non-managed user in this browser test to ensure
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+  // |IsUploadOfficeToCloudEnabled|.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetUpCommandLineForNonManagedUser(command_line);
+  }
+
   std::vector<std::string> urls_;
   std::vector<file_manager::file_tasks::TaskDescriptor> tasks_;
   std::vector<storage::FileSystemURL> files_;
@@ -408,6 +429,12 @@ class FixUpFlowBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  // Use a non-managed user in this browser test to ensure
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+  // |IsUploadOfficeToCloudEnabled|.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetUpCommandLineForNonManagedUser(command_line);
+  }
   std::vector<storage::FileSystemURL> files_;
 
  private:
@@ -639,3 +666,8 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
       *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
 }
 }  // namespace ash::cloud_upload
+
+void NonManagedUserWebUIBrowserTest::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  ash::cloud_upload::SetUpCommandLineForNonManagedUser(command_line);
+}

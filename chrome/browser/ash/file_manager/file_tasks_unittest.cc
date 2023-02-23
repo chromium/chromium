@@ -800,51 +800,6 @@ TEST_F(FileManagerFileTaskPreferencesTest, SetOfficeFileHandlersToFilesSWA) {
   ASSERT_EQ(task, default_task);
 }
 
-// Test that the office PWA file handler is hidden from the available file
-// handlers when opening an office file.
-TEST_F(FileManagerFileTaskWithAppServiceTest, OfficePwaHandlerHidden) {
-  struct FakeOfficeFileType {
-    std::string file_extension;
-    std::string mime_type;
-  };
-
-  // Enable `kUploadOfficeToCloud` flag as the hiding happens behind this
-  // flag.
-  base::test::ScopedFeatureList scoped_feature_list{
-      ash::features::kUploadOfficeToCloud};
-
-  std::vector<FakeOfficeFileType> fake_office_file_types = {
-      {"ppt", "application/vnd.ms-powerpoint"},
-      {"pptx",
-       "application/"
-       "vnd.openxmlformats-officedocument.presentationml.presentation"},
-      {"xls", "application/vnd.ms-excel"},
-      {"xlsx",
-       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
-      {"doc", "application/msword"},
-      {"docx",
-       "application/"
-       "vnd.openxmlformats-officedocument.wordprocessingml.document"}};
-
-  for (FakeOfficeFileType& fake_office_file_type : fake_office_file_types) {
-    file_manager::test::AddFakeWebApp(extension_misc::kOfficePwaAppId,
-                                      fake_office_file_type.mime_type,
-                                      fake_office_file_type.file_extension,
-                                      "something", true, app_service_proxy());
-
-    base::FilePath test_file_path = web_app::CreateTestFileWithExtension(
-        fake_office_file_type.file_extension);
-
-    std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
-        file_manager::test::GetTasksForFile(profile(), test_file_path);
-
-    for (FullTaskDescriptor& task : tasks) {
-      EXPECT_NE(extension_misc::kOfficePwaAppId, task.task_descriptor.app_id)
-          << " for extension: " << fake_office_file_type.file_extension;
-    }
-  }
-}
-
 // Test using the test extension system, which needs lots of setup.
 class FileManagerFileTasksComplexTest : public testing::Test {
  protected:

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/settings/ash/files_section.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
@@ -76,7 +76,7 @@ FilesSection::FilesSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetFilesSearchConcepts());
-  if (ash::features::IsUploadOfficeToCloudEnabled()) {
+  if (cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud()) {
     updater.AddSearchTags(GetFilesOfficeSearchConcepts());
   }
 }
@@ -117,8 +117,9 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("smbSharesLearnMoreURL",
                          GetHelpUrlWithBoard(chrome::kSmbSharesLearnMoreURL));
 
-  html_source->AddBoolean("showOfficeSettings",
-                          ash::features::IsUploadOfficeToCloudEnabled());
+  html_source->AddBoolean(
+      "showOfficeSettings",
+      cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
 
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile());
