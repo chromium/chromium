@@ -194,9 +194,11 @@ guestMessagePipe.registerHandler(Message.START_STREAMING, async () => {
 
 // Register CHANGE_ORIENTATION.
 guestMessagePipe.registerHandler(
-    Message.CHANGE_ORIENTATION, async (orientation) => {
-      console.log(`echeapi browser_proxy.js ${orientation}`);
-      streamOrientationObserver.onStreamOrientationChanged(orientation);
+    Message.CHANGE_ORIENTATION, async (message) => {
+      console.log(
+          `echeapi browser_proxy.js ` +
+          `onStreamOrientationChanged ${message.isLandscape}`);
+      streamOrientationObserver.onStreamOrientationChanged(message.isLandscape);
     });
 
 // We can't access hash change event inside iframe so parse the notification

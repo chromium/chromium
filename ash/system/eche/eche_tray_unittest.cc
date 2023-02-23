@@ -539,8 +539,7 @@ TEST_F(EcheTrayTest, EcheTrayOnStreamOrientationChanged) {
                           u"app 1", u"your phone");
   eche_tray()->ShowBubble();
 
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            eche_app::mojom::StreamOrientation::kPortrait);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
   EXPECT_EQ(expected_eche_size.width(),
             eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->width());
   EXPECT_EQ(
@@ -548,10 +547,8 @@ TEST_F(EcheTrayTest, EcheTrayOnStreamOrientationChanged) {
       eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
 
   // Orientation should stay the same
-  eche_tray()->OnStreamOrientationChanged(
-      eche_app::mojom::StreamOrientation::kPortrait);
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            eche_app::mojom::StreamOrientation::kPortrait);
+  eche_tray()->OnStreamOrientationChanged(false);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), false);
 
   expected_eche_size = eche_tray()->CalculateSizeForEche();
 
@@ -562,10 +559,8 @@ TEST_F(EcheTrayTest, EcheTrayOnStreamOrientationChanged) {
       eche_tray()->get_web_view_for_test()->height() + kBubbleMenuPadding * 2);
 
   // Change orientation
-  eche_tray()->OnStreamOrientationChanged(
-      eche_app::mojom::StreamOrientation::kLandscape);
-  EXPECT_EQ(eche_tray()->get_stream_orientation_for_test(),
-            eche_app::mojom::StreamOrientation::kLandscape);
+  eche_tray()->OnStreamOrientationChanged(true);
+  EXPECT_EQ(eche_tray()->get_is_landscape_for_test(), true);
 
   expected_eche_size = eche_tray()->CalculateSizeForEche();
   EXPECT_EQ(

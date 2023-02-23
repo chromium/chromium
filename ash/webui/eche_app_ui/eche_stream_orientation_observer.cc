@@ -8,6 +8,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
+#include "chromeos/ash/components/multidevice/logging/logging.h"
 
 namespace ash {
 
@@ -28,9 +29,12 @@ EcheStreamOrientationObserver::EcheStreamOrientationObserver() = default;
 EcheStreamOrientationObserver::~EcheStreamOrientationObserver() = default;
 
 void EcheStreamOrientationObserver::OnStreamOrientationChanged(
-    mojom::StreamOrientation orientation) {
+    bool is_landscape) {
+  PA_LOG(INFO) << "echeapi OnStreamOrientationChanged: isLandscape:"
+               << is_landscape;
+
   if (features::IsEcheSWAEnabled()) {
-    GetEcheTray()->OnStreamOrientationChanged(orientation);
+    GetEcheTray()->OnStreamOrientationChanged(is_landscape);
   }
 }
 

@@ -141,16 +141,10 @@ interface StreamActionObserver {
   OnStreamAction(StreamAction action);
 };
 
-// Enum representing orientations for the app stream.
-enum StreamOrientation {
-  kPortrait,
-  kLandscape,
-};
-
 // Interface to send new orientation for the app streaming bubble from Eche SWA.
 interface StreamOrientationObserver {
   // Notifies what orientation the stream has changed to.
-  OnStreamOrientationChanged(StreamOrientation orientation);
+  OnStreamOrientationChanged(bool isLandscape);
 };
 
 // Enum representing what EntryPoint was used to launch the eche app stream.

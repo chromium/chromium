@@ -6,37 +6,37 @@ const parentMessagePipe = new MessagePipe('chrome://eche-app', window.parent);
 
 let signalingCallback = null;
 parentMessagePipe.registerHandler(Message.SEND_SIGNAL, async (message) => {
-    if (!signalingCallback) {
-        return;
-    }
-    signalingCallback(/** @type {Uint8Array} */ (message.signal));
+  if (!signalingCallback) {
+    return;
+  }
+  signalingCallback(/** @type {Uint8Array} */ (message.signal));
 });
 
 let screenBacklightCallback = null;
-parentMessagePipe.registerHandler(Message.SCREEN_BACKLIGHT_STATE,
- async (message) => {
-    if (!screenBacklightCallback) {
+parentMessagePipe.registerHandler(
+    Message.SCREEN_BACKLIGHT_STATE, async (message) => {
+      if (!screenBacklightCallback) {
         return;
-    }
-    screenBacklightCallback(/** @type {number} */ (message.state));
-});
+      }
+      screenBacklightCallback(/** @type {number} */ (message.state));
+    });
 
 let tabletModeCallback = null;
 parentMessagePipe.registerHandler(Message.TABLET_MODE, async (message) => {
-    if (!tabletModeCallback) {
-        return;
-    }
-    tabletModeCallback(/** @type {boolean} */ (message.isTabletMode));
+  if (!tabletModeCallback) {
+    return;
+  }
+  tabletModeCallback(/** @type {boolean} */ (message.isTabletMode));
 });
 
 let notificationCallback = null;
 parentMessagePipe.registerHandler(
-  Message.NOTIFICATION_INFO, async (message) => {
-  if (!notificationCallback) {
-      return;
-  }
-  notificationCallback(/** @type {!NotificationInfo} */ (message));
-});
+    Message.NOTIFICATION_INFO, async (message) => {
+      if (!notificationCallback) {
+        return;
+      }
+      notificationCallback(/** @type {!NotificationInfo} */ (message));
+    });
 
 let streamActionCallback = null;
 parentMessagePipe.registerHandler(Message.STREAM_ACTION, async (message) => {
@@ -151,9 +151,11 @@ const EcheApiBindingImpl = new (class {
     streamActionCallback = callback;
   }
 
-  onStreamOrientationChanged(orientation) {
-    console.log('echeapi receiver.js onStreamOrientationChanged');
-    parentMessagePipe.sendMessage(Message.CHANGE_ORIENTATION, {orientation});
+  onStreamOrientationChanged(isLandscape) {
+    console.log(
+        'echeapi receiver.js onStreamOrientationChanged, landscape=' +
+        isLandscape);
+    parentMessagePipe.sendMessage(Message.CHANGE_ORIENTATION, {isLandscape});
   }
 
   onReceivedVirtualKeyboardChanged(callback) {
@@ -208,7 +210,7 @@ echeapi.system.registerVirtualKeyboardChangedReceiver =
 echeapi.system.registerAndroidNetworkInfoChangedReceiver =
     EcheApiBindingImpl.onAndroidDeviceNetworkInfoChanged.bind(
         EcheApiBindingImpl);
-echeapi.system.registerStreamOrientationReceiver =
+echeapi.system.onStreamOrientationChanged =
     EcheApiBindingImpl.onStreamOrientationChanged.bind(EcheApiBindingImpl);
 window['echeapi'] = echeapi;
 console.log('echeapi receiver.js finish bind the implementation of echeapi');
