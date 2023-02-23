@@ -155,21 +155,20 @@ export class EventManager implements IEventManager {
   }
 
   async subscribe(
-    events: Session.SubscribeParametersEvent[],
+    eventNames: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
-    for (const eventName of events) {
+    // First check if all the contexts are known.
+    for (const contextId of contextIds) {
+      if (contextId !== null) {
+        // Assert the context is known. Throw exception otherwise.
+        this.#bidiServer.getBrowsingContextStorage().getKnownContext(contextId);
+      }
+    }
+
+    for (const eventName of eventNames) {
       for (const contextId of contextIds) {
-        if (
-          contextId !== null &&
-          !this.#bidiServer
-            .getBrowsingContextStorage()
-            .hasKnownContext(contextId)
-        ) {
-          // Unknown context. Do nothing.
-          continue;
-        }
         this.#subscriptionManager.subscribe(eventName, contextId, channel);
         for (const eventWrapper of this.#getBufferedEvents(
           eventName,
@@ -187,13 +186,21 @@ export class EventManager implements IEventManager {
   }
 
   async unsubscribe(
-    events: Session.SubscribeParametersEvent[],
+    eventNames: Session.SubscribeParametersEvent[],
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
-    for (const event of events) {
+    // First check if all the contexts are known.
+    for (const contextId of contextIds) {
+      if (contextId !== null) {
+        // Assert the context is known. Throw exception otherwise.
+        this.#bidiServer.getBrowsingContextStorage().getKnownContext(contextId);
+      }
+    }
+
+    for (const eventName of eventNames) {
       for (const contextId of contextIds) {
-        this.#subscriptionManager.unsubscribe(event, contextId, channel);
+        this.#subscriptionManager.unsubscribe(eventName, contextId, channel);
       }
     }
   }
@@ -267,8 +274,15 @@ export class EventManager implements IEventManager {
     if (contextId === null) {
       // For global subscriptions, events buffered in each context should be sent back.
       Array.from(this.#eventToContextsMap.get(eventName)?.keys() ?? [])
-        // Events without context are already in the result.
-        .filter((_contextId) => _contextId !== null)
+        .filter(
+          (_contextId) =>
+            // Events without context are already in the result.
+            _contextId !== null &&
+            // Events from deleted contexts should not be sent.
+            this.#bidiServer
+              .getBrowsingContextStorage()
+              .hasKnownContext(_contextId)
+        )
         .map((_contextId) =>
           this.#getBufferedEvents(eventName, _contextId, channel)
         )

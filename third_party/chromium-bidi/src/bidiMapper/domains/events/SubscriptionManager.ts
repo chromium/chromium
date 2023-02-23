@@ -20,9 +20,11 @@ import {
   CDP,
   CommonDataTypes,
   Log,
+  Message,
   Session,
 } from '../../../protocol/protocol.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import InvalidArgumentException = Message.InvalidArgumentException;
 
 export class SubscriptionManager {
   #subscriptionPriority = 0;
@@ -78,8 +80,13 @@ export class SubscriptionManager {
       return null;
     }
 
+    const maybeTopLevelContextId = this.#findTopLevelContextId(contextId);
+
+    // `null` covers global subscription.
+    const relevantContexts = [...new Set([null, maybeTopLevelContextId])];
+
     // Get all the subscription priorities.
-    const priorities: number[] = this.#getRelevantContexts(contextId)
+    const priorities: number[] = relevantContexts
       .map((c) => contextToEventMap.get(c)?.get(eventMethod))
       .filter((p) => p !== undefined) as number[];
 
@@ -92,18 +99,18 @@ export class SubscriptionManager {
     return Math.min(...priorities);
   }
 
-  #getRelevantContexts(
+  #findTopLevelContextId(
     contextId: CommonDataTypes.BrowsingContext | null
-  ): (CommonDataTypes.BrowsingContext | null)[] {
-    // `null` covers global subscription.
-    const result: (CommonDataTypes.BrowsingContext | null)[] = [null];
-    while (contextId !== null) {
-      result.push(contextId);
-      const maybeParentContext =
-        this.#browsingContextStorage.findContext(contextId);
-      contextId = maybeParentContext?.parentId ?? null;
+  ): CommonDataTypes.BrowsingContext | null {
+    if (contextId === null) {
+      return null;
     }
-    return result;
+    const maybeContext = this.#browsingContextStorage.findContext(contextId);
+    const parentId = maybeContext?.parentId ?? null;
+    if (parentId !== null) {
+      return this.#findTopLevelContextId(parentId);
+    }
+    return contextId;
   }
 
   subscribe(
@@ -111,6 +118,9 @@ export class SubscriptionManager {
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): void {
+    // All the subscriptions are handled on the top-level contexts.
+    contextId = this.#findTopLevelContextId(contextId);
+
     if (event === BrowsingContext.AllEvents) {
       Object.values(BrowsingContext.EventNames).map((specificEvent) =>
         this.subscribe(specificEvent, contextId, channel)
@@ -153,6 +163,9 @@ export class SubscriptionManager {
     contextId: CommonDataTypes.BrowsingContext | null,
     channel: string | null
   ): void {
+    // All the subscriptions are handled on the top-level contexts.
+    contextId = this.#findTopLevelContextId(contextId);
+
     if (event === BrowsingContext.AllEvents) {
       Object.values(BrowsingContext.EventNames).map((specificEvent) =>
         this.unsubscribe(specificEvent, contextId, channel)
@@ -173,14 +186,24 @@ export class SubscriptionManager {
     }
 
     if (!this.#channelToContextToEventMap.has(channel)) {
-      return;
+      throw new InvalidArgumentException(
+        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
+      );
     }
     const contextToEventMap = this.#channelToContextToEventMap.get(channel)!;
 
     if (!contextToEventMap.has(contextId)) {
-      return;
+      throw new InvalidArgumentException(
+        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
+      );
     }
     const eventMap = contextToEventMap.get(contextId)!;
+
+    if (!eventMap.has(event)) {
+      throw new InvalidArgumentException(
+        `Cannot unsubscribe from ${event}, ${contextId}. No subscription found.`
+      );
+    }
 
     eventMap.delete(event);
 

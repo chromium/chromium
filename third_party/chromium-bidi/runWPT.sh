@@ -14,9 +14,10 @@ npm run build && \
   --webdriver-binary runBiDiServer.sh \
   --webdriver-arg="--verbose" \
   --webdriver-arg="--log-path=$LOG_FILE" \
+  --webdriver-arg="--headless=true" \
   --log-wptreport wptreport.json \
   --manifest wpt/MANIFEST.json \
-  --metadata wpt-metadata \
+  --metadata wpt-metadata/mapper/headless \
   --timeout-multiplier 8 \
   chromium \
   "$@")

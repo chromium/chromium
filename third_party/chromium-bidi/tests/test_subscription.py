@@ -18,6 +18,24 @@ from test_helpers import *
 
 
 @pytest.mark.asyncio
+async def test_subscribeForUnknownContext_exceptionReturned(websocket):
+    with pytest.raises(Exception) as exception_info:
+        await execute_command(
+            websocket, {
+                "method": "session.subscribe",
+                "params": {
+                    "events": ["browsingContext.load"],
+                    "contexts": ["UNKNOWN_CONTEXT_ID"]
+                }
+            })
+    recursive_compare(
+        {
+            'error': 'no such frame',
+            'message': 'Context UNKNOWN_CONTEXT_ID not found'
+        }, exception_info.value.args[0])
+
+
+@pytest.mark.asyncio
 async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
         websocket, context_id):
     result = await execute_command(
@@ -110,24 +128,135 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
 
 
 @pytest.mark.asyncio
+async def test_subscribeToNestedContext_subscribesToTopLevelContext(
+        websocket, context_id, iframe_id):
+    await subscribe(websocket, "log.entryAdded", iframe_id)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert event received.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "method": "log.entryAdded",
+        "params": any_value,
+    }, resp)
+
+
+@pytest.mark.asyncio
+async def test_subscribeToNestedContextAndUnsubscribeFromTopLevelContext_unsubscribedFromTopLevelContext(
+        websocket, context_id, iframe_id):
+    await subscribe(websocket, "log.entryAdded", iframe_id)
+    await execute_command(
+        websocket, {
+            "method": "session.unsubscribe",
+            "params": {
+                "events": ["log.entryAdded"],
+                "contexts": [context_id]
+            }
+        })
+
+    # Assert unsubscribed from top level context.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script is ended without any events before.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
+
+    # Assert unsubscribed from nested context.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": iframe_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script is ended without any events before.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
+
+
+@pytest.mark.asyncio
+async def test_subscribeToTopLevelContextAndUnsubscribeFromNestedContext_unsubscribedFromTopLevelContext(
+        websocket, context_id, iframe_id):
+    await subscribe(websocket, "log.entryAdded", context_id)
+    await execute_command(
+        websocket, {
+            "method": "session.unsubscribe",
+            "params": {
+                "events": ["log.entryAdded"],
+                "contexts": [iframe_id]
+            }
+        })
+
+    # Assert unsubscribed from top level context.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script is ended without any events before.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
+
+    # Assert unsubscribed from nested context.
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": iframe_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    # Assert evaluate script is ended without any events before.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
+
+
+@pytest.mark.asyncio
 async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
-        websocket, context_id):
+        websocket, context_id, another_context_id):
     # 1. Get 2 contexts.
     # 2. Subscribe to event `browsingContext.load` on the first one.
     # 3. Navigate waiting complete loading in both contexts.
     # 4. Verify `browsingContext.load` emitted only for the first context.
 
-    first_context_id = context_id
-
-    result = await execute_command(websocket, {
-        "method": "browsingContext.create",
-        "params": {
-            "type": "tab"
-        }
-    })
-    second_context_id = result["context"]
-
-    await subscribe(websocket, ["browsingContext.load"], [first_context_id])
+    await subscribe(websocket, ["browsingContext.load"], [context_id])
 
     # 3.1 Navigate first context.
     command_id_1 = get_next_command_id()
@@ -138,13 +267,13 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
             "params": {
                 "url": "data:text/html,<h2>test</h2>",
                 "wait": "complete",
-                "context": first_context_id
+                "context": context_id
             }
         })
     # 4.1 Verify `browsingContext.load` is emitted for the first context.
     resp = await read_JSON_message(websocket)
     assert resp["method"] == "browsingContext.load"
-    assert resp["params"]["context"] == first_context_id
+    assert resp["params"]["context"] == context_id
 
     # Verify first navigation finished.
     resp = await read_JSON_message(websocket)
@@ -159,7 +288,7 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
             "params": {
                 "url": "data:text/html,<h2>test</h2>",
                 "wait": "complete",
-                "context": second_context_id
+                "context": another_context_id
             }
         })
 
@@ -299,3 +428,75 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
             "channel": channel_4,
             "params": any_value
         }, resp)
+
+
+@pytest.mark.asyncio
+async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreReturned(
+        websocket, context_id, another_context_id):
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "channel": "SOME_OTHER_CHANNEL",
+            "params": {
+                "expression": "console.log('SOME_MESSAGE')",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "channel": "SOME_OTHER_CHANNEL",
+            "params": {
+                "expression": "console.log('ANOTHER_MESSAGE')",
+                "target": {
+                    "context": another_context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.close",
+            "params": {
+                "context": another_context_id
+            }
+        })
+
+    command_id = await send_JSON_command(websocket, {
+        "method": "session.subscribe",
+        "params": {
+            "events": ["log.entryAdded"]
+        }
+    })
+
+    # Assert only message from not closed context is received.
+    resp = await read_JSON_message(websocket)
+    recursive_compare(
+        {
+            "method": "log.entryAdded",
+            "params": {
+                "level": "info",
+                "source": {
+                    "realm": any_value,
+                    "context": context_id
+                },
+                "text": "SOME_MESSAGE",
+                "timestamp": any_value,
+                "stackTrace": any_value,
+                "type": "console",
+                "method": "log",
+                "args": [{
+                    "type": "string",
+                    "value": "SOME_MESSAGE"
+                }]
+            }
+        }, resp)
+
+    # Assert no more events were buffered.
+    resp = await read_JSON_message(websocket)
+    recursive_compare({'id': command_id, 'result': any_value}, resp)
