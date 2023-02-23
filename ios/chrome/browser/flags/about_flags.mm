@@ -1687,6 +1687,10 @@ void ResetAllFlags(flags_ui::FlagsStorage* flags_storage) {
   GetGlobalFlagsState().ResetAllFlags(flags_storage);
 }
 
+bool IsRestartNeededToCommitChanges() {
+  return GetGlobalFlagsState().IsRestartNeededToCommitChanges();
+}
+
 namespace testing {
 
 base::span<const flags_ui::FeatureEntry> GetFeatureEntries() {

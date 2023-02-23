@@ -58,6 +58,10 @@ void SetFeatureEntryEnabled(flags_ui::FlagsStorage* flags_storage,
 // Reset all flags to the default state by clearing all flags.
 void ResetAllFlags(flags_ui::FlagsStorage* flags_storage);
 
+// Returns true if a browser restart is needed for uncommitted changes to take
+// effect.
+bool IsRestartNeededToCommitChanges();
+
 namespace testing {
 
 // Returns the global set of feature entries.
