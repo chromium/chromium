@@ -141,19 +141,23 @@ class ASH_EXPORT ScheduledFeature
                             bool did_schedule_change,
                             bool keep_manual_toggles_during_schedules);
 
-  // Schedule the upcoming next toggle of the feature status.
-  void ScheduleNextToggle(base::TimeDelta delay);
+  // Schedule the next upcoming refresh of the feature state. `target_status`
+  // may actually be the same as `GetEnabled()` in some cases. For example, if
+  // it is currently `kSunrise` (`GetEnabled()` is false), that means the next
+  // `SunsetToSunriseCheckpoint` is `kMorning` (`target_status` is still false).
+  void ScheduleNextRefresh(base::TimeDelta delay, bool target_status);
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
   PrefService* active_user_pref_service_ = nullptr;
 
-  // Tracks the upcoming feature state changes per each user due to automatic
+  // Tracks the upcoming feature state refresh per each user due to automatic
   // schedules. This can be used to restore a manually toggled status while the
   // schedule is being used. See MaybeRestoreSchedule().
   struct ScheduleTargetState {
     // The time at which the feature will switch to `target_status` defined
-    // below.
+    // below. `target_status` is not necessarily a change in status. See
+    // comments above `ScheduleNextRefresh()`.
     base::Time target_time;
     bool target_status;
   };

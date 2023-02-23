@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/time/clock.h"
 
 namespace ash::schedule_utils {
 
@@ -62,9 +61,7 @@ std::vector<Slot> BuildSchedule(base::Time sunrise_time,
 
   // Shift `sunset_time` such that
   // `sunrise_time` <= `sunset_time` < `sunrise_time + kOneDay`.
-  const base::TimeDelta amount_to_advance_sunset =
-      (sunrise_time - sunset_time).CeilToMultiple(kOneDay);
-  sunset_time += amount_to_advance_sunset;
+  sunset_time = ShiftWithinOneDayFrom(sunrise_time, sunset_time);
 
   const base::TimeDelta daylight_duration = sunset_time - sunrise_time;
   DCHECK_GE(daylight_duration, base::TimeDelta());
@@ -107,8 +104,7 @@ Slot GetNextSlot(const size_t current_idx, const std::vector<Slot>& schedule) {
 
 Position GetCurrentPosition(const base::Time sunrise_time,
                             const base::Time sunset_time,
-                            const base::Clock* custom_clock) {
-  const base::Time now = custom_clock ? custom_clock->Now() : base::Time::Now();
+                            const base::Time now) {
   const std::vector<Slot> schedule =
       BuildSchedule(sunrise_time, sunset_time, now);
   DCHECK(!schedule.empty());
@@ -127,6 +123,13 @@ Position GetCurrentPosition(const base::Time sunrise_time,
                << " schedule:\n"
                << ToString(schedule);
   return Position();
+}
+
+base::Time ShiftWithinOneDayFrom(const base::Time origin,
+                                 const base::Time time_in) {
+  const base::TimeDelta amount_to_advance_time_in =
+      (origin - time_in).CeilToMultiple(kOneDay);
+  return time_in + amount_to_advance_time_in;
 }
 
 }  // namespace ash::schedule_utils

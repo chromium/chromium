@@ -15,6 +15,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/scheduled_feature/schedule_utils.h"
 #include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -37,6 +38,17 @@ constexpr int kDefaultStartTimeOffsetMinutes = 18 * 60;
 
 // Default end time at 6:00 AM as an offset from 00:00.
 constexpr int kDefaultEndTimeOffsetMinutes = 6 * 60;
+
+bool IsEnabledAtCheckpoint(SunsetToSunriseCheckpoint checkpoint) {
+  switch (checkpoint) {
+    case SunsetToSunriseCheckpoint::kSunrise:
+    case SunsetToSunriseCheckpoint::kMorning:
+    case SunsetToSunriseCheckpoint::kLateAfternoon:
+      return false;
+    case SunsetToSunriseCheckpoint::kSunset:
+      return true;
+  }
+}
 
 }  // namespace
 
@@ -193,7 +205,7 @@ bool ScheduledFeature::MaybeRestoreSchedule() {
   if (iter == per_user_schedule_target_state_.end())
     return false;
 
-  ScheduleTargetState& target_state = iter->second;
+  const ScheduleTargetState& target_state = iter->second;
   const base::Time now = clock_->Now();
   // It may be that the device was suspended for a very long time that the
   // target time is no longer valid.
@@ -201,8 +213,8 @@ bool ScheduledFeature::MaybeRestoreSchedule() {
     return false;
 
   VLOG(1) << "Restoring a previous schedule.";
-  DCHECK_NE(GetEnabled(), target_state.target_status);
-  ScheduleNextToggle(target_state.target_time - now);
+  ScheduleNextRefresh(target_state.target_time - now,
+                      target_state.target_status);
   return true;
 }
 
@@ -292,6 +304,10 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
   }
 }
 
+// The `SunsetToSunriseCheckpoint` usage in this method does not directly apply
+// to `ScheduleType::kCustom`, but the business logic still works for that
+// `ScheduleType` with no caller-facing impact. The internal `timer_` may just
+// fire a couple more times a day and be no-ops.
 void ScheduledFeature::RefreshScheduleTimer(
     base::Time start_time,
     base::Time end_time,
@@ -304,129 +320,76 @@ void ScheduledFeature::RefreshScheduleTimer(
     return;
   }
 
-  // NOTE: Users can set any weird combinations.
   const base::Time now = clock_->Now();
-  if (end_time <= start_time) {
-    // Example:
-    // Start: 9:00 PM, End: 6:00 AM.
-    //
-    //       6:00                21:00
-    // <----- + ------------------ + ----->
-    //        |                    |
-    //       end                 start
-    //
-    // Note that the above times are times of day (today). It is important to
-    // know where "now" is with respect to these times to decide how to adjust
-    // them.
-    if (end_time >= now) {
-      // If the end time (today) is greater than the time now, this means "now"
-      // is within the feature schedule, and the start time is actually
-      // yesterday. The above timeline is interpreted as:
-      //
-      //   21:00 (-1day)              6:00
-      // <----- + ----------- + ------ + ----->
-      //        |             |        |
-      //      start          now      end
-      //
-      start_time -= base::Days(1);
-    } else {
-      // Two possibilities here:
-      // - Either "now" is greater than the end time, but less than start time.
-      //   This means the feature is outside the schedule, waiting for the next
-      //   start time. The end time is actually a day later.
-      // - Or "now" is greater than both the start and end times. This means
-      //   the feature is within the schedule, waiting to turn off at the next
-      //   end time, which is also a day later.
-      end_time += base::Days(1);
-    }
-  }
+  const schedule_utils::Position schedule_position =
+      schedule_utils::GetCurrentPosition(
+          /*sunrise_time=*/end_time, /*sunset_time=*/start_time, now);
+  const bool enable_now =
+      IsEnabledAtCheckpoint(schedule_position.current_checkpoint);
+  const bool current_enabled = GetEnabled();
 
-  DCHECK_GE(end_time, start_time);
-
-  // The target status that we need to set the feature to now if a change of
-  // status is needed immediately.
-  bool enable_now = false;
-
-  // Where are we now with respect to the start and end times?
-  if (now < start_time) {
-    // Example:
-    // Start: 6:00 PM today, End: 6:00 AM tomorrow, Now: 4:00 PM.
-    //
-    // <----- + ----------- + ----------- + ----->
-    //        |             |             |
-    //       now          start          end
-    //
-    // In this case, we need to disable the feature immediately if it's enabled.
-    enable_now = false;
-  } else if (now >= start_time && now < end_time) {
-    // Example:
-    // Start: 6:00 PM today, End: 6:00 AM tomorrow, Now: 11:00 PM.
-    //
-    // <----- + ----------- + ----------- + ----->
-    //        |             |             |
-    //      start          now           end
-    //
-    // Turn the feature on right away. Our future start time is a day later than
-    // its current value.
-    enable_now = true;
-    start_time += base::Days(1);
-  } else {  // now >= end_time.
-    // Example:
-    // Start: 6:00 PM today, End: 10:00 PM today, Now: 11:00 PM.
-    //
-    // <----- + ----------- + ----------- + ----->
-    //        |             |             |
-    //      start          end           now
-    //
-    // In this case, our future start and end times are a day later from their
-    // current values. The feature needs to be off immediately if it's already
-    // enabled.
-    enable_now = false;
-    start_time += base::Days(1);
-    end_time += base::Days(1);
-  }
-
-  // After the above processing, the start and end time are all in the future.
-  DCHECK_GE(start_time, now);
-  DCHECK_GE(end_time, now);
-
-  if (did_schedule_change && enable_now != GetEnabled()) {
+  base::TimeDelta time_until_next_refresh;
+  bool next_feature_status = false;
+  if (enable_now == current_enabled) {
+    // The most standard case:
+    next_feature_status =
+        IsEnabledAtCheckpoint(schedule_position.next_checkpoint);
+    time_until_next_refresh = schedule_position.time_until_next_checkpoint;
+  } else if (did_schedule_change) {  // && enable_now != current_enabled
     // If the change in the schedule introduces a change in the status, then
     // calling SetEnabled() is all we need, since it will trigger a change in
     // the user prefs to which we will respond by calling Refresh(). This will
-    // end up in this function again, adjusting all the needed schedules.
+    // end up in this function again and enter the case above, adjusting all
+    // the needed schedules.
     SetEnabled(enable_now);
     return;
+  } else {  // enable_now != current_enabled && !did_schedule_change
+    // The user manually toggled the feature status to the opposite of what the
+    // schedule says. In this case, ignore the current `schedule_position` since
+    // it doesn't apply anymore. Just find the next time that the feature will
+    // flip back to a status that matches the schedule, and then normal
+    // scheduling logic (the 2 cases above) will resume.
+    next_feature_status = !current_enabled;
+    const base::Time next_toggle_time = schedule_utils::ShiftWithinOneDayFrom(
+        now, current_enabled ? end_time : start_time);
+    time_until_next_refresh = next_toggle_time - now;
   }
 
   // We reach here in one of the following conditions:
   // 1) If schedule changes don't result in changes in the status, we need to
-  // explicitly update the timer to re-schedule the next toggle to account for
+  // explicitly update the timer to re-schedule the next refresh to account for
   // any changes.
   // 2) The user has just manually toggled the status of the feature either from
   // the System Menu or System Settings. In this case, we respect the user
   // wish and maintain the current status that they desire, but we schedule the
   // status to be toggled according to the time that corresponds with the
   // opposite status of the current one.
-  ScheduleNextToggle(GetEnabled() ? end_time - now : start_time - now);
+  ScheduleNextRefresh(time_until_next_refresh, next_feature_status);
   RefreshFeatureState();
 }
 
-void ScheduledFeature::ScheduleNextToggle(base::TimeDelta delay) {
+void ScheduledFeature::ScheduleNextRefresh(base::TimeDelta delay,
+                                           bool target_status) {
   DCHECK(active_user_pref_service_);
+  DCHECK_GE(delay, base::TimeDelta());
 
-  const bool new_status = !GetEnabled();
   const base::Time target_time = clock_->Now() + delay;
-
   per_user_schedule_target_state_[active_user_pref_service_] =
-      ScheduleTargetState{target_time, new_status};
-
-  VLOG(1) << "Setting " << GetFeatureName() << " to toggle to "
-          << (new_status ? "enabled" : "disabled") << " at "
+      ScheduleTargetState{target_time, target_status};
+  base::OnceClosure timer_cb;
+  if (target_status == GetEnabled()) {
+    timer_cb =
+        base::BindOnce(&ScheduledFeature::Refresh, base::Unretained(this),
+                       /*did_schedule_change=*/false,
+                       /*keep_manual_toggles_during_schedules=*/false);
+  } else {
+    timer_cb = base::BindOnce(&ScheduledFeature::SetEnabled,
+                              base::Unretained(this), target_status);
+  }
+  VLOG(1) << "Setting " << GetFeatureName() << " to refresh to "
+          << (target_status ? "enabled" : "disabled") << " at "
           << base::TimeFormatTimeOfDay(target_time);
-  timer_->Start(FROM_HERE, delay,
-                base::BindOnce(&ScheduledFeature::SetEnabled,
-                               base::Unretained(this), new_status));
+  timer_->Start(FROM_HERE, delay, std::move(timer_cb));
 }
 
 }  // namespace ash

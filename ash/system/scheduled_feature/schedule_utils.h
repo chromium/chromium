@@ -9,10 +9,6 @@
 #include "ash/public/cpp/schedule_enums.h"
 #include "base/time/time.h"
 
-namespace base {
-class Clock;
-}  // namespace base
-
 namespace ash::schedule_utils {
 
 struct ASH_EXPORT Position {
@@ -27,12 +23,16 @@ struct ASH_EXPORT Position {
 // Returns the current position in the schedule using local `sunrise_time`
 // and `sunset_time`. The date of the provided sunrise/sunset times are
 // irrelevant; their corresponding times of day are extracted and used
-// internally. This uses system time to get "now", or the `custom_clock` if
-// specified.
-ASH_EXPORT Position
-GetCurrentPosition(const base::Time sunrise_time,
-                   const base::Time sunset_time,
-                   const base::Clock* custom_clock = nullptr);
+// internally.
+ASH_EXPORT Position GetCurrentPosition(const base::Time sunrise_time,
+                                       const base::Time sunset_time,
+                                       const base::Time now);
+
+// Shifts `time_in` by a whole number of days such that it's < 1 day from the
+// `origin`:
+// `origin` <= output < `origin` + 24 hours
+ASH_EXPORT base::Time ShiftWithinOneDayFrom(const base::Time origin,
+                                            const base::Time time_in);
 
 }  // namespace ash::schedule_utils
 
