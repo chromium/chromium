@@ -194,12 +194,51 @@
       }
 
       :host-context([chrome-refresh-2023]):host(:not([narrow])) {
+        background: none;
+        border-radius: 100px;
+        height: 36px;
+        overflow: hidden;
+        padding: 0 6px;
+        position: relative;
+      }
+
+      #background,
+      #stateBackground {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:not([narrow])) #background {
         background: var(--cr-toolbar-search-field-background,
             var(--color-textfield-background,
             var(--cr-fallback-color-surface)));
-        border-radius: 100px;
-        height: 36px;
-        padding: 0 6px;
+        border: 2px solid transparent;
+        border-radius: inherit;
+        display: block;
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+        z-index: -1;
+      }
+
+      :host-context([chrome-refresh-2023]):host(
+            [search-focused_]:not([narrow])) {
+        outline: 2px solid var(--cr-focus-outline-color);
+      }
+
+      :host-context([chrome-refresh-2023]):host(
+            [search-focused_]:not([narrow])) #background {
+        background-clip: padding-box;
+      }
+
+      :host-context([chrome-refresh-2023]) #stateBackground {
+        display: block;
+        inset: 0;
+        pointer-events: none;
+        position: absolute;
+      }
+
+      :host-context([chrome-refresh-2023]):host(:hover) #stateBackground {
+        background: var(--cr-hover-background-color);
       }
 
       :host(:not([narrow]):not([showing-search])) #icon {
@@ -234,6 +273,8 @@
             var(--cr-toolbar-search-icon-margin-inline-start, 18px);
       }
     </style>
+    <div id="background"></div>
+    <div id="stateBackground"></div>
     <template is="dom-if" id="spinnerTemplate">
       <paper-spinner-lite active="[[isSpinnerShown_]]">
       </paper-spinner-lite>
