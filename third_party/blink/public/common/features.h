@@ -1021,6 +1021,23 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kStorageAccessAPIAutoDenyOutsideFPS;
 
+// Kill-switch for a deprecation trial that unpartitions storage in third-party
+// contexts under the registered top-level site. If
+// `kDisableThirdPartyStoragePartitioningDeprecationTrial` is enabled, the
+// deprecation trial information can be sent to and enabled in the browser
+// process (i.e. when the base::Feature is enabled, the deprecation trial is
+// enabled in the browser process too).
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kDisableThirdPartyStoragePartitioningDeprecationTrial);
+
+// Kill-switch for any calls to the  mojo interface
+// RuntimeFeatureStateController in the RuntimeFeatureStateOverrideContext
+// class. If `kRuntimeFeatureStateControllerApplyFeatureDiff` is disabled,
+// origin/deprecation trial token information is not sent to the browser
+// process.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRuntimeFeatureStateControllerApplyFeatureDiff);
+
 }  // namespace features
 }  // namespace blink
 

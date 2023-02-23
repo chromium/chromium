@@ -1779,5 +1779,13 @@ const base::FeatureParam<bool> kStorageAccessAPIAutoGrantInFPS{
 const base::FeatureParam<bool> kStorageAccessAPIAutoDenyOutsideFPS{
     &kStorageAccessAPI, "storage_access_api_auto_deny_outside_fps", true};
 
+BASE_FEATURE(kDisableThirdPartyStoragePartitioningDeprecationTrial,
+             "DisableThirdPartyStoragePartitioningDeprecationTrial",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kRuntimeFeatureStateControllerApplyFeatureDiff,
+             "RuntimeFeatureStateControllerApplyFeatureDiff",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace blink

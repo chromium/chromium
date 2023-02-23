@@ -3,6 +3,7 @@
 
 {{source_files_for_generated_file(template_file, input_files)}}
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom-blink.h"
@@ -63,6 +64,13 @@ bool RuntimeFeatureStateOverrideContext::
 {% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning' %}
   UseCounter::Count(execution_context_,
                           WebFeature::kDisableThirdPartyStoragePartitioning);
+  // If the base::Feature for the deprecation trial is disabled, we should
+  // not send any overrides to the browser, so we return false immediately,
+  // skipping any mojom messaging.
+  if(!base::FeatureList::IsEnabled(
+    blink::features::kDisableThirdPartyStoragePartitioningDeprecationTrial)){
+    return false;
+  }
 {% endif %}
   // Origin Trial feature values should not override any sent from
   // the browser, so we only add a value if has not already been set
@@ -109,8 +117,14 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
     for (auto& o : origin_trial_overrides_){
       blink_overrides.insert(o.first, std::move(o.second));
     }
-    GetOrBindRuntimeFeatureStateController()->ApplyFeatureDiffForOriginTrial(
+    // Feature overrides and origin trial information should only be
+    // sent to the browser process if the corresponding base::Feature
+    // is enabled.
+    if(base::FeatureList::IsEnabled(
+        blink::features::kRuntimeFeatureStateControllerApplyFeatureDiff)){
+      GetOrBindRuntimeFeatureStateController()->ApplyFeatureDiffForOriginTrial(
       std::move(blink_overrides));
+    }
     // TODO(https://crbug.com/1377000): when we convert to WTF:: types,
     // we use std::move, so we have to do some cleanup.
     origin_trial_overrides_.clear();
