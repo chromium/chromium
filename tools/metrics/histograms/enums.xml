@@ -59886,6 +59886,7 @@ from previous Chrome versions.
   <int value="-1122853453" label="LazyImageLoading:enabled"/>
   <int value="-1122458028" label="UnifiedMediaView:enabled"/>
   <int value="-1121931029" label="DownloadsForeground:enabled"/>
+  <int value="-1120594059" label="PowerBookmarkBackend:enabled"/>
   <int value="-1120188661" label="PolicyLogsPageAndroid:enabled"/>
   <int value="-1119700637" label="ui-disable-partial-swap"/>
   <int value="-1119552494" label="SyncTrustedVaultPassphraseRecovery:disabled"/>
@@ -62994,6 +62995,7 @@ from previous Chrome versions.
   <int value="656864700" label="FillOnAccountSelectHttp:disabled"/>
   <int value="657832926" label="SwipeToMoveCursor:enabled"/>
   <int value="658127191" label="ReadAnything:enabled"/>
+  <int value="658725396" label="PowerBookmarkBackend:disabled"/>
   <int value="658983252" label="enable-features"/>
   <int value="659051425"
       label="AdaptiveButtonInTopToolbarCustomizationV2:disabled"/>

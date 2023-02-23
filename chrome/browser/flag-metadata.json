@@ -5787,6 +5787,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "power-bookmark-backend",
+    "owners": [ "wylieb", "skym" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "power-bookmarks-side-panel",
     "owners": [ "emshack", "chrome-desktop-ui-sea" ],
     "expiry_milestone": 118

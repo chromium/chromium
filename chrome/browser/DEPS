@@ -252,6 +252,7 @@ include_rules = [
   "+components/pdf/browser",
   "+components/pdf/common",
   "+components/policy",
+  "+components/power_bookmarks",
   "+components/power_metrics",
   "+components/pref_registry",
   "+components/prefs",

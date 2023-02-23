@@ -2229,6 +2229,7 @@ static_library("browser") {
     "//components/policy/core/browser",
     "//components/policy/proto",
     "//components/power_bookmarks/core",
+    "//components/power_bookmarks/core:features",
     "//components/power_bookmarks/storage",
     "//components/pref_registry",
     "//components/prefs",

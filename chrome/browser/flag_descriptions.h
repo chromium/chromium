@@ -1403,6 +1403,9 @@ extern const char kRecordPermissionExpirationTimestampsDescription[];
 extern const char kPointerLockOptionsName[];
 extern const char kPointerLockOptionsDescription[];
 
+extern const char kPowerBookmarkBackendName[];
+extern const char kPowerBookmarkBackendDescription[];
+
 extern const char kPowerBookmarksSidePanel[];
 extern const char kPowerBookmarksSidePanelDescription[];
 

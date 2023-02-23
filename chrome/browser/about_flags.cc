@@ -130,6 +130,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/policy/core/common/features.h"
+#include "components/power_bookmarks/core/power_bookmark_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/query_tiles/switches.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -9415,6 +9416,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpstreamUseAlternateSecureDataType)},
+
+    {"power-bookmark-backend", flag_descriptions::kPowerBookmarkBackendName,
+     flag_descriptions::kPowerBookmarkBackendDescription, kOsAll,
+     FEATURE_VALUE_TYPE(power_bookmarks::kPowerBookmarkBackend)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
