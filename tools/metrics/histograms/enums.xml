@@ -87831,6 +87831,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Laugh Cry"/>
 </enum>
 
+<enum name="ReadAnythingLetterSpacing">
+  <int value="0" label="Tight (Deprecated)"/>
+  <int value="1" label="Standard"/>
+  <int value="2" label="Wide"/>
+  <int value="3" label="Very Wide"/>
+</enum>
+
+<enum name="ReadAnythingLineSpacing">
+  <int value="0" label="Tight (Deprecated)"/>
+  <int value="1" label="Standard"/>
+  <int value="2" label="Loose"/>
+  <int value="3" label="Very Loose"/>
+</enum>
+
 <enum name="ReadDynamicRulesJSONStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kFileDoesNotExist"/>

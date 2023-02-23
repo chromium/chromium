@@ -35,6 +35,11 @@ const double kReadAnythingMinimumFontScale = 0.5;
 const double kReadAnythingMaximumFontScale = 4.5;
 const double kReadAnythingFontScaleIncrement = 0.25;
 
+const char kLetterSpacingHistogramName[] =
+    "Accessibility.ReadAnything.LetterSpacing";
+const char kLineSpacingHistogramName[] =
+    "Accessibility.ReadAnything.LineSpacing";
+
 }  // namespace
 
 #endif  // CHROME_COMMON_ACCESSIBILITY_READ_ANYTHING_CONSTANTS_H_

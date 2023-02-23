@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -76,7 +77,17 @@ void ReadAnythingContainerView::OnReadAnythingThemeChanged(
 
 void ReadAnythingContainerView::OnCoordinatorDestroyed() {
   // When the coordinator that created |this| is destroyed, clean up pointers.
+  LogTextStyle();
   coordinator_ = nullptr;
+}
+
+void ReadAnythingContainerView::LogTextStyle() {
+  read_anything::mojom::LineSpacing line_spacing =
+      coordinator_->GetModel()->line_spacing();
+  base::UmaHistogramEnumeration(kLineSpacingHistogramName, line_spacing);
+  read_anything::mojom::LetterSpacing letter_spacing =
+      coordinator_->GetModel()->letter_spacing();
+  base::UmaHistogramEnumeration(kLetterSpacingHistogramName, letter_spacing);
 }
 
 BEGIN_METADATA(ReadAnythingContainerView, views::View)
@@ -86,6 +97,7 @@ ReadAnythingContainerView::~ReadAnythingContainerView() {
   // If |this| is being destroyed before the associated coordinator, then
   // remove |this| as an observer.
   if (coordinator_) {
+    LogTextStyle();
     coordinator_->RemoveObserver(this);
     coordinator_->RemoveModelObserver(this);
   }

@@ -243,8 +243,12 @@ class ReadAnythingModel {
   ReadAnythingLineSpacingModel* GetLineSpacingModel() {
     return line_spacing_model_.get();
   }
+  read_anything::mojom::LineSpacing line_spacing() { return line_spacing_; }
   ReadAnythingLetterSpacingModel* GetLetterSpacingModel() {
     return letter_spacing_model_.get();
+  }
+  read_anything::mojom::LetterSpacing letter_spacing() {
+    return letter_spacing_;
   }
 
  private:

@@ -1695,6 +1695,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.LetterSpacing"
+    enum="ReadAnythingLetterSpacing" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen letter spacing for the Read Anything panel.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.LineSpacing"
+    enum="ReadAnythingLineSpacing" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen line spacing for the Read Anything panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Reliability.Tree.UnserializeError"
     enum="AccessibilityTreeUnserializeError" expires_after="2023-11-30">
   <owner>aleventhal@chromium.org</owner>
