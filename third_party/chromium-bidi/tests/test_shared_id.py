@@ -35,6 +35,48 @@ async def test_sharedId_in_same_realm_same_navigable(websocket, context_id):
         })
 
     shared_id = result["result"]["value"]["sharedId"]
+    assert "UNKNOWN" not in shared_id
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.callFunction",
+            "params": {
+                "functionDeclaration": "(arg)=>arg",
+                "this": {
+                    "type": "undefined"
+                },
+                "arguments": [{
+                    "sharedId": shared_id
+                }],
+                "awaitPromise": False,
+                "target": {
+                    "context": context_id
+                }
+            }
+        })
+
+    assert result["type"] == "success"
+    assert result["result"]["value"]["sharedId"] == shared_id
+
+
+@pytest.mark.asyncio
+async def test_sharedId_without_navigation(websocket, context_id):
+    await set_html_content(websocket, context_id, "<div>some text</div>")
+
+    result = await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.querySelector('body > div');",
+                "target": {
+                    "context": context_id
+                },
+                "awaitPromise": True
+            }
+        })
+
+    shared_id = result["result"]["value"]["sharedId"]
+    assert "UNKNOWN" not in shared_id
 
     result = await execute_command(
         websocket, {

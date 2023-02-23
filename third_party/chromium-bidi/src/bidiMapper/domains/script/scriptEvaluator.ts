@@ -57,7 +57,7 @@ async function deserializeToCdpArg(
 
     if (realm.navigableId !== navigableId) {
       throw new Message.NoSuchNodeException(
-        `SharedId "${argumentValue.sharedId}" belongs to different document.`
+        `SharedId "${argumentValue.sharedId}" belongs to different document. Current document is ${realm.navigableId}.`
       );
     }
 

@@ -32,9 +32,9 @@ const scriptEvaluator = new ScriptEvaluator();
 
 export class Realm {
   readonly #realmStorage: RealmStorage;
+  readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #realmId: string;
   readonly #browsingContextId: string;
-  readonly #navigableId: string;
   readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
   readonly #origin: string;
   readonly #type: RealmType;
@@ -45,9 +45,9 @@ export class Realm {
 
   constructor(
     realmStorage: RealmStorage,
+    browsingContextStorage: BrowsingContextStorage,
     realmId: string,
     browsingContextId: string,
-    navigableId: string,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
@@ -57,7 +57,6 @@ export class Realm {
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
-    this.#navigableId = navigableId;
     this.#executionContextId = executionContextId;
     this.sandbox = sandbox;
     this.#origin = origin;
@@ -65,6 +64,7 @@ export class Realm {
     this.cdpSessionId = cdpSessionId;
     this.#cdpClient = cdpClient;
     this.#realmStorage = realmStorage;
+    this.#browsingContextStorage = browsingContextStorage;
 
     this.#realmStorage.realmMap.set(this.#realmId, this);
   }
@@ -173,7 +173,10 @@ export class Realm {
   }
 
   get navigableId(): string {
-    return this.#navigableId;
+    return (
+      this.#browsingContextStorage.findContext(this.#browsingContextId)
+        ?.navigableId ?? 'UNKNOWN'
+    );
   }
 
   get browsingContextId(): string {
@@ -201,10 +204,9 @@ export class Realm {
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel,
-    browsingContextStorage: BrowsingContextStorage
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.CallFunctionResult> {
-    const context = browsingContextStorage.getKnownContext(
+    const context = this.#browsingContextStorage.getKnownContext(
       this.browsingContextId
     );
     await context.awaitUnblocked();
@@ -224,10 +226,9 @@ export class Realm {
   async scriptEvaluate(
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel,
-    browsingContextStorage: BrowsingContextStorage
+    resultOwnership: Script.OwnershipModel
   ): Promise<Script.EvaluateResult> {
-    const context = browsingContextStorage.getKnownContext(
+    const context = this.#browsingContextStorage.getKnownContext(
       this.browsingContextId
     );
     await context.awaitUnblocked();

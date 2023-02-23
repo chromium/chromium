@@ -260,8 +260,7 @@ export class BrowsingContextProcessor {
     return await realm.scriptEvaluate(
       params.expression,
       params.awaitPromise,
-      params.resultOwnership ?? 'none',
-      this.#browsingContextStorage
+      params.resultOwnership ?? 'none'
     );
   }
 
@@ -292,8 +291,7 @@ export class BrowsingContextProcessor {
       }, // `this` is `undefined` by default.
       params.arguments || [], // `arguments` is `[]` by default.
       params.awaitPromise,
-      params.resultOwnership ?? 'none',
-      this.#browsingContextStorage
+      params.resultOwnership ?? 'none'
     );
   }
 

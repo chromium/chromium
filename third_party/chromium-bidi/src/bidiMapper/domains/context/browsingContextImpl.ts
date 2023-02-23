@@ -403,9 +403,9 @@ export class BrowsingContextImpl {
         }
         const realm = new Realm(
           this.#realmStorage,
+          this.#browsingContextStorage,
           params.context.uniqueId,
           this.contextId,
-          this.navigableId ?? 'UNKNOWN',
           params.context.id,
           this.#getOrigin(params),
           // TODO: differentiate types.

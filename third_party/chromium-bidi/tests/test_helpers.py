@@ -231,6 +231,21 @@ async def read_JSON_message(websocket):
     return json.loads(await websocket.recv())
 
 
+# Sets the current page content without navigation.
+async def set_html_content(websocket, context_id, html_content):
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"document.body.innerHTML = '{html_content}'",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True
+            }
+        })
+
+
 # Open given URL in the given context.
 async def goto_url(websocket, context_id, url):
     await execute_command(
