@@ -259,19 +259,45 @@ zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
 
 # platform separator for readability
 
+# Below this line, we need to use unzip's -j (junk paths) and -d "$UNZIP_DEST"
+# flags. This is to rewrite paths, in order to stanardize them, as run_cts.py
+# assumes they will be the same across archs for a given release.
+
+TARGET_DIR="$PREFIX/arm64/T"
+IN_ZIPFILE=android-cts-13_r1-linux_x86-arm.zip
+OUT_ZIPFILE=android-cts-arm64-13_r1.zip
+UNZIP_DEST=android-cts/testcases
+
+mkdir -p "$TARGET_DIR"
+mkdir -p "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases/arm64/CtsWebkitTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWebViewStartupApp/arm64/CtsWebViewStartupApp.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWidgetTestCases/arm64/CtsWidgetTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistTestCases/arm64/CtsAssistTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistApp/arm64/CtsAssistApp.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService/arm64/CtsAssistService.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsMockInputMethod/arm64/CtsMockInputMethod.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAutoFillServiceTestCases/arm64/CtsAutoFillServiceTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases/arm64/CtsTextTestCases.apk" -d "$UNZIP_DEST"
+
+zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts
+
+# platform separator for readability
+
 TARGET_DIR="$PREFIX/x86/T"
 IN_ZIPFILE=android-cts-13_r1-linux_x86-x86.zip
 OUT_ZIPFILE=android-cts-x86-13_r1.zip
 
 mkdir -p "$TARGET_DIR"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases/x86_64/CtsWebkitTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWebViewStartupApp/x86_64/CtsWebViewStartupApp.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsWidgetTestCases/x86_64/CtsWidgetTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistTestCases/x86_64/CtsAssistTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistApp/x86_64/CtsAssistApp.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService/x86_64/CtsAssistService.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsMockInputMethod/x86_64/CtsMockInputMethod.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsAutoFillServiceTestCases/x86_64/CtsAutoFillServiceTestCases.apk"
-unzip "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases/x86_64/CtsTextTestCases.apk"
+mkdir -p "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWebkitTestCases/x86_64/CtsWebkitTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWebViewStartupApp/x86_64/CtsWebViewStartupApp.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsWidgetTestCases/x86_64/CtsWidgetTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistTestCases/x86_64/CtsAssistTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistApp/x86_64/CtsAssistApp.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAssistService/x86_64/CtsAssistService.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsMockInputMethod/x86_64/CtsMockInputMethod.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsAutoFillServiceTestCases/x86_64/CtsAutoFillServiceTestCases.apk" -d "$UNZIP_DEST"
+unzip -j "$IN_ZIPFILE" "android-cts/testcases/CtsTextTestCases/x86_64/CtsTextTestCases.apk" -d "$UNZIP_DEST"
 
 zip -rm "$TARGET_DIR/$OUT_ZIPFILE" android-cts

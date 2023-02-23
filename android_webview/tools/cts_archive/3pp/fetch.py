@@ -8,7 +8,7 @@ import json
 
 
 def do_latest():
-  print('2023.02.10')  # Update to current date when updating the URLs below
+  print('2023.02.22')  # Update to current date when updating the URLs below
 
 
 def get_download_url():
@@ -27,6 +27,7 @@ def get_download_url():
       "android-cts-11_r9-linux_x86-x86.zip",
       "android-cts-12_r5-linux_x86-arm.zip",
       "android-cts-12_r5-linux_x86-x86.zip",
+      "android-cts-13_r1-linux_x86-arm.zip",
       "android-cts-13_r1-linux_x86-x86.zip",
   ]
   url_prefix = "https://dl.google.com/dl/android/cts/"
