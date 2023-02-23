@@ -63,7 +63,7 @@ void TabletModeMultitaskMenuEventHandler::OnTouchEvent(ui::TouchEvent* event) {
         initial_drag_data_.reset();
         return;
       }
-      const gfx::RectF window_bounds(target->GetBoundsInScreen());
+      const gfx::RectF window_bounds(active_window->GetBoundsInScreen());
       gfx::RectF target_area(window_bounds);
       target_area.ClampToCenteredSize(kTargetAreaSize);
       target_area.set_y(window_bounds.y());
