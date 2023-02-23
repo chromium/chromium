@@ -125,7 +125,10 @@ class MockStreamingWriter : public chromeos::libassistant::StreamingWriter<
 class TestGrpcHttpConnectionService {
  public:
   explicit TestGrpcHttpConnectionService(GrpcHttpConnectionClient* client)
-      : client_(client) {}
+      : client_(client) {
+    CreateWriter();
+  }
+
   TestGrpcHttpConnectionService(const TestGrpcHttpConnectionService&) = delete;
   TestGrpcHttpConnectionService& operator=(
       const TestGrpcHttpConnectionService&) = delete;
@@ -195,8 +198,12 @@ class TestGrpcHttpConnectionService {
     WriteResponse(std::move(response));
   }
 
-  void SetWriteAvailable() { client_->OnRpcWriteAvailable(nullptr, &writer_); }
-  MockStreamingWriter& writer() { return writer_; }
+  void SetWriteAvailable() {
+    client_->OnRpcWriteAvailable(nullptr, writer_.get());
+  }
+  MockStreamingWriter& writer() { return *writer_; }
+  void CreateWriter() { writer_ = std::make_unique<MockStreamingWriter>(); }
+  void ResetWriter() { writer_.reset(); }
 
  private:
   void WriteResponse(StreamHttpConnectionResponse response) {
@@ -204,7 +211,7 @@ class TestGrpcHttpConnectionService {
   }
 
   base::raw_ptr<GrpcHttpConnectionClient> client_;
-  MockStreamingWriter writer_;
+  std::unique_ptr<MockStreamingWriter> writer_;
 };
 
 class GrpcHttpConnectionClientTest : public testing::Test {
@@ -229,9 +236,9 @@ class GrpcHttpConnectionClientTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment environment_;
+  std::unique_ptr<TestGrpcHttpConnectionService> service_;
   TestHttpConnectionFactory http_connection_factory_;
   std::unique_ptr<GrpcHttpConnectionClient> client_;
-  std::unique_ptr<TestGrpcHttpConnectionService> service_;
 };
 
 TEST_F(GrpcHttpConnectionClientTest, CreateHttpConnection) {
@@ -414,6 +421,33 @@ TEST_F(GrpcHttpConnectionClientTest, ReceiveOnNetworkError) {
   EXPECT_CALL(service_->writer(), Write(SerializedProtoEquals(request)));
   service_->SetWriteAvailable();
   connection->SendOnNetworkError(error_code, message);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(GrpcHttpConnectionClientTest, NotCrashWhenWriterGone) {
+  StreamHttpConnectionRequest request;
+  request.set_command(StreamHttpConnectionRequest::REGISTER);
+  EXPECT_CALL(service_->writer(), Write(SerializedProtoEquals(request)));
+  // Will trigger registering client.
+  service_->SetWriteAvailable();
+  base::RunLoop().RunUntilIdle();
+
+  service_->SendCreateCommand();
+  auto* connection = http_connection();
+  ASSERT_TRUE(connection);
+  EXPECT_CALL(*connection, Close());
+
+  const std::string raw_headers = "raw_headers";
+  request.Clear();
+  request.set_id(1);
+  request.set_command(StreamHttpConnectionRequest::HANDLE_HEADER_RESPONSE);
+  request.set_raw_headers(raw_headers);
+  connection->SendOnHeaderResponse(raw_headers);
+  EXPECT_CALL(service_->writer(), Write(SerializedProtoEquals(request)));
+
+  // Simulate the case that the writer becomes nullptr. Should not crash.
+  service_->SetWriteAvailable();
+  service_->ResetWriter();
   base::RunLoop().RunUntilIdle();
 }
 

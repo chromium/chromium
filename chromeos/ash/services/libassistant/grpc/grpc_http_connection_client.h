@@ -84,10 +84,11 @@ class GrpcHttpConnectionClient {
   // concurrency issue. No lock needed.
   bool init_request_sent_ = false;
 
-  // |write_queue_| methods are thread safe.
+  // Lock for |write_queue_| which could be accessed from the different threads.
+  base::Lock write_queue_lock_;
   std::unique_ptr<chromeos::libassistant::StreamingWriteQueue<
       ::assistant::api::StreamHttpConnectionRequest>>
-      write_queue_;
+      write_queue_ GUARDED_BY(write_queue_lock_);
 
   // `http_connection` owns itself and will be deleted when `Close()` is called.
   // When clean up `http_connections_`, will call `Close()` on the elements.
