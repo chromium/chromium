@@ -88,13 +88,15 @@ void PlatformAuthNavigationThrottle::FetchHeadersCallback(
     attached_headers_.push_back(it.name());
     navigation_handle()->SetRequestHeader(it.name(), it.value());
   }
+  fetch_headers_callback_ran_ = true;
 
   // Resume the deferred request.
   if (is_deferred_) {
-    Resume();
     is_deferred_ = false;
+    // `Resume()` can synchronously delete this navigation throttle, so no code
+    // after it should reference a throttle instance.
+    Resume();
   }
-  fetch_headers_callback_ran_ = true;
 }
 
 }  // namespace enterprise_auth
