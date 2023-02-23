@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy_hub/privacy_hub_notification.h"
 
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
@@ -140,16 +141,20 @@ TEST_F(PrivacyHubNotificationClickDelegateTest, Click) {
           base::BindLambdaForTesting(
               [&button_clicked]() { button_clicked++; }));
 
-  // Clicking the message while no callback for it is added shouldn't result in
-  // a callback being executed.
+  ASSERT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
+
+  // Without callback only Privacy Hub should be opened when clicking on the
+  // message.
   delegate->Click(absl::nullopt, absl::nullopt);
 
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   EXPECT_EQ(button_clicked, 0u);
   EXPECT_EQ(message_clicked, 0u);
 
   // Click the button.
   delegate->Click(0, absl::nullopt);
 
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   EXPECT_EQ(button_clicked, 1u);
   EXPECT_EQ(message_clicked, 0u);
 
@@ -160,31 +165,17 @@ TEST_F(PrivacyHubNotificationClickDelegateTest, Click) {
   // When clicking the button, only the button callback should be executed.
   delegate->Click(0, absl::nullopt);
 
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   EXPECT_EQ(button_clicked, 2u);
   EXPECT_EQ(message_clicked, 0u);
 
-  // Clicking the message should execute the message callback.
+  // Clicking the message should open Privacy Hub and execute the message
+  // callback.
   delegate->Click(absl::nullopt, absl::nullopt);
 
+  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 2);
   EXPECT_EQ(button_clicked, 2u);
   EXPECT_EQ(message_clicked, 1u);
-}
-
-TEST(PrivacyHubNotificationClickDelegateDeathTest, AddButton) {
-  scoped_refptr<PrivacyHubNotificationClickDelegate> delegate =
-      base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-          base::DoNothing());
-
-  if (DCHECK_IS_ON()) {
-    EXPECT_DEATH(
-        delegate->Click(1, absl::nullopt),
-        "Check failed: !button_callbacks_\\[button_index\\]\\.is_null\\(\\). "
-        "button_index=1");
-  }
-
-  EXPECT_DEATH(delegate->Click(2, absl::nullopt),
-               "Check failed: button_callbacks_.size\\(\\) > button_index \\(2 "
-               "vs. 2\\)");
 }
 
 TEST_F(PrivacyHubNotificationTest, ShowAndHide) {
@@ -227,26 +218,6 @@ TEST_F(PrivacyHubNotificationTest, UpdateNotification) {
   // the message center.
   EXPECT_TRUE(GetNotification());
   EXPECT_FALSE(GetPopupNotification());
-}
-
-TEST_F(PrivacyHubNotificationTest, AddButton) {
-  notification().Show();
-
-  EXPECT_EQ(GetNotification()->rich_notification_data().buttons.size(), 1u);
-
-  int second_button_clicked = 0;
-  notification().SetSecondButton(
-      base::BindLambdaForTesting(
-          [&second_button_clicked]() { second_button_clicked++; }),
-      IDS_PRIVACY_HUB_OPEN_SETTINGS_PAGE_BUTTON);
-
-  notification().Update();
-  message_center::Notification* test_notification = GetNotification();
-  ASSERT_EQ(test_notification->rich_notification_data().buttons.size(), 2u);
-
-  EXPECT_EQ(second_button_clicked, 0);
-  test_notification->delegate()->Click(1, absl::nullopt);
-  EXPECT_EQ(second_button_clicked, 1);
 }
 
 TEST_F(PrivacyHubNotificationTest, WithApps) {

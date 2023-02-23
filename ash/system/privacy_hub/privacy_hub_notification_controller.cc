@@ -88,11 +88,6 @@ PrivacyHubNotificationController::PrivacyHubNotificationController() {
           SensorDisabledNotificationDelegate::Sensor::kMicrophone},
       combined_delegate, NotificationCatalogName::kPrivacyHubMicAndCamera,
       IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON);
-
-  combined_notification_->SetSecondButton(
-      base::BindRepeating(
-          &PrivacyHubNotificationController::OpenPrivacyHubSettingsPage),
-      IDS_PRIVACY_HUB_OPEN_SETTINGS_PAGE_BUTTON);
 }
 
 PrivacyHubNotificationController::~PrivacyHubNotificationController() = default;
