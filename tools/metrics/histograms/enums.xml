@@ -98257,6 +98257,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="DirectWriting, Add Space Or Text"/>
   <int value="2" label="DirectWriting, Remove Spaces"/>
   <int value="3" label="DirectWriting, Split Or Merge"/>
+  <int value="4" label="Android, Select"/>
+  <int value="5" label="Android, Insert"/>
+  <int value="6" label="Android, Delete"/>
+  <int value="7" label="Android, Remove Space"/>
+  <int value="8" label="Android, Join Or Split"/>
+  <int value="9" label="Android, Select Range"/>
+  <int value="10" label="Android, Delete Range"/>
 </enum>
 
 <enum name="SubframeDownloadSandboxOriginAdGesture">

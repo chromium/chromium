@@ -16,16 +16,19 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.gfx.mojom.Rect;
 
 import java.lang.reflect.InvocationTargetException;
@@ -39,16 +42,26 @@ import java.util.Map;
  */
 @RunWith(ContentJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({"expose-internals-for-testing", "enable-features=StylusRichGestures"})
+@CommandLineFlags.Add({"enable-features=StylusRichGestures"})
 public class StylusGestureHandlerTest {
     @Rule
     public ImeActivityTestRule mRule = new ImeActivityTestRule();
 
-    private static String sTargetPackage = "android.view.inputmethod.";
-    private static String sFallbackText = "this gesture failed";
+    @Rule
+    public HistogramTestRule mHistogramTester = new HistogramTestRule();
+
+    private static final String TARGET_PACKAGE = "android.view.inputmethod.";
+    private static final String FALLBACK_TEXT = "this gesture failed";
+    private static final String HISTOGRAM_NAME = "InputMethod.StylusHandwriting.Gesture";
 
     private InputConnection mWrappedInputConnection;
     private StylusWritingGestureData mLastGestureData;
+
+    @BeforeClass
+    public static void setUpClass() {
+        // Needed for HistogramTestRule.
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -69,13 +82,13 @@ public class StylusGestureHandlerTest {
     public void testSelectGesture()
             throws ClassNotFoundException, InvocationTargetException, IllegalAccessException,
                    InstantiationException, NoSuchMethodException {
-        Class builderClass = getBuilderForClass(Class.forName(sTargetPackage + "SelectGesture"));
+        Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "SelectGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
         builderMethods.get("setGranularity")
                 .invoke(builder, StylusGestureHandler.GRANULARITY_CHARACTER);
         builderMethods.get("setSelectionArea").invoke(builder, new RectF(0, 0, 10, 10));
-        builderMethods.get("setFallbackText").invoke(builder, sFallbackText);
+        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
         Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
@@ -89,8 +102,11 @@ public class StylusGestureHandlerTest {
                 mLastGestureData.granularity);
         assertMojoRectsAreEqual(createMojoRect(0, 5, 0, 0), mLastGestureData.startRect);
         assertMojoRectsAreEqual(createMojoRect(10, 5, 0, 0), mLastGestureData.endRect);
-        assertEquals(sFallbackText, toJavaString(mLastGestureData.textAlternative));
+        assertEquals(FALLBACK_TEXT, toJavaString(mLastGestureData.textAlternative));
         assertNull(mLastGestureData.textToInsert);
+        assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.SELECT));
     }
 
     @Test
@@ -98,12 +114,12 @@ public class StylusGestureHandlerTest {
     public void testInsertGesture()
             throws ClassNotFoundException, InvocationTargetException, IllegalAccessException,
                    InstantiationException, NoSuchMethodException {
-        Class builderClass = getBuilderForClass(Class.forName(sTargetPackage + "InsertGesture"));
+        Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "InsertGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
         builderMethods.get("setTextToInsert").invoke(builder, "Foo");
         builderMethods.get("setInsertionPoint").invoke(builder, new PointF(15, 31));
-        builderMethods.get("setFallbackText").invoke(builder, sFallbackText);
+        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
         Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
@@ -117,8 +133,11 @@ public class StylusGestureHandlerTest {
                 mLastGestureData.granularity);
         assertMojoRectsAreEqual(createMojoRect(15, 31, 0, 0), mLastGestureData.startRect);
         assertNull(mLastGestureData.endRect);
-        assertEquals(sFallbackText, toJavaString(mLastGestureData.textAlternative));
+        assertEquals(FALLBACK_TEXT, toJavaString(mLastGestureData.textAlternative));
         assertEquals("Foo", toJavaString(mLastGestureData.textToInsert));
+        assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.INSERT));
     }
 
     @Test
@@ -126,12 +145,12 @@ public class StylusGestureHandlerTest {
     public void testDeleteGesture()
             throws ClassNotFoundException, InvocationTargetException, IllegalAccessException,
                    InstantiationException, NoSuchMethodException {
-        Class builderClass = getBuilderForClass(Class.forName(sTargetPackage + "DeleteGesture"));
+        Class builderClass = getBuilderForClass(Class.forName(TARGET_PACKAGE + "DeleteGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
         builderMethods.get("setGranularity").invoke(builder, StylusGestureHandler.GRANULARITY_WORD);
         builderMethods.get("setDeletionArea").invoke(builder, new RectF(0, 0, 10, 10));
-        builderMethods.get("setFallbackText").invoke(builder, sFallbackText);
+        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
         Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
@@ -145,8 +164,11 @@ public class StylusGestureHandlerTest {
                 mLastGestureData.granularity);
         assertMojoRectsAreEqual(createMojoRect(0, 5, 0, 0), mLastGestureData.startRect);
         assertMojoRectsAreEqual(createMojoRect(10, 5, 0, 0), mLastGestureData.endRect);
-        assertEquals(sFallbackText, toJavaString(mLastGestureData.textAlternative));
+        assertEquals(FALLBACK_TEXT, toJavaString(mLastGestureData.textAlternative));
         assertNull(mLastGestureData.textToInsert);
+        assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.DELETE));
     }
 
     @Test
@@ -155,11 +177,11 @@ public class StylusGestureHandlerTest {
             throws ClassNotFoundException, InvocationTargetException, IllegalAccessException,
                    InstantiationException, NoSuchMethodException {
         Class builderClass =
-                getBuilderForClass(Class.forName(sTargetPackage + "RemoveSpaceGesture"));
+                getBuilderForClass(Class.forName(TARGET_PACKAGE + "RemoveSpaceGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
         builderMethods.get("setPoints").invoke(builder, new PointF(51, 25), new PointF(105, 30));
-        builderMethods.get("setFallbackText").invoke(builder, sFallbackText);
+        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
         Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
@@ -173,8 +195,11 @@ public class StylusGestureHandlerTest {
                 mLastGestureData.granularity);
         assertMojoRectsAreEqual(createMojoRect(51, 25, 0, 0), mLastGestureData.startRect);
         assertMojoRectsAreEqual(createMojoRect(105, 30, 0, 0), mLastGestureData.endRect);
-        assertEquals(sFallbackText, toJavaString(mLastGestureData.textAlternative));
+        assertEquals(FALLBACK_TEXT, toJavaString(mLastGestureData.textAlternative));
         assertNull(mLastGestureData.textToInsert);
+        assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.REMOVE_SPACE));
     }
 
     @Test
@@ -183,11 +208,11 @@ public class StylusGestureHandlerTest {
             throws ClassNotFoundException, InvocationTargetException, IllegalAccessException,
                    InstantiationException, NoSuchMethodException {
         Class builderClass =
-                getBuilderForClass(Class.forName(sTargetPackage + "JoinOrSplitGesture"));
+                getBuilderForClass(Class.forName(TARGET_PACKAGE + "JoinOrSplitGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
         builderMethods.get("setJoinOrSplitPoint").invoke(builder, new PointF(1, 19));
-        builderMethods.get("setFallbackText").invoke(builder, sFallbackText);
+        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
         Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
@@ -201,8 +226,11 @@ public class StylusGestureHandlerTest {
                 mLastGestureData.granularity);
         assertMojoRectsAreEqual(createMojoRect(1, 19, 0, 0), mLastGestureData.startRect);
         assertNull(mLastGestureData.endRect);
-        assertEquals(sFallbackText, toJavaString(mLastGestureData.textAlternative));
+        assertEquals(FALLBACK_TEXT, toJavaString(mLastGestureData.textAlternative));
         assertNull(mLastGestureData.textToInsert);
+        assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.JOIN_OR_SPLIT));
     }
 
     @Test
@@ -211,13 +239,13 @@ public class StylusGestureHandlerTest {
             throws ClassNotFoundException, InvocationTargetException, IllegalAccessException,
                    InstantiationException, NoSuchMethodException {
         Class builderClass =
-                getBuilderForClass(Class.forName(sTargetPackage + "SelectRangeGesture"));
+                getBuilderForClass(Class.forName(TARGET_PACKAGE + "SelectRangeGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
         builderMethods.get("setGranularity").invoke(builder, StylusGestureHandler.GRANULARITY_WORD);
         builderMethods.get("setSelectionStartArea").invoke(builder, new RectF(10, 10, 45, 55));
         builderMethods.get("setSelectionEndArea").invoke(builder, new RectF(0, 100, 70, 200));
-        builderMethods.get("setFallbackText").invoke(builder, sFallbackText);
+        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
         Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
@@ -231,8 +259,11 @@ public class StylusGestureHandlerTest {
                 mLastGestureData.granularity);
         assertMojoRectsAreEqual(createMojoRect(10, 10, 35, 45), mLastGestureData.startRect);
         assertMojoRectsAreEqual(createMojoRect(0, 100, 70, 100), mLastGestureData.endRect);
-        assertEquals(sFallbackText, toJavaString(mLastGestureData.textAlternative));
+        assertEquals(FALLBACK_TEXT, toJavaString(mLastGestureData.textAlternative));
         assertNull(mLastGestureData.textToInsert);
+        assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.SELECT_RANGE));
     }
 
     @Test
@@ -241,14 +272,14 @@ public class StylusGestureHandlerTest {
             throws ClassNotFoundException, InvocationTargetException, IllegalAccessException,
                    InstantiationException, NoSuchMethodException {
         Class builderClass =
-                getBuilderForClass(Class.forName(sTargetPackage + "DeleteRangeGesture"));
+                getBuilderForClass(Class.forName(TARGET_PACKAGE + "DeleteRangeGesture"));
         Map<String, Method> builderMethods = getMethodsForClass(builderClass);
         Object builder = builderClass.newInstance();
         builderMethods.get("setGranularity")
                 .invoke(builder, StylusGestureHandler.GRANULARITY_CHARACTER);
         builderMethods.get("setDeletionStartArea").invoke(builder, new RectF(10, 10, 45, 55));
         builderMethods.get("setDeletionEndArea").invoke(builder, new RectF(0, 100, 70, 200));
-        builderMethods.get("setFallbackText").invoke(builder, sFallbackText);
+        builderMethods.get("setFallbackText").invoke(builder, FALLBACK_TEXT);
         Object gesture = builderMethods.get("build").invoke(builder);
 
         Method performHandwritingGesture = getMethodsForClass(mWrappedInputConnection.getClass())
@@ -262,8 +293,11 @@ public class StylusGestureHandlerTest {
                 mLastGestureData.granularity);
         assertMojoRectsAreEqual(createMojoRect(10, 10, 35, 45), mLastGestureData.startRect);
         assertMojoRectsAreEqual(createMojoRect(0, 100, 70, 100), mLastGestureData.endRect);
-        assertEquals(sFallbackText, toJavaString(mLastGestureData.textAlternative));
+        assertEquals(FALLBACK_TEXT, toJavaString(mLastGestureData.textAlternative));
         assertNull(mLastGestureData.textToInsert);
+        assertEquals(1,
+                mHistogramTester.getHistogramValueCount(
+                        HISTOGRAM_NAME, StylusGestureHandler.UmaGestureType.DELETE_RANGE));
     }
 
     private static Map<String, Method> getMethodsForClass(Class<?> className) {

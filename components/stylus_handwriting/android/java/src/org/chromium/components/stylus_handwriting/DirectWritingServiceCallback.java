@@ -17,19 +17,15 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.BinderThread;
-import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink.mojom.StylusWritingGestureGranularity;
+import org.chromium.content.browser.input.StylusGestureHandler;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.mojo_base.mojom.String16;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * This class implements the Direct Writing service callback interface that gets registered to the
@@ -62,27 +58,6 @@ class DirectWritingServiceCallback
     static final String GESTURE_TYPE_U_TYPE_REMOVE_SPACE = "u_type_remove_space";
     static final String GESTURE_TYPE_ARCH_TYPE_REMOVE_SPACE = "arch_type_remove_space";
     static final String GESTURE_I_TYPE_FUNCTIONAL = "i_type_functional";
-
-    // This should be kept in sync with the definition |StylusHandwritingGesture|
-    // in tools/metrics/histograms/enums.xml.
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({StylusHandwritingGesture.DELETE_TEXT, StylusHandwritingGesture.ADD_SPACE_OR_TEXT,
-            StylusHandwritingGesture.REMOVE_SPACES, StylusHandwritingGesture.SPLIT_OR_MERGE,
-            StylusHandwritingGesture.COUNT})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface StylusHandwritingGesture {
-        int DELETE_TEXT = 0;
-        int ADD_SPACE_OR_TEXT = 1;
-        int REMOVE_SPACES = 2;
-        int SPLIT_OR_MERGE = 3;
-        int COUNT = 4;
-    }
-
-    private static void recordGesture(@StylusHandwritingGesture int gesture) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "InputMethod.StylusHandwriting.Gesture", gesture, StylusHandwritingGesture.COUNT);
-    }
 
     private EditorInfo mEditorInfo;
     private int mLastSelectionStart;
@@ -178,16 +153,20 @@ class DirectWritingServiceCallback
 
         switch (gestureData.action) {
             case StylusWritingGestureAction.DELETE_TEXT:
-                recordGesture(StylusHandwritingGesture.DELETE_TEXT);
+                StylusGestureHandler.logGestureType(
+                        StylusGestureHandler.UmaGestureType.DW_DELETE_TEXT);
                 break;
             case StylusWritingGestureAction.ADD_SPACE_OR_TEXT:
-                recordGesture(StylusHandwritingGesture.ADD_SPACE_OR_TEXT);
+                StylusGestureHandler.logGestureType(
+                        StylusGestureHandler.UmaGestureType.DW_ADD_SPACE_OR_TEXT);
                 break;
             case StylusWritingGestureAction.REMOVE_SPACES:
-                recordGesture(StylusHandwritingGesture.REMOVE_SPACES);
+                StylusGestureHandler.logGestureType(
+                        StylusGestureHandler.UmaGestureType.DW_REMOVE_SPACES);
                 break;
             case StylusWritingGestureAction.SPLIT_OR_MERGE:
-                recordGesture(StylusHandwritingGesture.SPLIT_OR_MERGE);
+                StylusGestureHandler.logGestureType(
+                        StylusGestureHandler.UmaGestureType.DW_SPLIT_OR_MERGE);
                 break;
             default:
                 assert false : "Gesture type unset";

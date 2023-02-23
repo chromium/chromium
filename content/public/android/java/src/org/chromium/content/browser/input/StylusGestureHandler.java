@@ -8,12 +8,14 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.view.inputmethod.InputConnection;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.core.os.BuildCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.blink.mojom.StylusWritingGestureAction;
 import org.chromium.blink.mojom.StylusWritingGestureData;
@@ -23,6 +25,8 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.gfx.mojom.Rect;
 import org.chromium.mojo_base.mojom.String16;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -48,6 +52,32 @@ public class StylusGestureHandler implements InvocationHandler {
     static final int HANDWRITING_GESTURE_RESULT_UNSUPPORTED = 2;
 
     private static final String TAG = "StylusGestureHandler";
+
+    // Should be kept in sync with StylusHandwritingGesture in tools/metrics/histograms/enums.xml.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // Entries with the DW prefix are used by Samsung's DirectWriting service. All other entries are
+    // used by Android stylus handwriting.
+    @IntDef({UmaGestureType.DW_DELETE_TEXT, UmaGestureType.DW_ADD_SPACE_OR_TEXT,
+            UmaGestureType.DW_REMOVE_SPACES, UmaGestureType.DW_SPLIT_OR_MERGE,
+            UmaGestureType.SELECT, UmaGestureType.INSERT, UmaGestureType.DELETE,
+            UmaGestureType.REMOVE_SPACE, UmaGestureType.JOIN_OR_SPLIT, UmaGestureType.SELECT_RANGE,
+            UmaGestureType.DELETE_RANGE, UmaGestureType.NUM_ENTRIES})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface UmaGestureType {
+        int DW_DELETE_TEXT = 0;
+        int DW_ADD_SPACE_OR_TEXT = 1;
+        int DW_REMOVE_SPACES = 2;
+        int DW_SPLIT_OR_MERGE = 3;
+        int SELECT = 4;
+        int INSERT = 5;
+        int DELETE = 6;
+        int REMOVE_SPACE = 7;
+        int JOIN_OR_SPLIT = 8;
+        int SELECT_RANGE = 9;
+        int DELETE_RANGE = 10;
+        int NUM_ENTRIES = 11;
+    }
 
     private final InputConnection mFallback;
     private final Callback<StylusWritingGestureData> mOnGestureCallback;
@@ -76,6 +106,11 @@ public class StylusGestureHandler implements InvocationHandler {
                 new StylusGestureHandler(inputConnection, onGestureCallback));
 
         return proxy;
+    }
+
+    public static void logGestureType(@UmaGestureType int gestureType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "InputMethod.StylusHandwriting.Gesture", gestureType, UmaGestureType.NUM_ENTRIES);
     }
 
     @Override
@@ -112,18 +147,25 @@ public class StylusGestureHandler implements InvocationHandler {
 
         if (Class.forName(packageName + "SelectGesture").isInstance(gesture)) {
             gestureData = createSelectGesture(gesture);
+            logGestureType(UmaGestureType.SELECT);
         } else if (Class.forName(packageName + "InsertGesture").isInstance(gesture)) {
             gestureData = createInsertGesture(gesture);
+            logGestureType(UmaGestureType.INSERT);
         } else if (Class.forName(packageName + "DeleteGesture").isInstance(gesture)) {
             gestureData = createDeleteGesture(gesture);
+            logGestureType(UmaGestureType.DELETE);
         } else if (Class.forName(packageName + "RemoveSpaceGesture").isInstance(gesture)) {
             gestureData = createRemoveSpaceGesture(gesture);
+            logGestureType(UmaGestureType.REMOVE_SPACE);
         } else if (Class.forName(packageName + "JoinOrSplitGesture").isInstance(gesture)) {
             gestureData = createJoinOrSplitGesture(gesture);
+            logGestureType(UmaGestureType.JOIN_OR_SPLIT);
         } else if (Class.forName(packageName + "SelectRangeGesture").isInstance(gesture)) {
             gestureData = createSelectRangeGesture(gesture);
+            logGestureType(UmaGestureType.SELECT_RANGE);
         } else if (Class.forName(packageName + "DeleteRangeGesture").isInstance(gesture)) {
             gestureData = createDeleteRangeGesture(gesture);
+            logGestureType(UmaGestureType.DELETE_RANGE);
         }
         return gestureData;
     }
