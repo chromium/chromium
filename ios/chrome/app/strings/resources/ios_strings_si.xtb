@@ -318,6 +318,7 @@
 <translation id="3227137524299004712">මයික්‍රෆෝනය:</translation>
 <translation id="3240426699337459095">සබැඳිය පිටපත් කරන ලදි</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">ඔබේ වෙනස සුරැකිය නොහැකි විය.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" />කින් <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
 <translation id="3268451620468152448">ටැබ විවෘත කරන්න</translation>
 <translation id="3272527697863656322">අවලංගු කරන්න</translation>
@@ -340,6 +341,7 @@
 <translation id="3445288400492335833">මිනි <ph name="MINUTES" /></translation>
 <translation id="3448016392200048164">විභෙදුම් දසුන</translation>
 <translation id="345565170154308620">මුරපද කළමනා කරන්න...</translation>
+<translation id="3464194322481586217">මිල හඹා යාමට නොහැකි විය.</translation>
 <translation id="3469166899695866866">බාගැනීම නවතන්න</translation>
 <translation id="3470502288861289375">පිටපත් කෙරෙමින්...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} අඩවියක් හෝ යෙදුමක් සඳහා}one{අඩවි සහ යෙදුම් {COUNT}ක් සඳහා}other{අඩවි සහ යෙදුම් {COUNT}ක් සඳහා}}</translation>
@@ -768,6 +770,7 @@
 <translation id="6464397691496239022">ඔබේ බ්‍රවුස් කිරීමේ අත්දැකීම වැඩිදියුණු කිරීමට, උදාහරණයක් වශයෙන්, ඔබව පුරා තබා ගැනීමට හෝ ඔබේ සාප්පු සවාරි කරත්තයේ අයිතම මතක තබා ගැනීමට වෙබ් අඩවිවලට කුකි භාවිත කළ හැකිය.
 
 විවිධ වෙබ් අඩවි හරහා ඔබේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් බැලීමට, උදාහරණයක් වශයෙන්, වෙළඳ දැන්වීම් පෞද්ගලීකරණය කිරීමට වෙබ් අඩවිවලට කුකි භාවිත කළ නොහැකිය.</translation>
+<translation id="6476253015009698798">මෙම පිටුව සඳහා මිල හඹා යෑමක් නොමැත.</translation>
 <translation id="6476800141292307438">පිටුව <ph name="LANGUAGE" />ට පරිවර්තන කෙරේ. තිරයේ පහළ කොටස ළඟ විකල්ප ලැබේ.</translation>
 <translation id="648164694371393720">සත්‍යාපන දෝෂයකි</translation>
 <translation id="6482629121755362506">අයිතම <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ක් මකන ලදි</translation>
@@ -819,6 +822,7 @@
 <translation id="6780034285637185932">ZIP කේතය</translation>
 <translation id="6781260999953472352">සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්නද?</translation>
 <translation id="6785453220513215166">බිඳ වැටීම් වාර්තාව යවමින්...</translation>
+<translation id="6790502149545262384">ළඟදීම, ඔබ නව පටිත්තක් විවෘත කරන විට <ph name="CHANNEL_NAME" /> වෙතින් නව කතන්දර දකිනු ඇත.</translation>
 <translation id="6797885426782475225">හඬ සෙවීම</translation>
 <translation id="6801927553864092214">පෞද්ගලිකව බ්‍රවුස් කිරීමට, අප්‍රකට ටැබයක් විවෘත කරන්න</translation>
 <translation id="6807889908376551050">සියල්ල පෙන්වන්න...</translation>
@@ -1129,6 +1133,7 @@
 <translation id="9137526406337347448">Google සේවා</translation>
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>
 <translation id="9157836665414082580">සංවාද යටපත් කරන්න</translation>
+<translation id="9162432979321511934">මුරපද ස්වයං පිරවුම ක්‍රියාත්මක කරන්න</translation>
 <translation id="9165320910061267720">මිල පහත වැටීමේ ඇඟවීම් පිළිබඳ දැනුම්දීම් ලබා ගැනීම සඳහා, ඔබට ඔබේ iOS සැකසීම් තුළ දැනුම්දීම් ක්‍රියාත්මක කිරීමට අවශ්‍ය වනු ඇත.</translation>
 <translation id="9177438225260810839">විවෘත ටැබ සොයන්න</translation>
 <translation id="9188680907066685419">කළමනාකරණය කළ ගිණුමෙන් වරන්න</translation>

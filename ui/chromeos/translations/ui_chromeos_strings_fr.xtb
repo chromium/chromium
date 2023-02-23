@@ -355,6 +355,7 @@
 <translation id="3971140002794351170">Téléchargez le profil mobile, Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglais (Royaume-Uni)</translation>
 <translation id="3975895378829046965">Bengali (phonétique)</translation>
+<translation id="3999574733850440202">Les fichiers Microsoft ouverts récemment ont été déplacés vers OneDrive</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4017788180641807848">Anglais (États-Unis) avec clavier Workman</translation>
 <translation id="4019998208269143058">Épingler aux fichiers rapides</translation>
@@ -830,6 +831,7 @@
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7732111077498238432">Le réseau est soumis à des règles</translation>
 <translation id="7736003208887389532">Supprimer définitivement ces fichiers ?</translation>
+<translation id="7740287852186792672">Résultats de la recherche</translation>
 <translation id="7748626145866214022">D'autres options sont disponibles dans la barre d'action. Appuyez sur Alt+A pour la sélectionner.</translation>
 <translation id="7760449188139285140">Chinois (Wubi)</translation>
 <translation id="7765158879357617694">Déplacer</translation>
@@ -907,6 +909,7 @@
 <translation id="8300849813060516376">Échec de l'opération OTASP</translation>
 <translation id="8312871300878166382">Coller dans le dossier</translation>
 <translation id="8329978297633540474">Texte brut</translation>
+<translation id="8332007959299458842">Les fichiers Microsoft ouverts récemment ont été déplacés vers Google Drive</translation>
 <translation id="8335587457941836791">Retirer de l'étagère</translation>
 <translation id="8335837413233998004">Biélorusse</translation>
 <translation id="8336153091935557858">Hier à <ph name="YESTERDAY_DAYTIME" /></translation>

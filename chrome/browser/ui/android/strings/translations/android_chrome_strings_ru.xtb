@@ -355,6 +355,7 @@
 <translation id="2951071800649516099">Добавьте страницы в список для чтения.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
 <translation id="2961210776189273067">Обращение</translation>
+<translation id="296370266220139811">Экономьте время на вводе URL</translation>
 <translation id="2979025552038692506">Выбранная вкладка инкогнито</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2981364137500752533">Можно открыть не более пяти окон.</translation>
@@ -482,6 +483,7 @@
 <translation id="3578874072190212775">Вы можете помогать сайтам бороться с мошенничеством и отличать ботов от людей</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3587596251841506391">Помогать Google делать Интернет безопаснее</translation>
+<translation id="3597179440835065298">Более подходящие подсказки</translation>
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Управление окнами</translation>
@@ -747,6 +749,7 @@
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> запрашивает разрешение на подключение</translation>
 <translation id="5016205925109358554">С засечками</translation>
+<translation id="5017529052065664584">Последние 15 минут</translation>
 <translation id="5032430150487044192">Не удалось создать QR-код.</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5040262127954254034">Конфиденциальность</translation>
@@ -882,6 +885,7 @@
 <translation id="5813552293717797987">Этим браузером управляют <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Чтобы использовать голосовой ввод, нажмите на значок микрофона</translation>
 <translation id="5814749351757353073">Подпишитесь на любимые сайты</translation>
+<translation id="5822875253699806474">Чтобы быстро возвращаться к просмотренным сайтам, включите синхронизацию вкладок и истории.</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833984609253377421">Отправить ссылку</translation>
 <translation id="5834764604050996579">Чтобы отсканировать QR-код, разрешите Chrome доступ к камере.</translation>
@@ -1136,6 +1140,7 @@
 <translation id="7088681679121566888">У вас установлена последняя версия Chrome.</translation>
 <translation id="7105047059074518658">Чтобы работать с Chrome на разных устройствах было проще, войдите в аккаунт</translation>
 <translation id="7106762743910369165">Этим браузером управляет ваша организация.</translation>
+<translation id="7116588989735740310">Вы сможете с легкостью возвращаться к сайтам, просмотренным на других устройствах.</translation>
 <translation id="7130504491556983216">Когда вы начнете посещать сайты, здесь появится список ваших интересов.</translation>
 <translation id="7138678301420049075">Другое</translation>
 <translation id="7146622961999026732">Кажется, следующие сайты и приложения важны для вас:</translation>
@@ -1214,6 +1219,7 @@
 <translation id="751961395872307827">Не удалось подключиться к сайту</translation>
 <translation id="752220631458524187">Отключите кабель по окончании работы.</translation>
 <translation id="7523960634226602883">Включить камеру и использовать для поиска Google Объектив</translation>
+<translation id="7539698981064401140">Синхронизируйте вкладки и историю</translation>
 <translation id="7562080006725997899">Очистить историю</translation>
 <translation id="756809126120519699">Данные Chrome удалены</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
@@ -1396,6 +1402,7 @@
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8466613982764129868">Проверьте, подключено ли устройство <ph name="TARGET_DEVICE_NAME" /> к Интернету.</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
+<translation id="847433688444405067">Работайте на разных устройствах</translation>
 <translation id="8481980314595922412">Функции включены</translation>
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="FILE_SIZE" /> <ph name="SEPARATOR" /></translation>
 <translation id="8489271220582375723">Открыть страницу "История"</translation>
@@ -1449,6 +1456,7 @@
 <translation id="8712637175834984815">Готово</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
 <translation id="8746155870861185046">Поделиться выделенным</translation>
+<translation id="874726034427945498">Чтобы получать более точные подсказки в адресной строке, включите синхронизацию вкладок и истории.</translation>
 <translation id="8748850008226585750">Содержимое скрыто</translation>
 <translation id="8756969031206844760">Обновить пароль?</translation>
 <translation id="8765470054473112089">Когда вы вводите текст в адресную строку или окно поиска, Chrome отправляет запрос в поисковую систему по умолчанию, чтобы предложить вам более подходящие подсказки. В режиме инкогнито эта функция не работает.</translation>
@@ -1514,6 +1522,7 @@
 <translation id="9070377983101773829">Голосовой поиск</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">В режиме инкогнито сведения о посещенных сайтах не сохраняются</translation>
+<translation id="9084103763810123431">Чтобы продолжать работу в браузере на других устройствах, включите синхронизацию вкладок и истории.</translation>
 <translation id="9086302186042011942">Выполняется синхронизация</translation>
 <translation id="9086455579313502267">Нет доступа к сети</translation>
 <translation id="9099220545925418560">Подбираются на основе истории браузера. Параметр отключен.</translation>

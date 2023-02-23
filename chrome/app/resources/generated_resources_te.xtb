@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Linuxను రీస్టార్ట్ చేయాలా?</translation>
 <translation id="1047431265488717055">లింక్ వచ&amp;నం కాపీ చేయి</translation>
 <translation id="1048286738600630630">ప్రదర్శనలు</translation>
-<translation id="1048770690598418849">మీరు ప్రస్తుతానికి స్కిప్ చేయవచ్చు, మీరు సెటప్ చేయడం పూర్తి చేసిన తర్వాత మేము ఆటోమేటిక్‌గా మళ్లీ ట్రై చేస్తాము</translation>
 <translation id="1048986595386481879">డైనమిక్‌గా కేటాయించబడింది</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని స్వీకరిస్తోంది}other{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని స్వీకరిస్తోంది}}</translation>
 <translation id="1049743911850919806">అజ్ఞాత మోడ్</translation>
@@ -1367,6 +1366,7 @@
 <translation id="2182058453334755893">మీ క్లిప్‌బోర్డ్‌కు కాపీ చేయబడింది</translation>
 <translation id="2183570493397356669">కొనసాగించండి బటన్ డిజేబుల్ చేయబడింది</translation>
 <translation id="2184515124301515068">సైట్‌లు ధ్వనిని ఎప్పుడు ప్లే చేయాలనేది Chrome ఎంచుకునేలా సెట్ చేయండి (సిఫార్సు చేయబడింది)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">మరో పరికరం నుండి పేజీ షేర్ చేయబడింది</translation>
 <translation id="2187675480456493911">మీ ఖాతాలోని ఇతర పరికరాలతో సింక్ చేయబడింది. ఇతర యూజర్‌ల చేత మార్చబడిన సెట్టింగ్‌లు సింక్ చేయబడవు. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">సర్వర్ ప్రమాణపత్రం దిగుమతి ఎర్రర్</translation>
@@ -1637,6 +1637,7 @@
 <translation id="2408018932941436077">కార్డ్ సేవ్ అవుతోంది</translation>
 <translation id="2408955596600435184">మీ PINని నమోదు చేయండి</translation>
 <translation id="2409268599591722235">ప్రారంభించండి</translation>
+<translation id="2409709393952490731">ఫోన్ లేదా టాబ్లెట్‌ను ఉపయోగించండి</translation>
 <translation id="2410079346590497630">బిల్డ్ వివరాలు</translation>
 <translation id="2410298923485357543">పరికరం ఆన్‌లైన్‌లో ఉన్నప్పుడు సహజ వాయిస్‌ను ఉపయోగించండి</translation>
 <translation id="2410754283952462441">ఖాతాను ఎంచుకోండి</translation>
@@ -1933,7 +1934,6 @@
 <translation id="2673135533890720193">మీ బ్రౌజింగ్ హిస్టరీని చదవడానికి అనుమతి</translation>
 <translation id="2674764818721168631">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="2675570801872027281">Bruschettaను తీసివేయడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
-<translation id="2676492189600898281">ఆటోఫిల్ ఫీడ్‌బ్యాక్‌ను అందించండి</translation>
 <translation id="2678063897982469759">మ‌ళ్లీ-ప్రారంభించండి</translation>
 <translation id="2678100101831051676">ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="268053382412112343">&amp;చరిత్ర</translation>
@@ -3785,6 +3785,7 @@
 <translation id="4369215744064167350">వెబ్‌సైట్ రిక్వెస్ట్ ఆమోదించబడింది</translation>
 <translation id="4369735607080757018">రోజులో యాడ్ మీకు కనిపించిన సమయం వంటి పరిమిత రకాల డేటాను సైట్‌ల మధ్య షేర్ చేయడం ద్వారా, వాటిలో యాడ్‌ల పనితీరును అంచనా వేయవచ్చు</translation>
 <translation id="4370975561335139969">మీరు నమోదు చేసిన ఈమెయిల్‌, పాస్‌వర్డ్ సరిపోలలేదు</translation>
+<translation id="4374805630006466253">వేరే ఫోన్ లేదా టాబ్లెట్‌ను ఉపయోగించండి</translation>
 <translation id="4374831787438678295">Linux ఇన్‌స్టాలర్</translation>
 <translation id="4375035964737468845">డౌన్‌లోడ్ చేసిన పైల్‌లను తెరవండి</translation>
 <translation id="4376226992615520204">లొకేషన్ ఆఫ్ చేయబడింది</translation>
@@ -7227,7 +7228,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="7551643184018910560">అరకు పిన్ చేయండి</translation>
-<translation id="7552658769580484674">ఆటోఫిల్ ఫీడ్‌బ్యాక్‌ను అందించండి</translation>
 <translation id="7552846755917812628">కింది చిట్కాలను ప్రయత్నించండి:</translation>
 <translation id="7553012839257224005">Linux కంటెయినర్‌ను చెక్ చేస్తోంది</translation>
 <translation id="7553242001898162573">మీ పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
@@ -8783,7 +8783,6 @@
 <translation id="8952831374766033534">కాన్ఫిగరేషన్ ఎంపికకు మద్దతు లేదు: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">ఛార్జింగ్‌లో ఉన్నప్పుడు</translation>
 <translation id="895347679606913382">ప్రారంభిస్తోంది...</translation>
-<translation id="8956230710625245889">రీడర్‌లో తెరవండి</translation>
 <translation id="8957757410289731985">ప్రొఫైల్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="895944840846194039">JavaScript మెమరీ</translation>
 <translation id="8960208913905765425">త్వరిత సమాధానాల యూనిట్ మార్పిడి</translation>

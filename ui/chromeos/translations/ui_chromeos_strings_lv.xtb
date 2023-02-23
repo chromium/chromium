@@ -355,6 +355,7 @@
 <translation id="3971140002794351170">Lejupielādēt mobilo sakaru profilu, tīkls numur <ph name="NETWORK_INDEX" />, tīklu skaits ir <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Angļu (Apvienotā Karaliste)</translation>
 <translation id="3975895378829046965">Bengāļu, fonētiskā</translation>
+<translation id="3999574733850440202">Nesen atvērtie Microsoft faili ir pārvietoti uz pakalpojumu OneDrive.</translation>
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4017788180641807848">Angļu (ASV), ar Workman tastatūru</translation>
 <translation id="4019998208269143058">Piespraust sadaļai “Ātrā piekļuve failiem”</translation>
@@ -830,6 +831,7 @@
 <translation id="7724603315864178912">Izgriezt</translation>
 <translation id="7732111077498238432">Tīklu pārvalda politika</translation>
 <translation id="7736003208887389532">Vai vēlaties neatgriezeniski izdzēst šos failus?</translation>
+<translation id="7740287852186792672">Meklēšanas rezultāti</translation>
 <translation id="7748626145866214022">Vairāk pieejamu opciju darbību joslā. Lai izceltu darbību joslu, nospiediet taustiņu kombināciju Alt+A.</translation>
 <translation id="7760449188139285140">Ķīniešu, Wubi</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
@@ -907,6 +909,7 @@
 <translation id="8300849813060516376">OTASP neizdevās</translation>
 <translation id="8312871300878166382">Ielīmēt mapē</translation>
 <translation id="8329978297633540474">Vienkāršs teksts</translation>
+<translation id="8332007959299458842">Nesen atvērtie Microsoft faili ir pārvietoti uz Google disku.</translation>
 <translation id="8335587457941836791">Atspraust no plaukta</translation>
 <translation id="8335837413233998004">Baltkrievu</translation>
 <translation id="8336153091935557858">Vakar plkst. <ph name="YESTERDAY_DAYTIME" /></translation>

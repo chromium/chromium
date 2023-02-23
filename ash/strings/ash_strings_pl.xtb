@@ -549,6 +549,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ładuję wydarzenia.</translation>
 <translation id="3932043219784172185">Brak podłączonych urządzeń</translation>
 <translation id="3934456833412894880">Włączono ładowanie adaptacyjne. Bateria będzie się ładować do 80%, co pozwoli wydłużyć jej żywotność. Jeśli będziesz tego potrzebować, będzie mogła naładować się do pełna.</translation>
+<translation id="3936620957945677513">Naciśnij Enter, aby dołączyć do wydarzenia <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Wklej</translation>
 <translation id="394485226368336402">Ustawienia dźwięku</translation>
 <translation id="3945319193631853098">Kliknij, aby dokończyć konfigurację</translation>
@@ -1465,6 +1466,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8850991929411075241">Szukaj+Esc</translation>
 <translation id="8853703225951107899">Nadal nie udało się zweryfikować Twojego hasła ani kodu PIN. Uwaga: jeśli Twoje hasło zostało ostatnio zmienione, użyj starego hasła. Nowe hasło zacznie obowiązywać, gdy się wylogujesz.</translation>
 <translation id="8855885154700222542">Klawisz trybu pełnoekranowego</translation>
+<translation id="8858369206579825206">Ustawienia prywatności</translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
 <translation id="8874184842967597500">Nie połączono</translation>
 <translation id="8876661425082386199">Sprawdź połączenie</translation>

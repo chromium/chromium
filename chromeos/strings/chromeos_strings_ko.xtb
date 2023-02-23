@@ -749,6 +749,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">공급자 유형</translation>
 <translation id="7882501334836096755">공개 키</translation>
+<translation id="78957024357676568">왼쪽</translation>
 <translation id="7915220255123750251">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다.</translation>
 <translation id="7936303884198020182">네임서버를 찾을 수 없습니다.</translation>
 <translation id="7942349550061667556">빨간색</translation>
@@ -780,6 +781,7 @@
 <translation id="8226628635270268143">좋아하는 사진 및 앨범을 선택합니다.</translation>
 <translation id="8227119283605456246">파일 첨부</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
+<translation id="8242426110754782860">계속</translation>
 <translation id="8246209727385807362">알 수 없는 이동통신사</translation>
 <translation id="827422111966801947">인디고</translation>
 <translation id="8286154143153872371">배경화면을 보려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
@@ -857,6 +859,7 @@
 <translation id="8930622219860340959">무선</translation>
 <translation id="8936793075252196307">클라이언트 IP 주소</translation>
 <translation id="894617464444543719">휴대전화 기기입니다.</translation>
+<translation id="8957423540740801332">오른쪽</translation>
 <translation id="8968751544471797276">충전 속도</translation>
 <translation id="8970109610781093811">다시 실행</translation>
 <translation id="8983038754672563810">HSPA</translation>

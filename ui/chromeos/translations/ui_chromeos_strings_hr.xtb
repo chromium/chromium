@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">irski</translation>
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4131235941541910880">Nepotrebne stavke premjestite u otpad</translation>
+<translation id="4134804435730168042">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivira se nakon postavljanja uređaja</translation>
 <translation id="4153015322587141338">Desnom tipkom kliknite datoteku i odaberite "<ph name="PIN_COMMAND" />" da biste brzo pristupali datotekama na traci.</translation>
 <translation id="4157569377477607576">Prema pravilima administratora ne preporučuje se sljedeće:</translation>
 <translation id="4159731583141908892">Premješteno: <ph name="FILE_NAME" />.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">Datoteka <ph name="FILE_NAME" /> izbrisat će se i nećete je moći vratiti.</translation>
 <translation id="4418686080762064601">Izradite prečac za svoje datoteke</translation>
 <translation id="4425149324548788773">Moj disk</translation>
+<translation id="4432921877815220091">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivira se nakon postavljanja uređajaa, upravlja administrator</translation>
 <translation id="4439427728133035643">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, povežite</translation>
 <translation id="4442424173763614572">Nije uspjelo pretraživanje DNS poslužitelja</translation>
 <translation id="4462159676511157176">Prilagođeni poslužitelji naziva</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">Kopiranje nije uspjelo, neočekivana pogreška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">nizozemski (Nizozemska) s američkom međunarodnom tipkovnicom za PC</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivira se nakon postavljanja uređaja</translation>
 <translation id="5955954492236143329">Broj stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxovi</translation>
 <translation id="5982621672636444458">Opcije razvrstavanja</translation>
@@ -831,6 +834,7 @@
 <translation id="7724603315864178912">Izreži</translation>
 <translation id="7732111077498238432">Mreža je kontrolirana pravilima</translation>
 <translation id="7736003208887389532">Želite li trajno izbrisati te datoteke?</translation>
+<translation id="7740287852186792672">Rezultati pretraživanja</translation>
 <translation id="7748626145866214022">Više opcija dostupno je na traci radnji. Pritisnite Alt + A da biste fokusirali traku radnji.</translation>
 <translation id="7760449188139285140">kineski wubi</translation>
 <translation id="7765158879357617694">Pomakni</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Dostupno izvanmrežno</translation>
 <translation id="8492972329130824181">Kućna mreža nije dostupna. Za povezivanje je potrebno omogućiti roaming mobilnih podataka.</translation>
 <translation id="8499098729323186194">Izdvajanje <ph name="NUMBER_OF_ITEMS" /> stavke/stavki...</translation>
+<translation id="8502913769543567768">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivira se nakon postavljanja uređaja, upravlja administrator</translation>
 <translation id="8521441079177373948">engleska (Velika Britanija)</translation>
 <translation id="853494022971700746">francuski (Francuska)</translation>
 <translation id="8540608333167683902">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>

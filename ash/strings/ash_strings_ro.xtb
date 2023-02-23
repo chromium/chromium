@@ -549,6 +549,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Se încarcă evenimentele.</translation>
 <translation id="3932043219784172185">Niciun dispozitiv conectat</translation>
 <translation id="3934456833412894880">S-a activat încărcarea adaptabilă. Bateria va rămâne la 80 % pentru o autonomie mai mare și se va încărca la capacitate maximă când ai nevoie.</translation>
+<translation id="3936620957945677513">Apasă pe Enter pentru a te alătura evenimentului <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Inserează</translation>
 <translation id="394485226368336402">Setări audio</translation>
 <translation id="3945319193631853098">Atinge pentru a finaliza configurarea</translation>
@@ -1466,6 +1467,7 @@ Instalare nouă</translation>
 <translation id="8850991929411075241">Tasta de căutare + Esc</translation>
 <translation id="8853703225951107899">Codul PIN sau parola tot nu au putut fi confirmate. Notă: dacă ai schimbat parola recent, folosește vechea parolă. Noua parolă se va aplica după ce te deconectezi.</translation>
 <translation id="8855885154700222542">Tasta pentru ecran complet</translation>
+<translation id="8858369206579825206">Opțiuni de confidențialitate</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
 <translation id="8874184842967597500">Neconectat</translation>
 <translation id="8876661425082386199">Verifică-ți conexiunea</translation>

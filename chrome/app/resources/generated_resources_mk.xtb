@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Да се рестартира Linux?</translation>
 <translation id="1047431265488717055">Копирај го &amp;текстот на врската</translation>
 <translation id="1048286738600630630">Екрани</translation>
-<translation id="1048770690598418849">Засега, може да прескокнете, па ќе се обидеме пак автоматски откако ќе завршите со поставувањето</translation>
 <translation id="1048986595386481879">Динамички доделена</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Се презема <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}one{Се презема <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}other{Се преземаат <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
@@ -1370,6 +1369,7 @@
 <translation id="2182058453334755893">Копирано во привремената меморија</translation>
 <translation id="2183570493397356669">Копчето „Продолжи“ е оневозможено</translation>
 <translation id="2184515124301515068">Дозволете му на Chrome да избира кога сајтовите може да пуштаат звук (се препорачува)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Страница споделена од друг уред</translation>
 <translation id="2187675480456493911">Синхронизирано со други уреди на вашата сметка. Поставките што другите корисници ги измениле нема да се синхронизираат. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Грешка при увезување сертификат на сервер</translation>
@@ -1936,7 +1936,6 @@
 <translation id="2673135533890720193">Прочитајте ја историјата на прелистувачот</translation>
 <translation id="2674764818721168631">Исклучено</translation>
 <translation id="2675570801872027281">Грешка при отстранување на Bruschetta. Обидете се повторно.</translation>
-<translation id="2676492189600898281">Испратете повратни информации за автоматското пополнување</translation>
 <translation id="2678063897982469759">Овозможи повторно</translation>
 <translation id="2678100101831051676">Не може да се емитува.</translation>
 <translation id="268053382412112343">И&amp;сторија</translation>
@@ -4289,6 +4288,7 @@
 <translation id="4824037980212326045">Бекап и враќање на Linux</translation>
 <translation id="4824958205181053313">Да се откаже синхронизацијата?</translation>
 <translation id="4825532258163983651">Не може да се избрише криптографскиот клуч</translation>
+<translation id="4827283332383516812">Бришење картичка</translation>
 <translation id="4827675678516992122">Не може да се поврзе</translation>
 <translation id="4827784381479890589">Напредна проверка на правописот во прелистувачот Chrome (текстот се испраќа во Google за правописни предлози)</translation>
 <translation id="4827904420700932487">Создајте QR-код за сликава</translation>
@@ -5312,6 +5312,7 @@
 <translation id="5792295754950501287">Повеќе дејства за <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Допрете го копчето за вклучување</translation>
 <translation id="5792874008054171483">Повеќе дејства за <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Начинов на плаќање ќе се избрише од уредов</translation>
 <translation id="5793339252089865437">Доколку го преземете ажурирањето преку вашата мобилна мрежа, може да ви се наплати за надминување на квотата.</translation>
 <translation id="5793420564274426163">Потврда за спарување</translation>
 <translation id="5793430094159150686">Лозинката е сменета. За да ги вратите локалните податоци, треба да ја внесете старата лозинка.</translation>
@@ -7230,7 +7231,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Преземањето на <ph name="FILE_NAME" /> е неуспешно</translation>
 <translation id="7551643184018910560">Прикачи на полицата</translation>
-<translation id="7552658769580484674">Испратете повратни информации за автоматското пополнување</translation>
 <translation id="7552846755917812628">Испробајте ги следните совети:</translation>
 <translation id="7553012839257224005">Се проверува контејнерот за Linux</translation>
 <translation id="7553242001898162573">Внесете ја вашата лозинка</translation>
@@ -7292,6 +7292,7 @@
 <translation id="7609148976235050828">Поврзете се на интернет и обидете се повторно.</translation>
 <translation id="7612401678989660900">Дозволете пристап за апликации и веб-сајтови со дозвола за микрофонот</translation>
 <translation id="7612655942094160088">Овозможи ги функциите на поврзаниот телефон.</translation>
+<translation id="7612989789287281429">Ве најавуваме…</translation>
 <translation id="7614260613810441905">Прашувај кога некој сајт сака да изменува датотеки или папки на уредот (препорачано)</translation>
 <translation id="761530003705945209">Направете бекап на Google Drive. Лесно враќајте ги податоците или менувајте ги уредите во секое време. Бекапот опфаќа податоци од апликациите. Вашиот бекап се прикачува во Google и се шифрира со лозинката за вашата сметка на Google.</translation>
 <translation id="7615365294369022248">Грешка при додавањето сметка</translation>
@@ -8792,7 +8793,6 @@
 <translation id="8952831374766033534">Опцијата за конфигурација не е поддржана: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Додека се полни</translation>
 <translation id="895347679606913382">Се стартува…</translation>
-<translation id="8956230710625245889">Отвори во читач</translation>
 <translation id="8957757410289731985">Приспособете го профилот</translation>
 <translation id="895944840846194039">Меморија на JavaScript</translation>
 <translation id="8960208913905765425">Конверзија на валути на „Брзи одговори“</translation>

@@ -53,7 +53,6 @@
 <translation id="104710386808485638">გსურთ Linux-ის გადატვირთვა?</translation>
 <translation id="1047431265488717055">ბმულის ტე&amp;ქსტის კოპირება</translation>
 <translation id="1048286738600630630">ეკრანები</translation>
-<translation id="1048770690598418849">ახლა შეგიძლიათ გამოტოვოთ და ავტომატურად ვცდით ხელახლა, როცა დაყენებას დაასრულებთ</translation>
 <translation id="1048986595386481879">გამოყოფა დინამიკურად</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{მიმდინარეობს მიღება (<ph name="ATTACHMENTS" />) <ph name="DEVICE_NAME" />-დან}other{მიმდინარეობს მიღება (<ph name="ATTACHMENTS" />) <ph name="DEVICE_NAME" />-დან}}</translation>
 <translation id="1049743911850919806">ინკოგნიტო</translation>
@@ -1357,6 +1356,7 @@
 <translation id="2182058453334755893">დაკოპირდა თქვენს გაცვლის ბუფერში</translation>
 <translation id="2183570493397356669">გაგრძელების ღილაკი არ არის გააქტიურებული</translation>
 <translation id="2184515124301515068">საიტებისთვის ხმის დაკვრის დაშვების Chrome-ისთვის მინდობა (რეკომენდებული)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">სხვა მოწყობილობიდან გაზიარებული გვერდი</translation>
 <translation id="2187675480456493911">სინქრონიზებულია თქვენს ანგარიშთან დაკავშირებულ სხვა მოწყობილობებს შორის. სხვა მომხმარებლების მიერ შეცვლილი პარამეტრები არ იქნება სინქრონიზებული. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">სერვერის სერტიფიკატის იმპორტის შეცდომა</translation>
@@ -1624,6 +1624,7 @@
 <translation id="2408018932941436077">მიმდინარეობს ბარათის შენახვა</translation>
 <translation id="2408955596600435184">შეიყვანეთ თქვენი PIN-კოდი</translation>
 <translation id="2409268599591722235">დავიწყოთ</translation>
+<translation id="2409709393952490731">ტელეფონის ან ტაბლეტის გამოყენება</translation>
 <translation id="2410079346590497630">ანაწყობის დეტალები</translation>
 <translation id="2410298923485357543">ბუნებრივი ხმის გამოყენება, როცა მოწყობილობა ონლაინ რეჟიმშია</translation>
 <translation id="2410754283952462441">აირჩიეთ ანგარიში</translation>
@@ -1660,6 +1661,7 @@
 <translation id="2442916515643169563">ტექსტის ჩრდილი</translation>
 <translation id="2443487764245141020">ვებსაიტებს ასევე შეიძლება დასჭირდეთ თქვენი მოწყობილობის ამოცნობა შესაბამისი იდენტიფიკატორის მეშვეობით</translation>
 <translation id="244475495405467108">ჩანართების დახურვა მარცხნივ</translation>
+<translation id="2444874983932528148">მარტივად გააგრძელეთ იქიდან, სადაც შეჩერდით</translation>
 <translation id="2445081178310039857">საჭიროა გაფართოების ძირეული დირექტორია.</translation>
 <translation id="2445484935443597917">ახალი პროფილის შექმნა</translation>
 <translation id="2445726032315793326">ნაწილობრივი ლუპა</translation>
@@ -1920,7 +1922,6 @@
 <translation id="2673135533890720193">დათვალიერების ისტორიის წაკითხვა</translation>
 <translation id="2674764818721168631">გამორთული</translation>
 <translation id="2675570801872027281">Bruschetta-ს ამოშლისას მოხდა შეცდომა. ცადეთ ხელახლა.</translation>
-<translation id="2676492189600898281">ავტომატურ შევსებასთან დაკავშირებით გამოხმაურება</translation>
 <translation id="2678063897982469759">ხელახლა ჩართვა</translation>
 <translation id="2678100101831051676">ტრანსლირება ვერ ხერხდება.</translation>
 <translation id="268053382412112343">ი&amp;სტორია</translation>
@@ -2478,6 +2479,7 @@
 <translation id="3177909033752230686">გვერდის ენა:</translation>
 <translation id="3177914167275935955">თქვენს მოწყობილობას მოჰყვება Chrome Education Upgrade, თუმცა თქვენი მომხმარებლის სახელი არ არის დაკავშირებული Google for Education ანგარიშთან. შექმენით Google for Education ანგარიში — ამისთვის გადადით მისამართზე g.co/workspace/edusignup მეორეული მოწყობილობიდან.</translation>
 <translation id="3179982752812949580">ტექსტის შრიფტი</translation>
+<translation id="3180284704187420717">შეინახეთ თქვენი სანიშნეები, პაროლები და სხვა კონტენტი სინქრონიზაციის მეშვეობით</translation>
 <translation id="3181954750937456830">Safe Browsing (თქვენ და თქვენს მოწყობილობებს გიცავთ სახიფათო საიტებისგან)</translation>
 <translation id="3182749001423093222">მართლწერის შემოწმება</translation>
 <translation id="3183139917765991655">პროფილის იმპორტიორი</translation>
@@ -2969,6 +2971,7 @@
 <translation id="3637203148990213388">დამატებითი ანგარიშები</translation>
 <translation id="3639220004740062347">წამკითხველის რეჟიმიდან გასვლა</translation>
 <translation id="3640214691812501263">გსურთ, დაამატოთ „<ph name="EXTENSION_NAME" />“ <ph name="USER_NAME" />-სთვის?</translation>
+<translation id="3640347231390550691">დაიცავით თქვენი პაროლები ფიშინგისგან</translation>
 <translation id="3640613767643722554">ასწავლეთ ასისტენტს თქვენი ხმის ამოცნობა</translation>
 <translation id="3641456520301071208">საიტებს შეუძლია თქვენი მდებარეობის გამოყენების თხოვნა</translation>
 <translation id="3642070413432681490">წრის შემოხაზვა კურსორზე</translation>
@@ -3393,6 +3396,7 @@
 <translation id="3988996860813292272">აირჩიეთ დროის სარტყელი</translation>
 <translation id="399179161741278232">იმპორტირებული</translation>
 <translation id="3992008114154328194">მიმდინარეობს <ph name="FILE_NAME" />-ის ჩამოტვირთვა, <ph name="STATUS" /></translation>
+<translation id="3993259701827857030">მონაცემთა სარეზერვო კოპირება</translation>
 <translation id="3993887353483242788">შეასრულეთ თქვენი <ph name="DEVICE_TYPE" />-ის სინქრონიზაცია, რათა თქვენი შენახული პარამეტრები გამოსაყენებლად მზად იყოს ნებისმიერ მოწყობილობაზე, რომელშიც თქვენი Google ანგარიშით შეხვალთ. აღნიშნული მოიცავს აპებს, პარამეტრებს, Wi-Fi პაროლებს, ენებს, ფონს, კლავიატურის მალსახმობებსა და სხვას.</translation>
 <translation id="3994318741694670028">სამწუხაროდ, თქვენი კომპიუტერი კონფიგურირებულია აპარატურის არასწორად ფორმირებული ID-თი. ეს ხელს უშლის ChromeOS Flex-ში უსაფრთხოების უახლესი შესწორებების დაყენებას, რის გამოც თქვენი კომპიუტერი <ph name="BEGIN_BOLD" />შეიძლება გახდეს მავნე პროგრამების მხრიდან შეტევების ობიექტი<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />-ის განსაბლოკად მოაახლოვეთ და განბლოკეთ თქვენი ტელეფონი.</translation>
@@ -3772,6 +3776,7 @@
 <translation id="4369215744064167350">ვებსაიტის მოთხოვნა დაკმაყოფილდა</translation>
 <translation id="4369735607080757018">საკუთარი რეკლამის ეფექტურობის გაზომვის მიზნით, საიტებს შორის შეზღუდული ტიპის მონაცემები ზიარდება — მაგალითად, ის, თუ დღის რომელ მონაკვეთში იყო რეკლამა ნაჩვენები თქვენთვის</translation>
 <translation id="4370975561335139969">თქვენ მიერ შეყვანილი ელფოსტა და პაროლი არ ემთხვევა</translation>
+<translation id="4374805630006466253">სხვა ტელეფონის ან ტაბლეტის გამოყენება</translation>
 <translation id="4374831787438678295">Linux ინსტალატორი</translation>
 <translation id="4375035964737468845">გახსენით გადმოწერილი ფაილი</translation>
 <translation id="4376226992615520204">მდებარეობა გამორთულია</translation>
@@ -3952,6 +3957,7 @@
 <translation id="452750746583162491">სინქრონიზებული მონაცემების გადახედვა</translation>
 <translation id="4527929807707405172">უკუგადაადგილების ჩართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">თარგმნის შემოთავაზება</translation>
+<translation id="4528638190900283934">შედით სისტემაში, დამატებითი ფუნქციებით რომ ისარგებლოთ</translation>
 <translation id="4529455689802245339">Chrome-ის ავტოსუბტიტრებმა შეიძლება არ იმუშაოს</translation>
 <translation id="4530494379350999373">ორიგინალური</translation>
 <translation id="4531924570968473143">ვინ გსურთ, დაამატოთ ამ <ph name="DEVICE_TYPE" />-ს?</translation>
@@ -6361,6 +6367,7 @@
 <translation id="6774710250118040929">დაამატეთ ახალი პაროლი</translation>
 <translation id="6775163072363532304">აქ გამოჩნდება ხელმისაწვდომი მოწყობილობები.</translation>
 <translation id="677646486571529447">ჩანიშვნის დამატება</translation>
+<translation id="6776589734354015877">ისარგებლეთ დამატებითი ფუნქციებით</translation>
 <translation id="6776729248872343918">სწრაფი დაწყვილების ჩართვა</translation>
 <translation id="6777817260680419853">გადამისამართება დაიბლოკა</translation>
 <translation id="6779092717724412415">ამის მსგავსი გამოყოფის შესაქმნელად, აირჩიეთ ნებისმიერი ტექსტი და დააწკაპუნეთ მარჯვენა ღილაკზე</translation>
@@ -7213,7 +7220,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />-ის ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="7551643184018910560">თაროზე ჩამაგრება</translation>
-<translation id="7552658769580484674">ავტომატურ შევსებასთან დაკავშირებით გამოხმაურება</translation>
 <translation id="7552846755917812628">ცადეთ შემდეგი:</translation>
 <translation id="7553012839257224005">მიმდინარეობს Linux-ის კონტეინერის შემოწმება</translation>
 <translation id="7553242001898162573">შეიყვანეთ თქვენი პაროლი</translation>
@@ -7756,6 +7762,7 @@
 <translation id="8023801379949507775">გაანახლეთ გაფართოებები ეხლა</translation>
 <translation id="8025151549289123443">ჩაკეტილი ეკრანი და შესვლა</translation>
 <translation id="8026334261755873520">დათვალიერების მონაცემების გასუფთავება</translation>
+<translation id="8026471514777758216">თქვენი ყველა მოწყობილობა</translation>
 <translation id="8028060951694135607">Microsoft-ის გასაღების აღდგენა</translation>
 <translation id="8028803902702117856">მიმდინარეობს <ph name="SIZE" />-ის ჩამოტვირთვა, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ზომა</translation>
@@ -8772,7 +8779,6 @@
 <translation id="8952831374766033534">კონფიგურაციის ვარიანტი მხარდაუჭერელია: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">დატენისას</translation>
 <translation id="895347679606913382">იწყება…</translation>
-<translation id="8956230710625245889">წამკითხველში გახსნა</translation>
 <translation id="8957757410289731985">პროფილის მორგება</translation>
 <translation id="895944840846194039">JavaScript მეხსიერება</translation>
 <translation id="8960208913905765425">სწრაფი პასუხები — საზომი ერთეულების გადაყვანა</translation>

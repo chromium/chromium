@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
+<translation id="3636279694100170143">Odwiedzane przez Ciebie witryny mogą potwierdzić, że jesteś rzeczywistym użytkownikiem, a nie botem</translation>
+<translation id="3649190289964910441">Strona, którą odwiedzasz, może zapisywać w Chrome informacje, że jesteś prawdziwym użytkownikiem. Podczas przeglądania witryny mogą sprawdzać je w Chrome i potwierdzać w pierwszej odwiedzonej witrynie, że prawdopodobnie jesteś zaufanym użytkownikiem.</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3763247130972274048">Kliknij dwukrotnie z lewej lub prawej strony filmu, by przewinąć o 10 s</translation>
 <translation id="3794286421982011626">Aby strona, na którą wchodzisz, działała zgodnie z oczekiwaniami – na przykład nie wylogowywała Cię lub pokazywała produkty w koszyku na zakupy – może ona zapisywać informacje o tym, co robisz. Często witryny zapisują te informacje tymczasowo na Twoim urządzeniu.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
+<translation id="477781522763920796">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania.</translation>
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
@@ -324,6 +327,7 @@
 <translation id="7016516562562142042">Zezwolono na dostęp obecnej wyszukiwarce</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="702463548815491781">Zalecane, gdy włączono TalkBack lub Switch Access</translation>
+<translation id="7050519587566342213">Przeglądanie działa płynniej, ponieważ jesteś bardziej wiarygodnym użytkownikiem dla kolejnych witryn.</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Wybrano 1}few{Wybrano #}many{Wybrano #}other{Wybrano #}}</translation>
 <translation id="7087918508125750058">Wybrano <ph name="ITEM_COUNT" />. Opcje dostępne na górze ekranu</translation>

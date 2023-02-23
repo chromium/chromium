@@ -356,6 +356,7 @@
 <translation id="2951071800649516099">將網頁新增至閱讀清單以供日後使用</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀取的網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀取的網頁}}</translation>
 <translation id="2961210776189273067">稱謂</translation>
+<translation id="296370266220139811">不必重複輸入網址，節省寶貴時間</translation>
 <translation id="2979025552038692506">選取的無痕式分頁</translation>
 <translation id="2979639724566107830">於新視窗中開啟</translation>
 <translation id="2981364137500752533">最多只能開啟 5 個視窗。</translation>
@@ -483,6 +484,7 @@
 <translation id="3578874072190212775">協助網站防範詐欺及辨別機器人和真人</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">協助改善網路安全</translation>
+<translation id="3597179440835065298">取得更貼近需求的建議</translation>
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3616113530831147358">音訊</translation>
 <translation id="3622349720008044802">管理視窗</translation>
@@ -746,6 +748,7 @@
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連線</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">過去 15 分鐘</translation>
 <translation id="5032430150487044192">無法建立 QR 圖碼</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5040262127954254034">隱私權</translation>
@@ -881,6 +884,7 @@
 <translation id="5813552293717797987">這個瀏覽器是由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="5814131985548525293">在此輸入內容或麥克風語音圖示即可開始搜尋</translation>
 <translation id="5814749351757353073">掌握最愛網站的最新動態</translation>
+<translation id="5822875253699806474">如要快速重新造訪瀏覽過的網站，可以同步分頁和歷史記錄</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5834764604050996579">如要掃描 QR 圖碼，請允許 Chrome 使用你的攝影機</translation>
@@ -1135,6 +1139,7 @@
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
 <translation id="7105047059074518658">登入即可讓跨裝置瀏覽更順暢</translation>
 <translation id="7106762743910369165">你的瀏覽器是由貴機構管理</translation>
+<translation id="7116588989735740310">如要重新造訪在其他裝置上瀏覽過的網站，可以同步分頁和歷史記錄</translation>
 <translation id="7130504491556983216">瀏覽網路時，你的興趣喜好清單會顯示在這裡</translation>
 <translation id="7138678301420049075">其他</translation>
 <translation id="7146622961999026732">這些網站和應用程式似乎對你很重要：</translation>
@@ -1213,6 +1218,7 @@
 <translation id="751961395872307827">無法連線至網站</translation>
 <translation id="752220631458524187">請在完成後拔除傳輸線</translation>
 <translation id="7523960634226602883">使用 Google 智慧鏡頭透過相機進行搜尋</translation>
+<translation id="7539698981064401140">同步分頁和歷史記錄</translation>
 <translation id="7562080006725997899">正在清除瀏覽資料</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7577900504646297215">管理興趣喜好</translation>
@@ -1395,6 +1401,7 @@
 <translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
 <translation id="8466613982764129868">請確認「<ph name="TARGET_DEVICE_NAME" />」已連上網際網路</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
+<translation id="847433688444405067">跨裝置瀏覽</translation>
 <translation id="8481980314595922412">試用功能已開啟</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">開啟記錄頁面</translation>
@@ -1448,6 +1455,7 @@
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8746155870861185046">分享醒目顯示內容</translation>
+<translation id="874726034427945498">如要讓網址列顯示更貼近需求的建議，可以同步分頁和歷史記錄</translation>
 <translation id="8748850008226585750">內容已隱藏</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
@@ -1513,6 +1521,7 @@
 <translation id="9070377983101773829">開始語音搜尋</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
+<translation id="9084103763810123431">如要在其他裝置上繼續瀏覽，可以同步分頁和歷史記錄</translation>
 <translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9086455579313502267">無法存取網路</translation>
 <translation id="9099220545925418560">根據你的瀏覽記錄獨家推薦。這項設定已關閉。</translation>

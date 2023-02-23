@@ -942,6 +942,16 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio è impostato su false o non viene configurato, <ph name="PRODUCT_NAME" /> non eseguirà i controlli delle revoche online in <ph name="PRODUCT_NAME" /> 19 e versioni successive.
 
       Nota: i controlli di <ph name="OCSP_CRL_LABEL" /> non forniscono vantaggi efficaci per la sicurezza.</translation>
+<translation id="1904685047904049720">Se questo criterio viene attivato, le estensioni non pubblicate sul Chrome Web
+Store verranno disattivate su <ph name="PRODUCT_NAME" />.
+Questo criterio viene applicato solo alle estensioni installate e aggiornate dal
+Chrome Web Store. Le estensioni esterne al negozio, come le estensioni non pacchettizzate
+installate utilizzando la modalità sviluppatore e le estensioni installate tramite l'opzione della riga di comando,
+vengono ignorate. Vengono ignorate anche le estensioni con installazione forzata che non si aggiornano dal
+Chrome Web Store e tutte le estensioni con blocco della versione.
+
+Se il criterio viene impostato su <ph name="ALLOW_UNPUBLISHED" /> (0) o se non viene configurato, le estensioni non pubblicate sul Chrome Web Store sono consentite.
+Se il criterio viene impostato su <ph name="DISABLE_UNPUBLISHED" /> (1), le estensioni non pubblicate sul Chrome Web Store vengono disattivate.</translation>
 <translation id="1905061765326052857">Non consentire agli utenti non affiliati di usare le macchine virtuali necessarie per supportare le app Linux</translation>
 <translation id="1910704279188129272">Consente di impostare limiti di utilizzo per app.
         I limiti di utilizzo possono essere applicati alle app installate su <ph name="PRODUCT_OS_NAME" /> per l'utente in questione.
@@ -1321,10 +1331,6 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
 <translation id="2223393221350938149">Non consentire ad alcun sito di eseguire JIT di JavaScript</translation>
 <translation id="2223598546285729819">Impostazione di notifica predefinita</translation>
 <translation id="222673035924187991">Attiva TLS Encrypted ClientHello</translation>
-<translation id="2231726854197443389">Questo criterio consente di stabilire se gli utenti possono attivare la Modalità solo HTTPS in Impostazioni. La Modalità solo HTTPS esegue l'upgrade di tutte le navigazioni alle estensioni HTTPS.
-      Se questa impostazione viene consentita o non viene configurata, gli utenti potranno attivare la Modalità solo HTTPS.
-      Se non viene consentita, gli utenti non potranno attivare la Modalità solo HTTPS.
-      Al momento l'opzione Forza l'attivazione della Modalità solo HTTPS non è supportata.</translation>
 <translation id="2231817271680715693">Importa cronologia di navigazione dal browser predefinito alla prima esecuzione</translation>
 <translation id="2231962946025538735">Questo criterio è stato ritirato. Usa il criterio <ph name="DEFAULT_PLUGINS_SETTING_POLICY_NAME" /> per controllare la disponibilità del plug-in Flash e il criterio <ph name="ALWAYS_OPEN_PDF_EXTERNALLY_POLICY_NAME" /> per scegliere se utilizzare il visualizzatore PDF integrato per aprire i file PDF.
 
@@ -5674,6 +5680,7 @@ Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/im
 
       Se il criterio è configurato, gli utenti non possono apportare modifiche. Se non è configurato, gli utenti possono decidere se mostrare o nascondere la scorciatoia per le app dal menu contestuale della barra dei Preferiti.</translation>
 <translation id="638003144128412430">Disattiva i report sulle informazioni relative al fuso orario del dispositivo</translation>
+<translation id="6382209369210116232">Disattiva le estensioni non pubblicate</translation>
 <translation id="6382351416269252693">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui viene negata automaticamente l'autorizzazione per i caratteri locali. Ciò limiterà la capacità dei siti di vedere le informazioni sui caratteri locali.
 
       Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
@@ -7352,7 +7359,6 @@ Questo criterio aziendale consente agli amministratori di stabilire se gli utent
 <translation id="7962093600142350905">Questo criterio controlla se vengono mostrate agli utenti eventuali stampanti Privet disponibili nella finestra di dialogo dell'anteprima di stampa.
       Se viene impostato su Attivato, le stampanti Privet disponibili vengono mostrate.
       Se viene impostato su Disattivato o se non viene configurato, le stampanti Privet non vengono mostrate nell'anteprima di stampa, poiché questo metodo di stampa è deprecato.</translation>
-<translation id="7970844378072291834">Forza l'attivazione della Modalità solo HTTPS (opzione non ancora supportata)</translation>
 <translation id="7972642710812569707">Forza la riattivazione di WebSQL in contesti di terze parti.</translation>
 <translation id="7973609468423251675">Tieni presente che questo criterio è obsoleto e verrà rimosso nella versione 85 di <ph name="PRODUCT_OS_NAME" />. Usa il criterio <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 

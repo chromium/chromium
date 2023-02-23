@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Перезапустити Linux?</translation>
 <translation id="1047431265488717055">Копіювати те&amp;кст посилання</translation>
 <translation id="1048286738600630630">Дисплеї</translation>
-<translation id="1048770690598418849">Ви можете пропустити цей крок зараз, і ми автоматично повторимо спробу, коли ви завершите налаштування</translation>
 <translation id="1048986595386481879">Розміщено динамічно</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}one{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}few{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}many{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}other{Вхідні дані: <ph name="ATTACHMENTS" /> з пристрою "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="1049743911850919806">Анонімний перегляд</translation>
@@ -1372,6 +1371,7 @@
 <translation id="2182058453334755893">Скопійовано в буфер обміну</translation>
 <translation id="2183570493397356669">Кнопку "Продовжити" вимкнено</translation>
 <translation id="2184515124301515068">Дозволити Chrome вибирати, коли відтворювати звук на сайтах (рекомендується)</translation>
+<translation id="2186206192313702726">Google Об’єктив</translation>
 <translation id="2186711480981247270">Сторінка, надіслана з іншого пристрою</translation>
 <translation id="2187675480456493911">Мережу синхронізовано з іншими пристроями у вашому обліковому записі. Налаштування, які змінюють інші користувачі, не синхронізуватимуться. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Помилка імпортування сертифіката сервера</translation>
@@ -1642,6 +1642,7 @@
 <translation id="2408018932941436077">Зберігання картки</translation>
 <translation id="2408955596600435184">Введіть PIN-код</translation>
 <translation id="2409268599591722235">Почати</translation>
+<translation id="2409709393952490731">Використовувати телефон або планшет</translation>
 <translation id="2410079346590497630">Дані складання</translation>
 <translation id="2410298923485357543">Використовувати природний голос, коли пристрій у мережі</translation>
 <translation id="2410754283952462441">Виберіть обліковий запис</translation>
@@ -1938,7 +1939,6 @@
 <translation id="2673135533890720193">Переглядати історію веб-перегляду</translation>
 <translation id="2674764818721168631">Вимкнено</translation>
 <translation id="2675570801872027281">Не вдалося вилучити Bruschetta. Повторіть спробу.</translation>
-<translation id="2676492189600898281">Надіслати відгук про автозаповнення</translation>
 <translation id="2678063897982469759">Знову ввімкнути</translation>
 <translation id="2678100101831051676">Не вдалося транслювати.</translation>
 <translation id="268053382412112343">Іс&amp;торія</translation>
@@ -3790,6 +3790,7 @@
 <translation id="4369215744064167350">Запит на доступ до веб-сайту схвалено</translation>
 <translation id="4369735607080757018">Сайти отримують доступ лише до певних типів даних, на основі яких можуть визначати ефективність своїх оголошень. Зокрема, ідеться про час доби, коли вам було показано рекламу.</translation>
 <translation id="4370975561335139969">Введені електронна адреса та пароль не збігаються</translation>
+<translation id="4374805630006466253">Вибрати інший телефон або планшет</translation>
 <translation id="4374831787438678295">Файл встановлення Linux</translation>
 <translation id="4375035964737468845">Відкривати завантажені файли</translation>
 <translation id="4376226992615520204">Визначення місцезнаходження вимкнено</translation>
@@ -4291,6 +4292,7 @@
 <translation id="4824037980212326045">Резервне копіювання й відновлення Linux</translation>
 <translation id="4824958205181053313">Скасувати синхронізацію?</translation>
 <translation id="4825532258163983651">Не вдалося видалити ключ доступу</translation>
+<translation id="4827283332383516812">Видалити картку</translation>
 <translation id="4827675678516992122">Не вдалося під’єднатись</translation>
 <translation id="4827784381479890589">Покращена перевірка орфографії у веб-переглядачі Chrome (текст надсилається в Google для пропозицій написання)</translation>
 <translation id="4827904420700932487">Створити QR-код для цього зображення</translation>
@@ -5312,6 +5314,7 @@
 <translation id="5792295754950501287">Інші дії з карткою "<ph name="CARD_DESCRIPTION" />"</translation>
 <translation id="5792728279623964091">Натисніть кнопку живлення</translation>
 <translation id="5792874008054171483">Інші дії для сайту <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Цей спосіб оплати буде видалено з поточного пристрою</translation>
 <translation id="5793339252089865437">Завантаження оновлень через мобільну мережу може призвести до стягнення значно вищої плати.</translation>
 <translation id="5793420564274426163">Підтвердження підключення</translation>
 <translation id="5793430094159150686">Ваш пароль змінено. Щоб відновити локальні дані, потрібно ввести старий пароль.</translation>
@@ -7233,7 +7236,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Не вдалося завантажити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7551643184018910560">Закріпити на панелі запуску</translation>
-<translation id="7552658769580484674">Надіслати відгук про автозаповнення</translation>
 <translation id="7552846755917812628">Виконайте вказівки нижче.</translation>
 <translation id="7553012839257224005">Перевірка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
@@ -7295,6 +7297,7 @@
 <translation id="7609148976235050828">Підключіться до Інтернету та повторіть спробу.</translation>
 <translation id="7612401678989660900">Надайте доступ для всіх додатків і веб-сайтів, яким потрібен дозвіл на використання мікрофона</translation>
 <translation id="7612655942094160088">Увімкнути функції підключеного телефона.</translation>
+<translation id="7612989789287281429">Виконується вхід…</translation>
 <translation id="7614260613810441905">Запитувати, коли сайт хоче змінювати файли або папки на пристрої (рекомендується)</translation>
 <translation id="761530003705945209">Створювати резервні копії на Google Диску. Легко відновлюйте дані чи переносьте їх на інші пристрої. Резервні копії містять дані додатків. Ваші резервні копії завантажуються в Google і шифруються за допомогою пароля облікового запису Google.</translation>
 <translation id="7615365294369022248">Не вдалося додати обліковий запис</translation>
@@ -8795,7 +8798,6 @@
 <translation id="8952831374766033534">Параметр конфігурації не підтримується: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Якщо пристрій заряджається</translation>
 <translation id="895347679606913382">Запуск...</translation>
-<translation id="8956230710625245889">Відкрити в режимі перегляду</translation>
 <translation id="8957757410289731985">Налаштувати профіль</translation>
 <translation id="895944840846194039">Пам’ять JavaScript</translation>
 <translation id="8960208913905765425">Конвертування одиниць у швидких відповідях</translation>

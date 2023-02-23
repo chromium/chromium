@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Перезапустить Linux?</translation>
 <translation id="1047431265488717055">Скопировать &amp;текст ссылки</translation>
 <translation id="1048286738600630630">Дисплеи</translation>
-<translation id="1048770690598418849">Сейчас этот процесс можно пропустить. Он будет автоматически запущен после настройки.</translation>
 <translation id="1048986595386481879">Динамическое выделение места</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}one{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}few{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}many{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}other{Выполняется передача данных (<ph name="ATTACHMENTS" />) с устройства "<ph name="DEVICE_NAME" />"…}}</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
@@ -1359,6 +1358,7 @@
 <translation id="2182058453334755893">Скопировано в буфер обмена.</translation>
 <translation id="2183570493397356669">Кнопка "Продолжить" недоступна</translation>
 <translation id="2184515124301515068">Разрешить браузеру определять, на каких сайтах можно воспроизводить звук (рекомендуется)</translation>
+<translation id="2186206192313702726">Google Объектив</translation>
 <translation id="2186711480981247270">Страница, полученная с другого устройства</translation>
 <translation id="2187675480456493911">Синхронизировано с другими устройствами в вашем аккаунте. Настройки, измененные другими пользователями, не будут синхронизироваться. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Ошибка при импорте сертификата сервера</translation>
@@ -1663,6 +1663,7 @@
 <translation id="2442916515643169563">Тень текста</translation>
 <translation id="2443487764245141020">Возможно, сайтам потребуется распознавать ваше устройство с помощью идентификатора.</translation>
 <translation id="244475495405467108">Закрыть вкладки слева</translation>
+<translation id="2444874983932528148">Продолжайте работу с того места, где остановились.</translation>
 <translation id="2445081178310039857">Требуется корневой каталог расширения.</translation>
 <translation id="2445484935443597917">Создать профиль</translation>
 <translation id="2445726032315793326">Лупа для части экрана</translation>
@@ -1923,7 +1924,6 @@
 <translation id="2673135533890720193">Чтение истории просмотров</translation>
 <translation id="2674764818721168631">Отключено</translation>
 <translation id="2675570801872027281">При удалении Bruschetta произошла ошибка. Повторите попытку.</translation>
-<translation id="2676492189600898281">Оставить отзыв об автозаполнении</translation>
 <translation id="2678063897982469759">Включить снова</translation>
 <translation id="2678100101831051676">Не удалось запустить трансляцию</translation>
 <translation id="268053382412112343">&amp;История</translation>
@@ -2481,6 +2481,7 @@
 <translation id="3177909033752230686">Язык страницы:</translation>
 <translation id="3177914167275935955">На этом устройстве есть лицензия Chrome Education, но ваше имя пользователя не связано с аккаунтом Google for Education. Создайте аккаунт Google for Education на странице g.co/workspace/edusignup, используя другое устройство.</translation>
 <translation id="3179982752812949580">Шрифт текста</translation>
+<translation id="3180284704187420717">Сохраняйте закладки, пароли и многое другое с помощью функции синхронизации.</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
 <translation id="3182749001423093222">Проверка правописания</translation>
 <translation id="3183139917765991655">Импорт профилей</translation>
@@ -2972,6 +2973,7 @@
 <translation id="3637203148990213388">Дополнительные аккаунты</translation>
 <translation id="3639220004740062347">Выйти из режима чтения</translation>
 <translation id="3640214691812501263">Добавить расширение "<ph name="EXTENSION_NAME" />" для пользователя <ph name="USER_NAME" />?</translation>
+<translation id="3640347231390550691">Защитите пароли от фишинга.</translation>
 <translation id="3640613767643722554">Научите Ассистента узнавать ваш голос</translation>
 <translation id="3641456520301071208">Разрешить сайтам запрашивать ваше местоположение</translation>
 <translation id="3642070413432681490">Обводка курсора</translation>
@@ -3396,6 +3398,7 @@
 <translation id="3988996860813292272">Выбор часового пояса</translation>
 <translation id="399179161741278232">Выполнен импорт</translation>
 <translation id="3992008114154328194">Скачивание файла "<ph name="FILE_NAME" />" (<ph name="STATUS" />)</translation>
+<translation id="3993259701827857030">Резервное копирование</translation>
 <translation id="3993887353483242788">Синхронизируйте устройство <ph name="DEVICE_TYPE" />. После этого приложения, настройки, пароли Wi-Fi, языки, обои, сочетания клавиш и другие параметры будут доступны на всех устройствах, на которых выполнен вход в аккаунт Google.</translation>
 <translation id="3994318741694670028">В настройках компьютера указан неверный аппаратный идентификатор устройства. Chrome OS Flex не сможет устанавливать обновления системы безопасности для защиты компьютера от <ph name="BEGIN_BOLD" />вредоносных атак<ph name="END_BOLD" />.</translation>
 <translation id="3994374631886003300">Разблокируйте телефон и поднесите его к устройству <ph name="DEVICE_TYPE" />.</translation>
@@ -3956,6 +3959,7 @@
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4527929807707405172">Включить прокрутку в обратную сторону. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Предлагать перевод</translation>
+<translation id="4528638190900283934">Войдите в аккаунт и начните пользоваться дополнительными функциями</translation>
 <translation id="4529455689802245339">Автоматические субтитры Chrome могут не поддерживаться</translation>
 <translation id="4530494379350999373">Происхождение</translation>
 <translation id="4531924570968473143">Добавьте пользователя на это устройство (<ph name="DEVICE_TYPE" />)</translation>
@@ -6371,6 +6375,7 @@
 <translation id="6774710250118040929">Добавление пароля</translation>
 <translation id="6775163072363532304">Здесь будут появляться доступные устройства.</translation>
 <translation id="677646486571529447">Добавить заметку</translation>
+<translation id="6776589734354015877">Вас ждут дополнительные функции</translation>
 <translation id="6776729248872343918">Включить Быстрое подключение</translation>
 <translation id="6777817260680419853">Попытка переадресации заблокирована</translation>
 <translation id="6779092717724412415">Чтобы задать такое же выделение, выберите текст и нажмите на него правой кнопкой мыши.</translation>
@@ -7223,7 +7228,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Не удалось скачать файл <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
-<translation id="7552658769580484674">Оставить отзыв об автозаполнении</translation>
 <translation id="7552846755917812628">Попробуйте сделать следующее:</translation>
 <translation id="7553012839257224005">Проверка контейнера Linux</translation>
 <translation id="7553242001898162573">Пароль</translation>
@@ -7767,6 +7771,7 @@
 <translation id="8023801379949507775">Обновить расширения</translation>
 <translation id="8025151549289123443">Блокировка экрана и вход</translation>
 <translation id="8026334261755873520">Очистить историю</translation>
+<translation id="8026471514777758216">Синхронизация данных на всех устройствах</translation>
 <translation id="8028060951694135607">Восстановление ключей Microsoft</translation>
 <translation id="8028803902702117856">Скачивание файла <ph name="FILE_NAME" /> (<ph name="SIZE" />)</translation>
 <translation id="8028993641010258682">Размер</translation>
@@ -8786,7 +8791,6 @@
 <translation id="8952831374766033534">Конфигурация не поддерживается: <ph name="ERROR_LINE" />.</translation>
 <translation id="8953476467359856141">Если устройство заряжается</translation>
 <translation id="895347679606913382">Запуск...</translation>
-<translation id="8956230710625245889">Открыть в программе чтения</translation>
 <translation id="8957757410289731985">Настроить профиль</translation>
 <translation id="895944840846194039">Память JavaScript</translation>
 <translation id="8960208913905765425">Преобразование единиц измерения с помощью функции "Быстрые ответы"</translation>

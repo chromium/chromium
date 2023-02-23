@@ -47,6 +47,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1254117744268754948">Choose folder</translation>
 <translation id="1254424942107648268">Find Previous</translation>
 <translation id="1258491128795710625">What’s new</translation>
+<translation id="1264156759663453185">The selected text is too large for partial translation.</translation>
 <translation id="1265739287306757398">Learn How</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Selected</translation>
@@ -116,6 +117,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
+<translation id="173842016780303328">Partial translation failed.</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
 <translation id="1753905327828125965">Most Visited</translation>
@@ -226,7 +228,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2648803196158606475">Delete Read</translation>
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2664621323652615289">Stop</translation>
-<translation id="2667896873740639878">This address is saved in your Google Account(<ph name="USER_EMAIL" />). You can use this address across Google products on any device.</translation>
 <translation id="2671426118752779020">You can use the passwords that you saved to Google Password Manager in other apps on your iPhone.</translation>
 <translation id="2690858294534178585">Camera is in use</translation>
 <translation id="26915454213703967">Search inside image with Google</translation>
@@ -244,6 +245,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2747003861858887689">Previous field</translation>
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">just now</translation>
+<translation id="2768727608073497433">The selected text is empty.</translation>
 <translation id="2773292004659987824">Incognito Search</translation>
 <translation id="277771892408211951">Select language</translation>
 <translation id="2780046210906776326">No Email Accounts</translation>
@@ -672,7 +674,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5860033963881614850">Off</translation>
 <translation id="5869029295770560994">OK, got it</translation>
 <translation id="5871497086027727873">1 item moved</translation>
-<translation id="5881445640183527870">{count,plural, =1{This address will be deleted from your Google Account(<ph name="USER_EMAIL" />) and from this device.}other{These addresses will be deleted from your Google Account(<ph name="USER_EMAIL" />) and from this device.}}</translation>
 <translation id="5896576662943111387">Built for iOS</translation>
 <translation id="5897956970858271241">Visit copied link</translation>
 <translation id="5899314093904173337">To share with people nearby, let them scan this QR code with their camera or QR scanner app</translation>
@@ -706,6 +707,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6066301408025741299">Tap to cancel.</translation>
 <translation id="6071409777669089905">Unpin tab</translation>
 <translation id="6084848228346514841">Select tabs</translation>
+<translation id="6100617279104942061">Signed in as <ph name="USER_EMAIL" />. Opens settings.</translation>
 <translation id="6103540626693881831">On-device encryption</translation>
 <translation id="6119050551270742952">Current web page is on Incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1135,6 +1137,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9098541895599151034">Delete <ph name="NUMBER_OF_ACCOUNTS" /> passwords?</translation>
 <translation id="9100610230175265781">Passphrase required</translation>
 <translation id="9107664647686727385">Check for compromised passwords</translation>
+<translation id="9120217828624527905">Switch to full-page translation</translation>
 <translation id="9124387962554796433">Google may use your history to personalise Search and other Google services.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Sign in again</translation>

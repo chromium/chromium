@@ -549,6 +549,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, dogodki se nalagajo.</translation>
 <translation id="3932043219784172185">Nobena naprava ni povezana</translation>
 <translation id="3934456833412894880">Prilagodljivo polnjenje je vklopljeno. Polnjenje baterije se bo zaradi podaljšanja časa delovanja baterije ustavilo pri 80 %, v celoti pa se bo napolnila, ko jo boste potrebovali.</translation>
+<translation id="3936620957945677513">Pritisnite Enter, če se želite pridružiti dogodku <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="394485226368336402">Nastavitve zvoka</translation>
 <translation id="3945319193631853098">Dotaknite se, da dokončate nastavitev</translation>
@@ -1466,6 +1467,7 @@ Nova namestitev</translation>
 <translation id="8850991929411075241">Iskanje + Esc</translation>
 <translation id="8853703225951107899">Vaše kode PIN ali gesla še vedno ni bilo mogoče preveriti. Opomba: Če ste nedavno spremenili geslo, uporabite staro. Novo geslo bo začelo veljati, ko se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za celozaslonski način</translation>
+<translation id="8858369206579825206">Nastavitve zasebnosti</translation>
 <translation id="8870509716567206129">Aplikacija ne podpira načina razdeljenega zaslona.</translation>
 <translation id="8874184842967597500">Ni povezano</translation>
 <translation id="8876661425082386199">Preverjanje povezave</translation>

@@ -355,6 +355,7 @@
 <translation id="3971140002794351170">Scarica il profilo per dispositivi mobili, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglese (UK)</translation>
 <translation id="3975895378829046965">Bengalese fonetica</translation>
+<translation id="3999574733850440202">I file Microsoft aperti di recente sono stati spostati in OneDrive</translation>
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4017788180641807848">Inglese (USA) con tastiera Workman</translation>
 <translation id="4019998208269143058">Blocca sui file rapidi</translation>
@@ -363,6 +364,7 @@
 <translation id="4092890906744441904">Irlandese</translation>
 <translation id="4124935795427217608">Unicorno</translation>
 <translation id="4131235941541910880">Sposta nel cestino gli elementi che non ti servono</translation>
+<translation id="4134804435730168042">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Attiva dopo la configurazione del dispositivo</translation>
 <translation id="4153015322587141338">Fai clic con il tasto destro del mouse su un file e seleziona "<ph name="PIN_COMMAND" />" per accedervi rapidamente dalla barra delle app.</translation>
 <translation id="4157569377477607576">Il criterio dell'amministratore sconsiglia:</translation>
 <translation id="4159731583141908892">Elemento <ph name="FILE_NAME" /> spostato.</translation>
@@ -405,6 +407,7 @@
 <translation id="4414834425328380570">Il file "<ph name="FILE_NAME" />" verrà eliminato e non potrai ripristinarlo.</translation>
 <translation id="4418686080762064601">Crea una scorciatoia per i tuoi file</translation>
 <translation id="4425149324548788773">I miei file</translation>
+<translation id="4432921877815220091">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Attiva dopo la configurazione del dispositivo, Gestita dall'amministratore</translation>
 <translation id="4439427728133035643">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, connetti</translation>
 <translation id="4442424173763614572">Ricerca DNS non riuscita</translation>
 <translation id="4462159676511157176">Assegna nomi personalizzati a server</translation>
@@ -613,6 +616,7 @@
 <translation id="5913638992615760742">Operazione di copia non riuscita, errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Olandese (Paesi Bassi) con tastiera PC internazionale USA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Attiva dopo la configurazione del dispositivo</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementi</translation>
 <translation id="5957366693331451795">I Chromebox</translation>
 <translation id="5982621672636444458">Opzioni ordinamento</translation>
@@ -829,6 +833,7 @@
 <translation id="7724603315864178912">Taglia</translation>
 <translation id="7732111077498238432">La rete è gestita tramite norme</translation>
 <translation id="7736003208887389532">Vuoi eliminare definitivamente questi file?</translation>
+<translation id="7740287852186792672">Risultati della ricerca</translation>
 <translation id="7748626145866214022">Nella barra delle azioni sono disponibili altre opzioni. Premi ALT + A per impostare lo stato attivo sulla barra.</translation>
 <translation id="7760449188139285140">Cinese Wubi</translation>
 <translation id="7765158879357617694">Sposta</translation>
@@ -906,6 +911,7 @@
 <translation id="8300849813060516376">OTASP non riuscito</translation>
 <translation id="8312871300878166382">Incolla nella cartella</translation>
 <translation id="8329978297633540474">Testo normale</translation>
+<translation id="8332007959299458842">I file Microsoft aperti di recente sono stati spostati su Google Drive</translation>
 <translation id="8335587457941836791">Stacca dalla barra delle app</translation>
 <translation id="8335837413233998004">Bielorusso</translation>
 <translation id="8336153091935557858">Ieri alle <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -932,6 +938,7 @@
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="8492972329130824181">La rete di casa non è disponibile. Il roaming dei dati mobili deve essere attivato per connettersi.</translation>
 <translation id="8499098729323186194">Estrazione di <ph name="NUMBER_OF_ITEMS" /> elementi in corso…</translation>
+<translation id="8502913769543567768">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Attiva dopo la configurazione del dispositivo, Gestita dall'amministratore</translation>
 <translation id="8521441079177373948">Regno Unito</translation>
 <translation id="853494022971700746">Francese (Francia)</translation>
 <translation id="8540608333167683902">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>

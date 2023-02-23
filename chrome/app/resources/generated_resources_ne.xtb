@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Linux पुनः सुरु गर्ने हो?</translation>
 <translation id="1047431265488717055">लिंक पाठ प्रतिलिपि गर्नुहोस्</translation>
 <translation id="1048286738600630630">प्रदर्शनहरू</translation>
-<translation id="1048770690598418849">तपाईं अहिले यो कार्य स्किप गर्न सक्नुहुन्छ र तपाईंले सेटअप गर्ने प्रक्रिया पूरा गरिसकेपछि हामी स्वतः पुनः प्रयास गर्ने छौँ</translation>
 <translation id="1048986595386481879">गतिशील रूपमा छुट्याइएको</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गरिँदै}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त गरिँदै}}</translation>
 <translation id="1049743911850919806">इन्कोग्निटो</translation>
@@ -1354,6 +1353,7 @@
 <translation id="2182058453334755893">तपाईंको क्लिपबोर्डमा प्रतिलिपि गरियो</translation>
 <translation id="2183570493397356669">"जारी राख्नुहोस्" बटन अफ गरिएको छ</translation>
 <translation id="2184515124301515068">साइटहरूले ध्वनि कहिले प्ले गर्न सक्छन् भन्ने कुरा Chrome लाई छनौट गर्न दिनुहोस् (सिफारिस गरिएको)</translation>
+<translation id="2186206192313702726">Google लेन्स</translation>
 <translation id="2186711480981247270">अर्को डिभाइसबाट पेज सेयर गरिएको छ</translation>
 <translation id="2187675480456493911">तपाईंको खाता साइन इन गरिएका अन्य यन्त्रमा सिंक गरिएको छ। अन्य प्रयोगकर्ताहरूले परिमार्जन गरेका सेटिङ सिंक गरिने छैनन्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">सर्भर सर्टिफिकेट आयात त्रुटि</translation>
@@ -1621,6 +1621,7 @@
 <translation id="2408018932941436077">कार्ड सुरक्षित गर्दै</translation>
 <translation id="2408955596600435184">आफ्नो PIN प्रविष्टि गर्नुहोस्</translation>
 <translation id="2409268599591722235">जाऔँ</translation>
+<translation id="2409709393952490731">कुनै फोन वा ट्याब्लेट प्रयोग गर्नुहोस्</translation>
 <translation id="2410079346590497630">बिल्डसम्बन्धी विवरण</translation>
 <translation id="2410298923485357543">डिभाइस अनलाइन हुँदा उच्च गुणस्तरको आवाज प्रयोग गरियोस्</translation>
 <translation id="2410754283952462441">कुनै खाता छान्नुहोस्</translation>
@@ -1917,7 +1918,6 @@
 <translation id="2673135533890720193">तपाईंको ब्राउजिङ इतिहास पढ्नुहोस्</translation>
 <translation id="2674764818721168631">निष्क्रिय छ</translation>
 <translation id="2675570801872027281">Bruschetta अनइन्स्टल गर्ने क्रममा कुनै त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="2676492189600898281">अटोफिलका बारेमा प्रतिक्रिया दिनुहोस्</translation>
 <translation id="2678063897982469759">पुन: सक्षम गर्नुहोस्</translation>
 <translation id="2678100101831051676">कास्ट गर्न सकिएन।</translation>
 <translation id="268053382412112343">इति&amp;हास</translation>
@@ -3769,6 +3769,7 @@
 <translation id="4369215744064167350">तपाईंले वेबसाइट हेर्न पाऊँ भनी गर्नुभएको अनुरोध अनुमोदन गरिएको छ</translation>
 <translation id="4369735607080757018">साइटहरूमा देखाइने विज्ञापनको पर्फर्मेन्स मापन गर्न साइटहरूका बिचमा तपाईंलाई कुनै विज्ञापन देखाइएको समयलगायतका सीमित प्रकारका डेटा सेयर गरिन्छ</translation>
 <translation id="4370975561335139969">तपाईँले प्रविष्टि गर्नुभएको इमेल र पासवर्ड मेल खाँदैनन्</translation>
+<translation id="4374805630006466253">कुनै अर्को फोन वा ट्याब्लेट प्रयोग गर्नुहोस्</translation>
 <translation id="4374831787438678295">Linux को स्थापनाकर्ता</translation>
 <translation id="4375035964737468845">डाउनलोड गरिएका फाइलहरू खोल्नुहोस्</translation>
 <translation id="4376226992615520204">स्थान अफ गरिएको छ</translation>
@@ -7209,7 +7210,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> डाउनलोड असफल</translation>
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
-<translation id="7552658769580484674">अटोफिलका बारेमा प्रतिक्रिया दिनुहोस्</translation>
 <translation id="7552846755917812628">निम्न सुझावहरूको पालना गरी हेर्नुहोस्:</translation>
 <translation id="7553012839257224005">Linux कन्टेनर जाँच गरिँदै छ</translation>
 <translation id="7553242001898162573">तपाईँको पासवर्ड प्रविष्टि गर्नुहोस्।</translation>
@@ -8768,7 +8768,6 @@
 <translation id="8952831374766033534">कन्फिगुरेसनको यो विकल्प प्रयोग गर्न मिल्दैन: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">चार्ज भइरहेका बेला</translation>
 <translation id="895347679606913382">सुरु हुँदैछ...</translation>
-<translation id="8956230710625245889">Reader मा खोल्नुहोस्</translation>
 <translation id="8957757410289731985">प्रोफाइल आफू अनुकूल पार्नुहोस्</translation>
 <translation id="895944840846194039">जाभास्क्रिप्ट स्मृति</translation>
 <translation id="8960208913905765425">"द्रुत जवाफ"को एकाइ रूपान्तरण गर्ने सुविधा</translation>

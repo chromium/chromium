@@ -355,6 +355,7 @@
 <translation id="3971140002794351170">Sækja snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Enska (bresk)</translation>
 <translation id="3975895378829046965">Bengalska hljóðritun</translation>
+<translation id="3999574733850440202">Nýlega opnaðar Microsoft-skrár voru færðar yfir á OneDrive</translation>
 <translation id="4002066346123236978">Heiti</translation>
 <translation id="4017788180641807848">Enska (bandarísk) með Workman-lyklaborði</translation>
 <translation id="4019998208269143058">Festa við „Skrár fljótt“</translation>
@@ -829,6 +830,7 @@
 <translation id="7724603315864178912">Klippa</translation>
 <translation id="7732111077498238432">Netkerfinu er stjórnað af reglu</translation>
 <translation id="7736003208887389532">Eyða þessum skrám endanlega?</translation>
+<translation id="7740287852186792672">Leitarniðurstöður</translation>
 <translation id="7748626145866214022">Fleiri valkosti er að finna á aðgerðastikunni. Ýttu á Alt + A til að setja aðgerðastikuna í fókus.</translation>
 <translation id="7760449188139285140">Kínverska Wubi</translation>
 <translation id="7765158879357617694">Færa</translation>
@@ -906,6 +908,7 @@
 <translation id="8300849813060516376">OTASP mistókst</translation>
 <translation id="8312871300878166382">Líma inn í möppu</translation>
 <translation id="8329978297633540474">Ósniðinn texti</translation>
+<translation id="8332007959299458842">Nýlega opnaðar Microsoft-skrár voru færðar yfir á Google Drive</translation>
 <translation id="8335587457941836791">Losa úr hillu</translation>
 <translation id="8335837413233998004">Hvítrússneska</translation>
 <translation id="8336153091935557858">Í gær <ph name="YESTERDAY_DAYTIME" /></translation>

@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irland</translation>
 <translation id="4124935795427217608">Bir shoxli ot</translation>
 <translation id="4131235941541910880">Elementlarni boshqa jildga olish uchun chiqitdon kerak emas</translation>
+<translation id="4134804435730168042">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Qurilma sozlangandan keyin faollashtiriladi</translation>
 <translation id="4153015322587141338">Fayl ustida oʻng tugmani bosing va javon ichidagi fayllarga tezkor kirish uchun “<ph name="PIN_COMMAND" />” bandini tanlang.</translation>
 <translation id="4157569377477607576">Administrator tavsiya qilmaydi:</translation>
 <translation id="4159731583141908892">Boshqa joyga olindi: <ph name="FILE_NAME" />.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">“<ph name="FILE_NAME" />” fayli oʻchib ketadi va qayta tiklanmaydi.</translation>
 <translation id="4418686080762064601">Fayllaringiz uchun yorliq yarating</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Qurilma sozlangandan keyin faollashtiriladi, Administrator boshqaruvida</translation>
 <translation id="4439427728133035643">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Ulanish</translation>
 <translation id="4442424173763614572">DNS topilmadi</translation>
 <translation id="4462159676511157176">Boshqa nom serverlari</translation>
@@ -614,6 +616,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5913638992615760742">Nusxalash amali bajarilmadi, kutilmagan xatolik: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Golland (Niderlandiya) va kompyuter uchun AQSH klaviaturasi (xalqaro)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Qurilma sozlangandan keyin faollashtiriladi</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ta obyekt</translation>
 <translation id="5957366693331451795">Chromeboxe qurilmalari</translation>
 <translation id="5982621672636444458">Saralash</translation>
@@ -830,6 +833,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7724603315864178912">Qirqish</translation>
 <translation id="7732111077498238432">Tarmoq sozlamalari faqat siyosat asosida</translation>
 <translation id="7736003208887389532">Bu fayllar butunlay oʻchirib tashlansinmi?</translation>
+<translation id="7740287852186792672">Qidiruv natijalari</translation>
 <translation id="7748626145866214022">Amallar panelida qo‘shimcha sozlamalar mavjud. Amallar paneliga o‘tish uchun Alt+A tugmalarini bosing.</translation>
 <translation id="7760449188139285140">Xitoy (Wubi)</translation>
 <translation id="7765158879357617694">Ko‘chirib o‘tkazish</translation>
@@ -934,6 +938,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
 <translation id="8492972329130824181">Uydagi tarmoq ishlamayapti. Ulanish uchun mobil internet-roumingni yoqing.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ta fayl arxivdan chiqarilmoqda...</translation>
+<translation id="8502913769543567768">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Provayder: <ph name="NETWORK_PROVIDER_NAME" />, Qurilma sozlangandan keyin faollashtiriladi, Administrator boshqaruvida</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">Fransuz (Fransiya)</translation>
 <translation id="8540608333167683902">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Ulanish:<ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Batafsil</translation>

@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Linux өчүрүлүп күйгүзүлсүнбү?</translation>
 <translation id="1047431265488717055">Шилтеме тек&amp;стин көчүрүү</translation>
 <translation id="1048286738600630630">Дисплейлер</translation>
-<translation id="1048770690598418849">Азырынча өткөрүп жиберсеңиз болот. Тууралап бүткөнүңүздөн кийин автоматтык түрдө кайра аракет кылабыз</translation>
 <translation id="1048986595386481879">Динамикалык түрдө бөлүнгөн</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> түзмөгүнөн <ph name="ATTACHMENTS" /> тиркеме алынууда}other{<ph name="DEVICE_NAME" /> түзмөгүнөн <ph name="ATTACHMENTS" /> тиркеме алынууда}}</translation>
 <translation id="1049743911850919806">Жашыруун</translation>
@@ -1369,6 +1368,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2182058453334755893">Алмашуу буферине көчүрүлдү</translation>
 <translation id="2183570493397356669">Улантуу баскычы өчүрүлдү</translation>
 <translation id="2184515124301515068">Сайттардын добушун чыгарууну Chrome'го табыштаңыз (сунушталат)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Барак башка түзмөктөн бөлүшүлдү</translation>
 <translation id="2187675480456493911">Аккаунтуңуздагы башка түзмөктөр менен шайкештирилди. Башка колдонуучу өзгөрткөн жөндөө шайкештирилбейт. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Сервердин тастыктамасын импорттоо катасы.</translation>
@@ -1639,6 +1639,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2408018932941436077">Карта сакталууда</translation>
 <translation id="2408955596600435184">PIN кодуңузду киргизиңиз</translation>
 <translation id="2409268599591722235">Кеттик!</translation>
+<translation id="2409709393952490731">Телефонду же планшетти колдонуу</translation>
 <translation id="2410079346590497630">Кураманын чоо-жайы</translation>
 <translation id="2410298923485357543">Түзмөк онлайн режиминде болгондо кадимки үн колдонулсун</translation>
 <translation id="2410754283952462441">Аккаунт тандоо</translation>
@@ -1935,7 +1936,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2673135533890720193">Серептөө таржымалыңызды окуңуз</translation>
 <translation id="2674764818721168631">Өчүк</translation>
 <translation id="2675570801872027281">Bruschetta'ны өчүрүүдө ката кетти. Кайталап көрүңүз.</translation>
-<translation id="2676492189600898281">Автотолтуруу тууралуу пикир билдирүү</translation>
 <translation id="2678063897982469759">Кайра иштетүү</translation>
 <translation id="2678100101831051676">Тышкы экранга чыгарылбай жатат.</translation>
 <translation id="268053382412112343">Та&amp;ржымал</translation>
@@ -3787,6 +3787,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4369215744064167350">Вебсайт сурамы ырасталды</translation>
 <translation id="4369735607080757018">Жарнамалардын майнаптуулугун талдоо үчүн сайттардын ортосунда маалыматтын чектелген түрлөрү гана бөлүшүлөт, мисалы, жарнама сизге күндүн кайсы учурунда көрсөтүлдү</translation>
 <translation id="4370975561335139969">Киргизилген электрондук почта дареги менен сырсөз дал келбейт</translation>
+<translation id="4374805630006466253">Башка телефонду же планшетти колдонуу</translation>
 <translation id="4374831787438678295">Linux орноткучу</translation>
 <translation id="4375035964737468845">Жүктөлүп алынган файлдарды ачуу</translation>
 <translation id="4376226992615520204">Жайгашкан жерди аныктоо функциясы өчүк</translation>
@@ -7229,7 +7230,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> жүктөлүп алынган жок</translation>
 <translation id="7551643184018910560">Текчеге кадап коюу</translation>
-<translation id="7552658769580484674">Автотолтуруу тууралуу пикир билдирүү</translation>
 <translation id="7552846755917812628">Төмөнкү кеңештерди пайдаланып көрүңүз:</translation>
 <translation id="7553012839257224005">Linux контейнери текшерилүүдө</translation>
 <translation id="7553242001898162573">Сырсөзүңүздү киргизиңиз</translation>
@@ -8788,7 +8788,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8952831374766033534">Конфигурациянын параметри колдоого алынбайт: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Кубатталып жатканда</translation>
 <translation id="895347679606913382">Башталууда…</translation>
-<translation id="8956230710625245889">Окугучту ачуу</translation>
 <translation id="8957757410289731985">Профилди ыңгайлаштыруу</translation>
 <translation id="895944840846194039">JavaScript эстутуму</translation>
 <translation id="8960208913905765425">Ыкчам жооптордогу бирдик которуу</translation>

@@ -226,7 +226,6 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2648803196158606475">Slett leste</translation>
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2664621323652615289">Stopp</translation>
-<translation id="2667896873740639878">Denne adressen er lagret i Google-kontoen din (<ph name="USER_EMAIL" />). Du kan bruke adressen på alle Google-produkter på hvilken som helst enhet.</translation>
 <translation id="2671426118752779020">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="26915454213703967">Søk i bildet med Google</translation>
@@ -672,7 +671,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5860033963881614850">Av</translation>
 <translation id="5869029295770560994">Greit</translation>
 <translation id="5871497086027727873">1 element er flyttet</translation>
-<translation id="5881445640183527870">{count,plural, =1{Denne adressen slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}other{Disse adressene slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}}</translation>
 <translation id="5896576662943111387">Bygget for iOS</translation>
 <translation id="5897956970858271241">Besøk den kopierte linken</translation>
 <translation id="5899314093904173337">For å dele med personer i nærheten, la dem skanne denne QR-koden med kameraet sitt eller en QR-skanningsapp</translation>

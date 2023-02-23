@@ -53,7 +53,6 @@
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
 <translation id="1048286738600630630">顯示</translation>
-<translation id="1048770690598418849">你可以暫時略過這個步驟，系統會在你完成設定程序後自動重試</translation>
 <translation id="1048986595386481879">動態分配</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{正在從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}other{正在從「<ph name="DEVICE_NAME" />」接收 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="1049743911850919806">無痕模式</translation>
@@ -1357,6 +1356,7 @@
 <translation id="2182058453334755893">已複製到剪貼簿</translation>
 <translation id="2183570493397356669">已停用「繼續」按鈕</translation>
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
+<translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="2186711480981247270">透過其他裝置分享的網頁</translation>
 <translation id="2187675480456493911">已與你帳戶中的其他裝置同步。系統不會同步處理其他使用者修改的設定。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
@@ -1660,6 +1660,7 @@
 <translation id="2442916515643169563">文字陰影</translation>
 <translation id="2443487764245141020">網站可能也需要使用 ID 來辨識你的裝置</translation>
 <translation id="244475495405467108">關閉左側的分頁</translation>
+<translation id="2444874983932528148">輕鬆接續瀏覽進度</translation>
 <translation id="2445081178310039857">請指定擴充功能根目錄。</translation>
 <translation id="2445484935443597917">建立新的個人資料</translation>
 <translation id="2445726032315793326">局部放大鏡</translation>
@@ -1920,7 +1921,6 @@
 <translation id="2673135533890720193">讀取你的瀏覽記錄</translation>
 <translation id="2674764818721168631">關閉</translation>
 <translation id="2675570801872027281">移除 Bruschetta 時發生錯誤，請再試一次。</translation>
-<translation id="2676492189600898281">提供有關自動填入功能的意見</translation>
 <translation id="2678063897982469759">重新啟用</translation>
 <translation id="2678100101831051676">無法投放。</translation>
 <translation id="268053382412112343">記錄(&amp;S)</translation>
@@ -2478,6 +2478,7 @@
 <translation id="3177909033752230686">網頁語言：</translation>
 <translation id="3177914167275935955">你的裝置含有 Chrome Education 升級版，但你的使用者名稱沒有相關聯的 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
 <translation id="3179982752812949580">文字字型</translation>
+<translation id="3180284704187420717">透過同步處理功能儲存書籤、密碼等其他資訊</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護你和你的裝置不受危險網站攻擊)</translation>
 <translation id="3182749001423093222">拼字檢查</translation>
 <translation id="3183139917765991655">設定檔匯入工具</translation>
@@ -2969,6 +2970,7 @@
 <translation id="3637203148990213388">其他帳戶</translation>
 <translation id="3639220004740062347">結束閱讀器模式</translation>
 <translation id="3640214691812501263">為<ph name="USER_NAME" />新增「<ph name="EXTENSION_NAME" />」？</translation>
+<translation id="3640347231390550691">保護密碼，防範網路釣魚</translation>
 <translation id="3640613767643722554">訓練 Google 助理辨識你的聲音</translation>
 <translation id="3641456520301071208">網站可以要求取得你的位置資訊</translation>
 <translation id="3642070413432681490">圓形游標</translation>
@@ -3392,6 +3394,7 @@
 <translation id="3988996860813292272">選取時區</translation>
 <translation id="399179161741278232">已匯入</translation>
 <translation id="3992008114154328194">正在下載「<ph name="FILE_NAME" />」，<ph name="STATUS" /></translation>
+<translation id="3993259701827857030">備份資料</translation>
 <translation id="3993887353483242788">將 <ph name="DEVICE_TYPE" /> 同步處理，如此一來，在使用 Google 帳戶登入後，就能將偏好設定同步至任何裝置。偏好設定包含應用程式、設定、Wi-Fi 密碼、語言、桌布、鍵盤快速鍵等。</translation>
 <translation id="3994318741694670028">很抱歉，你的電腦是由格式錯誤的硬體 ID 所設定。這導致 ChromeOS Flex 無法使用最新的安全性修正程式進行更新，你的電腦也可能因此<ph name="BEGIN_BOLD" />容易遭受惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="3994374631886003300">解除手機的鎖定狀態，並且讓你的手機與 <ph name="DEVICE_TYPE" /> 更靠近，即可進入解鎖模式。</translation>
@@ -3951,6 +3954,7 @@
 <translation id="452750746583162491">查看已同步處理的資料</translation>
 <translation id="4527929807707405172">啟用反向捲動功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">翻譯建議</translation>
+<translation id="4528638190900283934">登入即可使用額外的實用功能</translation>
 <translation id="4529455689802245339">Chrome 即時字幕可能無法運作</translation>
 <translation id="4530494379350999373">來源</translation>
 <translation id="4531924570968473143">你想要將誰加入這部 <ph name="DEVICE_TYPE" />？</translation>
@@ -6357,6 +6361,7 @@
 <translation id="6774710250118040929">新增密碼</translation>
 <translation id="6775163072363532304">可用的裝置會顯示在這裡。</translation>
 <translation id="677646486571529447">新增附註</translation>
+<translation id="6776589734354015877">取得額外的實用功能</translation>
 <translation id="6776729248872343918">啟用快速配對</translation>
 <translation id="6777817260680419853">已禁止重新導向</translation>
 <translation id="6779092717724412415">如要建立其他醒目標示內容，請選取所需文字後按一下滑鼠右鍵。</translation>
@@ -7209,7 +7214,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> 下載失敗</translation>
 <translation id="7551643184018910560">固定至檔案櫃</translation>
-<translation id="7552658769580484674">提供有關自動填入功能的意見</translation>
 <translation id="7552846755917812628">嘗試按照下列提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
 <translation id="7553242001898162573">請輸入您的密碼</translation>
@@ -7753,6 +7757,7 @@
 <translation id="8023801379949507775">立即更新擴充功能</translation>
 <translation id="8025151549289123443">螢幕鎖定和登入</translation>
 <translation id="8026334261755873520">清除瀏覽資料</translation>
+<translation id="8026471514777758216">你的所有裝置</translation>
 <translation id="8028060951694135607">Microsoft 金鑰修復</translation>
 <translation id="8028803902702117856">正在下載 <ph name="FILE_NAME" />，檔案大小為 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>
@@ -8769,7 +8774,6 @@
 <translation id="8952831374766033534">不支援的設定選項：<ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">啟動中...</translation>
-<translation id="8956230710625245889">在 Reader 中開啟</translation>
 <translation id="8957757410289731985">自訂檔案</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
 <translation id="8960208913905765425">快速解答功能的單位轉換結果</translation>

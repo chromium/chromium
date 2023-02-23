@@ -339,6 +339,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8266560134891435528">Chromium 无法检查您的密码，因为您未登录</translation>
 <translation id="8276522524898344151">Chromium 正在尝试复制密码。</translation>
 <translation id="8290862415967981663">此文件可能存在危险，因此 Chromium 已将其拦截。</translation>
+<translation id="8325404639443959713">Chromium 功能多，任您探索</translation>
 <translation id="8330519371938183845">登录即可在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chromium</translation>
 <translation id="8357820681460164151">如需在您的所有设备上访问自己的 Chromium 浏览器信息，请登录您的帐号，然后开启同步功能</translation>
@@ -378,6 +379,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="9158494823179993217">您的系统管理员已将 Chromium 配置为使用备用浏览器访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="9185526690718004400">重新启动以更新 Chromium(&amp;C)</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">定制您的专属 Chromium</translation>
 <translation id="93478295209880648">Chromium 可能无法正常运行，因为它不再支持 Windows XP 和 Windows Vista</translation>
 <translation id="942598560705308788">由 Chromium 管理的证书</translation>
 <translation id="965162752251293939">谁在使用 Chromium？</translation>

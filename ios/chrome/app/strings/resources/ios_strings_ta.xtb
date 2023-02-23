@@ -159,6 +159,7 @@
 <translation id="21133533946938348">தாவலைப் பொருத்து</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> உருப்படிகள் நகர்த்தப்பட்டன</translation>
 <translation id="2122754583996902531">உங்கள் உலாவி நிர்வகிக்கப்படுகிறது. <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">விலை குறித்த அறிவிப்புகளை இயக்கவா?</translation>
 <translation id="2139867232736819575">நீங்கள் நகலெடுத்த உரையைத் தேடவும்</translation>
 <translation id="214201757571129614">உள்நுழைக…</translation>
 <translation id="2149973817440762519">புக்மார்க்கை மாற்றுக</translation>
@@ -251,6 +252,7 @@
 <translation id="2797029671965852011">பதிவுகளைக் காட்டு</translation>
 <translation id="2800683595868705743">தாவல் மாற்றியிலிருந்து வெளியேறு</translation>
 <translation id="2815198996063984598">2. இயல்பு உலாவி ஆப்ஸ் என்பதைத் தட்டவும்</translation>
+<translation id="2822917246944009066">பக்கம் பின் செய்யப்பட்டது</translation>
 <translation id="2830972654601096923">முகவரிகளை நிர்வகி...</translation>
 <translation id="2834399722155632105">3. கடவுச்சொல் விருப்பங்கள் என்பதைத் தட்டவும்</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -316,6 +318,7 @@
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3240426699337459095">இணைப்பு நகலெடுக்கப்பட்டது</translation>
 <translation id="3244271242291266297">MM</translation>
+<translation id="3245744387817103524">நீங்கள் செய்த மாற்றத்தைச் சேமிக்க முடியவில்லை.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3268451620468152448">திறந்த தத்தல்கள்</translation>
 <translation id="3272527697863656322">ரத்துசெய்</translation>
@@ -338,6 +341,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> நி.</translation>
 <translation id="3448016392200048164">காட்சிப் பிரிப்பு</translation>
 <translation id="345565170154308620">கடவுச்சொற்களை நிர்வகி...</translation>
+<translation id="3464194322481586217">விலையைக் கண்காணிக்க முடியவில்லை.</translation>
 <translation id="3469166899695866866">பதிவிறக்கத்தை நிறுத்தவா?</translation>
 <translation id="3470502288861289375">நகலெடுக்கிறது...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} தளம் அல்லது ஆப்ஸுக்கு}other{{COUNT} தளங்கள் அல்லது ஆப்ஸுக்கு}}</translation>
@@ -766,6 +770,7 @@
 <translation id="6464397691496239022">உங்கள் உலாவல் அனுபவத்தை மேம்படுத்துவதற்காக (எ.கா., உங்களை உள்நுழைந்தபடியே வைத்திருப்பது, உங்கள் ஷாப்பிங் கார்ட்டில் உள்ளவற்றை நினைவில் கொள்வது போன்றவை) குக்கீகளைத் தளங்கள் பயன்படுத்த முடியும்.
 
 விளம்பரங்களைப் பிரத்தியேகமாக்குவது போன்ற செயல்களைச் செய்வதற்காக வெவ்வேறு தளங்களில் உங்களின் உலாவல் செயல்பாட்டைப் பார்க்க, தளங்களால் குக்கீகளைப் பயன்படுத்த முடியாது.</translation>
+<translation id="6476253015009698798">இந்தப் பக்கத்தில் உள்ளவற்றின் விலையைக் கண்காணிக்க முடியாது.</translation>
 <translation id="6476800141292307438">பக்கத்தை <ph name="LANGUAGE" /> மொழியில் மொழிபெயர்க்கிறது. திரையின் கீழ்ப்பகுதிக்கு அருகில் விருப்பத்தேர்வுகள் உள்ளன.</translation>
 <translation id="648164694371393720">அங்கீகாரப் பிழை</translation>
 <translation id="6482629121755362506"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> உருப்படிகள் நீக்கப்பட்டன</translation>
@@ -817,6 +822,7 @@
 <translation id="6780034285637185932">அஞ்சல் குறியீடு</translation>
 <translation id="6781260999953472352">ஒத்திசைவை இயக்கவா?</translation>
 <translation id="6785453220513215166">சிதைவு அறிக்கையை அனுப்புகிறது...</translation>
+<translation id="6790502149545262384">விரைவில், புதிய பக்கத்தைத் திறக்கும்போது <ph name="CHANNEL_NAME" /> சேனலில் உள்ள கதைகள் காட்டப்படும்.</translation>
 <translation id="6797885426782475225">குரல் தேடல்</translation>
 <translation id="6801927553864092214">தனிப்பட்ட முறையில் உலாவ, மறைநிலைத் தாவலைத் திறக்கவும்</translation>
 <translation id="6807889908376551050">எல்லாவற்றையும் காட்டு...</translation>
@@ -896,6 +902,7 @@
 <translation id="7431991332293347422">தேடல் மற்றும் பலவற்றைத் தனிப்பயனாக்க உங்கள் உலாவல் வரலாறு எப்படிப் பயன்படுத்தப்படுகிறது என்பதைக் கட்டுப்படுத்தலாம்</translation>
 <translation id="7435356471928173109">உங்கள் நிர்வாகி முடக்கியுள்ளார்</translation>
 <translation id="7438481509621345350">புதிய உலாவிப் பக்கத்தைத் திறக்கும்போது, <ph name="CHANNEL_NAME" /> வழங்கும் கதைகள் காட்டப்படும்.</translation>
+<translation id="7446583256109515732">பக்கம் பிரித்தெடுக்கப்பட்டது</translation>
 <translation id="7454057999980797137">மாநிலம் / மாகாணம்</translation>
 <translation id="7459628154744868585">மேம்பட்ட பாதுகாப்பு இயக்கப்பட்டுள்ளது</translation>
 <translation id="746684838091935575">3. Chromeமைத் தேர்ந்தெடுக்கவும்</translation>
@@ -1126,6 +1133,8 @@
 <translation id="9137526406337347448">Google சேவைகள்</translation>
 <translation id="9148126808321036104">மீண்டும் உள்நுழைக</translation>
 <translation id="9157836665414082580">உரையாடல்களை மறை</translation>
+<translation id="9162432979321511934">தன்னிரப்பிக் கடவுச்சொற்களை இயக்கு</translation>
+<translation id="9165320910061267720">விலை குறைவு தொடர்பான அறிவிப்புகளைப் பெற, உங்கள் iOS அமைப்புகளில் அறிவிப்புகளை இயக்க வேண்டும்.</translation>
 <translation id="9177438225260810839">திறந்துள்ள உலாவிப் பக்கங்களைத் தேடுதல்</translation>
 <translation id="9188680907066685419">நிர்வகிக்கப்படும் கணக்கிலிருந்து வெளியேறு</translation>
 <translation id="9193147658040604536">பக்கத்தைப் பின் செய்ய இங்கே இழுக்கவும்</translation>

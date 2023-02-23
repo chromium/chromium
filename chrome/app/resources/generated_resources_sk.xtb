@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Chcete Linux reštartovať?</translation>
 <translation id="1047431265488717055">Kopírovať te&amp;xt odkazu</translation>
 <translation id="1048286738600630630">Zobrazenie</translation>
-<translation id="1048770690598418849">Teraz môžete túto možnosť preskočiť a keď dokončíte nastavenie, skúsime to znova automaticky</translation>
 <translation id="1048986595386481879">Dynamicky priradené</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}few{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}many{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}other{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -1359,6 +1358,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2182058453334755893">Skopírované do schránky</translation>
 <translation id="2183570493397356669">Tlačidlo Pokračovať je deaktivované</translation>
 <translation id="2184515124301515068">Povoľte Chromu vyberať, kedy môžu weby prehrať zvuk (odporúčané)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Stránka je zdieľaná z iného zariadenia</translation>
 <translation id="2187675480456493911">Synchronizované s ostatnými zariadeniami vo vašom účte. Nastavenia upravené ostatnými používateľmi nebudú synchronizované. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Chyba importovania certifikátu servera</translation>
@@ -1626,6 +1626,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2408018932941436077">Karta sa ukladá</translation>
 <translation id="2408955596600435184">Zadajte kód PIN</translation>
 <translation id="2409268599591722235">Poďme na to</translation>
+<translation id="2409709393952490731">Použiť telefón alebo tablet</translation>
 <translation id="2410079346590497630">podrobnosti o zostave</translation>
 <translation id="2410298923485357543">Keď je zariadenie online, používajte prirodzený hlas</translation>
 <translation id="2410754283952462441">Výber účtu</translation>
@@ -1922,7 +1923,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2673135533890720193">Čítať históriu prehliadania</translation>
 <translation id="2674764818721168631">Vypnuté</translation>
 <translation id="2675570801872027281">Pri odstraňovaní počítača Bruschetta sa vyskytla chyba. Skúste to znova.</translation>
-<translation id="2676492189600898281">Poskytnúť spätnú väzbu k automatickému dopĺňaniu</translation>
 <translation id="2678063897982469759">Znova povoliť</translation>
 <translation id="2678100101831051676">Nedá sa prenášať.</translation>
 <translation id="268053382412112343">Hi&amp;stória</translation>
@@ -3774,6 +3774,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4369215744064167350">Žiadosť o web bola schválená</translation>
 <translation id="4369735607080757018">Medzi webmi sa zdieľajú obmedzené typy údajov na meranie výkonnosti reklám, napríklad čas dňa, kedy sa vám reklama zobrazila.</translation>
 <translation id="4370975561335139969">Zadaný e-mail a heslo nesúhlasia.</translation>
+<translation id="4374805630006466253">Použiť iný telefón alebo tablet</translation>
 <translation id="4374831787438678295">Inštalátor systému Linux</translation>
 <translation id="4375035964737468845">Otvárať stiahnuté súbory</translation>
 <translation id="4376226992615520204">Poloha je vypnutá</translation>
@@ -7219,7 +7220,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7550830279652415241">záložky_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Nepodarilo sa stiahnuť súbor <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Pripnúť na poličku</translation>
-<translation id="7552658769580484674">Poskytnúť spätnú väzbu k automatickému dopĺňaniu</translation>
 <translation id="7552846755917812628">Vyskúšajte nasledujúce tipy:</translation>
 <translation id="7553012839257224005">Kontroluje sa kontajner Linux</translation>
 <translation id="7553242001898162573">Zadajte svoje heslo</translation>
@@ -8781,7 +8781,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8952831374766033534">Konfiguračná možnosť nie je k podporovaná: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Počas nabíjania</translation>
 <translation id="895347679606913382">Spúšťa sa...</translation>
-<translation id="8956230710625245889">Otvoriť v čítačke</translation>
 <translation id="8957757410289731985">Prispôsobiť profil</translation>
 <translation id="895944840846194039">Pamäť JavaScript</translation>
 <translation id="8960208913905765425">Prevod jednotiek v rámci rýchlych odpovedí</translation>

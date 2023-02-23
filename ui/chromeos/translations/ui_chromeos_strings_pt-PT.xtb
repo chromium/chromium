@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irlandês</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="4131235941541910880">Mova os itens de que não precisa para o lixo</translation>
+<translation id="4134804435730168042">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ativar após a configuração do dispositivo</translation>
 <translation id="4153015322587141338">Clique com o botão direito do rato num ficheiro e selecione "<ph name="PIN_COMMAND" />" para um acesso rápido aos seus ficheiros na prateleira.</translation>
 <translation id="4157569377477607576">A política do administrador não recomenda:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">O ficheiro "<ph name="FILE_NAME" />" vai ser apagado e não vai ser possível restaurá-lo.</translation>
 <translation id="4418686080762064601">Crie um atalho para os seus ficheiros</translation>
 <translation id="4425149324548788773">O meu disco</translation>
+<translation id="4432921877815220091">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ativar após a configuração do dispositivo, Gerida pelo administrador</translation>
 <translation id="4439427728133035643">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, ligar</translation>
 <translation id="4442424173763614572">A procura de DNS falhou</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">Falha na operação de cópia, erro inesperado: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="5926082595146149752">Neerlandês (Países Baixos) com o teclado de PC americano internacional</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ativar após a configuração do dispositivo</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> itens</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Opções de ordenação</translation>
@@ -831,6 +834,7 @@
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7732111077498238432">A rede é controlada por políticas.</translation>
 <translation id="7736003208887389532">Eliminar definitivamente estes ficheiros?</translation>
+<translation id="7740287852186792672">Resultados de pesquisa</translation>
 <translation id="7748626145866214022">Há mais opções disponíveis na barra de ação. Prima Alt + A para focar a barra de ação.</translation>
 <translation id="7760449188139285140">Wubi chinês</translation>
 <translation id="7765158879357617694">Mover</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Disponível offline</translation>
 <translation id="8492972329130824181">A rede doméstica não está disponível. O roaming de dados móveis tem de estar ativado para estabelecer a ligação.</translation>
 <translation id="8499098729323186194">A extrair <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
+<translation id="8502913769543567768">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ativar após a configuração do dispositivo, Gerida pelo administrador</translation>
 <translation id="8521441079177373948">Reino Unido</translation>
 <translation id="853494022971700746">Francês (França)</translation>
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>

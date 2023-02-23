@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Επανεκκίνηση του Linux;</translation>
 <translation id="1047431265488717055">Αντιγραφή κε&amp;ιμένου συνδέσμου</translation>
 <translation id="1048286738600630630">Οθόνες</translation>
-<translation id="1048770690598418849">Μπορείτε να κάνετε παράβλεψη προς το παρόν και θα δοκιμάσουμε ξανά αυτόματα αφού ολοκληρώσετε τη ρύθμιση</translation>
 <translation id="1048986595386481879">Δυναμική κατανομή</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Λαμβάνεται <ph name="ATTACHMENTS" /> από τη συσκευή <ph name="DEVICE_NAME" />}other{Λαμβάνονται <ph name="ATTACHMENTS" /> από τη συσκευή <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Ανώνυμη περιήγηση</translation>
@@ -1369,6 +1368,7 @@
 <translation id="2182058453334755893">Αντιγράφηκε στο πρόχειρό σας</translation>
 <translation id="2183570493397356669">Το κουμπί "συνέχεια" απενεργοποιήθηκε</translation>
 <translation id="2184515124301515068">Επιτρέψτε στο Chrome να επιλέξει πότε οι ιστότοποι μπορούν να αναπαράγουν ήχο (συνιστάται)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Η σελίδα κοινοποιήθηκε από άλλη συσκευή</translation>
 <translation id="2187675480456493911">Έγινε συγχρονισμός με άλλες συσκευές στον λογαριασμό σας. Οι ρυθμίσεις που τροποποιούνται από άλλους χρήστες δεν θα συγχρονίζονται. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Σφάλμα εισαγωγής του πιστοποιητικού διακομιστή  </translation>
@@ -1936,7 +1936,6 @@
 <translation id="2673135533890720193">Ανάγνωση του ιστορικού περιήγησής σας</translation>
 <translation id="2674764818721168631">Ανενεργό</translation>
 <translation id="2675570801872027281">Σφάλμα κατά την κατάργηση του Bruschetta. Δοκιμάστε ξανά.</translation>
-<translation id="2676492189600898281">Υποβολή σχολίων αυτόματης συμπλήρωσης</translation>
 <translation id="2678063897982469759">Εκ νέου ενεργοποίηση</translation>
 <translation id="2678100101831051676">Δεν είναι δυνατή η μετάδοση.</translation>
 <translation id="268053382412112343">Ιστορικό</translation>
@@ -7232,7 +7231,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Επιτυχής λήψη του αρχείου <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Καρφίτσωμα στο ράφι</translation>
-<translation id="7552658769580484674">Υποβολή σχολίων αυτόματης συμπλήρωσης</translation>
 <translation id="7552846755917812628">Δοκιμάστε τις παρακάτω συμβουλές:</translation>
 <translation id="7553012839257224005">Έλεγχος του κοντέινερ Linux</translation>
 <translation id="7553242001898162573">Εισαγάγετε τον κωδικό πρόσβασής σας</translation>
@@ -8790,7 +8788,6 @@
 <translation id="8952831374766033534">Δεν υποστηρίζεται η επιλογή διαμόρφωσης: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Κατά τη φόρτιση</translation>
 <translation id="895347679606913382">Έναρξη...</translation>
-<translation id="8956230710625245889">Άνοιγμα στο εργαλείο ανάγνωσης</translation>
 <translation id="8957757410289731985">Εξατομίκευση προφίλ</translation>
 <translation id="895944840846194039">Μνήμη JavaScript</translation>
 <translation id="8960208913905765425">Μετατροπή μονάδας Γρήγορων απαντήσεων</translation>

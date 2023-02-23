@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irlandeză</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mută elementele de care nu ai nevoie în coșul de gunoi</translation>
+<translation id="4134804435730168042">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activează după configurarea dispozitivului</translation>
 <translation id="4153015322587141338">Dă clic dreapta pe un fișier și selectează <ph name="PIN_COMMAND" /> pentru acces rapid la fișierele din raft.</translation>
 <translation id="4157569377477607576">Politica implementată de administrator nu recomandă:</translation>
 <translation id="4159731583141908892">Mutate: <ph name="FILE_NAME" />.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570"><ph name="FILE_NAME" /> va fi șters și nu vei putea să-l restabilești.</translation>
 <translation id="4418686080762064601">Creează o comandă rapidă pentru fișiere</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
+<translation id="4432921877815220091">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Activează după configurarea dispozitivului, Gestionată de administratorul tău</translation>
 <translation id="4439427728133035643">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="4442424173763614572">Căutarea DNS nu a reușit</translation>
 <translation id="4462159676511157176">Servere de nume personalizate</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">Nu s-a putut copia, eroare neprevăzută: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Neerlandeză (Țările de Jos) cu tastatură S.U.A. internațională pentru PC</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Activează după configurarea dispozitivului</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elemente</translation>
 <translation id="5957366693331451795">Chromeboxurile</translation>
 <translation id="5982621672636444458">Opțiuni de sortare</translation>
@@ -831,6 +834,7 @@
 <translation id="7724603315864178912">Decupează</translation>
 <translation id="7732111077498238432">Rețeaua este controlată de politică</translation>
 <translation id="7736003208887389532">Ștergi definitiv fișierele?</translation>
+<translation id="7740287852186792672">Rezultatele căutării</translation>
 <translation id="7748626145866214022">Mai multe opțiuni disponibile în bara de acțiuni. Apasă pe Alt + A pentru a focaliza bara de acțiune.</translation>
 <translation id="7760449188139285140">Chineză Wubi</translation>
 <translation id="7765158879357617694">Mută</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="8492972329130824181">Rețeaua de domiciliu nu este disponibilă. Trebuie să activezi roamingul de date mobile pentru a te conecta.</translation>
 <translation id="8499098729323186194">Se extrag <ph name="NUMBER_OF_ITEMS" /> elemente...</translation>
+<translation id="8502913769543567768">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activează după configurarea dispozitivului, Gestionată de administratorul tău</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">Franceză (Franța)</translation>
 <translation id="8540608333167683902">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>

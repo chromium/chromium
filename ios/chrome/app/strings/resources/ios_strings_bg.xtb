@@ -159,6 +159,7 @@
 <translation id="21133533946938348">Фиксиране на раздела</translation>
 <translation id="2116625576999540962">Преместихте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> елемента</translation>
 <translation id="2122754583996902531">Браузърът ви е управляван. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="2139502497535990641">Да се включат ли известията за цени?</translation>
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
 <translation id="214201757571129614">Вход…</translation>
 <translation id="2149973817440762519">Редактиране на отметката</translation>
@@ -251,6 +252,7 @@
 <translation id="2797029671965852011">Показване на историята</translation>
 <translation id="2800683595868705743">Излизане от превключвателя на раздели</translation>
 <translation id="2815198996063984598">2. Докоснете „Стандартно прилож. за браузър“.</translation>
+<translation id="2822917246944009066">Разделът е фиксиран</translation>
 <translation id="2830972654601096923">Управление на адресите...</translation>
 <translation id="2834399722155632105">3. Докоснете „Опции за паролите“.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -900,6 +902,7 @@
 <translation id="7431991332293347422">Контролирайте начина, по който историята ви на сърфиране се използва за персонализиране на търсенето и др.</translation>
 <translation id="7435356471928173109">Изключено от администратора ви</translation>
 <translation id="7438481509621345350">Когато отворите нов раздел, вече ще виждате материали от <ph name="CHANNEL_NAME" />.</translation>
+<translation id="7446583256109515732">Разделът е освободен</translation>
 <translation id="7454057999980797137">Щат/държава</translation>
 <translation id="7459628154744868585">Режимът за подобрена защита е включен</translation>
 <translation id="746684838091935575">3. Изберете Chrome.</translation>
@@ -1131,6 +1134,7 @@
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9157836665414082580">Диалогови прозорци: Блокиране</translation>
 <translation id="9162432979321511934">Включете AutoFill Passwords</translation>
+<translation id="9165320910061267720">За да получавате известия за сигнали за понижение на цената, трябва да включите известията от настройките на iOS.</translation>
 <translation id="9177438225260810839">Търсене в отворените раздели</translation>
 <translation id="9188680907066685419">Излизане от управляван профил</translation>
 <translation id="9193147658040604536">Плъзнете тук за фиксиране на раздела</translation>

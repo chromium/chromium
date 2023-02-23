@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Linux를 다시 시작하시겠습니까?</translation>
 <translation id="1047431265488717055">링크 텍스트 복사(&amp;X)</translation>
 <translation id="1048286738600630630">디스플레이</translation>
-<translation id="1048770690598418849">지금은 이 단계를 건너뛸 수 있으며 설정을 완료한 후 자동으로 다시 시도합니다</translation>
 <translation id="1048986595386481879">동적으로 할당됨</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 중}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신 중}}</translation>
 <translation id="1049743911850919806">시크릿 모드</translation>
@@ -1369,6 +1368,7 @@
 <translation id="2182058453334755893">클립보드에 복사됨</translation>
 <translation id="2183570493397356669">계속 버튼 사용 중지됨</translation>
 <translation id="2184515124301515068">사이트의 소리 재생 여부를 Chrome이 결정(권장)</translation>
+<translation id="2186206192313702726">Google 렌즈</translation>
 <translation id="2186711480981247270">다른 기기에서 공유된 페이지</translation>
 <translation id="2187675480456493911">계정에 연결된 다른 기기와 동기화되어 있습니다. 다른 사용자가 수정한 설정은 동기화되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">서버 인증서 가져오기 오류</translation>
@@ -1640,6 +1640,7 @@
 <translation id="2408018932941436077">카드 저장 중</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
 <translation id="2409268599591722235">시작하기</translation>
+<translation id="2409709393952490731">휴대전화 또는 태블릿 사용</translation>
 <translation id="2410079346590497630">빌드 세부정보</translation>
 <translation id="2410298923485357543">기기가 온라인일 때 자연 음성 사용</translation>
 <translation id="2410754283952462441">계정 선택</translation>
@@ -1936,7 +1937,6 @@
 <translation id="2673135533890720193">인터넷 사용 기록 확인</translation>
 <translation id="2674764818721168631">사용 안함</translation>
 <translation id="2675570801872027281">Bruschetta를 삭제하는 중에 오류가 발생했습니다. 다시 시도해 주세요.</translation>
-<translation id="2676492189600898281">자동 완성 의견 보내기</translation>
 <translation id="2678063897982469759">다시 사용</translation>
 <translation id="2678100101831051676">전송할 수 없습니다</translation>
 <translation id="268053382412112343">내역(&amp;S)</translation>
@@ -3786,6 +3786,7 @@
 <translation id="4369215744064167350">웹사이트 요청 승인됨</translation>
 <translation id="4369735607080757018">광고 실적을 측정할 수 있도록 광고 표시 시간 등 제한된 유형의 데이터가 사이트 간에 공유됩니다.</translation>
 <translation id="4370975561335139969">입력한 이메일과 비밀번호가 일치하지 않습니다.</translation>
+<translation id="4374805630006466253">다른 휴대전화 또는 태블릿 사용</translation>
 <translation id="4374831787438678295">Linux 설치 프로그램</translation>
 <translation id="4375035964737468845">다운로드한 파일 열기</translation>
 <translation id="4376226992615520204">위치 사용 중지됨</translation>
@@ -7228,7 +7229,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />을(를) 다운로드하지 못함</translation>
 <translation id="7551643184018910560">실행기에 고정</translation>
-<translation id="7552658769580484674">자동 완성 의견 보내기</translation>
 <translation id="7552846755917812628">다음 도움말을 확인해 보세요.</translation>
 <translation id="7553012839257224005">Linux 컨테이너 확인 중</translation>
 <translation id="7553242001898162573">비밀번호를 입력해 주세요.</translation>
@@ -8789,7 +8789,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8952831374766033534">설정 옵션이 지원되지 않음: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">충전 시</translation>
 <translation id="895347679606913382">다운로드 시작...</translation>
-<translation id="8956230710625245889">Reader에서 열기</translation>
 <translation id="8957757410289731985">프로필 맞춤설정</translation>
 <translation id="895944840846194039">자바스크립트 메모리</translation>
 <translation id="8960208913905765425">빠른 답변 단위 변환</translation>

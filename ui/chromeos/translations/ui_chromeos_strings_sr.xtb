@@ -761,6 +761,7 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;претражи Диск&lt;/em&gt;</translation>
 <translation id="7135561821015524160">канада фонетска</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Недостаје „Подударање алтернативног имена субјекта“ или „Подударање суфикса домена“ да би се потврдио идентитет сервера за потврду идентитета</translation>
 <translation id="7165320105431587207">Конфигурација мреже није успела</translation>
 <translation id="7170041865419449892">Изван опсега</translation>
 <translation id="7180611975245234373">Освежи</translation>
@@ -831,6 +832,7 @@
 <translation id="7724603315864178912">Исеци</translation>
 <translation id="7732111077498238432">Мрежу контролишу смернице</translation>
 <translation id="7736003208887389532">Желите да трајно избришете ове фајлове?</translation>
+<translation id="7740287852186792672">Резултати претраге</translation>
 <translation id="7748626145866214022">Још опција је доступно на траци са радњама. Притисните Alt+A да бисте фокусирали траку са радњама.</translation>
 <translation id="7760449188139285140">кинески вуби</translation>
 <translation id="7765158879357617694">Премести</translation>

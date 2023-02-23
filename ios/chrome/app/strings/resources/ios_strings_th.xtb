@@ -226,7 +226,6 @@
 <translation id="2648803196158606475">ลบรายการที่อ่านแล้ว</translation>
 <translation id="2653659639078652383">ส่ง</translation>
 <translation id="2664621323652615289">หยุด</translation>
-<translation id="2667896873740639878">บันทึกที่อยู่นี้ไว้ในบัญชี Google ของคุณ (<ph name="USER_EMAIL" />) แล้ว คุณสามารถใช้ที่อยู่นี้กับผลิตภัณฑ์ต่างๆ ของ Google ในอุปกรณ์ใดก็ได้</translation>
 <translation id="2671426118752779020">คุณใช้รหัสผ่านที่บันทึกอยู่ในเครื่องมือจัดการรหัสผ่านบน Google ในแอปอื่นๆ บน iPhone ได้</translation>
 <translation id="2690858294534178585">ใช้กล้องถ่ายรูปอยู่</translation>
 <translation id="26915454213703967">ค้นหาในรูปภาพด้วย Google</translation>
@@ -672,7 +671,6 @@
 <translation id="5860033963881614850">ปิด</translation>
 <translation id="5869029295770560994">รับทราบ</translation>
 <translation id="5871497086027727873">ย้ายแล้ว 1 รายการ</translation>
-<translation id="5881445640183527870">{count,plural, =1{ระบบจะลบที่อยู่นี้ออกจากบัญชี Google ของคุณ (<ph name="USER_EMAIL" />) และอุปกรณ์เครื่องนี้}other{ระบบจะลบที่อยู่เหล่านี้ออกจากบัญชี Google ของคุณ (<ph name="USER_EMAIL" />) และอุปกรณ์เครื่องนี้}}</translation>
 <translation id="5896576662943111387">สร้างขึ้นเพื่อ iOS</translation>
 <translation id="5897956970858271241">ไปที่ลิงก์ที่คัดลอก</translation>
 <translation id="5899314093904173337">ให้คนที่อยู่ใกล้ๆ สแกนคิวอาร์โค้ดนี้โดยใช้กล้องหรือแอปสแกนคิวอาร์โค้ดเพื่อแชร์</translation>

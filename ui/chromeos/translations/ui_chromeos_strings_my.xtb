@@ -47,7 +47,7 @@
 <translation id="1395262318152388157">ဆလိုက်ဒါးကို ရှာပါ</translation>
 <translation id="1399511500114202393">အသုံးပြုသူ အသိအမှတ်ပြုလက်မှတ် မရှိပါ</translation>
 <translation id="1403008701842173542">နေရာအနှံ့</translation>
-<translation id="1404323374378969387">နော်ဝေ</translation>
+<translation id="1404323374378969387">နော်ဝေး</translation>
 <translation id="1433628812591023318">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ ရွှေ့ရပါမည်။</translation>
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
 <translation id="1439919885608649279">ပန်းများနှင့်လူ</translation>
@@ -678,7 +678,7 @@
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> တွင် ထုတ်ယူနေသည်</translation>
 <translation id="6499681088828539489">မျှဝေထားသည့် ကွန်ရက်များအတွက် ပရောက်စီများကို ခွင့်မပြုရန်</translation>
 <translation id="6503285896705205014">ဖိုင် <ph name="COUNT" /> ဖိုင် မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
-<translation id="6509122719576673235">နော်ဝေ ဂျီယန်</translation>
+<translation id="6509122719576673235">နော်ဝေး ဂျီယန်</translation>
 <translation id="6528513914570774834">ဤစက်ပစ္စည်း၏ အခြားအသုံးပြုသူများအား ဤကွန်ရက်ကို အသုံးပြုခွင့်ပေးရန်</translation>
 <translation id="653019979737152879">စင့်ခ် လုပ်နေ <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">မကြာခင်</translation>
@@ -830,6 +830,7 @@
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
 <translation id="7732111077498238432">ကွန်ရက်မူဝါဒကို ထိန်းချုပ်ထားပါသည်</translation>
 <translation id="7736003208887389532">ဤဖိုင်များကို အပြီးဖျက်မလား။</translation>
+<translation id="7740287852186792672">ရှာဖွေမှု ရလဒ်များ</translation>
 <translation id="7748626145866214022">လုပ်ဆောင်ချက်ဘားတန်းတွင် နောက်ထပ်ရွေးချယ်စရာများ ရှိပါသည်။ လုပ်ဆောင်ချက်ဘားတန်းကို ရွေးရန် Alt + A ကို နှိပ်ပါ။</translation>
 <translation id="7760449188139285140">တရုတ် ဝူဘီ</translation>
 <translation id="7765158879357617694">ရွှေ့ရန်</translation>

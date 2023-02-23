@@ -84,6 +84,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1178821169867863726">12 x 16 polgadas</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1186201132766001848">Comprobar contrasinais</translation>
+<translation id="1195073053842921378">Este enderezo eliminarase do dispositivo</translation>
 <translation id="1195558154361252544">Bloquéanse automaticamente as notificacións para todos os sitios, excepto para os que permitas</translation>
 <translation id="1197088940767939838">Laranxa</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -2815,7 +2816,7 @@ Detalles adicionais:
 <translation id="7952804540472583406"><ph name="BEGIN_LINK" />Inicia sesión<ph name="END_LINK" /> na rede.</translation>
 <translation id="7953569069500808819">Grampa no bordo superior</translation>
 <translation id="7955105108888461311">Preguntar en persoa</translation>
-<translation id="7956713633345437162">Marcadores para móbiles</translation>
+<translation id="7956713633345437162">Marcadores do móbil</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7962467575542381659">Máquina da plataforma</translation>
 <translation id="7966803981046576691">Tipo de conta para o traballo</translation>

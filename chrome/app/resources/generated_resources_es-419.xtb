@@ -53,7 +53,6 @@
 <translation id="104710386808485638">¿Quieres reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copiar texto del vínculo</translation>
 <translation id="1048286738600630630">Pantallas</translation>
-<translation id="1048770690598418849">Puedes omitir este paso por ahora; volveremos a intentarlo automáticamente cuando finalices la configuración</translation>
 <translation id="1048986595386481879">Asignación dinámica</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}other{Recibiendo <ph name="ATTACHMENTS" /> de <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Incógnito</translation>
@@ -1354,6 +1353,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2182058453334755893">Se copió en tu portapapeles</translation>
 <translation id="2183570493397356669">Se inhabilitó el botón Continuar</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonido (recomendado)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Página compartida desde otro dispositivo</translation>
 <translation id="2187675480456493911">La red está sincronizada con otros dispositivos de tu cuenta. No se sincronizarán las opciones de configuración que modifiquen otros usuarios. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Error en el servidor de importación de certificado</translation>
@@ -1621,6 +1621,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
 <translation id="2408955596600435184">Ingresa tu PIN</translation>
 <translation id="2409268599591722235">Comenzar</translation>
+<translation id="2409709393952490731">Usar un teléfono o una tablet</translation>
 <translation id="2410079346590497630">Detalles de la versión</translation>
 <translation id="2410298923485357543">Utiliza una voz natural cuando el dispositivo esté en línea</translation>
 <translation id="2410754283952462441">Elegir una cuenta</translation>
@@ -1917,7 +1918,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2673135533890720193">Leer el historial de navegación</translation>
 <translation id="2674764818721168631">No</translation>
 <translation id="2675570801872027281">Se produjo un error al quitar Bruschetta. Vuelve a intentarlo.</translation>
-<translation id="2676492189600898281">Enviar comentarios sobre Autocompletar</translation>
 <translation id="2678063897982469759">Permitir nuevamente</translation>
 <translation id="2678100101831051676">No se puede transmitir.</translation>
 <translation id="268053382412112343">Hi&amp;storial</translation>
@@ -3769,6 +3769,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4369215744064167350">Se aprobó la solicitud de acceso al sitio web</translation>
 <translation id="4369735607080757018">Se comparten tipos limitados de datos entre sitios para medir el rendimiento de sus anuncios, como la hora del día en que se mostró un anuncio.</translation>
 <translation id="4370975561335139969">El correo electrónico y la contraseña que ingresaste no coinciden.</translation>
+<translation id="4374805630006466253">Usar otro teléfono o tablet</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir archivos descargados</translation>
 <translation id="4376226992615520204">Ubicación desactivada</translation>
@@ -4269,6 +4270,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4824037980212326045">Copia de seguridad y restablecimiento de Linux</translation>
 <translation id="4824958205181053313">¿Quieres cancelar la sincronización?</translation>
 <translation id="4825532258163983651">No se puede borrar la clave de acceso</translation>
+<translation id="4827283332383516812">Borrar tarjeta</translation>
 <translation id="4827675678516992122">No se pudo establecer conexión</translation>
 <translation id="4827784381479890589">Corrector ortográfico mejorado en el navegador Chrome (se envía el texto a Google para obtener sugerencias ortográficas)</translation>
 <translation id="4827904420700932487">Crear un código QR para esta imagen</translation>
@@ -5292,6 +5294,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5792295754950501287">Más acciones para <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Presiona el botón de encendido</translation>
 <translation id="5792874008054171483">Más acciones para <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Se borrará esta forma de pago de este dispositivo.</translation>
 <translation id="5793339252089865437">Si descargas la actualización mediante tu red móvil, es posible que se apliquen cargos por exceso de datos.</translation>
 <translation id="5793420564274426163">Confirmación de vinculación</translation>
 <translation id="5793430094159150686">Se cambió tu contraseña. Para restablecer los datos locales, debes ingresar la contraseña anterior.</translation>
@@ -7208,7 +7211,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Se descargó <ph name="FILE_NAME" /> correctamente.</translation>
 <translation id="7551643184018910560">Fijar en la barra</translation>
-<translation id="7552658769580484674">Enviar comentarios sobre Autocompletar</translation>
 <translation id="7552846755917812628">Intenta las siguientes sugerencias:</translation>
 <translation id="7553012839257224005">Revisando el contenedor de Linux</translation>
 <translation id="7553242001898162573">Ingresar contraseña</translation>
@@ -7270,6 +7272,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7609148976235050828">Conéctate a Internet y vuelve a intentarlo.</translation>
 <translation id="7612401678989660900">Permitir el acceso al micrófono para apps y sitios web con el permiso</translation>
 <translation id="7612655942094160088">Habilita las funciones del teléfono conectado.</translation>
+<translation id="7612989789287281429">Accediendo…</translation>
 <translation id="7614260613810441905">Preguntar cuando un sitio quiera editar archivos o carpetas de tu dispositivo (recomendado)</translation>
 <translation id="761530003705945209">Crea una copia de seguridad en Google Drive. Restaura tus datos o cambia de dispositivo en cualquier momento con facilidad. Se incluyen datos de apps. Se suben las copias de seguridad a Google y se encriptan con la contraseña de tu Cuenta de Google.</translation>
 <translation id="7615365294369022248">Se produjo un error al agregar una cuenta</translation>
@@ -8767,7 +8770,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8952831374766033534">No se admite la opción de configuración: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Mientras se carga</translation>
 <translation id="895347679606913382">Iniciando...</translation>
-<translation id="8956230710625245889">Abrir en Reader</translation>
 <translation id="8957757410289731985">Personalizar el perfil</translation>
 <translation id="895944840846194039">Memoria de JavaScript</translation>
 <translation id="8960208913905765425">Conversión de unidades de Respuestas rápidas</translation>

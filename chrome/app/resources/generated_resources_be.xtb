@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Перазапусціць Linux?</translation>
 <translation id="1047431265488717055">Скапіраваць &amp;тэкст спасылкі</translation>
 <translation id="1048286738600630630">Дысплэі</translation>
-<translation id="1048770690598418849">Зараз вы можаце прапусціць гэты працэс. Ён будзе аўтаматычна запушчаны пасля завяршэння наладжвання.</translation>
 <translation id="1048986595386481879">Дынамічнае размеркаванне</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}one{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}few{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}many{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}other{Ідзе атрыманне даных (<ph name="ATTACHMENTS" />) з прылады "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="1049743911850919806">Інкогніта</translation>
@@ -1360,6 +1359,7 @@
 <translation id="2182058453334755893">Скапіравана ў буфер абмену</translation>
 <translation id="2183570493397356669">Кнопка "Працягнуць" адключана</translation>
 <translation id="2184515124301515068">Дазволіць браўзеру Chrome вызначаць, калі сайты могуць прайграваць гук (рэкамендуецца)</translation>
+<translation id="2186206192313702726">Google Аб'ектыў</translation>
 <translation id="2186711480981247270">Старонка абагулена з іншай прылады</translation>
 <translation id="2187675480456493911">Сінхранізавана з іншымі прыладамі ў вашым уліковым запісе. Налады, змененыя іншымі карыстальнікамі, не будуць сінхранізавацца. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Памылка імпарту сертыфіката сервера</translation>
@@ -1923,7 +1923,6 @@
 <translation id="2673135533890720193">Чытанне вашай гісторыі прагляду сайтаў</translation>
 <translation id="2674764818721168631">Выключана</translation>
 <translation id="2675570801872027281">Пры выдаленні Bruschetta адбылася памылка. Паўтарыце спробу.</translation>
-<translation id="2676492189600898281">Пакінуць водгук пра функцыю аўтазапаўнення</translation>
 <translation id="2678063897982469759">Паўторна ўключыць</translation>
 <translation id="2678100101831051676">Не ўдалося запусціць трансляцыю.</translation>
 <translation id="268053382412112343">Гі&amp;сторыя</translation>
@@ -3948,6 +3947,7 @@
 <translation id="4522890784888918985">Даччыныя ўліковыя запісы не падтрымліваюцца</translation>
 <translation id="4523876148417776526">Спісы сайтаў у фармаце XML яшчэ не загружаны.</translation>
 <translation id="4524832533047962394">Указаны рэжым рэгістрацыі не падтрымліваецца ў гэтай версіі аперацыйнай сістэмы. Праверце, ці актуальная версія ў вас.</translation>
+<translation id="4526051299161934899">Схаваныя групы ўкладак (захаваныя)</translation>
 <translation id="4526853756266614740">Выберыце відарыс – і тэма імгненна прыменіцца</translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
 <translation id="4527929807707405172">Уключыць адваротную прагортку. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -4272,6 +4272,7 @@
 <translation id="4824037980212326045">Рэзервовае капіраванне і аднаўленне Linux</translation>
 <translation id="4824958205181053313">Скасаваць сінхранізацыю?</translation>
 <translation id="4825532258163983651">Не ўдалося выдаліць ключ доступу</translation>
+<translation id="4827283332383516812">Выдаленне карткі</translation>
 <translation id="4827675678516992122">Не ўдалося падключыцца</translation>
 <translation id="4827784381479890589">Палепшаная праверка правапісу ў браўзеры Chrome (тэкст адпраўляецца ў Google для прапаноў правапісных варыянтаў)</translation>
 <translation id="4827904420700932487">Стварыць QR-код для гэтага відарыса</translation>
@@ -5295,6 +5296,7 @@
 <translation id="5792295754950501287">Іншыя дзеянні для карткі "<ph name="CARD_DESCRIPTION" />"</translation>
 <translation id="5792728279623964091">Націсніце кнопку сілкавання</translation>
 <translation id="5792874008054171483">Іншыя дзеянні з сайтам <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Гэты спосаб аплаты будзе выдалены з прылады</translation>
 <translation id="5793339252089865437">Калі спампоўваць абнаўленне праз мабільную сетку, гэта можа прывесці да празмерных выдаткаў.</translation>
 <translation id="5793420564274426163">Пацвярджэнне спалучэння</translation>
 <translation id="5793430094159150686">Пароль быў зменены. Каб аднавіць лакальныя даныя, трэба ўвесці стары пароль.</translation>
@@ -7217,7 +7219,6 @@
 <translation id="7550830279652415241">закладкі_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
-<translation id="7552658769580484674">Пакінуць водгук пра функцыю аўтазапаўнення</translation>
 <translation id="7552846755917812628">Паспрабуйце наступнае:</translation>
 <translation id="7553012839257224005">Ідзе праверка наяўнасці кантэйнера Linux</translation>
 <translation id="7553242001898162573">Увядзіце пароль</translation>
@@ -7279,6 +7280,7 @@
 <translation id="7609148976235050828">Падключыцеся да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="7612401678989660900">Даць доступ праграмам і сайтам, якія маюць дазвол выкарыстоўваць мікрафон</translation>
 <translation id="7612655942094160088">Уключэнне функцый падключанага тэлефона.</translation>
+<translation id="7612989789287281429">Выконваецца ўваход…</translation>
 <translation id="7614260613810441905">Запытваць дазвол на змяненне сайтамі файлаў ці папак на прыладзе (рэкамендуецца)</translation>
 <translation id="761530003705945209">Рэзервовае капіраванне на Google Дыск. Лёгка аднаўляйце даныя і пераносьце іх на іншыя прылады. У рэзервовую копію ўваходзяць даныя праграм. Рэзервовыя копіі запампоўваюцца ў Google і шыфруюцца пад паролем ад вашага Уліковага запісу Google.</translation>
 <translation id="7615365294369022248">Пры дадаванні ўліковага запісу ўзнікла памылка.</translation>
@@ -8494,6 +8496,7 @@
 <translation id="869884720829132584">Меню праграм</translation>
 <translation id="869891660844655955">Тэрмін дзеяння</translation>
 <translation id="8699188901396699995">PPD для прынтара "<ph name="PRINTER_NAME" />"</translation>
+<translation id="8702278591052316269">Меню са схаванымі групамі ўкладак (захаванымі)</translation>
 <translation id="8702825062053163569">Ваша прылада <ph name="DEVICE_TYPE" /> была заблакіравана.</translation>
 <translation id="8703346390800944767">Прапусціць рэкламу</translation>
 <translation id="8705331520020532516">Серыйны нумар</translation>
@@ -8777,7 +8780,6 @@
 <translation id="8952831374766033534">Параметр канфігурацыі не падтрымліваецца: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Падчас зарадкі</translation>
 <translation id="895347679606913382">Пачынаецца...</translation>
-<translation id="8956230710625245889">Адкрыць у Reader</translation>
 <translation id="8957757410289731985">Наладзіць профіль</translation>
 <translation id="895944840846194039">Памяць JavaScript</translation>
 <translation id="8960208913905765425">Перавод адзінак вымярэння з дапамогай Хуткіх адказаў</translation>

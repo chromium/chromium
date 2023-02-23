@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Linux ပြန်စမလား။</translation>
 <translation id="1047431265488717055">လင့် စာ&amp;သားကို ကူးယူပါ</translation>
 <translation id="1048286738600630630">မျက်နှာပြင်</translation>
-<translation id="1048770690598418849">၎င်းကိုယခုကျော်နိုင်ပြီး စနစ်ထည့်သွင်းပြီးနောက် အလိုအလျောက် ထပ်စမ်းပါမည်</translation>
 <translation id="1048986595386481879">ပြောင်းလဲ သတ်မှတ်ထားသည်−</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ထံမှ <ph name="ATTACHMENTS" /> ခုကို ရရှိသည်}other{<ph name="DEVICE_NAME" /> ထံမှ <ph name="ATTACHMENTS" /> ခုကို ရရှိသည်}}</translation>
 <translation id="1049743911850919806">ရုပ်ဖျက်</translation>
@@ -1367,6 +1366,7 @@
 <translation id="2182058453334755893">'သင့်ကလစ်ဘုတ်' သို့ မိတ္တူကူးထားသည်</translation>
 <translation id="2183570493397356669">ရှေ့ဆက်ရန်ခလုတ် ပိတ်ထားသည်</translation>
 <translation id="2184515124301515068">ဝဘ်ဆိုက်များ အသံဖွင့်နိုင်ခြင်းရှိမရှိကို Chrome အား ရွေးချယ်ခွင့်ပေးပါ (အကြံပြုထားသည်)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">စက်နောက်တစ်ခုမှ မျှဝေထားသော စာမျက်နှာ</translation>
 <translation id="2187675480456493911">သင့်အကောင့်ရှိ အခြားစက်များနှင့် စင့်ခ်လုပ်ထားသည်။ အခြားအသုံးပြုသူများ ပြုပြင်ထားသော ဆက်တင်များကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ဆာဗာ လက်မှတ် တင်သွင်းမှု အမှား</translation>
@@ -1637,6 +1637,7 @@
 <translation id="2408018932941436077">ကတ်ကို သိမ်းနေသည်</translation>
 <translation id="2408955596600435184">သင့်ပင်နံပါတ်ကို ထည့်ပါ</translation>
 <translation id="2409268599591722235">စကြစို့</translation>
+<translation id="2409709393952490731">ဖုန်း (သို့) တက်ဘလက် သုံးရန်</translation>
 <translation id="2410079346590497630">တည်ဆောက်ပုံ အသေးစိတ်</translation>
 <translation id="2410298923485357543">စက်အွန်လိုင်းဖြစ်သောအခါ ပင်ကိုအသံ သုံးပါ</translation>
 <translation id="2410754283952462441">အကောင့်တစ်ခု ရွေးပါ</translation>
@@ -1933,7 +1934,6 @@
 <translation id="2673135533890720193">သင်၏ ဘရောင်ဇာ မှတ်တမ်းကို ဖတ်ကြည့်ရန်</translation>
 <translation id="2674764818721168631">ပိတ်ရန်</translation>
 <translation id="2675570801872027281">Bruschetta ဖယ်ရှားရာတွင် အမှားဖြစ်သွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
-<translation id="2676492189600898281">‘အော်တိုဖြည့် အကြံပြုချက်’ ပေးရန်</translation>
 <translation id="2678063897982469759">ပြန်ဖွင့်ထားရန်</translation>
 <translation id="2678100101831051676">ကာစ်လုပ်၍မရပါ။</translation>
 <translation id="268053382412112343">မှတ်&amp;တမ်း</translation>
@@ -3784,6 +3784,7 @@
 <translation id="4369215744064167350">ဝဘ်ဆိုက်တောင်းဆိုချက် အတည်ပြုလိုက်သည်</translation>
 <translation id="4369735607080757018">ဝဘ်ဆိုက်များ၏ ကြော်ငြာစွမ်းဆောင်ရည် တိုင်းတာရန် ကြော်ငြာပြသချိန်ကဲ့သို့ ကန့်သတ်ဒေတာအမျိုးအစားများကို ၎င်းတို့ကြားတွင် မျှဝေသည်</translation>
 <translation id="4370975561335139969">အီးမေးလိပ်စာနှင့် သင်ရိုက်ထည့်သော စကားဝှက် ကိုက်ညီမှု မရှိပါ</translation>
+<translation id="4374805630006466253">အခြားဖုန်း (သို့) တက်ဘလက် သုံးရန်</translation>
 <translation id="4374831787438678295">Linux ထည့်သွင်းကိရိယာ</translation>
 <translation id="4375035964737468845">ဒေါင်းလုပ်လုပ်ထားသည့် ဖိုင်များ ဖွင့်ရန်</translation>
 <translation id="4376226992615520204">တည်နေရာကို ပိတ်ထားပါသည်</translation>
@@ -7224,7 +7225,6 @@
 <translation id="7550830279652415241">စာညှပ်များ_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> အား အောင်မြင်စွာ ဒေါင်းလုပ်ရယူပြီး၏</translation>
 <translation id="7551643184018910560">စင်သို့ ပင်ထိုးရန်</translation>
-<translation id="7552658769580484674">အော်တိုဖြည့် အကြံပြုချက် ပေးရန်</translation>
 <translation id="7552846755917812628">အောက်ပါ နည်းလမ်းများကို စမ်းကြည့်ပါ−</translation>
 <translation id="7553012839257224005">Linux ကွန်တိန်နာ စစ်ဆေးနေသည်</translation>
 <translation id="7553242001898162573">သင့်စကားဝှက်အား ရိုက်ထည့်ရန်</translation>
@@ -8783,7 +8783,6 @@
 <translation id="8952831374766033534">စီစဉ်သတ်မှတ်ခြင်း ရွေးချယ်စရာကို ပံ့ပိုးမထားပါ- <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">အားသွင်းနေစဉ်</translation>
 <translation id="895347679606913382">စတင်နေ...</translation>
-<translation id="8956230710625245889">Reader တွင် ဖွင့်ရန်</translation>
 <translation id="8957757410289731985">ပရိုဖိုင်ကို စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="895944840846194039">JavaScript မှတ်ဉာဏ်</translation>
 <translation id="8960208913905765425">‘အမြန်အဖြေများ’ ယူနစ်ပြောင်းလဲခြင်း</translation>

@@ -764,6 +764,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;search Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (phonetic)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Missing 'subject alternative name match' or 'domain suffix match' to validate the authentication server identity</translation>
 <translation id="7165320105431587207">Failed to configure network</translation>
 <translation id="7170041865419449892">Out of range</translation>
 <translation id="7180611975245234373">Refresh</translation>
@@ -834,6 +835,7 @@
 <translation id="7724603315864178912">Cut</translation>
 <translation id="7732111077498238432">Network is policy controlled</translation>
 <translation id="7736003208887389532">Permanently delete these files?</translation>
+<translation id="7740287852186792672">Search results</translation>
 <translation id="7748626145866214022">More options available on the action bar. Press Alt + A to focus the action bar.</translation>
 <translation id="7760449188139285140">Chinese Wubi</translation>
 <translation id="7765158879357617694">Move</translation>

@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">爱尔兰语</translation>
 <translation id="4124935795427217608">独角兽</translation>
 <translation id="4131235941541910880">将不需要的内容移至回收站</translation>
+<translation id="4134804435730168042">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在设备完成设置后启用</translation>
 <translation id="4153015322587141338">只需右键点击某个文件并选择“<ph name="PIN_COMMAND" />”，即可在任务栏中快速访问相应文件。</translation>
 <translation id="4157569377477607576">管理员政策不建议：</translation>
 <translation id="4159731583141908892">已移动 <ph name="FILE_NAME" />。</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">“<ph name="FILE_NAME" />”将被删除且无法恢复。</translation>
 <translation id="4418686080762064601">为您的文件创建快捷方式</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
+<translation id="4432921877815220091">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，在设备完成设置后启用，由您的管理员管理</translation>
 <translation id="4439427728133035643">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，连接</translation>
 <translation id="4442424173763614572">DNS 查找失败</translation>
 <translation id="4462159676511157176">自定义域名服务器</translation>
@@ -610,6 +612,7 @@
 <translation id="5913638992615760742">复制操作失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">荷兰语（荷兰）美式国际 PC 键盘</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，在设备完成设置后启用</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 项内容</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序选项</translation>
@@ -826,6 +829,7 @@
 <translation id="7724603315864178912">剪切</translation>
 <translation id="7732111077498238432">网络受政策控制</translation>
 <translation id="7736003208887389532">要永久删除这些文件吗？</translation>
+<translation id="7740287852186792672">搜索结果</translation>
 <translation id="7748626145866214022">操作栏中提供了更多选项。按 Alt + A 即可聚焦于操作栏。</translation>
 <translation id="7760449188139285140">中文五笔</translation>
 <translation id="7765158879357617694">移动</translation>
@@ -930,6 +934,7 @@
 <translation id="8487700953926739672">可离线使用</translation>
 <translation id="8492972329130824181">无法使用家庭网络。必须启用移动数据漫游才能联网。</translation>
 <translation id="8499098729323186194">正在提取 <ph name="NUMBER_OF_ITEMS" /> 个项目…</translation>
+<translation id="8502913769543567768">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在设备完成设置后启用，由您的管理员管理</translation>
 <translation id="8521441079177373948">英国英语</translation>
 <translation id="853494022971700746">法语（法国）</translation>
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>

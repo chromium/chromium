@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Reiniciar Linux?</translation>
 <translation id="1047431265488717055">Copiar te&amp;xto do link</translation>
 <translation id="1048286738600630630">Telas</translation>
-<translation id="1048770690598418849">Você pode pular esta etapa por enquanto. Vamos tentar de novo automaticamente depois que a configuração for concluída</translation>
 <translation id="1048986595386481879">Alocado dinamicamente</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Recebendo <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}one{Recebendo <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}other{Recebendo <ph name="ATTACHMENTS" /> do <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Modo anônimo</translation>
@@ -1370,6 +1369,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2182058453334755893">Copiado para a área de transferência</translation>
 <translation id="2183570493397356669">Botão "Continuar" desativado</translation>
 <translation id="2184515124301515068">Permitir que Chrome defina quando os sites podem tocar áudio (recomendado)</translation>
+<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Página compartilhada de outro dispositivo</translation>
 <translation id="2187675480456493911">Sincronizada com outros dispositivos na sua conta. As configurações modificadas por outros usuários não serão sincronizadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Erro de importação do certificado de servidor</translation>
@@ -1640,6 +1640,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2408018932941436077">Salvando cartão</translation>
 <translation id="2408955596600435184">Informe seu PIN</translation>
 <translation id="2409268599591722235">Vamos lá</translation>
+<translation id="2409709393952490731">Usar um smartphone ou tablet</translation>
 <translation id="2410079346590497630">Detalhes da versão</translation>
 <translation id="2410298923485357543">Usar voz natural quando o dispositivo estiver on-line</translation>
 <translation id="2410754283952462441">Escolher uma conta</translation>
@@ -1936,7 +1937,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2673135533890720193">Ler seu histórico de navegação</translation>
 <translation id="2674764818721168631">Desativado</translation>
 <translation id="2675570801872027281">Erro ao remover Bruschetta. Tente de novo.</translation>
-<translation id="2676492189600898281">Enviar feedback sobre o preenchimento automático</translation>
 <translation id="2678063897982469759">Reativar</translation>
 <translation id="2678100101831051676">Falha na transmissão</translation>
 <translation id="268053382412112343">Hi&amp;stórico</translation>
@@ -3789,6 +3789,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4369215744064167350">A solicitação de acesso ao site foi aprovada</translation>
 <translation id="4369735607080757018">Tipos limitados de dados são compartilhados entre sites para avaliar a performance de anúncios, como a hora do dia em que foram mostrados</translation>
 <translation id="4370975561335139969">O e-mail e a senha que você digitou não coincidem.</translation>
+<translation id="4374805630006466253">Usar outro smartphone ou tablet</translation>
 <translation id="4374831787438678295">Instalador do Linux</translation>
 <translation id="4375035964737468845">Abrir arquivos baixados</translation>
 <translation id="4376226992615520204">Localização desativada</translation>
@@ -7234,7 +7235,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7550830279652415241">favoritos_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Falha no dowload de <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Fixar na estante</translation>
-<translation id="7552658769580484674">Enviar feedback sobre o preenchimento automático</translation>
 <translation id="7552846755917812628">Tente seguir estas dicas:</translation>
 <translation id="7553012839257224005">Verificando o contêiner Linux</translation>
 <translation id="7553242001898162573">Digite sua senha</translation>
@@ -8795,7 +8795,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8952831374766033534">Opção de configuração indisponível: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Ao carregar</translation>
 <translation id="895347679606913382">Iniciando...</translation>
-<translation id="8956230710625245889">Abrir no leitor</translation>
 <translation id="8957757410289731985">Personalizar perfil</translation>
 <translation id="895944840846194039">Memória JavaScript</translation>
 <translation id="8960208913905765425">Conversão de unidades das Respostas rápidas</translation>

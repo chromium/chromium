@@ -548,6 +548,7 @@
 <translation id="3925540965556789199"><ph name="DATE" />，正在載入活動。</translation>
 <translation id="3932043219784172185">未連線到任何裝置</translation>
 <translation id="3934456833412894880">自動調節充電功能已開啟。裝置電量會維持在 80% 以延長電池壽命，並在你需要時充飽電。</translation>
+<translation id="3936620957945677513">按下 Enter 即可加入「<ph name="EVENT_SUMMARY" />」活動</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="394485226368336402">音訊設定</translation>
 <translation id="3945319193631853098">輕觸即可完成設定</translation>
@@ -1463,6 +1464,7 @@
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
 <translation id="8853703225951107899">系統仍然無法驗證你的 PIN 碼或密碼。注意：如果你最近變更了密碼，請使用舊密碼。系統會在你登出帳戶後套用新密碼。</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
+<translation id="8858369206579825206">隱私權控制項</translation>
 <translation id="8870509716567206129">這個應用程式不支援分割畫面。</translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8876661425082386199">請檢查連線狀態</translation>

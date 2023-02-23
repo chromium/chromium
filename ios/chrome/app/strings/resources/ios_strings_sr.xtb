@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">Избор директоријума</translation>
 <translation id="1254424942107648268">Проналази претходно</translation>
 <translation id="1258491128795710625">Шта је ново</translation>
+<translation id="1264156759663453185">Изабрани текст је превелики за делимични превод.</translation>
 <translation id="1265739287306757398">Сазнајте како</translation>
 <translation id="1272079795634619415">Заустави</translation>
 <translation id="1275718070701477396">Изабрано је</translation>
@@ -116,6 +117,7 @@
 <translation id="1689333818294560261">Надимак</translation>
 <translation id="1700629756560807968">Број изабраних ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1715515772563243997">Ако веб-сајт <ph name="SITE" /> сматрате поузданим, можете да користите сачувану лозинку за пријављивање.</translation>
+<translation id="173842016780303328">Делимично превођење није успело.</translation>
 <translation id="1740468249224277719">Додирните двапут да бисте инсталирали.</translation>
 <translation id="1752547299766512813">Сачуване лозинке</translation>
 <translation id="1753905327828125965">Најпосећеније</translation>
@@ -241,6 +243,7 @@
 <translation id="2747003861858887689">Претходно поље</translation>
 <translation id="2749231692441336879">Пратите канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">малопре</translation>
+<translation id="2768727608073497433">Изабрани текст је празан.</translation>
 <translation id="2773292004659987824">Претрага без архивирања</translation>
 <translation id="277771892408211951">Изаберите језик</translation>
 <translation id="2780046210906776326">Нема налога е-поште</translation>
@@ -700,6 +703,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6066301408025741299">Додирните да бисте отказали.</translation>
 <translation id="6071409777669089905">Откачи картицу</translation>
 <translation id="6084848228346514841">Изаберите картице</translation>
+<translation id="6100617279104942061">Пријављени сте као <ph name="USER_EMAIL" />. Отвара подешавања.</translation>
 <translation id="6103540626693881831">Шифровање на уређају</translation>
 <translation id="6119050551270742952">Актуелна веб-страница је у режиму без архивирања</translation>
 <translation id="6122191549521593678">Онлајн</translation>
@@ -1129,6 +1133,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9098541895599151034">Желите ли да избришете лозинке за <ph name="NUMBER_OF_ACCOUNTS" /> налога?</translation>
 <translation id="9100610230175265781">Потребна је приступна фраза</translation>
 <translation id="9107664647686727385">Траже угрожене лозинке</translation>
+<translation id="9120217828624527905">Пређите на превод целе странице</translation>
 <translation id="9124387962554796433">Google може да користи историју за персонализацију Претраге и других Google услуга.</translation>
 <translation id="9137526406337347448">Google услуге</translation>
 <translation id="9148126808321036104">Пријави ме поново</translation>

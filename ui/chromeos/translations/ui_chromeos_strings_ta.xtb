@@ -355,6 +355,7 @@
 <translation id="3971140002794351170">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ஆங்கிலம் (யுகே)</translation>
 <translation id="3975895378829046965">வங்காளம் ஒலிப்புமுறை</translation>
+<translation id="3999574733850440202">சமீபத்தில் திறக்கப்பட்ட Microsoft ஃபைல்கள் OneDriveக்கு நகர்த்தப்பட்டுள்ளன</translation>
 <translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4017788180641807848">ஆங்கிலம் (யூஎஸ்) - வொர்க்மேன் கீபோர்டு</translation>
 <translation id="4019998208269143058">'துரித ஃபைல்கள்' பிரிவில் பின் செய்</translation>
@@ -830,6 +831,7 @@
 <translation id="7724603315864178912">வெட்டு</translation>
 <translation id="7732111077498238432">இது கொள்கையால் கட்டுப்படுத்தப்படும் நெட்வொர்க்</translation>
 <translation id="7736003208887389532">இந்த ஃபைல்களை நிரந்தரமாக நீக்கவா?</translation>
+<translation id="7740287852186792672">தேடல் முடிவுகள்</translation>
 <translation id="7748626145866214022">செயல் பட்டியில் பல விருப்பங்கள் உள்ளன. செயல் பட்டியில் கவனம் செலுத்த, Alt + Aஐ அழுத்தவும்.</translation>
 <translation id="7760449188139285140">சீனம் (உபி)</translation>
 <translation id="7765158879357617694">நகர்த்து</translation>
@@ -907,6 +909,7 @@
 <translation id="8300849813060516376">OTASP தோல்வியுற்றது</translation>
 <translation id="8312871300878166382">ஃபோல்டரில் ஒட்டு</translation>
 <translation id="8329978297633540474">எளிய உரை</translation>
+<translation id="8332007959299458842">சமீபத்தில் திறக்கப்பட்ட Microsoft ஃபைல்கள் Google Driveக்கு நகர்த்தப்பட்டுள்ளன</translation>
 <translation id="8335587457941836791">அடுக்கிலிருந்து பிரித்தெடு</translation>
 <translation id="8335837413233998004">பெலாரஷ்யன்</translation>
 <translation id="8336153091935557858">நேற்று <ph name="YESTERDAY_DAYTIME" /></translation>

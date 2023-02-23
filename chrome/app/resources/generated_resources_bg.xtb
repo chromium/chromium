@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Искате ли да рестартирате Linux?</translation>
 <translation id="1047431265488717055">Копиране на тек&amp;ста на връзката</translation>
 <translation id="1048286738600630630">Дисплеи</translation>
-<translation id="1048770690598418849">Можете да пропуснете засега и ще опитаме отново автоматично, след като завършите настройването</translation>
 <translation id="1048986595386481879">Динамично заделен</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Получавате <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}other{Получавате <ph name="ATTACHMENTS" /> от <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">„Инкогнито“</translation>
@@ -1365,6 +1364,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2182058453334755893">Копирано в буферната памет</translation>
 <translation id="2183570493397356669">Бутонът „Напред“ е деактивиран</translation>
 <translation id="2184515124301515068">Нека Chrome избира кога сайтовете да могат да възпроизвеждат звук (препоръчително)</translation>
+<translation id="2186206192313702726">Google Обектив</translation>
 <translation id="2186711480981247270">Страницата е споделена от друго устройство</translation>
 <translation id="2187675480456493911">Мрежата е синхронизирана с другите устройства в профила ви. Настройките, променени от други потребители, няма да се синхронизират. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Грешка при импортирането на сертификат на сървър</translation>
@@ -1931,7 +1931,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2673135533890720193">Да чете историята на сърфирането ви</translation>
 <translation id="2674764818721168631">Изключено</translation>
 <translation id="2675570801872027281">При премахването на Bruschetta възникна грешка. Моля, опитайте отново.</translation>
-<translation id="2676492189600898281">Предоставяне на отзиви за автоматичното попълване</translation>
 <translation id="2678063897982469759">Повторно активиране</translation>
 <translation id="2678100101831051676">Предаването не е възможно.</translation>
 <translation id="268053382412112343">&amp;Хронология</translation>
@@ -4285,6 +4284,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4824037980212326045">Резервни копия и възстановяване на Linux</translation>
 <translation id="4824958205181053313">Да се анулира ли синхронизирането?</translation>
 <translation id="4825532258163983651">Кодът за достъп не може да бъде изтрит</translation>
+<translation id="4827283332383516812">Изтриване на картата</translation>
 <translation id="4827675678516992122">Не можа да се установи връзка</translation>
 <translation id="4827784381479890589">Подобрена проверка на правописа в браузъра Chrome (текстът се изпраща до Google за получаване на предложения за правопис)</translation>
 <translation id="4827904420700932487">Създаване на QR код за това изображение</translation>
@@ -5309,6 +5309,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5792295754950501287">Още действия за „<ph name="CARD_DESCRIPTION" />“</translation>
 <translation id="5792728279623964091">Моля, докоснете бутона за захранване</translation>
 <translation id="5792874008054171483">Още действия за <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Този начин на плащане ще бъде изтрит от това устройство</translation>
 <translation id="5793339252089865437">Ако изтеглите актуализацията през мобилната си мрежа, може да бъдете таксувани допълнително.</translation>
 <translation id="5793420564274426163">Потвърждение за сдвояване</translation>
 <translation id="5793430094159150686">Паролата ви е променена. За да възстановите локалните си данни, трябва да въведете старата.</translation>
@@ -7225,7 +7226,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">„<ph name="FILE_NAME" />“ се изтегли успешно</translation>
 <translation id="7551643184018910560">Фиксиране в лавицата</translation>
-<translation id="7552658769580484674">Предоставяне на отзиви за автоматичното попълване</translation>
 <translation id="7552846755917812628">Изпробвайте следните съвети:</translation>
 <translation id="7553012839257224005">Контейнерът за Linux се проверява</translation>
 <translation id="7553242001898162573">Въведете паролата си</translation>
@@ -7287,6 +7287,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7609148976235050828">Моля, свържете се с интернет и опитайте отново.</translation>
 <translation id="7612401678989660900">Разрешаване на достъп за приложенията и уебсайтовете, които имат разрешение за микрофона</translation>
 <translation id="7612655942094160088">Активиране на функциите за свързания телефон.</translation>
+<translation id="7612989789287281429">Влизате в профила си…</translation>
 <translation id="7614260613810441905">Извеждане на запитване, когато сайт иска да редактира файлове или папки на устройството ви (препоръчително)</translation>
 <translation id="761530003705945209">Създаване на резервно копие в Google Диск. По всяко време можете лесно да възстановите данните на устройството си или да го замените с друго. Резервното ви копие включва данните от приложенията. Резервните ви копия се качват в Google и се шифроват посредством паролата за профила ви в Google.</translation>
 <translation id="7615365294369022248">При добавянето на профила възникна грешка</translation>
@@ -8784,7 +8785,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8952831374766033534">Конфигурационната опция не се поддържа: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">При зареждане</translation>
 <translation id="895347679606913382">Стартира...</translation>
-<translation id="8956230710625245889">Отваряне в Reader</translation>
 <translation id="8957757410289731985">Персонализиране на потребителския профил</translation>
 <translation id="895944840846194039">Памет за JavaScript</translation>
 <translation id="8960208913905765425">Преобразуване на мерни единици посредством функцията „Бързи отговори“</translation>

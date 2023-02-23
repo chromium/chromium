@@ -53,7 +53,6 @@
 <translation id="104710386808485638">Желите ли да рестартујете Linux?</translation>
 <translation id="1047431265488717055">Копирај тек&amp;ст линка</translation>
 <translation id="1048286738600630630">Прикази</translation>
-<translation id="1048770690598418849">Можете да прескочите за сада, а ми ћемо поново пробати аутоматски када завршите подешавање</translation>
 <translation id="1048986595386481879">Динамички додељен</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Прима се <ph name="ATTACHMENTS" /> са уређаја <ph name="DEVICE_NAME" />}one{Прима се <ph name="ATTACHMENTS" /> са уређаја <ph name="DEVICE_NAME" />}few{Примају се <ph name="ATTACHMENTS" /> са уређаја <ph name="DEVICE_NAME" />}other{Прима се <ph name="ATTACHMENTS" /> са уређаја <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Без архивирања</translation>
@@ -204,6 +203,7 @@
 <translation id="1174073918202301297">Пречица је додата</translation>
 <translation id="1174366174291287894">Веза је увек безбедна ако вам Chrome не каже другачије</translation>
 <translation id="117445914942805388">Да бисте обрисали податке прегледања са свих синхронизованих уређаја и са Google налога, <ph name="BEGIN_LINK" />идите у подешавања синхронизације<ph name="END_LINK" />.</translation>
+<translation id="1175131936083782305">Администратор је онемогућио ову функцију.</translation>
 <translation id="1175364870820465910">&amp;Одштампај...</translation>
 <translation id="1176471985365269981">Није им дозвољено да мењају фајлове или фолдере на уређају</translation>
 <translation id="1177863135347784049">Прилагођено</translation>
@@ -1356,6 +1356,7 @@
 <translation id="2182058453334755893">Копирано је у привремену меморију</translation>
 <translation id="2183570493397356669">Дугме Настави је онемогућено</translation>
 <translation id="2184515124301515068">Нека Chrome одабере када сајтови могу да пусте звук (препоручено)</translation>
+<translation id="2186206192313702726">Google објектив</translation>
 <translation id="2186711480981247270">Страница се дели са другог уређаја</translation>
 <translation id="2187675480456493911">Синхронизовано је са осталим уређајима на налогу. Подешавања која мењају други корисници се не синхронизују. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Грешка при увозу серверског сертификата</translation>
@@ -1920,7 +1921,6 @@
 <translation id="2673135533890720193">Читање ваше историје прегледања</translation>
 <translation id="2674764818721168631">Искључено</translation>
 <translation id="2675570801872027281">Грешка при уклањању Bruschetta-е. Пробајте поново.</translation>
-<translation id="2676492189600898281">Пошаљи повратне информације за аутоматско попуњавање</translation>
 <translation id="2678063897982469759">Поново омогући</translation>
 <translation id="2678100101831051676">Пребацивање није успело.</translation>
 <translation id="268053382412112343">Hi&amp;story (Историја)</translation>
@@ -2438,6 +2438,7 @@
 <translation id="3129215702932019810">Грешка при покретању апликације</translation>
 <translation id="3130528281680948470">Уређај ће бити ресетован и сви кориснички налози и локални подаци ће бити уклоњени. То не може да се опозове.</translation>
 <translation id="3130863904455712965">Историја и друго</translation>
+<translation id="3130966412954727147">Сајтови које посећујете могу да потврде да сте стварни корисник, а не робот.</translation>
 <translation id="313205617302240621">Заборавили сте лозинку?</translation>
 <translation id="3132277757485842847">Нисмо успели да одржимо везу са телефоном. Уверите се да је телефон у близини, да је откључан и да су Bluetooth и WiFi укључени.</translation>
 <translation id="3132896062549112541">Правило</translation>
@@ -2979,6 +2980,7 @@
 <translation id="3647654707956482440">Коришћење овог линка није успело. Проверите да ли има грешака у куцању или пробајте поново са другим линком.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> је примљена са уређаја <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> је примљена са уређаја <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> су примљене са уређаја <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> је примљено са уређаја <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Уређај <ph name="USB_DEVICE_NAME" /> је откривен</translation>
+<translation id="3649190289964910441">Сајт који посетите може да чува информације помоћу Chrome-а које потврђују да сте стварни корисник. Док настављате да прегледате, сајтови могу да проверавају са Chrome-ом и уверавају се на првом сајту да сте вероватно поуздани корисник.</translation>
 <translation id="3650753875413052677">Грешка при регистрацији</translation>
 <translation id="3650845953328929506">Отпремање евиденције је на чекању.</translation>
 <translation id="3650952250015018111">Дозволите да „<ph name="APP_NAME" />“ приступа:</translation>
@@ -4224,6 +4226,7 @@
 <translation id="477647109558161443">Направи пречицу на радној површини</translation>
 <translation id="4776594120007763294">Кликните на дугме да бисте додали страницу и читали је касније</translation>
 <translation id="4777458362738635055">Други корисници овог уређаја могу да користе ову мрежу</translation>
+<translation id="477781522763920796">Ово подешавање ради, а да не мора да вас идентификује или да дозволи сајтовима да виде историју прегледања.</translation>
 <translation id="4777825441726637019">Play продавница</translation>
 <translation id="4777943778632837590">Конфигуриши називе сервера мреже</translation>
 <translation id="4779083564647765204">Зумирање</translation>
@@ -6191,6 +6194,7 @@
 <translation id="6597331566371766302">Администратор је блокирао следеће додатке:</translation>
 <translation id="6601262427770154296">Управљање корисничким речницима</translation>
 <translation id="6601612474695404578">Неки сајтови користе колачиће треће стране да би учитавали своје странице. Ако сајт не ради, можете да пробате да дозволите колачиће.</translation>
+<translation id="6602581642873576447">Умањење непожељног садржаја и превара је искључено</translation>
 <translation id="6602937173026466876">Приступите штампачима</translation>
 <translation id="6602956230557165253">Користите тастере са стрелицама улево и удесно за кретање.</translation>
 <translation id="6603185457265641428">Одаберите да ли ћете синхронизовати историју</translation>
@@ -6707,6 +6711,7 @@
 <translation id="7047059339731138197">Изаберите позадину</translation>
 <translation id="7049293980323620022">Желите ли да задржите датотеку?</translation>
 <translation id="7050037487872780845">Неважећа конфигурација хотспота</translation>
+<translation id="7050519587566342213">Прегледање је боље јер ће вам више веровати када прелазите са једног сајта на други.</translation>
 <translation id="7051551856857948729">Сакриј IBAN вредност</translation>
 <translation id="7052237160939977163">Шаљи податке о праћењу учинка</translation>
 <translation id="7053983685419859001">Блокирај</translation>
@@ -6924,6 +6929,7 @@
 <translation id="7269736181983384521">Потрошња података Дељења у близини</translation>
 <translation id="7272674038937250585">Није наведен ниједан опис</translation>
 <translation id="7273110280511444812">последњи пут је прикључено <ph name="DATE" /></translation>
+<translation id="7273921429569738933">Умањење непожељног садржаја и превара је укључено</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> до краја пуњења</translation>
 <translation id="727952162645687754">Грешка при преузимању</translation>
 <translation id="7280041992884344566">Дошло је до грешке док је Chrome тражио штетан софтвер</translation>
@@ -7218,7 +7224,6 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Нисте успели да преузмете <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Закачи на полицу</translation>
-<translation id="7552658769580484674">Пошаљи повратне информације за аутоматско попуњавање</translation>
 <translation id="7552846755917812628">Испробајте следеће савете:</translation>
 <translation id="7553012839257224005">Проверава се Linux контејнер</translation>
 <translation id="7553242001898162573">Унесите лозинку</translation>
@@ -8780,7 +8785,6 @@
 <translation id="8952831374766033534">Опција конфигурисања није подржана: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Током пуњења</translation>
 <translation id="895347679606913382">Започињање...</translation>
-<translation id="8956230710625245889">Отвори у читачу</translation>
 <translation id="8957757410289731985">Прилагоди профил</translation>
 <translation id="895944840846194039">JavaScript меморија</translation>
 <translation id="8960208913905765425">Конверзија јединица за брзе одговоре</translation>
