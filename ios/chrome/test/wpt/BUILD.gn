@@ -16,7 +16,7 @@ script_test("wpt_tests_ios") {
     "--product",
     "chrome_ios",
     "--target",
-    "Default",
+    "Release",
   ]
   deps = [ ":all_tests" ]
   data = [
