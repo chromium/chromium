@@ -276,13 +276,6 @@ static_library("test_support") {
 if (is_fuchsia) {
   # Generate a packaged component, and an installer script to aid development.
 
-  # TODO(crbug.com/1211758): Remove this once bringup on CFv2 is complete.
-  fuchsia_component("chrome_component_v1") {
-    visibility = [ ":*" ]
-    manifest = "chrome_v1.cmx"
-    data_deps = [ "//chrome:chrome_initial" ]
-  }
-
   fuchsia_component("chrome_component") {
     visibility = [ ":*" ]
     manifest = "chrome.cml"
@@ -291,10 +284,7 @@ if (is_fuchsia) {
 
   fuchsia_package("chrome_pkg") {
     package_name = "chrome"
-    deps = [
-      ":chrome_component",
-      ":chrome_component_v1",
-    ]
+    deps = [ ":chrome_component" ]
 
     excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
   }
