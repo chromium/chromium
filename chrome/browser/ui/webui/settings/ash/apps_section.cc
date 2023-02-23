@@ -89,7 +89,7 @@ const std::vector<SearchConcept>& GetAppBadgingSearchConcepts() {
       {{IDS_OS_SETTINGS_TAG_APP_BADGING,
         mojom::kAppNotificationsSubpagePath,
         mojom::SearchResultIcon::kAppsGrid,
-        mojom::SearchResultDefaultRank::kLow,
+        mojom::SearchResultDefaultRank::kMedium,
         mojom::SearchResultType::kSetting,
         {.setting = mojom::Setting::kAppBadgingOnOff}}});
   return *tags;
