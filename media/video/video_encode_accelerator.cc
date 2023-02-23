@@ -38,6 +38,19 @@ BitstreamBufferMetadata::BitstreamBufferMetadata(size_t payload_size_bytes,
       timestamp(timestamp) {}
 BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
+absl::optional<uint8_t> BitstreamBufferMetadata::spatial_idx() const {
+  if (vp9) {
+    return vp9->spatial_idx;
+  }
+  if (av1) {
+    return av1->spatial_idx;
+  }
+  if (h265) {
+    return h265->spatial_idx;
+  }
+  return absl::nullopt;
+}
+
 VideoEncodeAccelerator::Config::Config()
     : input_format(PIXEL_FORMAT_UNKNOWN),
       output_profile(VIDEO_CODEC_PROFILE_UNKNOWN),
