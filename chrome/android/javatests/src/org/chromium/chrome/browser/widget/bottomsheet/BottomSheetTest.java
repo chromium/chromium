@@ -17,9 +17,8 @@ import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.view.View;
-import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 
 import androidx.test.filters.MediumTest;
 
@@ -277,40 +276,34 @@ public class BottomSheetTest {
         final int startingHeight = 300;
         final int endingHeight = 400;
 
-        // Set up content view.
-        LinearLayout content = new LinearLayout(mTestRule.getActivity());
-        final CallbackHelper callbackHelper = new CallbackHelper();
-        content.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(
-                    View view, int l, int t, int r, int b, int ol, int ot, int or, int ob) {
-                callbackHelper.notifyCalled();
-            }
+        runOnUiThreadBlocking(() -> {
+            // Set up content view.
+            final ViewGroup contentView = new FrameLayout(mTestRule.getActivity());
+            View child = new View(mTestRule.getActivity());
+            child.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, startingHeight));
+            contentView.addView(child);
+
+            // Set up bottom sheet.
+            TestBottomSheetContent sizeChangingContent = new TestBottomSheetContent(
+                    mTestRule.getActivity(), ContentPriority.HIGH, false, contentView);
+            sizeChangingContent.setFullHeightRatio(HeightMode.WRAP_CONTENT);
+            sizeChangingContent.setHalfHeightRatio(HeightMode.DISABLED);
+            sizeChangingContent.setPeekHeight(HeightMode.DISABLED);
+
+            // Show content view in bottom sheet.
+            mSheetController.requestShowContent(sizeChangingContent, false);
         });
-        LinearLayout child = new LinearLayout(mTestRule.getActivity());
-        child.setLayoutParams(
-                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, startingHeight));
-        int callCount = callbackHelper.getCallCount();
-        content.addView(child);
-        content.layout(0, 0, 100, 100);
-        callbackHelper.waitForCallback(callCount);
-
-        // Set up bottom sheet.
-        TestBottomSheetContent sizeChangingContent = new TestBottomSheetContent(
-                mTestRule.getActivity(), ContentPriority.HIGH, false, content);
-        sizeChangingContent.setFullHeightRatio(HeightMode.WRAP_CONTENT);
-        sizeChangingContent.setHalfHeightRatio(HeightMode.DISABLED);
-        sizeChangingContent.setPeekHeight(HeightMode.DISABLED);
-
-        runOnUiThreadBlocking(
-                () -> mSheetController.requestShowContent(sizeChangingContent, false));
 
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
         assertEquals(startingHeight, mSheetController.getCurrentOffset());
 
         // Change the size of the content to make sure the sheet's height reflects the change.
         runOnUiThreadBlocking(() -> {
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) child.getLayoutParams();
+            ViewGroup contentView =
+                    (ViewGroup) mSheetController.getCurrentSheetContent().getContentView();
+            View child = contentView.getChildAt(0);
+            ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) child.getLayoutParams();
             params.height = endingHeight;
             child.setLayoutParams(params);
         });
