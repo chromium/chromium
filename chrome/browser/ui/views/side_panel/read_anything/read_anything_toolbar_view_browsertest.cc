@@ -6,9 +6,11 @@
 
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using testing::_;
 using testing::IsFalse;
@@ -79,6 +81,10 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
     toolbar_view_->ChangeLetterSpacingCallback();
   }
 
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) {
+    toolbar_view_->GetAccessibleNodeData(node_data);
+  }
+
  protected:
   MockReadAnythingToolbarViewDelegate toolbar_delegate_;
   MockReadAnythingFontComboboxDelegate font_combobox_delegate_;
@@ -119,4 +125,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest,
   EXPECT_CALL(toolbar_delegate_, OnLetterSpacingChanged(_)).Times(1);
 
   ChangeLetterSpacingCallback();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingToolbarViewTest, AccessibleLabel) {
+  ui::AXNodeData node_data;
+  GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::Role::kToolbar, node_data.role);
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_READING_MODE_TOOLBAR_LABEL),
+            node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
 }

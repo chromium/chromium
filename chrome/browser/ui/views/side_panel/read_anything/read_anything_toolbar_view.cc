@@ -217,7 +217,7 @@ std::unique_ptr<views::View> ReadAnythingToolbarView::Separator() {
 
 void ReadAnythingToolbarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetDescription(
+  node_data->SetNameChecked(
       l10n_util::GetStringUTF16(IDS_READING_MODE_TOOLBAR_LABEL));
 }
 
