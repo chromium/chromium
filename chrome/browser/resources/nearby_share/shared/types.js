@@ -4,11 +4,12 @@
 
 /**
  * The reason a page was closed. Keep in sync with NearbyShareDialogUI.
+ * @enum {number}
  */
-export enum CloseReason {
-  UNKNOWN = 0,
-  TRANSFER_STARTED = 1,
-  TRANSFER_SUCCEEDED = 2,
-  CANCELLED = 3,
-  REJECTED = 4,
-}
+export const CloseReason = {
+  UNKNOWN: 0,
+  TRANSFER_STARTED: 1,
+  TRANSFER_SUCCEEDED: 2,
+  CANCELLED: 3,
+  REJECTED: 4,
+};

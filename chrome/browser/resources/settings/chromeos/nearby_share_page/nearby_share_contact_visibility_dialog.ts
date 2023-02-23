@@ -19,7 +19,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyContactVisibilityElement} from '../../shared/nearby_contact_visibility.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_mixin.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 import {getTemplate} from './nearby_share_contact_visibility_dialog.html.js';
 

@@ -18,7 +18,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNearbyShareSettings} from '../../shared/nearby_share_settings.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_mixin.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 import {getTemplate} from './nearby_share_data_usage_dialog.html.js';
 import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';

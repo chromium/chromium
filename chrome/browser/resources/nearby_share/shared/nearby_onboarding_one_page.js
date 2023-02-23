@@ -16,34 +16,40 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {DeviceNameValidationResult, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingInitiatedMetrics, processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics} from './nearby_metrics_logger.js';
 import {getTemplate} from './nearby_onboarding_one_page.html.js';
 import {getNearbyShareSettings} from './nearby_share_settings.js';
-import {NearbySettings} from './nearby_share_settings_mixin.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
 
+/**
+ * @type {string}
+ */
 const ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON =
     'nearby-images:nearby-onboarding-splash-light';
 
+/**
+ * @type {string}
+ */
 const ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON =
     'nearby-images:nearby-onboarding-splash-dark';
 
-export interface NearbyOnboardingOnePageElement {
-  $: {
-    deviceName: CrInputElement,
-  };
-}
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyOnboardingOnePageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-const NearbyOnboardingOnePageElementBase = I18nMixin(PolymerElement);
-
+/** @polymer */
 export class NearbyOnboardingOnePageElement extends
     NearbyOnboardingOnePageElementBase {
   static get is() {
-    return 'nearby-onboarding-one-page' as const;
+    return 'nearby-onboarding-one-page';
   }
 
   static get template() {
@@ -52,10 +58,12 @@ export class NearbyOnboardingOnePageElement extends
 
   static get properties() {
     return {
+      /** @type {?NearbySettings} */
       settings: {
         type: Object,
       },
 
+      /** @type {string} */
       errorMessage: {
         type: String,
         value: '',
@@ -63,6 +71,7 @@ export class NearbyOnboardingOnePageElement extends
 
       /**
        * Whether the onboarding page is being rendered in dark mode.
+       * @private {boolean}
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -71,24 +80,24 @@ export class NearbyOnboardingOnePageElement extends
     };
   }
 
-  errorMessage: string;
-  settings: NearbySettings|null;
-  private isDarkModeActive_: boolean;
-
-  override ready(): void {
+  ready() {
     super.ready();
 
     this.addEventListener('next', this.onNext_);
     this.addEventListener('close', this.onClose_);
-    this.addEventListener('keydown', this.onKeydown_);
+    this.addEventListener('keydown', (event) => {
+      this.onKeydown_(/** @type {!KeyboardEvent} */ (event));
+    });
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
   }
 
-  private onNext_(): void {
+  /** @private */
+  onNext_() {
     this.finishOnboarding_();
   }
 
-  private onClose_(): void {
+  /** @private */
+  onClose_() {
     processOnePageOnboardingCancelledMetrics(
         NearbyShareOnboardingFinalState.INITIAL_PAGE);
 
@@ -99,7 +108,11 @@ export class NearbyOnboardingOnePageElement extends
     this.dispatchEvent(onboardingCancelledEvent);
   }
 
-  private onKeydown_(e: KeyboardEvent): void {
+  /**
+   * @param {!KeyboardEvent} e Event containing the key
+   * @private
+   */
+  onKeydown_(e) {
     e.stopPropagation();
     if (e.key === 'Enter') {
       this.finishOnboarding_();
@@ -107,46 +120,55 @@ export class NearbyOnboardingOnePageElement extends
     }
   }
 
-  private onViewEnterStart_(): void {
-    this.$.deviceName.focus();
+  /** @private */
+  onViewEnterStart_() {
+    this.shadowRoot.querySelector('#deviceName').focus();
     processOnePageOnboardingInitiatedMetrics(new URL(document.URL));
   }
 
-  private async onDeviceNameInput_(): Promise<void> {
-    const result = await getNearbyShareSettings().validateDeviceName(
-        this.$.deviceName.value);
-    this.updateErrorMessage_(result.result);
+  /** @private */
+  onDeviceNameInput_() {
+    getNearbyShareSettings()
+        .validateDeviceName(this.$.deviceName.value)
+        .then((result) => {
+          this.updateErrorMessage_(result.result);
+        });
   }
 
-  private async finishOnboarding_(): Promise<void> {
-    const result =
-        await getNearbyShareSettings().setDeviceName(this.$.deviceName.value);
-
-    this.updateErrorMessage_(result.result);
-    if (result.result === DeviceNameValidationResult.kValid) {
-      /**
-       * TODO(crbug.com/1265562): remove this line once the old onboarding
-       * is deprecated and default visibility is changed in
-       * nearby_share_prefs.cc:kNearbySharingBackgroundVisibilityName
-       */
-      this.set('settings.visibility', this.getDefaultVisibility_());
-      this.set('settings.isOnboardingComplete', true);
-      this.set('settings.enabled', true);
-      processOnePageOnboardingCompleteMetrics(
-          NearbyShareOnboardingFinalState.INITIAL_PAGE,
-          this.getDefaultVisibility_());
-      const onboardingCompleteEvent = new CustomEvent('onboarding-complete', {
-        bubbles: true,
-        composed: true,
-      });
-      this.dispatchEvent(onboardingCompleteEvent);
-    }
+  /** @private */
+  finishOnboarding_() {
+    getNearbyShareSettings()
+        .setDeviceName(this.$.deviceName.value)
+        .then((result) => {
+          this.updateErrorMessage_(result.result);
+          if (result.result === DeviceNameValidationResult.kValid) {
+            /**
+             * TODO(crbug.com/1265562): remove this line once the old onboarding
+             * is deprecated and default visibility is changed in
+             * nearby_share_prefs.cc:kNearbySharingBackgroundVisibilityName
+             */
+            this.set('settings.visibility', this.getDefaultVisibility_());
+            this.set('settings.isOnboardingComplete', true);
+            this.set('settings.enabled', true);
+            processOnePageOnboardingCompleteMetrics(
+                NearbyShareOnboardingFinalState.INITIAL_PAGE,
+                this.getDefaultVisibility_());
+            const onboardingCompleteEvent =
+                new CustomEvent('onboarding-complete', {
+                  bubbles: true,
+                  composed: true,
+                });
+            this.dispatchEvent(onboardingCompleteEvent);
+          }
+        });
   }
 
   /**
+   * @private
+   *
    * Switch to visibility selection page when the button is clicked
    */
-  private switchToVisibilitySelectionView_(): void {
+  switchToVisibilitySelectionView_() {
     /**
      * TODO(crbug.com/1265562): remove this line once the old onboarding is
      * deprecated and default visibility is changed in
@@ -161,8 +183,13 @@ export class NearbyOnboardingOnePageElement extends
     this.dispatchEvent(changePageEvent);
   }
 
-  private updateErrorMessage_(validationResult: DeviceNameValidationResult):
-      void {
+  /**
+   * @private
+   *
+   * @param {!DeviceNameValidationResult} validationResult
+   * The error status from validating the provided device name.
+   */
+  updateErrorMessage_(validationResult) {
     switch (validationResult) {
       case DeviceNameValidationResult.kErrorEmpty:
         this.errorMessage = this.i18n('nearbyShareDeviceNameEmptyError');
@@ -180,36 +207,54 @@ export class NearbyOnboardingOnePageElement extends
     }
   }
 
-  private hasErrorMessage_(errorMessage: string): boolean {
+  /**
+   * @private
+   *
+   * @param {!string} errorMessage The error message.
+   * @return {boolean} Whether or not the error message exists.
+   */
+  hasErrorMessage_(errorMessage) {
     return errorMessage !== '';
   }
 
   /**
+   * @private
+   *
    * Returns the icon based on Light/Dark mode.
+   * @return {string}
    */
-  private getOnboardingSplashIcon_(): string {
+  getOnboardingSplashIcon_() {
     return this.isDarkModeActive_ ? ONE_PAGE_ONBOARDING_SPLASH_DARK_ICON :
                                     ONE_PAGE_ONBOARDING_SPLASH_LIGHT_ICON;
   }
 
   /**
+   * @private
+   *
    * Temporary workaround to set default visibility. Changing the
    * kNearbySharingBackgroundVisibilityName in nearby_share_prefs.cc results in
    * setting visibility selection to 'all contacts' in nearby_visibility_page in
    * existing onboarding workflow.
    *
+   * @return {?Visibility} default visibility
+   *
    * TODO(crbug.com/1265562): remove this function once the old onboarding is
    * deprecated and default visibility is changed in
    * nearby_share_prefs.cc:kNearbySharingBackgroundVisibilityName
    */
-  private getDefaultVisibility_(): Visibility|null {
-    if (this.settings!.visibility === Visibility.kUnknown) {
+  getDefaultVisibility_() {
+    if (this.settings.visibility === Visibility.kUnknown) {
       return Visibility.kAllContacts;
     }
-    return this.settings!.visibility;
+    return this.settings.visibility;
   }
 
-  private getVisibilitySelectionButtonText_(): string {
+  /**
+   * @private
+   *
+   * @return {string} Text displayed on visibility selection button
+   */
+  getVisibilitySelectionButtonText_() {
     const visibility = this.getDefaultVisibility_();
     switch (visibility) {
       case Visibility.kAllContacts:
@@ -223,7 +268,12 @@ export class NearbyOnboardingOnePageElement extends
     }
   }
 
-  private getVisibilitySelectionButtonIcon_(): string {
+  /**
+   * @private
+   *
+   * @return {string} Icon displayed on visibility selection button
+   */
+  getVisibilitySelectionButtonIcon_() {
     const visibility = this.getDefaultVisibility_();
     switch (visibility) {
       case Visibility.kAllContacts:
@@ -238,18 +288,16 @@ export class NearbyOnboardingOnePageElement extends
   }
 
   /**
+   * @private
+   *
+   * @return {string} Help text displayed under visibility selection button
+   *
    * TODO(crbug.com/1265562): Add strings for other modes and switch based on
    * default visibility selection
    */
-  private getVisibilitySelectionButtonHelpText_(): string {
+  getVisibilitySelectionButtonHelpText_() {
     return this.i18n(
         'nearbyShareOnboardingPageDeviceVisibilityHelpAllContacts');
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [NearbyOnboardingOnePageElement.is]: NearbyOnboardingOnePageElement;
   }
 }
 

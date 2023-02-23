@@ -15,17 +15,23 @@ import './nearby_shared_share_type_icons.html.js';
 
 import {PayloadPreview} from '/mojo/nearby_share.mojom-webui.js';
 import {ShareType} from '/mojo/nearby_share_share_type.mojom-webui.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_preview.html.js';
 
-const NearbyPreviewElementBase = I18nMixin(PolymerElement);
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyPreviewElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
+/** @polymer */
 export class NearbyPreviewElement extends NearbyPreviewElementBase {
   static get is() {
-    return 'nearby-preview' as const;
+    return 'nearby-preview';
   }
 
   static get template() {
@@ -37,6 +43,7 @@ export class NearbyPreviewElement extends NearbyPreviewElementBase {
       /**
        * Preview info for the file(s) to send. Expected to start
        * as null, then change to a valid object before this component is shown.
+       * @type {?PayloadPreview}
        */
       payloadPreview: {
         type: Object,
@@ -45,6 +52,7 @@ export class NearbyPreviewElement extends NearbyPreviewElementBase {
 
       /**
        * Controls whether the icon should be greyed out.
+       * @type {boolean}
        */
       disabled: {
         type: Boolean,
@@ -53,10 +61,11 @@ export class NearbyPreviewElement extends NearbyPreviewElementBase {
     };
   }
 
-  disabled: boolean;
-  payloadPreview: PayloadPreview|null;
-
-  private getTitle_(): string {
+  /**
+   * @return {string} the preview text to display
+   * @private
+   */
+  getTitle_() {
     if (!this.payloadPreview) {
       return '';
     }
@@ -71,7 +80,11 @@ export class NearbyPreviewElement extends NearbyPreviewElementBase {
     }
   }
 
-  private getIronIconName_(): string {
+  /**
+   * @return {string} the identifier for the iron icon
+   * @private
+   */
+  getIronIconName_() {
     if (!this.payloadPreview || this.payloadPreview.shareType === null ||
         this.payloadPreview.shareType === undefined) {
       return '';
@@ -107,21 +120,20 @@ export class NearbyPreviewElement extends NearbyPreviewElementBase {
         return 'nearbysharetype68:wifi-credentials';
       default:
         assertNotReached(
-            `No icon defined for share type ${this.payloadPreview.shareType}`);
+            'No icon defined for share type ' + this.payloadPreview.shareType);
+        return 'nearbysharetype68:unknown-file';
     }
   }
 
-  private getIconClass_(): string {
+  /**
+   * @return {string} The css class to be applied to the icon.
+   * @private
+   */
+  getIconClass_() {
     if (this.disabled) {
       return 'disabled';
     }
     return '';
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [NearbyPreviewElement.is]: NearbyPreviewElement;
   }
 }
 

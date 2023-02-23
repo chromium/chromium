@@ -15,34 +15,40 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 
-import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {DeviceNameValidationResult} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingInitiatedMetrics} from './nearby_metrics_logger.js';
 import {getTemplate} from './nearby_onboarding_page.html.js';
 import {getNearbyShareSettings} from './nearby_share_settings.js';
-import {NearbySettings} from './nearby_share_settings_mixin.js';
+import {NearbySettings} from './nearby_share_settings_behavior.js';
 
+/**
+ * @type {string}
+ */
 const ONBOARDING_SPLASH_LIGHT_ICON =
     'nearby-images:nearby-onboarding-splash-light';
 
+/**
+ * @type {string}
+ */
 const ONBOARDING_SPLASH_DARK_ICON =
     'nearby-images:nearby-onboarding-splash-dark';
 
-export interface NearbyOnboardingPageElement {
-  $: {
-    deviceName: CrInputElement,
-  };
-}
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyOnboardingPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-const NearbyOnboardingPageElementBase = I18nMixin(PolymerElement);
-
+/** @polymer */
 export class NearbyOnboardingPageElement extends
     NearbyOnboardingPageElementBase {
   static get is() {
-    return 'nearby-onboarding-page' as const;
+    return 'nearby-onboarding-page';
   }
 
   static get template() {
@@ -51,10 +57,12 @@ export class NearbyOnboardingPageElement extends
 
   static get properties() {
     return {
+      /** @type {?NearbySettings} */
       settings: {
         type: Object,
       },
 
+      /** @type {string} */
       errorMessage: {
         type: String,
         value: '',
@@ -62,6 +70,7 @@ export class NearbyOnboardingPageElement extends
 
       /**
        * Whether the onboarding page is being rendered in dark mode.
+       * @private {boolean}
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -71,24 +80,24 @@ export class NearbyOnboardingPageElement extends
     };
   }
 
-  errorMessage: string;
-  settings: NearbySettings|null;
-  private isDarkModeActive_: boolean;
-
-  override ready(): void {
+  ready() {
     super.ready();
 
     this.addEventListener('next', this.onNext_);
     this.addEventListener('close', this.onClose_);
-    this.addEventListener('keydown', this.onKeydown_);
+    this.addEventListener('keydown', (event) => {
+      this.onKeydown_(/** @type {!KeyboardEvent} */ (event));
+    });
     this.addEventListener('view-enter-start', this.onViewEnterStart_);
   }
 
-  private onNext_(): void {
+  /** @private */
+  onNext_() {
     this.submitDeviceNameInput_();
   }
 
-  private onClose_(): void {
+  /** @private */
+  onClose_() {
     processOnboardingCancelledMetrics(
         NearbyShareOnboardingFinalState.DEVICE_NAME_PAGE);
     const onboardingCancelledEvent = new CustomEvent('onboarding-cancelled', {
@@ -98,7 +107,11 @@ export class NearbyOnboardingPageElement extends
     this.dispatchEvent(onboardingCancelledEvent);
   }
 
-  private onKeydown_(e: KeyboardEvent): void {
+  /**
+   * @param {!KeyboardEvent} e Event containing the key
+   * @private
+   */
+  onKeydown_(e) {
     e.stopPropagation();
     if (e.key === 'Enter') {
       this.submitDeviceNameInput_();
@@ -106,36 +119,43 @@ export class NearbyOnboardingPageElement extends
     }
   }
 
-  private onViewEnterStart_(): void {
-    this.$.deviceName.focus();
+  /** @private */
+  onViewEnterStart_() {
+    this.shadowRoot.querySelector('#deviceName').focus();
     processOnboardingInitiatedMetrics(new URL(document.URL));
   }
 
 
-  private async onDeviceNameInput_(): Promise<void> {
-    const result = await getNearbyShareSettings().validateDeviceName(
-        this.$.deviceName.value);
-    this.updateErrorMessage_(result.result);
+  /** @private */
+  onDeviceNameInput_() {
+    getNearbyShareSettings()
+        .validateDeviceName(this.$.deviceName.value)
+        .then((result) => {
+          this.updateErrorMessage_(result.result);
+        });
   }
 
-  private async submitDeviceNameInput_(): Promise<void> {
-    const result =
-        await getNearbyShareSettings().setDeviceName(this.$.deviceName.value);
-    this.updateErrorMessage_(result.result);
-    if (result.result === DeviceNameValidationResult.kValid) {
-      const changePageEvent = new CustomEvent(
-          'change-page',
-          {bubbles: true, composed: true, detail: {page: 'visibility'}});
-      this.dispatchEvent(changePageEvent);
-    }
+  /** @private */
+  submitDeviceNameInput_() {
+    getNearbyShareSettings()
+        .setDeviceName(this.$.deviceName.value)
+        .then((result) => {
+          this.updateErrorMessage_(result.result);
+          if (result.result === DeviceNameValidationResult.kValid) {
+            const changePageEvent = new CustomEvent(
+                'change-page',
+                {bubbles: true, composed: true, detail: {page: 'visibility'}});
+            this.dispatchEvent(changePageEvent);
+          }
+        });
   }
 
   /**
-   * @param validationResult The error status from validating the provided
-   *    device name.
+   * @private
+   * @param {!DeviceNameValidationResult} validationResult The
+   *     error status from validating the provided device name.
    */
-  private updateErrorMessage_(validationResult: DeviceNameValidationResult):
-      void {
+  updateErrorMessage_(validationResult) {
     switch (validationResult) {
       case DeviceNameValidationResult.kErrorEmpty:
         this.errorMessage = this.i18n('nearbyShareDeviceNameEmptyError');
@@ -153,22 +173,23 @@ export class NearbyOnboardingPageElement extends
     }
   }
 
-  private hasErrorMessage_(errorMessage: string): boolean {
+  /**
+   * @private
+   *
+   * @param {!string} errorMessage The error message.
+   * @return {boolean} Whether or not the error message exists.
+   */
+  hasErrorMessage_(errorMessage) {
     return errorMessage !== '';
   }
 
   /**
    * Returns the icon based on Light/Dark mode.
+   * @return {string}
    */
-  private getOnboardingSplashIcon_(): string {
+  getOnboardingSplashIcon_() {
     return this.isDarkModeActive_ ? ONBOARDING_SPLASH_DARK_ICON :
                                     ONBOARDING_SPLASH_LIGHT_ICON;
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [NearbyOnboardingPageElement.is]: NearbyOnboardingPageElement;
   }
 }
 

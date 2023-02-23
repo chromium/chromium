@@ -4,28 +4,38 @@
 
 import {NearbyShareSettings, NearbyShareSettingsInterface, NearbyShareSettingsObserverInterface, NearbyShareSettingsObserverReceiver, NearbyShareSettingsObserverRemote} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
-let nearbyShareSettings: NearbyShareSettingsInterface|null = null;
+/** @type {?NearbyShareSettingsInterface} */
+let nearbyShareSettings = null;
+
+/** @type {boolean} */
 let isTesting = false;
 
-export function setNearbyShareSettingsForTesting(
-    testNearbyShareSettings: NearbyShareSettingsInterface): void {
+/**
+ * @param {!NearbyShareSettingsInterface} testNearbyShareSettings
+ */
+export function setNearbyShareSettingsForTesting(testNearbyShareSettings) {
   nearbyShareSettings = testNearbyShareSettings;
   isTesting = true;
 }
 
-export function getNearbyShareSettings(): NearbyShareSettingsInterface {
+/**
+ * @return {!NearbyShareSettingsInterface} the Nearby Share settings interface
+ */
+export function getNearbyShareSettings() {
   if (!nearbyShareSettings) {
     nearbyShareSettings = NearbyShareSettings.getRemote();
   }
   return nearbyShareSettings;
 }
 
-export function observeNearbyShareSettings(
-    observer: NearbyShareSettingsObserverInterface):
-    NearbyShareSettingsObserverReceiver|null {
+/**
+ * @param {!NearbyShareSettingsObserverInterface} observer
+ * @return {?NearbyShareSettingsObserverReceiver} the mojo receiver.
+ */
+export function observeNearbyShareSettings(observer) {
   if (isTesting) {
     getNearbyShareSettings().addSettingsObserver(
-        observer as NearbyShareSettingsObserverRemote);
+        /** @type {!NearbyShareSettingsObserverRemote} */ (observer));
     return null;
   }
 

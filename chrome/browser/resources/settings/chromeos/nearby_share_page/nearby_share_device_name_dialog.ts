@@ -18,7 +18,7 @@ import {DeviceNameValidationResult} from 'chrome://resources/mojo/chromeos/ash/s
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNearbyShareSettings} from '../../shared/nearby_share_settings.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_mixin.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 import {getTemplate} from './nearby_share_device_name_dialog.html.js';
 

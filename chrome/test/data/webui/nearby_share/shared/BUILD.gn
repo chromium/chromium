@@ -51,36 +51,25 @@ js_library("nearby_contact_visibility_test") {
     ":fake_nearby_share_settings",
     "../../chromeos:chai_assert",
     "../../chromeos:test_util",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
+    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility",
   ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
-  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("nearby_device_icon_test") {
   deps = [
     "../../chromeos:chai_assert",
-    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device_icon",
   ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
-  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("nearby_device_test") {
   deps = [
     "../../chromeos:chai_assert",
-    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device",
   ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
-  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("nearby_onboarding_one_page_test") {
@@ -88,12 +77,11 @@ js_library("nearby_onboarding_one_page_test") {
     ":fake_nearby_share_settings",
     "../../chromeos:chai_assert",
     "../../chromeos:test_util",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
   ]
   externs_list = [
     "$externs_path/mocha-2.5.js",
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
   ]
 }
 
@@ -102,13 +90,11 @@ js_library("nearby_onboarding_page_test") {
     ":fake_nearby_share_settings",
     "../../chromeos:chai_assert",
     "../../chromeos:test_util",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
   ]
   externs_list = [
     "$externs_path/mocha-2.5.js",
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
   ]
 }
 
@@ -116,47 +102,38 @@ js_library("nearby_page_template_test") {
   deps = [
     "../../chromeos:chai_assert",
     "../../chromeos:test_util",
+    "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
   ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
-  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("nearby_preview_test") {
   deps = [
     "../../chromeos:chai_assert",
-    "//chrome/browser/ui/webui/nearby_share:share_type_webui_js",
+    "//chrome/browser/resources/nearby_share/shared:nearby_preview",
   ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
-  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("nearby_progress_test") {
   deps = [
     "../../chromeos:chai_assert",
-    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
+    "//chrome/browser/resources/nearby_share/shared:nearby_progress",
   ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
-  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
 js_library("fake_nearby_share_settings") {
+  deps = [
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
+  ]
 }
 
 js_library("nearby_visibility_page_test") {
   deps = [
     ":fake_nearby_share_settings",
     "../../chromeos:chai_assert",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
   ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "//chrome/browser/resources/nearby_share/shared/shared_closure_types.js",
-  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

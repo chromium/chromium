@@ -19,9 +19,10 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './nearby_device_icon.html.js';
 
+/** @polymer */
 export class NearbyDeviceIconElement extends PolymerElement {
   static get is() {
-    return 'nearby-device-icon' as const;
+    return 'nearby-device-icon';
   }
 
   static get template() {
@@ -33,6 +34,7 @@ export class NearbyDeviceIconElement extends PolymerElement {
       /**
        * The share target to show the icon for. Expected to start as null, then
        * change to a valid object before this component is shown.
+       * @type {?ShareTarget}
        */
       shareTarget: {
         type: Object,
@@ -41,9 +43,11 @@ export class NearbyDeviceIconElement extends PolymerElement {
     };
   }
 
-  shareTarget: ShareTarget|null;
-
-  private getShareTargetIcon_(): string {
+  /**
+   * @return {string}
+   * @private
+   */
+  getShareTargetIcon_() {
     if (!this.shareTarget) {
       return 'nearby-share:laptop';
     }
@@ -57,12 +61,6 @@ export class NearbyDeviceIconElement extends PolymerElement {
       default:
         return 'nearby-share:laptop';
     }
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    [NearbyDeviceIconElement.is]: NearbyDeviceIconElement;
   }
 }
 

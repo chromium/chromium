@@ -4,28 +4,35 @@
 
 import {ContactManager, ContactManagerInterface, DownloadContactsObserverInterface, DownloadContactsObserverReceiver, DownloadContactsObserverRemote} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
-let contactManager: ContactManagerInterface|null = null;
+/** @type {?ContactManagerInterface} */
+let contactManager = null;
+/** @type {boolean} */
 let isTesting = false;
-
-export function setContactManagerForTesting(
-    testContactManager: ContactManagerInterface): void {
+/**
+ * @param {!ContactManagerInterface} testContactManager A test impl.
+ */
+export function setContactManagerForTesting(testContactManager) {
   contactManager = testContactManager;
   isTesting = true;
 }
-
-export function getContactManager(): ContactManagerInterface {
+/**
+ * @return {!ContactManagerInterface} the contactManager interface
+ */
+export function getContactManager() {
   if (!contactManager) {
     contactManager = ContactManager.getRemote();
   }
   return contactManager;
 }
-
-export function observeContactManager(
-    observer: DownloadContactsObserverInterface):
-    DownloadContactsObserverReceiver|null {
+/**
+ * @param {!DownloadContactsObserverInterface} observer
+ * @return {?DownloadContactsObserverReceiver} The mojo receiver or null
+ *   when testing.
+ */
+export function observeContactManager(observer) {
   if (isTesting) {
     getContactManager().addDownloadContactsObserver(
-        observer as DownloadContactsObserverRemote);
+        /** @type {!DownloadContactsObserverRemote} */ (observer));
     return null;
   }
   const receiver = new DownloadContactsObserverReceiver(observer);
