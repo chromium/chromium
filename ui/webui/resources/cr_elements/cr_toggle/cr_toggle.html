@@ -188,9 +188,17 @@
         width: var(--cr-toggle-knob-diameter_);
       }
 
+      :host-context([chrome-refresh-2023]):host(:active) #knob {
+        --cr-toggle-knob-diameter_: 10px;
+      }
+
       :host-context([chrome-refresh-2023]):host([checked]) #knob {
         --cr-toggle-knob-diameter_: 12px;
         left: calc(100% - var(--cr-toggle-knob-center-edge-distance_));
+      }
+
+      :host-context([chrome-refresh-2023]):host([checked]:active) #knob {
+        --cr-toggle-knob-diameter_: 14px;
       }
 
       :host-context([chrome-refresh-2023]):host(:hover) #knob::before {
