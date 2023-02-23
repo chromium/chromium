@@ -237,15 +237,37 @@ std::map<std::string, std::string> ReadLevelDB(const base::FilePath& path) {
 }
 
 bool WriteJSONDict(const base::Value::Dict& json_dict,
-                   const base::FilePath& dest) {
+                   const base::FilePath& path) {
   std::string serialized_dict;
 
   if (!base::JSONWriter::Write(json_dict, &serialized_dict)) {
     return false;
   }
-  if (!base::WriteFile(dest, serialized_dict)) {
+  if (!(base::PathExists(path.DirName()) ||
+        base::CreateDirectory(path.DirName()))) {
     return false;
   }
+  if (!base::WriteFile(path, serialized_dict)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ReadJSON(const base::FilePath& path, base::Value* json_out) {
+  std::string file_contents;
+
+  if (!base::ReadFileToString(path, &file_contents)) {
+    return false;
+  }
+
+  absl::optional<base::Value> deserialized_json =
+      base::JSONReader::Read(file_contents);
+  if (!deserialized_json.has_value()) {
+    return false;
+  }
+
+  *json_out = std::move(deserialized_json.value());
   return true;
 }
 
@@ -304,18 +326,12 @@ class BrowserDataBackMigratorTest : public testing::Test {
     tmp_profile_dir_ =
         ash_profile_dir_.Append(browser_data_back_migrator::kTmpDir);
 
-    merged_prefs_path_ = tmp_profile_dir_.Append("Preferences");
+    tmp_prefs_path_ = tmp_profile_dir_.Append("Preferences");
     lacros_prefs_path_ = lacros_profile_dir_.Append("Preferences");
     ash_prefs_path_ = ash_profile_dir_.Append("Preferences");
   }
 
   void TearDown() override { EXPECT_TRUE(user_data_dir_.Delete()); }
-
-  void CreateDirectories() {
-    ASSERT_TRUE(base::CreateDirectory(ash_profile_dir_));
-    ASSERT_TRUE(base::CreateDirectory(lacros_profile_dir_));
-    CreateTemporaryDirectory();
-  }
 
   void CreateTemporaryDirectory() {
     // During backward migration, `tmp_profile_dir_` is created in
@@ -368,22 +384,6 @@ class BrowserDataBackMigratorTest : public testing::Test {
     }
   }
 
-  void WritePrefs(const base::Value::Dict& ash_prefs,
-                  const base::Value::Dict& lacros_prefs) {
-    ASSERT_TRUE(WriteJSONDict(ash_prefs, ash_prefs_path_));
-    ASSERT_TRUE(WriteJSONDict(lacros_prefs, lacros_prefs_path_));
-  }
-
-  void ReadMergedPrefs(base::Value* prefs_out) {
-    std::string merged_contents;
-    ASSERT_TRUE(base::ReadFileToString(merged_prefs_path_, &merged_contents));
-    absl::optional<base::Value> merged_prefs =
-        base::JSONReader::Read(merged_contents);
-    ASSERT_TRUE(merged_prefs.has_value());
-
-    *prefs_out = std::move(merged_prefs.value());
-  }
-
   void SetupStateStoreLevelDBFiles(const base::FilePath& ash_profile_dir,
                                    const base::FilePath& lacros_profile_dir,
                                    FilesSetup setup) {
@@ -418,12 +418,18 @@ class BrowserDataBackMigratorTest : public testing::Test {
     }
   }
 
+  void CreateAshAndLacrosPrefs(const base::Value::Dict& ash_prefs,
+                               const base::Value::Dict& lacros_prefs) {
+    ASSERT_TRUE(WriteJSONDict(ash_prefs, ash_prefs_path_));
+    ASSERT_TRUE(WriteJSONDict(lacros_prefs, lacros_prefs_path_));
+  }
+
   base::ScopedTempDir user_data_dir_;
   base::FilePath ash_profile_dir_;
   base::FilePath lacros_profile_dir_;
   base::FilePath tmp_profile_dir_;
 
-  base::FilePath merged_prefs_path_;
+  base::FilePath tmp_prefs_path_;
   base::FilePath ash_prefs_path_;
   base::FilePath lacros_prefs_path_;
 
@@ -689,8 +695,6 @@ TEST_F(BrowserDataBackMigratorTest,
   // {
   //   browser_data_migrator_util::kAshOnlyPreferencesKeys[0]: kLacrosPrefValue,
   // }
-  CreateDirectories();
-
   base::Value::Dict ash_prefs;
   ash_prefs.SetByDottedPath(
       browser_data_migrator_util::kAshOnlyPreferencesKeys[0], kAshPrefValue);
@@ -700,10 +704,12 @@ TEST_F(BrowserDataBackMigratorTest,
   lacros_prefs.SetByDottedPath(
       browser_data_migrator_util::kAshOnlyPreferencesKeys[0], kLacrosPrefValue);
 
-  WritePrefs(ash_prefs, lacros_prefs);
+  CreateTemporaryDirectory();
+
+  CreateAshAndLacrosPrefs(ash_prefs, lacros_prefs);
 
   ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
-      ash_prefs_path_, lacros_prefs_path_, merged_prefs_path_));
+      ash_prefs_path_, lacros_prefs_path_, tmp_prefs_path_));
 
   // Expected MergedPrefs
   // {
@@ -711,7 +717,7 @@ TEST_F(BrowserDataBackMigratorTest,
   //   browser_data_migrator_util::kAshOnlyPreferencesKeys[0]: kAshPrefValue,
   // }
   base::Value merged_prefs;
-  ReadMergedPrefs(&merged_prefs);
+  ASSERT_TRUE(ReadJSON(tmp_prefs_path_, &merged_prefs));
 
   const base::Value* merged_ash_pref = merged_prefs.GetDict().FindByDottedPath(
       browser_data_migrator_util::kAshOnlyPreferencesKeys[0]);
@@ -742,8 +748,6 @@ TEST_F(BrowserDataBackMigratorTest,
   //    kLacrosOnlyExtensionId: kLacrosPrefValue
   //   }
   // }
-  CreateDirectories();
-
   base::Value::Dict ash_prefs;
   base::Value::Dict ash_split_pref_dict;
   ash_split_pref_dict.SetByDottedPath(
@@ -767,10 +771,12 @@ TEST_F(BrowserDataBackMigratorTest,
       browser_data_migrator_util::kSplitPreferencesKeys[0],
       base::Value(std::move(lacros_split_pref_dict)));
 
-  WritePrefs(ash_prefs, lacros_prefs);
+  CreateTemporaryDirectory();
+
+  CreateAshAndLacrosPrefs(ash_prefs, lacros_prefs);
 
   ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
-      ash_prefs_path_, lacros_prefs_path_, merged_prefs_path_));
+      ash_prefs_path_, lacros_prefs_path_, tmp_prefs_path_));
 
   // Expected MergedPrefs
   // {
@@ -781,7 +787,7 @@ TEST_F(BrowserDataBackMigratorTest,
   //   }
   // }
   base::Value merged_prefs;
-  ReadMergedPrefs(&merged_prefs);
+  ASSERT_TRUE(ReadJSON(tmp_prefs_path_, &merged_prefs));
 
   const base::Value* split_pref = merged_prefs.GetDict().FindByDottedPath(
       browser_data_migrator_util::kSplitPreferencesKeys[0]);
@@ -820,8 +826,6 @@ TEST_F(BrowserDataBackMigratorTest,
   //    kLacrosOnlyExtensionId
   //   ]
   // }
-  CreateDirectories();
-
   base::Value::Dict ash_prefs;
   base::Value::List ash_split_pref_list;
   ash_split_pref_list.Append(browser_data_migrator_util::kExtensionsAshOnly[0]);
@@ -839,10 +843,12 @@ TEST_F(BrowserDataBackMigratorTest,
       browser_data_migrator_util::kSplitPreferencesKeys[0],
       base::Value(std::move(lacros_split_pref_list)));
 
-  WritePrefs(ash_prefs, lacros_prefs);
+  CreateTemporaryDirectory();
+
+  CreateAshAndLacrosPrefs(ash_prefs, lacros_prefs);
 
   ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
-      ash_prefs_path_, lacros_prefs_path_, merged_prefs_path_));
+      ash_prefs_path_, lacros_prefs_path_, tmp_prefs_path_));
 
   // Expected MergedPrefs
   // {
@@ -853,7 +859,7 @@ TEST_F(BrowserDataBackMigratorTest,
   //   ]
   // }
   base::Value merged_prefs;
-  ReadMergedPrefs(&merged_prefs);
+  ASSERT_TRUE(ReadJSON(tmp_prefs_path_, &merged_prefs));
 
   const base::Value* split_pref = merged_prefs.GetDict().FindByDottedPath(
       browser_data_migrator_util::kSplitPreferencesKeys[0]);
@@ -885,8 +891,6 @@ TEST_F(BrowserDataBackMigratorTest,
   //   browser_data_migrator_util::kAshOnlyPreferencesKeys[0]: kLacrosPrefValue,
   //   kOtherLacrosPreference: kLacrosPrefValue,
   // }
-  CreateDirectories();
-
   base::Value::Dict ash_prefs;
   ash_prefs.SetByDottedPath(
       browser_data_migrator_util::kLacrosOnlyPreferencesKeys[0], kAshPrefValue);
@@ -900,10 +904,12 @@ TEST_F(BrowserDataBackMigratorTest,
   lacros_prefs.SetByDottedPath(kOtherBothChromesPreference, kLacrosPrefValue);
   lacros_prefs.SetByDottedPath(kOtherLacrosPreference, kLacrosPrefValue);
 
-  WritePrefs(ash_prefs, lacros_prefs);
+  CreateTemporaryDirectory();
+
+  CreateAshAndLacrosPrefs(ash_prefs, lacros_prefs);
 
   ASSERT_TRUE(BrowserDataBackMigrator::MergePreferences(
-      ash_prefs_path_, lacros_prefs_path_, merged_prefs_path_));
+      ash_prefs_path_, lacros_prefs_path_, tmp_prefs_path_));
 
   // Expected MergedPrefs
   // {
@@ -913,7 +919,7 @@ TEST_F(BrowserDataBackMigratorTest,
   //   kOtherLacrosPreference: kLacrosPrefValue,
   // }
   base::Value merged_prefs;
-  ReadMergedPrefs(&merged_prefs);
+  ASSERT_TRUE(ReadJSON(tmp_prefs_path_, &merged_prefs));
 
   const base::Value* lacros_preference =
       merged_prefs.GetDict().FindByDottedPath(
