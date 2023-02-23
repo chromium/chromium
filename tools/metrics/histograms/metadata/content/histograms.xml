@@ -1160,7 +1160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.Network.RequestSizeKB.Compressed"
-    units="KB" expires_after="M90">
+    units="KB" expires_after="M120">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
