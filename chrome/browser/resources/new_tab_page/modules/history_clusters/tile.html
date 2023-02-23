@@ -1,0 +1,113 @@
+<style include="history-clusters-shared-style">
+  #content {
+    background: var(--google-grey-100);
+    border-radius: 25px;
+    color: var(--google-grey-900);
+  }
+
+  /* TODO(crbug.com/1414484): Add comprehensive theming to the hover states */
+  /*:host(:hover) #content {*/
+  /*  background-color: var(--cr-hover-background-color);*/
+  /*}*/
+
+  /*:host(:active) #content {*/
+  /*  background-color: var(--cr-active-background-color);*/
+  /*}*/
+
+  :host([large-format]) #content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  :host([medium-format]) #content {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+  }
+
+  #image {
+    background: red;
+    border-radius: 25px;
+  }
+
+  :host([large-format]) #image {
+    height: 152px;
+    margin: 16px auto;
+    width: 320px;
+  }
+
+  :host([medium-format]) #image {
+    height: 128px;
+    margin: 8px;
+    width: 128px;
+  }
+
+  /* TODO(crbug.com/1418528): Add favicon */
+  /*#icon {*/
+  /*  background-color: white;*/
+  /*  height: 16px;*/
+  /*  margin-inline-end: 8px;*/
+  /*  width: 16px;*/
+  /*}*/
+
+  :host([medium-format]) #icon {
+    margin-inline-start: 8px;
+  }
+
+  #title {
+    font-size: 16px;
+    white-space: initial;
+  }
+
+  :host([large-format]) #title {
+    height: 48px;
+    max-width: 298px;
+    padding: 16px 24px 24px;
+  }
+
+  :host([medium-format]) #title {
+    height: 60px;
+    max-width: 184px;
+    padding: 18px 16px 32px 8px;
+  }
+
+  #info-container {
+    color: var(--google-grey-700);
+    display: flex;
+    flex-direction: row;
+    font-size: 11px;
+    margin-inline-start: 24px;
+  }
+
+  :host([large-format]) #label {
+    max-width: 200px;
+  }
+
+  :host([medium-format]) #label {
+    max-width: 90px;
+  }
+
+  #label,
+  #date {
+    bottom: -2px;
+    position: relative;
+  }
+
+  #dot {
+    line-height: 16px;
+  }
+</style>
+<div id="content">
+  <div id="image"></div>
+  <div id="text-container">
+    <div id="title" class="truncate">[[visit.pageTitle]]</div>
+    <div id="info-container">
+      <div id="label" class="truncate"> [[label_]]</div>
+      <span id="dot">&nbsp&#8226&nbsp</span>
+      <div id="date">[[visit.relativeDate]]</div>
+    </div>
+  </div>
+</div>
