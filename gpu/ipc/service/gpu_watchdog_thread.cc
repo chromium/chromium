@@ -77,9 +77,9 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
   // DO NOT CHANGE |watched_thread_name_str_uma_|. It's used for UMA and crash
   // report.
   if (thread_name == "GpuWatchdog_Compositor")
-    watched_thread_name_str_uma_ = "compositor";
+    watched_thread_name_str_uma_ = ".compositor";
   else
-    watched_thread_name_str_uma_ = "main";
+    watched_thread_name_str_uma_ = ".main";
 
 #if BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1223033): Remove this once macOS uses system-wide ids.
