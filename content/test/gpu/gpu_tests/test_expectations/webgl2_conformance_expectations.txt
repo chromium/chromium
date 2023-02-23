@@ -493,7 +493,6 @@ crbug.com/angleproject/7412 [ mac passthrough angle-opengl amd ] conformance2/re
 ## Mac Passthrough / Intel ##
 
 crbug.com/angleproject/5222 [ mac passthrough angle-opengl intel ] conformance2/textures/misc/tex-unpack-params.html [ Failure ]
-crbug.com/angleproject/7200 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/fboinvalidate/format_02.html [ Failure ]
 crbug.com/angleproject/5226 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/texturespecification/basic_copyteximage2d.html [ Failure ]
 crbug.com/angleproject/5222 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/texturespecification/teximage3d_pbo_params.html [ Failure ]
 crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_lines.html [ Failure ]
