@@ -1400,8 +1400,13 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     // potential use-after-free issues into unexploitable crashes.
     if (PA_UNLIKELY(!ref_count->IsAliveWithNoKnownRefs() &&
                     brp_zapping_enabled())) {
-      internal::SecureMemset(object, internal::kQuarantinedByte,
-                             slot_span->GetUsableSize(this));
+      auto usable_size = slot_span->GetUsableSize(this);
+      auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
+      if (PA_UNLIKELY(hook)) {
+        hook(object, usable_size);
+      } else {
+        internal::SecureMemset(object, internal::kQuarantinedByte, usable_size);
+      }
     }
 
     if (PA_UNLIKELY(!(ref_count->ReleaseFromAllocator()))) {

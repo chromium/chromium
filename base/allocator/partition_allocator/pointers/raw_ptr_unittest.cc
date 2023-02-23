@@ -14,11 +14,13 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
+#include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr_test_support.h"
 #include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -2040,6 +2042,32 @@ TEST_F(BackupRefPtrTest, Duplicate) {
   allocator_.root()->Free(ptr);
 }
 #endif  // PA_USE_OOB_POISON
+
+namespace {
+constexpr uint8_t kCustomQuarantineByte = 0xff;
+static_assert(kCustomQuarantineByte !=
+              partition_alloc::internal::kQuarantinedByte);
+
+void CustomQuarantineHook(void* address, size_t size) {
+  partition_alloc::internal::SecureMemset(address, kCustomQuarantineByte, size);
+}
+}  // namespace
+
+TEST_F(BackupRefPtrTest, QuarantineHook) {
+  partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(
+      CustomQuarantineHook);
+  uint8_t* native_ptr =
+      static_cast<uint8_t*>(allocator_.root()->Alloc(sizeof(uint8_t), ""));
+  *native_ptr = 0;
+  raw_ptr<uint8_t> smart_ptr = native_ptr;
+
+  allocator_.root()->Free(smart_ptr);
+  // Access the allocation through the native pointer to avoid triggering
+  // dereference checks in debug builds.
+  EXPECT_EQ(*native_ptr, kCustomQuarantineByte);
+
+  partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
+}
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
