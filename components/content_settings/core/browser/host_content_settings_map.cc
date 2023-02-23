@@ -1015,11 +1015,6 @@ void HostContentSettingsMap::
       continue;
     }
 
-    // Users were never allowed to add user-specified patterns for these types
-    // so we can assume they are all origin scoped.
-    DCHECK(GURL(pattern.primary_pattern.ToString()).is_valid());
-    DCHECK(GURL(pattern.secondary_pattern.ToString()).is_valid());
-
     if (pattern.secondary_pattern.IsValid() &&
         pattern.secondary_pattern != pattern.primary_pattern) {
       SetContentSettingCustomScope(pattern.primary_pattern,
