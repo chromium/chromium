@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_
 #define IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/sync/driver/trusted_vault_client.h"
 
 class ChromeAccountManagerService;
@@ -48,14 +47,9 @@ class IOSTrustedVaultClient : public syncer::TrustedVaultClient {
  private:
   // Returns the identity for `account_info`.
   id<SystemIdentity> IdentityForAccount(const CoreAccountInfo& account_info);
-  void VerifyDeviceRegistration(const std::string& gaia_id);
-  void VerifyDeviceRegistrationWithPublicKey(
-      const std::string& gaia_id,
-      const std::vector<uint8_t>& public_key);
 
   ChromeAccountManagerService* const account_manager_service_ = nullptr;
   TrustedVaultClientBackend* const backend_ = nullptr;
-  base::WeakPtrFactory<IOSTrustedVaultClient> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_IOS_TRUSTED_VAULT_CLIENT_H_

@@ -52,8 +52,9 @@ class TrustedVaultClientBackend : public KeyedService {
 
   // Registers a delegate-like callback that implements device registration
   // verification.
+  // TODO(crbug.com/1416626): Make abstract once all implementations land.
   virtual void SetDeviceRegistrationPublicKeyVerifierForUMA(
-      VerifierCallback verifier) = 0;
+      VerifierCallback verifier);
 
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
@@ -101,12 +102,14 @@ class TrustedVaultClientBackend : public KeyedService {
 
   // Clears local data belonging to `identity`, such as shared keys. This
   // excludes the physical client's key pair, which remains unchanged.
+  // TODO(crbug.com/1416626): Make abstract once all implementations land.
   virtual void ClearLocalData(id<SystemIdentity> identity,
-                              base::OnceCallback<void(bool)> callback) = 0;
+                              base::OnceCallback<void(bool)> callback);
 
   // Returns the member public key used to enroll the local device.
+  // TODO(crbug.com/1416626): Make abstract once all implementations land.
   virtual void GetPublicKeyForIdentity(id<SystemIdentity> identity,
-                                       GetPublicKeyCallback callback) = 0;
+                                       GetPublicKeyCallback callback);
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_TRUSTED_VAULT_CLIENT_BACKEND_H_
