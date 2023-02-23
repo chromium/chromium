@@ -64,6 +64,8 @@
     "resolution",
     "-webkit-transform-3d",
     "scan",
+    "overflow-inline",
+    "overflow-block",
     "device-posture",
     "horizontal-viewport-segments",
     "vertical-viewport-segments",

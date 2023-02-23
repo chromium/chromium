@@ -88,7 +88,11 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
                 media_feature_names::kVerticalViewportSegmentsMediaFeature &&
             RuntimeEnabledFeatures::CSSFoldablesEnabled()) ||
            (feature == media_feature_names::kDevicePostureMediaFeature &&
-            RuntimeEnabledFeatures::DevicePostureEnabled());
+            RuntimeEnabledFeatures::DevicePostureEnabled()) ||
+           (feature == media_feature_names::kOverflowInlineMediaFeature &&
+            RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
+           (feature == media_feature_names::kOverflowBlockMediaFeature &&
+            RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled());
   }
 
   bool IsCaseSensitive(const String& feature) const override { return false; }

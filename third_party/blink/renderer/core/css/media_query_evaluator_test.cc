@@ -351,6 +351,30 @@ MediaQueryEvaluatorTestCase g_video_dynamic_range_feature_disabled_cases[] = {
     {nullptr, false}  // Do not remove the terminator line.
 };
 
+// Tests when the output device is print.
+MediaQueryEvaluatorTestCase g_overflow_with_print_device_test_cases[] = {
+    {"(overflow-inline)", false},
+    {"(overflow-block)", true},
+    {"(overflow-inline: none)", true},
+    {"(overflow-block: none)", false},
+    {"(overflow-block: paged)", true},
+    {"(overflow-inline: scroll)", false},
+    {"(overflow-block: scroll)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+// Tests when the output device is scrollable.
+MediaQueryEvaluatorTestCase g_overflow_with_scrollable_device_test_cases[] = {
+    {"(overflow-inline)", true},
+    {"(overflow-block)", true},
+    {"(overflow-inline: none)", false},
+    {"(overflow-block: none)", false},
+    {"(overflow-block: paged)", false},
+    {"(overflow-inline: scroll)", true},
+    {"(overflow-block: scroll)", true},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
                      const MediaQueryEvaluator& media_query_evaluator,
                      CSSParserMode mode) {
@@ -417,6 +441,24 @@ TEST(MediaQueryEvaluatorTest, Cached) {
     data.color_bits_per_component = 24;
     data.monochrome_bits_per_component = 0;
   }
+
+  // Overflow values with printing.
+  {
+    data.media_type = media_type_names::kPrint;
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_overflow_with_print_device_test_cases,
+                    media_query_evaluator);
+    data.media_type = media_type_names::kScreen;
+  }
+
+  // Overflow values with scrolling.
+  {
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_overflow_with_scrollable_device_test_cases,
+                    media_query_evaluator);
+  }
 }
 
 TEST(MediaQueryEvaluatorTest, Dynamic) {
@@ -425,8 +467,12 @@ TEST(MediaQueryEvaluatorTest, Dynamic) {
 
   MediaQueryEvaluator media_query_evaluator(&page_holder->GetFrame());
   TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
+  TestMQEvaluator(g_overflow_with_scrollable_device_test_cases,
+                  media_query_evaluator);
   page_holder->GetFrameView().SetMediaType(media_type_names::kPrint);
   TestMQEvaluator(g_print_test_cases, media_query_evaluator);
+  TestMQEvaluator(g_overflow_with_print_device_test_cases,
+                  media_query_evaluator);
 }
 
 TEST(MediaQueryEvaluatorTest, DynamicNoView) {

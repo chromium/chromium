@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1338 tests; 1323 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1339 tests; 1334 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS query_should_be_parseable: (orientation)
 PASS query_should_be_parseable: not (orientation)
 PASS expression_should_be_known: (orientation)
@@ -1257,20 +1257,21 @@ PASS should_not_apply: all and min-color : 1
 PASS should_not_apply: (bogus)
 PASS should_not_apply: not all and (bogus)
 PASS should_not_apply: only all and (bogus)
-FAIL expression_should_be_known: overflow-block assert_true: expected true got false
-FAIL expression_should_be_known: overflow-block: none assert_true: expected true got false
-FAIL expression_should_be_known: overflow-block: paged assert_true: expected true got false
-FAIL expression_should_be_known: overflow-block: scroll assert_true: expected true got false
-FAIL expression_should_be_known: overflow-block: optional-paged assert_true: expected true got false
+PASS expression_should_be_known: overflow-block
+PASS expression_should_be_known: overflow-block: none
+PASS expression_should_be_known: overflow-block: paged
+PASS expression_should_be_known: overflow-block: scroll
+PASS expression_should_be_parseable: overflow-block: optional-paged
+PASS expression_should_be_unknown: overflow-block: optional-paged
 PASS expression_should_be_parseable: overflow-block: some-random-invalid-thing
 PASS expression_should_be_unknown: overflow-block: some-random-invalid-thing
-FAIL Sanity check for overflow-block assert_not_equals: overflow-block should be equivalent to not (overflow-block: none) got disallowed value false
-FAIL expression_should_be_known: overflow-inline assert_true: expected true got false
-FAIL expression_should_be_known: overflow-inline: none assert_true: expected true got false
-FAIL expression_should_be_known: overflow-inline: scroll assert_true: expected true got false
+PASS Sanity check for overflow-block
+PASS expression_should_be_known: overflow-inline
+PASS expression_should_be_known: overflow-inline: none
+PASS expression_should_be_known: overflow-inline: scroll
 PASS expression_should_be_parseable: overflow-inline: some-random-invalid-thing
 PASS expression_should_be_unknown: overflow-inline: some-random-invalid-thing
-FAIL Sanity check for overflow-inline assert_not_equals: overflow-inline should be equivalent to not (overflow-inline: none) got disallowed value false
+PASS Sanity check for overflow-inline
 FAIL expression_should_be_known: update assert_true: expected true got false
 FAIL expression_should_be_known: update: none assert_true: expected true got false
 FAIL expression_should_be_known: update: slow assert_true: expected true got false

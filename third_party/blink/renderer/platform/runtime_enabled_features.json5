@@ -937,6 +937,10 @@
       copied_from_base_feature_if: "overridden",
     },
     {
+      name: "CSSOverflowMediaFeatures",
+      status: "experimental",
+    },
+    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
       base_feature: "none",

@@ -1332,6 +1332,52 @@ static bool VerticalViewportSegmentsMediaFeatureEval(
          CompareValue(vertical_viewport_segments, static_cast<int>(number), op);
 }
 
+static bool OverflowInlineMediaFeatureEval(const MediaQueryExpValue& value,
+                                           MediaQueryOperator,
+                                           const MediaValues& media_values) {
+  bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
+                                            media_type_names::kPrint);
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return can_scroll;
+  }
+  DCHECK(value.IsId());
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return !can_scroll;
+    case CSSValueID::kScroll:
+      return can_scroll;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
+static bool OverflowBlockMediaFeatureEval(const MediaQueryExpValue& value,
+                                          MediaQueryOperator,
+                                          const MediaValues& media_values) {
+  bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
+                                            media_type_names::kPrint);
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return true;
+  }
+  DCHECK(value.IsId());
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return false;
+    case CSSValueID::kScroll:
+      return can_scroll;
+    case CSSValueID::kPaged:
+      return !can_scroll;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
 static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
                                           MediaQueryOperator,
                                           const MediaValues& media_values) {

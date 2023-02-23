@@ -1064,6 +1064,9 @@
     "window-controls-overlay",
     "tabbed",
 
+    // (overflow-block:) media feature
+    "paged",
+
     // position
     "sticky",
 
