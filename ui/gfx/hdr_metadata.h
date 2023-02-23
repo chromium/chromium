@@ -45,6 +45,10 @@ struct COLOR_SPACE_EXPORT ColorVolumeMetadata {
     return (primaries == rhs.primaries && luminance_max == rhs.luminance_max &&
             luminance_min == rhs.luminance_min);
   }
+
+  bool operator!=(const ColorVolumeMetadata& rhs) const {
+    return !(*this == rhs);
+  }
 };
 
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.

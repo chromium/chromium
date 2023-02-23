@@ -870,8 +870,10 @@ class ColorTransformFromBT2020CL : public ColorTransformStep {
 // Apply the HLG OOTF for a specified maximum luminance.
 class ColorTransformHLGOOTF : public ColorTransformStep {
  public:
-  explicit ColorTransformHLGOOTF(float gamma_minus_one)
-      : gamma_minus_one_(gamma_minus_one) {}
+  explicit ColorTransformHLGOOTF(float gamma_minus_one,
+                                 float dst_max_luminance_relative)
+      : gamma_minus_one_(gamma_minus_one),
+        dst_max_luminance_relative_(dst_max_luminance_relative) {}
 
   // The luminance vector in linear space.
   static constexpr float kLr = 0.2627;
@@ -882,8 +884,11 @@ class ColorTransformHLGOOTF : public ColorTransformStep {
   void Transform(ColorTransform::TriStim* color, size_t num) const override {
     for (size_t i = 0; i < num; i++) {
       float L = kLr * color[i].x() + kLg * color[i].y() + kLb * color[i].z();
-      if (L > 0.f)
+      if (L > 0.f) {
         color[i].Scale(powf(L, gamma_minus_one_));
+        // Scale the result to the full HDR range.
+        color[i].Scale(dst_max_luminance_relative_);
+      }
     }
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
@@ -893,6 +898,7 @@ class ColorTransformHLGOOTF : public ColorTransformStep {
          << "  half L = dot(color, luma_vec);\n"
          << "  if (L > 0.0) {\n"
          << "    color.rgb *= pow(L, hlg_ootf_gamma_minus_one);\n"
+         << "    color.rgb *= hlg_dst_max_luminance_relative;\n"
          << "  }\n"
          << "}\n";
   }
@@ -900,6 +906,7 @@ class ColorTransformHLGOOTF : public ColorTransformStep {
  private:
   // The gamma parameter for the power function specified in Rec 2100.
   const float gamma_minus_one_;
+  const float dst_max_luminance_relative_;
 };
 
 // Scale the color such that the luminance `input_max_value` maps to
@@ -1022,30 +1029,23 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
         // Apply the HLG OOTF for the specified maximum luminance.
         float gamma_minus_one = 0.f;
         ComputeHLGToneMapConstants(options, gamma_minus_one);
-        steps_.push_back(
-            std::make_unique<ColorTransformHLGOOTF>(gamma_minus_one));
-        // Scale the result to the full HDR range.
-        steps_.push_back(std::make_unique<ColorTransformMatrix>(
-            SkM44::Scale(options.dst_max_luminance_relative,
-                         options.dst_max_luminance_relative,
-                         options.dst_max_luminance_relative)));
-
+        steps_.push_back(std::make_unique<ColorTransformHLGOOTF>(
+            gamma_minus_one, options.dst_max_luminance_relative));
         break;
       }
       case ColorSpace::TransferID::PQ: {
         float a = 0.f;
         float b = 0.f;
-        if (ComputePQToneMapConstants(options, a, b)) {
-          const ColorSpace rec2020_linear(
-              ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR,
-              ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
-          steps_.push_back(std::make_unique<ColorTransformMatrix>(
-              Invert(rec2020_linear.GetPrimaryMatrix())));
-          steps_.push_back(
-              std::make_unique<ColorTransformToneMapInRec2020Linear>(a, b));
-          steps_.push_back(std::make_unique<ColorTransformMatrix>(
-              rec2020_linear.GetPrimaryMatrix()));
-        }
+        ComputePQToneMapConstants(options, a, b);
+        const ColorSpace rec2020_linear(
+            ColorSpace::PrimaryID::BT2020, ColorSpace::TransferID::LINEAR,
+            ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
+        steps_.push_back(std::make_unique<ColorTransformMatrix>(
+            Invert(rec2020_linear.GetPrimaryMatrix())));
+        steps_.push_back(
+            std::make_unique<ColorTransformToneMapInRec2020Linear>(a, b));
+        steps_.push_back(std::make_unique<ColorTransformMatrix>(
+            rec2020_linear.GetPrimaryMatrix()));
         break;
       }
       default:
@@ -1137,6 +1137,7 @@ sk_sp<SkRuntimeEffect> ColorTransformInternal::GetSkRuntimeEffect() const {
       << "uniform half pq_tonemap_a;\n"
       << "uniform half pq_tonemap_b;\n"
       << "uniform half hlg_ootf_gamma_minus_one;\n"
+      << "uniform half hlg_dst_max_luminance_relative;\n"
       << "\n"
       << "half4 main(half4 color) {\n"
       << "  // Un-premultiply alpha\n"
@@ -1170,6 +1171,7 @@ struct SkShaderUniforms {
   float pq_tonemap_a = 1.f;
   float pq_tonemap_b = 1.f;
   float hlg_ootf_gamma_minus_one = 0.f;
+  float hlg_dst_max_luminance_relative = 1.0f;
 };
 
 // static
@@ -1181,6 +1183,7 @@ sk_sp<SkData> ColorTransform::GetSkShaderUniforms(const ColorSpace& src,
   SkShaderUniforms data;
   data.offset = offset;
   data.multiplier = multiplier;
+  data.hlg_dst_max_luminance_relative = options.dst_max_luminance_relative;
   switch (src.GetTransferID()) {
     case ColorSpace::TransferID::PQ:
       ComputePQToneMapConstants(options, data.pq_tonemap_a, data.pq_tonemap_b);
