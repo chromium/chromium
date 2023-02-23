@@ -29,10 +29,8 @@
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/extensions/api/context_menus.h"
-#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1024,8 +1022,7 @@ TEST_F(ExtensionContextMenuModelTest, PageAccess_CustomizeByExtension_Submenu) {
   // Change extension to run "on click". Since we are revoking permissions, we
   // need to automatically accept the reload page bubble.
   action_runner->accept_bubble_for_testing(true);
-  extensions::PermissionsManagerWaiter waiter(
-      extensions::PermissionsManager::Get(profile()));
+  extensions::PermissionsManagerWaiter waiter(permissions_manager);
   menu.ExecuteCommand(kOnClick, 0);
   waiter.WaitForExtensionPermissionsUpdate();
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
@@ -1412,9 +1409,9 @@ TEST_F(ExtensionContextMenuModelTest,
   // Navigate to a url that should have "customize by extension" site
   // permissions by default (which allows us to test the page access submenu).
   content::WebContents* web_contents = AddTab(kActiveUrl);
-  EXPECT_EQ(PermissionsManager::Get(profile())->GetUserSiteSetting(
-                url::Origin::Create(kActiveUrl)),
-            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
+  EXPECT_EQ(
+      permissions_manager->GetUserSiteSetting(url::Origin::Create(kActiveUrl)),
+      PermissionsManager::UserSiteSetting::kCustomizeByExtension);
 
   // Verify the extension can run on all sites even though it
   // can't access the active url.
@@ -1437,8 +1434,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // need to automatically accept the reload page bubble.
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->accept_bubble_for_testing(true);
-  extensions::PermissionsManagerWaiter waiter(
-      extensions::PermissionsManager::Get(profile()));
+  extensions::PermissionsManagerWaiter waiter(permissions_manager);
   menu.ExecuteCommand(kOnClick, 0);
   waiter.WaitForExtensionPermissionsUpdate();
   EXPECT_TRUE(menu.IsCommandIdChecked(kOnClick));
@@ -1574,15 +1570,14 @@ TEST_F(ExtensionContextMenuModelTest,
     menu.ExecuteCommand(kOnClick, 0);
     ExtensionActionRunner::GetForWebContents(web_contents)
         ->accept_bubble_for_testing(true);
-    extensions::PermissionsManagerWaiter waiter(
-        extensions::PermissionsManager::Get(profile()));
+    extensions::PermissionsManagerWaiter waiter(permissions_manager);
     menu.ExecuteCommand(kOnClick, 0);
     waiter.WaitForExtensionPermissionsUpdate();
   }
 
   {
     PermissionsManager::ExtensionSiteAccess site_access =
-        PermissionsManager::Get(profile())->GetSiteAccess(*extension, b_com);
+        permissions_manager->GetSiteAccess(*extension, b_com);
     EXPECT_FALSE(site_access.has_site_access);
     EXPECT_FALSE(site_access.withheld_site_access);
   }
@@ -1630,8 +1625,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // page bubble.
   ExtensionActionRunner::GetForWebContents(web_contents)
       ->accept_bubble_for_testing(true);
-  extensions::PermissionsManagerWaiter waiter(
-      extensions::PermissionsManager::Get(profile()));
+  extensions::PermissionsManagerWaiter waiter(permissions_manager);
   menu.ExecuteCommand(kOnClick, 0);
   waiter.WaitForExtensionPermissionsUpdate();
 
@@ -1642,7 +1636,7 @@ TEST_F(ExtensionContextMenuModelTest,
   // revoke access on b.com.
   const GURL b_com("https://b.com");
   PermissionsManager::ExtensionSiteAccess site_access =
-      PermissionsManager::Get(profile())->GetSiteAccess(*extension, b_com);
+      permissions_manager->GetSiteAccess(*extension, b_com);
   EXPECT_FALSE(site_access.has_site_access);
   EXPECT_TRUE(site_access.withheld_site_access);
 }
