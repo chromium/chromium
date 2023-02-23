@@ -601,11 +601,11 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
 bool PictureLayerImpl::UpdateTiles() {
   // https://linear.app/replay/issue/RUN-550
-  recordreplay::Assert("PictureLayerImpl::UpdateTiles Start %d", id());
+  recordreplay::Assert("[RUN-550] PictureLayerImpl::UpdateTiles Start %d", id());
 
   if (!CanHaveTilings()) {
     // https://linear.app/replay/issue/RUN-550
-    recordreplay::Assert("PictureLayerImpl::UpdateTiles #1");
+    recordreplay::Assert("[RUN-550] PictureLayerImpl::UpdateTiles #1");
 
     ideal_page_scale_ = 0.f;
     ideal_device_scale_ = 0.f;
@@ -620,12 +620,18 @@ bool PictureLayerImpl::UpdateTiles() {
   // only have one or two tilings (high and low res), so only clean up the
   // active layer. This cleans it up here in case AppendQuads didn't run.
   // If it did run, this would not remove any additional tilings.
+
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("[RUN-550-1409] PictureLayerImpl::UpdateTiles #2 %d",
+    (int) layer_tree_impl()->IsActiveTree());
   if (layer_tree_impl()->IsActiveTree())
     CleanUpTilingsOnActiveLayer(last_append_quads_tilings_);
 
   UpdateIdealScales();
 
   const bool should_adjust_raster_scale = ShouldAdjustRasterScale();
+  recordreplay::Assert("[RUN-550-1409] PictureLayerImpl::UpdateTiles #3 %d",
+    (int) should_adjust_raster_scale);
   if (should_adjust_raster_scale)
     RecalculateRasterScales();
   UpdateTilingsForRasterScaleAndTranslation(should_adjust_raster_scale);
@@ -686,7 +692,7 @@ bool PictureLayerImpl::UpdateTiles() {
   SanityCheckTilingState();
 
   // https://linear.app/replay/issue/RUN-550
-  recordreplay::Assert("PictureLayerImpl::UpdateTiles Done %d", updated);
+  recordreplay::Assert("[RUN-550] PictureLayerImpl::UpdateTiles Done %d", updated);
 
   return updated;
 }
@@ -1692,6 +1698,11 @@ void PictureLayerImpl::AdjustRasterScaleForTransformAnimation(
 
 void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
     const std::vector<PictureLayerTiling*>& used_tilings) {
+
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("[RUN-550-1409] PictureLayerImpl::CleanUpTilingsOnActiveLayer Start %u",
+    (unsigned) tilings_->num_tilings());
+
   DCHECK(layer_tree_impl()->IsActiveTree());
   if (tilings_->num_tilings() == 0)
     return;

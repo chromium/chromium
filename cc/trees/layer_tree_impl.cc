@@ -1575,7 +1575,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
   // update draw properties flag is set again.
   if (!host_impl_->layer_tree_frame_sink()) {
     // https://linear.app/replay/issue/RUN-550
-    recordreplay::Assert("LayerTreeImpl::UpdateDrawProperties #2");
+    recordreplay::Assert("[RUN-550] LayerTreeImpl::UpdateDrawProperties #2");
     return false;
   }
 
@@ -1585,7 +1585,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
 
   if (layer_list_.empty()) {
     // https://linear.app/replay/issue/RUN-550
-    recordreplay::Assert("LayerTreeImpl::UpdateDrawProperties #3");
+    recordreplay::Assert("[RUN-550] LayerTreeImpl::UpdateDrawProperties #3");
     return false;
   }
 
@@ -1706,7 +1706,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
   }
 
   // https://linear.app/replay/issue/RUN-550
-  recordreplay::Assert("LayerTreeImpl::UpdateDrawProperties Done");
+  recordreplay::Assert("[RUN-550] LayerTreeImpl::UpdateDrawProperties Done");
 
   device_viewport_rect_changed_ = false;
 
