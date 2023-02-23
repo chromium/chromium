@@ -49,6 +49,16 @@
   (allow mach-lookup (xpc-service-name "com.apple.MTLCompilerService"))
 )
 
+; Allow access to the Apple Neural Engine for the Shape Detection API.
+; https://crbug.com/1382442
+(if (>= os-version 1300)
+  (begin
+    (allow mach-lookup (global-name "com.apple.appleneuralengine"))
+    (allow iokit-open
+      (iokit-user-client-class "H11ANEInDirectPathClient"))
+  )
+)
+
 ; Needed for VideoToolbox H.264 SW and VP9 decoding - https://crbug.com/1113936
 (if (>= os-version 1016)
   (begin
