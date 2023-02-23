@@ -271,8 +271,7 @@ void DumpBrowserHistograms(const base::FilePath& output_file) {
 
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  base::WriteFile(output_file, output_string.data(),
-                  static_cast<int>(output_string.size()));
+  base::WriteFile(output_file, output_string);
 }
 
 // Returns whether |profile_info.profile| can be opened during Chrome startup

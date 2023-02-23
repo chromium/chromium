@@ -41,9 +41,7 @@ void StoreScreenshot(const base::FilePath& screenshot_dir,
   }
   base::FilePath file_path = screenshot_dir.Append(screenshot_name);
 
-  if (static_cast<size_t>(base::WriteFile(
-          file_path, reinterpret_cast<const char*>(png_data->front()),
-          static_cast<int>(png_data->size()))) != png_data->size()) {
+  if (!base::WriteFile(file_path, *png_data)) {
     LOG(ERROR) << "Failed to save screenshot to " << file_path.value();
   } else {
     VLOG(1) << "Saved screenshot to " << file_path.value();
