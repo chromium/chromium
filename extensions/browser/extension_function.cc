@@ -42,7 +42,6 @@
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/error_utils.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
@@ -616,29 +615,6 @@ ExtensionFunction::ResponseValue ExtensionFunction::ArgumentList(
 
 ExtensionFunction::ResponseValue ExtensionFunction::Error(std::string error) {
   return CreateErrorResponseValue(std::move(error));
-}
-
-ExtensionFunction::ResponseValue ExtensionFunction::Error(
-    const std::string& format,
-    const std::string& s1) {
-  return CreateErrorResponseValue(ErrorUtils::FormatErrorMessage(format, s1));
-}
-
-ExtensionFunction::ResponseValue ExtensionFunction::Error(
-    const std::string& format,
-    const std::string& s1,
-    const std::string& s2) {
-  return CreateErrorResponseValue(
-      ErrorUtils::FormatErrorMessage(format, s1, s2));
-}
-
-ExtensionFunction::ResponseValue ExtensionFunction::Error(
-    const std::string& format,
-    const std::string& s1,
-    const std::string& s2,
-    const std::string& s3) {
-  return CreateErrorResponseValue(
-      ErrorUtils::FormatErrorMessage(format, s1, s2, s3));
 }
 
 ExtensionFunction::ResponseValue ExtensionFunction::ErrorWithArguments(

@@ -24,6 +24,7 @@
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/extra_response_data.mojom.h"
@@ -434,14 +435,11 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // ErrorUtils::FormatErrorMessage, that is, each occurrence of * is replaced
   // by the corresponding |s*|:
   // Error("Error in *: *", "foo", "bar") <--> Error("Error in foo: bar").
-  ResponseValue Error(const std::string& format, const std::string& s1);
-  ResponseValue Error(const std::string& format,
-                      const std::string& s1,
-                      const std::string& s2);
-  ResponseValue Error(const std::string& format,
-                      const std::string& s1,
-                      const std::string& s2,
-                      const std::string& s3);
+  template <typename... Args>
+  ResponseValue Error(const std::string& format, const Args&... args) {
+    return CreateErrorResponseValue(
+        (extensions::ErrorUtils::FormatErrorMessage(format, args), ...));
+  }
   // Error with a list of arguments |args| to pass to caller.
   // Using this ResponseValue indicates something is wrong with the API.
   // It shouldn't be possible to have both an error *and* some arguments.
