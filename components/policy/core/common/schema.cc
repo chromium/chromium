@@ -294,9 +294,11 @@ bool IsValidType(const std::string& type) {
                                  kSchemaTypesToValueTypesEnd, nullptr);
 }
 
-// Validate that |dict| only contains attributes that are allowed for the
-// corresponding value of 'type'. Also ensure that all of those attributes are
-// of the expected type. |options| can be used to ignore unknown attributes.
+// Validate that |dict| only contains attributes that are allowed for
+// the corresponding value of 'type'. Also ensure that all of those attributes
+// are of the expected type. |options| can be used to ignore unknown attributes
+// TODO(crbug/1187001): This function should accept base::Value::Dict for
+// |dict|.
 bool ValidateAttributesAndTypes(const base::Value& dict,
                                 const std::string& type,
                                 int options,
@@ -329,7 +331,7 @@ bool ValidateAttributesAndTypes(const base::Value& dict,
   }
 
   base::Value::Type expected_type = base::Value::Type::NONE;
-  for (auto it : dict.DictItems()) {
+  for (auto it : dict.GetDict()) {
     if (MapSchemaKeyToValueType(it.first, begin, end, &expected_type)) {
       if (!CheckType(&it.second, expected_type)) {
         *error = base::StringPrintf("Invalid type for attribute '%s'",
@@ -370,11 +372,14 @@ bool ValidateEnum(const base::Value* enum_list,
 // Forward declaration (used in ValidateProperties).
 bool IsValidSchema(const base::Value& dict, int options, std::string* error);
 
-// Validates that the values in the |properties| dict are valid schemas.
+// Validates that the values in the |properties| dict are valid
+// schemas.
+// TODO(crbug/1187001): This function should accept base::Value::Dict for
+// |properties|.
 bool ValidateProperties(const base::Value& properties,
                         int options,
                         std::string* error) {
-  for (auto dict_it : properties.DictItems()) {
+  for (auto dict_it : properties.GetDict()) {
     if (dict_it.second.type() != base::Value::Type::DICT) {
       *error = base::StringPrintf("Schema for property '%s' must be a dict.",
                                   dict_it.first.c_str());
@@ -913,6 +918,8 @@ bool Schema::InternalStorage::Parse(const base::Value& schema_val,
   return true;
 }
 
+// TODO(crbug/1187001): This function should accept base::Value::Dict for
+// |schema|.
 bool Schema::InternalStorage::ParseDictionary(
     const base::Value& schema,
     SchemaNode* schema_node,
@@ -934,21 +941,21 @@ bool Schema::InternalStorage::ParseDictionary(
 
   properties_nodes_[extra].begin = static_cast<int>(property_nodes_.size());
 
-  const base::Value* properties = schema.FindDictKey(schema::kProperties);
+  const base::Value::Dict* properties =
+      schema.GetDict().FindDict(schema::kProperties);
   if (properties) {
     // This and below reserves nodes for all of the |properties|, and makes sure
     // they are contiguous. Recursive calls to Parse() will append after these
     // elements.
-    property_nodes_.resize(property_nodes_.size() + properties->DictSize());
+    property_nodes_.resize(property_nodes_.size() + properties->size());
   }
 
   properties_nodes_[extra].end = static_cast<int>(property_nodes_.size());
 
-  const base::Value* pattern_properties =
-      schema.FindDictKey(schema::kPatternProperties);
+  const base::Value::Dict* pattern_properties =
+      schema.GetDict().FindDict(schema::kPatternProperties);
   if (pattern_properties) {
-    property_nodes_.resize(property_nodes_.size() +
-                           pattern_properties->DictSize());
+    property_nodes_.resize(property_nodes_.size() + pattern_properties->size());
   }
 
   properties_nodes_[extra].pattern_end =
@@ -958,7 +965,7 @@ bool Schema::InternalStorage::ParseDictionary(
     int base_index = properties_nodes_[extra].begin;
     int index = base_index;
 
-    for (auto property : properties->DictItems()) {
+    for (auto property : *properties) {
       strings_.push_back(property.first);
       property_nodes_[index].key = strings_.back().c_str();
       if (!Parse(property.second, &property_nodes_[index].schema,
@@ -967,14 +974,14 @@ bool Schema::InternalStorage::ParseDictionary(
       }
       ++index;
     }
-    CHECK_EQ(static_cast<int>(properties->DictSize()), index - base_index);
+    CHECK_EQ(static_cast<int>(properties->size()), index - base_index);
   }
 
   if (pattern_properties != nullptr) {
     int base_index = properties_nodes_[extra].end;
     int index = base_index;
 
-    for (auto pattern_property : pattern_properties->DictItems()) {
+    for (auto pattern_property : *pattern_properties) {
       re2::RE2* compiled_regex = CompileRegex(pattern_property.first);
       if (!compiled_regex->ok()) {
         *error = "/" + pattern_property.first +
@@ -989,8 +996,7 @@ bool Schema::InternalStorage::ParseDictionary(
       }
       ++index;
     }
-    CHECK_EQ(static_cast<int>(pattern_properties->DictSize()),
-             index - base_index);
+    CHECK_EQ(static_cast<int>(pattern_properties->size()), index - base_index);
   }
 
   properties_nodes_[extra].required_begin = required_properties_.size();
@@ -1263,7 +1269,7 @@ bool Schema::Validate(const base::Value& value,
 
   if (value.is_dict()) {
     base::flat_set<std::string> present_properties;
-    for (auto dict_item : value.DictItems()) {
+    for (auto dict_item : value.GetDict()) {
       SchemaList schema_list = GetMatchingProperties(dict_item.first);
       if (schema_list.empty()) {
         // Unknown property was detected.
@@ -1361,7 +1367,7 @@ bool Schema::Normalize(base::Value* value,
   if (value->is_dict()) {
     base::flat_set<std::string> present_properties;
     std::vector<std::string> drop_list;  // Contains the keys to drop.
-    for (auto dict_item : value->DictItems()) {
+    for (auto dict_item : value->GetDict()) {
       SchemaList schema_list = GetMatchingProperties(dict_item.first);
       if (schema_list.empty()) {
         // Unknown property was detected.
@@ -1666,9 +1672,8 @@ void Schema::MaskSensitiveValuesRecursive(base::Value* value) const {
     return;
 
   if (value->is_dict()) {
-    for (auto dict_item : value->DictItems()) {
-      auto& sub_value = dict_item.second;
-      SchemaList schema_list = GetMatchingProperties(dict_item.first);
+    for (auto [key, sub_value] : value->GetDict()) {
+      SchemaList schema_list = GetMatchingProperties(key);
       for (const auto& schema_item : schema_list)
         schema_item.MaskSensitiveValuesRecursive(&sub_value);
     }

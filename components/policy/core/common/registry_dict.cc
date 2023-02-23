@@ -47,7 +47,7 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
     // Recurse for complex types.
     if (value.is_dict()) {
       base::Value result(base::Value::Type::DICT);
-      for (auto entry : value.DictItems()) {
+      for (auto entry : value.GetDict()) {
         absl::optional<base::Value> converted =
             ConvertRegistryValue(entry.second, schema.GetProperty(entry.first));
         if (converted.has_value())
@@ -107,7 +107,7 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
       // (non-numerical keys are ignored).
       if (value.is_dict()) {
         base::Value result(base::Value::Type::LIST);
-        for (auto it : value.DictItems()) {
+        for (auto it : value.GetDict()) {
           if (!IsKeyNumerical(it.first))
             continue;
           absl::optional<base::Value> converted =
