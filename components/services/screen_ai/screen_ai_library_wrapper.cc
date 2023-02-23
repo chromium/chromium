@@ -45,17 +45,6 @@ std::vector<char> LoadModelFile(base::File& model_file) {
   return buffer;
 }
 
-// TODO(crbug.com/1413983): Remove this function when the bug is fixed.
-// This function is added only to get a better stack trace in the crash dump.
-void CheckLibraryIsLoaded(base::ScopedNativeLibrary& library) {
-  CHECK_NE(library.GetError(), nullptr);
-#if BUILDFLAG(IS_WIN)
-  CHECK_EQ(library.GetError()->code, 0u);
-#else
-  CHECK(library.GetError()->message.empty());
-#endif
-}
-
 }  // namespace
 
 ScreenAILibraryWrapper::ScreenAILibraryWrapper() = default;
@@ -74,7 +63,6 @@ bool ScreenAILibraryWrapper::LoadFunction(T& function_variable,
 
 bool ScreenAILibraryWrapper::Init(const base::FilePath& library_path) {
   library_ = base::ScopedNativeLibrary(library_path);
-  CheckLibraryIsLoaded(library_);
 
   if (library_.GetError() == nullptr) {
     VLOG(0) << "Library load state cannot be read.";
