@@ -367,8 +367,15 @@ void FlatlandWindow::OnGetStatus(
     case fuchsia::ui::composition::ParentViewportStatus::CONNECTED_TO_DISPLAY:
       OnViewAttachedChanged(true);
       break;
+
     case fuchsia::ui::composition::ParentViewportStatus::
         DISCONNECTED_FROM_DISPLAY:
+      // We may get here after the initial `GetStatus()` call. There is no need
+      // to do anything in this case.
+      if (!is_view_attached_) {
+        break;
+      }
+
       OnViewAttachedChanged(false);
 
       // Detach the surface view. This is necessary to ensure that the
@@ -386,6 +393,7 @@ void FlatlandWindow::OnGetStatus(
       platform_window_delegate_->OnAcceleratedWidgetAvailable(window_id_);
 
       break;
+
     default:
       NOTIMPLEMENTED();
       break;

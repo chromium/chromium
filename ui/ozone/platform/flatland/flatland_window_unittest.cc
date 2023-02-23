@@ -380,6 +380,9 @@ TEST_F(FlatlandWindowTest, ResetSurfaceOnDisconnect) {
   auto token_pair = scenic::ViewCreationTokenPair::New();
   flatland_window_->AttachSurfaceContent(std::move(token_pair.viewport_token));
 
+  SetWindowStatus(
+      fuchsia::ui::composition::ParentViewportStatus::CONNECTED_TO_DISPLAY);
+
   // Show to attach the scene graph.
   flatland_window_->Show(/*inactive=*/false);
   fuchsia::ui::composition::OnNextFrameBeginValues on_next_frame_begin_values;
