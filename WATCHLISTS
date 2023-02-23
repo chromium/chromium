@@ -1234,9 +1234,6 @@
                   '|chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/infobar/'\
                   '|chrome/browser/ui/android/infobars/',
     },
-    'infra_docs': {
-      'filepath': 'docs/infra',
-    },
     'input': {
       'filepath': 'content/browser/renderer_host/input|'\
                   'content/renderer/input|'\
@@ -2746,7 +2743,6 @@
                    'dmurph+watching-idb@chromium.org',
                    'enne+idb@chromium.org'],
     'infobars_for_weblayer': ['blundell+infobars-watch@chromium.org'],
-    'infra_docs': ['martiniss+watch@chromium.org'],
     'input': ['dtapuska+chromiumwatch@chromium.org'],
     'input_devices': ['spang+watch@chromium.org'],
     'installable': ['dominickn+watch-installable@chromium.org',
