@@ -64,7 +64,7 @@ class CWTRequestHandler {
 
   // Navigates the target tab to the given URL, and waits for the page load to
   // complete.
-  base::Value NavigateToUrl(const base::Value* url);
+  base::Value NavigateToUrl(const std::string* url);
 
   // Navigates the target tab to the URL given in `input`, waits for the page
   // load to complete, and then waits for the additional time specified in
@@ -83,7 +83,7 @@ class CWTRequestHandler {
 
   // Switches to the tab with the given id and makes this the target tab.
   // Returns an error value if no such tab exists.
-  base::Value SwitchToTabWithId(const base::Value* tab_id);
+  base::Value SwitchToTabWithId(const std::string* tab_id);
 
   // Closes the target tab. Returns an error value if no tab is open.
   // Otherwise, returns the ids of the remaining tabs.
@@ -111,7 +111,7 @@ class CWTRequestHandler {
   // 3) `script` is "document.title = 'hello world';" and `is_async_function` is
   //    false. In this case, the script's return value is "undefined" so the
   //    value returned by this method is a default-constructed base::Value.
-  base::Value ExecuteScript(const base::Value* script, bool is_async_function);
+  base::Value ExecuteScript(const std::string* script, bool is_async_function);
 
   // Takes a snapshot of the target tab. Returns an error value if the target
   // tab is no longer open. Otherwise, returns the snapshot as a base64-encoded
