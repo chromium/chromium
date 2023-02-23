@@ -281,17 +281,25 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetPolicy(::onc::ONCSource onc_source,
+  bool SetPolicy(::onc::ONCSource onc_source,
                  const std::string& userhash,
                  const std::string& path_to_onc) {
-    base::Value policy = path_to_onc.empty()
-                             ? chromeos::onc::ReadDictionaryFromJson(
-                                   kEmptyUnencryptedConfiguration)
-                             : test_utils::ReadTestDictionaryValue(path_to_onc);
-    SetPolicy(onc_source, userhash, std::move(policy));
+    if (path_to_onc.empty()) {
+      absl::optional<base::Value::Dict> policy =
+          chromeos::onc::ReadDictionaryFromJson(kEmptyUnencryptedConfiguration);
+      if (!policy.has_value()) {
+        return false;
+      }
+      return SetPolicy(onc_source, userhash, base::Value(std::move(*policy)));
+    }
+    base::Value policy_value = test_utils::ReadTestDictionaryValue(path_to_onc);
+    if (!policy_value.is_dict()) {
+      return false;
+    }
+    return SetPolicy(onc_source, userhash, std::move(policy_value));
   }
 
-  void SetPolicy(::onc::ONCSource onc_source,
+  bool SetPolicy(::onc::ONCSource onc_source,
                  const std::string& userhash,
                  base::Value policy) {
     chromeos::onc::Validator validator(true,   // error_on_unknown_field
@@ -306,9 +314,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
         &validation_result);
     if (validation_result == chromeos::onc::Validator::INVALID) {
       ADD_FAILURE() << "Network configuration invalid.";
-      return;
+      return false;
     }
-    ASSERT_TRUE(validated_policy.is_dict());
     const base::Value::Dict& validated_policy_dict = validated_policy.GetDict();
 
     base::Value::List network_configs;
@@ -331,6 +338,7 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
 
     managed_network_configuration_handler_->SetPolicy(
         onc_source, userhash, network_configs, global_config);
+    return true;
   }
 
   void SetUpEntry(const std::string& path_to_shill_json,
@@ -410,8 +418,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, RemoveIrrelevantFields) {
   base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
       "policy/shill_policy_on_unconfigured_wifi1.json");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_wifi1_with_redundant_fields.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1_with_redundant_fields.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -453,8 +461,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, VariableSetAfterPolicy) {
         ],
         "Type": "UnencryptedConfiguration"
       })";
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            base::test::ParseJson(onc_policy));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        base::test::ParseJson(onc_policy)));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -525,8 +533,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, VariableSetBeforePolicy) {
         ],
         "Type": "UnencryptedConfiguration"
       })";
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            base::test::ParseJson(onc_policy));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        base::test::ParseJson(onc_policy)));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -573,8 +581,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, VariableDoesNotAffectPolicy) {
         ],
         "Type": "UnencryptedConfiguration"
       })";
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            base::test::ParseJson(onc_policy));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        base::test::ParseJson(onc_policy)));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
@@ -600,21 +608,22 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyProhibitedTechnology) {
       LoginState::LoggedInUserType::LOGGED_IN_USER_REGULAR);
   prohibited_technologies_handler()->PoliciesApplied(kUser1);
 
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), empty);
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), empty));
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(
       prohibited_technologies_handler()->GetCurrentlyProhibitedTechnologies(),
       IsEmpty());
 
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), prohibit_wifi);
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), prohibit_wifi));
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(
       prohibited_technologies_handler()->GetCurrentlyProhibitedTechnologies(),
       ElementsAre(shill::kTypeWifi));
 
-  // Not explicitly prohibiting any technology should result in all technologies
-  // being explicitly allowed.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), empty);
+  // Not explicitly prohibiting any technology should result in all
+  // technologies being explicitly allowed.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), empty));
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(
       prohibited_technologies_handler()->GetCurrentlyProhibitedTechnologies(),
@@ -628,8 +637,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
   base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
       "policy/shill_policy_on_unconfigured_cellular.json");
 
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_cellular.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_cellular.onc"));
   FastForwardProfileRefreshDelay();
   FastForwardAutoConnectWaiting();
   base::RunLoop().RunUntilIdle();
@@ -647,8 +656,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
 
   // Verify that applying a new cellular policy with same ICCID should update
   // the old shill configuration.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_cellular_with_iccid.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_cellular_with_iccid.onc"));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(std::string(), GetShillServiceClient()->FindServiceMatchingGUID(
@@ -669,8 +678,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   InitializeEuicc();
   // Verify that applying managed eSIM policy with no SMDP address in the ONC
   // should not create a new shill configuration for it.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_cellular_with_no_smdp.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_cellular_with_no_smdp.onc"));
   FastForwardProfileRefreshDelay();
   base::RunLoop().RunUntilIdle();
   std::string service_path = GetShillServiceClient()->FindServiceMatchingGUID(
@@ -683,7 +692,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnconfigured) {
   base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
       "policy/shill_policy_on_unconfigured_wifi1.json");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -701,8 +711,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, EnableManagedCredentialsWiFi) {
   base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
       "policy/shill_policy_autoconnect_on_unconfigured_wifi1.json");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_wifi1_autoconnect.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1_autoconnect.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -720,8 +730,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, EnableManagedCredentialsVPN) {
   base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
       "policy/shill_policy_autoconnect_on_unconfigured_vpn.json");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_vpn_autoconnect.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_vpn_autoconnect.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -757,8 +767,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   SetUpEntry("policy/shill_unmanaged_wifi1.json", kUser1ProfilePath,
              "wifi_entry");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_ethernet_eap.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_ethernet_eap.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -774,14 +784,16 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyIgnoreUnmodified) {
   InitializeStandardProfiles();
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, policy_observer()->GetPoliciesAppliedCountAndReset());
 
   SetUpEntry("policy/shill_policy_on_unmanaged_wifi1.json", kUser1ProfilePath,
              "some_entry_path");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, policy_observer()->GetPoliciesAppliedCountAndReset());
 }
@@ -791,7 +803,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, PolicyApplicationRunning) {
 
   EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   managed_handler()->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
                                /*userhash=*/std::string(),
                                /*network_configs_onc=*/base::Value::List(),
@@ -804,8 +817,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, PolicyApplicationRunning) {
   SetUpEntry("policy/shill_policy_on_unmanaged_wifi1.json", kUser1ProfilePath,
              "some_entry_path");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_wifi1_update.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1_update.onc"));
   EXPECT_TRUE(managed_handler()->IsAnyPolicyApplicationRunning());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
@@ -814,15 +827,16 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, PolicyApplicationRunning) {
 TEST_F(ManagedNetworkConfigurationHandlerTest, UpdatePolicyAfterFinished) {
   InitializeStandardProfiles();
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, policy_observer()->GetPoliciesAppliedCountAndReset());
 
   SetUpEntry("policy/shill_policy_on_unmanaged_wifi1.json", kUser1ProfilePath,
              "some_entry_path");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_wifi1_update.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1_update.onc"));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, policy_observer()->GetPoliciesAppliedCountAndReset());
 }
@@ -830,11 +844,12 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, UpdatePolicyAfterFinished) {
 TEST_F(ManagedNetworkConfigurationHandlerTest, UpdatePolicyBeforeFinished) {
   InitializeStandardProfiles();
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   // Usually the first call will cause a profile entry to be created, which we
   // don't fake here.
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_wifi1_update.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1_update.onc"));
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, policy_observer()->GetPoliciesAppliedCountAndReset());
@@ -847,7 +862,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   InitializeStandardProfiles();
   base::RunLoop().RunUntilIdle();
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
 
   // Pretend that NetworkProfileHandler doesn't know the network profile
   // anymore.
@@ -869,7 +885,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnmanaged) {
   // Before setting policy, old_entry_path should exist.
   ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Verify old_entry_path is deleted.
@@ -901,7 +918,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUpdateManagedNewGUID) {
   // Before setting policy, old_entry_path should exist.
   ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Verify old_entry_path is deleted.
@@ -921,7 +939,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUpdateManagedVPN) {
   InitializeStandardProfiles();
   SetUpEntry("policy/shill_managed_vpn.json", kUser1ProfilePath, "entry_path");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_vpn.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_vpn.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -940,9 +959,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   InitializeStandardProfiles();
   SetUpEntry("policy/shill_managed_vpn.json", kUser1ProfilePath, "entry_path");
 
-  // Apply a policy that does not provide an authenticaiton type.
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_vpn_no_auth.onc");
+  // Apply a policy that does not provide an authentication type.
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_vpn_no_auth.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Apply additional configuration (e.g. from the UI). This includes password
@@ -976,8 +995,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
              "entry_path");
 
   // Apply the VPN L2TP-IPsec policy that will be updated.
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_vpn_ipsec.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_vpn_ipsec.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Update the VPN L2TP-IPsec policy.
@@ -1012,8 +1031,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
       "policy/shill_policy_on_managed_vpn.json");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_vpn_no_user_auth_type.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_vpn_no_user_auth_type.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -1038,7 +1057,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyReapplyToManaged) {
   expected_shill_properties.RemoveKey(shill::kPassphraseProperty);
   expected_shill_properties.RemoveKey(shill::kPassphraseRequiredProperty);
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   {
@@ -1054,7 +1074,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyReapplyToManaged) {
 
   // If we apply the policy again, without change, then the Shill profile will
   // not be modified.
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   {
@@ -1077,8 +1098,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyUnmanageManaged) {
   // Before setting policy, old_entry_path should exist.
   ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            std::string() /* path_to_onc */);
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        std::string() /* path_to_onc */));
   base::RunLoop().RunUntilIdle();
 
   // Verify old_entry_path is deleted.
@@ -1093,8 +1114,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetEmptyPolicyIgnoreUnmanaged) {
   // Before setting policy, old_entry_path should exist.
   ASSERT_TRUE(GetShillProfileClient()->HasService("old_entry_path"));
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            std::string() /* path_to_onc */);
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        std::string() /* path_to_onc */));
   base::RunLoop().RunUntilIdle();
 
   // Verify old_entry_path is kept.
@@ -1110,7 +1131,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyIgnoreUnmanaged) {
   base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
       "policy/shill_policy_on_unconfigured_wifi1.json");
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -1172,8 +1194,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
       ],
       "Type": "UnencryptedConfiguration"
     })";
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            base::test::ParseJson(onc_policy));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        base::test::ParseJson(onc_policy)));
   base::RunLoop().RunUntilIdle();
 
   // Expect that "policy_wifi1" policy has been applied by checking that the
@@ -1203,8 +1225,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
 
   // Apply the user policy with global autoconnect config and expect that
   // autoconnect is disabled in the network's profile entry.
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_allow_only_policy_networks_to_autoconnect.onc");
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                "policy/policy_allow_only_policy_networks_to_autoconnect.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string wifi2_service_path =
@@ -1255,7 +1278,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, LateProfileLoading) {
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   base::Value expected_shill_properties = test_utils::ReadTestDictionaryValue(
@@ -1278,7 +1302,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
        ShutdownDuringPolicyApplication) {
   InitializeStandardProfiles();
 
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
 
   // Reset the network configuration manager after setting policy and before
   // calling RunUntilIdle to simulate shutdown during policy application.
@@ -1297,9 +1322,11 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowOnlyPolicyWiFiToConnect) {
 
   // Set 'AllowOnlyPolicyWiFiToConnect' policy and another arbitrary user
   // policy.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_allow_only_policy_networks_to_connect.onc");
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                "policy/policy_allow_only_policy_networks_to_connect.onc"));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
@@ -1321,12 +1348,14 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
       UpdateBlockedWifiNetworks(false, true, std::vector<std::string>()))
       .Times(1);
 
-  // Set 'AllowOnlyPolicyWiFiToConnectIfAvailable' policy and another arbitrary
-  // user policy.
-  SetPolicy(
+  // Set 'AllowOnlyPolicyWiFiToConnectIfAvailable' policy and another
+  // arbitrary user policy.
+  EXPECT_TRUE(SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-      "policy/policy_allow_only_policy_networks_to_connect_if_available.onc");
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+      "policy/"
+      "policy_allow_only_policy_networks_to_connect_if_available.onc"));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
@@ -1350,9 +1379,11 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
 
   // Set 'AllowOnlyPolicyNetworksToAutoconnect' policy and another arbitrary
   // user policy.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_allow_only_policy_networks_to_autoconnect.onc");
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                "policy/policy_allow_only_policy_networks_to_autoconnect.onc"));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
@@ -1374,8 +1405,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
       .Times(1);
 
   // Set 'AllowOnlyPolicyCellularNetworks' policy.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_allow_only_policy_cellular_networks.onc");
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                "policy/policy_allow_only_policy_cellular_networks.onc"));
   FastForwardProfileRefreshDelay();
   base::RunLoop().RunUntilIdle();
 
@@ -1393,8 +1425,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AllowCellularSimLock) {
   feature_list.InitAndEnableFeature(features::kSimLockPolicy);
 
   // Set 'AllowCellularSimLock' policy.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_allow_cellular_sim_lock.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_allow_cellular_sim_lock.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
@@ -1417,9 +1449,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlacklistedHexSSIDs) {
       .Times(1);
 
   // Set 'BlacklistedHexSSIDs' policy and another arbitrary user policy.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_deprecated_blacklisted_hex_ssids.onc");
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_deprecated_blacklisted_hex_ssids.onc"));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
@@ -1441,9 +1474,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, GetBlockedHexSSIDs) {
       .Times(1);
 
   // Set 'BlockedHexSSIDs' policy and another arbitrary user policy.
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_blocked_hex_ssids.onc");
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                        "policy/policy_blocked_hex_ssids.onc"));
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
   base::RunLoop().RunUntilIdle();
 
   // Check ManagedNetworkConfigurationHandler policy accessors.
@@ -1461,18 +1495,20 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, WipeGlobalNetworkConfiguration) {
   // A user policy must be present to apply some global config, e.g. blocked
   // SSIDs, even though they are actually given in device policy. It does not
   // really matter which user policy is configured for this test.
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1.onc"));
 
   // Step 1: Apply a device policy which sets all possible entries in
   // GlobalNetworkConfiguration.
-  EXPECT_CALL(
-      *network_state_handler_,
-      UpdateBlockedWifiNetworks(/*only_managed=*/true, /*available_only=*/true,
-                                std::vector<std::string>({"blocked_ssid"})))
+  EXPECT_CALL(*network_state_handler_,
+              UpdateBlockedWifiNetworks(
+                  /*only_managed=*/true, /*available_only=*/true,
+                  std::vector<std::string>({"blocked_ssid"})))
       .Times(1);
 
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_exhaustive_global_network_configuration.onc");
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                "policy/policy_exhaustive_global_network_configuration.onc"));
   base::RunLoop().RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(network_state_handler_.get());
@@ -1491,8 +1527,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, WipeGlobalNetworkConfiguration) {
                   /*only_managed=*/false, /*available_only=*/false,
                   std::vector<std::string>()))
       .Times(1);
-  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
-            "policy/policy_empty_global_network_configuration.onc");
+  EXPECT_TRUE(
+      SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+                "policy/policy_empty_global_network_configuration.onc"));
   base::RunLoop().RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(network_state_handler_.get());
@@ -1514,8 +1551,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
       std::string() /* state */, true /* visible */);
 
   // Use proxy configured network.
-  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-            "policy/policy_wifi1_proxy.onc");
+  EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
+                        "policy/policy_wifi1_proxy.onc"));
   base::RunLoop().RunUntilIdle();
 
   std::string wifi_service_path =

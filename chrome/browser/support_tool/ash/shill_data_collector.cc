@@ -303,9 +303,11 @@ base::Value::Dict ShillDataCollector::ExpandProperties(
   // Converts UIData from a string to a dictionary.
   std::string* ui_data = dict.FindString(shill::kUIDataProperty);
   if (ui_data) {
-    base::Value ui_data_dict(chromeos::onc::ReadDictionaryFromJson(*ui_data));
-    if (ui_data_dict.is_dict())
-      dict.Set(shill::kUIDataProperty, std::move(ui_data_dict));
+    absl::optional<base::Value::Dict> ui_data_dict =
+        chromeos::onc::ReadDictionaryFromJson(*ui_data);
+    if (ui_data_dict.has_value()) {
+      dict.Set(shill::kUIDataProperty, base::Value(std::move(*ui_data_dict)));
+    }
   }
 
   if (base::StartsWith(object_path, kServicePrefix,

@@ -294,7 +294,7 @@ class CrosNetworkConfigTest : public testing::Test {
         /*global_network_config=*/base::Value::Dict());
 
     const std::string user_policy_ssid = "wifi2";
-    base::Value wifi2_onc =
+    absl::optional<base::Value::Dict> wifi2_onc =
         chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
             R"({"GUID": "wifi2_guid", "Type": "WiFi",
                 "Name": "wifi2", "Priority": 0,
@@ -303,30 +303,33 @@ class CrosNetworkConfigTest : public testing::Test {
             user_policy_ssid.c_str(),
             base::HexEncode(user_policy_ssid.c_str(), user_policy_ssid.size())
                 .c_str()));
+    ASSERT_TRUE(wifi2_onc.has_value());
 
-    base::Value wifi_eap_onc =
-        chromeos::onc::ReadDictionaryFromJson(R"({ "GUID": "wifi_eap",
-      "Name": "wifi_eap",
-      "Type": "WiFi",
-      "WiFi": {
-         "AutoConnect": true,
-         "EAP": {
-            "Inner": "MD5",
-            "Outer": "PEAP",
-            "SubjectAlternativeNameMatch": [
-              { "Type": "DNS" , "Value" : "example.com"},
-              {"Type" : "EMAIL", "Value" : "test@example.com"}],
-            "DomainSuffixMatch": ["example1.com","example2.com"],
-            "Recommended": [ "AnonymousIdentity", "Identity", "Password",
-              "DomainSuffixMatch" , "SubjectAlternativeNameMatch"],
-            "UseSystemCAs": true
-         },
-         "SSID": "wifi_eap",
-         "Security": "WPA-EAP"
-      }
-}  )");
+    absl::optional<base::Value::Dict> wifi_eap_onc =
+        chromeos::onc::ReadDictionaryFromJson(
+            R"({ "GUID": "wifi_eap",
+             "Name": "wifi_eap",
+             "Type": "WiFi",
+             "WiFi": {
+                "AutoConnect": true,
+                "EAP": {
+                   "Inner": "MD5",
+                   "Outer": "PEAP",
+                   "SubjectAlternativeNameMatch": [
+                     { "Type": "DNS" , "Value" : "example.com"},
+                     {"Type" : "EMAIL", "Value" : "test@example.com"}],
+                   "DomainSuffixMatch": ["example1.com","example2.com"],
+                   "Recommended": [ "AnonymousIdentity", "Identity", "Password",
+                     "DomainSuffixMatch" , "SubjectAlternativeNameMatch"],
+                   "UseSystemCAs": true
+                },
+                "SSID": "wifi_eap",
+                "Security": "WPA-EAP"
+             }
+           })");
+    ASSERT_TRUE(wifi_eap_onc.has_value());
 
-    base::Value openvpn_onc =
+    absl::optional<base::Value::Dict> openvpn_onc =
         chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
             R"({ "GUID": "openvpn_guid", "Name": "openvpn", "Type": "VPN", "VPN": {
           "Host": "my.vpn.example.com", "Type": "OpenVPN", "OpenVPN": {
@@ -334,11 +337,12 @@ class CrosNetworkConfigTest : public testing::Test {
           "CompressionAlgorithm": "LZO", "KeyDirection": "1",
           "TLSAuthContents": "%s"}}})",
             kOpenVPNTLSAuthContents));
+    ASSERT_TRUE(openvpn_onc.has_value());
 
     base::Value::List user_policy_onc;
-    user_policy_onc.Append(std::move(wifi2_onc));
-    user_policy_onc.Append(std::move(wifi_eap_onc));
-    user_policy_onc.Append(std::move(openvpn_onc));
+    user_policy_onc.Append(std::move(*wifi2_onc));
+    user_policy_onc.Append(std::move(*wifi_eap_onc));
+    user_policy_onc.Append(std::move(*openvpn_onc));
     managed_network_configuration_handler->SetPolicy(
         ::onc::ONC_SOURCE_USER_POLICY, helper()->UserHash(), user_policy_onc,
         /*global_network_config=*/base::Value::Dict());

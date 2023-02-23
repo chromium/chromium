@@ -117,7 +117,10 @@ struct OncParams {
 // Ensure that the constant |kEmptyUnencryptedConfiguration| describes a valid
 // ONC toplevel object.
 TEST_F(ONCValidatorTest, EmptyUnencryptedConfiguration) {
-  Validate(true, ReadDictionaryFromJson(kEmptyUnencryptedConfiguration),
+  absl::optional<base::Value::Dict> dict =
+      ReadDictionaryFromJson(kEmptyUnencryptedConfiguration);
+  EXPECT_TRUE(dict.has_value());
+  Validate(true, base::Value(std::move(*dict)),
            &kToplevelConfigurationSignature, false, ::onc::ONC_SOURCE_NONE);
   ExpectValid();
 }

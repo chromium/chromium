@@ -199,9 +199,11 @@ base::Value::Dict ShillLogSource::ScrubAndExpandProperties(
   // Convert UIData from a string to a dictionary.
   std::string* ui_data = dict.FindString(shill::kUIDataProperty);
   if (ui_data) {
-    base::Value ui_data_dict(chromeos::onc::ReadDictionaryFromJson(*ui_data));
-    if (ui_data_dict.is_dict())
-      dict.Set(shill::kUIDataProperty, std::move(ui_data_dict));
+    absl::optional<base::Value::Dict> ui_data_dict =
+        chromeos::onc::ReadDictionaryFromJson(*ui_data);
+    if (ui_data_dict.has_value()) {
+      dict.Set(shill::kUIDataProperty, std::move(*ui_data_dict));
+    }
   }
 
   if (!scrub_)

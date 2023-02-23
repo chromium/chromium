@@ -224,9 +224,9 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
   if (!value)
     return true;
 
-  base::Value root_dict =
+  absl::optional<base::Value::Dict> root_dict =
       chromeos::onc::ReadDictionaryFromJson(value->GetString());
-  if (!root_dict.is_dict()) {
+  if (!root_dict.has_value()) {
     errors->AddError(policy_name(), IDS_POLICY_NETWORK_CONFIG_PARSE_FAILED);
     return false;
   }
@@ -244,8 +244,8 @@ bool NetworkConfigurationPolicyHandler::CheckPolicySettings(
   // ONC policies are always unencrypted.
   chromeos::onc::Validator::Result validation_result;
   validator.ValidateAndRepairObject(
-      &chromeos::onc::kToplevelConfigurationSignature, root_dict,
-      &validation_result);
+      &chromeos::onc::kToplevelConfigurationSignature,
+      base::Value(std::move(*root_dict)), &validation_result);
 
   // Pass error/warning message and non-localized debug_info to PolicyErrorMap.
   std::vector<base::StringPiece> messages;
@@ -319,17 +319,18 @@ NetworkConfigurationPolicyHandler::SanitizeNetworkConfig(
   if (!config)
     return absl::nullopt;
 
-  base::Value toplevel_dict =
+  absl::optional<base::Value::Dict> config_dict =
       chromeos::onc::ReadDictionaryFromJson(config->GetString());
-  if (!toplevel_dict.is_dict())
+  if (!config_dict.has_value()) {
     return absl::nullopt;
+  }
 
   // Placeholder to insert in place of the filtered setting.
   const char kPlaceholder[] = "********";
 
-  toplevel_dict = chromeos::onc::MaskCredentialsInOncObject(
-      chromeos::onc::kToplevelConfigurationSignature, toplevel_dict,
-      kPlaceholder);
+  base::Value toplevel_dict = chromeos::onc::MaskCredentialsInOncObject(
+      chromeos::onc::kToplevelConfigurationSignature,
+      base::Value(std::move(*config_dict)), kPlaceholder);
 
   std::string json_string;
   base::JSONWriter::WriteWithOptions(

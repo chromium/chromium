@@ -351,11 +351,12 @@ bool ResolveServerCertRefsInObject(const CertPEMsByGUIDMap& certs_by_guid,
 
 }  // namespace
 
-base::Value ReadDictionaryFromJson(const std::string& json) {
+absl::optional<base::Value::Dict> ReadDictionaryFromJson(
+    const std::string& json) {
   if (json.empty()) {
     // Policy may contain empty values, just log a debug message.
     NET_LOG(DEBUG) << "Empty json string";
-    return base::Value();
+    return absl::nullopt;
   }
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       json,
@@ -363,12 +364,13 @@ base::Value ReadDictionaryFromJson(const std::string& json) {
   if (!parsed_json.has_value()) {
     NET_LOG(ERROR) << "Invalid JSON Dictionary: "
                    << parsed_json.error().message;
-    return base::Value();
-  } else if (!parsed_json->is_dict()) {
-    NET_LOG(ERROR) << "Invalid JSON Dictionary: Expected a dictionary.";
-    return base::Value();
+    return absl::nullopt;
   }
-  return std::move(*parsed_json);
+  if (!parsed_json->is_dict()) {
+    NET_LOG(ERROR) << "Invalid JSON Dictionary: Expected a dictionary.";
+    return absl::nullopt;
+  }
+  return std::move(*parsed_json).TakeDict();
 }
 
 base::Value Decrypt(const std::string& passphrase, const base::Value& root) {
@@ -460,11 +462,13 @@ base::Value Decrypt(const std::string& passphrase, const base::Value& root) {
     return base::Value();
   }
 
-  base::Value new_root = ReadDictionaryFromJson(plaintext);
-  if (new_root.is_none())
+  absl::optional<base::Value::Dict> new_root =
+      ReadDictionaryFromJson(plaintext);
+  if (!new_root) {
     NET_LOG(ERROR) << "Property dictionary malformed.";
-
-  return new_root;
+    return base::Value();
+  }
+  return base::Value(std::move(*new_root));
 }
 
 std::string GetSourceAsString(::onc::ONCSource source) {
@@ -626,12 +630,14 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   if (onc_blob.empty())
     return true;
 
-  base::Value toplevel_onc = ReadDictionaryFromJson(onc_blob);
-  if (toplevel_onc.is_none()) {
+  absl::optional<base::Value::Dict> toplevel_onc_dict =
+      ReadDictionaryFromJson(onc_blob);
+  if (!toplevel_onc_dict) {
     NET_LOG(ERROR) << "Not a valid ONC JSON dictionary: "
                    << GetSourceAsString(onc_source);
     return false;
   }
+  base::Value toplevel_onc(std::move(*toplevel_onc_dict));
 
   // Check and see if this is an encrypted ONC file. If so, decrypt it.
   std::string onc_type;

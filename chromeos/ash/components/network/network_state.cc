@@ -180,13 +180,13 @@ bool NetworkState::PropertyChanged(const std::string& key,
       proxy_config_ = base::Value();
       return true;
     }
-    base::Value proxy_config =
+    absl::optional<base::Value::Dict> proxy_config =
         chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
-    if (!proxy_config.is_dict()) {
+    if (!proxy_config.has_value()) {
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;
       proxy_config_ = base::Value();
     } else {
-      proxy_config_ = std::move(proxy_config);
+      proxy_config_ = base::Value(std::move(*proxy_config));
     }
     return true;
   } else if (key == shill::kProviderProperty) {

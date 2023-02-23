@@ -207,8 +207,10 @@ class CellularPolicyHandlerTest : public testing::Test {
                          const std::string& activation_code,
                          bool expect_install_success,
                          bool auto_connect = false) {
-    base::Value policy = chromeos::onc::ReadDictionaryFromJson(onc_json);
-    cellular_policy_handler_->InstallESim(activation_code, policy.GetDict());
+    absl::optional<base::Value::Dict> policy =
+        chromeos::onc::ReadDictionaryFromJson(onc_json);
+    ASSERT_TRUE(policy.has_value());
+    cellular_policy_handler_->InstallESim(activation_code, *policy);
     FastForwardProfileRefreshDelay();
     base::RunLoop().RunUntilIdle();
 

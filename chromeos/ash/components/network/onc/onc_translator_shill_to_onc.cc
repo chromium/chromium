@@ -765,11 +765,11 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
   const std::string* proxy_config_str =
       shill_dictionary_->FindString(shill::kProxyConfigProperty);
   if (proxy_config_str && !proxy_config_str->empty()) {
-    base::Value proxy_config_value =
+    absl::optional<base::Value::Dict> proxy_config =
         chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
-    if (!proxy_config_value.is_none()) {
+    if (proxy_config.has_value()) {
       base::Value proxy_settings =
-          ConvertProxyConfigToOncProxySettings(proxy_config_value.GetDict());
+          ConvertProxyConfigToOncProxySettings(*proxy_config);
       if (!proxy_settings.is_none()) {
         onc_object_.Set(::onc::network_config::kProxySettings,
                         std::move(proxy_settings));
