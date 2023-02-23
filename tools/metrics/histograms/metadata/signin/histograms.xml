@@ -727,6 +727,17 @@ the browser and content area. -->
   <summary>Tracks the latency of calls to the Kids Management API.</summary>
 </histogram>
 
+<histogram name="Signin.ListFamilyMembersRequest.NetOrHttpStatus"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The status of the net or http communication to the Kids Management API. This
+    is recorded for each request to the Kids Management API (ListFamilyMembers
+    rpc).
+  </summary>
+</histogram>
+
 <histogram name="Signin.ListFamilyMembersRequest.Status"
     enum="KidsExternalFetcherStatus" expires_after="2023-11-01">
   <owner>tju@google.com</owner>

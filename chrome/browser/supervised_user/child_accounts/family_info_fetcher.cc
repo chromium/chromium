@@ -51,6 +51,8 @@ const char kListFamilyMembersRequestHistogramPrefix[] =
     "Signin.ListFamilyMembersRequest";
 const char kListFamilyMembersRequestStatusHistogramName[] =
     "Signin.ListFamilyMembersRequest.Status";
+const char kListFamilyMembersRequestNetOrHttpStatusHistogramName[] =
+    "Signin.ListFamilyMembersRequest.NetOrHttpStatus";
 const char kListFamilyMembersRequestLatencyHistogramName[] =
     "Signin.ListFamilyMembersRequest.Latency";
 
@@ -61,7 +63,7 @@ std::string ToStatusKey(KidsExternalFetcherStatus::State status) {
       return "NoError";
     case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
       return "AuthError";
-    case KidsExternalFetcherStatus::HTTP_ERROR:
+    case KidsExternalFetcherStatus::NET_OR_HTTP_ERROR:
       return "HttpError";
     case KidsExternalFetcherStatus::INVALID_RESPONSE:
       return "ParseError";
@@ -76,11 +78,15 @@ std::string LatencyPerStatusKey(KidsExternalFetcherStatus::State status) {
                           /*separator=*/".");
 }
 
+bool IgnoreUnsupportedApiCalls(const GURL& request_url) {
+  // Ignore tracing all api calls except for family members.
+  return request_url != supervised_user::KidsManagementGetFamilyMembersURL();
+}
+
 void RecordMetrics(KidsExternalFetcherStatus::State status,
                    base::TimeTicks start_time,
                    const GURL& request_url) {
-  if (request_url != supervised_user::KidsManagementGetFamilyMembersURL()) {
-    // Ignore tracing all api calls except for family members.
+  if (IgnoreUnsupportedApiCalls(request_url)) {
     return;
   }
 
@@ -90,6 +96,18 @@ void RecordMetrics(KidsExternalFetcherStatus::State status,
   base::UmaHistogramTimes(kListFamilyMembersRequestLatencyHistogramName,
                           latency);
   base::UmaHistogramTimes(LatencyPerStatusKey(status), latency);
+}
+
+void RecordMetricsForNetOrHttpErrorState(int net_or_http_error,
+                                         base::TimeTicks start_time,
+                                         const GURL& request_url) {
+  RecordMetrics(KidsExternalFetcherStatus::State::NET_OR_HTTP_ERROR, start_time,
+                request_url);
+  if (IgnoreUnsupportedApiCalls(request_url)) {
+    return;
+  }
+  base::UmaHistogramSparse(
+      kListFamilyMembersRequestNetOrHttpStatusHistogramName, net_or_http_error);
 }
 }  // namespace
 
@@ -101,14 +119,11 @@ FamilyInfoFetcher::FamilyProfile::FamilyProfile() = default;
 
 FamilyInfoFetcher::FamilyProfile::FamilyProfile(const std::string& id,
                                                 const std::string& name)
-    : id(id), name(name) {
-}
+    : id(id), name(name) {}
 
-FamilyInfoFetcher::FamilyProfile::~FamilyProfile() {
-}
+FamilyInfoFetcher::FamilyProfile::~FamilyProfile() = default;
 
-FamilyInfoFetcher::FamilyMember::FamilyMember() {
-}
+FamilyInfoFetcher::FamilyMember::FamilyMember() = default;
 
 FamilyInfoFetcher::FamilyMember::FamilyMember(
     const std::string& obfuscated_gaia_id,
@@ -122,14 +137,12 @@ FamilyInfoFetcher::FamilyMember::FamilyMember(
       display_name(display_name),
       email(email),
       profile_url(profile_url),
-      profile_image_url(profile_image_url) {
-}
+      profile_image_url(profile_image_url) {}
 
 FamilyInfoFetcher::FamilyMember::FamilyMember(const FamilyMember& other) =
     default;
 
-FamilyInfoFetcher::FamilyMember::~FamilyMember() {
-}
+FamilyInfoFetcher::FamilyMember::~FamilyMember() = default;
 
 FamilyInfoFetcher::FamilyInfoFetcher(
     Consumer* consumer,
@@ -253,8 +266,9 @@ void FamilyInfoFetcher::OnSimpleLoaderComplete(
         simple_url_loader_->ResponseInfo()->headers->response_code();
   }
   std::string body;
-  if (response_body)
+  if (response_body) {
     body = std::move(*response_body);
+  }
   OnSimpleLoaderCompleteInternal(simple_url_loader_->NetError(), response_code,
                                  body);
 }
@@ -286,16 +300,16 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
 
   if (response_code != net::HTTP_OK) {
     DLOG(WARNING) << "HTTP error " << response_code;
-    RecordMetrics(KidsExternalFetcherStatus::State::HTTP_ERROR,
-                  simple_url_loader_start_time_, request_url_);
+    RecordMetricsForNetOrHttpErrorState(
+        response_code, simple_url_loader_start_time_, request_url_);
     consumer_->OnFailure(ErrorCode::kNetworkError);
     return;
   }
 
   if (net_error != net::OK) {
     DLOG(WARNING) << "NetError " << net_error;
-    RecordMetrics(KidsExternalFetcherStatus::State::HTTP_ERROR,
-                  simple_url_loader_start_time_, request_url_);
+    RecordMetricsForNetOrHttpErrorState(
+        net_error, simple_url_loader_start_time_, request_url_);
     consumer_->OnFailure(ErrorCode::kNetworkError);
     return;
   }
@@ -331,17 +345,21 @@ bool FamilyInfoFetcher::ParseMembers(const base::Value::List& list,
 bool FamilyInfoFetcher::ParseMember(const base::Value::Dict& dict,
                                     FamilyMember* member) {
   const std::string* obfuscated_gaia_id = dict.FindString(kIdUserId);
-  if (!obfuscated_gaia_id)
+  if (!obfuscated_gaia_id) {
     return false;
+  }
   member->obfuscated_gaia_id = *obfuscated_gaia_id;
   const std::string* role_str = dict.FindString(kIdRole);
-  if (!role_str)
+  if (!role_str) {
     return false;
-  if (!StringToRole(*role_str, &member->role))
+  }
+  if (!StringToRole(*role_str, &member->role)) {
     return false;
+  }
   const base::Value::Dict* profile_dict = dict.FindDict(kIdProfile);
-  if (profile_dict)
+  if (profile_dict) {
     ParseProfile(*profile_dict, member);
+  }
   return true;
 }
 
@@ -349,22 +367,27 @@ bool FamilyInfoFetcher::ParseMember(const base::Value::Dict& dict,
 void FamilyInfoFetcher::ParseProfile(const base::Value::Dict& dict,
                                      FamilyMember* member) {
   const std::string* display_name = dict.FindString(kIdDisplayName);
-  if (display_name)
+  if (display_name) {
     member->display_name = *display_name;
+  }
   const std::string* email = dict.FindString(kIdEmail);
-  if (email)
+  if (email) {
     member->email = *email;
+  }
   const std::string* profile_url = dict.FindString(kIdProfileUrl);
-  if (profile_url)
+  if (profile_url) {
     member->profile_url = *profile_url;
+  }
   const std::string* profile_image_url = dict.FindString(kIdProfileImageUrl);
-  if (profile_image_url)
+  if (profile_image_url) {
     member->profile_image_url = *profile_image_url;
+  }
   if (member->profile_image_url.empty()) {
     const std::string* def_profile_image_url =
         dict.FindString(kIdDefaultProfileImageUrl);
-    if (def_profile_image_url)
+    if (def_profile_image_url) {
       member->profile_image_url = *def_profile_image_url;
+    }
   }
 }
 

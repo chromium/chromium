@@ -39,6 +39,7 @@ using ::base::StringPiece;
 using ::base::TimeDelta;
 using ::base::TimeTicks;
 using ::base::UmaHistogramEnumeration;
+using ::base::UmaHistogramSparse;
 using ::base::UmaHistogramTimes;
 using ::base::Unretained;
 using ::kids_chrome_management::ListFamilyMembersRequest;
@@ -59,6 +60,14 @@ bool HasHttpOkResponse(const network::SimpleURLLoader& loader) {
   }
   return net::HttpStatusCode(loader.ResponseInfo()->headers->response_code()) ==
          net::HTTP_OK;
+}
+
+int CombineNetAndHttpErrors(const network::SimpleURLLoader& loader) {
+  if (loader.NetError() != net::OK || !loader.ResponseInfo() ||
+      !loader.ResponseInfo()->headers) {
+    return loader.NetError();
+  }
+  return loader.ResponseInfo()->headers->response_code();
 }
 
 std::unique_ptr<network::SimpleURLLoader> InitializeSimpleUrlLoader(
@@ -114,7 +123,7 @@ std::string ConvertStateToMetricLabel(KidsExternalFetcherStatus::State state) {
       return "NoError";
     case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
       return "AuthError";
-    case KidsExternalFetcherStatus::HTTP_ERROR:
+    case KidsExternalFetcherStatus::NET_OR_HTTP_ERROR:
       return "HttpError";
     case KidsExternalFetcherStatus::INVALID_RESPONSE:
       return "ParseError";
@@ -209,6 +218,10 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
                                       std::unique_ptr<Response> response) {
     TimeDelta latency = TimeTicks::Now() - start_time;
     UmaHistogramEnumeration(CreateMetricKey<Request>("Status"), status.state());
+    if (status.state() == KidsExternalFetcherStatus::State::NET_OR_HTTP_ERROR) {
+      UmaHistogramSparse(CreateMetricKey<Request>("NetOrHttpStatus"),
+                         status.net_or_http_error_code().value());
+    }
     UmaHistogramTimes(CreateMetricKey<Request>("Latency"), latency);
     UmaHistogramTimes(CreateMetricKey<Request>(
                           "Latency", ConvertStateToMetricLabel(status.state())),
@@ -261,7 +274,8 @@ class FetcherImpl final : public KidsExternalFetcher<Request, Response> {
                                  std::unique_ptr<std::string> response_body) {
     if (!IsLoadingSuccessful(*simple_url_loader_) ||
         !HasHttpOkResponse(*simple_url_loader_)) {
-      std::move(callback).Run(KidsExternalFetcherStatus::HttpError(),
+      std::move(callback).Run(KidsExternalFetcherStatus::NetOrHttpError(
+                                  CombineNetAndHttpErrors(*simple_url_loader_)),
                               std::make_unique<Response>());
       return;
     }
@@ -303,6 +317,9 @@ KidsExternalFetcherStatus::KidsExternalFetcherStatus(State state)
   DCHECK(state != State::GOOGLE_SERVICE_AUTH_ERROR);
 }
 KidsExternalFetcherStatus::KidsExternalFetcherStatus(
+    NetOrHttpErrorType error_code)
+    : state_(State::NET_OR_HTTP_ERROR), net_or_http_error_code_(error_code) {}
+KidsExternalFetcherStatus::KidsExternalFetcherStatus(
     class GoogleServiceAuthError google_service_auth_error)
     : KidsExternalFetcherStatus(GOOGLE_SERVICE_AUTH_ERROR,
                                 google_service_auth_error) {}
@@ -319,8 +336,9 @@ KidsExternalFetcherStatus KidsExternalFetcherStatus::GoogleServiceAuthError(
     class GoogleServiceAuthError error) {
   return KidsExternalFetcherStatus(error);
 }
-KidsExternalFetcherStatus KidsExternalFetcherStatus::HttpError() {
-  return KidsExternalFetcherStatus(State::HTTP_ERROR);
+KidsExternalFetcherStatus KidsExternalFetcherStatus::NetOrHttpError(
+    int net_or_http_error_code) {
+  return KidsExternalFetcherStatus(NetOrHttpErrorType(net_or_http_error_code));
 }
 KidsExternalFetcherStatus KidsExternalFetcherStatus::InvalidResponse() {
   return KidsExternalFetcherStatus(State::INVALID_RESPONSE);
@@ -333,7 +351,7 @@ bool KidsExternalFetcherStatus::IsOk() const {
   return state_ == State::NO_ERROR;
 }
 bool KidsExternalFetcherStatus::IsTransientError() const {
-  if (state_ == State::HTTP_ERROR) {
+  if (state_ == State::NET_OR_HTTP_ERROR) {
     return true;
   }
   if (state_ == State::GOOGLE_SERVICE_AUTH_ERROR) {
@@ -357,6 +375,11 @@ bool KidsExternalFetcherStatus::IsPersistentError() const {
 KidsExternalFetcherStatus::State KidsExternalFetcherStatus::state() const {
   return state_;
 }
+KidsExternalFetcherStatus::NetOrHttpErrorType
+KidsExternalFetcherStatus::net_or_http_error_code() const {
+  return net_or_http_error_code_;
+}
+
 const GoogleServiceAuthError&
 KidsExternalFetcherStatus::google_service_auth_error() const {
   return google_service_auth_error_;
