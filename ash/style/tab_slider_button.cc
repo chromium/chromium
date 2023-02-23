@@ -201,6 +201,10 @@ void LabelSliderButton::OnSelectedChanged() {
   UpdateLabelColor();
 }
 
+int LabelSliderButton::GetHeightForWidth(int w) const {
+  return kLabelButtonHeight;
+}
+
 gfx::Size LabelSliderButton::CalculatePreferredSize() const {
   // The width of the container equals to the label width with horizontal
   // padding.

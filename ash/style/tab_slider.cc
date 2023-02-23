@@ -218,17 +218,16 @@ void TabSlider::UpdateLayout() {
 
   // Add the row buttons will live in.
   table_layout->AddRows(1, views::TableLayout::kFixedSize);
-  if (distribute_space_evenly_) {
-    // Ensure extra space is spread evenly between the button containing
-    // columns.
-    table_layout->LinkColumnSizes(columns_containing_buttons);
-  }
-
   table_layout
       ->AddPaddingRow(views::TableLayout::kFixedSize,
                       custom_layout_params_.internal_border_padding)
       .AddPaddingColumn(views::TableLayout::kFixedSize,
                         custom_layout_params_.internal_border_padding);
+  if (distribute_space_evenly_) {
+    // Ensure extra space is spread evenly between the button containing
+    // columns.
+    table_layout->LinkColumnSizes(columns_containing_buttons);
+  }
 }
 
 void TabSlider::OnEnabledStateChanged() {
