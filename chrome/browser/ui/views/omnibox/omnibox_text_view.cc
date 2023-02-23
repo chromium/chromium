@@ -194,7 +194,7 @@ void OmniboxTextView::SetTextWithStyling(
     AppendText(text_field, std::u16string());
   if (!line.text_fields().empty()) {
     const int kMaxDisplayLines =
-        OmniboxFieldTrial::IsUniformRowHeightEnabled() ? 2 : 3;
+        OmniboxFieldTrial::IsUniformRowHeightEnabled() ? 1 : 3;
     const SuggestionAnswer::TextField& first_field = line.text_fields().front();
     if (first_field.has_num_lines() && first_field.num_lines() > 1) {
       render_text_->SetMultiline(true);
