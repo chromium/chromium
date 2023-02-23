@@ -455,12 +455,12 @@ class InterestGroupAuction::BuyerHelper
 
   void OnBiddingSignalsReceived(
       const base::flat_map<std::string, double>& priority_vector,
-      base::TimeDelta trusted_signals_fetch_duration,
+      base::TimeDelta trusted_signals_fetch_latency,
       base::OnceClosure resume_generate_bid_callback) override {
     BidState* state = generate_bid_client_receiver_set_.current_context();
     const blink::InterestGroup& interest_group = state->bidder->interest_group;
     auction_->ReportTrustedSignalsFetchLatency(interest_group,
-                                               trusted_signals_fetch_duration);
+                                               trusted_signals_fetch_latency);
     absl::optional<double> new_priority;
     if (!priority_vector.empty()) {
       new_priority = CalculateInterestGroupPriority(
@@ -488,11 +488,13 @@ class InterestGroupAuction::BuyerHelper
                      auction_worklet::mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
-      base::TimeDelta bidding_duration,
+      base::TimeDelta bidding_latency,
       const std::vector<std::string>& errors) override {
+    BidState* state = generate_bid_client_receiver_set_.current_context();
+    const blink::InterestGroup& interest_group = state->bidder->interest_group;
+    auction_->ReportBiddingLatency(interest_group, bidding_latency);
     OnGenerateBidCompleteInternal(
-        generate_bid_client_receiver_set_.current_context(),
-        std::move(mojo_bid), std::move(mojo_kanon_bid),
+        state, std::move(mojo_bid), std::move(mojo_kanon_bid),
         bidding_signals_data_version, has_bidding_signals_data_version,
         debug_loss_report_url, debug_win_report_url, set_priority,
         has_set_priority, std::move(update_priority_signals_overrides),
@@ -522,12 +524,20 @@ class InterestGroupAuction::BuyerHelper
 
   const url::Origin& owner() const { return owner_; }
 
-  void GetInterestGroupsThatBid(
+  void GetInterestGroupsThatBidAndReportBidCounts(
       blink::InterestGroupSet& interest_groups) const {
+    size_t bid_count = 0;
     for (const auto& bid_state : bid_states_) {
       if (bid_state->made_bid) {
         interest_groups.emplace(bid_state->bidder->interest_group.owner,
                                 bid_state->bidder->interest_group.name);
+        bid_count++;
+      }
+    }
+    for (const auto& bid_state : bid_states_) {
+      if (auction_->ReportBidCount(bid_state->bidder->interest_group,
+                                   bid_count)) {
+        break;
       }
     }
   }
@@ -1639,18 +1649,19 @@ size_t InterestGroupAuction::NumPotentialBidders() const {
   return num_interest_groups;
 }
 
-void InterestGroupAuction::GetInterestGroupsThatBid(
+void InterestGroupAuction::GetInterestGroupsThatBidAndReportBidCounts(
     blink::InterestGroupSet& interest_groups) const {
   if (!all_bids_scored_)
     return;
 
   for (auto& buyer_helper : buyer_helpers_) {
-    buyer_helper->GetInterestGroupsThatBid(interest_groups);
+    buyer_helper->GetInterestGroupsThatBidAndReportBidCounts(interest_groups);
   }
 
   // Retrieve data from component auctions as well.
   for (const auto& component_auction_info : component_auctions_) {
-    component_auction_info.second->GetInterestGroupsThatBid(interest_groups);
+    component_auction_info.second->GetInterestGroupsThatBidAndReportBidCounts(
+        interest_groups);
   }
 }
 
@@ -1735,19 +1746,19 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
   return url.ReplaceComponents(replacements);
 }
 
-void InterestGroupAuction::ReportPaBuyersValueIfAllowed(
+bool InterestGroupAuction::ReportPaBuyersValueIfAllowed(
     const blink::InterestGroup& interest_group,
     blink::InterestGroup::SellerCapabilities capability,
     blink::AuctionConfig::NonSharedParams::BuyerReportType buyer_report_type,
     int value) {
   if (!CanReportPaBuyersValue(interest_group, capability, config_->seller)) {
-    return;
+    return false;
   }
 
   absl::optional<absl::uint128> bucket_base =
       BucketBaseForReportPaBuyers(*config_, interest_group.owner);
   if (!bucket_base) {
-    return;
+    return false;
   }
 
   absl::optional<
@@ -1755,7 +1766,7 @@ void InterestGroupAuction::ReportPaBuyersValueIfAllowed(
       report_buyers_config =
           ReportBuyersConfigForPaBuyers(buyer_report_type, *config_);
   if (!report_buyers_config) {
-    return;
+    return false;
   }
 
   // TODO(caraitto): Consider adding renderer and Mojo validation to ensure that
@@ -1774,6 +1785,7 @@ void InterestGroupAuction::ReportPaBuyersValueIfAllowed(
           // TODO(caraitto): Consider allowing these to be set.
           content::mojom::AggregationServiceMode::kDefault,
           content::mojom::DebugModeDetails::New()));
+  return true;
 }
 
 bool InterestGroupAuction::HasNonKAnonWinner() const {
@@ -1974,14 +1986,44 @@ void InterestGroupAuction::TakePostAuctionUpdateOwners(
   }
 }
 
+bool InterestGroupAuction::ReportInterestGroupCount(
+    const blink::InterestGroup& interest_group,
+    size_t count) {
+  return ReportPaBuyersValueIfAllowed(
+      interest_group,
+      blink::InterestGroup::SellerCapabilities::kInterestGroupCounts,
+      blink::AuctionConfig::NonSharedParams::BuyerReportType::
+          kInterestGroupCount,
+      count);
+}
+
+bool InterestGroupAuction::ReportBidCount(
+    const blink::InterestGroup& interest_group,
+    size_t count) {
+  return ReportPaBuyersValueIfAllowed(
+      interest_group,
+      blink::InterestGroup::SellerCapabilities::kInterestGroupCounts,
+      blink::AuctionConfig::NonSharedParams::BuyerReportType::kBidCount, count);
+}
+
 void InterestGroupAuction::ReportTrustedSignalsFetchLatency(
     const blink::InterestGroup& interest_group,
-    base::TimeDelta trusted_signals_fetch_duration) {
+    base::TimeDelta trusted_signals_fetch_latency) {
   ReportPaBuyersValueIfAllowed(
       interest_group, blink::InterestGroup::SellerCapabilities::kLatencyStats,
       blink::AuctionConfig::NonSharedParams::BuyerReportType::
           kTotalSignalsFetchLatency,
-      trusted_signals_fetch_duration.InMilliseconds());
+      trusted_signals_fetch_latency.InMilliseconds());
+}
+
+void InterestGroupAuction::ReportBiddingLatency(
+    const blink::InterestGroup& interest_group,
+    base::TimeDelta bidding_latency) {
+  ReportPaBuyersValueIfAllowed(
+      interest_group, blink::InterestGroup::SellerCapabilities::kLatencyStats,
+      blink::AuctionConfig::NonSharedParams::BuyerReportType::
+          kTotalGenerateBidLatency,
+      bidding_latency.InMilliseconds());
 }
 
 base::flat_set<std::string> InterestGroupAuction::GetKAnonKeysToJoin() const {
@@ -2109,6 +2151,12 @@ void InterestGroupAuction::OnInterestGroupRead(
   if (interest_groups.empty()) {
     OnOneLoadCompleted();
     return;
+  }
+  for (const StorageInterestGroup& group : interest_groups) {
+    if (ReportInterestGroupCount(group.interest_group,
+                                 interest_groups.size())) {
+      break;
+    }
   }
   post_auction_update_owners_.push_back(
       interest_groups[0].interest_group.owner);

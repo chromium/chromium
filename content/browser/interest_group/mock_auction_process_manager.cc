@@ -175,13 +175,13 @@ void MockBidderWorklet::WaitForGenerateBid() {
   }
 }
 
-void MockBidderWorklet::SetBidderTrustedSignalsFetchDuration(
+void MockBidderWorklet::SetBidderTrustedSignalsFetchLatency(
     base::TimeDelta delta) {
-  trusted_signals_fetch_duration_ = delta;
+  trusted_signals_fetch_latency_ = delta;
 }
 
-void MockBidderWorklet::SetBiddingDuration(base::TimeDelta delta) {
-  bidding_duration_ = delta;
+void MockBidderWorklet::SetBiddingLatency(base::TimeDelta delta) {
+  bidding_latency_ = delta;
 }
 
 void MockBidderWorklet::InvokeGenerateBidCallback(
@@ -200,7 +200,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
   base::RunLoop run_loop;
   generate_bid_client_->OnBiddingSignalsReceived(
       /*priority_vector=*/{},
-      /*trusted_signals_fetch_duration=*/trusted_signals_fetch_duration_,
+      /*trusted_signals_fetch_latency=*/trusted_signals_fetch_latency_,
       run_loop.QuitClosure());
   run_loop.Run();
 
@@ -217,7 +217,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         base::flat_map<std::string,
                        auction_worklet::mojom::PrioritySignalsDoublePtr>(),
         /*pa_requests=*/std::move(pa_requests),
-        /*bidding_duration=*/bidding_duration_,
+        /*bidding_latency=*/bidding_latency_,
         /*errors=*/std::vector<std::string>());
     return;
   }
@@ -235,7 +235,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>(),
       /*pa_requests=*/std::move(pa_requests),
-      /*bidding_duration=*/bidding_duration_,
+      /*bidding_latency=*/bidding_latency_,
       /*errors=*/std::vector<std::string>());
 }
 

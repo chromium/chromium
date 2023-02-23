@@ -1535,6 +1535,8 @@ bool CopyPerBuyerPrioritySignalsFromIdlToMojo(
   return true;
 }
 
+// TODO(caraitto): Consider validating keys -- no bucket base + offset
+// conflicts, no overflow, etc.
 bool CopyAuctionReportBuyerKeysFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,

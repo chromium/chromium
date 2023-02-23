@@ -341,7 +341,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
   DCHECK(callback_);
 
   blink::InterestGroupSet interest_groups_that_bid;
-  auction_.GetInterestGroupsThatBid(interest_groups_that_bid);
+  auction_.GetInterestGroupsThatBidAndReportBidCounts(interest_groups_that_bid);
   if (!success) {
     FailAuction(/*manually_aborted=*/false,
                 std::move(interest_groups_that_bid));
