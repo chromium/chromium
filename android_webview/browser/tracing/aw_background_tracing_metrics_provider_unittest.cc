@@ -63,6 +63,10 @@ class AwBackgroundTracingMetricsProviderTest : public testing::Test {
             content::BackgroundTracingManager::ANONYMIZE_DATA));
   }
 
+  void TearDown() override {
+    content::BackgroundTracingManager::GetInstance().AbortScenarioForTesting();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::ContentClient content_client_;
