@@ -60,20 +60,15 @@ void PreserveNearIntegralBounds(gfx::RectF& bounds) {
 
 }  // anonymous namespace
 
-PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
-                           const PaintChunkIterator& first_chunk)
-    : PendingLayer(chunks, *first_chunk, first_chunk.IndexInPaintArtifact()) {}
-
-PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
-                           const PaintChunk& first_chunk,
-                           wtf_size_t first_chunk_index_in_paint_artifact)
+PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
+                           const PaintChunk& first_chunk)
     : bounds_(first_chunk.bounds),
       rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
       has_text_(first_chunk.has_text),
       draws_content_(first_chunk.DrawsContent()),
       text_known_to_be_on_opaque_background_(
           first_chunk.text_known_to_be_on_opaque_background),
-      chunks_(&chunks.GetPaintArtifact(), first_chunk_index_in_paint_artifact),
+      chunks_(std::move(artifact), first_chunk),
       property_tree_state_(
           first_chunk.properties.GetPropertyTreeState().Unalias()),
       compositing_type_(kOther) {
@@ -85,18 +80,20 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
   if (const absl::optional<gfx::RectF>& visibility_limit =
           VisibilityLimit(GetPropertyTreeState())) {
     bounds_.Intersect(*visibility_limit);
-    if (bounds_.IsEmpty())
+    if (bounds_.IsEmpty()) {
       draws_content_ = false;
+    }
   }
 
   if (IsCompositedScrollHitTest(first_chunk)) {
     compositing_type_ = kScrollHitTestLayer;
   } else if (first_chunk.size()) {
     const auto& first_display_item = FirstDisplayItem();
-    if (first_display_item.IsForeignLayer())
+    if (first_display_item.IsForeignLayer()) {
       compositing_type_ = kForeignLayer;
-    else if (IsCompositedScrollbar(first_display_item))
+    } else if (IsCompositedScrollbar(first_display_item)) {
       compositing_type_ = kScrollbarLayer;
+    }
   }
 }
 

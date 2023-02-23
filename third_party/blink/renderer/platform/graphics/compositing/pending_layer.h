@@ -32,7 +32,8 @@ class PLATFORM_EXPORT PendingLayer {
     kOther,
   };
 
-  PendingLayer(const PaintChunkSubset&, const PaintChunkIterator&);
+  PendingLayer(scoped_refptr<const PaintArtifact>,
+               const PaintChunk& first_chunk);
 
   // Returns the offset/bounds for the final cc::Layer, rounded if needed.
   gfx::Vector2dF LayerOffset() const;
@@ -63,7 +64,7 @@ class PLATFORM_EXPORT PendingLayer {
   }
 
   void SetPaintArtifact(scoped_refptr<const PaintArtifact> paint_artifact) {
-    chunks_.SetPaintArtifact(paint_artifact);
+    chunks_.SetPaintArtifact(std::move(paint_artifact));
   }
 
   // Merges |guest| into |this| if it can, by appending chunks of |guest|
@@ -157,9 +158,6 @@ class PLATFORM_EXPORT PendingLayer {
   SkColor4f ComputeBackgroundColor() const;
 
  private:
-  PendingLayer(const PaintChunkSubset&,
-               const PaintChunk& first_chunk,
-               wtf_size_t first_chunk_index_in_paint_artifact);
   gfx::RectF MapRectKnownToBeOpaque(const PropertyTreeState&) const;
   bool MergeInternal(const PendingLayer& guest,
                      const PropertyTreeState& guest_state,
