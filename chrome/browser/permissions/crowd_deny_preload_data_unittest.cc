@@ -65,9 +65,7 @@ class CrowdDenyPreloadDataTest : public testing::Test {
   }
 
   void SerializeTestRawData(base::StringPiece raw_data, base::FilePath path) {
-    const int bytes_to_write = base::checked_cast<int>(raw_data.size());
-    ASSERT_EQ(bytes_to_write,
-              base::WriteFile(path, raw_data.data(), bytes_to_write));
+    ASSERT_TRUE(base::WriteFile(path, raw_data));
   }
 
   void SerializeTestPreloadData(
