@@ -389,10 +389,11 @@ bool OmniboxMatchCellView::GetCanProcessEventsWithinSubtree() const {
 
 gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
   int contentHeight = content_view_->GetLineHeight();
-  int height = OmniboxFieldTrial::IsUniformRowHeightEnabled() && has_image_
-                   ? std::max(contentHeight, kEntityImageSizeSmall) +
-                         GetInsets().height()
-                   : contentHeight + GetInsets().height();
+  int height =
+      OmniboxFieldTrial::IsUniformRowHeightEnabled()
+          ? GetEntityImageSize() +
+                2 * OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get()
+          : contentHeight + GetInsets().height();
   if (layout_style_ == LayoutStyle::TWO_LINE_SUGGESTION)
     height += description_view_->GetHeightForWidth(width() - GetTextIndent());
   // Width is not calculated because it's not needed by current callers.

@@ -136,6 +136,7 @@ class OmniboxResultView : public views::View {
   // Weak pointers for easy reference.
   raw_ptr<OmniboxMatchCellView>
       suggestion_view_;                         // The leading (or left) view.
+  // TODO(manukh) No longer used as of crrev.com/c/3381302. Remove.
   raw_ptr<OmniboxMatchCellView> keyword_view_;  // The trailing (or right) view.
 
   // The blue bar used to indicate selection.
