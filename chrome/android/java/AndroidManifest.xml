@@ -896,7 +896,7 @@ by a child template that "extends" this file.
 
         <!-- Download foreground service -->
         <service android:name="org.chromium.chrome.browser.download.DownloadForegroundService"
-            android:exported="false">
+           android:foregroundServiceType="dataSync" android:exported="false">
         </service>
 
         <!-- Download broadcast manager service -->
@@ -1152,19 +1152,19 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"
             android:exported="false"/>
         <service android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PlaybackListenerService"
-            android:exported="false">
+            android:foregroundServiceType="mediaPlayback" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </service>
         <service android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PresentationListenerService"
-            android:exported="false">
+            android:foregroundServiceType="mediaPlayback" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </service>
         <service android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$CastListenerService"
-            android:exported="false">
+            android:foregroundServiceType="mediaPlayback" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
