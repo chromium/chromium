@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -333,17 +333,39 @@ chrome.accessibilityPrivate.DictationBubbleProperties;
  * @enum {string}
  */
 chrome.accessibilityPrivate.DlcType = {
+  TTS_BN_BD: 'ttsBnBd',
+  TTS_CS_CZ: 'ttsCsCz',
+  TTS_DA_DK: 'ttsDaDk',
+  TTS_DE_DE: 'ttsDeDe',
+  TTS_EL_GR: 'ttsElGr',
+  TTS_EN_AU: 'ttsEnAu',
+  TTS_EN_GB: 'ttsEnGb',
+  TTS_EN_US: 'ttsEnUs',
   TTS_ES_ES: 'ttsEsEs',
   TTS_ES_US: 'ttsEsUs',
+  TTS_FI_FI: 'ttsFiFi',
+  TTS_FIL_PH: 'ttsFilPh',
   TTS_FR_FR: 'ttsFrFr',
   TTS_HI_IN: 'ttsHiIn',
-  TTS_NL_NL: 'ttsNlNl',
-  TTS_PT_BR: 'ttsPtBr',
-  TTS_SV_SE: 'ttsSvSe',
-  TTS_EN_US: 'ttsEnUs',
-  TTS_JA_JP: 'ttsJaJp',
-  TTS_DE_DE: 'ttsDeDe',
+  TTS_HU_HU: 'ttsHuHu',
+  TTS_ID_ID: 'ttsIdId',
   TTS_IT_IT: 'ttsItIt',
+  TTS_JA_JP: 'ttsJaJp',
+  TTS_KM_KH: 'ttsKmKh',
+  TTS_KO_KR: 'ttsKoKr',
+  TTS_NB_NO: 'ttsNbNo',
+  TTS_NE_NP: 'ttsNeNp',
+  TTS_NL_NL: 'ttsNlNl',
+  TTS_PL_PL: 'ttsPlPl',
+  TTS_PT_BR: 'ttsPtBr',
+  TTS_SI_LK: 'ttsSiLk',
+  TTS_SK_SK: 'ttsSkSk',
+  TTS_SV_SE: 'ttsSvSe',
+  TTS_TH_TH: 'ttsThTh',
+  TTS_TR_TR: 'ttsTrTr',
+  TTS_UK_UA: 'ttsUkUa',
+  TTS_VI_VN: 'ttsViVn',
+  TTS_YUE_HK: 'ttsYueHk',
 };
 
 /**

@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -926,39 +927,33 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, TtsDlcTypeToPath) {
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-de-de/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSDEDE));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-en-us/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSENUS));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-es-es/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESES));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-es-us/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESUS));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-fr-fr/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSFRFR));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-hi-in/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSHIIN));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-it-it/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSITIT));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-ja-jp/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSJAJP));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-nl-nl/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSNLNL));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-pt-br/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSPTBR));
-  EXPECT_EQ(
-      base::FilePath("/run/imageloader/tts-sv-se/package/root/voice.zvoice"),
-      TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSSVSE));
+  auto get_full_path = [](const std::string& locale) -> std::string {
+    return base::StringPrintf(
+        "/run/imageloader/tts-%s/package/root/voice.zvoice", locale.c_str());
+  };
+
+  EXPECT_EQ(base::FilePath(get_full_path("de-de")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSDEDE));
+  EXPECT_EQ(base::FilePath(get_full_path("en-us")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSENUS));
+  EXPECT_EQ(base::FilePath(get_full_path("es-es")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESES));
+  EXPECT_EQ(base::FilePath(get_full_path("es-us")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSESUS));
+  EXPECT_EQ(base::FilePath(get_full_path("fr-fr")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSFRFR));
+  EXPECT_EQ(base::FilePath(get_full_path("hi-in")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSHIIN));
+  EXPECT_EQ(base::FilePath(get_full_path("it-it")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSITIT));
+  EXPECT_EQ(base::FilePath(get_full_path("ja-jp")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSJAJP));
+  EXPECT_EQ(base::FilePath(get_full_path("nl-nl")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSNLNL));
+  EXPECT_EQ(base::FilePath(get_full_path("pt-br")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSPTBR));
+  EXPECT_EQ(base::FilePath(get_full_path("sv-se")),
+            TtsDlcTypeToPath(DlcType::DLC_TYPE_TTSSVSE));
 }
 
 class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
