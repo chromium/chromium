@@ -30,6 +30,7 @@ using LoadAndLocalizeResourcesCallback =
 void LoadAndLocalizeResources(const Extension& extension,
                               std::vector<ExtensionResource> resources,
                               bool localize_files,
+                              size_t max_script_length,
                               LoadAndLocalizeResourcesCallback callback);
 
 }  // namespace extensions

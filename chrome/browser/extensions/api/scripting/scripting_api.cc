@@ -257,6 +257,7 @@ bool CheckAndLoadFiles(std::vector<std::string> files,
 
   LoadAndLocalizeResources(
       extension, resources, requires_localization,
+      script_parsing::GetMaxScriptLength(),
       base::BindOnce(&CheckLoadedResources, std::move(files),
                      std::move(callback)));
   return true;
