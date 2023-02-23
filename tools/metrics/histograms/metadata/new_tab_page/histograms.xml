@@ -941,6 +941,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.HasClusterToShow" enum="Boolean"
+    expires_after="2023-08-08">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs whether there is at least one cluster that can be shown in the history
+    clusters module that matches the desired filtering criteria configurable via
+    Finch. Only logged on the 1P NTP and the history clusters module is enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.HistoryClusters.NumClusterCandidates"
+    units="counts" expires_after="2023-08-08">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of clusters that match the desired filtering criteria
+    configurable via Finch for the history clusters module. Only logged on the
+    1P NTP and the history clusters module is enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Languages.UILanguageRatioInTwoTopLanguages"
     units="%" expires_after="M77">
   <owner>jkrcal@chromium.org</owner>

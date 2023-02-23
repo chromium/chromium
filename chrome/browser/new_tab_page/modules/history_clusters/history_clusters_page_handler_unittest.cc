@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
@@ -16,6 +17,7 @@
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/test_history_clusters_service.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
+#include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,6 +66,8 @@ class HistoryClustersPageHandlerTest : public testing::Test {
 };
 
 TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
+  base::HistogramTester histogram_tester;
+
   std::string kSampleLabel = "LabelOne";
   std::string kSampleUrl = "www.google.com";
   history::ClusterVisit kSampleVisit;
@@ -92,4 +96,69 @@ TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
   ASSERT_EQ(kSampleLabel, cluster_mojom->label.value());
   ASSERT_EQ(1u, cluster_mojom->visits.size());
   ASSERT_EQ(kSampleUrl, cluster_mojom->visits[0]->url_for_display);
+
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.NumClusterCandidates", 1, 1);
+}
+
+TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
+  base::HistogramTester histogram_tester;
+
+  std::string kSampleLabel = "LabelOne";
+  std::string kSampleUrl = "www.google.com";
+  history::ClusterVisit kSampleVisit;
+  kSampleVisit.url_for_display = base::UTF8ToUTF16(kSampleUrl);
+  const history::Cluster kSampleCluster =
+      history::Cluster(1, {kSampleVisit},
+                       {{u"apples", history::ClusterKeywordData()},
+                        {u"Red Oranges", history::ClusterKeywordData()}},
+                       /*should_show_on_prominent_ui_surfaces=*/false,
+                       /*label=*/base::UTF8ToUTF16(kSampleLabel));
+
+  const std::vector<history::Cluster> kSampleClusters = {kSampleCluster,
+                                                         kSampleCluster};
+  test_history_clusters_service().SetClustersToReturn(kSampleClusters);
+
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  base::MockCallback<HistoryClustersPageHandler::GetClusterCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cluster_mojom](history_clusters::mojom::ClusterPtr cluster_arg) {
+            cluster_mojom = std::move(cluster_arg);
+          }));
+  handler().GetCluster(callback.Get());
+  ASSERT_TRUE(cluster_mojom);
+  ASSERT_EQ(1u, cluster_mojom->id);
+  ASSERT_EQ(kSampleLabel, cluster_mojom->label.value());
+  ASSERT_EQ(1u, cluster_mojom->visits.size());
+  ASSERT_EQ(kSampleUrl, cluster_mojom->visits[0]->url_for_display);
+
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.NumClusterCandidates", 2, 1);
+}
+
+TEST_F(HistoryClustersPageHandlerTest, NoClusters) {
+  base::HistogramTester histogram_tester;
+
+  history_clusters::mojom::ClusterPtr cluster_mojom;
+  base::MockCallback<HistoryClustersPageHandler::GetClusterCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cluster_mojom](history_clusters::mojom::ClusterPtr cluster_arg) {
+            cluster_mojom = std::move(cluster_arg);
+          }));
+  handler().GetCluster(callback.Get());
+  // Callback should be invoked with a nullptr.
+  ASSERT_FALSE(cluster_mojom);
+
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.HasClusterToShow", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.NumClusterCandidates", 0, 1);
 }

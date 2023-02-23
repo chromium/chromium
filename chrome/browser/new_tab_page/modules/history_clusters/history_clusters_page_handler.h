@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,7 +21,6 @@ class Profile;
 
 namespace history_clusters {
 class HistoryClustersServiceTask;
-struct QueryClustersContinuationParams;
 }  // namespace history_clusters
 
 class HistoryClustersPageHandler
@@ -47,6 +47,9 @@ class HistoryClustersPageHandler
 
   mojo::Receiver<ntp::history_clusters::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;
+
+  // The filtering parameters to use for all calls to fetch clusters.
+  history_clusters::QueryClustersFilterParams filter_params_;
 
   // Tracks the current fetch clusters task. Will be `nullptr` or
   // `Done()` will be true if there is no ongoing task.
