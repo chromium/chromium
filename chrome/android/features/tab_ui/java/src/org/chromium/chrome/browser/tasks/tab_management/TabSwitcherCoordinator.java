@@ -317,7 +317,10 @@ public class TabSwitcherCoordinator
                     SharedPreferencesManager.getInstance().addObserver(
                             mPriceAnnotationsPrefObserver);
                 }
+            }
 
+            if (mode == TabListCoordinator.TabListMode.GRID
+                    || mode == TabListCoordinator.TabListMode.LIST) {
                 mTabSwitcherMenuActionHandler =
                         new MenuOrKeyboardActionController.MenuOrKeyboardActionHandler() {
                             @Override

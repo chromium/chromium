@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
@@ -38,6 +39,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Spy;
 
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -75,7 +77,10 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
     private EditText mTitleTextView;
     private View mMainContent;
     private ScrimCoordinator mScrimCoordinator;
+    @Spy
     private GridLayoutManager mLayoutManager;
+    @Spy
+    private LinearLayoutManager mLinearLayoutManager;
 
     @Override
     public void setUpTest() throws Exception {
@@ -492,6 +497,21 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         verify(mLayoutManager, times(1))
                 .scrollToPositionWithOffset(eq(5),
                         intThat(allOf(lessThan(mContentView.getHeight() / 2), greaterThan(0))));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetInitialScrollIndex_Linear() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mLinearLayoutManager = spy(new LinearLayoutManager(getActivity()));
+            mContentView.setLayoutManager(mLinearLayoutManager);
+        });
+        mContentView.layout(0, 0, 100, 500);
+
+        mModel.set(TabGridPanelProperties.INITIAL_SCROLL_INDEX, 5);
+
+        verify(mLinearLayoutManager, times(1)).scrollToPositionWithOffset(eq(5), eq(0));
     }
 
     @Override

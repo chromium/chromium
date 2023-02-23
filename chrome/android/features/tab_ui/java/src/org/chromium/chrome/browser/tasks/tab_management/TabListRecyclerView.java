@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Log;
@@ -601,7 +602,7 @@ class TabListRecyclerView
      */
     @NonNull
     RecyclerViewPosition getRecyclerViewPosition() {
-        GridLayoutManager layoutManager = (GridLayoutManager) getLayoutManager();
+        LinearLayoutManager layoutManager = (LinearLayoutManager) getLayoutManager();
         int position = layoutManager.findFirstVisibleItemPosition();
         int offset = 0;
         if (position != RecyclerView.NO_POSITION) {
@@ -617,7 +618,7 @@ class TabListRecyclerView
      * @param recyclerViewPosition the position and offset to scroll the recycler view to.
      */
     void setRecyclerViewPosition(@NonNull RecyclerViewPosition recyclerViewPosition) {
-        ((GridLayoutManager) getLayoutManager())
+        ((LinearLayoutManager) getLayoutManager())
                 .scrollToPositionWithOffset(
                         recyclerViewPosition.getPosition(), recyclerViewPosition.getOffset());
     }
