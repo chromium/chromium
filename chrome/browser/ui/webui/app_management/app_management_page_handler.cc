@@ -13,7 +13,9 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/message_formatter.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -151,6 +153,26 @@ std::vector<std::string> GetSupportedLinks(Profile* profile,
 
   return std::vector<std::string>(supported_links.begin(),
                                   supported_links.end());
+}
+
+absl::optional<std::string> MaybeFormatBytes(absl::optional<uint64_t> bytes) {
+  if (bytes.has_value()) {
+    // ui::FormatBytes requires a non-negative signed integer. In general, we
+    // expect that converting from unsigned to signed int here should always
+    // yield a positive value, since overflowing into negative would require an
+    // implausibly large app (2^63 bytes ~= 9 exabytes).
+    int64_t signed_bytes = static_cast<int64_t>(bytes.value());
+    if (signed_bytes < 0) {
+      // TODO(crbug.com/1418590): Investigate ARC apps which have negative data
+      // sizes.
+      LOG(ERROR) << "Invalid app size: " << signed_bytes;
+      base::debug::DumpWithoutCrashing();
+      return absl::nullopt;
+    }
+    return base::UTF16ToUTF8(ui::FormatBytes(signed_bytes));
+  }
+
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -417,14 +439,8 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 
   app->description = update.Description();
 
-  if (update.AppSizeInBytes().has_value()) {
-    app->app_size =
-        base::UTF16ToUTF8(ui::FormatBytes(update.AppSizeInBytes().value()));
-  }
-  if (update.DataSizeInBytes().has_value()) {
-    app->data_size =
-        base::UTF16ToUTF8(ui::FormatBytes(update.DataSizeInBytes().value()));
-  }
+  app->app_size = MaybeFormatBytes(update.AppSizeInBytes());
+  app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
 
   // On other OS's, is_pinned defaults to OptionalBool::kUnknown, which is
   // used to represent the fact that there is no concept of being pinned.
