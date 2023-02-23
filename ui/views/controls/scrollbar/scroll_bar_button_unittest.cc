@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -41,11 +40,15 @@ class ScrollBarButtonTest : public testing::Test {
             base::BindRepeating(&MockButtonCallback::ButtonPressed,
                                 base::Unretained(&callback_)),
             ScrollBarButton::Type::kLeft,
-            task_environment_.GetMockTickClock())) {}
+            task_environment_.GetMockTickClock())) {
+    display::Screen::SetScreenInstance(&test_screen_);
+  }
 
   ScrollBarButtonTest(const ScrollBarButtonTest&) = delete;
   ScrollBarButtonTest& operator=(const ScrollBarButtonTest&) = delete;
-  ~ScrollBarButtonTest() override = default;
+  ~ScrollBarButtonTest() override {
+    display::Screen::SetScreenInstance(nullptr);
+  }
 
  protected:
   testing::StrictMock<MockButtonCallback>& callback() { return callback_; }
@@ -59,7 +62,6 @@ class ScrollBarButtonTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   display::test::TestScreen test_screen_;
-  display::test::ScopedScreenOverride screen_override{&test_screen_};
 
   testing::StrictMock<MockButtonCallback> callback_;
   const std::unique_ptr<Button> button_;
