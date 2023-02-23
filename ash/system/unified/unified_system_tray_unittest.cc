@@ -20,6 +20,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
+#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/ime_mode_view.h"
 #include "ash/system/unified/unified_slider_bubble_controller.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -41,6 +42,12 @@
 #include "ui/message_center/message_center.h"
 
 namespace ash {
+
+namespace {
+
+constexpr int kQsDetailedViewHeight = 464;
+
+}  // namespace
 
 using message_center::MessageCenter;
 using message_center::Notification;
@@ -166,12 +173,41 @@ class UnifiedSystemTrayTest
     return bubble ? bubble->GetBoundsInScreen() : gfx::Rect();
   }
 
+  void TransferFromCalendarViewToMainViewByFuncKeys(UnifiedSystemTray* tray,
+                                                    TrayBubbleView* bubble_view,
+                                                    ui::KeyboardCode key) {
+    ShellTestApi().PressAccelerator(ui::Accelerator(key, ui::EF_NONE));
+    EXPECT_FALSE(tray->IsShowingCalendarView());
+    // Tests that `UnifiedSystemTray` is active and has the ink drop, while
+    // `DateTray` becomes inactive.
+    EXPECT_TRUE(tray->is_active());
+    EXPECT_FALSE(date_tray()->is_active());
+    // For QsRevamp: the main bubble is shorter than the detailed view bubble.
+    EXPECT_GT(kQsDetailedViewHeight, bubble_view->height());
+  }
+
+  void CheckDetailedViewHeight(TrayBubbleView* bubble_view) {
+    if (IsQsRevampEnabled()) {
+      // The bubble height should be fixed to the detailed view height.
+      EXPECT_EQ(kQsDetailedViewHeight, bubble_view->height());
+    } else {
+      EXPECT_GT(kQsDetailedViewHeight, bubble_view->height());
+    }
+  }
+
   TimeTrayItemView* time_view() {
     return GetPrimaryUnifiedSystemTray()->time_view_;
   }
 
   ImeModeView* ime_mode_view() {
     return GetPrimaryUnifiedSystemTray()->ime_mode_view_;
+  }
+
+  DateTray* date_tray() {
+    return Shell::GetPrimaryRootWindowController()
+        ->shelf()
+        ->GetStatusAreaWidget()
+        ->date_tray();
   }
 
   FakeVideoConferenceTrayController* fake_video_conference_tray_controller() {
@@ -580,6 +616,39 @@ TEST_P(UnifiedSystemTrayTest, CalendarGoesToMainView) {
   EXPECT_FALSE(tray->IsShowingCalendarView());
 }
 
+// Tests that using functional keys to change brightness/volume when the
+// `CalendarView` is open will make ink drop transfer(before and after
+// QsRevamp) and bubble height change(after QsRevamp).
+TEST_P(UnifiedSystemTrayTest, CalendarGoesToMainViewByFunctionalKeys) {
+  auto* tray = GetPrimaryUnifiedSystemTray();
+  tray->ShowBubble();
+  auto* bubble_view = tray->bubble()->GetBubbleView();
+
+  ShellTestApi().PressAccelerator(
+      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
+  EXPECT_TRUE(tray->IsShowingCalendarView());
+  CheckDetailedViewHeight(bubble_view);
+
+  // Tests the volume up/down/mute functional keys. It should hide the calendar
+  // view and open the `unified_system_tray_bubble_`. The ink drop should
+  // transfer from `DateTray` to `UnifiedSystemTray` and the `bubble_view`
+  // should shrink for the revamped Qs main page.
+  TransferFromCalendarViewToMainViewByFuncKeys(tray, bubble_view,
+                                               ui::VKEY_VOLUME_UP);
+  TransferFromCalendarViewToMainViewByFuncKeys(tray, bubble_view,
+                                               ui::VKEY_VOLUME_DOWN);
+  TransferFromCalendarViewToMainViewByFuncKeys(tray, bubble_view,
+                                               ui::VKEY_VOLUME_MUTE);
+
+  // Tests the brightness up/down functional keys.
+  TransferFromCalendarViewToMainViewByFuncKeys(tray, bubble_view,
+                                               ui::VKEY_BRIGHTNESS_UP);
+  TransferFromCalendarViewToMainViewByFuncKeys(tray, bubble_view,
+                                               ui::VKEY_BRIGHTNESS_DOWN);
+
+  tray->CloseBubble();
+}
+
 // Tests if the microphone mute toast is displayed when the mute state is
 // toggled by the software switches.
 TEST_P(UnifiedSystemTrayTest, InputMuteStateToggledBySoftwareSwitch) {
@@ -810,7 +879,7 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithEnoughSpace) {
   auto* bubble_view = tray->bubble()->GetBubbleView();
 
   // The main page height should be smaller than the detailed view height.
-  EXPECT_GT(464, bubble_view->height());
+  EXPECT_GT(kQsDetailedViewHeight, bubble_view->height());
 
   // Goes to a detailed view (here using calendar view).
   ShellTestApi().PressAccelerator(
@@ -819,12 +888,7 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeWithEnoughSpace) {
   // Asserts that calendar is actually shown.
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
 
-  if (IsQsRevampEnabled()) {
-    // The bubble height should be fixed to the detailed view height.
-    EXPECT_EQ(464, bubble_view->height());
-  } else {
-    EXPECT_GT(464, bubble_view->height());
-  }
+  CheckDetailedViewHeight(bubble_view);
   tray->CloseBubble();
 }
 
@@ -837,7 +901,7 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeNoEnoughSpace) {
   auto* bubble_view = tray->bubble()->GetBubbleView();
 
   // The main page height should be smaller than the detailed view height.
-  EXPECT_GT(464, bubble_view->height());
+  EXPECT_GT(kQsDetailedViewHeight, bubble_view->height());
 
   // Goes to a detailed view (here using calendar view).
   ShellTestApi().PressAccelerator(
@@ -846,7 +910,7 @@ TEST_P(UnifiedSystemTrayTest, BubbleViewSizeChangeNoEnoughSpace) {
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsShowingCalendarView());
 
   // No enough space for the fixed detailed view height.
-  EXPECT_GT(464, bubble_view->height());
+  EXPECT_GT(kQsDetailedViewHeight, bubble_view->height());
   tray->CloseBubble();
 }
 

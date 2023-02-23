@@ -586,18 +586,8 @@ void UnifiedSystemTrayController::EnsureCollapsed() {
 
 void UnifiedSystemTrayController::EnsureExpanded() {
   if (detailed_view_controller_) {
-    showing_audio_detailed_view_ = false;
-    showing_display_detailed_view_ = false;
-    if (features::IsQsRevampEnabled()) {
-      quick_settings_view_->ResetDetailedView();
-    } else {
-      unified_view_->ResetDetailedView();
-    }
-
-    // Destroy `detailed_view_controller_` after resetting
-    // `quick_settings_view_`'s `detailed_view_` because the detailed view has a
-    // reference to its `detailed_view_controller_` which is used in shutdown.
-    detailed_view_controller_.reset();
+    // If a detailed view is showing, first transit to the main view.
+    TransitionToMainView(false);
   }
   StartAnimation(true /*expand*/);
 
