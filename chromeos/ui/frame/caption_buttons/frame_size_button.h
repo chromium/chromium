@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
     set_buttons_to_snap_mode_delay_ms_ = delay_ms;
   }
 
-  bool in_snap_mode_for_testing() { return in_snap_mode_; }
+  bool in_snap_mode_for_testing() const { return in_snap_mode_; }
 
  private:
   class PieAnimationView;
@@ -92,7 +92,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // Starts |set_buttons_to_snap_mode_timer_|.
   void StartSetButtonsToSnapModeTimer(const ui::LocatedEvent& event);
 
-  // Starts the pie animation, which gives a visual inidicator of when the
+  // Starts the pie animation, which gives a visual indicator of when the
   // multitask menu will show up on long press or long touch, where `entry_type`
   // indicates the method the user started this animation (but hasn't shown the
   // menu yet).

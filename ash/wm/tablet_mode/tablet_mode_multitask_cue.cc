@@ -105,7 +105,7 @@ void TabletModeMultitaskCue::MaybeShowCue(aura::Window* active_window) {
   nudge_controller_.MaybeShowNudge(window_);
 }
 
-void TabletModeMultitaskCue::DismissCue() {
+void TabletModeMultitaskCue::DismissCue(bool menu_opened) {
   cue_dismiss_timer_.Stop();
   window_observation_.Reset();
 
@@ -116,8 +116,13 @@ void TabletModeMultitaskCue::DismissCue() {
 
   cue_layer_.reset();
 
-  // The education nudge should not appear without the cue.
-  nudge_controller_.DismissNudge();
+  // If we want to dismiss the cue because the menu was opened, let the nudge
+  // know, so we don't show it anymore. Otherwise, just dismiss it.
+  if (menu_opened) {
+    nudge_controller_.OnMenuOpened(/*tablet_mode=*/true);
+  } else {
+    nudge_controller_.DismissNudge();
+  }
 }
 
 void TabletModeMultitaskCue::OnWindowDestroying(aura::Window* window) {
@@ -189,7 +194,7 @@ void TabletModeMultitaskCue::OnTimerFinished() {
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .OnEnded(base::BindOnce(&TabletModeMultitaskCue::DismissCue,
-                              base::Unretained(this)))
+                              base::Unretained(this), /*menu_opened=*/false))
       .Once()
       .SetDuration(kFadeDuration)
       .SetOpacity(cue_layer_.get(), 0.0f, gfx::Tween::LINEAR);

@@ -168,7 +168,7 @@ void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
   if (!multitask_menu_) {
     multitask_menu_ =
         std::make_unique<TabletModeMultitaskMenu>(this, active_window);
-    multitask_cue_->DismissCue();
+    multitask_cue_->DismissCue(/*menu_opened=*/true);
   }
 }
 

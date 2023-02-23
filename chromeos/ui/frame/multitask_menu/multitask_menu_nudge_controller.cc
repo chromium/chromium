@@ -50,6 +50,7 @@ bool g_suppress_nudge_for_testing = false;
 // Clock that can be overridden for testing.
 base::Clock* g_clock_override = nullptr;
 
+// May be null in tests.
 MultitaskMenuNudgeController::Delegate* g_delegate_instance = nullptr;
 
 base::Time GetTime() {
@@ -172,6 +173,15 @@ void MultitaskMenuNudgeController::DismissNudge() {
   }
 }
 
+void MultitaskMenuNudgeController::OnMenuOpened(bool tablet_mode) {
+  DismissNudge();
+
+  if (g_delegate_instance) {
+    g_delegate_instance->SetNudgePreferences(tablet_mode, kNudgeMaxShownCount,
+                                             GetTime());
+  }
+}
+
 void MultitaskMenuNudgeController::OnWindowParentChanged(aura::Window* window,
                                                          aura::Window* parent) {
   if (!parent) {
@@ -264,11 +274,6 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   if (tablet_mode != TabletState::Get()->InTabletMode()) {
     return;
   }
-
-  // TODO(b/267787811): When the multitask menu has been opened in tablet
-  // mode, don't show the tablet nudge anymore.
-  // TODO(sammiequon|hewer): When the multitask menu has been opened in
-  // clamshell mode, don't show the clamshell nudge anymore.
 
   // Nudge has already been shown three times. No need to educate anymore.
   if (shown_count >= kNudgeMaxShownCount) {

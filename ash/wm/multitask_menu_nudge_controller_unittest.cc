@@ -163,11 +163,11 @@ TEST_F(MultitaskMenuNudgeControllerTest,
   views::NamedWidgetShownWaiter waiter(
       views::test::AnyWidgetTestPasskey{},
       std::string("MultitaskMenuBubbleWidget"));
-  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
+  chromeos::FrameSizeButton* size_button =
       NonClientFrameViewAsh::Get(window.get())
           ->GetHeaderView()
           ->caption_button_container()
-          ->size_button());
+          ->size_button();
   size_button->ShowMultitaskMenu(
       chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
   views::WidgetDelegate* delegate =
@@ -181,8 +181,7 @@ TEST_F(MultitaskMenuNudgeControllerTest,
                                        ->GetBoundsInScreen()
                                        .CenterPoint());
   GetEventGenerator()->ClickLeftButton();
-  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
-  EXPECT_TRUE(GetNudgeWidgetForWindow(window.get()));
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
 }
 
 TEST_F(MultitaskMenuNudgeControllerTest, NudgeTimeout) {
@@ -281,6 +280,36 @@ TEST_F(MultitaskMenuNudgeControllerTest, NudgePreferences) {
 
   // Advance the clock and attempt to show the nudge for a forth time. Verify
   // that it will not show.
+  test_clock_.Advance(base::Hours(25));
+  window.reset();
+  window = CreateAppWindow(gfx::Rect(300, 300));
+  EXPECT_FALSE(GetNudgeWidgetForWindow(window.get()));
+}
+
+// Tests that after the multitask menu is shown, the nudge does not show
+// anymore.
+TEST_F(MultitaskMenuNudgeControllerTest, MenuShown) {
+  // Create a window, the nudge is shown on new window activation.
+  auto window = CreateAppWindow(gfx::Rect(300, 300));
+  ASSERT_TRUE(GetNudgeWidgetForWindow(window.get()));
+
+  // Fake waiting for nudge to dismiss and open the multitask menu.
+  FireDismissNudgeTimer(window.get());
+  ASSERT_FALSE(GetNudgeWidgetForWindow(window.get()));
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      std::string("MultitaskMenuBubbleWidget"));
+  chromeos::FrameSizeButton* size_button =
+      NonClientFrameViewAsh::Get(window.get())
+          ->GetHeaderView()
+          ->caption_button_container()
+          ->size_button();
+  size_button->ShowMultitaskMenu(
+      chromeos::MultitaskMenuEntryType::kFrameSizeButtonHover);
+  waiter.WaitIfNeededAndGet();
+
+  // Advance the clock and then destroy the window and create a new window.
+  // Test that the nudge does not show up.
   test_clock_.Advance(base::Hours(25));
   window.reset();
   window = CreateAppWindow(gfx::Rect(300, 300));

@@ -86,6 +86,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   // Closes the widget and cleans up all pointers in this class.
   void DismissNudge();
 
+  // Called when the menu is opened. Marks the pref as seen so it does not show
+  // up again.
+  void OnMenuOpened(bool tablet_mode);
+
   // aura::WindowObserver:
   void OnWindowParentChanged(aura::Window* window,
                              aura::Window* parent) override;
