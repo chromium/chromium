@@ -68,6 +68,8 @@ RemoteCommandsService::MetricReceivedRemoteCommand RemoteCommandMetricFromType(
       return Metric::kBrowserRotateAttestationCredential;
     case em::RemoteCommand_Type_FETCH_CRD_AVAILABILITY_INFO:
       return Metric::kFetchCrdAvailabilityInfo;
+    case em::RemoteCommand_Type_FETCH_SUPPORT_PACKET:
+      return Metric::kFetchSupportPacket;
   }
 
   // None of possible types matched. May indicate that there is new unhandled
@@ -112,6 +114,8 @@ const char* RemoteCommandTypeToString(em::RemoteCommand_Type type) {
       return "BrowserRotateAttestationCredential";
     case em::RemoteCommand_Type_FETCH_CRD_AVAILABILITY_INFO:
       return "FetchCrdAvailabilityInfo";
+    case em::RemoteCommand_Type_FETCH_SUPPORT_PACKET:
+      return "FetchSupportPacket";
   }
 
   NOTREACHED() << "Unknown command type: " << type;

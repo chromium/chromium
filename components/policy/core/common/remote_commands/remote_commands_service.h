@@ -69,8 +69,9 @@ class POLICY_EXPORT RemoteCommandsService
     kDeviceResetEuicc = 19,
     kBrowserRotateAttestationCredential = 20,
     kFetchCrdAvailabilityInfo = 21,
+    kFetchSupportPacket = 22,
     // Used by UMA histograms. Shall refer to the last enumeration.
-    kMaxValue = kFetchCrdAvailabilityInfo
+    kMaxValue = kFetchSupportPacket
   };
 
   // Signature type that will be used for the requests.

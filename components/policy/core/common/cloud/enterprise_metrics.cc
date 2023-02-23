@@ -78,6 +78,7 @@ const char kMetricUserRemoteCommandReceived[] =
 // Enterprise.UserRemoteCommand.Executed.DeviceResetEuicc
 // Enterprise.UserRemoteCommand.Executed.BrowserRotateAttestationCredential
 // Enterprise.UserRemoteCommand.Executed.FetchCrdAvailabilityInfo
+// Enterprise.UserRemoteCommand.Executed.FetchSupportPacket
 const char kMetricUserRemoteCommandExecutedTemplate[] =
     "Enterprise.UserRemoteCommand.Executed.%s";
 

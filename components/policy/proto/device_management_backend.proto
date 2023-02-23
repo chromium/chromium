@@ -2810,6 +2810,9 @@ message RemoteCommand {
     // Fetch information that determines the availability of CRD on the device.
     FETCH_CRD_AVAILABILITY_INFO = 15;
 
+    // Fetch the logs from the Support Tool on managed ChromeOS devices.
+    FETCH_SUPPORT_PACKET = 16;
+
     // Please update metrics after adding a new item - see the comment above.
   }
 

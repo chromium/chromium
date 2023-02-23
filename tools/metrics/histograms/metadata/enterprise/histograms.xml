@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".DeviceWipeUsers" summary="Wipe users"/>
   <variant name=".FetchCrdAvailabilityInfo"
       summary="Fetch CRD availability info"/>
+  <variant name=".FetchSupportPacket" summary="Fetch support packet"/>
   <variant name=".UserArcCommand" summary="ARC command"/>
 </variants>
 
