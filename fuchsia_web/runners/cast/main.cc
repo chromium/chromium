@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
       resolver_binding(outgoing_directory, &resolver);
 
   // Publish the fuchsia.component.runner.ComponentRunner for Cast apps.
-  WebInstanceHost web_instance_host;
+  WebInstanceHost web_instance_host(*outgoing_directory);
   CastRunner runner(
       web_instance_host,
       {.headless = command_line->HasSwitch(kForceHeadlessForTestsSwitch) ||

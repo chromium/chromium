@@ -9,6 +9,7 @@
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/fit/function.h>
 #include <lib/sys/cpp/component_context.h>
+#include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <lib/vfs/cpp/pseudo_dir.h>
 #include <lib/vfs/cpp/pseudo_file.h>
@@ -54,9 +55,9 @@ constexpr char kCollectionName[] = "web_instances";
 
 // Returns the "/web_instances" dir from the component's outgoing directory,
 // creating it if necessary.
-vfs::PseudoDir* GetWebInstancesCollectionDir() {
-  return base::ComponentContextForProcess()->outgoing()->GetOrCreateDirectory(
-      kCollectionName);
+vfs::PseudoDir* GetWebInstancesCollectionDir(
+    sys::OutgoingDirectory& outgoing_directory) {
+  return outgoing_directory.GetOrCreateDirectory(kCollectionName);
 }
 
 // Returns an instance's name given its unique id.
@@ -93,6 +94,7 @@ struct Instance {
 class InstanceBuilder {
  public:
   static base::expected<std::unique_ptr<InstanceBuilder>, zx_status_t> Create(
+      sys::OutgoingDirectory& outgoing_directory,
       fuchsia::component::Realm& realm,
       const base::CommandLine& launch_args);
   ~InstanceBuilder();
@@ -134,7 +136,8 @@ class InstanceBuilder {
       fidl::InterfaceRequest<fuchsia::io::Directory> services_request);
 
  private:
-  InstanceBuilder(fuchsia::component::Realm& realm,
+  InstanceBuilder(sys::OutgoingDirectory& outgoing_directory,
+                  fuchsia::component::Realm& realm,
                   base::GUID id,
                   std::string name,
                   vfs::PseudoDir* instance_dir,
@@ -192,6 +195,7 @@ class InstanceBuilder {
   // Offers the read-only directory capability named `name` from the parent.
   void OfferDirectoryFromParent(base::StringPiece name);
 
+  const raw_ref<sys::OutgoingDirectory> outgoing_directory_;
   const raw_ref<fuchsia::component::Realm> realm_;
   const base::GUID id_;
   const std::string name_;
@@ -207,7 +211,8 @@ class InstanceBuilder {
 
 // static
 base::expected<std::unique_ptr<InstanceBuilder>, zx_status_t>
-InstanceBuilder::Create(fuchsia::component::Realm& realm,
+InstanceBuilder::Create(sys::OutgoingDirectory& outgoing_directory,
+                        fuchsia::component::Realm& realm,
                         const base::CommandLine& launch_args) {
   // Pick a unique identifier for the new instance.
   base::GUID instance_id = base::GUID::GenerateRandomV4();
@@ -220,24 +225,27 @@ InstanceBuilder::Create(fuchsia::component::Realm& realm,
   // the caller's responsibility to remove it when the instance goes away.
   auto instance_dir = std::make_unique<vfs::PseudoDir>();
   auto* const instance_dir_ptr = instance_dir.get();
-  if (zx_status_t status = GetWebInstancesCollectionDir()->AddEntry(
-          instance_name, std::move(instance_dir));
+  if (zx_status_t status =
+          GetWebInstancesCollectionDir(outgoing_directory)
+              ->AddEntry(instance_name, std::move(instance_dir));
       status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "AddEntry(name)";
     return base::unexpected(status);
   }
 
   return base::ok(base::WrapUnique(new InstanceBuilder(
-      realm, std::move(instance_id), std::move(instance_name), instance_dir_ptr,
-      launch_args)));
+      outgoing_directory, realm, std::move(instance_id),
+      std::move(instance_name), instance_dir_ptr, launch_args)));
 }
 
-InstanceBuilder::InstanceBuilder(fuchsia::component::Realm& realm,
+InstanceBuilder::InstanceBuilder(sys::OutgoingDirectory& outgoing_directory,
+                                 fuchsia::component::Realm& realm,
                                  base::GUID id,
                                  std::string name,
                                  vfs::PseudoDir* instance_dir,
                                  const base::CommandLine& launch_args)
-    : realm_(realm),
+    : outgoing_directory_(outgoing_directory),
+      realm_(realm),
       id_(std::move(id)),
       name_(std::move(name)),
       instance_dir_(instance_dir),
@@ -245,7 +253,8 @@ InstanceBuilder::InstanceBuilder(fuchsia::component::Realm& realm,
 
 InstanceBuilder::~InstanceBuilder() {
   if (instance_dir_) {
-    DestroyInstanceDirectory(GetWebInstancesCollectionDir(), name_);
+    DestroyInstanceDirectory(GetWebInstancesCollectionDir(*outgoing_directory_),
+                             name_);
   }
 }
 
@@ -546,7 +555,8 @@ bool HandleContentDirectoriesParam(InstanceBuilder& builder,
 
 }  // namespace
 
-WebInstanceHost::WebInstanceHost() {
+WebInstanceHost::WebInstanceHost(sys::OutgoingDirectory& outgoing_directory)
+    : outgoing_directory_(outgoing_directory) {
   // Ensure WebInstance is registered before launching it.
   // TODO(crbug.com/1211174): Replace with a different mechanism when available.
   RegisterWebInstanceProductData(kWebInstanceComponentUrl);
@@ -566,8 +576,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     Initialize();
   }
 
-  auto expected_builder =
-      InstanceBuilder::Create(*realm_, std::move(extra_args));
+  auto expected_builder = InstanceBuilder::Create(*outgoing_directory_, *realm_,
+                                                  std::move(extra_args));
   if (!expected_builder.has_value()) {
     return expected_builder.error();
   }
@@ -640,7 +650,8 @@ void WebInstanceHost::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Destroy all child instances and each one's outgoing directory subtree.
-  auto* const instances_dir = GetWebInstancesCollectionDir();
+  auto* const instances_dir =
+      GetWebInstancesCollectionDir(*outgoing_directory_);
   for (auto& [id, binder_ptr] : instances_) {
     const std::string name(InstanceNameFromId(id));
     if (realm_) {
@@ -673,7 +684,8 @@ void WebInstanceHost::OnComponentBinderClosed(const base::GUID& id,
   DestroyInstance(*realm_, name);
 
   // Drop the directory subtree for the child instance.
-  DestroyInstanceDirectory(GetWebInstancesCollectionDir(), name);
+  DestroyInstanceDirectory(GetWebInstancesCollectionDir(*outgoing_directory_),
+                           name);
 
   // Drop the hold on the instance's Binder. Note: destroying the InterfacePtr
   // here also deletes the lambda into which `id` was bound, so `id` must not

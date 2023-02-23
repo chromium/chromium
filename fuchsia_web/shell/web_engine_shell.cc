@@ -231,7 +231,8 @@ int main(int argc, char** argv) {
     web_context_provider->Create(std::move(create_context_params),
                                  context.NewRequest());
   } else {
-    web_instance_host = std::make_unique<WebInstanceHost>();
+    web_instance_host = std::make_unique<WebInstanceHost>(
+        *base::ComponentContextForProcess()->outgoing());
     if (enable_web_instance_tmp) {
       const zx_status_t status = fdio_open(
           "/tmp",
