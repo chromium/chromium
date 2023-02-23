@@ -48,6 +48,18 @@ namespace {
 
 const int kVKeyProcessKey = 229;
 
+bool IsPageUpOrDownKeyEvent(int key_code, WebInputEvent::Modifiers modifiers) {
+  if (modifiers & WebInputEvent::kAltKey) {
+    // Alt-Up/Down should behave like PageUp/Down on Mac. (Note that Alt-keys
+    // on other platforms are suppressed due to isSystemKey being set.)
+    return key_code == VKEY_UP || key_code == VKEY_DOWN;
+  } else if (key_code == VKEY_PRIOR || key_code == VKEY_NEXT) {
+    return modifiers == WebInputEvent::kNoModifiers;
+  }
+
+  return false;
+}
+
 bool MapKeyCodeForScroll(int key_code,
                          WebInputEvent::Modifiers modifiers,
                          mojom::blink::ScrollDirection* scroll_direction,
@@ -450,7 +462,8 @@ void KeyboardEventManager::DefaultArrowEventHandler(
   }
 
   if (IsSpatialNavigationEnabled(frame_) &&
-      !frame_->GetDocument()->InDesignMode()) {
+      !frame_->GetDocument()->InDesignMode() &&
+      !IsPageUpOrDownKeyEvent(event->keyCode(), event->GetModifiers())) {
     if (page->GetSpatialNavigationController().HandleArrowKeyboardEvent(
             event)) {
       event->SetDefaultHandled();
