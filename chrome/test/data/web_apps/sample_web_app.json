@@ -9,6 +9,21 @@
    "background_color": "rgba(77,188,194,0.9686274509803922)",
    "capture_links": "kNone",
    "current_os_integration_states": {
+      "file_handling": [  ],
+      "protocols_handled": {
+         "web+test0": "https://example.com/scope1234/start12340",
+         "web+test1": "https://example.com/scope1234/start12341"
+      },
+      "run_on_os_login": "minimized",
+      "shortcut_descriptions": {
+         "description": "Description1234",
+         "icon_size_to_timestamp_map": {
+            "32": "1970-02-18 08:29:15.376 UTC"
+         },
+         "title": "Name1234"
+      },
+      "shortcut_menus": [  ],
+      "uninstall_registration": true
    },
    "dark_mode_background_color": "none",
    "dark_mode_theme_color": "rgba(34,214,187,1)",
@@ -149,8 +164,8 @@
    "is_uninstalling": false,
    "isolation_data": {
       "isolated_web_app_location": {
-         "dev_mode_proxy": {
-            "proxy_url": "https://proxy-1234.com"
+         "dev_mode_bundle": {
+            "path": "1234"
          }
       }
    },

@@ -58,6 +58,7 @@
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "components/sync/base/time.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -380,6 +381,92 @@ std::vector<blink::Manifest::ImageResource> CreateRandomHomeTabIcons(
   }
   return icons;
 }
+
+proto::WebAppOsIntegrationState GenerateRandomWebAppOsIntegrationState(
+    RandomHelper& random,
+    WebApp& app) {
+  proto::WebAppOsIntegrationState state;
+
+  // Randomly fill shortcuts data.
+  auto* shortcuts = state.mutable_shortcut();
+  shortcuts->set_title(app.untranslated_name());
+  shortcuts->set_description(app.untranslated_description());
+  auto* first_shortcut = shortcuts->add_icon_data_any();
+  first_shortcut->set_icon_size(32);
+  first_shortcut->set_timestamp(syncer::TimeToProtoTime(
+      base::Time::UnixEpoch() + base::Milliseconds(random.next_uint())));
+
+  // Randomly fill protocols_handled.
+  auto* protocols_handled = state.mutable_protocols_handled();
+  int num_protocols = random.next_uint(/*bound=*/3);
+  for (int i = 0; i < num_protocols; i++) {
+    auto* protocol = protocols_handled->add_protocols();
+    protocol->set_protocol(base::StrCat({"web+test", base::NumberToString(i)}));
+    protocol->set_url(
+        base::StrCat({app.start_url().spec(), base::NumberToString(i)}));
+  }
+
+  // Randomly fill run_on_os_login.
+  const proto::RunOnOsLoginMode run_on_os_login_modes[3] = {
+      proto::RunOnOsLoginMode::NOT_RUN, proto::RunOnOsLoginMode::WINDOWED,
+      proto::RunOnOsLoginMode::MINIMIZED};
+  state.mutable_run_on_os_login()->set_run_on_os_login_mode(
+      run_on_os_login_modes[random.next_uint(/*bound=*/3)]);
+
+  // Randomly fill uninstallation registration logic.
+  state.mutable_uninstall_registration()->set_registered_with_os(
+      random.next_bool());
+
+  // Randomly fill shortcuts menu information.
+  auto* shortcut_menus = state.mutable_shortcut_menus();
+  int count_shortcut_menu_items = random.next_uint(/*bound=*/2);
+  for (int i = 0; i < count_shortcut_menu_items; i++) {
+    auto* menu_info = shortcut_menus->add_shortcut_menu_info();
+    menu_info->set_shortcut_name(
+        base::StrCat({"shortcut_name", base::NumberToString(i)}));
+    menu_info->set_shortcut_launch_url(
+        base::StrCat({app.scope().spec(), base::NumberToString(i)}));
+
+    auto* data_any = menu_info->add_icon_data_any();
+    data_any->set_icon_size(16 * random.next_uint(/*bound=*/4));
+    data_any->set_timestamp(syncer::TimeToProtoTime(
+        base::Time::UnixEpoch() + base::Milliseconds(random.next_uint())));
+
+    auto* data_maskable = menu_info->add_icon_data_maskable();
+    data_maskable->set_icon_size(16 * random.next_uint(/*bound=*/4));
+    data_maskable->set_timestamp(syncer::TimeToProtoTime(
+        base::Time::UnixEpoch() + base::Milliseconds(random.next_uint())));
+
+    auto* data_monochrome = menu_info->add_icon_data_monochrome();
+    data_monochrome->set_icon_size(16 * random.next_uint(/*bound=*/4));
+    data_monochrome->set_timestamp(syncer::TimeToProtoTime(
+        base::Time::UnixEpoch() + base::Milliseconds(random.next_uint())));
+  }
+
+  // Randomly fill file handling information.
+  auto* file_handling = state.mutable_file_handling();
+  int count_file_handlers = random.next_uint(/*bound=*/2);
+  for (int i = 0; i < count_file_handlers; i++) {
+    auto* file_handlers = file_handling->add_file_handlers();
+    int count_accepts = random.next_uint(/*bound=*/2);
+    file_handlers->set_action(
+        base::StrCat({"https://file.open/", base::NumberToString(i)}));
+    file_handlers->set_display_name(
+        base::StrCat({"file_type", base::NumberToString(i)}));
+    for (int j = 0; j < count_accepts; j++) {
+      auto* accept = file_handlers->add_accept();
+      accept->set_mimetype(
+          base::StrCat({"application/type", base::NumberToString(i)}));
+      accept->add_file_extensions(
+          base::StrCat({"foo", base::NumberToString(i)}));
+      accept->add_file_extensions(
+          base::StrCat({"bar", base::NumberToString(i)}));
+    }
+  }
+
+  return state;
+}
+
 }  // namespace
 
 std::string GetExternalPrefMigrationTestName(
@@ -725,12 +812,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   app->SetAlwaysShowToolbarInFullscreen(random.next_bool());
 
-  if (random.next_bool()) {
-    // TODO(crbug.com/1403844): Fill this up randomly to use in
-    // WebAppDatabaseTests.
-    proto::WebAppOsIntegrationState state;
-    app->SetCurrentOsIntegrationStates(state);
-  }
+  app->SetCurrentOsIntegrationStates(
+      GenerateRandomWebAppOsIntegrationState(random, *app));
 
   if (random.next_bool()) {
     constexpr size_t kNumLocationTypes =

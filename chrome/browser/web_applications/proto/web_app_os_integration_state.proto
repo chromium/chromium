@@ -88,5 +88,5 @@ message WebAppOsIntegrationState {
   optional FileHandling file_handling = 7;
   // Add data states for other OS integration hooks here.
   // New fields added to this message must also be added to:
-  // OsStatesDebugValue()
+  // OsStatesDebugValue() and GenerateRandomWebAppOsIntegrationState().
 }
