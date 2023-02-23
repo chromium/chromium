@@ -947,6 +947,16 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
       Politika False (Yanlış) değerine ayarlanır veya hiç ayarlanmazsa <ph name="PRODUCT_NAME" /> online iptal etme denetimlerini <ph name="PRODUCT_NAME" /> 19 ve sonraki sürümler için yapmaz.
 
       Not: <ph name="OCSP_CRL_LABEL" /> denetimleri güvenlik açısından verimli değildir.</translation>
+<translation id="1904685047904049720">Bu politika etkinleştirilirse Chrome Web Mağazası'nda yayından kaldırılan uzantılar
+<ph name="PRODUCT_NAME" /> ürününde devre dışı bırakılır.
+Bu politika yalnızca Chrome Web Mağazası'ndan yüklenen ve güncellenen uzantılar
+için geçerlidir. Geliştirici modu kullanılarak yüklenen paketlenmemiş uzantılar ve
+komut satırı anahtarı kullanılarak yüklenen uzantılar gibi mağaza dışındaki uzantılar
+yoksayılır. Zorunlu yüklenmiş ancak Chrome Web Mağazası'ndan
+güncellenmeyen ve sürüme sabitlenmiş tüm uzantılar da yoksayılır.
+
+Politika <ph name="ALLOW_UNPUBLISHED" /> (0) değerine ayarlanırsa veya ayarlanmadan bırakılırsa Chrome Web Mağazası'nda yayından kaldırılan uzantılara izin verilir.
+Politika <ph name="DISABLE_UNPUBLISHED" /> (1) değerine ayarlanırsa Chrome Web Mağazası'nda yayından kaldırılan uzantılar devre dışı bırakılır.</translation>
 <translation id="1905061765326052857">Bağlı olmayan kullanıcıların, Linux uygulamalarını desteklemek için gerekli olan sanal makineleri kullanmasına izin verme</translation>
 <translation id="1910704279188129272">Uygulama başına kullanım kısıtlamaları ayarlamaya olanak tanır.
         Kullanım kısıtlamaları, belirtilen kullanıcı için <ph name="PRODUCT_OS_NAME" /> üzerinde yüklü uygulamalarda geçerli olabilir.
@@ -5704,6 +5714,7 @@ Ayrıntılı bilgi için https://developer.chrome.com/blog/immutable-document-do
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa kullanıcılar uygulama kısayollarının yer işareti çubuğu içerik menüsünde gösterilmesine veya gizlenmesine karar verir.</translation>
 <translation id="638003144128412430">Cihazın saat dilimi bilgileri raporlamasını devre dışı bırak</translation>
+<translation id="6382209369210116232">Yayından kaldırılan uzantıları devre dışı bırak</translation>
 <translation id="6382351416269252693">Yerel yazı tipleri izninin otomatik olarak reddedileceği siteleri belirten site URL kalıplarının yer aldığı bir liste oluşturur. Bu durumda sitelerin, yerel yazı tipleriyle ilgili bilgileri görme imkanı kısıtlanmış olur.
 
       Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir. Bu politika yalnızca kaynağa göre eşleşir. Dolayısıyla, URL kalıbındaki yollar yok sayılır.

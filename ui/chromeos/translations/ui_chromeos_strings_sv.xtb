@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1209796539517632982">Automatiska namnservrar</translation>
 <translation id="1210831758834677569">laotiska</translation>
+<translation id="1221555006497674479">Ont om lagringsutrymme – <ph name="REMAINING_PERCENTAGE" /> % kvar av den delade enhetens lagringsutrymme på <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Ladda upp</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Direkt Internetanslutning</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">kinesiska (pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer görs tillgängliga offline</translation>
 <translation id="164969095109328410">Chrome-enhet</translation>
+<translation id="1661207570040737402">Du har använt allt ditt lagringsutrymme på den delade Google Workspace-enheten.</translation>
 <translation id="1661867754829461514">Pinkod saknas</translation>
 <translation id="166439687370499867">Du får inte ändra delade nätverkskonfigurationer</translation>
 <translation id="1665611772925418501">Det gick inte att ändra filen.</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="3952872973865944257">telugu, fonetiskt</translation>
-<translation id="3954354850384043518">Pågår</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Ladda ned mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">engelska (Storbritannien)</translation>
@@ -995,6 +996,7 @@
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
 <translation id="9065512565307033593">Nätverksåtkomsten kommer att inaktiveras om du misslyckas med verifieringen.</translation>
 <translation id="908378762078012445">ryskt fonetiskt tangentbord (AATSEEL)</translation>
+<translation id="9086302186042011942">Synkroniserar</translation>
 <translation id="9099674669267916096">Sidantal</translation>
 <translation id="9100610230175265781">Lösenfras krävs</translation>
 <translation id="9110990317705400362">Vi strävar hela tiden efter att göra det säkrare för dig att surfa. Tidigare kunde du uppmanas att lägga till ett tillägg i webbläsaren på vilken webbplats som helst. I de senaste versionerna av Google Chrome måste du uttryckligen tala om för Chrome att du vill installera dessa tillägg genom att lägga till dem via sidan Tillägg. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>

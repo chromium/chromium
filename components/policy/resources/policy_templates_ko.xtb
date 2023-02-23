@@ -945,6 +945,11 @@
       정책을 False로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 <ph name="PRODUCT_NAME" /> 19 이후에는 온라인 해지 확인 검사를 진행하지 않습니다.
 
       참고: <ph name="OCSP_CRL_LABEL" /> 검사는 보안상 실질적인 이점이 없습니다.</translation>
+<translation id="1904685047904049720">정책을 사용 설정하면 Chrome 웹 스토어에서 게시 취소된 확장 프로그램이 <ph name="PRODUCT_NAME" />에서 사용 중지됩니다.
+이 정책은 Chrome 웹 스토어에서 설치 및 업데이트된 확장 프로그램에만 적용됩니다. 개발자 모드를 사용하여 설치되는 압축해제된 확장 프로그램 및 명령줄 전환을 사용하여 설치된 확장 프로그램 등 스토어 외부에서 설치된 확장 프로그램은 무시됩니다. 강제 설치되었으며 Chrome 웹 스토어에서 업데이트되지 않는 확장 프로그램 및 모든 버전 고정 확장 프로그램도 무시됩니다.
+
+정책을 <ph name="ALLOW_UNPUBLISHED" />(0)(으)로 설정하거나 설정하지 않으면 Chrome 웹 스토어에서 게시 취소된 확장 프로그램을 사용할 수 있습니다.
+정책을 <ph name="DISABLE_UNPUBLISHED" />(1)(으)로 설정하면 Chrome 웹 스토어에서 게시 취소된 확장 프로그램이 사용 중지됩니다.</translation>
 <translation id="1905061765326052857">제휴되지 않은 사용자가 Linux 앱을 지원하는 데 필요한 가상 머신을 사용하도록 허용 안 함</translation>
 <translation id="1910704279188129272">앱별 사용 제한을 설정하도록 허용합니다.
         사용 제한은 특정 사용자를 위해 <ph name="PRODUCT_OS_NAME" />에 설치된 앱에 적용될 수 있습니다.
@@ -5690,6 +5695,7 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
 
       정책을 설정하면 사용자가 변경할 수 없습니다. 설정하지 않으면 사용자가 앱 바로가기를 북마크바 컨텍스트 메뉴에서 표시하거나 숨길지를 결정합니다.</translation>
 <translation id="638003144128412430">기기 시간대 정보 보고 사용 중지</translation>
+<translation id="6382209369210116232">게시가 취소된 확장 프로그램 사용 중지</translation>
 <translation id="6382351416269252693">자동으로 로컬 글꼴 권한을 거부하는 사이트를 지정하도록 사이트 URL 패턴 목록을 설정합니다. 이렇게 하면 로컬 글꼴에 관한 정보를 볼 수 있는 사이트 기능이 제한됩니다.
 
       유효한 사이트 URL 패턴에 관한 자세한 내용은 다음을 참고하세요. https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns 와일드 카드(<ph name="WILDCARD_VALUE" />)를 사용할 수 있습니다. 이 정책은 출처만 기준으로 일치 여부를 판단하므로 URL 패턴의 경로는 무시됩니다.

@@ -351,11 +351,11 @@
 <translation id="3924145049010392604">मेटा</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="3952872973865944257">तेलगू फोनेटिक</translation>
-<translation id="3954354850384043518">प्रक्रियामा छ</translation>
 <translation id="3958548648197196644">कीवी</translation>
 <translation id="3971140002794351170">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">अङ्ग्रेजी (संयुक्त अधिराज्य)</translation>
 <translation id="3975895378829046965">बङ्गाली फोनेटिक</translation>
+<translation id="3999574733850440202">हालसालै खोलिएका Microsoft फाइलहरू सारेर OneDrive मा लगिएका छन्</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4017788180641807848">अङ्ग्रेजी (सं. रा. अमेरिकी) वर्कमेन किबोर्ड</translation>
 <translation id="4019998208269143058">"क्विक फाइलहरू" मा पिन गरियोस्</translation>
@@ -907,6 +907,7 @@
 <translation id="8300849813060516376">OTASP असफल</translation>
 <translation id="8312871300878166382">फोल्डरमा टाँस्नुहोस्</translation>
 <translation id="8329978297633540474">सादा पाठ</translation>
+<translation id="8332007959299458842">हालसालै खोलिएका Microsoft फाइलहरू सारेर Google Drive मा लगिएका छन्</translation>
 <translation id="8335587457941836791">शेल्फबाट अनपिन गर्नुहोस्</translation>
 <translation id="8335837413233998004">बेलारुसी</translation>
 <translation id="8336153091935557858">हिजो <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -994,6 +995,7 @@
 <translation id="9046895021617826162">जडान असफल भयो,</translation>
 <translation id="9065512565307033593">तपाईंले पुष्टि गर्न सक्नुभएन भने तपाईं अब नेटवर्क प्रयोग गर्न पाउनु हुने छैन।</translation>
 <translation id="908378762078012445">रसियाली फोनेटिक AATSEEL किबोर्ड</translation>
+<translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9099674669267916096">पृष्ठको गणना</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9110990317705400362">हामी लगातार तपाईंको ब्राउजर अझ सुरक्षित बनाउने तरिकाहरू खोजिरहेकाछौं। योभन्दा पहिले, कुनैपनि वेबसाइटले आफ्नो ब्राउजरमा एक्स्टेन्शन थप्न तपाईंलाई प्रेरित गर्न सक्थ्यो। Google Chrome को यो नवीनतम संस्करणमा, तपाईंले तिनीहरूलाई एक्स्टेन्शनहरू भन्ने पृष्ठमा थपेर आफूले ती एक्स्टेन्शनहरू स्थापना गर्न चाहेको कुरा Chrome लाई भन्नैपर्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>

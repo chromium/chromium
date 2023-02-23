@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1209796539517632982">Izen-zerbitzari automatikoak</translation>
 <translation id="1210831758834677569">Laostarra</translation>
+<translation id="1221555006497674479">Biltegiratze gutxi gelditzen da: % <ph name="REMAINING_PERCENTAGE" /> gelditzen zaizu unitate partekatuaren <ph name="TOTAL_SPACE" />-ko biltegian.</translation>
 <translation id="1243314992276662751">Kargatu</translation>
 <translation id="1249250836236328755">Generoa</translation>
 <translation id="1254593899333212300">Interneteko konexio zuzena</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Txinatarra (pinyin)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fitxategi konexiorik gabe erabiltzeko deskargatzen</translation>
 <translation id="164969095109328410">Chrome-ko gailua</translation>
+<translation id="1661207570040737402">Unitate partekatuaren Google Workspace-ko biltegi osoa erabili duzu.</translation>
 <translation id="1661867754829461514">PINa falta da</translation>
 <translation id="166439687370499867">Ez da onartzen sare partekatuen konfigurazioak aldatzea</translation>
 <translation id="1665611772925418501">Ezin izan da fitxategia aldatu.</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Itsatsi</translation>
 <translation id="3952872973865944257">Teluguar fonetikoa</translation>
-<translation id="3954354850384043518">Abian</translation>
 <translation id="3958548648197196644">Kiwia</translation>
 <translation id="3971140002794351170">Deskargatu mugikorreko profila, <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" /> sare, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Ingelesa (Erresuma Batua)</translation>
@@ -992,6 +993,7 @@
 <translation id="9046895021617826162">Ezin izan da konektatu</translation>
 <translation id="9065512565307033593">Egiaztapena gauzatzen ez baduzu, desgaitu egingo da sarerako sarbidea.</translation>
 <translation id="908378762078012445">Errusiarra, AATSEEL teklatu fonetikoarekin</translation>
+<translation id="9086302186042011942">Sinkronizatzen</translation>
 <translation id="9099674669267916096">Orri kopurua</translation>
 <translation id="9100610230175265781">Pasaesaldia behar da</translation>
 <translation id="9110990317705400362">Arakatzea geroz eta seguruagoa izan dadin saiatzen gara etengabe. Lehen, edozein webgunek eskain ziezazukeen arakatzailean gehitzeko luzapen bat. Google Chrome-ren azken bertsioetan, ordea, luzapen horiek Luzapenak orrian gehituta instalatu nahi dituzula berariaz esan behar diozu Chrome-ri. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>

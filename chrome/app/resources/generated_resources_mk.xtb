@@ -69,6 +69,7 @@
 <translation id="1059484610606223931">Протокол за безбеден пренос на хипертекст (HTTPS)</translation>
 <translation id="1059944192885972544">Најдени се <ph name="NUM" /> картички за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="1060292118287751956">Ја одредува фреквенцијата на освежување на екранот</translation>
+<translation id="1060570945511946595">Управувајте со билетите</translation>
 <translation id="1061130374843955397">Добре дојдовте на <ph name="DEVICE_TYPE" /></translation>
 <translation id="1061373870045429865">Создајте QR-код за линков</translation>
 <translation id="1061904396131502319">Речиси е време за пауза</translation>
@@ -1127,6 +1128,7 @@
 <translation id="1975841812214822307">Отстрани...</translation>
 <translation id="1976150099241323601">Најавете се на безбедносниот уред</translation>
 <translation id="1977965994116744507">Приближете го вашиот телефон за да го отклучите вашиот <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1978666928180318515">Отстранување на Bruschetta</translation>
 <translation id="1979095679518582070">Исклучувањето на функцијава нема да влијае врз способноста на уредов да ги испраќа податоците што се потребни за основните услуги, како што се системските ажурирања и безбедноста на системот.</translation>
 <translation id="1979280758666859181">Се префрлате на канал со постара верзија на <ph name="PRODUCT_NAME" />. Промената на каналот ќе се примени кога неговата верзија ќе се совпадне со верзијата што тековно е инсталирана на уредот.</translation>
 <translation id="197989455406964291">KDC не го поддржува типот шифрирање</translation>
@@ -1933,6 +1935,7 @@
 <translation id="2672142220933875349">Лоша crx датотека, отпакувањето не успеа.</translation>
 <translation id="2673135533890720193">Прочитајте ја историјата на прелистувачот</translation>
 <translation id="2674764818721168631">Исклучено</translation>
+<translation id="2675570801872027281">Грешка при отстранување на Bruschetta. Обидете се повторно.</translation>
 <translation id="2676492189600898281">Испратете повратни информации за автоматското пополнување</translation>
 <translation id="2678063897982469759">Овозможи повторно</translation>
 <translation id="2678100101831051676">Не може да се емитува.</translation>
@@ -2931,6 +2934,7 @@
 <translation id="3593965109698325041">Ограничувања на име на сертификат</translation>
 <translation id="3596012367874587041">Поставки за апликацијата</translation>
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
+<translation id="3598010454707842106">Кликнете на „Приспособување на Chrome“</translation>
 <translation id="3599221874935822507">Со подигнат раб</translation>
 <translation id="3600051066689725006">Информации за веб-барањето</translation>
 <translation id="360180734785106144">Да ви нуди нови функции кога ќе станат достапни</translation>
@@ -3929,6 +3933,7 @@
 <translation id="4497145443434063861">Компјутер и Chromecast на различни Wi-Fi мрежи (пр., 2,4 GHz
     наспроти 5 GHz)</translation>
 <translation id="4500114933761911433"><ph name="PLUGIN_NAME" /> падна</translation>
+<translation id="4500647907053779331">&amp;Translate го изборот на <ph name="LANGUAGE" /></translation>
 <translation id="450099669180426158">Икона извичник</translation>
 <translation id="4501530680793980440">Потврди отстранување</translation>
 <translation id="4502423230170890588">Отстрани од уредов</translation>
@@ -3959,6 +3964,7 @@
 <translation id="4522890784888918985">Детските сметки не се поддржани</translation>
 <translation id="4523876148417776526">XML-списоците на сајтови уште не се преземени.</translation>
 <translation id="4524832533047962394">Оваа верзија на оперативниот систем не го поддржува обезбедениот режим на регистрирање. Проверете дали ја користите најновата верзија.</translation>
+<translation id="4526051299161934899">Сокриени зачувани групи картички</translation>
 <translation id="4526853756266614740">Изберете слика за да се примени темата веднаш</translation>
 <translation id="452750746583162491">Прегледајте ги синхронизираните податоци</translation>
 <translation id="4527929807707405172">Овозможи обратно лизгање. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -5741,6 +5747,7 @@
 <translation id="617213288191670920">Не се додадени јазици</translation>
 <translation id="6173623053897475761">Напишете го вашиот PIN повторно</translation>
 <translation id="6175314957787328458">ГУИД на домен на Microsoft</translation>
+<translation id="6177412385419165772">Се отстранува…</translation>
 <translation id="6178664161104547336">Избери сертификат</translation>
 <translation id="6178682841350631965">Податоците за најавување се ажурирани</translation>
 <translation id="6180510783007738939">Алатка за линија</translation>
@@ -6219,6 +6226,7 @@
 <translation id="6619801788773578757">Додајте киоск-апликација</translation>
 <translation id="6619990499523117484">Потврдете го вашиот PIN</translation>
 <translation id="6620254580880484313">Име на контејнер</translation>
+<translation id="6620927550847360014">Дали да се отстрани Bruschetta од вашиот <ph name="DEVICE_TYPE" />?</translation>
 <translation id="6621391692573306628">За да ја испратите картичкава на друг уред, најавете се на Chrome на двата уреда</translation>
 <translation id="6622980291894852883">Продолжи со блокирање слики…</translation>
 <translation id="6624036901798307345">Во режимот на таблет, допрете го копчето за алатник на бројачот на картички за да се отвори нова лента за картички која прикажува сликички за секоја картичка.</translation>
@@ -6436,6 +6444,7 @@
 <translation id="6818547713623251698">Прегледувајте ги фотографиите, аудиовизуелните содржини, известувањата и апликациите од телефонот</translation>
 <translation id="6818802132960437751">Вградена заштита од вируси</translation>
 <translation id="6818920801736417483">Да се зачуваат лозинките?</translation>
+<translation id="6820079682647046800">Автентикацијата на Kerberos не успеа</translation>
 <translation id="6823174134746916417">Допри за да се кликне на подлогата за допир</translation>
 <translation id="6824564591481349393">Копирај &amp;адреса на е-пошта</translation>
 <translation id="6824584962142919697">&amp;Проверете ги елементите</translation>
@@ -6590,6 +6599,7 @@
 <translation id="6955698182324067397">Овозможувате функции за отстранување грешки на Chrome OS коишто ќе постават sshd-демон и ќе овозможат подигање од USB-дискови.</translation>
 <translation id="6955893174999506273">Додели уште 1 прекинувач</translation>
 <translation id="6957044667612803194">Овој безбедносен клуч не поддржува PIN-кодови</translation>
+<translation id="6960133692707095572">Отворете без билет</translation>
 <translation id="6960507406838246615">Потребно е ажурирање на Linux</translation>
 <translation id="6960648667961844909">Не може да се преземат датотеките за говор на <ph name="LANGUAGE" />. Подоцна ќе се изврши обид за преземање. Говорот се испраќа во Google за обработка додека да заврши преземањето.</translation>
 <translation id="696103774840402661">Сите датотеки и локални податоци за сите корисници на овој <ph name="DEVICE_TYPE" /> трајно се избришани.</translation>
@@ -8053,6 +8063,7 @@
 <translation id="8272443605911821513">Управувајте ги вашите наставки со кликнување на Наставки во менито „Повеќе алатки“.</translation>
 <translation id="8272786333453048167">Одобрете повторно</translation>
 <translation id="8273905181216423293">Преземи сега</translation>
+<translation id="827488840488530039">Страницата што се обидувате да ја отворите не можеше да ги потврди вашите билети за Kerberos</translation>
 <translation id="8274921654076766238">Лупата го следи фокусот на тастатурата</translation>
 <translation id="8274924778568117936">Не исклучувајте и не затворајте <ph name="DEVICE_TYPE" /> пред да заврши ажурирањето. <ph name="DEVICE_TYPE" /> ќе се рестартира откако ќе заврши инсталацијата.</translation>
 <translation id="8275038454117074363">Увези</translation>
@@ -8499,6 +8510,7 @@
 <translation id="869884720829132584">Мени со апликации</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699188901396699995">PPD за <ph name="PRINTER_NAME" /></translation>
+<translation id="8702278591052316269">Мени што содржи сокриени зачувани групи картички</translation>
 <translation id="8702825062053163569">Вашиот <ph name="DEVICE_TYPE" /> е заклучен.</translation>
 <translation id="8703346390800944767">Прескокни ја рекламата</translation>
 <translation id="8705331520020532516">Сериски број</translation>

@@ -3945,6 +3945,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4522890784888918985">Alt hesaplar desteklenmiyor</translation>
 <translation id="4523876148417776526">XML site listeleri henüz getirilmedi.</translation>
 <translation id="4524832533047962394">Sağlanan kayıt modu işletim sisteminin bu sürümü tarafından desteklenmiyor. Lütfen en yeni sürümü kullandığınızdan emin olun.</translation>
+<translation id="4526051299161934899">Gizlenen kayıtlı sekme grupları</translation>
 <translation id="4526853756266614740">Temayı anında uygulamak için bir resim seçin</translation>
 <translation id="452750746583162491">Senkronize edilmiş verilerinizi inceleyin</translation>
 <translation id="4527929807707405172">Ters kaydırmayı etkinleştirin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
@@ -4269,6 +4270,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4824037980212326045">Linux yedekleme ve geri yükleme</translation>
 <translation id="4824958205181053313">Senkronizasyon iptal edilsin mi?</translation>
 <translation id="4825532258163983651">Şifre anahtarı silinemiyor</translation>
+<translation id="4827283332383516812">Kartı sil</translation>
 <translation id="4827675678516992122">Bağlanılamadı</translation>
 <translation id="4827784381479890589">Chrome tarayıcı için gelişmiş yazım denetimi (metin, yazım önerileri için Google'a gönderilir)</translation>
 <translation id="4827904420700932487">Bu resim için QR Kodu oluştur</translation>
@@ -5293,6 +5295,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> ile ilgili diğer işlemler</translation>
 <translation id="5792728279623964091">Lütfen cihazınızın güç düğmesine dokunun</translation>
 <translation id="5792874008054171483"><ph name="SITE_NAME" /> ile ilgili diğer işlemler</translation>
+<translation id="5793317771769868848">Bu ödeme yöntemi bu cihazdan silinecek</translation>
 <translation id="5793339252089865437">Güncellemeyi mobil ağ bağlantınız üzerinden indirirseniz limit aşımı ücretleriyle karşılaşabilirsiniz.</translation>
 <translation id="5793420564274426163">Eşleme Onayı</translation>
 <translation id="5793430094159150686">Şifreniz değişti. Yerel verilerinizi geri yüklemek için eski şifrenizi girmeniz gerekiyor.</translation>
@@ -7023,7 +7026,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7380622428988553498">Cihaz adı geçersiz karakterler içeriyor</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> güncellendi</translation>
 <translation id="7382085868019811559">Eski Tarayıcı Desteği (LBS) aracılığıyla belirli URL kalıpları, bu siteleri düzgün bir şekilde çalıştırmak için gereken eski özelliklerin desteklendiği alternatif bir tarayıcıda açılabilir.</translation>
-<translation id="738322632977123193">Yüklenemiyor. Şu biçimlerden birinde bir resim kullanın: .jpg, .gif, .png, .bmp, .tif, or .webp</translation>
+<translation id="738322632977123193">Yüklenemiyor. Şu biçimlerden birinde bir resim kullanın: .jpg, .gif, .png, .bmp, .tif veya .webp</translation>
 <translation id="73843634555824551">Giriş ve klavyeler</translation>
 <translation id="7384687527486377545">Klavye otomatik tekrarı</translation>
 <translation id="7385490373498027129">Bu <ph name="DEVICE_TYPE" /> üzerindeki tüm kullanıcıların dosyaları ve yerel verileri kalıcı olarak silinecek.</translation>
@@ -7271,6 +7274,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7609148976235050828">Lütfen internete bağlanın ve tekrar deneyin.</translation>
 <translation id="7612401678989660900">Mikrofon izni olan uygulamaların ve web sitelerinin mikrofona erişmesine izin verin</translation>
 <translation id="7612655942094160088">Bağlı telefon özelliklerini etkinleştir.</translation>
+<translation id="7612989789287281429">Oturum açılıyor…</translation>
 <translation id="7614260613810441905">Bir site, cihazımdaki dosyaları veya klasörleri düzenlemek istediğinde sor (önerilir)</translation>
 <translation id="761530003705945209">Google Drive'a yedekle. Verilerinizi istediğiniz zaman kolayca geri yükleyin veya cihazlar arasında geçiş yapın. Yedeklemeniz, uygulama verilerini içerir. Yedek verileriniz Google'a yüklenir ve Google Hesabınızın şifresi kullanılarak şifrelenir.</translation>
 <translation id="7615365294369022248">Hesap eklenirken bir hata oluştu</translation>
@@ -8487,6 +8491,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="869884720829132584">Uygulamalar menüsü</translation>
 <translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" /> için PPD</translation>
+<translation id="8702278591052316269">Gizlenen kayıtlı sekme gruplarının yer aldığı menü</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> cihazınız kilitlendi.</translation>
 <translation id="8703346390800944767">Reklamı Atla</translation>
 <translation id="8705331520020532516">Seri Numarası</translation>

@@ -185,6 +185,7 @@
 <translation id="2359043044084662842">Превод</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2360196772093551345">Заявка за мобилния сайт</translation>
+<translation id="2362083820973145409">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отваря настройките.</translation>
 <translation id="236977714248711277">Сайтовете не могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница.
 
 Сайтовете не могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например с цел персонализиране на реклами.</translation>
@@ -284,6 +285,7 @@
 <translation id="3020183492814296499">Клавишни комбинации</translation>
 <translation id="3037605927509011580">Ужас!</translation>
 <translation id="3039722182465315531">Без влизане в профила</translation>
+<translation id="3074499504015191586">Превод на цялата страница</translation>
 <translation id="3076846064362030967">Няма да излезете от профила си в Google. Възможно е <ph name="BEGIN_LINK" />други видове активност<ph name="END_LINK" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.
 
 
@@ -314,6 +316,7 @@
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
 <translation id="3244271242291266297">ММ</translation>
+<translation id="3245744387817103524">Промяната ви не бе запазена.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> от <ph name="NUM_SUGGESTIONS" /></translation>
 <translation id="3268451620468152448">Отворени раздели</translation>
 <translation id="3272527697863656322">Отказ</translation>
@@ -336,6 +339,7 @@
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3448016392200048164">Разделен изглед</translation>
 <translation id="345565170154308620">Управление на паролите...</translation>
+<translation id="3464194322481586217">Следенето на цената не бе успешно.</translation>
 <translation id="3469166899695866866">Искате ли да спрете изтеглянето?</translation>
 <translation id="3470502288861289375">Копира се...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{за {COUNT} сайт или приложение}other{за {COUNT} сайта и приложения}}</translation>
@@ -561,6 +565,7 @@
 <translation id="5118713593561876160">Интереси</translation>
 <translation id="5118764316110575523">Изкл.</translation>
 <translation id="5119391094379141756">Изберете Chrome.</translation>
+<translation id="5121618895923301719">Вече проследявате този продукт. Тази страница е запазена в <ph name="BEGIN_LINK" />Мобилни отметки<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадеждна парола}other{{COUNT} ненадеждни пароли}}</translation>
 <translation id="5149188072385105201">Добавяне на парола...</translation>
@@ -591,6 +596,7 @@
 <translation id="5386314158584363703">Тук ще намерите сайтовете, които следите</translation>
 <translation id="5388358297987318779">Отваряне на изображението</translation>
 <translation id="5407969256130905701">Отхвърляне на промените</translation>
+<translation id="5414763847370083940">Ще получите сигнал, когато цената в някой от сайтовете се понижи.</translation>
 <translation id="5416022985862681400">Последните 7 дни</translation>
 <translation id="5423269318075950257">Следене на цената</translation>
 <translation id="543338862236136125">Редактиране на паролата</translation>
@@ -637,6 +643,7 @@
 <translation id="5738385766833540397">Управлявайте начините, по които получавате сигнали за понижение на цената за продукти, които следите</translation>
 <translation id="5738887413654608789">Това ви позволява да откривате подходящи уеб страници въз основа на заобикалящата ви среда.</translation>
 <translation id="5745916533876677730">Към предишния раздел</translation>
+<translation id="5755162682436943950">Не сте в профила си. Отваря диалоговия прозорец за вход в профила и включване на синхронизирането.</translation>
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>
 <translation id="5765456154762864099">Меню → Настройки → Браузър по подразбиране</translation>
 <translation id="5782227691023083829">Превежда се...</translation>
@@ -761,6 +768,7 @@
 <translation id="6464397691496239022">Сайтовете могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница.
 
 Сайтовете не могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например с цел персонализиране на реклами.</translation>
+<translation id="6476253015009698798">Следенето на цените не е възможно за тази страница.</translation>
 <translation id="6476800141292307438">Страницата се превежда на <ph name="LANGUAGE" />. Опциите са достъпни в долната част на екрана.</translation>
 <translation id="648164694371393720">Грешка при удостоверяването</translation>
 <translation id="6482629121755362506">Изтрихте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> елемента</translation>
@@ -812,6 +820,7 @@
 <translation id="6780034285637185932">Пощенски код</translation>
 <translation id="6781260999953472352">Да се включи ли синхронизирането?</translation>
 <translation id="6785453220513215166">Сигналите за сривове се изпращат...</translation>
+<translation id="6790502149545262384">Скоро ще виждате материали от <ph name="CHANNEL_NAME" />, когато отворите нов раздел.</translation>
 <translation id="6797885426782475225">Гласово търсене</translation>
 <translation id="6801927553864092214">За да сърфирате частно, отворете раздел в режим „инкогнито“</translation>
 <translation id="6807889908376551050">Показване на всички...</translation>
@@ -1121,6 +1130,7 @@
 <translation id="9137526406337347448">Услуги на Google</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
 <translation id="9157836665414082580">Диалогови прозорци: Блокиране</translation>
+<translation id="9162432979321511934">Включете AutoFill Passwords</translation>
 <translation id="9177438225260810839">Търсене в отворените раздели</translation>
 <translation id="9188680907066685419">Излизане от управляван профил</translation>
 <translation id="9193147658040604536">Плъзнете тук за фиксиране на раздела</translation>
@@ -1133,6 +1143,7 @@
 <translation id="952704832371081537">Отказ</translation>
 <translation id="953008885340860025">Не сте в профила си в Chrome</translation>
 <translation id="959066944189734975">Следвате <ph name="CHANNEL_NAME" /></translation>
+<translation id="973493300226275298">Проследявайте цената на даден продукт в различни онлайн магазини. Ще получите сигнал, когато цената се понижи.</translation>
 <translation id="980712131080209571">N</translation>
 <translation id="981498610235328462">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити.</translation>
 <translation id="984509647832111802">Синхронизирането не работи.</translation>

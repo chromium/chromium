@@ -351,11 +351,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="3952872973865944257">фонетски телугу</translation>
-<translation id="3954354850384043518">У току</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3971140002794351170">Преузмите профил за мобилне уређаје, <ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">енглески (УК)</translation>
 <translation id="3975895378829046965">фонетски бенгалски</translation>
+<translation id="3999574733850440202">Недавно отворени Microsoft фајлови су премештени на OneDrive</translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4017788180641807848">енглески (САД) са тастатуром Workman</translation>
 <translation id="4019998208269143058">Закачи у брз приступ фајловима</translation>
@@ -908,6 +908,7 @@
 <translation id="8300849813060516376">OTASP није успео</translation>
 <translation id="8312871300878166382">Налепи у фолдер</translation>
 <translation id="8329978297633540474">Чисти текст</translation>
+<translation id="8332007959299458842">Недавно отворени Microsoft фајлови су премештени на Google диск</translation>
 <translation id="8335587457941836791">Откачи са полице</translation>
 <translation id="8335837413233998004">белоруски</translation>
 <translation id="8336153091935557858">Јуче у <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -995,6 +996,7 @@
 <translation id="9046895021617826162">Повезивање није успело</translation>
 <translation id="9065512565307033593">Ако верификација не успе, приступ мрежи ће бити онемогућен.</translation>
 <translation id="908378762078012445">руски са фонетском тастатуром AATSEEL</translation>
+<translation id="9086302186042011942">Синхронизовање</translation>
 <translation id="9099674669267916096">Број страница</translation>
 <translation id="9100610230175265781">Потребна је приступна фраза</translation>
 <translation id="9110990317705400362">Стално тражимо нове начине да учинимо прегледање безбеднијим. Раније је сваки веб-сајт могао да вам затражи да додате додатак у прегледач. У најновијим верзијама Google Chrome-а морате експлицитно да кажете Chrome-у да желите да инсталирате те додатке тако што ћете их додати преко странице Додаци. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>

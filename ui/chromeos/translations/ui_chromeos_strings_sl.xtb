@@ -351,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Prilepi</translation>
 <translation id="3952872973865944257">teluščina (fonetična)</translation>
-<translation id="3954354850384043518">Poteka</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3971140002794351170">Profil za prenos v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">angleščina (Združeno kraljestvo)</translation>
@@ -997,6 +996,7 @@
 <translation id="9046895021617826162">Vzpostavljanje povezave ni uspelo</translation>
 <translation id="9065512565307033593">Če ne preverite, bo dostop do omrežja onemogočen.</translation>
 <translation id="908378762078012445">ruščina s fonetično tipkovnico AATSEEL</translation>
+<translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9099674669267916096">Število strani</translation>
 <translation id="9100610230175265781">Zahtevano je geslo</translation>
 <translation id="9110990317705400362">Stalno si prizadevamo zagotoviti, da bi bilo brskanje varnejše. Prej vas je lahko vsako spletno mesto pozvalo, da dodate razširitev v brskalnik. V zadnjih različicah Google Chroma pa morate Chromu izrecno povedati, da želite te razširitve namestiti, tako da jih dodate na strani »Razširitve«. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>

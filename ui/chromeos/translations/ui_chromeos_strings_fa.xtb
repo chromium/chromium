@@ -351,11 +351,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">جاگذاری</translation>
 <translation id="3952872973865944257">تلوگو (آوایی)</translation>
-<translation id="3954354850384043518">درحال انجام</translation>
 <translation id="3958548648197196644">کیوی</translation>
 <translation id="3971140002794351170">بارگیری نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">انگلیسی (بریتانیا)</translation>
 <translation id="3975895378829046965">بنگلا (آوایی)</translation>
+<translation id="3999574733850440202">‏فایل‌های Microsoft اخیراً بازشده به OneDrive منتقل شده‌اند</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4017788180641807848">‏انگلیسی (آمریکایی) با صفحه‌کلید Workman</translation>
 <translation id="4019998208269143058">سنجاق کردن به «فایل‌های سریع»</translation>
@@ -908,6 +908,7 @@
 <translation id="8300849813060516376">‏OTASP انجام نشد</translation>
 <translation id="8312871300878166382">جای‌گذاری در پوشه</translation>
 <translation id="8329978297633540474">نوشتار ساده</translation>
+<translation id="8332007959299458842">‏فایل‌های Microsoft اخیراً بازشده به Google Drive منتقل شده‌اند</translation>
 <translation id="8335587457941836791">برداشتن سنجاق از راه‌انداز</translation>
 <translation id="8335837413233998004">بلاروسی</translation>
 <translation id="8336153091935557858">دیروز <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -995,6 +996,7 @@
 <translation id="9046895021617826162">اتصال برقرار نشد</translation>
 <translation id="9065512565307033593">اگر نتوانید به‌تأیید برسانید، دسترسی شما به شبکه غیرفعال خواهد شد.</translation>
 <translation id="908378762078012445">‏روسی با صفحه‌کلید آوایی AATSEEL</translation>
+<translation id="9086302186042011942">همگام‌سازی</translation>
 <translation id="9099674669267916096">تعداد صفحه</translation>
 <translation id="9100610230175265781">گذرعبارت لازم است</translation>
 <translation id="9110990317705400362">‏همواره به دنبال راه‌هایی هستیم تا مرورتان را ایمن‌تر کنیم. قبلاً هر وب‌سایتی از شما می‌خواست برنامه‌افزودنی‌ای را در مرورگرتان اضافه کنید. در جدیدترین نسخه Google Chrome، باید به Chrome صراحتاً بگویید که می‌خواهید با افزودن این برنامه‌های افزودنی از طریق صفحه افزونه‌ها آنها را نصب کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>

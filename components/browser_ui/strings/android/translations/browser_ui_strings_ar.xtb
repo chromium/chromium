@@ -59,6 +59,7 @@
 <translation id="216989819110952009">على الرغم من احتماء "دورثي" ورفاقها خلف نظارات خضراء، انبهرت عيونهم للوهلة الأولى بسبب</translation>
 <translation id="2176704795966505152">عرض خيار التكبير أو التصغير في القائمة الرئيسية</translation>
 <translation id="2182457891543959921">طلب الإذن قبل السماح لموقع إلكتروني بإنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك أو تتبُّع موضع الكاميرا (مقترَح)</translation>
+<translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="2212565012507486665">السماح بملفات تعريف الارتباط</translation>
 <translation id="2228071138934252756">‏للسماح لتطبيق <ph name="APP_NAME" /> بالوصول إلى الكاميرا، يُرجى أيضًا تفعيل الكاميرا في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
@@ -348,6 +349,7 @@
 <translation id="757524316907819857">منع المواقع الإلكترونية من تشغيل المحتوى المحمي</translation>
 <translation id="7577900504646297215">إدارة الاهتمامات</translation>
 <translation id="7594634374516752650">تم الاتصال بجهاز يتضمّن بلوتوث.</translation>
+<translation id="7634280112532283638">الحدّ من الرسائل غير المرغوب فيها والاحتيال</translation>
 <translation id="7641339528570811325">محو بيانات التصفّح...</translation>
 <translation id="7649070708921625228">مساعدة</translation>
 <translation id="7658239707568436148">إلغاء</translation>
@@ -423,6 +425,7 @@
 <translation id="8737217482364735741">سيؤدي هذا الإجراء إلى محو جميع البيانات وملفات تعريف الارتباط المُخزّنة من خلال <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">اختيار صورة</translation>
 <translation id="8801436777607969138">‏حظر JavaScript لموقع إلكتروني مُعيَّن.</translation>
+<translation id="8803526663383843427">عندما تكون الميزة مفعَّلة</translation>
 <translation id="8816026460808729765">يمكنك حظر المواقع الإلكترونية من الوصول إلى أجهزة الاستشعار.</translation>
 <translation id="8823559166155093873">حظر ملفات تعريف الارتباط</translation>
 <translation id="8847988622838149491">USB</translation>

@@ -59,6 +59,7 @@
 <translation id="216989819110952009">도로시와 친구들은 녹색 안경으로 눈을 보호했지만, 처음에는 멋진 도시의 광채에 눈이 부셨습니다.</translation>
 <translation id="2176704795966505152">기본 메뉴에 확대/축소 옵션 표시</translation>
 <translation id="2182457891543959921">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 허용하기 전에 확인(권장)</translation>
+<translation id="2194856509914051091">고려사항</translation>
 <translation id="2212565012507486665">쿠키 허용</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />에서 카메라에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">사이트에서 보호된 콘텐츠를 재생하지 못하도록 차단</translation>
 <translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="7594634374516752650">블루투스 기기에 연결됨</translation>
+<translation id="7634280112532283638">스팸 및 사기 근절</translation>
 <translation id="7641339528570811325">인터넷 사용 기록 삭제...</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7658239707568436148">취소</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741"><ph name="ORIGIN" />에서 저장한 모든 데이터와 쿠키가 삭제됩니다.</translation>
 <translation id="8751914237388039244">이미지 선택</translation>
 <translation id="8801436777607969138">특정 사이트의 자바스크립트를 차단합니다.</translation>
+<translation id="8803526663383843427">켜졌을 때</translation>
 <translation id="8816026460808729765">사이트에서 센서에 액세스하지 못하도록 차단</translation>
 <translation id="8823559166155093873">쿠키 차단</translation>
 <translation id="8847988622838149491">USB</translation>

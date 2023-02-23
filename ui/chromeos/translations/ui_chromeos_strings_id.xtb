@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1209796539517632982">Server nama otomatis</translation>
 <translation id="1210831758834677569">Lao</translation>
+<translation id="1221555006497674479">Penyimpanan hampir habis. Tersisa <ph name="REMAINING_PERCENTAGE" />% dari <ph name="TOTAL_SPACE" /> penyimpanan drive bersama Anda.</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Koneksi internet langsung</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Pinyin China</translation>
 <translation id="1646019627374511909">Membuat <ph name="NUMBER_OF_ITEMS" /> file tersedia secara offline</translation>
 <translation id="164969095109328410">Perangkat Chrome</translation>
+<translation id="1661207570040737402">Anda telah menggunakan seluruh penyimpanan Drive Bersama Google Workspace.</translation>
 <translation id="1661867754829461514">PIN hilang</translation>
 <translation id="166439687370499867">Mengubah konfigurasi jaringan bersama tidak diizinkan</translation>
 <translation id="1665611772925418501">File tidak dapat diubah.</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="3952872973865944257">Fonetik Telugu</translation>
-<translation id="3954354850384043518">Dalam proses</translation>
 <translation id="3958548648197196644">Burung Kiwi</translation>
 <translation id="3971140002794351170">Download profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inggris (Inggris Raya)</translation>
@@ -993,6 +994,7 @@
 <translation id="9046895021617826162">Gagal menyambung</translation>
 <translation id="9065512565307033593">Jika gagal memverifikasi, akses jaringan Anda akan dinonaktifkan.</translation>
 <translation id="908378762078012445">Rusia dengan keyboard AATSEEL Fonetik</translation>
+<translation id="9086302186042011942">Menyinkronkan</translation>
 <translation id="9099674669267916096">Hitungan halaman</translation>
 <translation id="9100610230175265781">Frasa sandi diwajibkan</translation>
 <translation id="9110990317705400362">Kami terus mencari cara agar penjelajahan Anda lebih aman. Sebelumnya, situs web apa pun dapat meminta Anda untuk menambahkan ekstensi ke browser. Pada versi terbaru Google Chrome, Anda harus memberitahukan dengan jelas kepada Chrome bahwa Anda ingin memasang ekstensi ini dengan menambahkannya melalui halaman Ekstensi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>

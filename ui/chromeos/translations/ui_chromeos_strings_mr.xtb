@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1209796539517632982">स्वयंचलित नाव सर्व्हर</translation>
 <translation id="1210831758834677569">लाओ</translation>
+<translation id="1221555006497674479">कमी स्टोरेज, तुमच्या <ph name="TOTAL_SPACE" /> Shared Drive च्या स्टोरेजपैकी <ph name="REMAINING_PERCENTAGE" />% शिल्लक.</translation>
 <translation id="1243314992276662751">अपलोड करा</translation>
 <translation id="1249250836236328755">शैली</translation>
 <translation id="1254593899333212300">थेट इंटरनेट कनेक्शन</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">चीनी पिनयिन</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> फाइल ऑफलाइन उपलब्ध करत आहे</translation>
 <translation id="164969095109328410">Chrome डिव्हाइस</translation>
+<translation id="1661207570040737402">तुम्ही तुमचे पूर्ण Shared Drive Google Workspace स्टोरेज वापरले आहे.</translation>
 <translation id="1661867754829461514">पिन गहाळ आहे </translation>
 <translation id="166439687370499867">शेअर केलेल्या नेटवर्कची कॉंफिगरेशन बदलण्याची परवानगी नाही</translation>
 <translation id="1665611772925418501">फाइल सुधारली जाऊ शकली नाही.</translation>
@@ -349,11 +351,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">पेस्ट करा</translation>
 <translation id="3952872973865944257">तेलुगु फोनेटिक</translation>
-<translation id="3954354850384043518">प्रगतीपथावर</translation>
 <translation id="3958548648197196644">किवी</translation>
 <translation id="3971140002794351170">मोबाइल प्रोफाइल डाउनलोड करा, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">इंग्रजी (यूके)</translation>
 <translation id="3975895378829046965">बंगाली फोनेटिक</translation>
+<translation id="3999574733850440202">अलीकडे उघडलेल्या Microsoft फाइल OneDrive वर हलवल्या आहेत</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4017788180641807848">वर्कमॅन कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="4019998208269143058">झटपट फाइल वर पिन करा</translation>
@@ -906,6 +908,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8300849813060516376">OTASP बिघडले</translation>
 <translation id="8312871300878166382">फोल्डरमध्ये पेस्ट करा</translation>
 <translation id="8329978297633540474">साधा मजकूर</translation>
+<translation id="8332007959299458842">अलीकडे उघडलेल्या Microsoft फाइल Google Drive वर हलवल्या आहेत</translation>
 <translation id="8335587457941836791">शेल्फपासून अनपिन करा</translation>
 <translation id="8335837413233998004">बेलारुशियन</translation>
 <translation id="8336153091935557858">काल <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -993,6 +996,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9046895021617826162">कनेक्ट करण्यात अयशस्वी</translation>
 <translation id="9065512565307033593">तुम्हाला पडताळणी करता न आल्यास, तुमचा नेटवर्क अ‍ॅक्सेस बंद केला जाईल.</translation>
 <translation id="908378762078012445">फोनेटिक AATSEEL कीबोर्डसह रशियन</translation>
+<translation id="9086302186042011942">समक्रमण करीत आहे</translation>
 <translation id="9099674669267916096">पेज गणना</translation>
 <translation id="9100610230175265781">सांकेतिक पासफ्रेझ आवश्यक</translation>
 <translation id="9110990317705400362">आम्ही तुमचे ब्राउझिंग सुरक्षित करण्यासाठी सातत्याने मार्ग शोधत आहोत. मागे, तुमच्या ब्राउझरमध्ये एक्स्टेंशन जोडण्यासाठी कोणतीही वेबसाइट तुम्हाला सूचित करू शकत होती. Google Chrome च्या नवीनतम आवृत्तीमध्ये, एक्स्टेंशन पेजद्वारे ते जोडून हे एक्स्टेंशन तुम्ही इंस्टॉल करू इच्छित आहात हे तुम्ही Chrome ला स्पष्टपणे सांगणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>

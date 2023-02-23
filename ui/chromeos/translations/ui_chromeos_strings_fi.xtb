@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1209796539517632982">Automaattiset nimipalvelimet</translation>
 <translation id="1210831758834677569">lao</translation>
+<translation id="1221555006497674479"><ph name="REMAINING_PERCENTAGE" /> % jäljellä jaetusta tallennustilastasi (<ph name="TOTAL_SPACE" />).</translation>
 <translation id="1243314992276662751">Lähetä</translation>
 <translation id="1249250836236328755">Lajityyppi</translation>
 <translation id="1254593899333212300">Suora internet-yhteys</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">kiina (pinyin)</translation>
 <translation id="1646019627374511909">Otetaan <ph name="NUMBER_OF_ITEMS" /> tiedostoa käyttöön offline-tilassa</translation>
 <translation id="164969095109328410">Chrome-laite</translation>
+<translation id="1661207570040737402">Olet käyttänyt jaetun Google Workspace ‐tallennustilasi kokonaan.</translation>
 <translation id="1661867754829461514">PIN-koodi puuttuu</translation>
 <translation id="166439687370499867">Jaettujen verkkojen määritysten muokkaaminen on estetty.</translation>
 <translation id="1665611772925418501">Tiedostoa ei voi muuttaa.</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Liitä</translation>
 <translation id="3952872973865944257">foneettinen telugu</translation>
-<translation id="3954354850384043518">Käynnissä</translation>
 <translation id="3958548648197196644">Kiivi</translation>
 <translation id="3971140002794351170">Lataa mobiiliprofiili, verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">englanti (Yhdistynyt kuningaskunta)</translation>
@@ -993,6 +994,7 @@
 <translation id="9046895021617826162">Yhdistäminen epäonnistui</translation>
 <translation id="9065512565307033593">Jos vahvistus ei onnistu, pääsy verkkoon estyy.</translation>
 <translation id="908378762078012445">venäjä, foneettinen AATSEEL-näppäimistö</translation>
+<translation id="9086302186042011942">Synkronoidaan</translation>
 <translation id="9099674669267916096">Sivumäärä</translation>
 <translation id="9100610230175265781">Tunnuslause tarvitaan</translation>
 <translation id="9110990317705400362">Pyrimme jatkuvasti tekemään selaamisesta turvallisempaa. Aiemmin mikä tahansa sivusto pystyi pyytämään laajennuksen lisäämistä selaimeen. Uusimmissa Google Chrome -versioissa sinun on erikseen ilmoitettava Chromelle, että haluat asentaa nämä laajennukset, lisäämällä ne Laajennukset-sivulla. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>

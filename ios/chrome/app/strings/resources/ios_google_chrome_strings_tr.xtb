@@ -113,7 +113,6 @@
 <translation id="7780154209050837198">Chrome'dan en iyi şekilde yararlanmak için Google Hesabı'nızla Chrome'da oturum açın.</translation>
 <translation id="7855730255114109580">Google Chrome güncel durumda</translation>
 <translation id="7939179037291298976">iPhone'unuzun Ayarlar bölümünde "Şifre Seçenekleri"ni açıp "Chrome"u seçin</translation>
-<translation id="7975131781538454817">Chrome bildirimleri, cihaz ayarlarınızda devre dışı bırakılmış. Öncelikle bildirimlere izin vermeniz gerekli.</translation>
 <translation id="8022947259858476807">Bağlantıları açmak, widget'lardan arama yapmak ve diğer uygulamalarda şifreleri otomatik doldurmak için varsayılan olarak Chrome'u kullanın</translation>
 <translation id="81358522153858150">Chrome artık yönetilen hesabınız için kullanıcı politikalarını destekliyor</translation>
 <translation id="8160472928944011082">Chrome güncellenemiyor</translation>
@@ -143,7 +142,6 @@ Dikkate alınması gereken noktalar:
   • Chrome kilitlenirse bu kilitlenmeyle ilgili ayrıntılarda bazı kişisel bilgiler yer alabilir.
 
   • Senkronizasyonu açarsanız ziyaret ettiğiniz URL'ler hakkındaki bilgiler de metriklerde yer alabilir.<ph name="END_INDENT" /></translation>
-<translation id="9101160735177453133">"Fiyatı Takip Et" Seçeneğini Etkinleştirmek için Cihaz Ayarlarında Chrome Bildirimlerine İzin Verin</translation>
 <translation id="9103442491611662960">Bu Chrome profilinde standart güvenlik korumasına sahipsiniz</translation>
 <translation id="9112744793181547300">Chrome Varsayılan olarak ayarlansın mı?</translation>
 <translation id="9122931302567044771">Bu durumda Chrome her seferinde masaüstü siteyi ister.</translation>

@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1209796539517632982">自動ネーム サーバー</translation>
 <translation id="1210831758834677569">ラオ語</translation>
+<translation id="1221555006497674479"><ph name="TOTAL_SPACE" /> の共有ドライブ ストレージは残り <ph name="REMAINING_PERCENTAGE" />% と少なくなっています。</translation>
 <translation id="1243314992276662751">アップロード</translation>
 <translation id="1249250836236328755">ジャンル</translation>
 <translation id="1254593899333212300">インターネットへの直接接続</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">中国語（ピンイン）</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> 個のファイルをオフラインで使用できるようにしています</translation>
 <translation id="164969095109328410">Chrome デバイス</translation>
+<translation id="1661207570040737402">共有ドライブの Google Workspace ストレージの空き容量がなくなりました。</translation>
 <translation id="1661867754829461514">PIN がありません</translation>
 <translation id="166439687370499867">共有のネットワーク設定を変更することはできません</translation>
 <translation id="1665611772925418501">ファイルを修正することができませんでした。</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="3952872973865944257">テルグ語（表音）</translation>
-<translation id="3954354850384043518">ダウンロード中</translation>
 <translation id="3958548648197196644">キウイ</translation>
 <translation id="3971140002794351170">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">英語（イギリス）</translation>
@@ -993,6 +994,7 @@
 <translation id="9046895021617826162">接続に失敗しました</translation>
 <translation id="9065512565307033593">確認に失敗した場合、ネットワーク アクセスは無効になります。</translation>
 <translation id="908378762078012445">ロシア語（表音 AATSEEL）キーボード</translation>
+<translation id="9086302186042011942">同期しています</translation>
 <translation id="9099674669267916096">ページ数</translation>
 <translation id="9100610230175265781">パスフレーズを入力してください</translation>
 <translation id="9110990317705400362">Google では、より安全にウェブを閲覧できる方法を常に追求しています。以前は、どのウェブサイトでも、ブラウザに拡張機能を追加するように指示することができました。Google Chrome の最新バージョンでは、ユーザーのインストールの意思をより明確に確認するため、拡張機能の追加は拡張機能ページで行うこととなりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>

@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Даже в защитных очках Дороти и ее друзья были ослеплены блеском</translation>
 <translation id="2176704795966505152">Показывать параметр изменения масштаба в главном меню</translation>
 <translation id="2182457891543959921">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры (рекомендуется)</translation>
+<translation id="2194856509914051091">Важная информация</translation>
 <translation id="2212565012507486665">Разрешить файлы cookie</translation>
 <translation id="2228071138934252756">Чтобы у приложения "<ph name="APP_NAME" />" был доступ к камере, включите ее в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Сторонние файлы cookie заблокированы.</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">Запретить сайтам воспроизводить защищенный контент</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
 <translation id="7594634374516752650">Подключено устройство Bluetooth</translation>
+<translation id="7634280112532283638">Противодействие спаму и мошенничеству</translation>
 <translation id="7641339528570811325">Очистить историю...</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7658239707568436148">Отмена</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741">Будут удалены все данные и файлы cookie, которые сохранены сайтом <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Выберите фото</translation>
 <translation id="8801436777607969138">Блокировать код JavaScript на определенном сайте</translation>
+<translation id="8803526663383843427">Функция включена</translation>
 <translation id="8816026460808729765">Закрыть сайтам доступ к датчикам</translation>
 <translation id="8823559166155093873">Блокировать файлы cookie</translation>
 <translation id="8847988622838149491">USB</translation>

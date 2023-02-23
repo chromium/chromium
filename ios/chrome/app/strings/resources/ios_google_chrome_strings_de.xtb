@@ -113,7 +113,6 @@
 <translation id="7780154209050837198">Wenn du Chrome optimal nutzen möchtest, meldest du dich mit deinem Google-Konto in Chrome an.</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="7939179037291298976">Rufe in den Einstellungen deines iPhones den Punkt „Passwortoptionen“ auf und wähle „Chromium“ aus</translation>
-<translation id="7975131781538454817">Chrome-Benachrichtigungen sind in den Geräteeinstellungen deaktiviert. Du musst sie zuerst zulassen.</translation>
 <translation id="8022947259858476807">Standardmäßig Chrome verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
 <translation id="81358522153858150">Chrome unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
@@ -141,7 +140,6 @@ Wichtige Hinweise:
 <ph name="BEGIN_INDENT" />  • Daten zu deiner Chrome-Nutzung werden an Google gesendet, können aber nicht mit dir in Verbindung gebracht werden.
   • Falls Chrome abstürzt, können die Details zum Absturz einige personenbezogene Daten enthalten.
   • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
-<translation id="9101160735177453133">Zum Aktivieren von „Preis beobachten“ Chrome-Benachrichtigungen in den Geräteeinstellungen zulassen</translation>
 <translation id="9103442491611662960">Dieses Chrome-Profil wird durch die standardmäßigen Sicherheitsfunktionen geschützt</translation>
 <translation id="9112744793181547300">Chrome als Standardbrowser festlegen?</translation>
 <translation id="9122931302567044771">Das bedeutet, dass Chrome immer die Desktopversion der Website anfordert.</translation>

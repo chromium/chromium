@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Tālāk</translation>
 <translation id="1209796539517632982">Automātiski nosaukumu serveri</translation>
 <translation id="1210831758834677569">Laosiešu</translation>
+<translation id="1221555006497674479">Jūsu kopīgā diska <ph name="TOTAL_SPACE" /> krātuvē ir atlicis maz vietas (<ph name="REMAINING_PERCENTAGE" />%).</translation>
 <translation id="1243314992276662751">Augšupielādēt</translation>
 <translation id="1249250836236328755">Žanrs</translation>
 <translation id="1254593899333212300">Tiešais interneta savienojums</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Ķīniešu, piņjiņs</translation>
 <translation id="1646019627374511909">Vairāki faili tiek padarīti pieejami bezsaistē (skaits: <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Chrome ierīce</translation>
+<translation id="1661207570040737402">Jūs esat izmantojis visu savu kopīgā diska Google Workspace krātuvi.</translation>
 <translation id="1661867754829461514">Trūkst PIN koda</translation>
 <translation id="166439687370499867">Nav atļauts mainīt koplietota tīkla konfigurāciju.</translation>
 <translation id="1665611772925418501">Failu nevarēja pārveidot.</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Ielīmēt</translation>
 <translation id="3952872973865944257">Telugu, fonētiskā</translation>
-<translation id="3954354850384043518">Notiek lejupielāde</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3971140002794351170">Lejupielādēt mobilo sakaru profilu, tīkls numur <ph name="NETWORK_INDEX" />, tīklu skaits ir <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Angļu (Apvienotā Karaliste)</translation>
@@ -993,6 +994,7 @@
 <translation id="9046895021617826162">Savienojums neizdevās</translation>
 <translation id="9065512565307033593">Ja verifikācija neizdosies, jūsu piekļuve tīklam tiks atspējota.</translation>
 <translation id="908378762078012445">Krievu, ar fonētisko AATSEEL tastatūru</translation>
+<translation id="9086302186042011942">Notiek sinhronizācija</translation>
 <translation id="9099674669267916096">Lappušu skaits</translation>
 <translation id="9100610230175265781">Jāievada ieejas frāze.</translation>
 <translation id="9110990317705400362">Mēs arvien meklējam veidus, kā papildus aizsargāt pārlūkošanu. Iepriekš jebkura vietne varēja aicināt pievienot paplašinājumu pārlūkā. Jaunākajās Google Chrome versijās lapā “Paplašinājumi” ir precīzi jānorāda, ka vēlaties instalēt šos paplašinājumus. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>

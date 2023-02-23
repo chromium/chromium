@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1209796539517632982">Автоматично избиране на сървъри за имена</translation>
 <translation id="1210831758834677569">Лаоски</translation>
+<translation id="1221555006497674479">Хранилището е почти пълно. Имате още <ph name="REMAINING_PERCENTAGE" />% от хранилището за споделения ви диск от <ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Качване</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Директна връзка с интернет</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Китайски (пинин)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файла се правят налични офлайн</translation>
 <translation id="164969095109328410">Устройство с Chrome</translation>
+<translation id="1661207570040737402">Използвахте цялото хранилище за споделения си диск в Google Workspace.</translation>
 <translation id="1661867754829461514">Липсва PIN</translation>
 <translation id="166439687370499867">Промените в конфигурациите за споделени мрежи не са разрешени</translation>
 <translation id="1665611772925418501">Файлът не можа да бъде променен.</translation>
@@ -349,11 +351,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Поставяне</translation>
 <translation id="3952872973865944257">Телугу (фонетична клавиатура)</translation>
-<translation id="3954354850384043518">В ход</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3971140002794351170">Изтегляне на мобилния потребителски профил, мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Английски (ОК)</translation>
 <translation id="3975895378829046965">Бенгалски (фонетична клавиатура)</translation>
+<translation id="3999574733850440202">Наскоро отворените файлове в Microsoft са преместени в OneDrive</translation>
 <translation id="4002066346123236978">Заглавие</translation>
 <translation id="4017788180641807848">Английски (САЩ) с клавиатура „Уъркман“</translation>
 <translation id="4019998208269143058">Фиксиране в пространството за бърз достъп до файловете</translation>
@@ -906,6 +908,7 @@
 <translation id="8300849813060516376">Безжичното осигуряване на услуга не бе успешно</translation>
 <translation id="8312871300878166382">Поставяне в папка</translation>
 <translation id="8329978297633540474">Неформатиран текст</translation>
+<translation id="8332007959299458842">Наскоро отворените файлове в Microsoft са преместени в Google Диск</translation>
 <translation id="8335587457941836791">Освобождаване от лавицата</translation>
 <translation id="8335837413233998004">Беларуски</translation>
 <translation id="8336153091935557858">Вчера, <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -993,6 +996,7 @@
 <translation id="9046895021617826162">Свързването не бе успешно</translation>
 <translation id="9065512565307033593">Ако не успеете да потвърдите самоличността си, достъпът ви до мрежата ще бъде прекратен.</translation>
 <translation id="908378762078012445">Руски с фонетична клавиатура AATSEEL</translation>
+<translation id="9086302186042011942">Синхронизира се</translation>
 <translation id="9099674669267916096">Брой страници</translation>
 <translation id="9100610230175265781">Изисква се пропуск</translation>
 <translation id="9110990317705400362">Непрекъснато търсим начини да правим сърфирането ви по-безопасно. По-рано всеки уебсайт можеше да ви подкани да добавите разширение в браузъра си. В най-новите версии на Google Chrome трябва изрично да укажете на браузъра, че искате да инсталирате съответния софтуер, като го добавите чрез страницата „Разширения“. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>

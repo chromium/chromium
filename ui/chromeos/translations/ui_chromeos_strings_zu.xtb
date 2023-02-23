@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Okulandelayo</translation>
 <translation id="1209796539517632982">Amaseva wegama elizenzakalelayo</translation>
 <translation id="1210831758834677569">Isi-Lao</translation>
+<translation id="1221555006497674479">Isitoreji siphansi <ph name="REMAINING_PERCENTAGE" />% osele wesitoreji sakho sedrayivu eyabiwe esingu-<ph name="TOTAL_SPACE" />.</translation>
 <translation id="1243314992276662751">Layisha</translation>
 <translation id="1249250836236328755">Uhlobo</translation>
 <translation id="1254593899333212300">Qondisa ukuxhumeka kwe-inthanethi</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinese Pinyin</translation>
 <translation id="1646019627374511909">Yenza amafayela angu-<ph name="NUMBER_OF_ITEMS" /> atholakale ngokungaxhunyiwe kwi-inthanethi</translation>
 <translation id="164969095109328410">Idivivayisi ye-Chrome</translation>
+<translation id="1661207570040737402">Usebenzise sonke isitoreji sakho se-Shared Drive ye-Google Workspace.</translation>
 <translation id="1661867754829461514">Iphinikhodi ayikho</translation>
 <translation id="166439687370499867">Ukushintsha ukulungiselelwa kwenethiwekhi okwabiwe akuvunyelwe</translation>
 <translation id="1665611772925418501">Ifayela ayikwazi ukuguqulwa.</translation>
@@ -349,11 +351,11 @@
 <translation id="3924145049010392604">I-Meta</translation>
 <translation id="3943857333388298514">Namathisela</translation>
 <translation id="3952872973865944257">I-Telugu Phonetic</translation>
-<translation id="3954354850384043518">Kuyaqhubeka</translation>
 <translation id="3958548648197196644">I-Kiwi</translation>
 <translation id="3971140002794351170">Landa iphrofayela yeselula, Inethiwekhi engu-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">English (UK)</translation>
 <translation id="3975895378829046965">I-Bangla Phonetic</translation>
+<translation id="3999574733850440202">Amafayela e-Microsoft asanda kuvulwa athuthelwe ku-OneDrive</translation>
 <translation id="4002066346123236978">Isihloko</translation>
 <translation id="4017788180641807848">English (US) enekhibhodi ye-Workman</translation>
 <translation id="4019998208269143058">Phina kumafayela asheshayo</translation>
@@ -905,6 +907,7 @@
 <translation id="8300849813060516376">I-OTASP ihlulekile</translation>
 <translation id="8312871300878166382">Namathisela kufolda</translation>
 <translation id="8329978297633540474">Umbhalo osobala</translation>
+<translation id="8332007959299458842">Amafayela e-Microsoft asanda kuvulwa athuthelwe ku-Google Drive</translation>
 <translation id="8335587457941836791">Khipha ukuphina kusuka kushelufu</translation>
 <translation id="8335837413233998004">Isi-Belarusia</translation>
 <translation id="8336153091935557858">Izolo ngo-<ph name="YESTERDAY_DAYTIME" /></translation>
@@ -992,6 +995,7 @@
 <translation id="9046895021617826162">Ukuxhumeka kuhlulekile</translation>
 <translation id="9065512565307033593">Uma wehluleka ukuqinisekisa, ukufinyelela kwakho kunethiwekhi kuzokhutshazwa.</translation>
 <translation id="908378762078012445">Isi-Russian esinekhibhodi ye-Phonetic AATSEEL</translation>
+<translation id="9086302186042011942">Iyavumelanisa</translation>
 <translation id="9099674669267916096">Ukubalwa kwekhasi</translation>
 <translation id="9100610230175265781">Kudingeka umushwana wokungena</translation>
 <translation id="9110990317705400362">Sibheka izindlela zokwenza ukuphequlula kwakho kuphephe. Ngaphambilini, noma iyiphi iwebhusayithi ingakukhomba ukuthi ungeze isandiso kusiphequluli sakho. Kuzinguqulo zakamuva ze-Google Chrome, kufanele utshele ngokusobala i-Chrome ukuthi ufuna ukufaka lezi zelulo ngokuzingeza ngekhasi lezandiso. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>

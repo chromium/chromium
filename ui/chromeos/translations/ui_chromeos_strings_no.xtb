@@ -351,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Lim inn</translation>
 <translation id="3952872973865944257">Telugu, fonetisk</translation>
-<translation id="3954354850384043518">Pågår</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Last ned mobilprofilen, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engelsk (Storbritannia)</translation>
@@ -365,6 +364,7 @@
 <translation id="4092890906744441904">Irsk</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flytt elementer du ikke trenger, til papirkurven</translation>
+<translation id="4134804435730168042">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – aktiver etter enhetskonfigurering</translation>
 <translation id="4153015322587141338">Høyreklikk på en fil, og velg «<ph name="PIN_COMMAND" />» for å få rask tilgang til filene dine på hyllen.</translation>
 <translation id="4157569377477607576">Administratorreglene anbefaler ikke at du gjør følgende:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> er flyttet.</translation>
@@ -407,6 +407,7 @@
 <translation id="4414834425328380570">«<ph name="FILE_NAME" />» slettes, og du kan ikke gjenopprette den.</translation>
 <translation id="4418686080762064601">Opprett en snarvei til filene dine</translation>
 <translation id="4425149324548788773">Min disk</translation>
+<translation id="4432921877815220091">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – aktiver etter enhetskonfigurering – administrert av administratoren din</translation>
 <translation id="4439427728133035643">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
 <translation id="4442424173763614572">DNS-søk mislyktes</translation>
 <translation id="4462159676511157176">Egendefinerte navnetjenere</translation>
@@ -616,6 +617,7 @@
 <translation id="5913638992615760742">Kopieringshandlingen mislyktes på grunn av en uventet feil: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Nederlandsk (Nederland) med datamaskintastaturet USA-Internasjonal</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – aktiver etter enhetskonfigurering</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="5957366693331451795">Chromebox-enheter</translation>
 <translation id="5982621672636444458">Sorteringsalternativer</translation>
@@ -936,6 +938,7 @@
 <translation id="8487700953926739672">Tilgjengelig utenfor nettet</translation>
 <translation id="8492972329130824181">Hjemmenettverket er ikke tilgjengelig. Mobildata-roaming må være påslått for at du skal kunne koble til.</translation>
 <translation id="8499098729323186194">Pakker ut <ph name="NUMBER_OF_ITEMS" /> elementer …</translation>
+<translation id="8502913769543567768">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="NETWORK_PROVIDER_NAME" /> – aktiver etter enhetskonfigurering – administrert av administratoren din</translation>
 <translation id="8521441079177373948">Britisk</translation>
 <translation id="853494022971700746">Fransk (Frankrike)</translation>
 <translation id="8540608333167683902">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – detaljer</translation>
@@ -997,6 +1000,7 @@
 <translation id="9046895021617826162">Tilkoblingen mislyktes</translation>
 <translation id="9065512565307033593">Hvis du ikke verifiserer SIM-kortet, blir nettverkstilgangen din slått av.</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
+<translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9099674669267916096">Antall sider</translation>
 <translation id="9100610230175265781">Det kreves en passordfrase</translation>
 <translation id="9110990317705400362">Vi jobber kontinuerlig for å gjøre surfingen din tryggere. Tidligere kunne et hvilket som helst nettsted be deg å legge til en utvidelse i nettleseren din. I de nyeste versjonene av Google Chrome må du gi Chrome uttrykkelig beskjed om at du ønsker å installere disse utvidelsene ved å legge dem til via Utvidelser-siden. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>

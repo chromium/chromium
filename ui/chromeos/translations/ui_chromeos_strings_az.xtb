@@ -351,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="3952872973865944257">Teluqu (Fonetik)</translation>
-<translation id="3954354850384043518">İcra olunur</translation>
 <translation id="3958548648197196644">Kivi</translation>
 <translation id="3971140002794351170">Mobil profili endirin, Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">İngilis (BK)</translation>
@@ -994,6 +993,7 @@
 <translation id="9046895021617826162">Qoşulma uğursuz oldu</translation>
 <translation id="9065512565307033593">Doğrulamaq alınmasa, şəbəkəyə girişiniz deaktiv ediləcək.</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klaviaturası ilə Rus dili</translation>
+<translation id="9086302186042011942">Sinxronizasiya edilir</translation>
 <translation id="9099674669267916096">Səhifə sayı</translation>
 <translation id="9100610230175265781">Parol tələb olunur</translation>
 <translation id="9110990317705400362">Brauzerinizi güvənli etməyin yollarını daima axtarırıq. Son Chrome versiyasında artırmaları əlavə etmək üçün bunu Chrome'a açıq şəkildə deməlisiniz. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>

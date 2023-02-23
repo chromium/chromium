@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1209796539517632982">自动域名服务器</translation>
 <translation id="1210831758834677569">老挝语</translation>
+<translation id="1221555006497674479">存储空间不足，您的 <ph name="TOTAL_SPACE" /> 共享云端硬盘存储空间还剩 <ph name="REMAINING_PERCENTAGE" />%。</translation>
 <translation id="1243314992276662751">上传</translation>
 <translation id="1249250836236328755">流派</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">中文拼音</translation>
 <translation id="1646019627374511909">正在将 <ph name="NUMBER_OF_ITEMS" /> 个文件设为“可离线使用”</translation>
 <translation id="164969095109328410">Chrome设备</translation>
+<translation id="1661207570040737402">您的 Google Workspace 共享云端硬盘存储空间已用尽。</translation>
 <translation id="1661867754829461514">缺少 PIN</translation>
 <translation id="166439687370499867">不允许更改共享网络配置</translation>
 <translation id="1665611772925418501">无法修改该文件。</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">粘贴</translation>
 <translation id="3952872973865944257">泰卢固语注音</translation>
-<translation id="3954354850384043518">正在下载</translation>
 <translation id="3958548648197196644">猕猴桃</translation>
 <translation id="3971140002794351170">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="3973925058222872294">英语（英国）</translation>
@@ -990,6 +991,7 @@
 <translation id="9046895021617826162">连接失败</translation>
 <translation id="9065512565307033593">如果您未通过验证，我们将禁止您访问网络。</translation>
 <translation id="908378762078012445">俄语注音 AATSEEL 键盘</translation>
+<translation id="9086302186042011942">正在同步</translation>
 <translation id="9099674669267916096">页数</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="9110990317705400362">我们在不断寻找各种方式来提高上网安全。之前，任何网站都可以提示您在浏览器中添加扩展程序；而在最新版本的Google Chrome中，您必须明确告诉Chrome您想要安装这些扩展程序（即：在“扩展程序”页添加它们）后才可以。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>

@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Lesk tohto nádherného mesta Dorotku a jej priateľov najskôr oslepoval, hoci mali na očiach zelené okuliare</translation>
 <translation id="2176704795966505152">Zobrazovať možnosť lupy v hlavnej ponuke</translation>
 <translation id="2182457891543959921">Pýtať sa, či chcete povoliť webu vytvárať priestorovú mapu okolia alebo sledovať pozíciu kamery (odporúčané)</translation>
+<translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="2212565012507486665">Povoliť súbory cookie</translation>
 <translation id="2228071138934252756">Ak chcete povoliť aplikácii <ph name="APP_NAME" /> používať váš fotoaparát, zapnite ho aj v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">Brániť webom prehrávať chránený obsah</translation>
 <translation id="7577900504646297215">Spravovať záujmy</translation>
 <translation id="7594634374516752650">Pripojené k zariadeniu Bluetooth</translation>
+<translation id="7634280112532283638">Redukcia spamu a podvodov</translation>
 <translation id="7641339528570811325">Vymazať dáta prehliadania…</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741">Týmto vymažete všetky dáta a súbory cookie uložené webom <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Vyberte obrázok</translation>
 <translation id="8801436777607969138">Blokovať JavaScript na konkrétnom webe.</translation>
+<translation id="8803526663383843427">Keď je funkcia zapnutá</translation>
 <translation id="8816026460808729765">Brániť webom v prístupe k senzorom</translation>
 <translation id="8823559166155093873">Blokovať súbory cookie</translation>
 <translation id="8847988622838149491">USB</translation>

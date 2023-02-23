@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1209796539517632982">Serveurs de noms automatiques</translation>
 <translation id="1210831758834677569">Laotien</translation>
+<translation id="1221555006497674479">Il vous reste <ph name="REMAINING_PERCENTAGE" /> % de votre espace de stockage Drive partagé total (<ph name="TOTAL_SPACE" />).</translation>
 <translation id="1243314992276662751">Importer</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chinois (Pinyin)</translation>
 <translation id="1646019627374511909">Téléchargement de <ph name="NUMBER_OF_ITEMS" /> fichiers pour les utiliser hors connexion…</translation>
 <translation id="164969095109328410">Appareil Google Chrome</translation>
+<translation id="1661207570040737402">Vous avez utilisé tout votre espace de stockage Google Workspace Drive partagé.</translation>
 <translation id="1661867754829461514">Code secret manquant</translation>
 <translation id="166439687370499867">La modification de la configuration d'un réseau partagé n'est pas autorisée</translation>
 <translation id="1665611772925418501">Impossible de modifier le fichier.</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="3952872973865944257">Télougou (phonétique)</translation>
-<translation id="3954354850384043518">En cours</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Téléchargez le profil mobile, Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglais (Royaume-Uni)</translation>
@@ -993,6 +994,7 @@
 <translation id="9046895021617826162">Échec de la connexion</translation>
 <translation id="9065512565307033593">En cas d'échec de la validation, votre accès réseau sera désactivé.</translation>
 <translation id="908378762078012445">Russe avec clavier phonétique AATSEEL</translation>
+<translation id="9086302186042011942">Synchronisation en cours</translation>
 <translation id="9099674669267916096">Nombre de pages</translation>
 <translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
 <translation id="9110990317705400362">Nous recherchons constamment à rendre votre navigation plus sûre. Auparavant, vous pouviez être invité à ajouter une extension dans votre navigateur par n'importe quel site Web. Dans les dernières versions de Google Chrome, vous devez explicitement indiquer que vous souhaitez installer une extension en l'ajoutant via la page "Extensions". <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>

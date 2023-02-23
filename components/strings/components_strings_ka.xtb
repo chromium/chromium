@@ -588,7 +588,6 @@
 <translation id="2359629602545592467">რამდენიმე</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2361263712565360498">275 x 395 მმ</translation>
-<translation id="2362083820973145409">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. გახსნის პარამეტრებს.</translation>
 <translation id="236340516568226369">ზომის შეცვლის გადართვის მენიუ</translation>
 <translation id="2367567093518048410">დონე</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -1931,7 +1930,6 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{გამოიყენეთ ვირტუალური ნომერი ამ ბარათისთვის}other{აირჩიეთ ბარათი}}</translation>
 <translation id="5752552348183096912">ანტიპერსპირანტები, დეოდორანტები და ტანის სპრეები</translation>
 <translation id="5754400531489347219">შინაური და გარეული ცხოველები</translation>
-<translation id="5755162682436943950">გამოსული ხართ. გახსნის დიალოგს სისტემაში შესასვლელად და სინქრონიზაციის ჩასართავად.</translation>
 <translation id="5759751709240058861">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="5763042198335101085">შეიყვანეთ ელფოსტის სწორი მისამართი</translation>
 <translation id="5764725887548570807">წყაროს ფორმატი არასწორია.</translation>
@@ -2475,7 +2473,6 @@
 <translation id="7153618581592392745">ლავანდისფერი</translation>
 <translation id="7156870133441232244">საჭიროა სერვერის გადაყვანა TLS 1.2-ზე ან უფრო ახალ ვერსიაზე.</translation>
 <translation id="7163295244162773898">{0,plural, =1{გსურთ კონფიდენციალური ფაილის კოპირება?}other{გსურთ კონფიდენციალური ფაილების კოპირება?}}</translation>
-<translation id="7168323970702333693">შესული ხართ, როგორც <ph name="USER_NAME" />. გახსნის პარამეტრებს.</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
 <translation id="7174545416324379297">გაერთიანებული</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}other{<ph name="SHIPPING_OPTION_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}}</translation>
@@ -2689,6 +2686,7 @@
 <translation id="7630470133768862132">თანხმობის სტატუსი:</translation>
 <translation id="7631444403134069754">მსუბუქი ათლეტიკა</translation>
 <translation id="7633909222644580952">წარმადობის მონაცემები და ავარიულად გათიშვის ანგარიშები</translation>
+<translation id="7634280112532283638">სმაპისა და თაღლითობის შემცირება</translation>
 <translation id="7637571805876720304">ამოიშალოს საკრედიტო ბარათი Chromium-იდან?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{არცერთი}=1{თქვენს ანგარიშშია 1 პაროლი (შემდეგისთვის: <ph name="DOMAIN_LIST" />)}other{თქვენს ანგარიშშია # პაროლი (შემდეგისთვის: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">თანმიმდევრული პორტები</translation>
@@ -3191,7 +3189,6 @@
 <translation id="8903921497873541725">მასშტაბის გადიდება</translation>
 <translation id="890493561996401738">შემოთავაზების ამოშლის ღილაკი, ამოსაშლელად დააჭირეთ კლავიშს „Enter“, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 დუიმი</translation>
-<translation id="8912362522468806198">Google ანგარიში</translation>
 <translation id="8913778647360618320">გადახდის მეთოდების მართვის ღილაკი, Chrome-ის პარამეტრებიდან საგადახდო და საკრედიტო ბარათების ინფორმაციის სამართავად დააჭირეთ კლავიშს Enter-ს</translation>
 <translation id="8922013791253848639">ამ საიტზე რეკლამის ყოველთვის დაშვება</translation>
 <translation id="892588693504540538">ზედა მარჯვენა ნაწილის გახვრეტა</translation>

@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Áfram</translation>
 <translation id="1209796539517632982">Sjálfvirkir nafnaþjónar</translation>
 <translation id="1210831758834677569">Laoska</translation>
+<translation id="1221555006497674479">Lítið geymslurými, <ph name="REMAINING_PERCENTAGE" />% eftir af <ph name="TOTAL_SPACE" /> geymslurými á samnýttu drifi.</translation>
 <translation id="1243314992276662751">Hlaða inn</translation>
 <translation id="1249250836236328755">Stefna</translation>
 <translation id="1254593899333212300">Beintenging við internetið</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Kínverska Pinyin</translation>
 <translation id="1646019627374511909">Gerir <ph name="NUMBER_OF_ITEMS" /> skrár aðgengilegar án nettengingar</translation>
 <translation id="164969095109328410">Chrome tæki</translation>
+<translation id="1661207570040737402">Þú hefur fyllt geymslurýmið þitt á samnýttu drifi Google Workspace.</translation>
 <translation id="1661867754829461514">PIN-númer vantar</translation>
 <translation id="166439687370499867">Ekki er leyfilegt að breyta stillingum fyrir sameiginlegt netkerfi</translation>
 <translation id="1665611772925418501">Ekki er hægt að breyta skránni.</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Líma</translation>
 <translation id="3952872973865944257">Telugu hljóðritun</translation>
-<translation id="3954354850384043518">Stendur yfir</translation>
 <translation id="3958548648197196644">Loðber</translation>
 <translation id="3971140002794351170">Sækja snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Enska (bresk)</translation>
@@ -992,6 +993,7 @@
 <translation id="9046895021617826162">Tenging mistókst</translation>
 <translation id="9065512565307033593">Ef þú staðfestir ekki verður slökkt á netaðganginum þínum.</translation>
 <translation id="908378762078012445">Rússneska með AATSEEL-hljóðritunarlyklaborði</translation>
+<translation id="9086302186042011942">Samstillir</translation>
 <translation id="9099674669267916096">Síðufjöldi</translation>
 <translation id="9100610230175265781">Aðgangsorðs krafist</translation>
 <translation id="9110990317705400362">Við erum sífellt að leita leiða við að gera vefnotkun öruggari fyrir þig. Áður var það þannig að hvaða vefsvæði sem var gat birt kvaðningu um að þú bættir viðbót við vafrann. Í nýjustu útgáfum Google Chrome þarf notandinn að taka sérstaklega fram að Chrome eigi að setja upp viðbætur með því að bæta þeim við í gegnum síðuna Viðbætur. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>

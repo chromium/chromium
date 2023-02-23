@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Навіть попри захист зелених окулярів Дороті та її друзі були приголомшені сяйвом</translation>
 <translation id="2176704795966505152">Показувати опцію масштабування в головному меню</translation>
 <translation id="2182457891543959921">Запитувати, перш ніж дозволяти сайтам створювати 3D-карту вашого оточення або відстежувати положення камери (рекомендовано)</translation>
+<translation id="2194856509914051091">Що варто врахувати</translation>
 <translation id="2212565012507486665">Дозволити файли cookie</translation>
 <translation id="2228071138934252756">Щоб надати додатку <ph name="APP_NAME" /> доступ до камери, також увімкніть її в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Файли cookie третіх сторін блокуються</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">Заборонити сайтам відтворювати захищений вміст</translation>
 <translation id="7577900504646297215">Керувати інтересами</translation>
 <translation id="7594634374516752650">Підключено до пристрою з Bluetooth</translation>
+<translation id="7634280112532283638">Боротьба зі спамом і шахрайством</translation>
 <translation id="7641339528570811325">Очистити історію…</translation>
 <translation id="7649070708921625228">Довідка</translation>
 <translation id="7658239707568436148">Скасувати</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741">Усі дані та файли cookie сайту <ph name="ORIGIN" /> буде видалено.</translation>
 <translation id="8751914237388039244">Виберіть зображення</translation>
 <translation id="8801436777607969138">Блокувати JavaScript на певному сайті.</translation>
+<translation id="8803526663383843427">Коли функцію ввімкнено</translation>
 <translation id="8816026460808729765">Заборонити сайтам доступ до датчиків</translation>
 <translation id="8823559166155093873">Блокувати файли cookie</translation>
 <translation id="8847988622838149491">USB</translation>

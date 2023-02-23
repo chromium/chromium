@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">આગલું</translation>
 <translation id="1209796539517632982">સ્વયંચાલિત નામ સર્વર્સ</translation>
 <translation id="1210831758834677569">લાઓ</translation>
+<translation id="1221555006497674479">સ્ટોરેજ ઓછો છે, શેર કરેલી ડ્રાઇવના તમારા <ph name="TOTAL_SPACE" /> સ્ટોરેજમાંથી <ph name="REMAINING_PERCENTAGE" />% બાકી છે.</translation>
 <translation id="1243314992276662751">અપલોડ કરો</translation>
 <translation id="1249250836236328755">શૈલી</translation>
 <translation id="1254593899333212300">ડાયરેક્ટ ઇન્ટરનેટ કનેક્શન</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">ચાઇનીઝ પિનયિન</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ફાઇલ ઑફલાઇન ઉપલબ્ધ કરાવી રહ્યાં છીએ</translation>
 <translation id="164969095109328410">Chrome ઉપકરણ</translation>
+<translation id="1661207570040737402">તમે Google Workspaceની શેર કરેલી તમારી ડ્રાઇવના સ્ટોરેજનો પૂરો ઉપયોગ કરી લીધો છે.</translation>
 <translation id="1661867754829461514">PIN ખૂટે છે</translation>
 <translation id="166439687370499867">શેર કરેલ નેટવર્કની ગોઠવણીમાં ફેરફાર કરવાની મંજૂરી નથી</translation>
 <translation id="1665611772925418501">ફાઇલ સંશોધિત કરી શકાઈ નથી.</translation>
@@ -349,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">પેસ્ટ કરો</translation>
 <translation id="3952872973865944257">તેલુગુ ફોનેટિક</translation>
-<translation id="3954354850384043518">પ્રક્રિયામાં છે</translation>
 <translation id="3958548648197196644">કિવી</translation>
 <translation id="3971140002794351170"><ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="3973925058222872294">અંગ્રેજી (યુકે)</translation>
@@ -991,6 +992,7 @@
 <translation id="9046895021617826162">કનેક્ટ કરવું નિષ્ફળ</translation>
 <translation id="9065512565307033593">જો તમે ચકાસણી કરવામાં નિષ્ફળ રહ્યાં, તો તમારા નેટવર્કનો ઍક્સેસ બંધ થઈ જશે.</translation>
 <translation id="908378762078012445">રશિયન, ફોનેટિક AATSEEL કીબોર્ડ સાથે</translation>
+<translation id="9086302186042011942">સમન્વય કરી રહ્યું છે</translation>
 <translation id="9099674669267916096">પેજની સંખ્યા</translation>
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>
 <translation id="9110990317705400362">અમે સતત તમારા બ્રાઉઝિંગને વધુ સલામત બનાવવાની રીતો શોધી રહ્યાં છીએ. પહેલાં, કોઈપણ વેબસાઇટ તમને તમારા બ્રાઉઝરમાં એક્સ્ટેન્શન ઉમેરવા માટે સંકેત આપી શકતી હતી. Google Chromeના નવીનતમ વર્ઝનમાં, તમે એક્સ્ટેન્શન પેજ દ્વારા આ એક્સ્ટેન્શનને ઉમેરીને તમે તેમને ઇન્સ્ટૉલ કરવા માગો છો તે, તમારે Chromeને સ્પષ્ટપણે કહેવું આવશ્યક છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>

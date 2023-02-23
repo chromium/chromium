@@ -113,7 +113,6 @@
 <translation id="7780154209050837198">Da biste koristili Chrome na najbolji način, prijavite se na Chrome pomoću Google naloga.</translation>
 <translation id="7855730255114109580">Google Chrome je aktuelan</translation>
 <translation id="7939179037291298976">U podešavanjima iPhone-a otvorite „Password Options“ (Opcije za lozinke) i izaberite „Chrome“</translation>
-<translation id="7975131781538454817">Chrome obaveštenja su isključena u podešavanjima uređaja. Prvo treba da dozvolite obaveštenja.</translation>
 <translation id="8022947259858476807">Podrazumevano koristite Chrome da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="81358522153858150">Chrome sada podržava smernice za korisnika za upravljani nalog</translation>
 <translation id="8160472928944011082">Chrome ne može da se ažurira</translation>
@@ -141,7 +140,6 @@
 <ph name="BEGIN_INDENT" />  • Informacije o vašem korišćenju Chrome-a se šalju Google-u, ali nisu povezane sa vama.
   • Ako Chrome otkaže, detalji o otkazivanju mogu da sadrže neke lične podatke.
   • Ako uključite sinhronizaciju, pokazatelji mogu da obuhvataju informacije o URL-ovima koje posećujete.<ph name="END_INDENT" /></translation>
-<translation id="9101160735177453133">Da biste uključili opciju Prati cenu, dozvolite Chrome obaveštenja u podešavanjima uređaja</translation>
 <translation id="9103442491611662960">Dobijate standardnu bezbednosnu zaštitu za ovaj Chrome profil</translation>
 <translation id="9112744793181547300">Želite da podesite Chrome kao podrazumevani?</translation>
 <translation id="9122931302567044771">To znači da će Chrome svaki put zahtevati sajt za računar.</translation>

@@ -587,7 +587,6 @@
 <translation id="2359629602545592467">பல</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2361263712565360498">275 x 395 மிமீ</translation>
-<translation id="2362083820973145409">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. அமைப்புகளைத் திறக்கும்.</translation>
 <translation id="236340516568226369">அளவை மாற்றும் பட்டன்களைக் காட்டும் மெனு</translation>
 <translation id="2367567093518048410">நிலை</translation>
 <translation id="2380886658946992094">Legal</translation>
@@ -1926,7 +1925,6 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{இந்தக் கார்டுக்கு விர்ச்சுவல் எண்ணைப் பயன்படுத்துங்கள்}other{கார்டைத் தேர்ந்தெடுங்கள்}}</translation>
 <translation id="5752552348183096912">வியர்வைக் குறைப்புப் பொருட்கள், டியோடரண்ட்கள் &amp; பாடி ஸ்பிரேக்கள்</translation>
 <translation id="5754400531489347219">செல்லப்பிராணிகள் &amp; விலங்குகள்</translation>
-<translation id="5755162682436943950">வெளியேறிவிட்டீர்கள். உள்நுழைந்து ஒத்திசைவை இயக்குவதற்கான உரையாடலைத் திறக்கும்.</translation>
 <translation id="5759751709240058861">உங்கள் கேமராவைப் பயன்படுத்துவது &amp; நகர்த்துவது</translation>
 <translation id="5763042198335101085">சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்</translation>
 <translation id="5764725887548570807">ஆரிஜின் வடிவம் தவறு.</translation>
@@ -2469,7 +2467,6 @@
 <translation id="7153618581592392745">லாவெண்டர் நிறம்</translation>
 <translation id="7156870133441232244">சேவையகத்தை TLS 1.2 அல்லது அதற்குப் பிந்தைய பதிப்பிற்கு மேம்படுத்த வேண்டும்.</translation>
 <translation id="7163295244162773898">{0,plural, =1{ரகசியமான ஃபைலை நிச்சயம் நகலெடுக்க வேண்டுமா?}other{ரகசியமான ஃபைல்களை நிச்சயம் நகலெடுக்க வேண்டுமா?}}</translation>
-<translation id="7168323970702333693">உள்நுழைந்துள்ள கணக்கு: <ph name="USER_NAME" />. அமைப்புகளைத் திறக்கும்.</translation>
 <translation id="717330890047184534">Gaia ஐடி:</translation>
 <translation id="7174545416324379297">ஒன்றிணைக்கப்பட்டது</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />, மேலும் <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
@@ -2683,6 +2680,7 @@
 <translation id="7630470133768862132">ஒப்புதல் நிலை:</translation>
 <translation id="7631444403134069754">டிராக் &amp; ஃபீல்டு</translation>
 <translation id="7633909222644580952">செயல்திறன் தரவுகள் &amp; சிதைவு அறிக்கைகள்</translation>
+<translation id="7634280112532283638">ஸ்பேம் &amp; மோசடியைக் குறைத்தல்</translation>
 <translation id="7637571805876720304">Chromium இலிருந்து கிரெடிட் கார்டை அகற்றவா?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{எதுவுமில்லை}=1{1 கடவுச்சொல் உங்கள் கணக்கில் சேமிக்கப்பட்டுள்ளது (இவற்றுக்கானது:<ph name="DOMAIN_LIST" />)}other{# கடவுச்சொற்கள் உங்கள் கணக்கில் சேமிக்கப்பட்டுள்ளன (இவற்றுக்கானவை: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="7638605456503525968">சீரியல் போர்ட்டுகள்</translation>
@@ -3185,7 +3183,6 @@
 <translation id="8903921497873541725">பெரிதாக்கு</translation>
 <translation id="890493561996401738">பரிந்துரை பட்டனை அகற்றுக, அகற்ற Enterரை அழுத்தவும், <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 இன்ச்</translation>
-<translation id="8912362522468806198">Google கணக்கு</translation>
 <translation id="8913778647360618320">’கட்டண முறைகளை நிர்வகி’ பட்டன், Chrome அமைப்புகளில் பேமெண்ட்டுகள், கிரெடிட் கார்டு ஆகியவை குறித்த தகவலை நிர்வகிக்க Enter விசையை அழுத்துங்கள்</translation>
 <translation id="8922013791253848639">இந்தத் தளத்தில் எப்போதும் விளம்பரங்களை அனுமதி</translation>
 <translation id="892588693504540538">பஞ்ச் டாப் ரைட்</translation>

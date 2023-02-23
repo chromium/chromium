@@ -2058,7 +2058,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Remover 1 app sem suporte}one{Remover # app sem suporte}other{Remover # apps sem suporte}}</translation>
 <translation id="2776560192867872731">Mudar nome do dispositivo para <ph name="DEVICE_NAME" /></translation>
 <translation id="2777251078198759550">Excluir contêiner</translation>
-<translation id="2777525873368474674">Colar o link da imagem</translation>
+<translation id="2777525873368474674">Cole o link de uma imagem</translation>
 <translation id="2778471504622896352">Adicionar apps remotos ao iniciador do ChromeOS</translation>
 <translation id="2781120507965857989">Ative a sincronização para acessar favoritos, senhas, histórico e muito mais neste dispositivo e em qualquer outro lugar em que esse recurso também esteja ativado. O Google pode usar seu histórico para personalizar a Pesquisa e outros serviços que ele oferece.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -4290,6 +4290,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4824037980212326045">Backup e restauração do Linux</translation>
 <translation id="4824958205181053313">Cancelar sincronização?</translation>
 <translation id="4825532258163983651">Falha ao excluir a senha de acesso</translation>
+<translation id="4827283332383516812">Excluir cartão</translation>
 <translation id="4827675678516992122">Não foi possível conectar</translation>
 <translation id="4827784381479890589">Verificação ortográfica melhorada no navegador Chrome (o texto é enviado ao Google para sugestões de ortografia)</translation>
 <translation id="4827904420700932487">Criar código QR para esta imagem</translation>
@@ -5314,6 +5315,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5792295754950501287">Mais ações para <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Toque no botão liga/desliga</translation>
 <translation id="5792874008054171483">Mais ações para o site <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Essa forma de pagamento vai ser excluída do dispositivo</translation>
 <translation id="5793339252089865437">Se você fizer o download da atualização pela rede móvel, poderá receber cobranças adicionais.</translation>
 <translation id="5793420564274426163">Confirmação de pareamento</translation>
 <translation id="5793430094159150686">Sua senha foi alterada. Para restaurar os dados locais, digite a senha antiga.</translation>
@@ -7294,6 +7296,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7609148976235050828">Conecte-se à Internet e tente novamente.</translation>
 <translation id="7612401678989660900">Dê acesso a apps e sites com a permissão do microfone</translation>
 <translation id="7612655942094160088">Ativar recursos do smartphone conectado.</translation>
+<translation id="7612989789287281429">Fazendo login…</translation>
 <translation id="7614260613810441905">Perguntar quando um site quiser editar arquivos ou pastas do dispositivo (recomendado)</translation>
 <translation id="761530003705945209">Fazer backup no Google Drive Restaure seus dados ou troque de dispositivo a qualquer momento com facilidade. Seu backup inclui dados do app. Seus backups são enviados para o Google e criptografados usando a senha da sua Conta do Google.</translation>
 <translation id="7615365294369022248">Ocorreu um erro ao adicionar uma conta</translation>

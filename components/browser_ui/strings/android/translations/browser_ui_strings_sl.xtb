@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Kljub zelenim očalom za zaščito oči je Dorothy in njene prijatelje sprva zaslepilo</translation>
 <translation id="2176704795966505152">Prikaz možnosti povečave/pomanjšave v glavnem meniju</translation>
 <translation id="2182457891543959921">Vprašaj, preden se spletnim mestom dovoli ustvarjanje 3D-zemljevida vaše okolice ali spremljanje položaja kamere (priporočljivo)</translation>
+<translation id="2194856509914051091">Kaj morate upoštevati</translation>
 <translation id="2212565012507486665">Dovoli piškotke</translation>
 <translation id="2228071138934252756">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do fotoaparata, fotoaparat vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Piškotki drugih spletnih mest so blokirani</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">Prepreči spletnim mestom predvajanje zaščitene vsebine</translation>
 <translation id="7577900504646297215">Upravljanje zanimanj</translation>
 <translation id="7594634374516752650">Povezano z napravo Bluetooth</translation>
+<translation id="7634280112532283638">Zmanjšanje vsiljene vsebine in prevar</translation>
 <translation id="7641339528570811325">Izbris podatkov brskanja …</translation>
 <translation id="7649070708921625228">Pomoč</translation>
 <translation id="7658239707568436148">Prekliči</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741">S tem boste izbrisali vse podatke in piškotke, ki jih je shranilo spletno mesto <ph name="ORIGIN" />.</translation>
 <translation id="8751914237388039244">Izberite sliko</translation>
 <translation id="8801436777607969138">Preprečevanje JavaScripta za določeno spletno mesto.</translation>
+<translation id="8803526663383843427">Če je to vklopljeno</translation>
 <translation id="8816026460808729765">Preprečevanje spletnim mestom dostopa do tipal</translation>
 <translation id="8823559166155093873">Blokiraj piškotke</translation>
 <translation id="8847988622838149491">USB</translation>

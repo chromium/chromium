@@ -113,7 +113,6 @@
 <translation id="7780154209050837198">Da iskoristite sve prednosti Chromea, prijavite se na Chrome pomoću Google računa.</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
 <translation id="7939179037291298976">U postavkama iPhone uređaja otvorite Opcije lozinke i odaberite Chrome</translation>
-<translation id="7975131781538454817">Obavještenja Chromea su isključena u postavkama uređaja. Najprije ćete morati dozvoliti obavještenja.</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="81358522153858150">Chrome sada podržava korisnička pravila za vaš upravljani račun</translation>
 <translation id="8160472928944011082">Nije moguće ažurirati Chrome</translation>
@@ -141,7 +140,6 @@ Stvari za razmatranje:
 <ph name="BEGIN_INDENT" />  • Informacije o vašem korištenju Chromea se šalju Googleu, ali se ne povezuju s vama.
   • Ako dođe do pada Chromea, detalji o padu mogu uključivati neke lične informacije.
   • Ako uključite sinhronizaciju, pokazatelji također mogu uključivati informacije o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
-<translation id="9101160735177453133">Da uključite funkciju "Prati cijenu" dozvolite obavještenja Chromea u postavkama uređaja</translation>
 <translation id="9103442491611662960">Za ovaj Chrome profil dobijate standardnu sigurnosnu zaštitu</translation>
 <translation id="9112744793181547300">Postaviti Chrome kao zadani preglednik?</translation>
 <translation id="9122931302567044771">Ovo znači da će Chrome svaki put zatražiti web lokaciju za računar.</translation>

@@ -351,7 +351,6 @@
 <translation id="3924145049010392604">Клавіша Meta</translation>
 <translation id="3943857333388298514">Уставіць</translation>
 <translation id="3952872973865944257">Тэлугу (фанетычная раскладка)</translation>
-<translation id="3954354850384043518">Выконваецца</translation>
 <translation id="3958548648197196644">Ківі</translation>
 <translation id="3971140002794351170">Спампаваць мабільны профіль, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англійская (Вялікабрытанія)</translation>
@@ -994,6 +993,7 @@
 <translation id="9046895021617826162">Збой падключэння</translation>
 <translation id="9065512565307033593">Калі вы ўведзяце няправільны PUK-код, доступ да сеткі будзе адключаны.</translation>
 <translation id="908378762078012445">Руская (фанетычная раскладка AATSEEL)</translation>
+<translation id="9086302186042011942">Сінхранізацыя</translation>
 <translation id="9099674669267916096">Колькасць старонак</translation>
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>
 <translation id="9110990317705400362">Мы пастаянна працуем над новымі спосабамі зрабіць працу ў інтэрнэце больш бяспечнай. Раней любы сайт мог прапанаваць вам дадаць пашырэнні ў браўзер. У апошніх версіях Google Chrome пашырэнні трэба дадаваць праз старонку "Пашырэнні", даючы браўзеру яўнае ўказанне, што вы хочаце іх усталяваць. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>

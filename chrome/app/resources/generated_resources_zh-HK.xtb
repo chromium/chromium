@@ -4288,6 +4288,7 @@
 <translation id="4824037980212326045">Linux 備份與還原</translation>
 <translation id="4824958205181053313">要取消同步功能嗎？</translation>
 <translation id="4825532258163983651">無法刪除密鑰</translation>
+<translation id="4827283332383516812">刪除卡</translation>
 <translation id="4827675678516992122">無法連線</translation>
 <translation id="4827784381479890589">Chrome 瀏覽器的進階拼字檢查功能 (文字會傳送給 Google 以提供拼字建議)</translation>
 <translation id="4827904420700932487">為此圖片建立 QR 碼</translation>
@@ -5309,6 +5310,7 @@
 <translation id="5792295754950501287">可以對「<ph name="CARD_DESCRIPTION" />」執行嘅其他動作</translation>
 <translation id="5792728279623964091">請輕按您的開關按鈕</translation>
 <translation id="5792874008054171483">可對 <ph name="SITE_NAME" /> 執行的其他操作</translation>
+<translation id="5793317771769868848">此付款方法將從此裝置上刪除</translation>
 <translation id="5793339252089865437">如果您透過流動網絡下載更新，可能需要支付超額費用。</translation>
 <translation id="5793420564274426163">配對確認</translation>
 <translation id="5793430094159150686">您的密碼已變更。您需要輸入舊密碼，才能還原本機資料。</translation>
@@ -7287,6 +7289,7 @@
 <translation id="7609148976235050828">請連線至互聯網，然後再試一次。</translation>
 <translation id="7612401678989660900">允許具備麥克風權限的應用程式和網站存取麥克風</translation>
 <translation id="7612655942094160088">啟用連接手機嘅功能。</translation>
+<translation id="7612989789287281429">正在登入…</translation>
 <translation id="7614260613810441905">網站必須先詢問您，才能編輯裝置上的檔案或資料夾 (建議使用)</translation>
 <translation id="761530003705945209">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或轉用其他裝置。備份包含應用程式資料。您的備份會上載至 Google，並透過您的 Google 帳戶密碼加密。</translation>
 <translation id="7615365294369022248">新增帳戶時發生錯誤</translation>

@@ -351,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3952872973865944257">เตลูกู (ตามการออกเสียง)</translation>
-<translation id="3954354850384043518">กำลังดำเนินการ</translation>
 <translation id="3958548648197196644">กีวี</translation>
 <translation id="3971140002794351170">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">อังกฤษ (สหราชอาณาจักร)</translation>
@@ -365,6 +364,7 @@
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
 <translation id="4131235941541910880">ย้ายรายการที่คุณไม่ต้องการไปยังถังขยะ</translation>
+<translation id="4134804435730168042">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, เปิดใช้งานหลังจากตั้งค่าอุปกรณ์</translation>
 <translation id="4153015322587141338">คลิกขวาที่ไฟล์แล้วเลือก "<ph name="PIN_COMMAND" />" เพื่อให้เข้าถึงไฟล์ในชั้นวางได้อย่างรวดเร็ว</translation>
 <translation id="4157569377477607576">นโยบายของผู้ดูแลระบบไม่แนะนำให้ทำสิ่งต่อไปนี้</translation>
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
@@ -407,6 +407,7 @@
 <translation id="4414834425328380570">ระบบจะลบ "<ph name="FILE_NAME" />" และคุณจะกู้คืนไม่ได้</translation>
 <translation id="4418686080762064601">สร้างทางลัดสำหรับไฟล์ของคุณ</translation>
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
+<translation id="4432921877815220091">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, , เปิดใช้งานหลังจากตั้งค่าอุปกรณ์, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="4439427728133035643">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
 <translation id="4442424173763614572">การค้นหา DNS ล้มเหลว</translation>
 <translation id="4462159676511157176">เซิร์ฟเวอร์ชื่อที่กำหนดเอง</translation>
@@ -616,6 +617,7 @@
 <translation id="5913638992615760742">การคัดลอกล้มเหลว ข้อผิดพลาดที่ไม่คาดคิด: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">ดัตช์ (เนเธอร์แลนด์) ด้วยแป้นพิมพ์พีซีสหรัฐฯ แบบสากล</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, , เปิดใช้งานหลังจากตั้งค่าอุปกรณ์</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ตัวเลือกการจัดเรียง</translation>
@@ -936,6 +938,7 @@
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="8492972329130824181">เครือข่ายในบ้านไม่พร้อมใช้งาน ต้องเปิดใช้การโรมมิ่งอินเทอร์เน็ตมือถือเพื่อเชื่อมต่อ</translation>
 <translation id="8499098729323186194">กำลังแตกข้อมูล <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
+<translation id="8502913769543567768">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, เปิดใช้งานหลังจากตั้งค่าอุปกรณ์, จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8521441079177373948">สหราชอาณาจักร</translation>
 <translation id="853494022971700746">ฝรั่งเศส (ฝรั่งเศส)</translation>
 <translation id="8540608333167683902">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
@@ -997,6 +1000,7 @@
 <translation id="9046895021617826162">การเชื่อมต่อล้มเหลว</translation>
 <translation id="9065512565307033593">หากไม่ยืนยัน ระบบจะปิดใช้สิทธิ์เข้าถึงเครือข่ายของคุณ</translation>
 <translation id="908378762078012445">รัสเซียด้วยแป้นพิมพ์ AATSEEL (ตามการออกเสียง)</translation>
+<translation id="9086302186042011942">กำลังซิงค์</translation>
 <translation id="9099674669267916096">จำนวนหน้า</translation>
 <translation id="9100610230175265781">ต้องระบุรหัสผ่าน</translation>
 <translation id="9110990317705400362">เรายังคงค้นหาวิธีที่จะทำให้การท่องเว็บของคุณปลอดภัยยิ่งขึ้นอย่างสม่ำเสมอ ก่อนหน้านี้ทุกเว็บไซต์สามารถแสดงข้อความแจ้งให้คุณเพิ่มส่วนขยายในเบราว์เซอร์ แต่ใน Google Chrome เวอร์ชันล่าสุด คุณจะต้องแจ้งให้ Chrome ทราบอย่างชัดเจนว่าคุณต้องการติดตั้งส่วนขยายเหล่านี้โดยการเพิ่มส่วนขยายผ่านหน้า "ส่วนขยาย" <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>

@@ -351,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">貼上</translation>
 <translation id="3952872973865944257">泰盧固文 (拼音)</translation>
-<translation id="3954354850384043518">下載中</translation>
 <translation id="3958548648197196644">奇異果</translation>
 <translation id="3971140002794351170">下載流動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">英文 (英國)</translation>
@@ -997,6 +996,7 @@
 <translation id="9046895021617826162">連線失敗</translation>
 <translation id="9065512565307033593">如未完成驗證，您將無法存取網絡。</translation>
 <translation id="908378762078012445">俄文 (注音 AATSEEL 鍵盤)</translation>
+<translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9099674669267916096">頁數</translation>
 <translation id="9100610230175265781">請輸入複雜密碼</translation>
 <translation id="9110990317705400362">我們不斷努力提升瀏覽網絡的安全性。過去，任何網站都可以提示您在瀏覽器中新增擴充功能。在最新版本的 Google Chrome 中，您必須透過「擴充功能」頁面新增擴充功能，讓 Chrome 明確瞭解您想要安裝這些擴充功能。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>

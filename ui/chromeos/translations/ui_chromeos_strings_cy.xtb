@@ -351,11 +351,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Gludo</translation>
 <translation id="3952872973865944257">Seinegol Telwgw</translation>
-<translation id="3954354850384043518">Ar y gweill</translation>
 <translation id="3958548648197196644">Ciwi</translation>
 <translation id="3971140002794351170">Lawrlwytho proffil dyfais symudol, Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Saesneg (DU)</translation>
 <translation id="3975895378829046965">Seinegol Bangala</translation>
+<translation id="3999574733850440202">Mae ffeiliau Microsoft a agorwyd yn ddiweddar yn symud i OneDrive</translation>
 <translation id="4002066346123236978">Teitl</translation>
 <translation id="4017788180641807848">Saesneg (UDA) gyda bysellfwrdd Gweithiwr</translation>
 <translation id="4019998208269143058">Pinio i ffeiliau cyflym</translation>
@@ -907,6 +907,7 @@
 <translation id="8300849813060516376">OTASP wedi methu</translation>
 <translation id="8312871300878166382">Gludo i'r ffolder</translation>
 <translation id="8329978297633540474">Testun plaen</translation>
+<translation id="8332007959299458842">Mae ffeiliau Microsoft a agorwyd yn ddiweddar yn symud i Google Drive</translation>
 <translation id="8335587457941836791">Dadosod o'r silff</translation>
 <translation id="8335837413233998004">Belarwseg</translation>
 <translation id="8336153091935557858">Ddoe <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -994,6 +995,7 @@
 <translation id="9046895021617826162">Wedi methu cysylltu</translation>
 <translation id="9065512565307033593">Os byddwch yn methu â dilysu, bydd eich mynediad at y rhwydwaith yn cael ei ddiffodd.</translation>
 <translation id="908378762078012445">Rwseg gyda bysellfwrdd Seinegol AATSEEL</translation>
+<translation id="9086302186042011942">Wrthi’n cysoni</translation>
 <translation id="9099674669267916096">Cyfrif tudalennau</translation>
 <translation id="9100610230175265781">Angen cyfrinymadrodd</translation>
 <translation id="9110990317705400362">Rydym bob amser yn chwilio am ffyrdd i wneud eich pori'n fwy diogel. Yn flaenorol, gallai unrhyw wefan eich annog i ychwanegu estyniad i'ch porwr. Yn y fersiynau diweddaraf o Google Chrome, rhaid i chi ddweud yn benodol wrth Chrome eich bod am osod yr estyniadau hyn drwy eu hychwanegu drwy'r dudalen Estyniadau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>

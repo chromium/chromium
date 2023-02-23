@@ -59,6 +59,7 @@
 <translation id="216989819110952009">尽管有绿色眼镜保护着眼睛，桃乐丝和她的朋友们在刚看到这座奇妙的城市时，还是被它耀眼的光芒照得眼花缭乱</translation>
 <translation id="2176704795966505152">在主菜单中显示缩放选项</translation>
 <translation id="2182457891543959921">需先询问，得到许可后才允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置（推荐）</translation>
+<translation id="2194856509914051091">注意事项</translation>
 <translation id="2212565012507486665">允许使用 Cookie</translation>
 <translation id="2228071138934252756">若要允许 <ph name="APP_NAME" /> 使用您的摄像头，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">禁止网站播放受保护的内容</translation>
 <translation id="7577900504646297215">管理我的兴趣</translation>
 <translation id="7594634374516752650">已连接到蓝牙设备</translation>
+<translation id="7634280112532283638">垃圾内容和欺诈行为削减</translation>
 <translation id="7641339528570811325">清除浏览数据…</translation>
 <translation id="7649070708921625228">帮助</translation>
 <translation id="7658239707568436148">取消</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741">这会清除 <ph name="ORIGIN" /> 存储的所有数据和 Cookie。</translation>
 <translation id="8751914237388039244">选择图片</translation>
 <translation id="8801436777607969138">禁止特定网站运行 JavaScript。</translation>
+<translation id="8803526663383843427">处于开启状态时</translation>
 <translation id="8816026460808729765">禁止网站使用传感器</translation>
 <translation id="8823559166155093873">屏蔽 Cookie</translation>
 <translation id="8847988622838149491">USB</translation>

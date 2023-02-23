@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Жашыл көз айнек менен корголгон Доротинин көздөрү саамга эч нерсе көрбөй калды</translation>
 <translation id="2176704795966505152">Башкы менюда чоңойтуп/кичирейтүү параметрин көрсөтүү</translation>
 <translation id="2182457891543959921">Сайттар айланаңыздын 3D картасын түзгөнү же камераңыздын абалын көргөнү жатканда уруксат суралсын (сунушталат)</translation>
+<translation id="2194856509914051091">Эске ала турган нерселер</translation>
 <translation id="2212565012507486665">Cookies файлдарына уруксат берүү</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> колдонмосуна камерага кирүүгө уруксат берүү үчүн, <ph name="BEGIN_LINK" />Android Параметрлеринен<ph name="END_LINK" /> камераны күйгүзүңүз.</translation>
 <translation id="2235344399760031203">Үчүнчү тараптын cookie файлдары бөгөттөлдү</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">Сайттарга корголгон мазмунду ойнотууга тыюу салынсын</translation>
 <translation id="7577900504646297215">Кызыккан нерселерди башкаруу</translation>
 <translation id="7594634374516752650">Bluetooth түзмөгүнө туташтырылды</translation>
+<translation id="7634280112532283638">Спам жана шылуундукту азайтуу</translation>
 <translation id="7641339528570811325">Серептөө дайындарын тазалап салуу…</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741">Ушуну менен <ph name="ORIGIN" /> сактаган бардык маалымат менен cookie-файлдары тазаланат.</translation>
 <translation id="8751914237388039244">Сүрөт тандоо</translation>
 <translation id="8801436777607969138">Белгилүү бир сайтта JavaScript'ти бөгөттөө.</translation>
+<translation id="8803526663383843427">Күйүп турганда</translation>
 <translation id="8816026460808729765">Сайттардын сенсорлорду колдонуусун бөгөттөө</translation>
 <translation id="8823559166155093873">Cookie файлдарын бөгөттөө</translation>
 <translation id="8847988622838149491">USB</translation>

@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1209796539517632982">Անունների ավտոմատ սերվերներ</translation>
 <translation id="1210831758834677569">լաոսերեն</translation>
+<translation id="1221555006497674479">Ընդհանուր դրայվում տարածքը քիչ է։ Մնացել է <ph name="TOTAL_SPACE" />-ի <ph name="REMAINING_PERCENTAGE" />%-ը։</translation>
 <translation id="1243314992276662751">Վերբեռնել</translation>
 <translation id="1249250836236328755">Ժանրը</translation>
 <translation id="1254593899333212300">Համացանցի անմիջական կապակցում</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">չինարեն (փինյին)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ֆայլ շուտով հասանելի կդառնա անցանց ռեժիմում</translation>
 <translation id="164969095109328410">Chrome սարք</translation>
+<translation id="1661207570040737402">Դուք օգտագործել եք Google Workspace-ի ձեր ամբողջ ընդհանուր դրայվը։</translation>
 <translation id="1661867754829461514">PIN կոդը բացակայում է</translation>
 <translation id="166439687370499867">Դուք չեք կարող փոխել ընդհանուր ցանցի կարգավորումները</translation>
 <translation id="1665611772925418501">Չհաջողվեց փոփոխել ֆայլը:</translation>
@@ -349,11 +351,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="3952872973865944257">տելուգու (հնչյունային)</translation>
-<translation id="3954354850384043518">Ընթացքում</translation>
 <translation id="3958548648197196644">Կիվի</translation>
 <translation id="3971140002794351170">Ներբեռնել բջջային պրոֆիլը, ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">անգլերեն (ՄԹ)</translation>
 <translation id="3975895378829046965">բանգլա (հնչյունային)</translation>
+<translation id="3999574733850440202">Վերջերս բացված Microsoft ֆայլերը տեղափոխվել են OneDrive</translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4017788180641807848">անգլերեն (ԱՄՆ)՝ Workman ստեղնաշարով</translation>
 <translation id="4019998208269143058">Ամրացնել ֆայլերի արագ մուտքին</translation>
@@ -905,6 +907,7 @@
 <translation id="8300849813060516376">OTASP-ի խափանում</translation>
 <translation id="8312871300878166382">Տեղադրել պանակում</translation>
 <translation id="8329978297633540474">Պարզ տեքստ</translation>
+<translation id="8332007959299458842">Վերջերս բացված Microsoft ֆայլերը տեղափոխվել են Google Drive</translation>
 <translation id="8335587457941836791">Ապամրացնել դարակից</translation>
 <translation id="8335837413233998004">բելառուսերեն</translation>
 <translation id="8336153091935557858">Երեկ <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -992,6 +995,7 @@
 <translation id="9046895021617826162">Չհաջողվեց միանալ</translation>
 <translation id="9065512565307033593">Եթե չկարողանաք հաստատել, ցանցն անհասանելի կդառնա։</translation>
 <translation id="908378762078012445">ռուսերեն (AATSEEL հնչյունային ստեղնաշար)</translation>
+<translation id="9086302186042011942">Համաժամացում</translation>
 <translation id="9099674669267916096">Էջերի քանակը</translation>
 <translation id="9100610230175265781">Անհրաժեշտ է անցաբառ</translation>
 <translation id="9110990317705400362">Մենք մշտապես փորձում ենք ձեր զննարկումն ավելի ապահով դարձնել: Նախկինում ցանկացած վեբկայք կարող էր առաջարկել ձեզ ընդլայնում ավելացնել ձեր դիտարկիչին: Google Chrome-ի վերջին տարբերակներում Chrome-ը ձեզանից հստակորեն պետք է հրաման ստանա, եթե դուք ցանկանաք տեղադրել որևէ ընդլայնում՝ ավելացնելով դրանք Ընդլայնումների էջի միջոցով: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>

@@ -3962,6 +3962,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4522890784888918985">자녀 계정은 지원되지 않습니다.</translation>
 <translation id="4523876148417776526">XML 사이트 목록을 아직 가져오지 않았습니다.</translation>
 <translation id="4524832533047962394">제공된 등록 모드는 이 버전의 운영체제에서 지원되지 않습니다. 최신 버전을 실행하고 있는지 확인하세요.</translation>
+<translation id="4526051299161934899">숨겨진 저장된 탭 그룹</translation>
 <translation id="4526853756266614740">이미지를 선택하여 테마를 즉시 적용하세요</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4527929807707405172">역방향 스크롤이 사용 설정되었습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -4286,6 +4287,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4824037980212326045">Linux 백업 및 복원</translation>
 <translation id="4824958205181053313">동기화를 취소하시겠습니까?</translation>
 <translation id="4825532258163983651">패스키를 삭제할 수 없음</translation>
+<translation id="4827283332383516812">카드 삭제</translation>
 <translation id="4827675678516992122">연결할 수 없음</translation>
 <translation id="4827784381479890589">Chrome 브라우저의 향상된 맞춤법 검사(텍스트는 맞춤법 추천을 위해 Google에 전송됨)</translation>
 <translation id="4827904420700932487">이 이미지의 QR 코드 생성</translation>
@@ -5309,6 +5311,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" />의 작업 더보기</translation>
 <translation id="5792728279623964091">전원 버튼을 탭하세요.</translation>
 <translation id="5792874008054171483"><ph name="SITE_NAME" />의 작업 메뉴 더보기</translation>
+<translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
 <translation id="5793339252089865437">모바일 네트워크를 통해 업데이트를 다운로드하면 요금이 과도하게 부과될 수 있습니다.</translation>
 <translation id="5793420564274426163">페어링 확인</translation>
 <translation id="5793430094159150686">비밀번호가 변경되었습니다. 로컬 데이터를 복원하려면 이전 비밀번호를 입력해야 합니다.</translation>
@@ -7287,6 +7290,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7609148976235050828">인터넷에 연결한 다음 다시 시도하세요.</translation>
 <translation id="7612401678989660900">마이크 권한이 있는 앱 및 웹사이트의 액세스 허용</translation>
 <translation id="7612655942094160088">연결된 휴대전화 기능 사용 설정.</translation>
+<translation id="7612989789287281429">로그인하는 중…</translation>
 <translation id="7614260613810441905">사이트에서 기기의 파일 또는 폴더를 수정하려는 경우 확인 메시지 표시(권장)</translation>
 <translation id="761530003705945209">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 내 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="7615365294369022248">계정 추가 중 오류 발생</translation>
@@ -8504,6 +8508,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="869884720829132584">애플리케이션 메뉴</translation>
 <translation id="869891660844655955">유효기간</translation>
 <translation id="8699188901396699995"><ph name="PRINTER_NAME" />의 PPD</translation>
+<translation id="8702278591052316269">숨겨진 저장된 탭 그룹이 포함된 메뉴</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> 잠김</translation>
 <translation id="8703346390800944767">광고 건너뛰기</translation>
 <translation id="8705331520020532516">일련번호</translation>

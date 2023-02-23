@@ -3949,6 +3949,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4522890784888918985">Podradené účty nie sú podporované</translation>
 <translation id="4523876148417776526">Zoznamy webov XML zatiaľ neboli načítané.</translation>
 <translation id="4524832533047962394">Poskytnutý režim registrácie táto verzia operačného systému nepodporuje. Uistite sa, že používate najnovšiu verziu.</translation>
+<translation id="4526051299161934899">Skryté uložené skupiny kariet</translation>
 <translation id="4526853756266614740">Vyberte obrázok, na ktorý sa má motív okamžite použiť</translation>
 <translation id="452750746583162491">Skontrolovať synchronizované údaje</translation>
 <translation id="4527929807707405172">Povoliť obrátené posúvanie <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -4273,6 +4274,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4824037980212326045">Zálohovanie a obnova v systéme Linux</translation>
 <translation id="4824958205181053313">Chcete zrušiť synchronizáciu?</translation>
 <translation id="4825532258163983651">Prístupový kľúč sa nedá odstrániť</translation>
+<translation id="4827283332383516812">Odstránenie karty</translation>
 <translation id="4827675678516992122">Nepodarilo sa pripojiť</translation>
 <translation id="4827784381479890589">Rozšírená kontrola pravopisu v prehliadači Chrome (text sa odosiela Googlu, ktorý poskytuje návrhy pravopisu)</translation>
 <translation id="4827904420700932487">Vytvoriť QR kód pre tento obrázok</translation>
@@ -5296,6 +5298,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5792295754950501287">Ďalšie akcie: <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Klepnite na vypínač</translation>
 <translation id="5792874008054171483">Ďalšie akcie pre zariadenie: <ph name="SITE_NAME" /></translation>
+<translation id="5793317771769868848">Tento spôsob platby bude odstránený z tohto zariadenia</translation>
 <translation id="5793339252089865437">Ak stiahnete aktualizáciu cez mobilnú sieť, môže to viesť k vyšším účtovaným poplatkom.</translation>
 <translation id="5793420564274426163">Potvrdenie párovania</translation>
 <translation id="5793430094159150686">Vaše heslo bolo zmenené. Ak chcete svoje miestne údaje obnoviť, musíte zadať staré heslo.</translation>
@@ -7278,6 +7281,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7609148976235050828">Pripojte sa k internetu a skúste to znova.</translation>
 <translation id="7612401678989660900">Umožniť prístup aplikáciám a webom s povolením používať mikrofón</translation>
 <translation id="7612655942094160088">Povolenie funkcií pripojeného telefónu</translation>
+<translation id="7612989789287281429">Prihlasuje sa…</translation>
 <translation id="7614260613810441905">Pýtať sa, keď chce nejaký web upraviť súbory alebo priečinky vo vašom zariadení (odporúčané)</translation>
 <translation id="761530003705945209">Zálohovanie na Disk Google. Jednoducho kedykoľvek obnovte svoje údaje alebo prejdite na iné zariadenie. Záloha obsahuje dáta aplikácií. Zálohy nahrané do Googlu sú šifrované heslom vášho účtu Google.</translation>
 <translation id="7615365294369022248">Pri pridávaní účtu sa vyskytla chyba</translation>
@@ -8494,6 +8498,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="869884720829132584">Ponuka Aplikácie</translation>
 <translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8699188901396699995">PPD pre tlačiareň <ph name="PRINTER_NAME" /></translation>
+<translation id="8702278591052316269">Ponuka obsahujúca skryté uložené skupiny kariet</translation>
 <translation id="8702825062053163569">Vaše zariadenie <ph name="DEVICE_TYPE" /> bolo uzamknuté.</translation>
 <translation id="8703346390800944767">Preskočiť reklamu</translation>
 <translation id="8705331520020532516">Sériové číslo</translation>

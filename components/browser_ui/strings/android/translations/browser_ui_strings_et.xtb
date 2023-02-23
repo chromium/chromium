@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Kuigi rohelised prillid olid silmade kaitseks ninale asetatud, olid Dorothy ja tema sõbrad esialgu</translation>
 <translation id="2176704795966505152">Kuva peamenüüs suumimisvalik</translation>
 <translation id="2182457891543959921">Küsi enne saitidele loa andmist mind ümbritsevast 3D-kaardi loomiseks või kaamera asendi jälgimiseks (soovitatav)</translation>
+<translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2212565012507486665">Luba küpsisefailid</translation>
 <translation id="2228071138934252756">Selleks et anda rakendusele <ph name="APP_NAME" /> juurdepääs teie kaamerale, lülitage kaamera sisse ka <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">Saitidel kaitstud sisu esitamise blokeerimine</translation>
 <translation id="7577900504646297215">Huvide haldamine</translation>
 <translation id="7594634374516752650">Ühendatud Bluetooth-seadmega</translation>
+<translation id="7634280112532283638">Rämpssisu ja pettuste vähendamine</translation>
 <translation id="7641339528570811325">Sirvimisandmete kustutamine …</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7658239707568436148">Tühista</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741">See kustutab kõik saidi <ph name="ORIGIN" /> salvestatud andmed ja küpsisefailid.</translation>
 <translation id="8751914237388039244">Kujutise valimine</translation>
 <translation id="8801436777607969138">JavaScripti blokeerimine konkreetsel saidil.</translation>
+<translation id="8803526663383843427">Kui on sisse lülitatud</translation>
 <translation id="8816026460808729765">Blokeeri saitide jaoks juurdepääs anduritele</translation>
 <translation id="8823559166155093873">Blokeeri küpsisefailid</translation>
 <translation id="8847988622838149491">USB</translation>

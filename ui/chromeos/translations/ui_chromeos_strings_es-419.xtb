@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1209796539517632982">Servidores de nombres automáticos</translation>
 <translation id="1210831758834677569">Laosiano</translation>
+<translation id="1221555006497674479">Hay poco almacenamiento; queda <ph name="REMAINING_PERCENTAGE" />% de <ph name="TOTAL_SPACE" /> del almacenamiento de la unidad compartida.</translation>
 <translation id="1243314992276662751">Cargar</translation>
 <translation id="1249250836236328755">Género</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
@@ -73,6 +74,7 @@
 <translation id="1641780993263690097">Chino (Pinyin)</translation>
 <translation id="1646019627374511909">Habilitando el acceso sin conexión a <ph name="NUMBER_OF_ITEMS" /> archivos</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
+<translation id="1661207570040737402">Usaste todo tu almacenamiento de la unidad compartida de Google Workspace.</translation>
 <translation id="1661867754829461514">Falta el número de PIN </translation>
 <translation id="166439687370499867">No se permite cambiar las opciones de configuración de la red compartida</translation>
 <translation id="1665611772925418501">No se pudo modificar el archivo.</translation>
@@ -349,11 +351,11 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3952872973865944257">Télugu (fonético)</translation>
-<translation id="3954354850384043518">En curso</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Descarga un perfil de dispositivo móvil, red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Inglés (Reino Unido)</translation>
 <translation id="3975895378829046965">Bengalí (fonético)</translation>
+<translation id="3999574733850440202">Los archivos de Microsoft que abriste recientemente se trasladaron a OneDrive</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4017788180641807848">Inglés (EE.UU.) con teclado Workman</translation>
 <translation id="4019998208269143058">Fijar en archivos rápidos</translation>
@@ -906,6 +908,7 @@
 <translation id="8300849813060516376">OTASP falló</translation>
 <translation id="8312871300878166382">Pegar en la carpeta</translation>
 <translation id="8329978297633540474">Texto sin formato</translation>
+<translation id="8332007959299458842">Los archivos de Microsoft que abriste recientemente se trasladaron a Google Drive</translation>
 <translation id="8335587457941836791">Dejar de fijar en la biblioteca</translation>
 <translation id="8335837413233998004">Bielorruso</translation>
 <translation id="8336153091935557858">Ayer a las <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -993,6 +996,7 @@
 <translation id="9046895021617826162">No se pudo conectar</translation>
 <translation id="9065512565307033593">Si no puedes verificar tu identidad, se inhabilitará tu acceso a la red.</translation>
 <translation id="908378762078012445">Ruso con teclado fonético AATSEEL</translation>
+<translation id="9086302186042011942">Sincronización</translation>
 <translation id="9099674669267916096">Cantidad de páginas</translation>
 <translation id="9100610230175265781">Se necesita una frase de contraseña.</translation>
 <translation id="9110990317705400362">Constantemente buscamos la forma de ofrecerte una navegación más segura. Antes, cualquier sitio web podía pedirte agregar una extensión al navegador. En las últimas versiones de Google Chrome, debes indicar a Chrome explícitamente que deseas instalar estas extensiones al agregarlas en la página Extensiones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>

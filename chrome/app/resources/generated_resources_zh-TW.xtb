@@ -3946,6 +3946,7 @@
 <translation id="4522890784888918985">不支援子帳戶</translation>
 <translation id="4523876148417776526">尚未擷取的 XML 網站清單。</translation>
 <translation id="4524832533047962394">這個版本的作業系統不支援目前提供的註冊模式。請確認你使用的是最新版本。</translation>
+<translation id="4526051299161934899">隱藏的已儲存分頁群組</translation>
 <translation id="4526853756266614740">選擇圖片即可立即套用主題</translation>
 <translation id="452750746583162491">查看已同步處理的資料</translation>
 <translation id="4527929807707405172">啟用反向捲動功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -4270,6 +4271,7 @@
 <translation id="4824037980212326045">Linux 備份與還原</translation>
 <translation id="4824958205181053313">取消同步處理？</translation>
 <translation id="4825532258163983651">無法刪除密碼金鑰</translation>
+<translation id="4827283332383516812">刪除卡片</translation>
 <translation id="4827675678516992122">無法連線</translation>
 <translation id="4827784381479890589">Chrome 瀏覽器中的進階拼字檢查功能 (系統會將文字傳送給 Google 以取得拼字建議)</translation>
 <translation id="4827904420700932487">為這張圖片建立 QR 圖碼</translation>
@@ -5291,6 +5293,7 @@
 <translation id="5792295754950501287">可對「<ph name="CARD_DESCRIPTION" />」執行的其他動作</translation>
 <translation id="5792728279623964091">請輕觸電源按鈕</translation>
 <translation id="5792874008054171483">可對 <ph name="SITE_NAME" /> 執行的其他動作</translation>
+<translation id="5793317771769868848">這個付款方式將從這部裝置上刪除</translation>
 <translation id="5793339252089865437">如果你透過行動網路下載更新，可能會產生超額傳輸費用。</translation>
 <translation id="5793420564274426163">配對確認</translation>
 <translation id="5793430094159150686">你的密碼已變更。如要還原本機資料，你必須輸入舊密碼。</translation>
@@ -7268,6 +7271,7 @@
 <translation id="7609148976235050828">請連上網際網路，然後再試一次。</translation>
 <translation id="7612401678989660900">允許應用程式和網站存取麥克風</translation>
 <translation id="7612655942094160088">啟用已連結的手機功能。</translation>
+<translation id="7612989789287281429">正在登入…</translation>
 <translation id="7614260613810441905">網站必須先詢問你，才能編輯裝置上的檔案或資料夾 (建議使用)</translation>
 <translation id="761530003705945209">使用 Google 雲端硬碟備份你的資料。你隨時可以輕鬆還原資料或切換裝置。備份項目包含應用程式資料。備份內容會上傳到 Google，並使用你的 Google 帳戶密碼加密。</translation>
 <translation id="7615365294369022248">新增帳戶時發生錯誤</translation>
@@ -8484,6 +8488,7 @@
 <translation id="869884720829132584">應用程式選單</translation>
 <translation id="869891660844655955">到期日</translation>
 <translation id="8699188901396699995">「<ph name="PRINTER_NAME" />」的 PPD</translation>
+<translation id="8702278591052316269">選單中內含隱藏的已儲存分頁群組</translation>
 <translation id="8702825062053163569">系統已鎖定你的 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="8703346390800944767">略過廣告</translation>
 <translation id="8705331520020532516">序號</translation>

@@ -587,7 +587,6 @@
 <translation id="2359629602545592467">ഒന്നിലധികം</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
-<translation id="2362083820973145409"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="236340516568226369">വലുപ്പം‌ മാറ്റുക ടോഗിൾ മെനു</translation>
 <translation id="2367567093518048410">നില</translation>
 <translation id="2380886658946992094">നിയമപരം</translation>
@@ -1929,7 +1928,6 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{ഈ കാർഡിന് വെർച്വൽ നമ്പർ ഉപയോഗിക്കുക}other{ഒരു കാർഡ് തിരഞ്ഞെടുക്കുക}}</translation>
 <translation id="5752552348183096912">ആന്റിപെർസ്പിറന്റുകളും ഡിയോഡറന്റുകളും ബോഡി സ്പ്രേകളും</translation>
 <translation id="5754400531489347219">വളർത്തുമൃഗങ്ങളും മൃഗങ്ങളും</translation>
-<translation id="5755162682436943950">സൈൻ ഔട്ട് ചെയ്‌തു. സൈൻ ഇൻ ചെയ്യാനും സമന്വയം ഓണാക്കാനും ഡയലോഗ് തുറക്കുക.</translation>
 <translation id="5759751709240058861">ക്യാമറ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക</translation>
 <translation id="5763042198335101085">ശരിയായ ഇമെയിൽ വിലാസം നൽകുക</translation>
 <translation id="5764725887548570807">ഒറിജിൻ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
@@ -2473,7 +2471,6 @@
 <translation id="7153618581592392745">ലാവെൻഡർ</translation>
 <translation id="7156870133441232244">സെർവർ TLS 1.2 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പിലേക്ക് അപ്‌ഗ്രേഡ് ചെയ്യേണ്ടതുണ്ട്.</translation>
 <translation id="7163295244162773898">{0,plural, =1{രഹസ്യാത്മക ഫയൽ പകർത്തണോ?}other{രഹസ്യാത്മക ഫയലുകൾ പകർത്തണോ?}}</translation>
-<translation id="7168323970702333693"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="717330890047184534">Gaia ഐഡി:</translation>
 <translation id="7174545416324379297">ലയിപ്പിച്ചു</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> എണ്ണവും}other{<ph name="SHIPPING_OPTION_PREVIEW" /> എന്നതും മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> എണ്ണവും}}</translation>
@@ -2685,6 +2682,7 @@
 <translation id="7630470133768862132">സമ്മത നില:</translation>
 <translation id="7631444403134069754">ട്രാക്കും ഫീൽഡും</translation>
 <translation id="7633909222644580952">പ്രകടന ഡാറ്റയും ക്രാഷ് റിപ്പോർട്ടുകളും</translation>
+<translation id="7634280112532283638">സ്‌പാമും വഞ്ചനയും കുറയ്ക്കൽ</translation>
 <translation id="7637571805876720304">Chromium-ൽ നിന്ന് ക്രെഡിറ്റ് കാർഡ് നീക്കംചെയ്യണോ?</translation>
 <translation id="7637586430889951925">{COUNT,plural, =0{ഒന്നുമില്ല}=1{നിങ്ങളുടെ അക്കൗണ്ടിലെ ഒരു പാസ്‌വേഡ് (<ph name="DOMAIN_LIST" /> എന്നതിനായി)}other{നിങ്ങളുടെ അക്കൗണ്ടിലെ # പാസ്‌വേഡുകൾ (<ph name="DOMAIN_LIST" /> എന്നതിനായി)}}</translation>
 <translation id="7638605456503525968">സീരിയൽ പോർട്ടുകൾ</translation>
@@ -3187,7 +3185,6 @@
 <translation id="8903921497873541725">സൂം ഇന്‍ ചെയ്യുക</translation>
 <translation id="890493561996401738">നിർദ്ദേശ ബട്ടൺ നീക്കം ചെയ്യുക, നീക്കം ചെയ്യാൻ എന്റർ അമർത്തുക, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="8910898109640902752">8 x 10 ഇഞ്ച്</translation>
-<translation id="8912362522468806198">Google അക്കൗണ്ട്</translation>
 <translation id="8913778647360618320">'പേയ്‌മെന്റ് രീതികൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ പേയ്‌മെന്റുകളും ക്രെഡിറ്റ് കാർഡ് വിവരങ്ങളും മാനേജ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="8922013791253848639">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും പരസ്യങ്ങൾ അനുവദിക്കുക</translation>
 <translation id="892588693504540538">മുകളിൽ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>

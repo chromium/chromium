@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Malgré leurs lunettes vertes, Dorothée et ses amis furent d'abord éblouis par l'éclat</translation>
 <translation id="2176704795966505152">Afficher l'option de zoom dans le menu principal</translation>
 <translation id="2182457891543959921">Demander avant d'autoriser les sites à créer un plan 3D de votre environnement ou à suivre la position de la caméra (recommandé)</translation>
+<translation id="2194856509914051091">Éléments à prendre en compte</translation>
 <translation id="2212565012507486665">Autoriser les cookies</translation>
 <translation id="2228071138934252756">Pour autoriser <ph name="APP_NAME" /> à accéder à votre caméra, activez-la également dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Cookies tiers bloqués</translation>
@@ -182,7 +183,7 @@
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
 <translation id="4428065317363009941">Personnalisation des annonces</translation>
-<translation id="4434045419905280838">Pop-up et redirections</translation>
+<translation id="4434045419905280838">Pop-ups et redirections</translation>
 <translation id="4440642537584213025">Développer "<ph name="TARGET_DESCRIPTION" />"</translation>
 <translation id="4468959413250150279">Coupez le son d'un site spécifique.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}one{# cookie}other{# cookies}}</translation>
@@ -347,6 +348,7 @@
 <translation id="757524316907819857">Empêcher les sites de lire les contenus protégés</translation>
 <translation id="7577900504646297215">Gérer les centres d'intérêt</translation>
 <translation id="7594634374516752650">Connecté à un appareil Bluetooth</translation>
+<translation id="7634280112532283638">Réduction du spam et de la fraude</translation>
 <translation id="7641339528570811325">Effacer les données de navigation</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7658239707568436148">Annuler</translation>
@@ -421,6 +423,7 @@
 <translation id="8737217482364735741">L'ensemble des données et des cookies stockés par <ph name="ORIGIN" /> seront effacés.</translation>
 <translation id="8751914237388039244">Sélectionner une image</translation>
 <translation id="8801436777607969138">Bloquez JavaScript sur un site spécifique.</translation>
+<translation id="8803526663383843427">Lorsque la fonctionnalité est activée</translation>
 <translation id="8816026460808729765">Bloque l'accès aux capteurs pour certains sites</translation>
 <translation id="8823559166155093873">Bloquer les cookies</translation>
 <translation id="8847988622838149491">USB</translation>

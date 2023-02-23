@@ -946,6 +946,11 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
       Als je het beleid instelt op False of niet instelt, voert <ph name="PRODUCT_NAME" /> geen online intrekkingschecks uit in <ph name="PRODUCT_NAME" /> 19 en hoger.
 
       Opmerking: Door <ph name="OCSP_CRL_LABEL" />-checks wordt de beveiliging niet aantoonbaar verbeterd.</translation>
+<translation id="1904685047904049720">Als je dit beleid aanzet, worden extensies waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store uitgezet voor <ph name="PRODUCT_NAME" />.
+Dit beleid geldt alleen voor extensies die zijn geïnstalleerd en geüpdatet via de Chrome Web Store. Extensies van buiten de Chrome Web Store, zoals uitgepakte extensies die zijn geïnstalleerd via de ontwikkelaarsmodus en extensies die zijn geïnstalleerd met de opdrachtregelschakelaar, worden genegeerd. Afgedwongen geïnstalleerde extensies die niet worden geüpdatet via de Chrome Web Store en alle vastgezette extensies worden ook genegeerd.
+
+Als je het beleid instelt op <ph name="ALLOW_UNPUBLISHED" /> (0) of niet instelt, zijn extensies toegestaan waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store.
+Als je het beleid instelt op <ph name="DISABLE_UNPUBLISHED" /> (1), worden extensies uitgezet waarvan de publicatie ongedaan is gemaakt in de Chrome Web Store.</translation>
 <translation id="1905061765326052857">Niet-aangesloten gebruikers niet toestaan virtuele machines te gebruiken die nodig zijn om Linux-apps te ondersteunen</translation>
 <translation id="1910704279188129272">Hiermee kun je per app gebruiksbeperkingen instellen.
         Gebruiksbeperkingen kunnen worden toegepast op de apps die voor de betreffende gebruiker in <ph name="PRODUCT_OS_NAME" /> zijn geïnstalleerd.
@@ -5642,6 +5647,7 @@ Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer infor
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers aangeven of de app-snelkoppeling moet worden getoond of verborgen in het contextmenu van de bookmarkbalk.</translation>
 <translation id="638003144128412430">Rapportage van tijdzone-informatie van apparaat uitzetten</translation>
+<translation id="6382209369210116232">Niet-gepubliceerde extensies uitzetten</translation>
 <translation id="6382351416269252693">Hiermee wordt een lijst met URL-patronen voor sites ingesteld waarmee sites worden gespecificeerd waarvoor het recht voor lokale lettertypen automatisch wordt geweigerd. Dit beperkt de mogelijkheid van sites om informatie over lokale lettertypen te bekijken.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens, <ph name="WILDCARD_VALUE" />, zijn toegestaan. Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.

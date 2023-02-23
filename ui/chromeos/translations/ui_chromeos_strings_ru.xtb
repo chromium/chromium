@@ -351,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Вставить</translation>
 <translation id="3952872973865944257">Телугу, фонетический</translation>
-<translation id="3954354850384043518">Скачивание…</translation>
 <translation id="3958548648197196644">Киви</translation>
 <translation id="3971140002794351170">Скачать мобильный профиль, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Английский (Великобритания)</translation>
@@ -997,6 +996,7 @@
 <translation id="9046895021617826162">Сбой подключения</translation>
 <translation id="9065512565307033593">Если не пройти проверку, доступ к сети будет отключен.</translation>
 <translation id="908378762078012445">Русский, фонетическая раскладка AATSEEL</translation>
+<translation id="9086302186042011942">Выполняется синхронизация</translation>
 <translation id="9099674669267916096">Количество страниц</translation>
 <translation id="9100610230175265781">Необходима кодовая фраза</translation>
 <translation id="9110990317705400362">Мы постоянно работаем над тем, чтобы сделать наш браузер ещё более защищенным. Раньше любой сайт мог предложить вам установить расширение, что было небезопасно. В последних версиях Google Chrome добавить расширения можно только на странице "Расширения". <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>

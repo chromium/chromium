@@ -351,7 +351,6 @@
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="3952872973865944257">Telugu fonètic</translation>
-<translation id="3954354850384043518">En curs</translation>
 <translation id="3958548648197196644">Kiwi</translation>
 <translation id="3971140002794351170">Baixa el perfil mòbil, xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglès (Regne Unit)</translation>
@@ -995,6 +994,7 @@
 <translation id="9046895021617826162">S'ha produït un error en la connexió</translation>
 <translation id="9065512565307033593">Si no fas la verificació, l'accés a la xarxa es desactivarà.</translation>
 <translation id="908378762078012445">Rus amb teclat AATSEEL fonètic</translation>
+<translation id="9086302186042011942">Sincronització</translation>
 <translation id="9099674669267916096">Nombre de pàgines</translation>
 <translation id="9100610230175265781">S'ha d'introduir una frase de contrasenya </translation>
 <translation id="9110990317705400362">Mai no deixem de cercar maneres de millorar la seguretat de la navegació. Anteriorment, des de qualsevol lloc web se us podia demanar que afegíssiu una extensió al navegador. A les versions més recents de Google Chrome, heu d'afegir aquestes extensions mitjançant la pàgina Extensions per fer saber explícitament a Chrome que voleu instal·lar-les. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
