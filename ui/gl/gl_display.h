@@ -82,20 +82,26 @@ class GL_EXPORT GLDisplay {
   GLDisplay& operator=(const GLDisplay&) = delete;
 
   uint64_t system_device_id() const { return system_device_id_; }
+  DisplayKey display_key() const { return display_key_; }
+  DisplayPlatform type() const { return type_; }
 
   virtual ~GLDisplay();
 
   virtual void* GetDisplay() const = 0;
   virtual void Shutdown() = 0;
   virtual bool IsInitialized() const = 0;
+  virtual bool InitializeFromDisplay(GLDisplay* display) = 0;
 
   template <typename GLDisplayPlatform>
   GLDisplayPlatform* GetAs();
 
  protected:
-  GLDisplay(uint64_t system_device_id, DisplayPlatform type);
+  GLDisplay(uint64_t system_device_id,
+            DisplayKey display_key,
+            DisplayPlatform type);
 
   uint64_t system_device_id_ = 0;
+  DisplayKey display_key_ = DisplayKey::kDefault;
   DisplayPlatform type_ = NONE;
 };
 
@@ -125,6 +131,7 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   bool Initialize(bool supports_angle,
                   std::vector<DisplayType> init_displays,
                   EGLDisplayPlatform native_display);
+  bool InitializeFromDisplay(GLDisplay* other_display) override;
   void InitializeForTesting();
   bool InitializeExtensionSettings();
 
@@ -158,7 +165,7 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
     EGLDisplay display_ = EGL_NO_DISPLAY;
   };
 
-  explicit GLDisplayEGL(uint64_t system_device_id);
+  GLDisplayEGL(uint64_t system_device_id, DisplayKey display_key);
 
   bool InitializeDisplay(bool supports_angle,
                          std::vector<DisplayType> init_displays,

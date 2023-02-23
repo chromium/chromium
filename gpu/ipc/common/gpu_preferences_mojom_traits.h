@@ -266,6 +266,9 @@ struct GPU_EXPORT
         prefs.enable_chromeos_direct_video_decoder();
 #endif
 
+    out->force_separate_egl_display_for_webgl_testing =
+        prefs.force_separate_egl_display_for_webgl_testing();
+
     return true;
   }
 
@@ -461,6 +464,10 @@ struct GPU_EXPORT
     return prefs.enable_chromeos_direct_video_decoder;
   }
 #endif
+  static bool force_separate_egl_display_for_webgl_testing(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.force_separate_egl_display_for_webgl_testing;
+  }
 };
 
 }  // namespace mojo

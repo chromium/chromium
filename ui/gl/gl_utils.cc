@@ -176,13 +176,20 @@ void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
 #endif  // BUILDFLAG(IS_WIN)
 
 GLDisplay* GetDisplay(GpuPreference gpu_preference) {
+  return GetDisplay(gpu_preference, gl::DisplayKey::kDefault);
+}
+
+GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference,
+                                gl::DisplayKey display_key) {
 #if defined(USE_GLX)
   if (!GLDisplayManagerX11::GetInstance()->IsEmpty()) {
-    return GLDisplayManagerX11::GetInstance()->GetDisplay(gpu_preference);
+    return GLDisplayManagerX11::GetInstance()->GetDisplay(gpu_preference,
+                                                          display_key);
   }
 #endif
 #if defined(USE_EGL)
-  return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference);
+  return GLDisplayManagerEGL::GetInstance()->GetDisplay(gpu_preference,
+                                                        display_key);
 #endif
   NOTREACHED();
   return nullptr;

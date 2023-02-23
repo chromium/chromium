@@ -98,6 +98,8 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enable_chromeos_direct_video_decoder,
             right.enable_chromeos_direct_video_decoder);
 #endif
+  EXPECT_EQ(left.force_separate_egl_display_for_webgl_testing,
+            right.force_separate_egl_display_for_webgl_testing);
 }
 
 }  // namespace
@@ -188,6 +190,7 @@ TEST(GpuPreferencesTest, EncodeDecode) {
 #if BUILDFLAG(IS_CHROMEOS)
     GPU_PREFERENCES_FIELD(enable_chromeos_direct_video_decoder, true);
 #endif
+    GPU_PREFERENCES_FIELD(force_separate_egl_display_for_webgl_testing, true);
 
     input_prefs.texture_target_exception_list.emplace_back(
         gfx::BufferUsage::SCANOUT, gfx::BufferFormat::RGBA_8888);
@@ -280,6 +283,7 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
 #if BUILDFLAG(IS_CHROMEOS)
   PRINT_BOOL(enable_chromeos_direct_video_decoder);
 #endif
+  PRINT_BOOL(force_separate_egl_display_for_webgl_testing);
   printf("}\n");
 }
 

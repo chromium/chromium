@@ -293,6 +293,10 @@ struct GPU_EXPORT GpuPreferences {
   // Disables oppr debug crash dumps.
   bool disable_oopr_debug_crash_dump = false;
 
+  // Forces the use of a separate EGL display for WebGL contexts even when one
+  // GPU is used.
+  bool force_separate_egl_display_for_webgl_testing = false;
+
   // Please update gpu_preferences_unittest.cc when making additions or
   // changes to this struct.
 };

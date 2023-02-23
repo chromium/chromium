@@ -120,6 +120,7 @@
 #define EGL_ANGLE_platform_angle_device_id
 #define EGL_PLATFORM_ANGLE_DEVICE_ID_HIGH_ANGLE 0x34D6
 #define EGL_PLATFORM_ANGLE_DEVICE_ID_LOW_ANGLE 0x34D7
+#define EGL_PLATFORM_ANGLE_DISPLAY_KEY_ANGLE 0x34DC
 #endif /* EGL_ANGLE_platform_angle_device_id */
 
 // From ANGLE's egl/eglext.h.
@@ -251,7 +252,8 @@ EGLDisplay GetDisplayFromType(
     const std::vector<std::string>& enabled_angle_features,
     const std::vector<std::string>& disabled_angle_features,
     bool disable_all_angle_features,
-    uint64_t system_device_id) {
+    uint64_t system_device_id,
+    DisplayKey display_key) {
   std::vector<EGLAttrib> extra_display_attribs;
   if (disable_all_angle_features) {
     extra_display_attribs.push_back(EGL_FEATURE_ALL_DISABLED_ANGLE);
@@ -266,6 +268,10 @@ EGLDisplay GetDisplayFromType(
     uint32_t high_part = (system_device_id >> 32) & 0xffffffff;
     extra_display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_ID_HIGH_ANGLE);
     extra_display_attribs.push_back(high_part);
+  }
+  if (display_key != DisplayKey::kDefault) {
+    extra_display_attribs.push_back(EGL_PLATFORM_ANGLE_DISPLAY_KEY_ANGLE);
+    extra_display_attribs.push_back(static_cast<EGLint>(display_key));
   }
   EGLNativeDisplayType display = native_display.GetDisplay();
   switch (display_type) {
@@ -503,8 +509,12 @@ void EGLAPIENTRY LogEGLDebugMessage(EGLenum error,
 
 }  // namespace
 
-GLDisplay::GLDisplay(uint64_t system_device_id, DisplayPlatform type)
-    : system_device_id_(system_device_id), type_(type) {}
+GLDisplay::GLDisplay(uint64_t system_device_id,
+                     DisplayKey display_key,
+                     DisplayPlatform type)
+    : system_device_id_(system_device_id),
+      display_key_(display_key),
+      type_(type) {}
 
 GLDisplay::~GLDisplay() = default;
 
@@ -545,8 +555,8 @@ void GLDisplayEGL::EGLGpuSwitchingObserver::OnGpuSwitched(
   eglHandleGPUSwitchANGLE(display_);
 }
 
-GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id)
-    : GLDisplay(system_device_id, EGL), display_(EGL_NO_DISPLAY) {
+GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id, DisplayKey display_key)
+    : GLDisplay(system_device_id, display_key, EGL), display_(EGL_NO_DISPLAY) {
   ext = std::make_unique<DisplayExtensionsEGL>();
 }
 
@@ -638,6 +648,62 @@ bool GLDisplayEGL::Initialize(bool supports_angle,
   return true;
 }
 
+bool GLDisplayEGL::InitializeFromDisplay(GLDisplay* other_display) {
+  GLDisplayEGL* other_display_egl = other_display->GetAs<GLDisplayEGL>();
+  if (!other_display_egl->IsInitialized()) {
+    return false;
+  }
+
+  if (display_key_ == other_display->display_key()) {
+    return true;
+  }
+
+  if (display_ != EGL_NO_DISPLAY) {
+    return true;
+  }
+
+  if (other_display_egl->system_device_id() != system_device_id_) {
+    return false;
+  }
+
+  type_ = other_display_egl->type();
+  display_type_ = other_display_egl->GetDisplayType();
+  native_display_ = other_display_egl->GetNativeDisplay();
+  ext = std::make_unique<DisplayExtensionsEGL>(*other_display_egl->ext.get());
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  std::vector<std::string> enabled_angle_features =
+      GetStringVectorFromCommandLine(command_line,
+                                     switches::kEnableANGLEFeatures);
+  std::vector<std::string> disabled_angle_features =
+      GetStringVectorFromCommandLine(command_line,
+                                     switches::kDisableANGLEFeatures);
+  bool disable_all_angle_features =
+      command_line->HasSwitch(switches::kDisableGpuDriverBugWorkarounds);
+
+  EGLDisplay display =
+      GetDisplayFromType(display_type_, native_display_, enabled_angle_features,
+                         disabled_angle_features, disable_all_angle_features,
+                         system_device_id_, display_key_);
+
+  if (!eglInitialize(display, nullptr, nullptr)) {
+    LOG(ERROR) << "Failed to initialize new display from existing display.";
+    return false;
+  }
+
+  display_ = display;
+
+  InitializeCommon();
+
+  if (ext->b_EGL_ANGLE_power_preference) {
+    gpu_switching_observer_ =
+        std::make_unique<EGLGpuSwitchingObserver>(display_);
+    ui::GpuSwitchingManager::GetInstance()->AddObserver(
+        gpu_switching_observer_.get());
+  }
+  return true;
+}
+
 void GLDisplayEGL::InitializeForTesting() {
   display_ = eglGetCurrentDisplay();
   ext->InitializeExtensionSettings(display_);
@@ -693,9 +759,10 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
 
   for (size_t disp_index = 0; disp_index < init_displays.size(); ++disp_index) {
     DisplayType display_type = init_displays[disp_index];
-    EGLDisplay display = GetDisplayFromType(
-        display_type, native_display, enabled_angle_features,
-        disabled_angle_features, disable_all_angle_features, system_device_id_);
+    EGLDisplay display =
+        GetDisplayFromType(display_type, native_display, enabled_angle_features,
+                           disabled_angle_features, disable_all_angle_features,
+                           system_device_id_, display_key_);
     if (display == EGL_NO_DISPLAY) {
       // Assume this is not an error, so don't verbosely report it;
       // simply try the next display type.

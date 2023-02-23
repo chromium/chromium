@@ -22,6 +22,14 @@ enum class GpuPreference {
   kMaxValue = kHighPerformance
 };
 
+// Some clients may need to use the same GPU with a separate EGL display.
+// This enum is used to key individual EGL displays per-GPU.
+enum class DisplayKey {
+  kDefault,
+  kSeparateEGLDisplayForWebGLTesting,
+  kMaxValue = kSeparateEGLDisplayForWebGLTesting,
+};
+
 }  // namespace gl
 
 #endif  // UI_GL_GPU_PREFERENCE_H_

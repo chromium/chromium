@@ -82,6 +82,11 @@ GL_EXPORT GLDisplay* GetDefaultDisplay();
 // GLDisplayX11.
 GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference);
 
+// Query the GLDisplay by |gpu_preference| and |display_key|. May return either
+// a GLDisplayEGL or GLDisplayX11.
+GL_EXPORT GLDisplay* GetDisplay(GpuPreference gpu_preference,
+                                gl::DisplayKey display_key);
+
 // Query the default GLDisplayEGL.
 GL_EXPORT GLDisplayEGL* GetDefaultDisplayEGL();
 
