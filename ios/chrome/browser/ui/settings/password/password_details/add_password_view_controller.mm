@@ -55,7 +55,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSite,
   SectionIdentifierDuplicate,
   SectionIdentifierFooter,
-  SectionIdentifierTLDFooter
+  SectionIdentifierTLDFooter,
+  SectionIdentifierNoteFooter
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -70,6 +71,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Size of the symbols.
 const CGFloat kSymbolSize = 15;
+// Minimal amount of characters in password note to display the warning.
+const int kMinNoteCharAmountForWarning = 901;
+// Maximal amount of characters that a password note can contain.
+const int kMaxNoteCharAmount = 1000;
 
 }  // namespace
 
@@ -107,6 +112,12 @@ const CGFloat kSymbolSize = 15;
 // Yes, when the message for top-level domain missing is shown.
 @property(nonatomic, assign) BOOL isTLDMissingMessageShown;
 
+// Yes, when the footer informing about the max note length is shown.
+@property(nonatomic, assign) BOOL isNoteFooterShown;
+
+// Yes, when the note's length is less or equal than `kMaxNoteCharAmount`.
+@property(nonatomic, assign) BOOL isNoteValid;
+
 // If YES, the password details are shown without requiring any authentication.
 @property(nonatomic, assign) BOOL showPasswordWithoutAuth;
 
@@ -129,6 +140,8 @@ const CGFloat kSymbolSize = 15;
     _shouldEnableSave = NO;
     _showPasswordWithoutAuth = NO;
     _isTLDMissingMessageShown = NO;
+    _isNoteFooterShown = NO;
+    _isNoteValid = YES;
     _syncingUserEmail = syncingUserEmail;
   }
   return self;
@@ -207,6 +220,7 @@ const CGFloat kSymbolSize = 15;
     self.noteTextItem = [self noteItem];
     [model addItem:self.noteTextItem
         toSectionWithIdentifier:SectionIdentifierPassword];
+    [model addSectionWithIdentifier:SectionIdentifierNoteFooter];
   }
 
   [model addSectionWithIdentifier:SectionIdentifierFooter];
@@ -290,7 +304,6 @@ const CGFloat kSymbolSize = 15;
   return item;
 }
 
-// TODO(crbug.com/1414897): Adjust item specs to the defined mocks.
 - (TableViewMultiLineTextEditItem*)noteItem {
   TableViewMultiLineTextEditItem* item =
       [[TableViewMultiLineTextEditItem alloc] initWithType:ItemTypeNote];
@@ -353,6 +366,14 @@ const CGFloat kSymbolSize = 15;
       IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION,
       base::SysNSStringToUTF16([self.websiteTextItem.textFieldValue
           stringByAppendingString:@".com"]));
+  return item;
+}
+
+- (TableViewLinkHeaderFooterItem*)tooLongNoteMessageFooterItem {
+  TableViewLinkHeaderFooterItem* item =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION);
   return item;
 }
 
@@ -573,7 +594,7 @@ const CGFloat kSymbolSize = 15;
   BOOL siteValid = [self checkIfValidSite];
   BOOL passwordValid = [self checkIfValidPassword];
 
-  self.shouldEnableSave = (siteValid && passwordValid);
+  self.shouldEnableSave = (siteValid && passwordValid && self.isNoteValid);
   [self toggleNavigationBarRightButtonItem];
 
   [self.delegate checkForDuplicates:self.usernameTextItem.textFieldValue];
@@ -601,6 +622,42 @@ const CGFloat kSymbolSize = 15;
 #pragma mark - TableViewMultiLineTextEditItemDelegate
 
 - (void)textViewItemDidChange:(TableViewMultiLineTextEditItem*)tableViewItem {
+  DCHECK(tableViewItem == self.noteTextItem);
+
+  // Update save button state based on the note's length and validity of other
+  // input fields.
+  BOOL noteValid = tableViewItem.text.length <= kMaxNoteCharAmount;
+  if (self.isNoteValid != noteValid) {
+    self.isNoteValid = noteValid;
+    tableViewItem.validText = noteValid;
+
+    self.shouldEnableSave =
+        noteValid && [self checkIfValidSite] && [self checkIfValidPassword];
+    [self toggleNavigationBarRightButtonItem];
+  }
+
+  // Update note footer based on the note's length.
+  BOOL shouldDisplayNoteFooter =
+      tableViewItem.text.length >= kMinNoteCharAmountForWarning;
+  if (self.isNoteFooterShown != shouldDisplayNoteFooter) {
+    self.isNoteFooterShown = shouldDisplayNoteFooter;
+    [self
+        performBatchTableViewUpdates:^{
+          [self.tableViewModel
+                             setFooter:shouldDisplayNoteFooter
+                                           ? [self tooLongNoteMessageFooterItem]
+                                           : nil
+              forSectionWithIdentifier:SectionIdentifierNoteFooter];
+          NSUInteger index = [self.tableViewModel
+              sectionForSectionIdentifier:SectionIdentifierNoteFooter];
+          [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:index]
+                        withRowAnimation:UITableViewRowAnimationNone];
+        }
+                          completion:nil];
+  }
+
+  [self reconfigureCellsForItems:@[ tableViewItem ]];
+
   // Refresh the cells' height.
   [self.tableView beginUpdates];
   [self.tableView endUpdates];

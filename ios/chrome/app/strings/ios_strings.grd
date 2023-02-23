@@ -2502,6 +2502,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION" desc="Footer text shown when the user is trying to add a new credential manually via settings [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure you're saving your current password for this site.
       </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION" desc="Footer text shown when the user is trying to add or edit a credential manually via settings and the note typed by user is too long. [iOS only]">
+        Notes can save up to 1000 characters.
+      </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_MISSING_TLD_DESCRIPTION" desc="Footer text shown when the website field data misses the top-level domain when creating a new credential via settings [iOS only]" meaning="Suggesting user to add the top-level domain in the website text.">
         Did you mean <ph name="WEBSITE">$1<ex>twitter.com</ex></ph>?
       </message>

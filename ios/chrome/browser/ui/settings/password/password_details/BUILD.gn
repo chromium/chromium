@@ -102,6 +102,15 @@ source_set("password_details_ui") {
   ]
 }
 
+source_set("password_details_table_view_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_details_table_view_constants.h",
+    "password_details_table_view_constants.mm",
+  ]
+  deps = [ "//ios/chrome/browser/ui/list_model" ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true

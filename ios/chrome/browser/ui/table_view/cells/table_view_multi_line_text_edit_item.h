@@ -24,6 +24,9 @@
 // Whether the text field is enabled for editing.
 @property(nonatomic, assign) BOOL editingEnabled;
 
+// Whether the text typed in `textView` is valid.
+@property(nonatomic, assign) BOOL validText;
+
 @end
 
 // Implements a TableViewCell that displays a label in the first line and a
@@ -35,6 +38,10 @@
 
 // Text field below the label.
 @property(nonatomic, readonly, strong) UITextView* textView;
+
+// Displays error icon when the typed text view is not valid, it is nil
+// otherwise. Placed at the trailing edge of the cell, next to the label.
+@property(nonatomic, strong) UIImageView* iconView;
 
 @end
 

@@ -221,7 +221,7 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAddWithNotesEnabled) {
       static_cast<AddPasswordViewController*>(controller());
   [passwords_controller loadModel];
 
-  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(5, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(0, NumberOfItemsInSection(1));
   EXPECT_EQ(3, NumberOfItemsInSection(2));
@@ -232,7 +232,7 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAddWithNotesEnabled) {
                                      IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
                                  l10n_util::GetNSString(
                                      IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
-      3);
+      4);
 }
 
 // Tests the layout of the view controller when adding a new credential with
