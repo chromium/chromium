@@ -250,9 +250,7 @@ class NearbyNotificationManagerTestBase : public testing::Test {
       std::vector<unsigned char> png_data;
       EXPECT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(
           image, /*discard_transparency=*/true, &png_data));
-      char* data = reinterpret_cast<char*>(&png_data[0]);
-      int size = static_cast<int>(png_data.size());
-      base::WriteFile(file_path, data, size);
+      base::WriteFile(file_path, png_data);
 
       FileAttachment attachment(file_path);
       share_target.file_attachments.push_back(std::move(attachment));
