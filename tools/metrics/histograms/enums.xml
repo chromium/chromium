@@ -78642,6 +78642,16 @@ Called by update_net_trust_anchors.py.-->
       label="Translate button in target language selection view clicked"/>
 </enum>
 
+<enum name="PartialTranslateOutcome">
+  <int value="0" label="Partial Translate success"/>
+  <int value="1" label="Selection too long, user cancelled"/>
+  <int value="2" label="Selection too long, user pressed full translate"/>
+  <int value="3" label="Selection empty, user cancelled"/>
+  <int value="4" label="Selection empty, user pressed full translate"/>
+  <int value="5" label="Partial translate failed, user cancelled"/>
+  <int value="6" label="Partial translate failed, user pressed full translate"/>
+</enum>
+
 <enum name="PartialTranslateTranslationStatus">
   <int value="0" label="Partial Translate success"/>
   <int value="1" label="Partial Translate error"/>

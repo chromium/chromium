@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_member.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/core/browser/translate_pref_names.h"
@@ -21,6 +22,58 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+enum class PartialTranslateError {
+  kSelectionTooLong,
+  kSelectionEmpty,
+  kGenericError
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PartialTranslateOutcomeStatus {
+  kSuccess,
+  kTooLongCancel,
+  kTooLongFullTranslate,
+  kEmptyCancel,
+  kEmptyFullTranslate,
+  kErrorCancel,
+  kErrorFullTranslate,
+  kMaxValue = kErrorFullTranslate
+};
+
+void ReportOutcome(PartialTranslateOutcomeStatus outcome) {
+  base::UmaHistogramEnumeration("IOS.PartialTranslate.Outcome", outcome);
+}
+
+void ReportErrorOutcome(PartialTranslateError error, bool went_full) {
+  switch (error) {
+    case PartialTranslateError::kSelectionTooLong:
+      if (went_full) {
+        ReportOutcome(PartialTranslateOutcomeStatus::kTooLongFullTranslate);
+      } else {
+        ReportOutcome(PartialTranslateOutcomeStatus::kTooLongCancel);
+      }
+      break;
+    case PartialTranslateError::kSelectionEmpty:
+      if (went_full) {
+        ReportOutcome(PartialTranslateOutcomeStatus::kEmptyFullTranslate);
+      } else {
+        ReportOutcome(PartialTranslateOutcomeStatus::kEmptyCancel);
+      }
+      break;
+    case PartialTranslateError::kGenericError:
+      if (went_full) {
+        ReportOutcome(PartialTranslateOutcomeStatus::kErrorFullTranslate);
+      } else {
+        ReportOutcome(PartialTranslateOutcomeStatus::kErrorCancel);
+      }
+      break;
+  }
+}
+
+}  // anonymous namespace
 
 @interface PartialTranslateMediator ()
 
@@ -63,7 +116,6 @@
 
 - (void)handlePartialTranslateSelection {
   DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  // TODO(crbug.com/1417238): add metrics
   WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
   if (!tabHelper) {
     return;
@@ -77,7 +129,6 @@
 
 - (BOOL)canHandlePartialTranslateSelection {
   DCHECK(base::FeatureList::IsEnabled(kSharedHighlightingIOS));
-  // TODO(crbug.com/1417238): add metrics
   WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
   if (!tabHelper) {
     return NO;
@@ -107,17 +158,31 @@
   return YES;
 }
 
-- (void)switchToFullTranslateWithMessage:(NSString*)message {
-  // TODO(crbug.com/1417238): add metrics
+- (void)switchToFullTranslateWithError:(PartialTranslateError)error {
   if (!self.alertDelegate) {
     return;
   }
+  NSString* message;
+  switch (error) {
+    case PartialTranslateError::kSelectionTooLong:
+      message = l10n_util::GetNSString(
+          IDS_IOS_PARTIAL_TRANSLATE_ERROR_STRING_TOO_LONG_ERROR);
+      break;
+    case PartialTranslateError::kSelectionEmpty:
+      message =
+          l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_ERROR_STRING_EMPTY);
+      break;
+    case PartialTranslateError::kGenericError:
+      message = l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_ERROR_GENERIC);
+      break;
+  }
+  DCHECK(message);
   __weak __typeof(self) weakSelf = self;
   EditMenuAlertDelegateAction* cancelAction =
       [[EditMenuAlertDelegateAction alloc]
           initWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                  action:^{
-                   // TODO(crbug.com/1417238): add metrics
+                   ReportErrorOutcome(error, false);
                  }
                   style:UIAlertActionStyleCancel];
   EditMenuAlertDelegateAction* translateAction = [[EditMenuAlertDelegateAction
@@ -125,7 +190,7 @@
       initWithTitle:l10n_util::GetNSString(
                         IDS_IOS_PARTIAL_TRANSLATE_ACTION_TRANSLATE_FULL_PAGE)
              action:^{
-               // TODO(crbug.com/1417238): add metrics
+               ReportErrorOutcome(error, true);
                [weakSelf triggerFullTranslate];
              }
               style:UIAlertActionStyleDefault];
@@ -140,21 +205,16 @@
 
 - (void)receivedWebSelectionResponse:(WebSelectionResponse*)response {
   DCHECK(response);
-  // TODO(crbug.com/1417238): add metrics
   if (response.selectedText.length > PartialTranslateLimitMaxCharacters()) {
-    return
-        [self switchToFullTranslateWithMessage:
-                  l10n_util::GetNSString(
-                      IDS_IOS_PARTIAL_TRANSLATE_ERROR_STRING_TOO_LONG_ERROR)];
+    return [self switchToFullTranslateWithError:PartialTranslateError::
+                                                    kSelectionTooLong];
   }
   if ([[response.selectedText
           stringByTrimmingCharactersInSet:[NSCharacterSet
                                               whitespaceAndNewlineCharacterSet]]
           length] == 0u) {
-    return
-        [self switchToFullTranslateWithMessage:
-                  l10n_util::GetNSString(
-                      IDS_IOS_PARTIAL_TRANSLATE_ERROR_STRING_TOO_LONG_ERROR)];
+    return [self
+        switchToFullTranslateWithError:PartialTranslateError::kSelectionEmpty];
   }
   __weak __typeof(self) weakSelf = self;
   self.controller = NewPartialTranslateController(
@@ -163,10 +223,11 @@
       presentOnViewController:self.baseViewController
         flowCompletionHandler:^(BOOL success) {
           weakSelf.controller = nil;
-          if (!success) {
-            [weakSelf switchToFullTranslateWithMessage:
-                          l10n_util::GetNSString(
-                              IDS_IOS_PARTIAL_TRANSLATE_ERROR_GENERIC)];
+          if (success) {
+            ReportOutcome(PartialTranslateOutcomeStatus::kSuccess);
+          } else {
+            [weakSelf switchToFullTranslateWithError:PartialTranslateError::
+                                                         kGenericError];
           }
         }];
 }
