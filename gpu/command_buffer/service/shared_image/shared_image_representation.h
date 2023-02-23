@@ -263,6 +263,10 @@ class GPU_GLES2_EXPORT GLTexturePassthroughImageRepresentation
 
   gpu::TextureBase* GetTextureBase(int plane_index) override;
 
+  // Returns true if access must be suspended in between GL decoder tasks due to
+  // DXGI keyed mutex. Only implemented for D3D GL representation.
+  virtual bool NeedsSuspendAccessForDXGIKeyedMutex() const;
+
  private:
   friend class WrappedGLTexturePassthroughCompoundImageRepresentation;
 };

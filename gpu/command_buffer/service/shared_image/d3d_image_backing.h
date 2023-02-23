@@ -130,6 +130,11 @@ class GPU_GLES2_EXPORT D3DImageBacking
 
   absl::optional<gl::DCLayerOverlayImage> GetDCLayerOverlayImage();
 
+  bool has_keyed_mutex() const {
+    return dxgi_shared_handle_state_ &&
+           dxgi_shared_handle_state_->has_keyed_mutex();
+  }
+
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state_for_testing()
       const {
     return dxgi_shared_handle_state_;

@@ -218,6 +218,13 @@ void CommandBufferService::Flush(int32_t put_offset,
   }
 
   handler->BeginDecoding();
+
+  // BeginDecoding can cause context loss due to resuming shared image access.
+  if (state_.error != error::kNoError) {
+    handler->EndDecoding();
+    return;
+  }
+
   int end = put_offset_ < state_.get_offset ? num_entries_ : put_offset_;
   while (put_offset_ != state_.get_offset) {
     int num_entries = end - state_.get_offset;

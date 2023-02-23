@@ -21,14 +21,19 @@ GLTexturePassthroughD3DImageRepresentation::
     : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
       textures_(std::move(textures)) {}
 
+GLTexturePassthroughD3DImageRepresentation::
+    ~GLTexturePassthroughD3DImageRepresentation() = default;
+
+bool GLTexturePassthroughD3DImageRepresentation::
+    NeedsSuspendAccessForDXGIKeyedMutex() const {
+  return static_cast<D3DImageBacking*>(backing())->has_keyed_mutex();
+}
+
 const scoped_refptr<gles2::TexturePassthrough>&
 GLTexturePassthroughD3DImageRepresentation::GetTexturePassthrough(
     int plane_index) {
   return textures_[plane_index];
 }
-
-GLTexturePassthroughD3DImageRepresentation::
-    ~GLTexturePassthroughD3DImageRepresentation() = default;
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
   D3DImageBacking* d3d_image_backing = static_cast<D3DImageBacking*>(backing());
