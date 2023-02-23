@@ -91,13 +91,37 @@ AutoclickController::~AutoclickController() {
   menu_bubble_controller_ = nullptr;
   CancelAutoclickAction();
 
-  Shell::Get()->cursor_manager()->RemoveObserver(this);
-  Shell::Get()->RemovePreTargetHandler(this);
+  // This may be called during shutdown in which case some of the
+  // ash objects may already be destroyed.
+  auto* shell = Shell::Get();
+  if (!shell) {
+    return;
+  }
+
+  auto* cursor_manager = shell->cursor_manager();
+  if (cursor_manager) {
+    cursor_manager->RemoveObserver(this);
+  }
+
+  shell->RemovePreTargetHandler(this);
   SetTapDownTarget(nullptr);
-  Shell::GetPrimaryRootWindow()
-      ->GetHost()
-      ->GetEventSource()
-      ->RemoveEventRewriter(drag_event_rewriter_.get());
+
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  if (!root_window) {
+    return;
+  }
+
+  auto* host = root_window->GetHost();
+  if (!host) {
+    return;
+  }
+
+  auto* event_source = host->GetEventSource();
+  if (!event_source) {
+    return;
+  }
+
+  event_source->RemoveEventRewriter(drag_event_rewriter_.get());
 }
 
 float AutoclickController::GetStartGestureDelayRatioForTesting() {
