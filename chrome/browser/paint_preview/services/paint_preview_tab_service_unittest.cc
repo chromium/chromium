@@ -122,10 +122,8 @@ class PaintPreviewTabServiceTest : public ChromeRenderViewHostTestHarness {
     for (const auto& i : tab_ids) {
       auto key_path = path.AppendASCII(base::NumberToString(i));
       EXPECT_TRUE(base::CreateDirectory(key_path));
-      EXPECT_EQ(static_cast<size_t>(
-                    base::WriteFile(key_path.AppendASCII("proto.pb"),
-                                    fake_content.data(), fake_content.size())),
-                fake_content.size());
+      EXPECT_TRUE(
+          base::WriteFile(key_path.AppendASCII("proto.pb"), fake_content));
     }
 
     return std::make_unique<PaintPreviewTabService>(
@@ -443,8 +441,7 @@ TEST_F(PaintPreviewTabServiceTest, CaptureTabAndCleanup) {
                                 .AppendASCII(base::NumberToString(kTabId + 1));
   // The threshold for cleanup is 25 MB.
   std::string data(25 * 1000 * 1000, 'x');
-  EXPECT_TRUE(base::WriteFile(old_path.AppendASCII("foo.txt"), data.data(),
-                              data.size()));
+  EXPECT_TRUE(base::WriteFile(old_path.AppendASCII("foo.txt"), data));
   EXPECT_TRUE(base::PathExists(old_path));
   EXPECT_TRUE(service->HasCaptureForTab(kTabId + 1));
 
