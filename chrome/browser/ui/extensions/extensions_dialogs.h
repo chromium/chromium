@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_DIALOGS_H_
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_DIALOGS_H_
 
+#include <memory>
 #include <string>
 
 #include "base/functional/callback_forward.h"
