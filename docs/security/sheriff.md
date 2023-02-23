@@ -229,6 +229,13 @@ help.
   [go/url-spoofs](http://go/url-spoofs) for a guide to triaging these.
 * **SQLite bugs** can be assigned to mek@. CC drhsqlite@ for upstream issues.
 
+Note that **even when you are handing off triage to another team or point of
+contact**, it is your responsibility to ensure that the `Security_Severity` and
+`FoundIn` fields are set as soon as possible (and definitely before the end of
+your sheriffing shift). Work with your point of contact to set these. For
+instance, you may want to set initial/provisional values for these fields and
+ask them whether it matches their understanding.
+
 Tips for reproducing bugs:
 
 * Assume that test cases may be malicious. You should only reproduce bugs
