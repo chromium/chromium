@@ -12,9 +12,9 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
@@ -28,6 +28,7 @@
 namespace content {
 namespace {
 
+using ::attribution_reporting::mojom::SourceType;
 using ::base::test::IsJson;
 
 TEST(AttributionReportTest, ReportURL) {
@@ -57,10 +58,10 @@ TEST(AttributionReportTest, ReportURL) {
 
 TEST(AttributionReportTest, ReportBody) {
   const struct {
-    AttributionSourceType source_type;
+    SourceType source_type;
     base::Value::Dict expected;
   } kTestCases[] = {
-      {AttributionSourceType::kNavigation, base::test::ParseJsonDict(R"json({
+      {SourceType::kNavigation, base::test::ParseJsonDict(R"json({
         "attribution_destination":"https://conversion.test",
         "randomized_trigger_rate":0.2,
         "report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",
@@ -69,7 +70,7 @@ TEST(AttributionReportTest, ReportBody) {
         "source_type":"navigation",
         "trigger_data":"5"
       })json")},
-      {AttributionSourceType::kEvent, base::test::ParseJsonDict(R"json({
+      {SourceType::kEvent, base::test::ParseJsonDict(R"json({
         "attribution_destination":"https://conversion.test",
         "randomized_trigger_rate":0.2,
         "report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",

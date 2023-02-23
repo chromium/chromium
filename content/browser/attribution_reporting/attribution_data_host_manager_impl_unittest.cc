@@ -30,10 +30,10 @@
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/public/browser/global_routing_id.h"
@@ -62,6 +62,7 @@ using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::TriggerRegistration;
 using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::SourceType;
 
 using ::blink::mojom::AttributionNavigationType;
 
@@ -165,8 +166,8 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
   EXPECT_CALL(
       mock_manager_,
       HandleSource(
-          AllOf(SourceTypeIs(AttributionSourceType::kEvent),
-                SourceEventIdIs(10), DestinationSiteIs(destination_site),
+          AllOf(SourceTypeIs(SourceType::kEvent), SourceEventIdIs(10),
+                DestinationSiteIs(destination_site),
                 ImpressionOriginIs(page_origin),
                 ReportingOriginIs(reporting_origin), SourcePriorityIs(20),
                 SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
@@ -507,8 +508,8 @@ TEST_F(AttributionDataHostManagerImplTest,
     EXPECT_CALL(
         mock_manager_,
         HandleSource(
-            AllOf(SourceTypeIs(AttributionSourceType::kNavigation),
-                  SourceEventIdIs(10), DestinationSiteIs(destination_site),
+            AllOf(SourceTypeIs(SourceType::kNavigation), SourceEventIdIs(10),
+                  DestinationSiteIs(destination_site),
                   ImpressionOriginIs(page_origin),
                   ReportingOriginIs(reporting_origin), SourcePriorityIs(20),
                   SourceDebugKeyIs(789), AggregationKeysAre(aggregation_keys),
@@ -820,7 +821,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
   EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
                                  "!!!invalid json", source_site, reporter,
-                                 AttributionSourceType::kNavigation,
+                                 SourceType::kNavigation,
                                  SourceRegistrationError::kInvalidJson));
 
   const blink::AttributionSrcToken attribution_src_token;
@@ -1445,14 +1446,14 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  EXPECT_CALL(mock_manager_,
-              HandleSource(AllOf(SourceTypeIs(AttributionSourceType::kEvent),
-                                 SourceEventIdIs(10),
-                                 DestinationSiteIs(destination_site),
-                                 ImpressionOriginIs(page_origin),
-                                 ReportingOriginIs(reporting_origin),
-                                 SourceIsWithinFencedFrameIs(true)),
-                           kFrameId));
+  EXPECT_CALL(
+      mock_manager_,
+      HandleSource(AllOf(SourceTypeIs(SourceType::kEvent), SourceEventIdIs(10),
+                         DestinationSiteIs(destination_site),
+                         ImpressionOriginIs(page_origin),
+                         ReportingOriginIs(reporting_origin),
+                         SourceIsWithinFencedFrameIs(true)),
+                   kFrameId));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -1607,11 +1608,10 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationBeaconSource_ParsingFinishesBeforeAndAfterNav) {
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(AllOf(SourceTypeIs(AttributionSourceType::kNavigation),
-                         SourceIsWithinFencedFrameIs(false)),
-                   kFrameId))
+  EXPECT_CALL(mock_manager_,
+              HandleSource(AllOf(SourceTypeIs(SourceType::kNavigation),
+                                 SourceIsWithinFencedFrameIs(false)),
+                           kFrameId))
       .Times(2);
 
   auto reporting_origin = url::Origin::Create(GURL("https://report.test"));
@@ -1654,7 +1654,7 @@ TEST_F(AttributionDataHostManagerImplTest,
   EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
                                  "!!!invalid json", source_origin,
                                  *SuitableOrigin::Create(reporting_origin),
-                                 AttributionSourceType::kNavigation,
+                                 SourceType::kNavigation,
                                  SourceRegistrationError::kInvalidJson))
       .Times(2);
 
@@ -1687,9 +1687,8 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest,
        NavigationBeaconSource_DataReceivedBeforeAndAfterNav) {
-  EXPECT_CALL(
-      mock_manager_,
-      HandleSource(SourceTypeIs(AttributionSourceType::kNavigation), kFrameId))
+  EXPECT_CALL(mock_manager_,
+              HandleSource(SourceTypeIs(SourceType::kNavigation), kFrameId))
       .Times(2);
 
   auto reporting_origin = url::Origin::Create(GURL("https://report.test"));
@@ -1855,7 +1854,7 @@ TEST_F(AttributionDataHostManagerImplTest,
 
 TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
   EXPECT_CALL(mock_manager_,
-              HandleSource(AllOf(SourceTypeIs(AttributionSourceType::kEvent),
+              HandleSource(AllOf(SourceTypeIs(SourceType::kEvent),
                                  SourceIsWithinFencedFrameIs(true)),
                            kFrameId));
 

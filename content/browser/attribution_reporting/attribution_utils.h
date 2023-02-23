@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/common/content_export.h"
 
 namespace base {
@@ -25,7 +25,7 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
                              base::Time trigger_time);
 
 // Returns the number of report windows for the given source type.
-int NumReportWindows(AttributionSourceType source_type);
+int NumReportWindows(attribution_reporting::mojom::SourceType);
 
 // Calculates the report time for a given source and window index.
 base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);

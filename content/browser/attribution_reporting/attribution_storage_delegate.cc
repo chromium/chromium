@@ -5,8 +5,13 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 
 #include "base/check.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 
 namespace content {
+
+namespace {
+using ::attribution_reporting::mojom::SourceType;
+}  // namespace
 
 AttributionStorageDelegate::AttributionStorageDelegate(
     const AttributionConfig& config)
@@ -15,12 +20,12 @@ AttributionStorageDelegate::AttributionStorageDelegate(
 }
 
 int AttributionStorageDelegate::GetMaxAttributionsPerSource(
-    AttributionSourceType source_type) const {
+    SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
-    case AttributionSourceType::kNavigation:
+    case SourceType::kNavigation:
       return config_.event_level_limit.max_attributions_per_navigation_source;
-    case AttributionSourceType::kEvent:
+    case SourceType::kEvent:
       return config_.event_level_limit.max_attributions_per_event_source;
   }
 }
@@ -54,14 +59,14 @@ AttributionConfig::RateLimitConfig AttributionStorageDelegate::GetRateLimits()
 }
 
 double AttributionStorageDelegate::GetRandomizedResponseRate(
-    AttributionSourceType source_type) const {
+    SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (source_type) {
-    case AttributionSourceType::kNavigation:
+    case SourceType::kNavigation:
       return config_.event_level_limit
           .navigation_source_randomized_response_rate;
-    case AttributionSourceType::kEvent:
+    case SourceType::kEvent:
       return config_.event_level_limit.event_source_randomized_response_rate;
   }
 }
@@ -73,7 +78,7 @@ int64_t AttributionStorageDelegate::GetAggregatableBudgetPerSource() const {
 
 uint64_t AttributionStorageDelegate::SanitizeTriggerData(
     uint64_t trigger_data,
-    AttributionSourceType source_type) const {
+    SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const uint64_t cardinality = TriggerDataCardinality(source_type);
@@ -92,13 +97,13 @@ uint64_t AttributionStorageDelegate::SanitizeSourceEventId(
 }
 
 uint64_t AttributionStorageDelegate::TriggerDataCardinality(
-    AttributionSourceType source_type) const {
+    SourceType source_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (source_type) {
-    case AttributionSourceType::kNavigation:
+    case SourceType::kNavigation:
       return config_.event_level_limit
           .navigation_source_trigger_data_cardinality;
-    case AttributionSourceType::kEvent:
+    case SourceType::kEvent:
       return config_.event_level_limit.event_source_trigger_data_cardinality;
   }
 }

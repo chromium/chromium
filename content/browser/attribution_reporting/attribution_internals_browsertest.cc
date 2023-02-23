@@ -23,13 +23,13 @@
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/send_result.h"
@@ -60,6 +60,7 @@ namespace {
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::SourceType;
 
 using AttributionFilters = ::attribution_reporting::Filters;
 
@@ -279,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
               })
               .BuildStored(),
           SourceBuilder(now + base::Hours(1))
-              .SetSourceType(AttributionSourceType::kEvent)
+              .SetSourceType(SourceType::kEvent)
               .SetPriority(std::numeric_limits<int64_t>::max())
               .SetDedupKeys({13, 17})
               .SetAggregatableBudgetConsumed(1300)
@@ -314,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   manager()->NotifySourceHandled(
       SourceBuilder(now + base::Hours(7))
-          .SetSourceType(AttributionSourceType::kEvent)
+          .SetSourceType(SourceType::kEvent)
           .Build(),
       StorableSource::Result::kExcessiveReportingOrigins);
 
@@ -404,8 +405,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   manager()->NotifySourceRegistrationFailure(
       "!", *SuitableOrigin::Deserialize("https://b.test"),
-      *SuitableOrigin::Deserialize("https://a.test"),
-      AttributionSourceType::kEvent, SourceRegistrationError::kInvalidJson);
+      *SuitableOrigin::Deserialize("https://a.test"), SourceType::kEvent,
+      SourceRegistrationError::kInvalidJson);
   EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
@@ -512,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{
           ReportBuilder(AttributionInfoBuilder(
                             SourceBuilder(now)
-                                .SetSourceType(AttributionSourceType::kEvent)
+                                .SetSourceType(SourceType::kEvent)
                                 .SetAttributionLogic(
                                     StoredSource::AttributionLogic::kFalsely)
                                 .BuildStored())
@@ -954,11 +955,11 @@ IN_PROC_BROWSER_TEST_F(
                  net::ERR_INTERNET_DISCONNECTED));
   ON_CALL(*manager(), GetPendingReportsForInternalUse)
       .WillByDefault(RunOnceCallback<2>(std::vector<AttributionReport>{
-          ReportBuilder(AttributionInfoBuilder(
-                            SourceBuilder(now)
-                                .SetSourceType(AttributionSourceType::kEvent)
-                                .BuildStored())
-                            .Build())
+          ReportBuilder(
+              AttributionInfoBuilder(SourceBuilder(now)
+                                         .SetSourceType(SourceType::kEvent)
+                                         .BuildStored())
+                  .Build())
               .SetReportTime(now)
               .SetAggregatableHistogramContributions(contributions)
               .BuildAggregatableAttribution()}));

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
 #include "base/observer_list.h"
@@ -30,6 +31,7 @@
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -42,7 +44,6 @@
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -86,10 +87,10 @@ class AttributionTrigger;
 
 enum class RateLimitResult : int;
 
-const AttributionSourceType kSourceTypes[] = {
-    AttributionSourceType::kNavigation,
-    AttributionSourceType::kEvent,
-};
+constexpr auto kSourceTypes =
+    base::EnumSet<attribution_reporting::mojom::SourceType,
+                  attribution_reporting::mojom::SourceType::kMinValue,
+                  attribution_reporting::mojom::SourceType::kMaxValue>::All();
 
 template <class SuperClass>
 class MockAttributionReportingContentBrowserClientBase : public SuperClass {
@@ -305,7 +306,7 @@ class MockAttributionManager : public AttributionManager {
               (const std::string& header_value,
                const attribution_reporting::SuitableOrigin& source_origin,
                const attribution_reporting::SuitableOrigin& reporting_origin,
-               AttributionSourceType,
+               attribution_reporting::mojom::SourceType,
                attribution_reporting::mojom::SourceRegistrationError),
               (override));
 
@@ -342,7 +343,7 @@ class MockAttributionManager : public AttributionManager {
       const std::string& header_value,
       const attribution_reporting::SuitableOrigin& source_origin,
       const attribution_reporting::SuitableOrigin& reporting_origin,
-      AttributionSourceType,
+      attribution_reporting::mojom::SourceType,
       attribution_reporting::mojom::SourceRegistrationError);
   void NotifyDebugReportSent(const AttributionDebugReport&,
                              int status,
@@ -458,7 +459,7 @@ class SourceBuilder {
 
   SourceBuilder& SetReportingOrigin(attribution_reporting::SuitableOrigin);
 
-  SourceBuilder& SetSourceType(AttributionSourceType source_type);
+  SourceBuilder& SetSourceType(attribution_reporting::mojom::SourceType);
 
   SourceBuilder& SetPriority(int64_t priority);
 
@@ -503,7 +504,8 @@ class SourceBuilder {
   attribution_reporting::SuitableOrigin source_origin_;
   base::flat_set<net::SchemefulSite> destination_sites_;
   attribution_reporting::SuitableOrigin reporting_origin_;
-  AttributionSourceType source_type_ = AttributionSourceType::kNavigation;
+  attribution_reporting::mojom::SourceType source_type_ =
+      attribution_reporting::mojom::SourceType::kNavigation;
   int64_t priority_ = 0;
   StoredSource::AttributionLogic attribution_logic_ =
       StoredSource::AttributionLogic::kTruthfully;

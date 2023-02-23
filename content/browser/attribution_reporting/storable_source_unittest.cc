@@ -8,8 +8,8 @@
 
 #include "base/time/time.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -105,7 +105,7 @@ TEST(StorableSourceTest, ReportWindows) {
 
     StorableSource actual(reporting_origin, std::move(reg), kSourceTime,
                           *SuitableOrigin::Deserialize("https://source.test"),
-                          AttributionSourceType::kNavigation,
+                          attribution_reporting::mojom::SourceType::kNavigation,
                           /*is_within_fenced_frame=*/false);
 
     EXPECT_EQ(actual.common_info().expiry_time(),

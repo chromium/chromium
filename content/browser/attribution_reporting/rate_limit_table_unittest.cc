@@ -19,9 +19,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -350,14 +350,16 @@ TEST_F(RateLimitTableTest,
   const auto navigation_attribution =
       AttributionInfoBuilder(
           SourceBuilder()
-              .SetSourceType(AttributionSourceType::kNavigation)
+              .SetSourceType(
+                  attribution_reporting::mojom::SourceType::kNavigation)
               .BuildStored())
           .Build();
 
   const auto event_attribution =
-      AttributionInfoBuilder(SourceBuilder()
-                                 .SetSourceType(AttributionSourceType::kEvent)
-                                 .BuildStored())
+      AttributionInfoBuilder(
+          SourceBuilder()
+              .SetSourceType(attribution_reporting::mojom::SourceType::kEvent)
+              .BuildStored())
           .Build();
 
   ASSERT_EQ(RateLimitResult::kAllowed,

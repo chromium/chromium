@@ -20,13 +20,13 @@
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/public/browser/global_routing_id.h"
@@ -46,6 +46,7 @@ namespace {
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
+using ::attribution_reporting::mojom::SourceType;
 using ::blink::mojom::AttributionNavigationType;
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -339,8 +340,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
   // invalid.
   if (header_value.empty()) {
     attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, source_origin, reporting_origin,
-        AttributionSourceType::kNavigation,
+        header_value, source_origin, reporting_origin, SourceType::kNavigation,
         SourceRegistrationError::kInvalidJson);
     return;
   }
@@ -493,9 +493,9 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   context.IncrementNumDataRegistered();
 
-  auto source_type = AttributionSourceType::kEvent;
+  auto source_type = SourceType::kEvent;
   if (auto nav_type = context.nav_type()) {
-    source_type = AttributionSourceType::kNavigation;
+    source_type = SourceType::kNavigation;
 
     base::UmaHistogramEnumeration(
         "Conversions.SourceRegistration.NavigationType.Background", *nav_type);
@@ -688,10 +688,10 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   NavigationRedirectSourceRegistrations& registrations = it->second;
   registrations.pending_source_data--;
 
-  absl::optional<StorableSource> source = ParseStorableSource(
-      std::move(result), header_value, reporting_origin,
-      registrations.source_origin, AttributionSourceType::kNavigation,
-      registrations.is_within_fenced_frame);
+  absl::optional<StorableSource> source =
+      ParseStorableSource(std::move(result), header_value, reporting_origin,
+                          registrations.source_origin, SourceType::kNavigation,
+                          registrations.is_within_fenced_frame);
 
   if (source.has_value()) {
     base::UmaHistogramEnumeration(
@@ -817,8 +817,8 @@ void AttributionDataHostManagerImpl::OnBeaconSourceParsed(
       ParseStorableSource(std::move(result), header_value, reporting_origin,
                           registrations.source_origin,
                           absl::holds_alternative<NavigationBeaconId>(beacon_id)
-                              ? AttributionSourceType::kNavigation
-                              : AttributionSourceType::kEvent,
+                              ? SourceType::kNavigation
+                              : SourceType::kEvent,
                           registrations.is_within_fenced_frame);
 
   if (source.has_value()) {
@@ -839,7 +839,7 @@ AttributionDataHostManagerImpl::ParseStorableSource(
     const std::string& header_value,
     const attribution_reporting::SuitableOrigin& reporting_origin,
     const attribution_reporting::SuitableOrigin& source_origin,
-    AttributionSourceType source_type,
+    SourceType source_type,
     bool is_within_fenced_frame) {
   base::expected<StorableSource, SourceRegistrationError> source =
       base::unexpected(SourceRegistrationError::kInvalidJson);

@@ -44,7 +44,6 @@ source_set("browser") {
     ":for_content_tests",  # See top of //content/BUILD.gn for why.
     "//content/app:*",
     "//content/public/browser:browser_sources",
-    "//content/test/fuzzer:attribution_source_fuzzer",
     "//content/test/fuzzer:browser_accessibility_fuzzer",
     "//content/test/fuzzer:clipboard_host_mojolpm_fuzzer",
     "//content/test/fuzzer:first_party_set_parser_fuzzer_support",
@@ -454,7 +453,6 @@ source_set("browser") {
     "attribution_reporting/attribution_report_network_sender.cc",
     "attribution_reporting/attribution_report_network_sender.h",
     "attribution_reporting/attribution_report_sender.h",
-    "attribution_reporting/attribution_source_type.h",
     "attribution_reporting/attribution_storage.cc",
     "attribution_reporting/attribution_storage.h",
     "attribution_reporting/attribution_storage_delegate.cc",

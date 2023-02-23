@@ -33,6 +33,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
@@ -41,7 +42,6 @@
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -74,6 +74,7 @@ using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::SourceType;
 
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("Conversions");
@@ -136,16 +137,16 @@ absl::optional<StoredSource::AttributionLogic> DeserializeAttributionLogic(
   }
 }
 
-int SerializeSourceType(AttributionSourceType val) {
+int SerializeSourceType(SourceType val) {
   return static_cast<int>(val);
 }
 
-absl::optional<AttributionSourceType> DeserializeSourceType(int val) {
+absl::optional<SourceType> DeserializeSourceType(int val) {
   switch (val) {
-    case static_cast<int>(AttributionSourceType::kNavigation):
-      return AttributionSourceType::kNavigation;
-    case static_cast<int>(AttributionSourceType::kEvent):
-      return AttributionSourceType::kEvent;
+    case static_cast<int>(SourceType::kNavigation):
+      return SourceType::kNavigation;
+    case static_cast<int>(SourceType::kEvent):
+      return SourceType::kEvent;
     default:
       return absl::nullopt;
   }
@@ -347,7 +348,7 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   base::Time expiry_time = statement.ColumnTime(col++);
   base::Time event_report_window_time = statement.ColumnTime(col++);
   base::Time aggregatable_report_window_time = statement.ColumnTime(col++);
-  absl::optional<AttributionSourceType> source_type =
+  absl::optional<SourceType> source_type =
       DeserializeSourceType(statement.ColumnInt(col++));
   absl::optional<StoredSource::AttributionLogic> attribution_logic =
       DeserializeAttributionLogic(statement.ColumnInt(col++));
@@ -1081,7 +1082,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     return EventLevelResult::kReportWindowPassed;
   }
 
-  const AttributionSourceType source_type = common_info.source_type();
+  const SourceType source_type = common_info.source_type();
 
   auto event_trigger = base::ranges::find_if(
       trigger.registration().event_triggers.vec(),
@@ -2684,7 +2685,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
     return AggregatableResult::kReportWindowPassed;
   }
 
-  const AttributionSourceType source_type = common_info.source_type();
+  const SourceType source_type = common_info.source_type();
 
   auto matched_dedup_key = base::ranges::find_if(
       trigger.registration().aggregatable_dedup_keys.vec(),

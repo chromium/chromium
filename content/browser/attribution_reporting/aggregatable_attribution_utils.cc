@@ -20,11 +20,11 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/aggregatable_report.mojom.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,7 +50,7 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
 
 std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const attribution_reporting::FilterData& source_filter_data,
-    AttributionSourceType source_type,
+    attribution_reporting::mojom::SourceType source_type,
     const attribution_reporting::AggregationKeys& keys,
     const attribution_reporting::AggregatableTriggerDataList&
         aggregatable_trigger_data,

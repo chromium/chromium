@@ -28,12 +28,12 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -56,6 +56,7 @@ namespace {
 
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::SourceType;
 
 using ::testing::AllOf;
 using ::testing::Field;
@@ -397,7 +398,7 @@ void MockAttributionManager::NotifySourceRegistrationFailure(
     const std::string& header_value,
     const SuitableOrigin& source_origin,
     const SuitableOrigin& reporting_origin,
-    AttributionSourceType source_type,
+    SourceType source_type,
     attribution_reporting::mojom::SourceRegistrationError error) {
   base::Time source_time = base::Time::Now();
   for (auto& observer : observers_) {
@@ -533,7 +534,7 @@ SourceBuilder& SourceBuilder::SetReportingOrigin(SuitableOrigin origin) {
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetSourceType(AttributionSourceType source_type) {
+SourceBuilder& SourceBuilder::SetSourceType(SourceType source_type) {
   source_type_ = source_type;
   return *this;
 }
@@ -743,13 +744,13 @@ AttributionTrigger TriggerBuilder::Build(
         trigger_data_, priority_, dedup_key_,
         FilterPair{.positive =
                        attribution_reporting::Filters::ForSourceTypeForTesting(
-                           AttributionSourceType::kNavigation)});
+                           SourceType::kNavigation)});
 
     event_triggers.emplace_back(
         event_source_trigger_data_, priority_, dedup_key_,
         attribution_reporting::FilterPair{
             .positive = attribution_reporting::Filters::ForSourceTypeForTesting(
-                AttributionSourceType::kEvent)});
+                SourceType::kEvent)});
   }
 
   return AttributionTrigger(

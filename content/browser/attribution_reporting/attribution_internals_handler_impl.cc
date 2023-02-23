@@ -27,6 +27,7 @@
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
@@ -34,7 +35,6 @@
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -392,7 +392,7 @@ void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
     base::Time source_time,
     const attribution_reporting::SuitableOrigin& source_origin,
     const attribution_reporting::SuitableOrigin& reporting_origin,
-    AttributionSourceType source_type,
+    attribution_reporting::mojom::SourceType source_type,
     attribution_reporting::mojom::SourceRegistrationError error) {
   auto web_ui_source = WebUISourceRegistration::New();
   web_ui_source->registration = GetRegistration(

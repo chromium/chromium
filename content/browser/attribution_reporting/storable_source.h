@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "content/common/content_export.h"
@@ -38,7 +38,7 @@ class CONTENT_EXPORT StorableSource {
                  attribution_reporting::SourceRegistration,
                  base::Time source_time,
                  attribution_reporting::SuitableOrigin source_origin,
-                 AttributionSourceType,
+                 attribution_reporting::mojom::SourceType,
                  bool is_within_fenced_frame);
 
   ~StorableSource();

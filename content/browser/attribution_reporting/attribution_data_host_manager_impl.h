@@ -15,9 +15,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -148,7 +148,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const std::string& header_value,
       const attribution_reporting::SuitableOrigin& reporting_origin,
       const attribution_reporting::SuitableOrigin& source_origin,
-      AttributionSourceType source_type,
+      attribution_reporting::mojom::SourceType,
       bool is_within_fenced_frame);
 
   void MaybeOnBeaconRegistrationsFinished(BeaconId beacon_id);

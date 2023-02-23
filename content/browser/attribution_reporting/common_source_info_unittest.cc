@@ -5,12 +5,15 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+namespace {
+
+using ::attribution_reporting::mojom::SourceType;
 
 TEST(CommonSourceInfoTest, NoExpiryForImpression_DefaultUsed) {
   const base::Time source_time = base::Time::Now();
@@ -90,17 +93,16 @@ TEST(CommonSourceInfoTest, SmallReportWindowSpecified_ClampedTo1Day) {
 
 TEST(CommonSourceInfoTest, NonWholeDayImpressionExpirySpecified_Rounded) {
   const struct {
-    AttributionSourceType source_type;
+    SourceType source_type;
     base::TimeDelta declared_expiry;
     base::TimeDelta want_expiry;
   } kTestCases[] = {
-      {AttributionSourceType::kNavigation, base::Hours(36), base::Hours(36)},
-      {AttributionSourceType::kEvent, base::Hours(36), base::Days(2)},
+      {SourceType::kNavigation, base::Hours(36), base::Hours(36)},
+      {SourceType::kEvent, base::Hours(36), base::Days(2)},
 
-      {AttributionSourceType::kNavigation,
-       base::Days(1) + base::Milliseconds(1),
+      {SourceType::kNavigation, base::Days(1) + base::Milliseconds(1),
        base::Days(1) + base::Milliseconds(1)},
-      {AttributionSourceType::kEvent, base::Days(1) + base::Milliseconds(1),
+      {SourceType::kEvent, base::Days(1) + base::Milliseconds(1),
        base::Days(1)},
   };
 
@@ -136,4 +138,5 @@ TEST(CommonSourceInfoTest, ReportWindowSpecified_WindowOverrideDefault) {
       CommonSourceInfo::GetReportWindowTime(declared_expiry, source_time));
 }
 
+}  // namespace
 }  // namespace content

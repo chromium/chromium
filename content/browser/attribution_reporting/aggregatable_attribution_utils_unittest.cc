@@ -18,9 +18,9 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -31,6 +31,7 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::FilterPair;
+using ::attribution_reporting::mojom::SourceType;
 using ::testing::ElementsAre;
 
 using AttributionFilters = ::attribution_reporting::Filters;
@@ -83,7 +84,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
 
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
-          *source_filter_data, AttributionSourceType::kEvent, *source,
+          *source_filter_data, SourceType::kEvent, *source,
           *attribution_reporting::AggregatableTriggerDataList::Create(
               std::move(aggregatable_trigger_data)),
           aggregatable_values);
@@ -113,8 +114,7 @@ TEST(AggregatableAttributionUtilsTest,
 
   std::vector<AggregatableHistogramContribution> contributions =
       CreateAggregatableHistogram(
-          attribution_reporting::FilterData(),
-          AttributionSourceType::kNavigation, *source,
+          attribution_reporting::FilterData(), SourceType::kNavigation, *source,
           /*aggregatable_trigger_data=*/{},
           /*aggregatable_values=*/
           *attribution_reporting::AggregatableValues::Create(

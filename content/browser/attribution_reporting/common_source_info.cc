@@ -12,6 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -21,6 +22,7 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::SourceType;
 
 base::flat_set<net::SchemefulSite> DestinationSet(
     net::SchemefulSite destination) {
@@ -51,13 +53,13 @@ base::Time GetClampedTime(base::TimeDelta time_delta, base::Time source_time) {
 base::Time CommonSourceInfo::GetExpiryTime(
     absl::optional<base::TimeDelta> declared_expiry,
     base::Time source_time,
-    AttributionSourceType source_type) {
+    SourceType source_type) {
   // Default to the maximum expiry time.
   base::TimeDelta expiry =
       declared_expiry.value_or(kDefaultAttributionSourceExpiry);
 
   // Expiry time for event sources must be a whole number of days.
-  if (source_type == AttributionSourceType::kEvent) {
+  if (source_type == SourceType::kEvent) {
     expiry = expiry.RoundToMultiple(base::Days(1));
   }
 
@@ -87,7 +89,7 @@ CommonSourceInfo::CommonSourceInfo(
     base::Time expiry_time,
     absl::optional<base::Time> event_report_window_time,
     absl::optional<base::Time> aggregatable_report_window_time,
-    AttributionSourceType source_type,
+    SourceType source_type,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
     absl::optional<uint64_t> debug_key,
@@ -115,7 +117,7 @@ CommonSourceInfo::CommonSourceInfo(
     base::Time expiry_time,
     absl::optional<base::Time> event_report_window_time,
     absl::optional<base::Time> aggregatable_report_window_time,
-    AttributionSourceType source_type,
+    SourceType source_type,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
     absl::optional<uint64_t> debug_key,

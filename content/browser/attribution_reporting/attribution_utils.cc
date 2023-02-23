@@ -10,26 +10,27 @@
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 
 namespace content {
 
 namespace {
 
+using ::attribution_reporting::mojom::SourceType;
+
 constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
 
-base::span<const base::TimeDelta> EarlyDeadlines(
-    AttributionSourceType source_type) {
+base::span<const base::TimeDelta> EarlyDeadlines(SourceType source_type) {
   static constexpr base::TimeDelta kEarlyDeadlinesNavigation[] = {
       base::Days(2),
       base::Days(7),
   };
 
   switch (source_type) {
-    case AttributionSourceType::kNavigation:
+    case SourceType::kNavigation:
       return kEarlyDeadlinesNavigation;
-    case AttributionSourceType::kEvent:
+    case SourceType::kEvent:
       return base::span<const base::TimeDelta>();
   }
 }
@@ -85,7 +86,7 @@ base::Time ComputeReportTime(const CommonSourceInfo& source,
   return ReportTimeFromDeadline(source.source_time(), deadline_to_use);
 }
 
-int NumReportWindows(AttributionSourceType source_type) {
+int NumReportWindows(SourceType source_type) {
   // Add 1 for the expiry deadline.
   return 1 + EarlyDeadlines(source_type).size();
 }
