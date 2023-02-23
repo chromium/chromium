@@ -2526,7 +2526,8 @@ class GLES2DecoderImpl : public GLES2Decoder,
       const gfx::Size& size,
       gfx::BufferFormat format,
       bool* is_cleared,
-      GLuint target);
+      GLuint target,
+      GLuint texture_id);
 #endif
   unsigned int RequiredTextureTypeForAnonymousImage();
 
@@ -3242,7 +3243,7 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
     buffer_format = gfx::BufferFormat::BGRX_8888;
   }
   scoped_refptr<gl::GLImageNativePixmap> image = decoder_->CreateAnonymousImage(
-      size, buffer_format, &is_cleared, Target());
+      size, buffer_format, &is_cleared, Target(), id());
   if (!image)
     return false;
 
@@ -19595,7 +19596,8 @@ scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool* is_cleared,
-    GLuint target) {
+    GLuint target,
+    GLuint texture_id) {
   gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
   SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
@@ -19610,14 +19612,14 @@ scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
                << gfx::BufferUsageToString(usage);
     return nullptr;
   }
-  auto image = gl::GLImageNativePixmap::Create(size, format, std::move(pixmap));
+  auto image = gl::GLImageNativePixmap::Create(size, format, std::move(pixmap),
+                                               target, texture_id);
   if (!image) {
     LOG(ERROR) << "Failed to create GLImage " << size.ToString() << ", "
                << gfx::BufferFormatToString(format) << ", usage "
                << gfx::BufferUsageToString(usage);
     return nullptr;
   }
-  image->BindTexImage(target);
 
   *is_cleared = true;
   return image;

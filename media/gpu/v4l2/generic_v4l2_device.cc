@@ -284,7 +284,9 @@ EGLImageKHR GenericV4L2Device::CreateEGLImage(
 scoped_refptr<gl::GLImageNativePixmap> GenericV4L2Device::CreateGLImage(
     const gfx::Size& size,
     const Fourcc fourcc,
-    gfx::NativePixmapHandle handle) const {
+    gfx::NativePixmapHandle handle,
+    GLenum target,
+    GLuint texture_id) const {
   DVLOGF(3);
   DCHECK(CanCreateEGLImageFrom(fourcc));
 
@@ -315,8 +317,8 @@ scoped_refptr<gl::GLImageNativePixmap> GenericV4L2Device::CreateGLImage(
   DCHECK(pixmap);
 
   // TODO(b/220336463): plumb the right color space.
-  auto image =
-      gl::GLImageNativePixmap::Create(size, buffer_format, std::move(pixmap));
+  auto image = gl::GLImageNativePixmap::Create(
+      size, buffer_format, std::move(pixmap), target, texture_id);
   DCHECK(image);
   return image;
 }

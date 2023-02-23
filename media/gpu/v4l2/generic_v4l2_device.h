@@ -58,7 +58,9 @@ class GenericV4L2Device : public V4L2Device {
   scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
       const gfx::Size& size,
       const Fourcc fourcc,
-      gfx::NativePixmapHandle handle) const override;
+      gfx::NativePixmapHandle handle,
+      GLenum target,
+      GLuint texture_id) const override;
 
   EGLBoolean DestroyEGLImage(EGLDisplay egl_display,
                              EGLImageKHR egl_image) const override;

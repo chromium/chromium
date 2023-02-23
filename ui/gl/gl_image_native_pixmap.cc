@@ -10,6 +10,7 @@
 #include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/scoped_binders.h"
 
 #define FOURCC(a, b, c, d)                                        \
   ((static_cast<uint32_t>(a)) | (static_cast<uint32_t>(b) << 8) | \
@@ -91,9 +92,12 @@ EGLint FourCC(gfx::BufferFormat format) {
 scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::Create(
     const gfx::Size& size,
     gfx::BufferFormat format,
-    scoped_refptr<gfx::NativePixmap> pixmap) {
+    scoped_refptr<gfx::NativePixmap> pixmap,
+    GLenum target,
+    GLuint texture_id) {
   return CreateForPlane(size, format, gfx::BufferPlane::DEFAULT,
-                        std::move(pixmap), gfx::ColorSpace());
+                        std::move(pixmap), gfx::ColorSpace(), target,
+                        texture_id);
 }
 
 scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::CreateForPlane(
@@ -101,11 +105,16 @@ scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::CreateForPlane(
     gfx::BufferFormat format,
     gfx::BufferPlane plane,
     scoped_refptr<gfx::NativePixmap> pixmap,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    GLenum target,
+    GLuint texture_id) {
+  DCHECK_GT(texture_id, 0u);
+
   auto image =
       base::WrapRefCounted(new GLImageNativePixmap(size, format, plane));
 
-  if (!image->InitializeFromNativePixmap(std::move(pixmap), color_space)) {
+  if (!image->InitializeFromNativePixmap(std::move(pixmap), color_space, target,
+                                         texture_id)) {
     return nullptr;
   }
   return image;
@@ -122,7 +131,9 @@ GLImageNativePixmap::~GLImageNativePixmap() {
 
 bool GLImageNativePixmap::InitializeFromNativePixmap(
     scoped_refptr<gfx::NativePixmap> pixmap,
-    const gfx::ColorSpace& color_space) {
+    const gfx::ColorSpace& color_space,
+    GLenum target,
+    GLuint texture_id) {
   DCHECK(!pixmap_);
   if (GLInternalFormat(format_) == GL_NONE) {
     LOG(ERROR) << "Unsupported format: " << gfx::BufferFormatToString(format_);
@@ -231,17 +242,15 @@ bool GLImageNativePixmap::InitializeFromNativePixmap(
   }
 
   pixmap_ = pixmap;
+
+  gl::ScopedTextureBinder binder(target, texture_id);
+  glEGLImageTargetTexture2DOES(target, egl_image_.get());
+
   return true;
 }
 
 gfx::Size GLImageNativePixmap::GetSize() {
   return size_;
-}
-
-void GLImageNativePixmap::BindTexImage(unsigned target) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  glEGLImageTargetTexture2DOES(target, egl_image_.get());
 }
 
 unsigned GLImageNativePixmap::GetInternalFormat() {

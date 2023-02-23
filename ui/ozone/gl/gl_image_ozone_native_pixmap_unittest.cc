@@ -34,6 +34,12 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
 
   ~GLImageNativePixmapTestDelegate() override = default;
 
+  void WillTearDown() override {
+    if (texture_id_) {
+      glDeleteTextures(1, &texture_id_);
+    }
+  }
+
   bool SkipTest(GLDisplay* display) const override {
     ui::GLOzone* gl_ozone = ui::OzonePlatform::GetInstance()
                                 ->GetSurfaceFactoryOzone()
@@ -47,7 +53,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
   }
 
   scoped_refptr<GLImage> CreateSolidColorImage(const gfx::Size& size,
-                                               const uint8_t color[4]) const {
+                                               const uint8_t color[4]) {
     ui::SurfaceFactoryOzone* surface_factory =
         ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
     scoped_refptr<gfx::NativePixmap> pixmap =
@@ -71,8 +77,14 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
       client_pixmap->Unmap();
     }
 
-    auto image =
-        gl::GLImageNativePixmap::Create(size, format, std::move(pixmap));
+    // Create a dummy texture ID to bind - these tests don't actually care about
+    // binding.
+    if (!texture_id_) {
+      glGenTextures(1, &texture_id_);
+    }
+
+    auto image = gl::GLImageNativePixmap::Create(
+        size, format, std::move(pixmap), GetTextureTarget(), texture_id_);
     EXPECT_TRUE(image);
     return image;
   }
@@ -94,6 +106,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
   }
 
  private:
+  GLuint texture_id_ = 0;
   std::unique_ptr<gfx::ClientNativePixmapFactory> client_native_pixmap_factory_;
 };
 

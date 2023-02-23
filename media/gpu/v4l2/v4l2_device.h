@@ -780,7 +780,9 @@ class MEDIA_GPU_EXPORT V4L2Device
   virtual scoped_refptr<gl::GLImageNativePixmap> CreateGLImage(
       const gfx::Size& size,
       const Fourcc fourcc,
-      gfx::NativePixmapHandle handle) const = 0;
+      gfx::NativePixmapHandle handle,
+      GLenum target,
+      GLuint texture_id) const = 0;
 
   // Destroys the EGLImageKHR.
   virtual EGLBoolean DestroyEGLImage(EGLDisplay egl_display,

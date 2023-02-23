@@ -87,16 +87,16 @@ VaapiStatus VaapiPictureNativePixmapOzone::Initialize(
   const gfx::BufferFormat format = pixmap->GetBufferFormat();
 
   // TODO(b/220336463): plumb the right color space.
-  auto image =
-      gl::GLImageNativePixmap::Create(visible_size_, format, std::move(pixmap));
+  auto image = gl::GLImageNativePixmap::Create(
+      visible_size_, format, std::move(pixmap),
+      base::strict_cast<GLenum>(texture_target_),
+      base::strict_cast<GLuint>(texture_id_));
   if (!image) {
     LOG(ERROR) << "Failed to create GLImage";
     return VaapiStatus::Codes::kFailedToInitializeImage;
   }
 
   gl_image_ = std::move(image);
-
-  gl_image_->BindTexImage(texture_target_);
 
   if (bind_image_cb_ &&
       !bind_image_cb_.Run(client_texture_id_, texture_target_, gl_image_)) {
