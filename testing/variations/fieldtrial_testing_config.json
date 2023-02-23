@@ -9055,26 +9055,6 @@
             ]
         }
     ],
-    "PermissionQuietChip": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_1",
-                    "enable_features": [
-                        "PermissionQuietChip"
-                    ]
-                }
-            ]
-        }
-    ],
     "PermissionsQuietPromptsSurvey": [
         {
             "platforms": [
@@ -10201,21 +10181,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "RetryLanguageDetection"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RevokeNotificationsPermissionIfDisabledOnAppLevel": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2",
-                    "enable_features": [
-                        "RevokeNotificationsPermissionIfDisabledOnAppLevel"
                     ]
                 }
             ]
