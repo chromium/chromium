@@ -9,7 +9,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_number_conversions_win.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"

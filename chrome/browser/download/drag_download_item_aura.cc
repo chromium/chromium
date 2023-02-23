@@ -7,7 +7,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"
 #include "net/base/mime_util.h"
 #include "ui/aura/client/drag_drop_client.h"
