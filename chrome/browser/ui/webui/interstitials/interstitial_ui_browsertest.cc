@@ -21,8 +21,8 @@
 
 class InterstitialUITest : public InProcessBrowserTest {
  public:
-   InterstitialUITest() {}
-   ~InterstitialUITest() override {}
+  InterstitialUITest() {}
+  ~InterstitialUITest() override {}
 
  protected:
   // Tests interstitial displayed at url to verify that it has the given
@@ -34,9 +34,8 @@ class InterstitialUITest : public InProcessBrowserTest {
                         const std::string& page_title,
                         const std::u16string& body_text) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    EXPECT_EQ(
-      base::ASCIIToUTF16(page_title),
-      browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
+    EXPECT_EQ(base::ASCIIToUTF16(page_title),
+              browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 
     // Should also be able to open and close devtools.
     DevToolsWindow* window =
@@ -44,8 +43,9 @@ class InterstitialUITest : public InProcessBrowserTest {
     EXPECT_TRUE(window);
     DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 
-    if (body_text.empty())
+    if (body_text.empty()) {
       return;
+    }
 
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -56,8 +56,7 @@ class InterstitialUITest : public InProcessBrowserTest {
   }
 
   // Convenience function to test interstitial pages without provided body_text.
-  void TestInterstitial(GURL url,
-                        const std::string& page_title) {
+  void TestInterstitial(GURL url, const std::string& page_title) {
     TestInterstitial(url, page_title, std::u16string());
   }
 
@@ -71,16 +70,12 @@ class InterstitialUITest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, HomePage) {
-  TestInterstitial(
-      GURL("chrome://interstitials"),
-      "Interstitials");
+  TestInterstitial(GURL("chrome://interstitials"), "Interstitials");
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, InvalidURLShouldOpenHomePage) {
   // Invalid path should open the main page:
-  TestInterstitial(
-      GURL("chrome://interstitials/--invalid--"),
-      "Interstitials");
+  TestInterstitial(GURL("chrome://interstitials/--invalid--"), "Interstitials");
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest,
