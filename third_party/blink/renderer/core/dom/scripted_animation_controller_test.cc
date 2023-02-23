@@ -216,7 +216,7 @@ TEST_F(ScriptedAnimationControllerTest, TestIsInRequestAnimationFrame) {
 
   bool ran_callback = false;
   Controller().RegisterFrameCallback(
-      MakeGarbageCollected<RunTaskCallback>(base::BindRepeating(
+      MakeGarbageCollected<RunTaskCallback>(WTF::BindRepeating(
           [](ScriptedAnimationController* controller, bool* ran_callback) {
             EXPECT_TRUE(
                 controller->GetExecutionContext()->IsInRequestAnimationFrame());

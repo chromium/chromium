@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -83,6 +82,7 @@
 #include "third_party/blink/renderer/platform/media/web_audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
@@ -427,11 +427,11 @@ class WebMediaPlayerImplTest
         ukm::kInvalidSourceId, media::learning::FeatureValue(0),
         media::VideoDecodePerfHistory::SaveCallback(),
         media::MediaMetricsProvider::GetLearningSessionCallback(),
-        base::BindRepeating(
+        WTF::BindRepeating(
             &WebMediaPlayerImplTest::GetRecordAggregateWatchTimeCallback,
-            base::Unretained(this)),
-        base::BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
-                            base::Unretained(this)),
+            WTF::Unretained(this)),
+        WTF::BindRepeating(&WebMediaPlayerImplTest::IsShuttingDown,
+                           WTF::Unretained(this)),
         provider.BindNewPipeAndPassReceiver());
 
     // Initialize provider since none of the tests below actually go through the
@@ -456,12 +456,12 @@ class WebMediaPlayerImplTest
         std::move(media_log), player_id, WebMediaPlayerBuilder::DeferLoadCB(),
         audio_sink_, media_thread_.task_runner(), media_thread_.task_runner(),
         media_thread_.task_runner(), media_thread_.task_runner(),
-        base::BindRepeating(&WebMediaPlayerImplTest::OnAdjustAllocatedMemory,
-                            base::Unretained(this)),
+        WTF::BindRepeating(&WebMediaPlayerImplTest::OnAdjustAllocatedMemory,
+                           WTF::Unretained(this)),
         nullptr, media::RequestRoutingTokenCallback(),
         mock_observer_.AsWeakPtr(), false, false, provider.Unbind(),
-        base::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
-                       base::Unretained(this)),
+        WTF::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
+                      base::Unretained(this)),
         viz::TestContextProvider::Create(),
         /*use_surface_layer=*/true, is_background_suspend_enabled_,
         is_background_video_playback_enabled_, true,
@@ -862,8 +862,8 @@ class WebMediaPlayerImplTest
     base::RunLoop run_loop;
     WebContentDecryptionModuleImpl::Create(
         &mock_cdm_factory_, test_origin, cdm_config,
-        base::BindOnce(&WebMediaPlayerImplTest::OnCdmCreated,
-                       base::Unretained(this), run_loop.QuitClosure()));
+        WTF::BindOnce(&WebMediaPlayerImplTest::OnCdmCreated,
+                      WTF::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(web_cdm_);
   }
