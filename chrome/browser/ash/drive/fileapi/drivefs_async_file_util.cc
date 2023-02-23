@@ -173,16 +173,15 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
       return;
     }
 
-    if (ash::features::IsDriveFsBulkPinningEnabled()) {
-      if (drive_->GetRelativeDrivePath(path_, &drive_path_)) {
-        // TODO(b/266168982): In the case this is a folder, only the folder will
-        // get unpinned leaving all the children pinned. When the new method is
-        // exposed (or parameter on the existing method) update the
-        // implementation here.
-        drive_->GetDriveFsInterface()->GetMetadata(
-            drive_path_, base::BindOnce(&DeleteOperation::OnGotMetadata, this));
-        return;
-      }
+    if (drive_->GetPinManager() &&
+        drive_->GetRelativeDrivePath(path_, &drive_path_)) {
+      // TODO(b/266168982): In the case this is a folder, only the folder will
+      // get unpinned leaving all the children pinned. When the new method is
+      // exposed (or parameter on the existing method) update the
+      // implementation here.
+      drive_->GetDriveFsInterface()->GetMetadata(
+          drive_path_, base::BindOnce(&DeleteOperation::OnGotMetadata, this));
+      return;
     }
 
     blocking_task_runner_->PostTask(
@@ -195,6 +194,8 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
 
   void OnGotMetadata(const drive::FileError error,
                      const drivefs::mojom::FileMetadataPtr metadata) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
     if (error == drive::FILE_ERROR_OK) {
       DCHECK(metadata);
       id_ = Id(metadata->stable_id);
