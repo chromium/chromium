@@ -153,7 +153,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
   }
 
   if (icon_str == "settingsIcon") {
-    return ImageViewFromVectorIcon(kMonoColorProductIcon);
+    return ImageViewFromVectorIcon(omnibox::kProductIcon);
   }
 
   if (icon_str == "empty") {
