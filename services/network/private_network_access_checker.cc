@@ -52,6 +52,19 @@ const mojom::ClientSecurityState* ChooseClientSecurityState(
   return request_client_security_state;
 }
 
+absl::optional<net::IPAddress> ParsePrivateIpFromUrl(const GURL& url) {
+  net::IPAddress address;
+  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
+    return absl::nullopt;
+  }
+
+  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
+    return absl::nullopt;
+  }
+
+  return address;
+}
+
 }  // namespace
 
 PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
@@ -87,7 +100,7 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
     const net::TransportInfo& transport_info) {
   // If the request URL host was a private IP, record whether we ended up
   // connecting to that IP address. See https://crbug.com/1381471#c2.
-  if (request_url_private_ip_) {
+  if (request_url_private_ip_.has_value()) {
     base::UmaHistogramBoolean(
         "Security.PrivateNetworkAccess.PrivateIpResolveMatch",
         *request_url_private_ip_ == transport_info.endpoint.address());
@@ -113,7 +126,7 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
       is_request_url_scheme_http_ && result == Result::kBlockedByPolicyBlock) {
     base::UmaHistogramBoolean(
         "Security.PrivateNetworkAccess.PrivateIpInferrable",
-        request_url_private_ip_ != nullptr);
+        request_url_private_ip_.has_value());
   }
 
   response_address_space_ = resource_address_space;
@@ -257,17 +270,7 @@ Result PrivateNetworkAccessChecker::CheckInternal(
 
 void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {
   is_request_url_scheme_http_ = url.scheme_piece() == url::kHttpScheme;
-
-  net::IPAddress address;
-  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
-    return;
-  }
-
-  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
-    return;
-  }
-
-  request_url_private_ip_ = std::make_unique<net::IPAddress>(address);
+  request_url_private_ip_ = ParsePrivateIpFromUrl(url);
 }
 
 }  // namespace network

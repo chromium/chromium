@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_PRIVATE_NETWORK_ACCESS_CHECKER_H_
 
 #include <stdint.h>
-#include <memory>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -146,7 +145,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   bool is_request_url_scheme_http_ = false;
 
   // If the request URL's host is a private IP literal, then this stores the
-  // IP. Nullptr otherwise.
+  // IP. Nullopt otherwise.
   //
   // For example:
   //
@@ -156,7 +155,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // - request url = `http://localhost`     -> nullptr
   //
   // Used to compute metrics for https://crbug.com/1381471.
-  std::unique_ptr<net::IPAddress> request_url_private_ip_;
+  absl::optional<net::IPAddress> request_url_private_ip_;
 
   // The target IP address space set on the request. Ignored if `kUnknown`.
   //
