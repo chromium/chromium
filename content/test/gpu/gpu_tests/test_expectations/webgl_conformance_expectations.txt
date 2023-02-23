@@ -364,9 +364,6 @@ crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 # New validation was not implemented on the validating command decoder.
 crbug.com/angleproject/6358 [ no-passthrough ] conformance/programs/program-test.html [ Failure ]
 
-# Win / Intel / Vulkan / Passthrough command decoder
-# Technically flaky, but flake rate is too high for RetryOnFailure.
-crbug.com/angleproject/4922 [ win intel angle-vulkan passthrough ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
 ####################
 # Fuchsia failures #
