@@ -20,9 +20,6 @@ namespace autofill {
 
 struct AutofillMetadata;
 
-// A midline horizontal ellipsis (U+22EF).
-extern const char16_t kMidlineEllipsisDot[];
-
 namespace internal {
 
 // Returns an obfuscated representation of a credit card number given its last
@@ -105,11 +102,13 @@ class CreditCard : public AutofillDataModel {
 
   // Creates a server card with non-legacy instrument id. The type must be
   // MASKED_SERVER_CARD or FULL_SERVER_CARD.
-  CreditCard(RecordType type, const int64_t& instrument_id);
+  CreditCard(RecordType type, int64_t instrument_id);
 
-  // For use in STL containers.
   CreditCard();
   CreditCard(const CreditCard& credit_card);
+  CreditCard(CreditCard&& credit_card);
+  CreditCard& operator=(const CreditCard& credit_card);
+  CreditCard& operator=(CreditCard&& credit_card);
   ~CreditCard() override;
 
   // Returns a version of |number| that has any separator characters removed.
@@ -197,9 +196,6 @@ class CreditCard : public AutofillDataModel {
   void set_card_issuer(Issuer card_issuer) { card_issuer_ = card_issuer; }
   const std::string& issuer_id() const { return issuer_id_; }
   void set_issuer_id(const std::string& issuer_id) { issuer_id_ = issuer_id; }
-
-  // For use in STL containers.
-  void operator=(const CreditCard& credit_card);
 
   // If the card numbers for |this| and |imported_card| match, and merging the
   // two wouldn't result in unverified data overwriting verified data,

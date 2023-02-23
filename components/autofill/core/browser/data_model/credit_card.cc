@@ -157,8 +157,7 @@ CreditCard::CreditCard(RecordType type, const std::string& server_id)
   server_id_ = server_id;
 }
 
-CreditCard::CreditCard(RecordType type, const int64_t& instrument_id)
-    : CreditCard() {
+CreditCard::CreditCard(RecordType type, int64_t instrument_id) : CreditCard() {
   DCHECK(type == MASKED_SERVER_CARD || type == FULL_SERVER_CARD);
   record_type_ = type;
   instrument_id_ = instrument_id;
@@ -166,9 +165,10 @@ CreditCard::CreditCard(RecordType type, const int64_t& instrument_id)
 
 CreditCard::CreditCard() : CreditCard(base::GenerateGUID(), std::string()) {}
 
-CreditCard::CreditCard(const CreditCard& credit_card) : CreditCard() {
-  operator=(credit_card);
-}
+CreditCard::CreditCard(const CreditCard& credit_card) = default;
+CreditCard::CreditCard(CreditCard&& credit_card) = default;
+CreditCard& CreditCard::operator=(const CreditCard& credit_card) = default;
+CreditCard& CreditCard::operator=(CreditCard&& credit_card) = default;
 
 CreditCard::~CreditCard() = default;
 
@@ -605,38 +605,6 @@ void CreditCard::SetNickname(const std::u16string& nickname) {
   base::ReplaceChars(nickname, u"\t\r\n", u" ", &nickname_);
   // Then trim leading/trailing whitespaces from |nickname_|.
   base::TrimString(nickname_, u" ", &nickname_);
-}
-
-void CreditCard::operator=(const CreditCard& credit_card) {
-  set_use_count(credit_card.use_count());
-  set_use_date(credit_card.use_date());
-  set_modification_date(credit_card.modification_date());
-
-  if (this == &credit_card)
-    return;
-
-  record_type_ = credit_card.record_type_;
-  number_ = credit_card.number_;
-  name_on_card_ = credit_card.name_on_card_;
-  network_ = credit_card.network_;
-  expiration_month_ = credit_card.expiration_month_;
-  expiration_year_ = credit_card.expiration_year_;
-  server_id_ = credit_card.server_id_;
-  billing_address_id_ = credit_card.billing_address_id_;
-  bank_name_ = credit_card.bank_name_;
-  temp_card_first_name_ = credit_card.temp_card_first_name_;
-  temp_card_last_name_ = credit_card.temp_card_last_name_;
-  nickname_ = credit_card.nickname_;
-  card_issuer_ = credit_card.card_issuer_;
-  issuer_id_ = credit_card.issuer_id_;
-  instrument_id_ = credit_card.instrument_id_;
-  virtual_card_enrollment_state_ = credit_card.virtual_card_enrollment_state_;
-  virtual_card_enrollment_type_ = credit_card.virtual_card_enrollment_type_;
-  card_art_url_ = GURL(credit_card.card_art_url_);
-  product_description_ = credit_card.product_description_;
-
-  set_guid(credit_card.guid());
-  set_origin(credit_card.origin());
 }
 
 bool CreditCard::UpdateFromImportedCard(const CreditCard& imported_card,
