@@ -12,8 +12,7 @@ class GURL;
 // Populates |load_time_data| for interstitial HTML.
 void PopulateHttpsOnlyModeStringsForBlockingPage(
     base::Value::Dict& load_time_data,
-    const GURL& url,
-    bool is_under_advanced_protection);
+    const GURL& url);
 
 // Values added to get shared interstitial HTML to play nice.
 void PopulateHttpsOnlyModeStringsForSharedHTML(

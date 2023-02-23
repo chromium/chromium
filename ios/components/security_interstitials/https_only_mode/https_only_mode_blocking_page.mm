@@ -67,9 +67,7 @@ void HttpsOnlyModeBlockingPage::PopulateInterstitialStrings(
   }
 
   PopulateHttpsOnlyModeStringsForSharedHTML(load_time_data);
-  PopulateHttpsOnlyModeStringsForBlockingPage(
-      load_time_data, request_url(),
-      /*is_under_advanced_protection=*/false);
+  PopulateHttpsOnlyModeStringsForBlockingPage(load_time_data, request_url());
 }
 
 bool HttpsOnlyModeBlockingPage::ShouldDisplayURL() const {

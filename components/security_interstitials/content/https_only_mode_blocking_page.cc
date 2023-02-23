@@ -32,12 +32,10 @@ const SecurityInterstitialPage::TypeID
 HttpsOnlyModeBlockingPage::HttpsOnlyModeBlockingPage(
     content::WebContents* web_contents,
     const GURL& request_url,
-    std::unique_ptr<SecurityInterstitialControllerClient> controller_client,
-    bool is_under_advanced_protection)
+    std::unique_ptr<SecurityInterstitialControllerClient> controller_client)
     : SecurityInterstitialPage(web_contents,
                                request_url,
-                               std::move(controller_client)),
-      is_under_advanced_protection_(is_under_advanced_protection) {
+                               std::move(controller_client)) {
   controller()->metrics_helper()->RecordUserDecision(MetricsHelper::SHOW);
   controller()->metrics_helper()->RecordUserInteraction(
       MetricsHelper::TOTAL_VISITS);
@@ -111,8 +109,7 @@ void HttpsOnlyModeBlockingPage::CommandReceived(const std::string& command) {
 void HttpsOnlyModeBlockingPage::PopulateInterstitialStrings(
     base::Value::Dict& load_time_data) {
   PopulateHttpsOnlyModeStringsForSharedHTML(load_time_data);
-  PopulateHttpsOnlyModeStringsForBlockingPage(load_time_data, request_url(),
-                                              is_under_advanced_protection_);
+  PopulateHttpsOnlyModeStringsForBlockingPage(load_time_data, request_url());
 }
 
 }  // namespace security_interstitials

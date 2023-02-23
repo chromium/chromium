@@ -275,8 +275,7 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
   return std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
       web_contents, request_url,
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
-                                                      request_url),
-      /*is_under_advanced_protection=*/false);
+                                                      request_url));
 }
 
 std::unique_ptr<safe_browsing::SafeBrowsingBlockingPage>
