@@ -677,6 +677,12 @@ BASE_FEATURE(kAutofillDisableSilentProfileUpdates,
              "AutofillDisableSilentProfileUpdates",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, any new profiles created from the settings are of type kAccount.
+// TODO(crbug.com/1348294): Remove once the migration UI exists.
+BASE_FEATURE(kAutofillCreateAccountProfilesFromSettings,
+             "AutofillCreateAccountProfilesFromSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, three address profiles are created for testing.
 BASE_FEATURE(kAutofillCreateDataForTest,
              "AutofillCreateDataForTest",

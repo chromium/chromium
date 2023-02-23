@@ -154,6 +154,22 @@ autofill::AutofillManager* GetAutofillManager(
   return autofill_driver->autofill_manager();
 }
 
+autofill::AutofillProfile CreateNewAutofillProfile() {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::test::
+              kAutofillCreateAccountProfilesFromSettings)) {
+    return autofill::AutofillProfile(base::GenerateGUID(), kSettingsOrigin);
+  }
+  autofill::AutofillProfile profile(
+      base::GenerateGUID(), kSettingsOrigin,
+      autofill::AutofillProfile::Source::kAccount);
+  profile.set_initial_creator_id(
+      autofill::AutofillProfile::kInitialCreatorOrModifierChrome);
+  profile.set_last_modifier_id(
+      autofill::AutofillProfile::kInitialCreatorOrModifierChrome);
+  return profile;
+}
+
 }  // namespace
 
 namespace extensions {
@@ -206,9 +222,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
       return RespondNow(Error(kErrorDataUnavailable));
   }
   autofill::AutofillProfile profile =
-      existing_profile
-          ? *existing_profile
-          : autofill::AutofillProfile(base::GenerateGUID(), kSettingsOrigin);
+      existing_profile ? *existing_profile : CreateNewAutofillProfile();
 
   if (address->full_names) {
     std::string full_name;
