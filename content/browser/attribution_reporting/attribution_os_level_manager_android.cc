@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "components/attribution_reporting/os_support.mojom-shared.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "url/android/gurl_android.h"
@@ -50,6 +51,23 @@ int GetMatchBehavior(BrowsingDataFilterBuilder::Mode mode) {
       return kMatchBehaviorDelete;
     case BrowsingDataFilterBuilder::Mode::kPreserve:
       return kMatchBehaviorPreserve;
+  }
+}
+
+attribution_reporting::mojom::OsSupport ConvertToOsSupport(int value) {
+  // See
+  // https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/measurement/MeasurementManager
+  // for constant values.
+  static constexpr int kMeasurementApiStateDisabled = 0;
+  static constexpr int kMeasurementApiStateEnabled = 1;
+
+  switch (value) {
+    case kMeasurementApiStateDisabled:
+      return attribution_reporting::mojom::OsSupport::kDisabled;
+    case kMeasurementApiStateEnabled:
+      return attribution_reporting::mojom::OsSupport::kEnabled;
+    default:
+      return attribution_reporting::mojom::OsSupport::kDisabled;
   }
 }
 
@@ -108,6 +126,15 @@ void AttributionOsLevelManagerAndroid::ClearData(
       base::android::ToJavaArrayOfStrings(
           env, std::vector<std::string>(domains.begin(), domains.end())),
       GetDeletionMode(delete_rate_limit_data), GetMatchBehavior(mode));
+}
+
+attribution_reporting::mojom::OsSupport
+AttributionOsLevelManagerAndroid::GetOsSupport() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return ConvertToOsSupport(
+      Java_AttributionOsLevelManager_getMeasurementApiStatus(
+          base::android::AttachCurrentThread(), jobj_));
 }
 
 void AttributionOsLevelManagerAndroid::OnDataDeletionCompleted(

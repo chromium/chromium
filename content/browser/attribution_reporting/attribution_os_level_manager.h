@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 
 class GURL;
@@ -43,6 +44,8 @@ class AttributionOsLevelManager {
                          BrowsingDataFilterBuilder::Mode mode,
                          bool delete_rate_limit_data,
                          base::OnceClosure done) = 0;
+
+  virtual attribution_reporting::mojom::OsSupport GetOsSupport() = 0;
 };
 
 }  // namespace content

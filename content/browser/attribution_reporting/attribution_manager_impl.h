@@ -18,7 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
-#include "components/attribution_reporting/os_support.mojom.h"
+#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
@@ -125,9 +125,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   // Returns whether OS-level attribution is enabled. `kDisabled` is returned
   // before the result is returned from the underlying platform (e.g. Android).
-  static attribution_reporting::mojom::OsSupport GetOsSupport() {
-    return g_os_support_;
-  }
+  static attribution_reporting::mojom::OsSupport GetOsSupport();
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
@@ -177,13 +175,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
  private:
   friend class AttributionManagerImplTest;
-
-  static void SetOsSupportForTesting(
-      attribution_reporting::mojom::OsSupport os_support);
-
-  // TODO(crbug.com/1373536): The OS-level support should be derived from the
-  // underlying platform (e.g. Android).
-  static attribution_reporting::mojom::OsSupport g_os_support_;
 
   using ReportSentCallback = AttributionReportSender::ReportSentCallback;
   using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;

@@ -49,6 +49,18 @@ public class AttributionOsLevelManager {
         }
     }
 
+    /**
+     * Gets Measurement API status with native, see `getMeasurementApiStatus()`:
+     * https://developer.android.com/reference/androidx/privacysandbox/ads/adservices/measurement/MeasurementManager#getMeasurementApiStatus
+     */
+    @CalledByNative
+    private int getMeasurementApiStatus() {
+        // TODO(linnan):  Get from Android API, see
+        // https://developer.android.com/design-for-safety/privacy-sandbox/guides/attribution.
+        // This is dependent on support for the Tiramisu Privacy Sandbox SDK.
+        return 0;
+    }
+
     @CalledByNative
     private void nativeDestroyed() {
         mNativePtr = 0;

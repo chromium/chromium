@@ -44,6 +44,8 @@ class AttributionOsLevelManagerAndroid : public AttributionOsLevelManager {
                  bool delete_rate_limit_data,
                  base::OnceClosure done) override;
 
+  attribution_reporting::mojom::OsSupport GetOsSupport() override;
+
   // This is exposed to JNI and therefore has to be public.
   void OnDataDeletionCompleted(JNIEnv* env, jint request_id);
 

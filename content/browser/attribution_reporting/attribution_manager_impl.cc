@@ -328,6 +328,28 @@ bool IsOperationAllowed(
 
 bool g_run_in_memory = false;
 
+// This flag is per device and can only be changed by the OS.
+//
+// TODO(linnan): As currently we don't listen to the flag changes on the OS and
+// the API is synchronous, consider changing this to be per instance instead of
+// global which is set on creation. The renderer would be initialized with the
+// instance value without further updates.
+attribution_reporting::mojom::OsSupport g_os_support =
+    attribution_reporting::mojom::OsSupport::kDisabled;
+
+void SetOsSupport(attribution_reporting::mojom::OsSupport os_support) {
+  if (g_os_support == os_support) {
+    return;
+  }
+
+  g_os_support = os_support;
+
+  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
+       !it.IsAtEnd(); it.Advance()) {
+    it.GetCurrentValue()->SetOsSupportForAttributionReporting(g_os_support);
+  }
+}
+
 }  // namespace
 
 struct AttributionManagerImpl::SourceOrTriggerRFH {
@@ -364,17 +386,13 @@ ScopedUseInMemoryStorageForTesting::~ScopedUseInMemoryStorageForTesting() {
 
 ScopedOsSupportForTesting::ScopedOsSupportForTesting(
     attribution_reporting::mojom::OsSupport os_support)
-    : previous_(AttributionManagerImpl::g_os_support_) {
-  AttributionManagerImpl::SetOsSupportForTesting(os_support);
+    : previous_(g_os_support) {
+  SetOsSupport(os_support);
 }
 
 ScopedOsSupportForTesting::~ScopedOsSupportForTesting() {
-  AttributionManagerImpl::SetOsSupportForTesting(previous_);
+  SetOsSupport(previous_);
 }
-
-// static
-attribution_reporting::mojom::OsSupport AttributionManagerImpl::g_os_support_ =
-    attribution_reporting::mojom::OsSupport::kDisabled;
 
 // static
 std::unique_ptr<AttributionManagerImpl>
@@ -392,6 +410,11 @@ AttributionManagerImpl::CreateWithNewDbForTesting(
   return std::make_unique<AttributionManagerImpl>(
       storage_partition, user_data_directory,
       std::move(special_storage_policy));
+}
+
+// static
+attribution_reporting::mojom::OsSupport AttributionManagerImpl::GetOsSupport() {
+  return g_os_support;
 }
 
 bool AttributionManagerImpl::IsReportAllowed(
@@ -424,17 +447,6 @@ AttributionManagerImpl::CreateForTesting(
       std::move(cookie_checker), std::move(report_sender),
       /*data_host_manager=*/nullptr, std::move(storage_task_runner),
       std::move(os_level_manager)));
-}
-
-// static
-void AttributionManagerImpl::SetOsSupportForTesting(
-    attribution_reporting::mojom::OsSupport os_support) {
-  g_os_support_ = os_support;
-
-  for (RenderProcessHost::iterator it = RenderProcessHost::AllHostsIterator();
-       !it.IsAtEnd(); it.Advance()) {
-    it.GetCurrentValue()->SetOsSupportForAttributionReporting(g_os_support_);
-  }
 }
 
 AttributionManagerImpl::AttributionManagerImpl(
@@ -504,6 +516,13 @@ AttributionManagerImpl::AttributionManagerImpl(
   DCHECK(storage_task_runner_);
   DCHECK(cookie_checker_);
   DCHECK(report_sender_);
+
+  if (attribution_os_level_manager_) {
+    // The measurement API status can only change when user changes the setting
+    // on the device, therefore it's fine to update the global variable to keep
+    // track of the latest setting.
+    SetOsSupport(attribution_os_level_manager_->GetOsSupport());
+  }
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {

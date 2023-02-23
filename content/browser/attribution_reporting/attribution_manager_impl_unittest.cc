@@ -220,6 +220,11 @@ class MockAttributionOsLevelManager : public AttributionOsLevelManager {
                bool delete_rate_limit_data,
                base::OnceClosure done),
               (override));
+
+  MOCK_METHOD(attribution_reporting::mojom::OsSupport,
+              GetOsSupport,
+              (),
+              (override));
 };
 
 }  // namespace
