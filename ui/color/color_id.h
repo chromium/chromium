@@ -28,6 +28,7 @@
   E_CPONLY(kColorRefPrimary100) \
   E_CPONLY(kColorRefSecondary0) \
   E_CPONLY(kColorRefSecondary10) \
+  E_CPONLY(kColorRefSecondary15) \
   E_CPONLY(kColorRefSecondary20) \
   E_CPONLY(kColorRefSecondary30) \
   E_CPONLY(kColorRefSecondary40) \

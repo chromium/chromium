@@ -44,6 +44,7 @@ void AddRefColorMixer(ColorProvider* provider,
 
   mixer[kColorRefSecondary0] = {palette.secondary().get(0)};
   mixer[kColorRefSecondary10] = {palette.secondary().get(10)};
+  mixer[kColorRefSecondary15] = {palette.secondary().get(15)};
   mixer[kColorRefSecondary20] = {palette.secondary().get(20)};
   mixer[kColorRefSecondary30] = {palette.secondary().get(30)};
   mixer[kColorRefSecondary40] = {palette.secondary().get(40)};
