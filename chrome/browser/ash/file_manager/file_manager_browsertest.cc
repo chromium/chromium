@@ -2173,7 +2173,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchWithRecencyOptions").EnableSearchV2(),
         TestCase("searchRemovableDevice").EnableSearchV2(),
         TestCase("resetSearchOptionsOnFolderChange").EnableSearchV2(),
-        TestCase("showSearchResultMessageWhenSearching").EnableSearchV2()
+        TestCase("showSearchResultMessageWhenSearching").EnableSearchV2(),
+        TestCase("showsEducationNudge").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
         ));

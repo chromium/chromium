@@ -1697,6 +1697,9 @@ export class FileManager extends EventTarget {
         prefs.officeFileMovedOneDrive < prefs.officeFileMovedGoogleDrive) {
       this.ui_.nudgeContainer.showNudge(NudgeType['DRIVE_MOVED_FILE_NUDGE']);
     }
+    if (util.isSearchV2Enabled()) {
+      this.ui_.nudgeContainer.showNudge(NudgeType['SEARCH_V2_EDUCATION_NUDGE']);
+    }
 
     if (redraw) {
       this.directoryTree.redraw(false);

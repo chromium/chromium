@@ -577,3 +577,15 @@ testcase.showSearchResultMessageWhenSearching = async () => {
       await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
   chrome.test.assertEq(beforeSearchPath, afterSearchPath);
 };
+
+/**
+ * Tests that the educational nudge is displayed when the files
+ * app is started with V2 version of search enabled.
+ */
+testcase.showsEducationNudge = async () => {
+  // Open the Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Check that the nudge and its text is visible.
+  await remoteCall.waitNudge(appId, 'New search features available');
+};
