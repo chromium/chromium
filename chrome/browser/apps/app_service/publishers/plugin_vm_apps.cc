@@ -154,15 +154,12 @@ PluginVmApps::PluginVmApps(AppServiceProxy* proxy)
   // Register for Plugin VM changes to policy and installed state, so that we
   // can update the availability and status of the Plugin VM app. Unretained is
   // safe as these are cleaned up upon destruction.
-  policy_subscription_ =
-      std::make_unique<plugin_vm::PluginVmPolicySubscription>(
-          profile_, base::BindRepeating(&PluginVmApps::OnPluginVmAllowedChanged,
-                                        base::Unretained(this)));
+  availability_subscription_ =
+      std::make_unique<plugin_vm::PluginVmAvailabilitySubscription>(
+          profile_,
+          base::BindRepeating(&PluginVmApps::OnPluginVmAvailabilityChanged,
+                              base::Unretained(this)));
   pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(
-      plugin_vm::prefs::kPluginVmImageExists,
-      base::BindRepeating(&PluginVmApps::OnPluginVmConfiguredChanged,
-                          base::Unretained(this)));
   for (const PermissionInfo& info : permission_infos) {
     pref_registrar_.Add(info.pref_name,
                         base::BindRepeating(&PluginVmApps::OnPermissionChanged,
@@ -377,7 +374,8 @@ AppPtr PluginVmApps::CreateApp(
   return app;
 }
 
-void PluginVmApps::OnPluginVmAllowedChanged(bool is_allowed) {
+void PluginVmApps::OnPluginVmAvailabilityChanged(bool is_allowed,
+                                                 bool is_configured) {
   // Republish the Plugin VM app when policy changes have changed
   // its availability. Only changed fields need to be republished.
   is_allowed_ = is_allowed;
@@ -385,15 +383,7 @@ void PluginVmApps::OnPluginVmAllowedChanged(bool is_allowed) {
   auto app =
       std::make_unique<App>(AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId);
   SetAppAllowed(is_allowed, *app);
-  AppPublisher::Publish(std::move(app));
-}
-
-void PluginVmApps::OnPluginVmConfiguredChanged() {
-  // Only changed fields need to be republished.
-  auto app =
-      std::make_unique<App>(AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId);
-  app->show_in_management =
-      plugin_vm::PluginVmFeatures::Get()->IsConfigured(profile_);
+  app->show_in_management = is_configured;
   AppPublisher::Publish(std::move(app));
 }
 
