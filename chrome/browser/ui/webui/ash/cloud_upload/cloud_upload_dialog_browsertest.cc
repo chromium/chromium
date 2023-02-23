@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_parser.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
@@ -216,13 +217,13 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Check that the Setup flow has never run and so the File
-  // Handler dialog will be launched when OpenFilesWithCloudProvider() is
+  // Handler dialog will be launched when CloudOpenTask::Execute() is
   // called.
   ASSERT_FALSE(file_manager::file_tasks::OfficeSetupComplete(profile()));
 
   // Launch File Handler dialog.
-  ASSERT_TRUE(OpenFilesWithCloudProvider(profile(), files_,
-                                         CloudProvider::kGoogleDrive));
+  ASSERT_TRUE(
+      CloudOpenTask::Execute(profile(), files_, CloudProvider::kGoogleDrive));
 
   // Wait for File Handler dialog to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -348,6 +349,10 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   int num_tasks = 3;
   SetUpTasksAndFiles({kXlsFileExtension}, num_tasks);
 
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kGoogleDrive));
+  cloud_open_task->SetTasksForTest(tasks_);
+
   for (int selected_task = 0; selected_task < num_tasks; selected_task++) {
     std::string user_response = base::NumberToString(selected_task);
     // Watch for the selected task to open.
@@ -355,10 +360,8 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
         (GURL(urls_[selected_task])));
     navigation_observer_task.StartWatchingNewWebContents();
 
-    std::vector<file_manager::file_tasks::TaskDescriptor> tasks = tasks_;
-
     // Simulate user selecting this task.
-    OnDialogComplete(profile(), files_, user_response, std::move(tasks));
+    cloud_open_task->OnDialogComplete(user_response);
 
     // Wait for the selected task to open.
     navigation_observer_task.Wait();
@@ -377,11 +380,15 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OnDialogCompleteNoCrash) {
   int num_tasks = 3;
   SetUpTasksAndFiles({kPptFileExtension}, num_tasks);
 
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kGoogleDrive));
+  cloud_open_task->SetTasksForTest(tasks_);
+
   int out_of_range_task = 3;
   std::string user_response = base::NumberToString(out_of_range_task);
 
   // Simulate user selecting a nonexistent selected task.
-  OnDialogComplete(profile(), files_, user_response, std::move(tasks_));
+  cloud_open_task->OnDialogComplete(user_response);
 }
 
 // Tests the Fixup flow. Ensures that it is run when the conditions are met: the
@@ -459,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest, FixUpFlowWhenODFSNotMounted) {
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  OpenFilesWithCloudProvider(profile(), files_, CloudProvider::kOneDrive);
+  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive);
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -502,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
       (GURL(chrome::kChromeUICloudUploadURL)));
   navigation_observer_dialog.StartWatchingNewWebContents();
 
-  OpenFilesWithCloudProvider(profile(), files_, CloudProvider::kOneDrive);
+  CloudOpenTask::Execute(profile(), files_, CloudProvider::kOneDrive);
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -560,6 +567,14 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   AddFakeODFS();
   AddFakeOfficePWA();
 
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kOneDrive));
+  mojom::DialogArgsPtr args =
+      cloud_open_task->CreateDialogArgs(mojom::DialogPage::kOneDriveSetup);
+  // Self-deleted on close.
+  CloudUploadDialog* dialog = new CloudUploadDialog(
+      std::move(args), base::DoNothing(), mojom::DialogPage::kOneDriveSetup);
+
   // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
       (GURL(chrome::kChromeUICloudUploadURL)));
@@ -572,8 +587,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
 
   // Open the Welcome Page for the OneDrive set up part of the Setup flow. This
   // will lead to the Office PWA being set as the default task.
-  CloudUploadDialog::SetUpAndShowDialog(profile(), files_,
-                                        mojom::DialogPage::kOneDriveSetup);
+  dialog->ShowSystemDialog();
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
@@ -623,6 +637,14 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   AddFakeODFS();
   AddFakeOfficePWA();
 
+  auto cloud_open_task = base::WrapRefCounted(
+      new CloudOpenTask(profile(), files_, CloudProvider::kOneDrive));
+  mojom::DialogArgsPtr args =
+      cloud_open_task->CreateDialogArgs(mojom::DialogPage::kOneDriveSetup);
+  // Self-deleted on close.
+  CloudUploadDialog* dialog = new CloudUploadDialog(
+      std::move(args), base::DoNothing(), mojom::DialogPage::kOneDriveSetup);
+
   // Watch for OneDrive Setup dialog URL chrome://cloud-upload.
   content::TestNavigationObserver navigation_observer_dialog(
       (GURL(chrome::kChromeUICloudUploadURL)));
@@ -636,8 +658,7 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   // Open the Welcome Page for the OneDrive set up part of the Setup flow. This
   // will not lead to the Office PWA being set as the default task because the
   // Setup flow has already been completed.
-  CloudUploadDialog::SetUpAndShowDialog(profile(), files_,
-                                        mojom::DialogPage::kOneDriveSetup);
+  dialog->ShowSystemDialog();
 
   // Wait for Welcome Page to open at chrome://cloud-upload.
   navigation_observer_dialog.Wait();
