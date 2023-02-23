@@ -848,14 +848,21 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(1);
 
-  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+  base::FilePath my_files_dir_ =
+      file_manager::util::GetMyFilesFolderForProfile(browser()->profile());
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+
+    ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
+  }
+  AddLocalFileSystem(browser()->profile(), my_files_dir_);
 
   const base::FilePath blocked_file_path =
-      temp_dir_.GetPath().Append("blocked_file.txt");
+      my_files_dir_.Append("blocked_file.txt");
   const base::FilePath unrestricted_file_path =
-      temp_dir_.GetPath().Append("unrestricted_file.txt");
+      my_files_dir_.Append("unrestricted_file.txt");
   const base::FilePath untracked_file_path =
-      temp_dir_.GetPath().Append("untracked_file.txt");
+      my_files_dir_.Append("untracked_file.txt");
 
   {
     base::ScopedAllowBlockingForTesting allow_io;

@@ -83,7 +83,23 @@ constexpr char kOpenBlockedNotificationId[] = "open_dlp_blocked";
 // FileSystemContext instance set for testing.
 storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
 
+// Returns true if `file_path` is in My Files directory.
+bool IsInLocalFileSystem(const base::FilePath& file_path) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  auto my_files_folder =
+      file_manager::util::GetMyFilesFolderForProfile(profile);
+  if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
+    return true;
+  }
+  return false;
+}
+
+// Returns inode value for local files.
 absl::optional<ino64_t> GetInodeValue(const base::FilePath& path) {
+  if (!IsInLocalFileSystem(path)) {
+    return absl::nullopt;
+  }
+
   struct stat file_stats;
   if (stat(path.value().c_str(), &file_stats) != 0) {
     return absl::nullopt;
@@ -484,17 +500,6 @@ void ShowNotification(const std::string& notification_id,
   GetNotificationDisplayService()->Display(NotificationHandler::Type::TRANSIENT,
                                            *notification,
                                            /*metadata=*/nullptr);
-}
-
-// Returns true if `file_path` is in My Files directory.
-bool IsInLocalFileSystem(const base::FilePath& file_path) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  auto my_files_folder =
-      file_manager::util::GetMyFilesFolderForProfile(profile);
-  if (my_files_folder == file_path || my_files_folder.IsParent(file_path)) {
-    return true;
-  }
-  return false;
 }
 
 // Converts files paths to file system URLs.
