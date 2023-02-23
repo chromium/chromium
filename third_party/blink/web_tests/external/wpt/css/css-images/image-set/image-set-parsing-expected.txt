@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 84 tests; 76 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 86 tests; 78 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set('example.jpg' 1x)" should set the property value
@@ -24,8 +24,6 @@ PASS e.style['background-image'] = "image-set(url(example.png) 1x url(example.jp
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x url(example.jpeg))" should not set the property value
 PASS e.style['background-image'] = "image-set(url(example.png) 1x 2x)" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x 2x)" should not set the property value
-PASS e.style['background-image'] = "image-set(image-set(url(example.png)) 2x)" should not set the property value
-PASS e.style['background-image'] = "-webkit-image-set(image-set(url(example.png)) 2x)" should not set the property value
 PASS e.style['background-image'] = "image-set(url(foo))" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(foo))" should set the property value
 PASS e.style['background-image'] = "image-set(url(foo), url(bar) 1x)" should set the property value
@@ -84,5 +82,9 @@ PASS e.style['background-image'] = "image-set(url(example.png) 1xtype('image/png
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1xtype('image/png'))" should not set the property value
 PASS e.style['background-image'] = "image-set(type('image/png') url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set(type('image/png') url(example.png) 1x)" should not set the property value
+PASS e.style['background-image'] = "image-set(image-set(url(example.png)) 2x)" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(image-set(url(example.png)) 2x)" should not set the property value
+PASS e.style['background-image'] = "image-set(image(image-set(url(example.png)) 2x) 2x)" should not set the property value
+PASS e.style['background-image'] = "-webkit-image-set(image(image-set(url(example.png)) 2x) 2x)" should not set the property value
 Harness: the test ran to completion.
 
