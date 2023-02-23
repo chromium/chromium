@@ -1110,7 +1110,8 @@ void RecordTabGridCloseTabsCount(int count) {
     return;
   }
   [self.delegate dismissPopovers];
-
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridAddedMultipleNewBookmarks"));
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToBookmarks",
                               items.count);
 

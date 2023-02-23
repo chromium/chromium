@@ -222,6 +222,8 @@ enum class PresentedState {
   // Copy of `URL` to be captured in block.
   GURL bookmarkedURL(URL);
   void (^editAction)() = ^{
+    base::RecordAction(base::UserMetricsAction(
+        "MobileBookmarkManagerOpenedBookmarkEditorFromSnackbar"));
     [weakSelf presentBookmarkEditorForURL:bookmarkedURL];
   };
 

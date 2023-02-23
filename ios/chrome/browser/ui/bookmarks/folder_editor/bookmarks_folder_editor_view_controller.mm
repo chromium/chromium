@@ -10,8 +10,9 @@
 #import "base/check_op.h"
 #import "base/i18n/rtl.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
-
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
@@ -268,6 +269,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Actions
 
 - (void)dismiss {
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksFolderEditorCanceled"));
   [self.view endEditing:YES];
   [self.delegate bookmarksFolderEditorDidCancel:self];
 }
@@ -275,6 +278,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)deleteFolder {
   DCHECK(self.editingExistingFolder);
   DCHECK(self.folder);
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksFolderEditorDeletedFolder"));
   std::set<const BookmarkNode*> editedNodes;
   editedNodes.insert(self.folder);
   [self.snackbarCommandsHandler
@@ -286,7 +291,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)saveFolder {
   DCHECK(self.parentFolder);
-
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksFolderEditorSaved"));
   NSString* folderString = self.titleItem.text;
   DCHECK(folderString.length > 0);
   std::u16string folderTitle = base::SysNSStringToUTF16(folderString);
@@ -318,6 +324,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)changeParentFolder {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileBookmarksFolderEditorOpenedFolderChooser"));
   std::set<const BookmarkNode*> hiddenNodes;
   if (self.folder) {
     hiddenNodes.insert(self.folder);

@@ -1168,11 +1168,15 @@
   if (currentlyBookmarked) {
     [self editBookmarkWithURL:URL];
   } else {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileTabGridOpenedBookmarkEditorForNewBookmark"));
     [self.bookmarksCoordinator bookmarkURL:URL title:title];
   }
 }
 
 - (void)editBookmarkWithURL:(const GURL&)URL {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileTabGridOpenedBookmarkEditorForExistingBookmark"));
   [self.bookmarksCoordinator presentBookmarkEditorForURL:URL];
 }
 

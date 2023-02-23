@@ -345,6 +345,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 #pragma mark - Actions
 
 - (void)deleteBookmark {
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksEditorDeletedBookmark"));
   if ([self.mutator bookmark] && [self.mutator bookmarkModel]->loaded()) {
     // To stop getting recursive events from committed bookmark editing changes
     // ignore bookmark model updates notifications.
@@ -368,14 +370,18 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 }
 
 - (void)moveBookmark {
+  base::RecordAction(
+      base::UserMetricsAction("MobileBookmarksEditorOpenedFolderChooser"));
   [self.delegate moveBookmark];
 }
 
 - (void)cancel {
+  base::RecordAction(base::UserMetricsAction("MobileBookmarksEditorCanceled"));
   [self dismissBookmarkEditorView];
 }
 
 - (void)save {
+  base::RecordAction(base::UserMetricsAction("MobileBookmarksEditorSaved"));
   [self commitBookmarkChanges];
   [self dismissBookmarkEditorView];
 }

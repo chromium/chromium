@@ -11865,6 +11865,32 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSBookmarksEditorClosedWithSwipeDown">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes bookmark editor by swiping down. iOS-only.
+  </description>
+</action>
+
+<action name="IOSBookmarksFolderChooserClosedWithSwipeDown">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes bookmark folder chooser by swiping down.
+    iOS-only.
+  </description>
+</action>
+
+<action name="IOSBookmarksFolderEditorClosedWithSwipeDown">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when the user closes bookmark folder editor by swiping down.
+    iOS-only.
+  </description>
+</action>
+
 <action name="IOSClearBrowsingDataCloseWithSwipe">
   <owner>edchin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
@@ -18002,6 +18028,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerAddedBookmarkUndone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user undid added bookmark on iOS only.</description>
+</action>
+
 <action name="MobileBookmarkManagerClose">
   <owner>twellington@google.com</owner>
   <owner>sczs@chromium.org</owner>
@@ -18020,6 +18052,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerDeletedEntryUndone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user undid bookmark deletion on iOS only.</description>
+</action>
+
 <action name="MobileBookmarkManagerDragReorder">
   <owner>jhimawan@google.com</owner>
   <owner>twellington@google.com</owner>
@@ -18033,7 +18071,8 @@ should be able to be added at any place in this file.
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <description>
-    Recorded when a user edits a bookmark in the Android bookmark manager.
+    Recorded when a user edits a bookmark in bookmark manager, on iOS or
+    Android.
   </description>
 </action>
 
@@ -18041,7 +18080,7 @@ should be able to be added at any place in this file.
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <description>
-    Recorded when a user edits a folder in the Android bookmark manager.
+    Recorded when a user edits a folder in bookmark manager, on iOS or Android.
   </description>
 </action>
 
@@ -18115,8 +18154,14 @@ should be able to be added at any place in this file.
   <owner>clank-app-team@google.com</owner>
   <description>
     Recorded when a user moves all selected bookmark items to a new folder in
-    the Android bookmark manager.
+    bookmark manager, on iOS or Android.
   </description>
+</action>
+
+<action name="MobileBookmarkManagerMoveToFolderUndone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user undid bookmark move on iOS only.</description>
 </action>
 
 <action name="MobileBookmarkManagerMoveUp">
@@ -18145,11 +18190,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileBookmarkManagerOpenedBookmarkEditorFromSnackbar">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user opened the bookmark editor using the snackbar.
+  </description>
+</action>
+
 <action name="MobileBookmarkManagerOpenFolder">
   <owner>twellington@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <description>
-    Recorded when a user opens a folder in the Android bookmark manager.
+    Recorded when a user opens a folder on iOS and Android.
   </description>
 </action>
 
@@ -18194,6 +18247,92 @@ should be able to be added at any place in this file.
   <description>
     Recorded when a user taps on an item in order to select it from the Android
     bookmark manager (this can only occur while in selection mode).
+  </description>
+</action>
+
+<action name="MobileBookmarkManagerUpdatedBookmarkUndone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user undid bookmark update on iOS only.</description>
+</action>
+
+<action name="MobileBookmarksEditorCanceled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user canceled the bookmark editor view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksEditorDeletedBookmark">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user deleted the bookmark in the bookmark editor view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksEditorOpenedFolderChooser">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user opened the folder chooser in the bookmark editor view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksEditorSaved">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>The user saved the bookmark editor view. iOS-only.</description>
+</action>
+
+<action name="MobileBookmarksFolderChooserCanceled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user canceled the bookmark folder chooser view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderChooserDone">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user confirmed the bookmark folder chooser view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderEditorCanceled">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user canceled the bookmark folder editor view. iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderEditorDeletedFolder">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user deleted the folder while in the bookmark folder editor view.
+    iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderEditorOpenedFolderChooser">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user opened the folder chooser in the bookmark folder editor view.
+    iOS-only.
+  </description>
+</action>
+
+<action name="MobileBookmarksFolderEditorSaved">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    The user confirmed the bookmark folder editor view. iOS-only.
   </description>
 </action>
 
@@ -18767,7 +18906,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileFreUMALinkTapped">
   <owner>arthurmilchior@chromium.org</owner>
-  <owner>jlebel@google.com</owner>
+  <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>
     User tapped on the UMA link on the first run welcome view. This metric is
@@ -20950,6 +21089,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridAddedMultipleNewBookmarks">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    User added multiple new bookmarks base on the selected tabs, in the iOS tab
+    grid. It is possible to have one tab selected.
+  </description>
+</action>
+
 <action name="MobileTabGridBeganReordering">
   <owner>edchin@chromium.org</owner>
   <owner>marq@chromium.org</owner>
@@ -21117,6 +21265,20 @@ should be able to be added at any place in this file.
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <description>User moves from a Tab to an existing other Tab.</description>
+</action>
+
+<action name="MobileTabGridOpenedBookmarkEditorForExistingBookmark">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    User edited an existing bookmark, in the iOS tab grid.
+  </description>
+</action>
+
+<action name="MobileTabGridOpenedBookmarkEditorForNewBookmark">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>User adds one new bookmark, in the iOS tab grid.</description>
 </action>
 
 <action name="MobileTabGridOpenIncognitoTab">
