@@ -389,7 +389,15 @@ std::vector<AXNode*> AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
     if (!wrapper)
       continue;
 
-    nodes.push_back(wrapper->ax_tree()->GetFromId(app_node_info.node_id));
+    AXNode* node = wrapper->ax_tree()->GetFromId(app_node_info.node_id);
+    // We don't expect this to ever be null, however in b:269669313 we see that
+    // it is occasionally null. This DCHECK might help sus out what's going on,
+    // meanwhile don't add the node to the result if it is null to avoid
+    // crashes in non-debug builds.
+    DCHECK(node);
+    if (node != nullptr) {
+      nodes.push_back(node);
+    }
   }
 
   return nodes;
