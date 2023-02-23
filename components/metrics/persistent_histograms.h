@@ -34,11 +34,15 @@ extern const char kPersistentHistogramStorageLocalMemory[];
 extern const base::FeatureParam<std::string> kPersistentHistogramsStorage;
 
 // Persistent browser metrics need to be persisted somewhere. This constant
-// provides a known string to be used for both the allocator's internal name
-// and for a file on disk (relative to metrics_dir) to which they
-// can be saved. This is exported so the name can also be used as a "pref"
-// during configuration.
+// provides a known string to be used for both the allocator's internal name and
+// for a file on disk (relative to metrics_dir) to which they can be saved. This
+// is exported so the name can also be used as a "pref" during configuration.
 extern const char kBrowserMetricsName[];
+
+// Like above, this provides a known string to be used for persistent browser
+// metrics. However, metrics under this are "deferred" and sent along with a
+// future session's metrics instead of independently.
+extern const char kDeferredBrowserMetricsName[];
 
 // Do all the checking and work necessary to enable persistent histograms.
 // `metrics_dir` specifies the root directory where persistent histograms will
@@ -61,5 +65,21 @@ void PersistentHistogramsCleanup(const base::FilePath& metrics_dir);
 // is also called immediately after.
 void InstantiatePersistentHistogramsWithFeaturesAndCleanup(
     const base::FilePath& metrics_dir);
+
+// After calling this, histograms from this session that were not sent (i.e.,
+// unlogged samples) will be sent along with a future session's metrics.
+// Normally, those unlogged samples are sent as an "independent log", which uses
+// the system profile in the persistent file. However, there are scenarios where
+// the browser must exit before a system profile is written to the file, which
+// results in the metrics from that session being lost. Calling this function
+// will make so that the unlogged samples are sent with a future session's
+// metrics (whichever is the first to read the file). Note that this may come at
+// the cost of associating the metrics with an incorrect system profile. Returns
+// whether the operation was successful.
+// Note: If you plan on using this, please make sure to get a review from the
+// metrics team. Using this may lead to reporting additional histograms that
+// may not be relevant to what is being experimented with, which can cause
+// confusing/disruptive data.
+bool DeferBrowserMetrics(const base::FilePath& metrics_dir);
 
 #endif  // COMPONENTS_METRICS_PERSISTENT_HISTOGRAMS_H_

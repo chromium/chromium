@@ -54,7 +54,7 @@ bool EnrollMachineInEarlySingletonFeature() {
     return false;
 
   // Enroll 50% of the population.
-  return base::Hash(machine_guid) % 2 == 0;
+  return base::Hash(machine_guid + "EarlyProcessSingleton") % 2 == 0;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -142,7 +142,7 @@ void ChromeProcessSingleton::RegisterEarlySingletonFeature() {
   // be generated from the metrics log that is open at the time of registration.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "EarlyProcessSingleton",
-      g_is_early_singleton_feature_ ? "Enabled" : "Disabled",
+      g_is_early_singleton_feature_ ? "Enabled2" : "Disabled2",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 

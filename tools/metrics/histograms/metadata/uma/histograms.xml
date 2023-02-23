@@ -254,6 +254,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.FileMetricsProvider.{Source}.MergedHistogramsCount"
+    units="histograms" expires_after="2023-11-01">
+  <owner>lucnguyen@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    The number of histograms merged to the current session from a PMA file from
+    the {Source} source. Emitted right after merging the histograms.
+  </summary>
+  <token key="Source">
+    <variant name="DeferredBrowserMetrics"/>
+    <variant name="NotificationHelperMetrics"/>
+    <variant name="SetupMetrics"/>
+  </token>
+</histogram>
+
 <histogram name="UMA.IndependentLog.{Provider}.FinalizeTime" units="ms"
     expires_after="2023-07-01">
   <owner>lucnguyen@google.com</owner>

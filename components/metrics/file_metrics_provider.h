@@ -280,7 +280,8 @@ class FileMetricsProvider : public MetricsProvider,
   static AccessResult CheckAndMapMetricSource(SourceInfo* source);
 
   // Merges all of the histograms from a |source| to the StatisticsRecorder.
-  static void MergeHistogramDeltasFromSource(SourceInfo* source);
+  // Returns the number of histograms merged.
+  static size_t MergeHistogramDeltasFromSource(SourceInfo* source);
 
   // Records all histograms from a given source via a snapshot-manager.
   static void RecordHistogramSnapshotsFromSource(

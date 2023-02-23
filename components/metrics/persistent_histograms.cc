@@ -230,6 +230,7 @@ const base::FeatureParam<std::string> kPersistentHistogramsStorage{
     kPersistentHistogramStorageMappedFile};
 
 const char kBrowserMetricsName[] = "BrowserMetrics";
+const char kDeferredBrowserMetricsName[] = "DeferredBrowserMetrics";
 
 void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
                                      bool persistent_histograms_enabled,
@@ -291,4 +292,22 @@ void InstantiatePersistentHistogramsWithFeaturesAndCleanup(
       metrics_dir, base::FeatureList::IsEnabled(kPersistentHistogramsFeature),
       kPersistentHistogramsStorage.Get());
   PersistentHistogramsCleanup(metrics_dir);
+}
+
+bool DeferBrowserMetrics(const base::FilePath& metrics_dir) {
+  base::GlobalHistogramAllocator* allocator =
+      base::GlobalHistogramAllocator::Get();
+
+  if (!allocator || !allocator->HasPersistentLocation()) {
+    return false;
+  }
+
+  base::FilePath deferred_metrics_dir =
+      metrics_dir.AppendASCII(kDeferredBrowserMetricsName);
+
+  if (!base::CreateDirectory(deferred_metrics_dir)) {
+    return false;
+  }
+
+  return allocator->MovePersistentFile(deferred_metrics_dir);
 }

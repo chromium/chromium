@@ -685,6 +685,14 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
     UMA_HISTOGRAM_ENUMERATION("Chrome.ProcessSingleton.NotifyResult",
                               notify_result,
                               ProcessSingleton::kNumNotifyResults);
+
+    // If |notify_result| is not PROCESS_NONE, this process will exit. To ensure
+    // that the histograms emitted in this process are reported, report the
+    // metrics accumulated this session with a future session's metrics.
+    if (notify_result != ProcessSingleton::PROCESS_NONE) {
+      DeferBrowserMetrics(user_data_dir);
+    }
+
     switch (notify_result) {
       case ProcessSingleton::PROCESS_NONE:
         // No process already running, continue on to starting a new one.

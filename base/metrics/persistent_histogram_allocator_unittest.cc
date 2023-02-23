@@ -10,6 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/statistics_recorder.h"
@@ -452,6 +454,65 @@ TEST_F(PersistentHistogramAllocatorTest, RangesDeDuplication) {
       allocator_->GetAsArray<uint32_t>(ref2, 0, kRangesRefIndex + 1);
   EXPECT_EQ(ranges_ref, data1[kRangesRefIndex]);
   EXPECT_EQ(ranges_ref, data2[kRangesRefIndex]);
+}
+
+TEST_F(PersistentHistogramAllocatorTest, MovePersistentFile) {
+  const char temp_name[] = "MovePersistentFileTest.pma";
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath temp_file = temp_dir.GetPath().AppendASCII(temp_name);
+  const size_t temp_size = 64 << 10;  // 64 KiB
+
+  // Initialize persistent histogram system with a known file path.
+  DestroyPersistentHistogramAllocator();
+  GlobalHistogramAllocator::CreateWithFile(temp_file, temp_size, 0, temp_name);
+  GlobalHistogramAllocator* allocator = GlobalHistogramAllocator::Get();
+  ASSERT_TRUE(allocator->HasPersistentLocation());
+  EXPECT_EQ(allocator->GetPersistentLocation(), temp_file);
+  EXPECT_TRUE(base::PathExists(temp_file));
+
+  // Move the persistent file to a new directory.
+  ScopedTempDir new_temp_dir;
+  ASSERT_TRUE(new_temp_dir.CreateUniqueTempDir());
+  EXPECT_TRUE(allocator->MovePersistentFile(new_temp_dir.GetPath()));
+
+  // Verify that the persistent file was correctly moved |new_temp_dir|.
+  FilePath new_temp_file = new_temp_dir.GetPath().AppendASCII(temp_name);
+  ASSERT_TRUE(allocator->HasPersistentLocation());
+  EXPECT_EQ(allocator->GetPersistentLocation(), new_temp_file);
+  EXPECT_TRUE(base::PathExists(new_temp_file));
+  EXPECT_FALSE(base::PathExists(temp_file));
+
+  // Emit a histogram after moving the file.
+  const char kHistogramName[] = "MovePersistentFile.Test";
+  base::UmaHistogramBoolean(kHistogramName, true);
+
+  // Release the allocator.
+  DestroyPersistentHistogramAllocator();
+
+  // Open and read the file in order to verify that |kHistogramName| was written
+  // to it even after being moved.
+  base::File file(new_temp_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  std::unique_ptr<char[]> data = std::make_unique<char[]>(temp_size);
+  EXPECT_EQ(file.Read(/*offset=*/0, data.get(), temp_size),
+            static_cast<int>(temp_size));
+
+  // Create an allocator and iterator using the file's data.
+  PersistentHistogramAllocator new_file_allocator(
+      std::make_unique<PersistentMemoryAllocator>(data.get(), temp_size, 0, 0,
+                                                  "", false));
+  PersistentHistogramAllocator::Iterator it(&new_file_allocator);
+
+  // Verify that |kHistogramName| is in the file.
+  std::unique_ptr<HistogramBase> histogram;
+  bool found_histogram = false;
+  while ((histogram = it.GetNext()) != nullptr) {
+    if (strcmp(kHistogramName, histogram->histogram_name()) == 0) {
+      found_histogram = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(found_histogram);
 }
 
 }  // namespace base

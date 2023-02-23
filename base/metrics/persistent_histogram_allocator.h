@@ -467,6 +467,14 @@ class BASE_EXPORT GlobalHistogramAllocator
   // are to be saved.
   const FilePath& GetPersistentLocation() const;
 
+  // Returns whether the contents of this allocator are being saved to a
+  // persistent file on disk.
+  bool HasPersistentLocation() const;
+
+  // Moves the file being used to persist this allocator's data to the directory
+  // specified by |dir|. Returns whether the operation was successful.
+  bool MovePersistentFile(const FilePath& dir);
+
   // Writes the internal data to a previously set location. This is generally
   // called when a process is exiting from a section of code that may not know
   // the filesystem. The data is written in an atomic manner. The return value

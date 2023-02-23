@@ -25,6 +25,7 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/metrics/ranges_manager.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
@@ -418,7 +419,15 @@ std::vector<size_t> FileMetricsProvider::CheckAndMergeMetricSourcesOnTaskRunner(
         if (source->association == ASSOCIATE_INTERNAL_PROFILE_SAMPLES_COUNTER) {
           samples_counts.push_back(CollectFileMetadataFromSource(source.get()));
         } else {
-          MergeHistogramDeltasFromSource(source.get());
+          size_t histograms_count =
+              MergeHistogramDeltasFromSource(source.get());
+          if (!source->prefs_key.empty()) {
+            base::UmaHistogramCounts1000(
+                base::StringPrintf(
+                    "UMA.FileMetricsProvider.%s.MergedHistogramsCount",
+                    source->prefs_key.c_str()),
+                histograms_count);
+          }
         }
         DCHECK(source->read_complete);
       }
@@ -567,13 +576,13 @@ FileMetricsProvider::AccessResult FileMetricsProvider::CheckAndMapMetricSource(
 }
 
 // static
-void FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
+size_t FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
   DCHECK(source->allocator);
   base::PersistentHistogramAllocator::Iterator histogram_iter(
       source->allocator.get());
 
   const bool read_only = kSourceOptions[source->type].is_read_only;
-  int histogram_count = 0;
+  size_t histogram_count = 0;
   while (true) {
     std::unique_ptr<base::HistogramBase> histogram = histogram_iter.GetNext();
     if (!histogram)
@@ -592,6 +601,7 @@ void FileMetricsProvider::MergeHistogramDeltasFromSource(SourceInfo* source) {
   source->read_complete = true;
   DVLOG(1) << "Reported " << histogram_count << " histograms from "
            << source->path.value();
+  return histogram_count;
 }
 
 // static

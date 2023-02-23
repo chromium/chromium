@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -35,6 +36,8 @@
 
 namespace {
 const char kMetricsName[] = "TestMetrics";
+const char kMergedCountHistogramName[] =
+    "UMA.FileMetricsProvider.TestMetrics.MergedHistogramsCount";
 const char kMetricsFilename[] = "file.metrics";
 }  // namespace
 
@@ -283,6 +286,7 @@ INSTANTIATE_TEST_SUITE_P(SmallAndLargeFiles,
 
 TEST_P(FileMetricsProviderTest, AccessMetrics) {
   ASSERT_FALSE(PathExists(metrics_file()));
+  base::HistogramTester histogram_tester;
 
   base::Time metrics_time = base::Time::Now() - base::Minutes(5);
   std::unique_ptr<base::PersistentHistogramAllocator> histogram_allocator =
@@ -294,11 +298,15 @@ TEST_P(FileMetricsProviderTest, AccessMetrics) {
   provider()->RegisterSource(FileMetricsProvider::Params(
       metrics_file(), FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_FILE,
       FileMetricsProvider::ASSOCIATE_CURRENT_RUN, kMetricsName));
+  histogram_tester.ExpectTotalCount(kMergedCountHistogramName,
+                                    /*expected_count=*/0);
 
   // Record embedded snapshots via snapshot-manager.
   OnDidCreateMetricsLog();
   RunTasks();
   EXPECT_EQ(2U, GetSnapshotHistogramCount());
+  histogram_tester.ExpectUniqueSample(kMergedCountHistogramName, /*sample=*/2,
+                                      /*expected_bucket_count=*/1);
   EXPECT_FALSE(base::PathExists(metrics_file()));
 
   // Make sure a second call to the snapshot-recorder doesn't break anything.
@@ -315,6 +323,8 @@ TEST_P(FileMetricsProviderTest, AccessMetrics) {
   OnDidCreateMetricsLog();
   RunTasks();
   EXPECT_EQ(0U, GetSnapshotHistogramCount());
+  histogram_tester.ExpectUniqueSample(kMergedCountHistogramName, /*sample=*/2,
+                                      /*expected_bucket_count=*/1);
   EXPECT_FALSE(base::PathExists(metrics_file()));
 
   // Recreate the file to indicate that it is "new" and must be recorded.
@@ -326,6 +336,8 @@ TEST_P(FileMetricsProviderTest, AccessMetrics) {
   OnDidCreateMetricsLog();
   RunTasks();
   EXPECT_EQ(2U, GetSnapshotHistogramCount());
+  histogram_tester.ExpectUniqueSample(kMergedCountHistogramName, /*sample=*/2,
+                                      /*expected_bucket_count=*/2);
   EXPECT_FALSE(base::PathExists(metrics_file()));
 }
 
