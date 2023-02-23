@@ -18,10 +18,10 @@ test(() => {
   const url = new URL("http://localhost/query?a=1&b=2&a=3");
   assert_equals(url.searchParams.size, 3);
 
-  params.delete("a");
+  url.searchParams.delete("a");
   assert_equals(url.searchParams.size, 1);
 
-  params.append("b", 4);
+  url.searchParams.append("b", 4);
   assert_equals(url.searchParams.size, 2);
 }, "URLSearchParams's size when obtained from a URL");
 
