@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/payments/core/features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,18 +19,20 @@ class PaymentHandlerHeaderViewUITest
     : public PaymentRequestBrowserTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  PaymentHandlerHeaderViewUITest() : minimal_header_ux_enabled_(GetParam()) {
-    if (minimal_header_ux_enabled_) {
-      features_.InitAndEnableFeature(features::kPaymentHandlerMinimalHeaderUX);
-    } else {
-      features_.InitAndDisableFeature(features::kPaymentHandlerMinimalHeaderUX);
-    }
-  }
+  PaymentHandlerHeaderViewUITest() : minimal_header_ux_enabled_(GetParam()) {}
   ~PaymentHandlerHeaderViewUITest() override = default;
 
   void SetUpOnMainThread() override {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
     NavigateTo("/payment_handler.html");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
+    if (minimal_header_ux_enabled_) {
+      command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                      "PaymentHandlerMinimalHeaderUX");
+    }
   }
 
  protected:

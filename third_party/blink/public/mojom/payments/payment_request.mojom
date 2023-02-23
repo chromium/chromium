@@ -230,6 +230,10 @@ struct PaymentDetails {
   string? id;
 
   string? stringified_payment_method_errors;
+
+  // Whether the execution context of the payment request has the
+  // PaymentHandlerMinimalHeaderUX feature enabled, e.g. via origin trial.
+  bool payment_handler_minimal_header_ux_enabled = false;
 };
 
 enum PaymentShippingType {

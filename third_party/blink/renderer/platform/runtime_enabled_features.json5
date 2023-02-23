@@ -2395,6 +2395,14 @@
       status: "experimental",
       base_feature: "none",
     },
+    // Desktop only, if enabled PaymentHandler will use the new minimal header UX.
+    // See https://crbug.com/1385136.
+    {
+      name: "PaymentHandlerMinimalHeaderUX",
+      origin_trial_feature_name: "PaymentHandlerMinimalHeaderUX",
+      origin_trial_allows_third_party: true,
+      origin_trial_os: ["win", "mac", "linux", "fuchsia", "chromeos"],
+    },
     {
       name: "PaymentInstruments",
       depends_on: ["PaymentApp"],

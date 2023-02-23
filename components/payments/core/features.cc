@@ -82,9 +82,11 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
 #endif
 );
 
+// The blink-side feature of the same name is disabled by default, and can be
+// enabled directly or via origin trial.
 BASE_FEATURE(kPaymentHandlerMinimalHeaderUX,
              "PaymentHandlerMinimalHeaderUX",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace payments

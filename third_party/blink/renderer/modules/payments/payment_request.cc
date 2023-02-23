@@ -541,6 +541,10 @@ void ValidateAndConvertPaymentDetailsBase(const PaymentDetailsBase* input,
         input->modifiers(), *output->modifiers, execution_context,
         exception_state);
   }
+
+  output->payment_handler_minimal_header_ux_enabled =
+      RuntimeEnabledFeatures::PaymentHandlerMinimalHeaderUXEnabled(
+          &execution_context);
 }
 
 PaymentItemPtr CreateTotalPlaceHolderForAppStoreBilling(

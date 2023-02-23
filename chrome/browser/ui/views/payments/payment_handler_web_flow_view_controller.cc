@@ -258,8 +258,7 @@ void PaymentHandlerWebFlowViewController::FillContentView(
     // colors will be set in PopulateSheetHeaderView.
     progress_bar_ = header_content_separator_container()->AddChildView(
         std::make_unique<views::ProgressBar>(/*preferred_height=*/2));
-    if (!base::FeatureList::IsEnabled(
-            features::kPaymentHandlerMinimalHeaderUX)) {
+    if (!spec()->IsPaymentHandlerMinimalHeaderUXEnabled()) {
       // Prior to minimal UX, the separator container used a Separator view,
       // which uses the Chrome theme color which may not match the header color.
       progress_bar_->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -309,7 +308,7 @@ bool PaymentHandlerWebFlowViewController::ShouldShowSecondaryButton() {
 
 void PaymentHandlerWebFlowViewController::PopulateSheetHeaderView(
     views::View* container) {
-  if (!base::FeatureList::IsEnabled(features::kPaymentHandlerMinimalHeaderUX)) {
+  if (!spec()->IsPaymentHandlerMinimalHeaderUXEnabled()) {
     PaymentRequestSheetController::PopulateSheetHeaderView(container);
     return;
   }
@@ -564,7 +563,7 @@ void PaymentHandlerWebFlowViewController::DidFinishNavigation(
 }
 
 void PaymentHandlerWebFlowViewController::LoadProgressChanged(double progress) {
-  if (base::FeatureList::IsEnabled(features::kPaymentHandlerMinimalHeaderUX)) {
+  if (spec()->IsPaymentHandlerMinimalHeaderUXEnabled()) {
     // The progress bar reflects the load progress until it reaches 1.0, at
     // which point it's reset to 0 to just show the separator color.
     progress_bar_->SetValue(progress < 1.0 ? progress : 0);
