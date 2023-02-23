@@ -6,8 +6,8 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
-#include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -245,12 +245,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
                                       "window.domAutomationController.send("
                                       "    JSON.stringify(userMediaRequests));",
                                       &json_requests));
-    std::unique_ptr<base::Value> value_requests =
-        base::JSONReader::ReadDeprecated(json_requests);
+    base::Value::List list_request = base::test::ParseJsonList(json_requests);
 
-    EXPECT_EQ(base::Value::Type::LIST, value_requests->type());
-
-    const base::Value::List& list_request = value_requests->GetList();
     EXPECT_EQ(requests.size(), list_request.size());
 
     for (size_t i = 0; i < requests.size(); ++i) {
@@ -457,44 +453,35 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
   // Verifies |dump| contains |peer_connection_number| peer connection dumps,
   // each containing |update_number| updates and |stats_number| stats tables.
-  void VerifyPageDumpStructure(base::Value* dump,
+  void VerifyPageDumpStructure(const base::Value::Dict& dump,
                                int peer_connection_number,
                                int update_number,
                                int stats_number) {
-    EXPECT_NE((base::Value*)nullptr, dump);
-    ASSERT_EQ(base::Value::Type::DICT, dump->type());
-
-    EXPECT_EQ((size_t)peer_connection_number, dump->DictSize());
-    for (auto kv : dump->DictItems()) {
-      const base::Value& pc_dump = kv.second;
-      ASSERT_EQ(base::Value::Type::DICT, pc_dump.type());
+    EXPECT_EQ(static_cast<size_t>(peer_connection_number), dump.size());
+    for (auto kv : dump) {
+      ASSERT_TRUE(kv.second.is_dict());
+      const base::Value::Dict& pc_dump = kv.second.GetDict();
 
       // Verifies the number of updates.
-      const base::Value::List* updates_value =
-          pc_dump.GetDict().FindList("updateLog");
-      ASSERT_TRUE(updates_value);
-      EXPECT_EQ(static_cast<size_t>(update_number), updates_value->size());
+      const base::Value::List* updates = pc_dump.FindList("updateLog");
+      ASSERT_TRUE(updates);
+      EXPECT_EQ(static_cast<size_t>(update_number), updates->size());
 
       // Verifies the number of stats tables.
-      const base::Value::Dict* stats_value =
-          pc_dump.GetDict().FindDict("stats");
-      ASSERT_TRUE(stats_value);
-      EXPECT_EQ(static_cast<size_t>(stats_number), stats_value->size());
+      const base::Value::Dict* stats = pc_dump.FindDict("stats");
+      ASSERT_TRUE(stats);
+      EXPECT_EQ(static_cast<size_t>(stats_number), stats->size());
     }
   }
 
   // Verifies |dump| contains the correct statsTable and statsDataSeries for
   // |pc|.
-  void VerifyStatsDump(base::Value* dump,
+  void VerifyStatsDump(const base::Value::Dict& dump,
                        const PeerConnectionEntry& pc,
                        const string& report_type,
                        const string& report_id,
                        const StatsUnit& stats) {
-    EXPECT_NE((base::Value*)nullptr, dump);
-    EXPECT_EQ(base::Value::Type::DICT, dump->type());
-
-    const base::Value::Dict& dict_dump = dump->GetDict();
-    const base::Value::Dict* pc_dump = dict_dump.FindDict(pc.getIdString());
+    const base::Value::Dict* pc_dump = dump.FindDict(pc.getIdString());
     ASSERT_TRUE(pc_dump);
 
     // Verifies there is one data series per stats name.
@@ -804,11 +791,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
       "window.domAutomationController.send("
       "    JSON.stringify(peerConnectionDataStore));",
       &dump_json));
-  std::unique_ptr<base::Value> dump =
-      base::JSONReader::ReadDeprecated(dump_json);
-  VerifyPageDumpStructure(dump.get(),
-                          2 /*peer_connection_number*/,
-                          2 /*update_number*/,
+  VerifyPageDumpStructure(base::test::ParseJsonDict(dump_json),
+                          2 /*peer_connection_number*/, 2 /*update_number*/,
                           0 /*stats_number*/);
 
   // Adds a stats report.
@@ -824,8 +808,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
       "window.domAutomationController.send("
       "    JSON.stringify(peerConnectionDataStore));",
       &dump_json));
-  dump = base::JSONReader::ReadDeprecated(dump_json);
-  VerifyStatsDump(dump.get(), pc_0, type, id, stats);
+  VerifyStatsDump(base::test::ParseJsonDict(dump_json), pc_0, type, id, stats);
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, UpdateMedia) {
