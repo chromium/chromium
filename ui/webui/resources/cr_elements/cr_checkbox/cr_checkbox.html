@@ -118,41 +118,24 @@
       }
 
       #checkmark {
-        border-color: var(--cr-checkbox-mark-color);
-        border-style: solid;
-        border-width: 0 2px 2px 0;
-        content: '';
         display: block;
-        height: 73%;
-        transform: scale(0) rotate(45deg);
-        transform-origin: 100% 80%;
-        width: 36%;
+        transform: scale(0);
       }
 
-      :host-context([dir='rtl']) #checkmark {
-        transform-origin: 50% 14%;
+      #checkmark path {
+        fill: var(--cr-checkbox-mark-color);
       }
 
-      :host-context([chrome-refresh-2023]) #checkmark {
-        height: 7.19px;
-        transform-origin: 85% 92%;
-        width: 3.55px;
-      }
-
-      :host-context([chrome-refresh-2023]):host-context([dir='rtl']) #checkmark {
-        transform-origin: 30% 14%;
+      :host([checked]) #checkmark {
+        transform: scale(1);
+        /* Only animate when showing checkmark. */
+        transition: transform 140ms ease-out;
       }
 
       :host([checked]) #checkbox {
         background: var(--cr-checkbox-checked-box-background-color,
             var(--cr-checkbox-checked-box-color));
         border-color: var(--cr-checkbox-checked-box-color);
-      }
-
-      :host([checked]) #checkmark {
-        transform: scale(1) rotate(45deg);
-        /* Only animate when showing checkmark. */
-        transition: transform 140ms ease-out;
       }
 
       :host-context([chrome-refresh-2023]):host([checked]) #checkbox:focus-visible {
@@ -206,7 +189,11 @@
         on-keydown="onKeyDown_" on-keyup="onKeyUp_" aria-disabled="false"
         aria-checked="false" aria-labelledby="label-container"
         aria-describedby="ariaDescription">
-      <span id="checkmark"></span>
+      <!-- Inline SVG paints faster than loading it from a separate file. -->
+      <svg id="checkmark" width="12" height="12" viewBox="0 0 12 12"
+          fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="m10.192 2.121-6.01 6.01-2.121-2.12L1 7.07l2.121 2.121.707.707.354.354 7.071-7.071-1.06-1.06Z">
+      </svg>
       <div id="hover-layer"></div>
     </div>
     <div id="label-container" aria-hidden="true" part="label-container">
