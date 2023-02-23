@@ -15,6 +15,7 @@ namespace features {
 // The feature is defined in Ash and propagated to Lacros over crosapi.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kFlossEnabled);
+DEVICE_BLUETOOTH_EXPORT BASE_DECLARE_FEATURE(kFlossIsAvailable);
 #endif
 
 // A helper method that has the appropriate behavior on both Ash and Lacros.
