@@ -46,13 +46,6 @@ defaults.execution_timeout.set(8 * time.hour)
 defaults.pool.set("luci.chromium.findit")
 defaults.service_account.set("findit-builder@chops-service-accounts.iam.gserviceaccount.com")
 
-defaults.caches.set([
-    swarming.cache(
-        name = "win_toolchain",
-        path = "win_toolchain",
-    ),
-])
-
 # Builders are defined in lexicographic order by name
 
 # Same as findit_variable, except now with a specified recipe, as this is no

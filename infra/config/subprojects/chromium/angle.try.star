@@ -15,12 +15,6 @@ try_.defaults.set(
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     build_numbers = True,
-    caches = [
-        swarming.cache(
-            name = "win_toolchain",
-            path = "win_toolchain",
-        ),
-    ],
     cq_group = "cq",
     execution_timeout = 2 * time.hour,
     # Max. pending time for builds. CQ considers builds pending >2h as timed

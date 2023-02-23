@@ -13,12 +13,6 @@ try_.defaults.set(
     bucket = "try",
     cpu = cpu.X86_64,
     build_numbers = True,
-    caches = [
-        swarming.cache(
-            name = "win_toolchain",
-            path = "win_toolchain",
-        ),
-    ],
     cq_group = "cq",
     # Max. pending time for builds. CQ considers builds pending >2h as timed
     # out: http://shortn/_8PaHsdYmlq. Keep this in sync.
