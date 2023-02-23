@@ -168,13 +168,13 @@ SharedMemoryImageBacking::ProduceMemory(SharedImageManager* manager,
                                                          tracker);
 }
 
-void SharedMemoryImageBacking::OnMemoryDump(
+base::trace_event::MemoryAllocatorDump* SharedMemoryImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t client_tracing_id) {
-  SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
-                                   client_tracing_id);
+  auto* dump = SharedImageBacking::OnMemoryDump(dump_name, client_guid, pmd,
+                                                client_tracing_id);
 
   // Add a |shared_memory_guid| which expresses shared ownership between the
   // various GPU dumps.
@@ -183,6 +183,7 @@ void SharedMemoryImageBacking::OnMemoryDump(
     pmd->CreateSharedMemoryOwnershipEdge(client_guid, shared_memory_guid,
                                          kNonOwningEdgeImportance);
   }
+  return dump;
 }
 
 SharedMemoryImageBacking::SharedMemoryImageBacking(

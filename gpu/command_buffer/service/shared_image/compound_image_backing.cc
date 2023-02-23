@@ -582,7 +582,7 @@ CompoundImageBacking::ProduceOverlay(SharedImageManager* manager,
       manager, this, tracker, std::move(real_rep));
 }
 
-void CompoundImageBacking::OnMemoryDump(
+base::trace_event::MemoryAllocatorDump* CompoundImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -616,6 +616,7 @@ void CompoundImageBacking::OnMemoryDump(
     backing->OnMemoryDump(element_dump_name, element_client_guid, pmd,
                           client_tracing_id);
   }
+  return dump;
 }
 
 const std::vector<SkPixmap>& CompoundImageBacking::GetSharedMemoryPixmaps() {

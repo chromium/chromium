@@ -4520,6 +4520,11 @@ chromium-metrics-reviews@google.com.
       label="All SharedImages memory. Typically accounted for in other
              processes, e.g. renderers, this is the total Chrome-wide memory
              used by SharedImages."/>
+  <suffix name="SharedImages.Purgeable"
+      label="All purgeable SharedImages memory. Typically accounted for in
+             other processes, e.g. renderers, this is the total Chrome-wide
+             memory used by SharedImages. Non-zero only on platforms where
+             SharedImages can be purgeable."/>
   <suffix name="SiteStorage"
       label="Only counting memory used by Web storage API."/>
   <suffix name="SiteStorage.BlobStorage"

@@ -124,7 +124,7 @@ bool SharedImageBacking::PresentSwapChain() {
   return false;
 }
 
-void SharedImageBacking::OnMemoryDump(
+base::trace_event::MemoryAllocatorDump* SharedImageBacking::OnMemoryDump(
     const std::string& dump_name,
     base::trace_event::MemoryAllocatorDumpGuid client_guid,
     base::trace_event::ProcessMemoryDump* pmd,
@@ -139,11 +139,14 @@ void SharedImageBacking::OnMemoryDump(
   dump->AddString("dimensions", "", size().ToString());
   dump->AddString("format", "", format().ToString());
   dump->AddString("usage", "", CreateLabelForSharedImageUsage(usage()));
+  dump->AddScalar("purgeable", "bool", IsPurgeable());
 
   // Add ownership edge to `client_guid` which expresses shared ownership with
   // the client process.
   pmd->CreateSharedGlobalAllocatorDump(client_guid);
   pmd->AddOwnershipEdge(dump->guid(), client_guid, kNonOwningEdgeImportance);
+
+  return dump;
 }
 
 std::unique_ptr<GLTextureImageRepresentation>
@@ -386,6 +389,10 @@ void ClearTrackingSharedImageBacking::SetClearedRectInternal(
 
 scoped_refptr<gfx::NativePixmap> SharedImageBacking::GetNativePixmap() {
   return nullptr;
+}
+
+bool SharedImageBacking::IsPurgeable() const {
+  return false;
 }
 
 }  // namespace gpu

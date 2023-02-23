@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -169,6 +170,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // than allocating and freeing the image. See investigation in
   // https://crbug.com/1347282.
   virtual void SetPurgeable(bool purgeable) {}
+  virtual bool IsPurgeable() const;
 
   virtual void Update(std::unique_ptr<gfx::GpuFence> in_fence);
 
@@ -197,7 +199,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // add additional ownership edges linked to `client_guid` but they must call
   // SharedImageBacking::OnMemoryDump() first (or do something equivalent) to
   // create a MemoryAllocatorDump and ownership edge.
-  virtual void OnMemoryDump(
+  virtual base::trace_event::MemoryAllocatorDump* OnMemoryDump(
       const std::string& dump_name,
       base::trace_event::MemoryAllocatorDumpGuid client_guid,
       base::trace_event::ProcessMemoryDump* pmd,
