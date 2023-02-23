@@ -636,22 +636,6 @@ static_library("browser") {
   }
 }
 
-if (is_android) {
-  java_cpp_enum("java_enum_srcjar") {
-    # External code should depend on ":card_unmask_challenge_option_type_java" instead.
-    visibility = [ ":*" ]
-    sources = [ "payments/card_unmask_challenge_option.h" ]
-  }
-
-  android_library("card_unmask_challenge_option_type_java") {
-    srcjar_deps = [ ":java_enum_srcjar" ]
-
-    # Important: the generated enum uses the @IntDef annotation provided by
-    # this dependency.
-    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-  }
-}
-
 static_library("test_support") {
   testonly = true
   sources = [
