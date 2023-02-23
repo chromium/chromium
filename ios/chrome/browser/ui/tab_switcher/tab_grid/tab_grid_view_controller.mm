@@ -1852,11 +1852,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   switch (page) {
     case TabGridPageRemoteTabs:
       return !([self.regularTabsViewController isGridEmpty] &&
-               [self.pinnedTabsViewController isCollectionEmpty] &&
+               (!IsPinnedTabsEnabled() ||
+                [self.pinnedTabsViewController isCollectionEmpty]) &&
                [self.incognitoTabsViewController isGridEmpty]);
     case TabGridPageRegularTabs:
       return !([self.regularTabsViewController isGridEmpty] &&
-               [self.pinnedTabsViewController isCollectionEmpty]);
+               (!IsPinnedTabsEnabled() ||
+                [self.pinnedTabsViewController isCollectionEmpty]));
     case TabGridPageIncognitoTabs:
       return ![self.incognitoTabsViewController isGridEmpty];
   }
