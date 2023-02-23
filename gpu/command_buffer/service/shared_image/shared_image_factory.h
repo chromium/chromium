@@ -92,7 +92,7 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #if BUILDFLAG(IS_WIN)
   bool CreateSwapChain(const Mailbox& front_buffer_mailbox,
                        const Mailbox& back_buffer_mailbox,
-                       viz::ResourceFormat format,
+                       viz::SharedImageFormat format,
                        const gfx::Size& size,
                        const gfx::ColorSpace& color_space,
                        GrSurfaceOrigin surface_origin,

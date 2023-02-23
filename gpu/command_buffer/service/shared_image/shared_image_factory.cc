@@ -543,7 +543,7 @@ void SharedImageFactory::DestroyAllSharedImages(bool have_context) {
 #if BUILDFLAG(IS_WIN)
 bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                          const Mailbox& back_buffer_mailbox,
-                                         viz::ResourceFormat format,
+                                         viz::SharedImageFormat format,
                                          const gfx::Size& size,
                                          const gfx::ColorSpace& color_space,
                                          GrSurfaceOrigin surface_origin,
@@ -553,8 +553,7 @@ bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return false;
 
   auto backings = d3d_backing_factory_->CreateSwapChain(
-      front_buffer_mailbox, back_buffer_mailbox,
-      viz::SharedImageFormat::SinglePlane(format), size, color_space,
+      front_buffer_mailbox, back_buffer_mailbox, format, size, color_space,
       surface_origin, alpha_type, usage);
   return RegisterBacking(std::move(backings.front_buffer)) &&
          RegisterBacking(std::move(backings.back_buffer));

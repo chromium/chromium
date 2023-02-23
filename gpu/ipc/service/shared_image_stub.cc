@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/common/command_buffer_id.h"
@@ -398,8 +399,9 @@ void SharedImageStub::OnCreateSwapChain(
 
   if (!factory_->CreateSwapChain(
           params->front_buffer_mailbox, params->back_buffer_mailbox,
-          params->format, params->size, params->color_space,
-          params->surface_origin, params->alpha_type, params->usage)) {
+          viz::SharedImageFormat::SinglePlane(params->format), params->size,
+          params->color_space, params->surface_origin, params->alpha_type,
+          params->usage)) {
     DLOG(ERROR) << "SharedImageStub: Unable to create swap chain";
     OnError();
     return;
