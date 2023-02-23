@@ -144,7 +144,7 @@ class SettingsSetupFingerprintDialogElement extends
   }
 
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.addWebUiListener(
@@ -155,21 +155,23 @@ class SettingsSetupFingerprintDialogElement extends
     this.$.dialog.showModal();
   }
 
-  /**
-   * Closes the dialog.
-   */
-  close(): void {
-    // Note: Reset resets |step_| back to the default, so handle anything that
-    // checks |step_| before resetting.
+  override disconnectedCallback(): void {
+    this.cancelCurrentEnroll();
+  }
+
+  private cancelCurrentEnroll(): void {
     if (this.step_ !== FingerprintSetupStep.READY) {
       this.browserProxy_.cancelCurrentEnroll();
     }
+    // Note: reset_ resets |step_| back to the default, so handle anything that
+    // checks |step_| before resetting.
+    this.reset_();
+  }
 
+  private closeDialog(): void {
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }
-
-    this.reset_();
   }
 
   private clearSensorMessageTimeout_(): void {
@@ -190,12 +192,12 @@ class SettingsSetupFingerprintDialogElement extends
   }
 
   /**
-   * Closes the dialog.
+   * Cancel the current enrollment and closes the dialog.
+   * Important to cancel first while we know the current state (step_).
    */
   private onClose_(): void {
-    if (this.$.dialog.open) {
-      this.$.dialog.close();
-    }
+    this.cancelCurrentEnroll();
+    this.closeDialog();
   }
 
   /**
@@ -237,7 +239,8 @@ class SettingsSetupFingerprintDialogElement extends
    */
   private onScreenLocked_(screenIsLocked: boolean): void {
     if (screenIsLocked) {
-      this.close();
+      this.cancelCurrentEnroll();
+      this.closeDialog();
     }
   }
 
