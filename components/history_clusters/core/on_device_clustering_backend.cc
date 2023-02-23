@@ -443,7 +443,10 @@ void OnDeviceClusteringBackend::DispatchGetClustersForUIToBackgroundThread(
           clustering_request_source, base::OwnedRef(std::move(filter_params)),
           engagement_score_provider_ != nullptr, std::move(clusters),
           base::OwnedRef(std::move(entity_metadata_map)),
-          /*calculate_triggerability=*/true),
+          // Only Journeys has both non-prominent and prominent UI surfaces and
+          // requires searchability.
+          /*calculate_triggerability=*/clustering_request_source ==
+              ClusteringRequestSource::kJourneysPage),
       std::move(callback));
 }
 
@@ -534,7 +537,8 @@ OnDeviceClusteringBackend::GetClustersForUIOnBackgroundThread(
             &entity_id_to_entity_metadata_map));
   }
   cluster_processors.push_back(std::make_unique<FilterClusterProcessor>(
-      clustering_request_source, filter_params));
+      clustering_request_source, filter_params,
+      engagement_score_provider_is_valid));
   // TODO(b/265301309): Figure out if we should dedupe in the clustering
   // processing step instead so that the filter is applied correctly.
 

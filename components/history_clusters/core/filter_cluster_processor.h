@@ -13,18 +13,40 @@ namespace history_clusters {
 enum class ClusteringRequestSource;
 struct QueryClustersFilterParams;
 
+// The reasons why a cluster can be filtered via this processor.
+enum class ClusterFilterReason {
+  kNotFiltered = 0,
+  kNotEnoughImages = 1,
+  kNoCategoryMatch = 2,
+  kNotSearchInitiated = 3,
+  kNoRelatedSearches = 4,
+  kNotEnoughInterestingVisits = 5,
+  kSingleVisit = 6,
+  kNotContentVisible = 7,
+
+  // Add above here and make sure to keep `ClusterFilterReason` up to date in
+  // enums.xml.
+
+  kMaxValue = kNotContentVisible
+};
+
 // A cluster processor that removes clusters that do not match the filter.
 class FilterClusterProcessor : public ClusterProcessor {
  public:
   explicit FilterClusterProcessor(
       ClusteringRequestSource clustering_request_source,
-      QueryClustersFilterParams& filter_params);
+      QueryClustersFilterParams& filter_params,
+      bool engagement_score_provider_is_valid);
   ~FilterClusterProcessor() override;
 
   // ClusterProcessor:
   void ProcessClusters(std::vector<history::Cluster>* clusters) override;
 
  private:
+  // Returns whether `cluster` matches the filter as specified by
+  // `filter_params_`.
+  bool DoesClusterMatchFilter(const history::Cluster& cluster) const;
+
   // The clustering request source that requires this filtering. Used for
   // metrics purposes.
   ClusteringRequestSource clustering_request_source_;
@@ -35,6 +57,11 @@ class FilterClusterProcessor : public ClusterProcessor {
 
   // The parameters that the clusters are filtered with.
   const raw_ref<QueryClustersFilterParams> filter_params_;
+
+  // Whether the engagement score provider is valid and the "noisiness" of a
+  // visit should be considered as a filter for showing on prominent UI
+  // surfaces.
+  bool engagement_score_provider_is_valid_;
 };
 
 }  // namespace history_clusters

@@ -857,6 +857,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="History.Clusters.Backend.FilterClusterProcessor.ClusterFilterReason.{Source}"
+    enum="ClusterFilterReason" expires_after="2023-08-08">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Logs the reason why a cluster was filtered out of the return set for each
+    cluster provided to the clustering backend when invoked by {Source}. Note
+    that a single cluster can log multiple values in this metric if it is
+    ineligible for multiple reasons.
+  </summary>
+  <token key="Source" variants="ClusteringRequestSource"/>
+</histogram>
+
+<histogram
     name="History.Clusters.Backend.FilterClusterProcessor.NumClusters.{Segment}{Source}"
     units="ms" expires_after="2023-08-08">
   <owner>sophiechang@chromium.org</owner>
