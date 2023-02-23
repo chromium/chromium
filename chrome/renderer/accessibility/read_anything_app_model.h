@@ -7,6 +7,7 @@
 
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_selection.h"
 
 namespace ui {
@@ -37,6 +38,29 @@ class ReadAnythingAppModel {
   int32_t start_offset() const { return start_offset_; }
   int32_t end_offset() const { return end_offset_; }
 
+  bool distillation_in_progress() const { return distillation_in_progress_; }
+  const ukm::SourceId& active_ukm_source_id() const {
+    return active_ukm_source_id_;
+  }
+  const ui::AXTreeID& active_tree_id() const { return active_tree_id_; }
+
+#if DCHECK_IS_ON()
+  const ui::AXTreeID& pending_updates_bundle_id() const {
+    return pending_updates_bundle_id_;
+  }
+  void SetPendingUpdatesBundleId(ui::AXTreeID id) {
+    pending_updates_bundle_id_ = id;
+  }
+#endif
+
+  void SetDistillationInProgress(bool distillation) {
+    distillation_in_progress_ = distillation;
+  }
+  void SetActiveUkmSourceId(ukm::SourceId source_id) {
+    active_ukm_source_id_ = source_id;
+  }
+  void SetActiveTreeId(ui::AXTreeID tree_id) { active_tree_id_ = tree_id; }
+
   void SetStart(ui::AXNodeID start_node_id, int32_t start_offset);
   void SetEnd(ui::AXNodeID end_node_id, int32_t end_offset);
 
@@ -50,6 +74,23 @@ class ReadAnythingAppModel {
       read_anything::mojom::LetterSpacing letter_spacing) const;
   double GetLineSpacingValue(
       read_anything::mojom::LineSpacing line_spacing) const;
+
+  // The AXTreeID of the currently active web contents.
+  ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
+
+  // The UKM source ID of the main frame of the active web contents, whose
+  // AXTree has ID active_tree_id_. This is used for metrics collection.
+  ukm::SourceId active_ukm_source_id_ = ukm::kInvalidSourceId;
+
+  // Distillation is slow and happens out-of-process when Screen2x is running.
+  // This boolean marks when distillation is in progress to avoid sending
+  // new distillation requests during that time.
+  bool distillation_in_progress_ = false;
+
+#if DCHECK_IS_ON()
+  // The bundle ID for the pending updates.
+  ui::AXTreeID pending_updates_bundle_id_ = ui::AXTreeIDUnknown();
+#endif
 
   // Theme information.
   std::string font_name_ = kReadAnythingDefaultFontName;

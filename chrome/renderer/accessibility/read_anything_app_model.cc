@@ -23,6 +23,7 @@ void ReadAnythingAppModel::Reset() {
   start_offset_ = -1;
   end_offset_ = -1;
   has_selection_ = false;
+  distillation_in_progress_ = false;
 }
 
 void ReadAnythingAppModel::ResetSelection(ui::AXSelection selection) {
