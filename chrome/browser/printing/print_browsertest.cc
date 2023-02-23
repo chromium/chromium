@@ -2663,6 +2663,10 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
   // PrintViewManagerBase::Observer:
+  void OnRegisterSystemPrintClient(bool succeeded) override {
+    system_print_registration_succeeded_ = succeeded;
+  }
+
   void OnDidPrintDocument() override {
     ++did_print_document_count_;
     CheckForQuit();
@@ -2716,7 +2720,7 @@ class SystemAccessProcessPrintBrowserTestBase
   }
 
 #if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
-  void SystemPrintFromPreviewOnceReadyAndLoaded() {
+  void SystemPrintFromPreviewOnceReadyAndLoaded(bool wait_for_callback) {
     // First invoke the Print Preview dialog with `StartPrint()`.
     PrintPreviewObserver print_preview_observer(/*wait_for_loaded=*/true);
     StartPrint(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -2747,7 +2751,9 @@ class SystemAccessProcessPrintBrowserTestBase
     // result, just ignore the error instead.  Rely upon tests catching any
     // failure through the use of other expectation checks.
     std::ignore = content::ExecJs(preview_dialog, kPrintWithSystemDialogScript);
-    WaitUntilCallbackReceived();
+    if (wait_for_callback) {
+      WaitUntilCallbackReceived();
+    }
   }
 #endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
@@ -2806,6 +2812,10 @@ class SystemAccessProcessPrintBrowserTestBase
   void PrimeForAccessDeniedErrorsInDocumentDone() {
     test_printing_context_factory()->SetAccessDeniedErrorOnDocumentDone(
         /*cause_errors=*/true);
+  }
+
+  const absl::optional<bool> system_print_registration_succeeded() const {
+    return system_print_registration_succeeded_;
   }
 
   bool did_use_default_settings() const { return did_use_default_settings_; }
@@ -2968,6 +2978,7 @@ class SystemAccessProcessPrintBrowserTestBase
   TestPrinterQuery::PrintCallbacks test_print_job_worker_callbacks_;
   TestPrintJobWorkerOop::PrintCallbacks test_print_job_worker_oop_callbacks_;
   CreatePrinterQueryCallback test_create_printer_query_callback_;
+  absl::optional<bool> system_print_registration_succeeded_;
   bool did_use_default_settings_ = false;
   bool did_get_settings_with_ui_ = false;
   bool print_backend_service_use_detected_ = false;
@@ -3611,7 +3622,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessPrintBrowserTest,
     // TODO(crbug.com/1393505)  Fill in expected events once the printing stack
     // updates to support this scenario with out-of-process are in place.
   }
-  SystemPrintFromPreviewOnceReadyAndLoaded();
+  SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
 
 #if !BUILDFLAG(IS_WIN)
   if (GetParam() == PrintBackendFeatureVariation::kInBrowserProcess) {
@@ -3895,6 +3906,62 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   // Cleanup before test shutdown.
   PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
+                       SystemPrintFromPrintPreviewConcurrent) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // Pretend that another tab has started a system print.
+  // TODO(crbug.com/809738)  Improve on this test by using a persistent fake
+  // system print dialog.
+  absl::optional<PrintBackendServiceManager::ClientId> client_id =
+      PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
+  ASSERT_TRUE(client_id.has_value());
+
+  // Now do a print preview which will try to switch to doing system print.
+#if BUILDFLAG(IS_LINUX)
+  // The expected events for this are:
+  // 1.  Start printing.
+  // 2.  The document is rendered.
+  // 3.  Receive document done notification.
+  // 4.  Wait for the one print job to be destroyed, to ensure printing
+  //     finished cleanly before completing the test.
+  SetNumExpectedMessages(/*num=*/4);
+
+  constexpr bool kWaitForCallback = true;
+#else
+  // Inability to support this should be detected immediately without needing
+  // to wait for callback.
+  constexpr bool kWaitForCallback = false;
+#endif
+
+  SystemPrintFromPreviewOnceReadyAndLoaded(kWaitForCallback);
+
+  // With the exception of Linux, concurrent system print is not allowed.
+  ASSERT_TRUE(system_print_registration_succeeded().has_value());
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(*system_print_registration_succeeded());
+#else
+  // The denied concurrent print is silent without an error.
+  EXPECT_FALSE(*system_print_registration_succeeded());
+  EXPECT_EQ(error_dialog_shown_count(), 0u);
+#endif
+
+  // Cleanup before test shutdown.
+  PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
+}
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
                        StartBasicPrintUseDefaultFails) {

@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UseDefaultSettings) {
   EXPECT_EQ(settings->get_settings().dpi(), kPrintSettingsDefaultDpi);
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, AskUserForSettings) {
   LaunchService();
   AddDefaultPrinter();
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, AskUserForSettings) {
   EXPECT_EQ(settings->get_settings().copies(), kPrintSettingsCopies);
   EXPECT_EQ(settings->get_settings().dpi(), kPrintSettingsDefaultDpi);
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   LaunchService();

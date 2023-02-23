@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
@@ -226,6 +227,18 @@ void PrintViewManagerBase::PrintForPrintPreview(
     content::RenderFrameHost* rfh,
     PrinterHandler::PrintCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
+      job_settings.FindBool(kSettingShowSystemDialog).value_or(false)) {
+    if (!RegisterSystemPrintClient()) {
+      // Platform unable to support system print dialog at this time, treat
+      // this as a cancel.
+      std::move(callback).Run(
+          base::Value("Concurrent system print not allowed"));
+      return;
+    }
+  }
+#endif
   PrintSettingsCallback settings_callback =
       base::BindOnce(&PrintViewManagerBase::OnPrintSettingsDone,
                      weak_ptr_factory_.GetWeakPtr(), print_data,
@@ -284,8 +297,10 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(printer_query);
 
-  // Check if the job was cancelled. This should only happen on Windows when
-  // the system dialog is cancelled.
+  // Check if the job was cancelled.  With out-of-process printing, this could
+  // happen if we detect that another system print dialog is already being
+  // displayed.  Otherwise this should only happen on Windows when the system
+  // dialog is cancelled.
   if (printer_query->last_status() == mojom::ResultCode::kCanceled) {
     queue_->QueuePrinterQuery(std::move(printer_query));
 #if BUILDFLAG(IS_WIN)
@@ -1048,12 +1063,14 @@ bool PrintViewManagerBase::RegisterSystemPrintClient() {
   DCHECK(!query_with_ui_client_id_.has_value());
   query_with_ui_client_id_ =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
-  if (!query_with_ui_client_id_.has_value()) {
-    DVLOG(1) << "Multiple system print clients not allowed, skipping user "
-                "request.";
-    return false;
+  bool registered = query_with_ui_client_id_.has_value();
+  if (!registered) {
+    PRINTER_LOG(DEBUG) << "Unable to initiate a concurrent system print dialog";
   }
-  return true;
+  for (auto& observer : GetObservers()) {
+    observer.OnRegisterSystemPrintClient(registered);
+  }
+  return registered;
 }
 
 void PrintViewManagerBase::UnregisterSystemPrintClient() {
