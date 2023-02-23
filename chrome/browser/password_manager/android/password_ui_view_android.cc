@@ -77,8 +77,7 @@ PasswordUIViewAndroid::SerializationResult SerializePasswords(
   // Write the serialized data in CSV.
   std::string data =
       password_manager::PasswordCSVWriter::SerializePasswords(credentials);
-  int bytes_written = base::WriteFile(export_file, data.data(), data.size());
-  if (bytes_written != base::checked_cast<int>(data.size())) {
+  if (!base::WriteFile(export_file, data)) {
     return {
         0, std::string(),
         logging::SystemErrorCodeToString(logging::GetLastSystemErrorCode())};
