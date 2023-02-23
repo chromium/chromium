@@ -15,6 +15,7 @@ FailedUkmDatabaseTest.*
 FeatureAggregatorImplTest.*
 FeatureListQueryProcessorTest.*
 FeedUserModelTest.*
+FieldTrialRecorderTest.*
 FrequentFeatureUserModelTest.*
 HistogramSignalHandlerTest.*
 HistoryDelegateImplTest.*
