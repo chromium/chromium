@@ -294,6 +294,30 @@ class MainState {
   }
 
   /**
+   * @return {?function(string): boolean}
+   * @public
+   */
+  getFilter() {
+    const getRegExpOrNull = (s) => {
+      if (s) {
+        try {
+          return new RegExp(s);
+        } catch (err) {
+        }
+      }
+      return null;
+    };
+
+    const includeRE = getRegExpOrNull(this.stInclude.get());
+    const excludeRE = getRegExpOrNull(this.stExclude.get());
+    if (includeRE) {
+      return excludeRE ? (s) => includeRE.test(s) && !excludeRE.test(s) :
+                         (s) => includeRE.test(s);
+    }
+    return excludeRE ? (s) => !excludeRE.test(s) : null;
+  }
+
+  /**
    * @return {boolean}
    * @public
    */
@@ -456,38 +480,47 @@ function _startListeners() {
 }
 
 function _makeIconTemplateGetter() {
-  const getIcon = (q) => assertNotNull(g_el.divIcons.querySelector(q));
+  const getSymbolIcon = (q) => assertNotNull(g_el.divIcons.querySelector(q));
 
   /**
    * @type {{[type:string]: SVGSVGElement}} Icon elements
    * that correspond to each symbol type.
    */
   const symbolIcons = {
-    D: getIcon('.foldericon'),
-    G: getIcon('.groupicon'),
-    J: getIcon('.javaclassicon'),
-    F: getIcon('.fileicon'),
-    b: getIcon('.bssicon'),
-    d: getIcon('.dataicon'),
-    r: getIcon('.readonlyicon'),
-    t: getIcon('.codeicon'),
-    R: getIcon('.relroicon'),
-    x: getIcon('.dexicon'),
-    m: getIcon('.dexmethodicon'),
-    p: getIcon('.localpakicon'),
-    P: getIcon('.nonlocalpakicon'),
-    o: getIcon('.othericon'),  // used as default icon
+    D: getSymbolIcon('.foldericon'),
+    G: getSymbolIcon('.groupicon'),
+    J: getSymbolIcon('.javaclassicon'),
+    F: getSymbolIcon('.fileicon'),
+    b: getSymbolIcon('.bssicon'),
+    d: getSymbolIcon('.dataicon'),
+    r: getSymbolIcon('.readonlyicon'),
+    t: getSymbolIcon('.codeicon'),
+    R: getSymbolIcon('.relroicon'),
+    x: getSymbolIcon('.dexicon'),
+    m: getSymbolIcon('.dexmethodicon'),
+    p: getSymbolIcon('.localpakicon'),
+    P: getSymbolIcon('.nonlocalpakicon'),
+    o: getSymbolIcon('.othericon'),  // used as default icon
     '*': null,
   };
 
-  const getDiffStatusIcons = (q) => {
+  const getDiffStatusIcon = (q) => {
     return assertNotNull(g_el.divDiffStatusIcons.querySelector(q));
   };
   const statusIcons = {
-    added: getDiffStatusIcons('.addedicon'),
-    removed: getDiffStatusIcons('.removedicon'),
-    changed: getDiffStatusIcons('.changedicon'),
-    unchanged: getDiffStatusIcons('.unchangedicon'),
+    added: getDiffStatusIcon('.addedicon'),
+    removed: getDiffStatusIcon('.removedicon'),
+    changed: getDiffStatusIcon('.changedicon'),
+    unchanged: getDiffStatusIcon('.unchangedicon'),
+  };
+
+  const getMetricsIcon = (q) => {
+    return assertNotNull(g_el.divMetricsIcons.querySelector(q))
+  };
+  const metricsIcons = {
+    group: getSymbolIcon('.groupicon'),  // Reuse.
+    file: getSymbolIcon('.fileicon'),    // Reuse.
+    metrics: getMetricsIcon('.metricsicon'),
   };
 
   /** @type {Map<string, {color:string, description:string}>} */
@@ -563,11 +596,20 @@ function _makeIconTemplateGetter() {
     return statusIcons[key].cloneNode(true);
   }
 
+  /**
+   * @param {string} key
+   * @return {SVGSVGElement}
+   */
+  function getMetricsIconTemplate(key) {
+    return metricsIcons[key].cloneNode(true);
+  }
+
   return {
     getIconTemplate,
     getIconTemplateWithFill,
     getIconStyle,
-    getDiffStatusTemplate
+    getDiffStatusTemplate,
+    getMetricsIconTemplate,
   };
 }
 
@@ -661,7 +703,8 @@ const {
   getIconTemplate,
   getIconTemplateWithFill,
   getIconStyle,
-  getDiffStatusTemplate
+  getDiffStatusTemplate,
+  getMetricsIconTemplate,
 } = _makeIconTemplateGetter();
 const {getSizeContents, setSizeClasses} = _makeSizeTextGetter();
 _startListeners();

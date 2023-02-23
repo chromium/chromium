@@ -42,6 +42,34 @@
  */
 
 /**
+ * @typedef {Object} MetricsItem
+ * @property {string} name - Item name, used for UI and grouping for total.
+ * @property {number} value - Metrics value, can be bytes or count.
+ * @property {number|undefined} beforeValue - Optional value for "before".
+ */
+
+/**
+ * @typedef {Object} MetricsTreeNode
+ * @property {string|undefined} name - The full name of the node, and is shown
+ *     in the UI.
+ * @property {?MetricsTreeNode} parent - Parent tree node, null if this is a
+ *     root node.
+ * @property {!Array<!MetricsTreeNode>|undefined} children - Child nodes.
+ *     Non-existent or null indicates this is a leaf node.
+ * @property {!Array<!MetricsItem>|undefined} items - For leaf nodes only, a
+ *     list of named values for a metric. Mutually exclusive with |liveItems|.
+ * @property {?function(function(string): boolean): !Array<!MetricsItem>|
+ *            undefined} liveItems - For leaf nodes only, function to return a
+ *     list of named values for a metric, taking a filtering function. To be
+ *     included, the filter is eithe rnull, or needs to return true for names of
+ *     all ancestor with |isFiltered| true. Mutually exclusive with |item|.
+ * @property {boolean|undefined} isFiltered - For group nodes only, whether
+ *     filtering is applied to the node.
+ * @property {string|undefined} iconKey - For group nodes only, input for
+ *     getMetricsIconTemplate() to retrieve icon.
+ */
+
+/**
  * Stats about a node's descendants of a certain type.
  * @typedef {Object} TreeNodeChildStats
  * @property {number} size - Byte size.
@@ -200,7 +228,7 @@ const STATE_KEY = {
 };
 
 /**
- * Throws error if |cond| is false.
+ * Throws error if |cond| is falsey.
  * @param {boolean} cond The condition to check.
  * @param {string=} msg Message on assert failure.
  */
@@ -210,13 +238,13 @@ function assert(cond, msg = 'Assert fail.') {
 }
 
 /**
- * Throws error if |obj| is null; returns |obj| otherwise.
- * @param {?Object} obj The condition to check.
+ * Throws error if |obj| is null or undefined; returns |obj| otherwise.
+ * @param {?Object} obj The (non-primitive) object to check.
  * @param {string=} msg Message on assert failure.
  * @return {!Object}
  */
 function assertNotNull(obj, msg = 'Assert fail: Object is null.') {
-  if (!obj)
+  if (obj == null)  // Using == to also include undefined.
     throw new Error(msg);
   return obj;
 }
@@ -302,4 +330,28 @@ function formatPercent(num, lo = 0, hi = 0) {
     minimumFractionDigits: lo,
     maximumFractionDigits: hi,
   });
+}
+
+/**
+ * Combines multiple iterators (if non-null) into a single iterator.
+ * @param {...?Iterable<*>} itList
+ * @generator
+ */
+function* joinIter(...itList) {
+  for (const it of itList) {
+    if (it) {
+      for (const v of it) {
+        yield v;
+      }
+    }
+  }
+}
+
+/**
+ * Returns a sorted list of disstinct strings taken from an iterator.
+ * @param {!Iterable<string>} it
+ * @return {!Array<string>}
+ */
+function uniquifyIterToString(it) {
+  return Array.from(new Set(it)).sort();
 }

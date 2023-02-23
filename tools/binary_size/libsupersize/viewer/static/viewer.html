@@ -415,7 +415,13 @@ found in the LICENSE file.
         <title>Unchanged</title>
       </svg>
     </div>
-    <!-- Template for tree groups and leaves -->
+    <div hidden id="div-metrics-icons">
+      <svg class="icon metricsicon" height="24" width="24" fill="#716f71">
+        <title>Metrics</title>
+        <path d="M9.5 21v-18h4v18ZM2 21v-7h4v7ZM17 21v-12h4v12Z"/>
+      </svg>
+    </div>
+    <!-- Templates for symbol tree groups and leaves -->
     <template id="tmpl-symbol-tree-group">
       <li role="treeitem" aria-expanded="false"
           aria-describedby="div-infocard-artifact">
@@ -434,8 +440,8 @@ found in the LICENSE file.
         </span>
       </li>
     </template>
-    <!-- Tree view -->
-    <main class="tree-view">
+    <!-- Tree View -->
+    <main id="main-tree-view" class="top-view">
       <header class="tree-header">
         <span class="subtitle">Name</span>
         <span id="span-size-header" class="subtitle">Size</span>
@@ -447,8 +453,35 @@ found in the LICENSE file.
     <div id="div-no-symbols-msg" style="display:none">
       This diff contains no symbols (no sizes changed).
     </div>
-    <!-- Metadata Node -->
-    <div id="div-metadata-view" class="metadata"
+    <!-- Templates for metrics tree groups and leaves -->
+    <template id="tmpl-metrics-tree-group">
+      <li role="treeitem" aria-expanded="false">
+        <a class="node" href="#" tabindex="-1" role="presentation">
+          <span class="symbol-name"></span>
+        </a>
+        <ul role="group"></ul>
+      </li>
+    </template>
+    <template id="tmpl-metrics-tree-leaf">
+      <li role="treeitem">
+        <span class="node leaf">
+          <table></table>
+        </span>
+      </li>
+    </template>
+    <!-- Metrics View -->
+    <div id="div-metrics-view" class="top-view">
+      <ul id="ul-metrics-tree" class="tree" role="tree"
+          aria-labelledby="h1-headline">
+        <li>
+          <a class="node" tabindex="0" role="presentation">
+            <span class="metadata-symbol-name">Metrics</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <!-- Metadata View -->
+    <div id="div-metadata-view" class="top-view"
          title="Metadata from .size/.sizediff file">
       <a class="node" tabindex="0" role="presentation">
         <svg width="24" height="24" viewBox="0 0 24 24"
@@ -460,7 +493,7 @@ found in the LICENSE file.
         <span class="metadata-symbol-name">Metadata</span>
       </a>
     </div>
-    <pre id="pre-metadata-content" class="metadata"></pre>
+    <pre id="pre-metadata-content" class="top-view"></pre>
     <!-- Symbol and artifact breakdown cards -->
     <link href="infocard.css" rel="stylesheet">
     <div class="infocards">

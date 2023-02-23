@@ -61,14 +61,15 @@ body {
   grid-area: options;
 }
 
+.top-view {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
 .symbols {
   grid-area: symbols;
   padding: 0 48px;
   margin-bottom: 240px;
-}
-.tree-view {
-  margin: 0 auto;
-  max-width: 1200px;
 }
 
 .headline {
@@ -281,14 +282,55 @@ ul {
   word-break: break-word;
 }
 
-.metadata {
-  margin: 0 auto;
-  max-width: 1200px;
-}
-
+#div-metrics-view:not(.active),
 #div-metadata-view:not(.active),
 #pre-metadata-content:not(.active) {
   display: none;
+}
+
+#div-metrics-view .node.leaf {
+  display: block;
+}
+
+#div-metrics-view .node.leaf::before {
+  content: none;
+}
+
+#div-metrics-view table {
+  border-collapse: collapse;
+  margin-left: 25px;
+}
+
+#div-metrics-view table td {
+  border: 1px solid rgba(0,0,0,0.25);
+  min-width: 80px;
+}
+
+#div-metrics-view table td.number {
+  text-align: right;
+}
+
+#div-metrics-view table tr td {
+  background: #fff;
+}
+
+#div-metrics-view table .positive td {
+  background: #fcc;
+}
+
+#div-metrics-view table .negative td {
+  background: #dfd;
+}
+
+#div-metrics-view table .positive .diff {
+  color: #f00;
+}
+#div-metrics-view table .positive .diff:before {
+  content: '+';
+}
+
+#div-metrics-view table .negative .diff {
+  color: #080;
 }
 
 #div-review-info{
