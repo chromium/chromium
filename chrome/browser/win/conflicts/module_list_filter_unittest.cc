@@ -24,14 +24,6 @@ namespace {
 // Typedef for convenience.
 using ModuleInfo = std::pair<ModuleInfoKey, ModuleInfoData>;
 
-// Writes the |contents| to |file_path|. Returns true on success.
-bool WriteStringToFile(const base::FilePath& file_path,
-                       const std::string& contents) {
-  int result = base::WriteFile(file_path, contents.data(),
-                               static_cast<int>(contents.size()));
-  return contents.size() == static_cast<size_t>(result);
-}
-
 std::string GetCodeId(uint32_t module_time_date_stamp, uint32_t module_size) {
   return base::StringPrintf("%08X%x", module_time_date_stamp, module_size);
 }
@@ -108,7 +100,7 @@ class ModuleListBuilder {
   bool Finalize() {
     std::string contents;
     return module_list_.SerializeToString(&contents) &&
-           WriteStringToFile(module_list_path_, contents);
+           base::WriteFile(module_list_path_, contents);
   }
 
  private:

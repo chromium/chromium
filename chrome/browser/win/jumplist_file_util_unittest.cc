@@ -22,9 +22,7 @@ const int kFileDeleteLimitForTest = 1;
 // Simple function to dump some text into a new file.
 void CreateTextFile(const base::FilePath& file_name,
                     const std::string& contents) {
-  // Since |contents|'s length is small here, static_cast won't cause overflow.
-  ASSERT_EQ(static_cast<int>(contents.length()),
-            base::WriteFile(file_name, contents.data(), contents.length()));
+  ASSERT_TRUE(base::WriteFile(file_name, contents));
   ASSERT_TRUE(base::PathExists(file_name));
 }
 

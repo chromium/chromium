@@ -169,9 +169,7 @@ class ModuleBlocklistCacheUpdaterTest : public testing::Test,
 
     std::string contents;
     if (!module_list.SerializeToString(&contents) ||
-        base::WriteFile(module_list_path, contents.data(),
-                        static_cast<int>(contents.size())) !=
-            static_cast<int>(contents.size())) {
+        !base::WriteFile(module_list_path, contents)) {
       return nullptr;
     }
 
