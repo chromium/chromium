@@ -5914,13 +5914,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kAsyncDns)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"download-auto-resumption-native",
-     flag_descriptions::kDownloadAutoResumptionNativeName,
-     flag_descriptions::kDownloadAutoResumptionNativeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(download::features::kDownloadAutoResumptionNative)},
-#endif
-
     {"enable-new-download-backend",
      flag_descriptions::kEnableNewDownloadBackendName,
      flag_descriptions::kEnableNewDownloadBackendDescription, kOsAll,

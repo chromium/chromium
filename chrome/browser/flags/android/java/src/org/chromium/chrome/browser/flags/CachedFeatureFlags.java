@@ -52,8 +52,6 @@ public class CachedFeatureFlags {
             ImmutableMap.<String, String>builder()
                     .put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED,
                             ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED)
-                    .put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE,
-                            ChromePreferenceKeys.FLAGS_CACHED_DOWNLOAD_AUTO_RESUMPTION_IN_NATIVE)
                     .put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT,
                             ChromePreferenceKeys
                                     .FLAGS_CACHED_SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT)

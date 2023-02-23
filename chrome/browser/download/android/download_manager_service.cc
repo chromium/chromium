@@ -110,10 +110,7 @@ void DownloadManagerService::CreateAutoResumptionHandler() {
   auto config = std::make_unique<download::AutoResumptionHandler::Config>();
   config->auto_resumption_size_limit =
       DownloadUtils::GetAutoResumptionSizeLimit();
-  // TODO(crbug.com/1414618): This flag should be removed and default to true.
-  config->is_auto_resumption_enabled_in_native =
-      chrome::android::IsJavaDrivenFeatureEnabled(
-          download::features::kDownloadAutoResumptionNative);
+  config->is_auto_resumption_enabled_in_native = true;
   download::AutoResumptionHandler::Create(
       std::move(network_listener), std::move(task_manager), std::move(config),
       base::DefaultClock::GetInstance());

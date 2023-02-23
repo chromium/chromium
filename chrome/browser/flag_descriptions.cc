@@ -1129,11 +1129,6 @@ const char kExperimentalRgbKeyboardPatternsName[] =
 const char kExperimentalRgbKeyboardPatternsDescription[] =
     "Enable experimental RGB Keyboard patterns support on supported devices.";
 
-const char kDownloadAutoResumptionNativeName[] =
-    "Enable download auto-resumption in native";
-const char kDownloadAutoResumptionNativeDescription[] =
-    "Enables download auto-resumption in native";
-
 const char kDownloadBubbleName[] = "Enable download bubble";
 const char kDownloadBubbleDescription[] =
     "Enables the download bubble instead of the download shelf.";

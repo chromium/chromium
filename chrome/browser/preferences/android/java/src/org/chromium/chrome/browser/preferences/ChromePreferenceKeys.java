@@ -347,12 +347,7 @@ public final class ChromePreferenceKeys {
      */
     public static final String FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED =
             "command_line_on_non_rooted_enabled";
-    /**
-     * Whether or not the download auto-resumption is enabled in native.
-     * Default value is true.
-     */
-    public static final String FLAGS_CACHED_DOWNLOAD_AUTO_RESUMPTION_IN_NATIVE =
-            "download_auto_resumption_in_native";
+
     /**
      * Whether or not the grid tab switcher is enabled.
      * Default value is false.

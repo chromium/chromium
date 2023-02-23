@@ -661,9 +661,6 @@ extern const char kMemlogStackModeDescription[];
 extern const char kMemlogStackModeNative[];
 extern const char kMemlogStackModeNativeWithThreadNames[];
 
-extern const char kDownloadAutoResumptionNativeName[];
-extern const char kDownloadAutoResumptionNativeDescription[];
-
 extern const char kDownloadBubbleName[];
 extern const char kDownloadBubbleDescription[];
 

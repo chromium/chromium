@@ -13,15 +13,6 @@ BASE_FEATURE(kUseDownloadOfflineContentProvider,
              "UseDownloadOfflineContentProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDownloadAutoResumptionNative,
-             "DownloadsAutoResumptionNative",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 BASE_FEATURE(kParallelDownloading,
              "ParallelDownloading",
 #if BUILDFLAG(IS_ANDROID)
