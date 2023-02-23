@@ -164,7 +164,8 @@ chromium-metrics-reviews@google.com.
   <owner>tapted@chromium.org</owner>
   <summary>
     The number of times v1 apps are launched grouped by
-    extension_misc::AppLaunchBuckets. See also Apps.AppLaunch for v2 apps.
+    extension_misc::AppLaunchBuckets. See also Apps.AppLaunch for v2 apps. Note
+    this was changed in 2023-02 to no longer count web app launches.
   </summary>
 </histogram>
 

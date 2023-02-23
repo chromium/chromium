@@ -31,8 +31,6 @@
 #include "base/functional/identity.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
@@ -77,7 +75,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -878,54 +875,6 @@ void WebAppPublisherHelper::Launch(
   if (!web_app) {
     std::move(on_complete).Run(nullptr);
     return;
-  }
-
-  switch (launch_source) {
-    case apps::LaunchSource::kUnknown:
-    case apps::LaunchSource::kFromParentalControls:
-      break;
-    case apps::LaunchSource::kFromAppListGrid:
-    case apps::LaunchSource::kFromAppListGridContextMenu:
-      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
-                                extension_misc::APP_LAUNCH_APP_LIST_MAIN,
-                                extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
-
-      break;
-    case apps::LaunchSource::kFromAppListQuery:
-    case apps::LaunchSource::kFromAppListQueryContextMenu:
-      UMA_HISTOGRAM_ENUMERATION("Extensions.AppLaunch",
-                                extension_misc::APP_LAUNCH_APP_LIST_SEARCH,
-                                extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
-      break;
-    case apps::LaunchSource::kFromAppListRecommendation:
-    case apps::LaunchSource::kFromShelf:
-    case apps::LaunchSource::kFromFileManager:
-    case apps::LaunchSource::kFromLink:
-    case apps::LaunchSource::kFromOmnibox:
-    case apps::LaunchSource::kFromChromeInternal:
-    case apps::LaunchSource::kFromKeyboard:
-    case apps::LaunchSource::kFromOtherApp:
-    case apps::LaunchSource::kFromMenu:
-    case apps::LaunchSource::kFromInstalledNotification:
-    case apps::LaunchSource::kFromTest:
-    case apps::LaunchSource::kFromArc:
-    case apps::LaunchSource::kFromSharesheet:
-    case apps::LaunchSource::kFromReleaseNotesNotification:
-    case apps::LaunchSource::kFromFullRestore:
-    case apps::LaunchSource::kFromSmartTextContextMenu:
-    case apps::LaunchSource::kFromDiscoverTabNotification:
-    case apps::LaunchSource::kFromManagementApi:
-    case apps::LaunchSource::kFromKiosk:
-    case apps::LaunchSource::kFromCommandLine:
-    case apps::LaunchSource::kFromBackgroundMode:
-    case apps::LaunchSource::kFromNewTabPage:
-    case apps::LaunchSource::kFromIntentUrl:
-    case apps::LaunchSource::kFromOsLogin:
-    case apps::LaunchSource::kFromProtocolHandler:
-    case apps::LaunchSource::kFromUrlHandler:
-    case apps::LaunchSource::kFromLockScreen:
-    case apps::LaunchSource::kFromAppHomePage:
-      break;
   }
 
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
