@@ -36,10 +36,6 @@ enum HumanReadableSize : int64_t;
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
 
-// The periodic removal task is ran to ensure any leftover items in the syncing
-// map are identified as being `available_offline` or 0 byte files.
-extern const base::TimeDelta kPeriodicRemovalInterval;
-
 // The PinManager first undergoes a setup phase, where it audits the current
 // disk space, pins all available files (disk space willing) then moves to
 // monitoring. This enum represents the various stages the setup goes through.
@@ -69,7 +65,7 @@ std::ostream& operator<<(std::ostream& out, Stage stage);
 // gathered.
 struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Number of free bytes on the stateful partition. Estimated at the beginning
-  // of the setup process and left unchanged afterwards.
+  // of the setup process and regularly updated afterwards.
   int64_t free_space = 0;
 
   // Estimated number of extra bytes that are required to store the files to
@@ -117,6 +113,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   Progress();
   Progress(const Progress&);
   Progress& operator=(const Progress&);
+
+  // Returns whether required_space + some margin is less than free_space.
+  bool HasEnoughFreeSpace() const;
 };
 
 // Manages bulk pinning of items via DriveFS. This class handles the following:
@@ -287,7 +286,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void OnFileModified(const mojom::FileChange& event);
 
   // Invoked on retrieval of available space in the `~/GCache` directory.
-  void OnFreeSpaceRetrieved(int64_t free_space);
+  void OnFreeSpaceRetrieved1(int64_t free_space);
+
+  void CheckFreeSpace();
+  void OnFreeSpaceRetrieved2(int64_t free_space);
 
   // Once the free disk space has been retrieved, this method will be invoked
   // after every batch of searches to Drive complete. This is required as the

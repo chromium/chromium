@@ -295,10 +295,23 @@ Progress::Progress() = default;
 Progress::Progress(const Progress&) = default;
 Progress& Progress::operator=(const Progress&) = default;
 
+bool Progress::HasEnoughFreeSpace() const {
+  // The free space should not go below this limit.
+  const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
+  const bool enough = required_space + margin <= free_space;
+  LOG_IF(ERROR, !enough) << "Not enough space: Free space "
+                         << HumanReadableSize(free_space)
+                         << " is less than required space "
+                         << HumanReadableSize(required_space) << " + margin "
+                         << HumanReadableSize(margin);
+  return enough;
+}
+
 // TODO(b/261530666): This was chosen arbitrarily, this should be experimented
 // with and potentially made dynamic depending on feedback of the in progress
 // queue.
-constexpr base::TimeDelta kPeriodicRemovalInterval = base::Seconds(10);
+constexpr base::TimeDelta kStalledFileInterval = base::Seconds(10);
+constexpr base::TimeDelta kFreeSpaceInterval = base::Seconds(60);
 
 bool PinManager::CanPin(const mojom::FileMetadata& md, const Path& path) {
   using Type = mojom::FileMetadata::Type;
@@ -532,14 +545,14 @@ void PinManager::Start() {
   files_to_track_.clear();
   DCHECK_EQ(progress_.syncing_files, 0);
 
-  VLOG(1) << "Calculating free space...";
+  VLOG(2) << "Getting free space...";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kGettingFreeSpace;
   NotifyProgress();
 
   space_getter_.Run(
       profile_path_.AppendASCII("GCache"),
-      base::BindOnce(&PinManager::OnFreeSpaceRetrieved, GetWeakPtr()));
+      base::BindOnce(&PinManager::OnFreeSpaceRetrieved1, GetWeakPtr()));
 }
 
 void PinManager::Stop() {
@@ -568,19 +581,18 @@ void PinManager::Enable(bool enabled) {
   }
 }
 
-void PinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
+void PinManager::OnFreeSpaceRetrieved1(const int64_t free_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (free_space < 0) {
-    LOG(ERROR) << "Cannot calculate free space";
+    LOG(ERROR) << "Cannot get free space";
     return Complete(Stage::kCannotGetFreeSpace);
   }
 
   progress_.free_space = free_space;
-  VLOG(1) << "Calculated free space " << HumanReadableSize(free_space) << " in "
-          << timer_.Elapsed().InMilliseconds() << " ms";
+  VLOG(1) << "Free space: " << HumanReadableSize(free_space);
 
-  VLOG(1) << "Calculating required space...";
+  VLOG(1) << "Listing files...";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kListingFiles;
   NotifyProgress();
@@ -589,6 +601,36 @@ void PinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
                              CreateMyDriveQuery());
   search_query_->GetNextPage(base::BindOnce(
       &PinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
+}
+
+void PinManager::CheckFreeSpace() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  VLOG(2) << "Getting free space...";
+  space_getter_.Run(
+      profile_path_.AppendASCII("GCache"),
+      base::BindOnce(&PinManager::OnFreeSpaceRetrieved2, GetWeakPtr()));
+}
+
+void PinManager::OnFreeSpaceRetrieved2(const int64_t free_space) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (free_space < 0) {
+    LOG(ERROR) << "Cannot get free space";
+    return Complete(Stage::kCannotGetFreeSpace);
+  }
+
+  progress_.free_space = free_space;
+  VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
+  NotifyProgress();
+
+  if (!progress_.HasEnoughFreeSpace()) {
+    return Complete(Stage::kNotEnoughSpace);
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&PinManager::CheckFreeSpace, GetWeakPtr()),
+      kFreeSpaceInterval);
 }
 
 void PinManager::OnSearchResultForSizeCalculation(
@@ -655,10 +697,7 @@ void PinManager::Complete(const Stage stage) {
 void PinManager::StartPinning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(1) << "Calculated required space "
-          << HumanReadableSize(progress_.required_space) << " in "
-          << timer_.Elapsed().InMilliseconds() << " ms";
-
+  VLOG(1) << "Listed files in " << timer_.Elapsed().InMilliseconds() << " ms";
   VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
   VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
   VLOG(1) << "Skipped: " << progress_.skipped_files << " files";
@@ -666,16 +705,7 @@ void PinManager::StartPinning() {
           << HumanReadableSize(progress_.bytes_to_pin);
   VLOG(1) << "To track: " << files_to_track_.size() << " files";
 
-  // The free space should not go below this limit.
-  const int64_t margin = cryptohome::kMinFreeSpaceInBytes;
-  const int64_t required_with_margin = progress_.required_space + margin;
-
-  if (progress_.free_space < required_with_margin) {
-    LOG(ERROR) << "Not enough space: Free space "
-               << HumanReadableSize(progress_.free_space)
-               << " is less than required space "
-               << HumanReadableSize(progress_.required_space) << " + margin "
-               << HumanReadableSize(margin);
+  if (!progress_.HasEnoughFreeSpace()) {
     return Complete(Stage::kNotEnoughSpace);
   }
 
@@ -691,8 +721,10 @@ void PinManager::StartPinning() {
   if (should_check_stalled_files_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
-        kPeriodicRemovalInterval);
+        kStalledFileInterval);
   }
+
+  CheckFreeSpace();
 
   PinSomeFiles();
   NotifyProgress();
@@ -998,7 +1030,7 @@ void PinManager::CheckStalledFiles() {
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&PinManager::CheckStalledFiles, GetWeakPtr()),
-      kPeriodicRemovalInterval);
+      kStalledFileInterval);
 }
 
 void PinManager::OnMetadataForCreatedFile(
