@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/components/device_activity/device_activity_controller.h"
 
-#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
@@ -85,7 +84,7 @@ class DeviceActivityControllerTest : public testing::Test {
   // The repeating callback is owned by this test class.
   base::RepeatingCallback<base::TimeDelta()> oobe_completed_callback_;
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<DeviceActivityController> device_activity_controller_;
 

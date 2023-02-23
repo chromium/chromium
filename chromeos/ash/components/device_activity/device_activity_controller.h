@@ -72,13 +72,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   // Stop Device Activity reporting.
   void Stop();
 
+  // Wrapper method for the PostTaskAndReplyWithResult, which is used to spawn
+  // a worker thread to check oobe completed file time delta.
+  void CheckOobeCompletedInWorker(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback);
+
   // Retry method every kOobeReadFailedRetryDelay minute until confirming
   // 1 minute has passed since /home/chronos/.oobe_completed file was written.
   // Maximum retry count is kNumberOfRetriesBeforeFail.
   void OnOobeFileWritten(
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback);
+      base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
+      base::TimeDelta time_since_oobe_file_written);
 
   void OnPsmDeviceActiveSecretFetched(
       PrefService* local_state,

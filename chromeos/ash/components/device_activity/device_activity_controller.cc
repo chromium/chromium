@@ -8,6 +8,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -256,8 +258,8 @@ void DeviceActivityController::Start(
       DeviceActivityClient::DeviceActivityMethod::
           kDeviceActivityControllerStart);
 
-  OnOobeFileWritten(local_state, url_loader_factory,
-                    std::move(check_oobe_completed_callback));
+  CheckOobeCompletedInWorker(local_state, url_loader_factory,
+                             std::move(check_oobe_completed_callback));
 }
 
 void DeviceActivityController::Stop() {
@@ -266,10 +268,25 @@ void DeviceActivityController::Stop() {
   }
 }
 
-void DeviceActivityController::OnOobeFileWritten(
+void DeviceActivityController::CheckOobeCompletedInWorker(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(check_oobe_completed_callback),
+      base::BindOnce(&DeviceActivityController::OnOobeFileWritten,
+                     weak_factory_.GetWeakPtr(), local_state,
+                     url_loader_factory, check_oobe_completed_callback));
+}
+
+void DeviceActivityController::OnOobeFileWritten(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
+    base::TimeDelta time_since_oobe_file_written) {
   // We block if the oobe completed file is not written.
   // ChromeOS devices should go through oobe to be considered a real device.
   // The ActivateDate is also only set after oobe is written.
@@ -280,9 +297,6 @@ void DeviceActivityController::OnOobeFileWritten(
                << "5 days.";
     return;
   }
-
-  base::TimeDelta time_since_oobe_file_written =
-      check_oobe_completed_callback.Run();
 
   if (time_since_oobe_file_written < base::Minutes(1)) {
     retry_oobe_completed_count_ += 1;
@@ -297,7 +311,7 @@ void DeviceActivityController::OnOobeFileWritten(
 
     oobe_completed_timer_->Start(
         FROM_HERE, kOobeReadFailedRetryDelay,
-        base::BindOnce(&DeviceActivityController::OnOobeFileWritten,
+        base::BindOnce(&DeviceActivityController::CheckOobeCompletedInWorker,
                        weak_factory_.GetWeakPtr(), local_state,
                        url_loader_factory,
                        std::move(check_oobe_completed_callback)));
