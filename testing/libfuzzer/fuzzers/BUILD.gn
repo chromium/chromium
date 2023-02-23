@@ -485,21 +485,24 @@ fuzzer_test("command_buffer_fuzzer") {
     "command_buffer_fuzzer/webgpu_support.h",
   ]
 
-  # This is a hack. For reasons I have not investigated, in non-debug builds the
-  # build fails at link time due to duplicate symbols from these source files.
-  # However, if these files are excluded entirely from the build then the same
-  # symbols are undefined in debug_true=true builds.
-  #
-  # It's not obviously worth the time to investigate right now.
-  if (is_debug) {
+  # This is a hack. These files should be pulled in as a result of the
+  # dependency on //gpu:webgpu which has a public dependency on
+  # //gpu/command_buffer/client:webgpu_sources, but for some reason these files
+  # get dropped in component builds, so manually add them to the sources here.
+  if (is_component_build) {
     sources += [
-      "//gpu/command_buffer/client/dawn_client_memory_transfer_service.cc",
-      "//gpu/command_buffer/client/dawn_client_memory_transfer_service.h",
-      "//gpu/command_buffer/client/dawn_client_serializer.cc",
-      "//gpu/command_buffer/client/dawn_client_serializer.h",
       "//gpu/command_buffer/client/webgpu_implementation.cc",
       "//gpu/command_buffer/client/webgpu_implementation.h",
     ]
+
+    if (use_dawn) {
+      sources += [
+        "//gpu/command_buffer/client/dawn_client_memory_transfer_service.cc",
+        "//gpu/command_buffer/client/dawn_client_memory_transfer_service.h",
+        "//gpu/command_buffer/client/dawn_client_serializer.cc",
+        "//gpu/command_buffer/client/dawn_client_serializer.h",
+      ]
+    }
   }
 
   deps = [
@@ -518,7 +521,6 @@ fuzzer_test("command_buffer_fuzzer") {
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_c_lib",
     "//gpu/command_buffer/client:gles2_implementation",
-    "//gpu/command_buffer/client:webgpu",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/command_buffer/service",
