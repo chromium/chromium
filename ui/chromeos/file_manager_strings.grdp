@@ -904,6 +904,9 @@
   <message name="IDS_FILE_BROWSER_SEARCH_OPTIONS_TYPES_VIDEOS" desc="Text shown in search options if search results are limited to videos">
     Videos
   </message>
+  <message name="IDS_FILE_BROWSER_SEARCH_RESULTS_LABEL" desc="Text shown as a breadcrumb to inform the user that they are viewing search results">
+    Search results
+  </message>
 
   <message name="IDS_FILE_BROWSER_DEFAULT_NEW_FOLDER_NAME" desc="The default name for a newly created folder.">
     New folder

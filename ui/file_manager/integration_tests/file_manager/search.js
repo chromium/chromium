@@ -541,3 +541,39 @@ testcase.resetSearchOptionsOnFolderChange = async () => {
       'All time', await getSelectedOptionText(appId, 'recency'));
   chrome.test.assertEq('All types', await getSelectedOptionText(appId, 'type'));
 };
+
+/**
+ * Checks that we are showing the correct message in breadcrumbs when search is
+ * active.
+ */
+testcase.showSearchResultMessageWhenSearching = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Check that we start with My Files
+  const beforeSearchPath =
+      await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
+  chrome.test.assertEq('/My files/Downloads', beforeSearchPath);
+
+  // Type something into the search query to start search.
+  await remoteCall.typeSearchText(appId, 'b');
+
+  // Wait for the search to fully expand.
+  await remoteCall.waitForElementLost(appId, '#search-wrapper[collapsed]');
+
+  // Check that the breadcumb shows that we are searching.
+  const duringSearchPath =
+      await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
+  chrome.test.assertEq('/Search results', duringSearchPath);
+
+  // Clear and close search.
+  await remoteCall.waitAndClickElement(appId, '#search-box .clear');
+  await remoteCall.waitAndClickElement(appId, '#search-button');
+
+  // Wait for the search to fully close.
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
+
+  // Expect the path to return to the original path.
+  const afterSearchPath =
+      await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
+  chrome.test.assertEq(beforeSearchPath, afterSearchPath);
+};
