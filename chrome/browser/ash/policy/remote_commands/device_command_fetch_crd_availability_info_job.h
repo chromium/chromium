@@ -23,8 +23,7 @@ class DeviceCommandFetchCrdAvailabilityInfoJob : public RemoteCommandJob {
 
   // `RemoteCommandJob` implementation:
   enterprise_management::RemoteCommand_Type GetType() const override;
-  void RunImpl(CallbackWithResult succeed_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
  private:
   void SendPayload(CallbackWithResult callback, bool is_in_managed_network);

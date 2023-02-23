@@ -57,9 +57,8 @@ enterprise_management::RemoteCommand_Type DeviceCommandRebootJob::GetType()
   return enterprise_management::RemoteCommand_Type_DEVICE_REBOOT;
 }
 
-void DeviceCommandRebootJob::RunImpl(CallbackWithResult succeeded_callback,
-                                     CallbackWithResult failed_callback) {
-  succeeded_callback_ = std::move(succeeded_callback);
+void DeviceCommandRebootJob::RunImpl(CallbackWithResult result_callback) {
+  result_callback_ = std::move(result_callback);
 
   // Determines the time delta between the command having been issued and the
   // boot time of the system.
@@ -70,7 +69,7 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult succeeded_callback,
   if (delta.is_positive()) {
     LOG(WARNING) << "Ignoring reboot command issued " << delta
                  << " before current boot time";
-    RunAsyncCallback(std::move(succeeded_callback_), FROM_HERE);
+    RunAsyncCallback(std::move(result_callback_), FROM_HERE);
     return;
   }
 
@@ -101,11 +100,11 @@ void DeviceCommandRebootJob::RebootUserSession() {
 void DeviceCommandRebootJob::OnSignout() {
   // `session_termination_manager_` will initiate the reboot, just report the
   // command finished.
-  RunAsyncCallback(std::move(succeeded_callback_), FROM_HERE);
+  RunAsyncCallback(std::move(result_callback_), FROM_HERE);
 }
 
 void DeviceCommandRebootJob::DoReboot(const std::string& reason) {
-  DCHECK(succeeded_callback_);
+  DCHECK(result_callback_);
 
   // Posting the task with a callback just before reboot request does not
   // guarantee the callback reaching `RemoteCommandsService` and is very
@@ -113,7 +112,7 @@ void DeviceCommandRebootJob::DoReboot(const std::string& reason) {
   // testing purposes.
   // TODO(b/252980103): Come up with a mechanism to deliver the execution result
   // to DMServer.
-  RunAsyncCallback(std::move(succeeded_callback_), FROM_HERE);
+  RunAsyncCallback(std::move(result_callback_), FROM_HERE);
   power_manager_client_->RequestRestart(
       power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT, reason);
 }
@@ -122,7 +121,8 @@ void DeviceCommandRebootJob::DoReboot(const std::string& reason) {
 void DeviceCommandRebootJob::RunAsyncCallback(CallbackWithResult callback,
                                               base::Location from_where) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      from_where, base::BindOnce(std::move(callback), absl::nullopt));
+      from_where,
+      base::BindOnce(std::move(callback), ResultType::kSuccess, absl::nullopt));
 }
 
 }  // namespace policy

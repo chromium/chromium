@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace policy {
@@ -43,8 +44,7 @@ bool UserCommandArcJob::ParseCommandPayload(
   return true;
 }
 
-void UserCommandArcJob::RunImpl(CallbackWithResult succeeded_callback,
-                                CallbackWithResult failed_callback) {
+void UserCommandArcJob::RunImpl(CallbackWithResult result_callback) {
   // Payload may contain crypto key, thus only log payload in debugging mode.
   SYSLOG(INFO) << "Running Arc command...";
   DLOG(INFO) << "payload = " << command_payload_;
@@ -55,22 +55,22 @@ void UserCommandArcJob::RunImpl(CallbackWithResult succeeded_callback,
   if (!arc_policy_bridge) {
     // ARC is not enabled for this profile, fail the remote command.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(result_callback),
+                                  ResultType::kFailure, absl::nullopt));
     return;
   }
 
   auto on_command_finished_callback = base::BindOnce(
-      [](CallbackWithResult succeeded_callback,
-         CallbackWithResult failed_callback,
+      [](CallbackWithResult result_callback,
          arc::mojom::CommandResultType result) {
-        if (result == arc::mojom::CommandResultType::FAILURE ||
-            result == arc::mojom::CommandResultType::IGNORED) {
-          std::move(failed_callback).Run(absl::nullopt);
-          return;
-        }
-        std::move(succeeded_callback).Run(absl::nullopt);
+        bool command_failed =
+            result == arc::mojom::CommandResultType::FAILURE ||
+            result == arc::mojom::CommandResultType::IGNORED;
+        std::move(result_callback)
+            .Run(command_failed ? ResultType::kFailure : ResultType::kSuccess,
+                 absl::nullopt);
       },
-      std::move(succeeded_callback), std::move(failed_callback));
+      std::move(result_callback));
 
   // Documentation for RemoteCommandJob::RunImpl requires that the
   // implementation executes the command asynchronously.

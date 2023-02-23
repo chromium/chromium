@@ -47,8 +47,7 @@ bool DeviceCommandSetVolumeJob::ParseCommandPayload(
   return true;
 }
 
-void DeviceCommandSetVolumeJob::RunImpl(CallbackWithResult succeeded_callback,
-                                        CallbackWithResult failed_callback) {
+void DeviceCommandSetVolumeJob::RunImpl(CallbackWithResult result_callback) {
   SYSLOG(INFO) << "Running set volume command, volume = " << volume_;
   auto* audio_handler = ash::CrasAudioHandler::Get();
   audio_handler->SetOutputVolumePercent(volume_);
@@ -56,7 +55,8 @@ void DeviceCommandSetVolumeJob::RunImpl(CallbackWithResult succeeded_callback,
   audio_handler->SetOutputMute(mute);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(succeeded_callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(result_callback),
+                                ResultType::kSuccess, absl::nullopt));
 }
 
 }  // namespace policy

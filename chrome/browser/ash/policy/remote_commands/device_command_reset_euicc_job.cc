@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/network/cellular_esim_uninstall_handler.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,26 +53,11 @@ enterprise_management::RemoteCommand_Type DeviceCommandResetEuiccJob::GetType()
   return enterprise_management::RemoteCommand_Type_DEVICE_RESET_EUICC;
 }
 
-DeviceCommandResetEuiccJob::CallbackWithResult
-DeviceCommandResetEuiccJob::CreateTimedResetMemorySuccessCallback(
-    CallbackWithResult success_callback) {
-  return base::BindOnce(
-      [](CallbackWithResult success_callback, base::Time reset_euicc_start_time,
-         absl::optional<std::string> result_payload) {
-        std::move(success_callback).Run(std::move(result_payload));
-        UMA_HISTOGRAM_MEDIUM_TIMES(
-            "Network.Cellular.ESim.Policy.ResetEuicc.Duration",
-            base::Time::Now() - reset_euicc_start_time);
-      },
-      std::move(success_callback), base::Time::Now());
-}
-
-void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult succeeded_callback,
-                                         CallbackWithResult failed_callback) {
+void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult result_callback) {
   absl::optional<dbus::ObjectPath> euicc_path = ash::GetCurrentEuiccPath();
   if (!euicc_path) {
     SYSLOG(ERROR) << "No current EUICC. Unable to reset EUICC";
-    RunResultCallback(std::move(failed_callback));
+    RunResultCallback(std::move(result_callback), ResultType::kFailure);
     return;
   }
 
@@ -80,36 +66,36 @@ void DeviceCommandResetEuiccJob::RunImpl(CallbackWithResult succeeded_callback,
       ash::NetworkHandler::Get()->cellular_esim_uninstall_handler();
   uninstall_handler->ResetEuiccMemory(
       *euicc_path,
-      base::BindOnce(
-          &DeviceCommandResetEuiccJob::OnResetMemoryResponse,
-          weak_ptr_factory_.GetWeakPtr(),
-          CreateTimedResetMemorySuccessCallback(std::move(succeeded_callback)),
-          std::move(failed_callback)));
+      base::BindOnce(&DeviceCommandResetEuiccJob::OnResetMemoryResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(result_callback),
+                     base::Time::Now()));
 }
 
 void DeviceCommandResetEuiccJob::OnResetMemoryResponse(
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback,
+    CallbackWithResult result_callback,
+    base::Time reset_euicc_start_time,
     bool success) {
   if (!success) {
     SYSLOG(ERROR) << "Euicc reset failed.";
     RecordResetEuiccResult(ResetEuiccResult::kHermesResetFailed);
-    RunResultCallback(std::move(failed_callback));
+    RunResultCallback(std::move(result_callback), ResultType::kFailure);
     return;
   }
 
   SYSLOG(INFO) << "Successfully cleared EUICC";
   RecordResetEuiccResult(ResetEuiccResult::kSuccess);
-  RunResultCallback(std::move(succeeded_callback));
+  RunResultCallback(std::move(result_callback), ResultType::kSuccess);
+  UMA_HISTOGRAM_MEDIUM_TIMES("Network.Cellular.ESim.Policy.ResetEuicc.Duration",
+                             base::Time::Now() - reset_euicc_start_time);
   ShowResetEuiccNotification();
 }
 
-void DeviceCommandResetEuiccJob::RunResultCallback(
-    CallbackWithResult callback) {
+void DeviceCommandResetEuiccJob::RunResultCallback(CallbackWithResult callback,
+                                                   ResultType result) {
   // Post |callback| to ensure async execution as required for RunImpl.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), /*result_payload=*/absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), result,
+                                /*result_payload=*/absl::nullopt));
 }
 
 void DeviceCommandResetEuiccJob::ShowResetEuiccNotification() {

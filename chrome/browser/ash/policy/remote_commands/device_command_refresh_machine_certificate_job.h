@@ -37,13 +37,10 @@ class DeviceCommandRefreshMachineCertificateJob : public RemoteCommandJob {
 
   // RemoteCommandJob:
   bool IsExpired(base::TimeTicks now) override;
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
   // Handle the result of a refresh and upload of the machine certificate.
-  void OnCertificateUploaded(CallbackWithResult succeeded_callback,
-                             CallbackWithResult failed_callback,
-                             bool success);
+  void OnCertificateUploaded(CallbackWithResult result_callback, bool success);
 
   base::WeakPtrFactory<DeviceCommandRefreshMachineCertificateJob>
       weak_ptr_factory_{this};

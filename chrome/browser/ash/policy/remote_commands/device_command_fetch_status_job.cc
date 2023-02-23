@@ -29,8 +29,7 @@ enterprise_management::RemoteCommand_Type DeviceCommandFetchStatusJob::GetType()
   return enterprise_management::RemoteCommand_Type_DEVICE_FETCH_STATUS;
 }
 
-void DeviceCommandFetchStatusJob::RunImpl(CallbackWithResult succeeded_callback,
-                                          CallbackWithResult failed_callback) {
+void DeviceCommandFetchStatusJob::RunImpl(CallbackWithResult result_callback) {
   SYSLOG(INFO) << "Fetching device status";
   BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
@@ -46,13 +45,14 @@ void DeviceCommandFetchStatusJob::RunImpl(CallbackWithResult succeeded_callback,
     manager->GetStatusUploader()->ScheduleNextStatusUploadImmediately();
     manager->GetSystemLogUploader()->ScheduleNextSystemLogUploadImmediately();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(succeeded_callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(result_callback),
+                                  ResultType::kSuccess, absl::nullopt));
     return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
+      FROM_HERE, base::BindOnce(std::move(result_callback),
+                                ResultType::kFailure, absl::nullopt));
 }
 
 }  // namespace policy

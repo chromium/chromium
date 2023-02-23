@@ -63,8 +63,7 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
                                base::Location from_where);
 
   // RemoteCommandJob:
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
   // Reboots the device on user logout.
   void RebootUserSession();
@@ -94,7 +93,7 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
   // change at runtime, e.g. because of time sync.
   const GetBootTimeCallback get_boot_time_callback_;
 
-  CallbackWithResult succeeded_callback_;
+  CallbackWithResult result_callback_;
 
   base::WeakPtrFactory<DeviceCommandRebootJob> weak_factory_{this};
 };

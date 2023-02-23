@@ -24,8 +24,7 @@ class DeviceCommandFetchStatusJob : public RemoteCommandJob {
 
  protected:
   // RemoteCommandJob:
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 };
 
 }  // namespace policy

@@ -83,13 +83,13 @@ class FakeJob : public RemoteCommandJob {
 
   // Finish this job and report success.
   void FinishWithSuccess(const std::string& payload) {
-    DCHECK(!succeed_callback_.is_null());
-    std::move(succeed_callback_).Run(payload);
+    DCHECK(!result_callback_.is_null());
+    std::move(result_callback_).Run(ResultType::kSuccess, payload);
   }
   // Finish this job and report an error.
   void FinishWithFailure(const std::string& payload) {
-    DCHECK(!failed_callback_.is_null());
-    std::move(failed_callback_).Run(payload);
+    DCHECK(!result_callback_.is_null());
+    std::move(result_callback_).Run(ResultType::kFailure, payload);
   }
 
   void Finish() { FinishWithSuccess(""); }
@@ -103,10 +103,8 @@ class FakeJob : public RemoteCommandJob {
     return true;
   }
   bool IsExpired(base::TimeTicks now) override { return false; }
-  void RunImpl(CallbackWithResult succeed_callback,
-               CallbackWithResult failed_callback) override {
-    succeed_callback_ = std::move(succeed_callback);
-    failed_callback_ = std::move(failed_callback);
+  void RunImpl(CallbackWithResult result_callback) override {
+    result_callback_ = std::move(result_callback);
   }
 
  private:
@@ -115,8 +113,7 @@ class FakeJob : public RemoteCommandJob {
   // The payload passed to ParseCommandPayload().
   std::string payload_;
 
-  CallbackWithResult succeed_callback_;
-  CallbackWithResult failed_callback_;
+  CallbackWithResult result_callback_;
 };
 
 // Fake RemoteCommand factory that creates FakeJob instances.

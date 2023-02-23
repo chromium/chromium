@@ -86,8 +86,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
  protected:
   // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
   void TerminateImpl() override;
 
  private:
@@ -115,11 +114,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   std::unique_ptr<OAuthTokenFetcher> oauth_token_fetcher_;
 
   // The callback that will be called when the access code was successfully
-  // obtained.
-  CallbackWithResult succeeded_callback_;
-
-  // The callback that will be called when this command failed.
-  CallbackWithResult failed_callback_;
+  // obtained or when this command failed.
+  CallbackWithResult result_callback_;
 
   // -- Command parameters --
 

@@ -30,8 +30,7 @@ class EchoRemoteCommandJob : public RemoteCommandJob {
   // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
   bool IsExpired(base::TimeTicks now) override;
-  void RunImpl(CallbackWithResult succeed_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
   std::string command_payload_;
 

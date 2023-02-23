@@ -31,12 +31,10 @@ class DeviceCommandGetRoutineUpdateJob : public RemoteCommandJob {
  private:
   // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
   void OnCrosHealthdResponseReceived(
-      CallbackWithResult succeeded_callback,
-      CallbackWithResult failed_callback,
+      CallbackWithResult result_callback,
       ash::cros_healthd::mojom::RoutineUpdatePtr update);
 
   // The ID of the routine to send the command to.

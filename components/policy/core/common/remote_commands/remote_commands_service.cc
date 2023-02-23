@@ -118,28 +118,6 @@ const char* RemoteCommandTypeToString(em::RemoteCommand_Type type) {
   return "";
 }
 
-em::RemoteCommandResult::ResultType CommandStatusToResultType(
-    RemoteCommandJob::Status status) {
-  switch (status) {
-    case RemoteCommandJob::SUCCEEDED:
-      return em::RemoteCommandResult_ResultType_RESULT_SUCCESS;
-    case RemoteCommandJob::FAILED:
-      return em::RemoteCommandResult_ResultType_RESULT_FAILURE;
-    case RemoteCommandJob::EXPIRED:
-    case RemoteCommandJob::INVALID:
-      return em::RemoteCommandResult_ResultType_RESULT_IGNORED;
-    case RemoteCommandJob::NOT_INITIALIZED:
-    case RemoteCommandJob::NOT_STARTED:
-    case RemoteCommandJob::RUNNING:
-    case RemoteCommandJob::TERMINATED:
-    case RemoteCommandJob::STATUS_TYPE_SIZE:
-      NOTREACHED();
-      return em::RemoteCommandResult_ResultType_RESULT_IGNORED;
-  }
-  NOTREACHED();
-  return em::RemoteCommandResult_ResultType_RESULT_IGNORED;
-}
-
 std::string ToString(
     enterprise_management::RemoteCommandResult::ResultType type) {
 #define CASE(_name)                                       \
@@ -384,7 +362,7 @@ void RemoteCommandsService::OnJobFinished(RemoteCommandJob* command) {
   em::RemoteCommandResult result;
   result.set_command_id(command->unique_id());
   result.set_timestamp(command->execution_started_time().ToJavaTime());
-  result.set_result(CommandStatusToResultType(command->status()));
+  result.set_result(command->GetResult());
 
   std::unique_ptr<std::string> result_payload = command->GetResultPayload();
   if (result_payload) {

@@ -28,12 +28,10 @@ class RotateAttestationCredentialJob : public policy::RemoteCommandJob {
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
   bool ParseCommandPayload(const std::string& command_payload) override;
-  void RunImpl(CallbackWithResult succeeded_callback,
-               CallbackWithResult failed_callback) override;
+  void RunImpl(CallbackWithResult result_callback) override;
 
   void OnKeyRotated(
-      CallbackWithResult succeeded_callback,
-      CallbackWithResult failed_callback,
+      CallbackWithResult result_callback,
       enterprise_connectors::DeviceTrustKeyManager::KeyRotationResult
           rotation_result);
 

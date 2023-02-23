@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -155,8 +156,7 @@ bool DeviceCommandGetRoutineUpdateJob::ParseCommandPayload(
 }
 
 void DeviceCommandGetRoutineUpdateJob::RunImpl(
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback) {
+    CallbackWithResult result_callback) {
   SYSLOG(INFO)
       << "Executing GetRoutineUpdate command with DiagnosticRoutineCommandEnum "
       << command_;
@@ -167,24 +167,24 @@ void DeviceCommandGetRoutineUpdateJob::RunImpl(
           routine_id_, command_, include_output_,
           base::BindOnce(
               &DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived,
-              weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),
-              std::move(failed_callback)));
+              weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
 }
 
 void DeviceCommandGetRoutineUpdateJob::OnCrosHealthdResponseReceived(
-    CallbackWithResult succeeded_callback,
-    CallbackWithResult failed_callback,
+    CallbackWithResult result_callback,
     ash::cros_healthd::mojom::RoutineUpdatePtr update) {
   if (!update) {
     SYSLOG(ERROR) << "No RoutineUpdate received from cros_healthd.";
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(failed_callback), absl::nullopt));
+        FROM_HERE, base::BindOnce(std::move(result_callback),
+                                  ResultType::kFailure, absl::nullopt));
     return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(succeeded_callback),
-                                CreatePayload(std::move(update))));
+      FROM_HERE,
+      base::BindOnce(std::move(result_callback), ResultType::kSuccess,
+                     CreatePayload(std::move(update))));
 }
 
 }  // namespace policy
