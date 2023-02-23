@@ -225,16 +225,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Clipboard.X11StoreCopyPasteDuration" units="ms"
-    expires_after="M95">
-  <owner>dcheng@chromium.org</owner>
-  <owner>pkotwicz@chromium.org</owner>
-  <summary>
-    The length of time that it takes to transfer ownership of Chrome's CLIPBOARD
-    selection to the clipboard manager when Chrome exits.
-  </summary>
-</histogram>
-
 <histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
     expires_after="2023-08-01">
   <owner>cmumford@chromium.org</owner>
