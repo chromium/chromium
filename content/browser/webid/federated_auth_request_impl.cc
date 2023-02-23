@@ -936,6 +936,12 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           base::Time::Now() -
           auto_reauthn_permission_delegate_->GetAutoReauthnEmbargoStartTime(
               GetEmbeddingOrigin());
+
+      // See `kFederatedIdentityAutoReauthnEmbargoDuration`.
+      render_frame_host().AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kInfo,
+          "Auto re-authn was previously triggered less than 10 minutes ago. "
+          "Only one auto re-authn request can be made every 10 minutes.");
     }
     auto_reauthn &= !is_auto_reauthn_embargoed;
   }

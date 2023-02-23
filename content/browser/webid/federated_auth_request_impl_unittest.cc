@@ -218,6 +218,7 @@ struct MockConfiguration {
   bool delay_token_response;
   AccountsDialogAction accounts_dialog_action;
   IdpSigninStatusMismatchDialogAction idp_signin_status_mismatch_dialog_action;
+  bool succeed_with_console_message = false;
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -782,16 +783,18 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             main_test_rfh()->GetFederatedAuthRequestIssueCount(absl::nullopt);
         EXPECT_EQ(0, issue_count);
       }
-      CheckConsoleMessages(expectation.devtools_issue_statuses);
+      CheckConsoleMessages(expectation.devtools_issue_statuses,
+                           configuration.succeed_with_console_message);
     }
   }
 
   void CheckConsoleMessages(
-      const std::vector<FederatedAuthRequestResult>& devtools_issue_statuses) {
+      const std::vector<FederatedAuthRequestResult>& devtools_issue_statuses,
+      bool succeed_with_console_message) {
     std::vector<std::string> messages =
         RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
 
-    bool did_expect_any_messages = false;
+    bool did_expect_any_messages = succeed_with_console_message;
     size_t expected_message_index = messages.size() - 1;
     for (const auto& expected_status :
          base::Reversed(devtools_issue_statuses)) {
@@ -1773,7 +1776,9 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnWithCooldown) {
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.auto_reauthn = true;
-  RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.succeed_with_console_message = true;
+  RunAuthTest(request_parameters, kExpectationSuccess, configuration);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignIn);
@@ -1783,6 +1788,14 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnWithCooldown) {
                            /*expected_succeeded=*/false,
                            /*expected_auto_reauthn_setting_blocked=*/false,
                            /*expected_auto_reauthn_embargoed=*/true);
+
+  std::vector<std::string> messages =
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+  ASSERT_EQ(1U, messages.size());
+  EXPECT_EQ(
+      "Auto re-authn was previously triggered less than 10 minutes ago. Only "
+      "one auto re-authn request can be made every 10 minutes.",
+      messages[0]);
 }
 
 TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
