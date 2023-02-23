@@ -21,6 +21,14 @@ BASE_FEATURE(kAmbientBadgeSiteEngagement,
 extern const base::FeatureParam<int> kAmbientBadgeSiteEngagement_MinEngagement{
     &kAmbientBadgeSiteEngagement, "minimal_engagement", 0};
 
+BASE_FEATURE(kAmbientBadgeSuppressFirstVisit,
+             "AmbientBadgeSuppressFirstVisit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+extern const base::FeatureParam<base::TimeDelta>
+    kAmbientBadgeSuppressFirstVisit_Period{&kAmbientBadgeSuppressFirstVisit,
+                                           "period", base::Days(30)};
+
 // Enables or disables the installable ambient badge infobar.
 BASE_FEATURE(kInstallableAmbientBadgeInfoBar,
              "InstallableAmbientBadgeInfoBar",

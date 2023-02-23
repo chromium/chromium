@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace webapps {
@@ -16,6 +17,9 @@ namespace features {
 BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
 BASE_DECLARE_FEATURE(kAmbientBadgeSiteEngagement);
 extern const base::FeatureParam<int> kAmbientBadgeSiteEngagement_MinEngagement;
+BASE_DECLARE_FEATURE(kAmbientBadgeSuppressFirstVisit);
+extern const base::FeatureParam<base::TimeDelta>
+    kAmbientBadgeSuppressFirstVisit_Period;
 BASE_DECLARE_FEATURE(kInstallableAmbientBadgeInfoBar);
 BASE_DECLARE_FEATURE(kInstallableAmbientBadgeMessage);
 extern const base::FeatureParam<int>

@@ -209,6 +209,8 @@ class AppBannerManagerAndroid : public AppBannerManager,
   // ambient badge.
   bool HasSufficientEngagementForAmbientBadge();
 
+  bool ShouldSuppressAmbientBadge();
+
   // Shows the in-product help if possible and returns true when a request to
   // show it was made, but false if conditions (e.g. engagement score) for
   // showing where not deemed adequate.

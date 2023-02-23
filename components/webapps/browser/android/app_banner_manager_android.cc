@@ -579,6 +579,11 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
     return;
   }
 
+  if (ShouldSuppressAmbientBadge()) {
+    badge_state_ = AmbientBadgeState::PENDING_ENGAGEMENT;
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(features::kAmbientBadgeSiteEngagement) &&
       !HasSufficientEngagementForAmbientBadge()) {
     badge_state_ = AmbientBadgeState::PENDING_ENGAGEMENT;
@@ -640,6 +645,32 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
                                          manifest().start_url) ||
          WebappsClient::Get()->IsInstallationInProgress(
              web_contents(), manifest_url_, manifest_id_);
+}
+
+bool AppBannerManagerAndroid::ShouldSuppressAmbientBadge() {
+  if (!base::FeatureList::IsEnabled(
+          features::kAmbientBadgeSuppressFirstVisit)) {
+    return false;
+  }
+
+  content::WebContents* contents = web_contents();
+  absl::optional<base::Time> last_could_show_time =
+      AppBannerSettingsHelper::GetSingleBannerEvent(
+          contents, validated_url_, GetAppIdentifier(),
+          AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW_AMBIENT_BADGE);
+
+  AppBannerSettingsHelper::RecordBannerEvent(
+      contents, validated_url_, GetAppIdentifier(),
+      AppBannerSettingsHelper::APP_BANNER_EVENT_COULD_SHOW_AMBIENT_BADGE,
+      GetCurrentTime());
+
+  if (!last_could_show_time || last_could_show_time->is_null()) {
+    return true;
+  }
+
+  base::TimeDelta period =
+      features::kAmbientBadgeSuppressFirstVisit_Period.Get();
+  return GetCurrentTime() - *last_could_show_time > period;
 }
 
 void AppBannerManagerAndroid::ShowAmbientBadge() {
