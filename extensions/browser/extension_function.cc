@@ -229,35 +229,6 @@ void ReceivedBadMessage(T* bad_message_sender,
   extensions::bad_message::ReceivedBadMessage(bad_message_sender, reason);
 }
 
-class RespondNowAction : public ExtensionFunction::ResponseActionObject {
- public:
-  typedef base::OnceCallback<void(bool)> SendResponseCallback;
-  RespondNowAction(ExtensionFunction::ResponseValue result,
-                   SendResponseCallback send_response)
-      : result_(std::move(result)), send_response_(std::move(send_response)) {}
-  ~RespondNowAction() override = default;
-
-  void Execute() override { std::move(send_response_).Run(result_.success()); }
-
- private:
-  ExtensionFunction::ResponseValue result_;
-  SendResponseCallback send_response_;
-};
-
-class RespondLaterAction : public ExtensionFunction::ResponseActionObject {
- public:
-  ~RespondLaterAction() override {}
-
-  void Execute() override {}
-};
-
-class AlreadyRespondedAction : public ExtensionFunction::ResponseActionObject {
- public:
-  ~AlreadyRespondedAction() override {}
-
-  void Execute() override {}
-};
-
 // Used in implementation of ScopedUserGestureForTests.
 class UserGestureForTests {
  public:
@@ -375,6 +346,32 @@ ExtensionFunction::ResponseValue::~ResponseValue() = default;
 
 ExtensionFunction::ExtensionFunction() {
   EnsureMemoryDumpProviderExists();
+}
+
+ExtensionFunction::RespondNowAction::RespondNowAction(
+    ResponseValue result,
+    SendResponseCallback send_response)
+    : result_(std::move(result)), send_response_(std::move(send_response)) {}
+ExtensionFunction::RespondNowAction::RespondNowAction(
+    RespondNowAction&& other) = default;
+ExtensionFunction::RespondNowAction::~RespondNowAction() = default;
+
+void ExtensionFunction::RespondNowAction::Execute() {
+  std::move(send_response_).Run(result_.success());
+}
+
+ExtensionFunction::ResponseAction::ResponseAction(PassKey) {}
+ExtensionFunction::ResponseAction::ResponseAction(RespondNowAction action,
+                                                  PassKey)
+    : action_(std::move(action)) {}
+ExtensionFunction::ResponseAction::ResponseAction(ResponseAction&& other) =
+    default;
+ExtensionFunction::ResponseAction::~ResponseAction() = default;
+
+void ExtensionFunction::ResponseAction::Execute() {
+  if (action_) {
+    action_->Execute();
+  }
 }
 
 ExtensionFunction::~ExtensionFunction() {
@@ -656,19 +653,21 @@ ExtensionFunction::ResponseValue ExtensionFunction::BadMessage() {
 
 ExtensionFunction::ResponseAction ExtensionFunction::RespondNow(
     ResponseValue result) {
-  return ResponseAction(new RespondNowAction(
-      std::move(result),
-      base::BindOnce(&ExtensionFunction::SendResponseImpl, this)));
+  return ResponseAction(
+      RespondNowAction(
+          std::move(result),
+          base::BindOnce(&ExtensionFunction::SendResponseImpl, this)),
+      PassKey());
 }
 
 ExtensionFunction::ResponseAction ExtensionFunction::RespondLater() {
-  return ResponseAction(new RespondLaterAction());
+  return ResponseAction(PassKey());
 }
 
 ExtensionFunction::ResponseAction ExtensionFunction::AlreadyResponded() {
   DCHECK(did_respond()) << "ExtensionFunction did not call Respond(),"
                            " but Run() returned AlreadyResponded()";
-  return ResponseAction(new AlreadyRespondedAction());
+  return ResponseAction(PassKey());
 }
 
 // static

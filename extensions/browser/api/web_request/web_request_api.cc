@@ -3158,7 +3158,7 @@ void WebRequestHandlerBehaviorChangedFunction::OnQuotaExceeded(
   WarningService::NotifyWarningsOnUI(browser_context(), warnings);
 
   // Continue gracefully.
-  RunWithValidation()->Execute();
+  RunWithValidation().Execute();
 }
 
 ExtensionFunction::ResponseAction

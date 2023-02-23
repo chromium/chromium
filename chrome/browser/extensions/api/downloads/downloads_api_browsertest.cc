@@ -1025,7 +1025,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest, DownloadExtensionTest_Open) {
   std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
       new ExtensionFunctionDispatcher(current_browser()->profile()));
   open_function->SetDispatcher(dispatcher->AsWeakPtr());
-  open_function->RunWithValidation()->Execute();
+  open_function->RunWithValidation().Execute();
   response_helper.WaitForResponse();
   EXPECT_TRUE(response_helper.has_response());
   EXPECT_TRUE(response_helper.GetResponse());

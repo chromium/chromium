@@ -175,7 +175,7 @@ class AsyncFunctionRunner {
     function->SetDispatcher(dispatcher_->AsWeakPtr());
 
     function->set_has_callback(true);
-    function->RunWithValidation()->Execute();
+    function->RunWithValidation().Execute();
   }
 
   std::string WaitForError(ExtensionFunction* function) {

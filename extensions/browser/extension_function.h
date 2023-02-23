@@ -153,17 +153,44 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
     const bool success_;
   };
 
+  // The action type used to hold a callback to be used by ResponseAction, when
+  // returning from RunAsync.
+  class RespondNowAction {
+   public:
+    using SendResponseCallback = base::OnceCallback<void(bool)>;
+    RespondNowAction(ResponseValue result, SendResponseCallback send_response);
+    RespondNowAction(RespondNowAction&& other);
+    RespondNowAction& operator=(RespondNowAction&& other) = delete;
+    ~RespondNowAction();
+
+    // Executes the send response callback.
+    void Execute();
+
+   private:
+    ResponseValue result_;
+    SendResponseCallback send_response_;
+  };
+
   // The action to use when returning from RunAsync.
   //
   // Use RespondNow() or RespondLater() or AlreadyResponded() rather than this
   // class directly.
-  class ResponseActionObject {
-   public:
-    virtual ~ResponseActionObject() {}
 
-    virtual void Execute() = 0;
+  class ResponseAction {
+   public:
+    explicit ResponseAction(PassKey);
+    ResponseAction(RespondNowAction action, PassKey);
+    ResponseAction(ResponseAction&& other);
+    ResponseAction& operator=(ResponseAction&& other) = delete;
+    ~ResponseAction();
+
+    // Executes whatever respond action it may be holding.
+    void Execute();
+
+   private:
+    // An action object responsible for handling the sending of the response.
+    absl::optional<RespondNowAction> action_;
   };
-  typedef std::unique_ptr<ResponseActionObject> ResponseAction;
 
   // Helper class for tests to force all ExtensionFunction::user_gesture()
   // calls to return true as long as at least one instance of this class

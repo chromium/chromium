@@ -442,7 +442,7 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
           base::StringPrintf(R"([%d, {"url":"http://example.com"}])", tab_id))
           .value());
   api_test_utils::SendResponseHelper response_helper(function.get());
-  function->RunWithValidation()->Execute();
+  function->RunWithValidation().Execute();
 
   EXPECT_EQ(kGoogle, raw_web_contents->GetLastCommittedURL());
   EXPECT_EQ(kGoogle, raw_web_contents->GetVisibleURL());

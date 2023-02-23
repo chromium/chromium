@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, CrostiniIncognito) {
 
   extensions::api_test_utils::SendResponseHelper response_helper(
       function.get());
-  function->RunWithValidation()->Execute();
+  function->RunWithValidation().Execute();
   response_helper.WaitForResponse();
   EXPECT_TRUE(response_helper.GetResponse());
 }
