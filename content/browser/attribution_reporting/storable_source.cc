@@ -45,18 +45,10 @@ StorableSource::StorableSource(
           std::move(reporting_origin),
           source_time,
           CommonSourceInfo::GetExpiryTime(reg.expiry, source_time, source_type),
-          reg.event_report_window
-              ? absl::make_optional(
-                    CommonSourceInfo::GetExpiryTime(reg.event_report_window,
-                                                    source_time,
-                                                    source_type))
-              : absl::nullopt,
-          reg.aggregatable_report_window
-              ? absl::make_optional(CommonSourceInfo::GetExpiryTime(
-                    reg.aggregatable_report_window,
-                    source_time,
-                    source_type))
-              : absl::nullopt,
+          CommonSourceInfo::GetReportWindowTime(reg.event_report_window,
+                                                source_time),
+          CommonSourceInfo::GetReportWindowTime(reg.aggregatable_report_window,
+                                                source_time),
           source_type,
           reg.priority,
           std::move(reg.filter_data),

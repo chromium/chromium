@@ -22,6 +22,12 @@ TEST(CommonSourceInfoTest, NoExpiryForImpression_DefaultUsed) {
   }
 }
 
+TEST(CommonSourceInfoTest, NoReportWindowForImpression_NullOptReturned) {
+  EXPECT_EQ(absl::nullopt, CommonSourceInfo::GetReportWindowTime(
+                               /*declared_window=*/absl::nullopt,
+                               /*source_time=*/base::Time::Now()));
+}
+
 TEST(CommonSourceInfoTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
   constexpr base::TimeDelta declared_expiry = base::Days(60);
   const base::Time source_time = base::Time::Now();
@@ -31,6 +37,15 @@ TEST(CommonSourceInfoTest, LargeImpressionExpirySpecified_ClampedTo30Days) {
               CommonSourceInfo::GetExpiryTime(declared_expiry, source_time,
                                               source_type));
   }
+}
+
+TEST(CommonSourceInfoTest, LargeReportWindowSpecified_ClampedTo30Days) {
+  constexpr base::TimeDelta declared_report_window = base::Days(60);
+  const base::Time source_time = base::Time::Now();
+
+  EXPECT_EQ(source_time + base::Days(30),
+            CommonSourceInfo::GetReportWindowTime(declared_report_window,
+                                                  source_time));
 }
 
 TEST(CommonSourceInfoTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
@@ -51,6 +66,25 @@ TEST(CommonSourceInfoTest, SmallImpressionExpirySpecified_ClampedTo1Day) {
                 CommonSourceInfo::GetExpiryTime(test_case.declared_expiry,
                                                 source_time, source_type));
     }
+  }
+}
+
+TEST(CommonSourceInfoTest, SmallReportWindowSpecified_ClampedTo1Day) {
+  const struct {
+    base::TimeDelta declared_report_window;
+    base::TimeDelta want_report_window;
+  } kTestCases[] = {
+      {base::Days(-1), base::Days(1)},
+      {base::Days(0), base::Days(1)},
+      {base::Days(1) - base::Milliseconds(1), base::Days(1)},
+  };
+
+  const base::Time source_time = base::Time::Now();
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(source_time + test_case.want_report_window,
+              CommonSourceInfo::GetReportWindowTime(
+                  test_case.declared_report_window, source_time));
   }
 }
 
@@ -89,6 +123,17 @@ TEST(CommonSourceInfoTest, ImpressionExpirySpecified_ExpiryOverrideDefault) {
               CommonSourceInfo::GetExpiryTime(declared_expiry, source_time,
                                               source_type));
   }
+}
+
+TEST(CommonSourceInfoTest, ReportWindowSpecified_WindowOverrideDefault) {
+  constexpr base::TimeDelta declared_expiry =
+      base::Days(10) + base::Milliseconds(1);
+  const base::Time source_time = base::Time::Now();
+
+  // Verify no rounding occurs.
+  EXPECT_EQ(
+      source_time + declared_expiry,
+      CommonSourceInfo::GetReportWindowTime(declared_expiry, source_time));
 }
 
 }  // namespace content

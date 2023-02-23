@@ -34,6 +34,10 @@ class CONTENT_EXPORT CommonSourceInfo {
       base::Time source_time,
       AttributionSourceType source_type);
 
+  static absl::optional<base::Time> GetReportWindowTime(
+      absl::optional<base::TimeDelta> declared_window,
+      base::Time source_time);
+
   // TODO(crbug.com/1382389): Remove this constructor once all callers pass
   // a destination set.
   CommonSourceInfo(uint64_t source_event_id,

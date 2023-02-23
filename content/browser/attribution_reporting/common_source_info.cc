@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -38,6 +39,12 @@ base::Time ComputeReportWindowTime(
              : expiry_time;
 }
 
+base::Time GetClampedTime(base::TimeDelta time_delta, base::Time source_time) {
+  constexpr base::TimeDelta kMinDeltaTime = base::Days(1);
+  return source_time + base::clamp(time_delta, kMinDeltaTime,
+                                   kDefaultAttributionSourceExpiry);
+}
+
 }  // namespace
 
 // static
@@ -45,8 +52,6 @@ base::Time CommonSourceInfo::GetExpiryTime(
     absl::optional<base::TimeDelta> declared_expiry,
     base::Time source_time,
     AttributionSourceType source_type) {
-  constexpr base::TimeDelta kMinImpressionExpiry = base::Days(1);
-
   // Default to the maximum expiry time.
   base::TimeDelta expiry =
       declared_expiry.value_or(kDefaultAttributionSourceExpiry);
@@ -58,8 +63,19 @@ base::Time CommonSourceInfo::GetExpiryTime(
 
   // If the impression specified its own expiry, clamp it to the minimum and
   // maximum.
-  return source_time + base::clamp(expiry, kMinImpressionExpiry,
-                                   kDefaultAttributionSourceExpiry);
+  return GetClampedTime(expiry, source_time);
+}
+
+// static
+absl::optional<base::Time> CommonSourceInfo::GetReportWindowTime(
+    absl::optional<base::TimeDelta> declared_window,
+    base::Time source_time) {
+  // If the impression specified its own window, clamp it to the minimum and
+  // maximum.
+  return declared_window.has_value()
+             ? absl::make_optional(
+                   GetClampedTime(declared_window.value(), source_time))
+             : absl::nullopt;
 }
 
 CommonSourceInfo::CommonSourceInfo(
