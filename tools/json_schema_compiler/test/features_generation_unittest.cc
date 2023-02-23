@@ -38,6 +38,7 @@ void ExpectOptionalVectorsEqual(const absl::optional<std::vector<T>>& expected,
 
 const bool kDefaultAutoGrant = true;
 const bool kDefaultInternal = false;
+const bool kDefaultRequiresDelegatedAvailabilityCheck = false;
 
 }  // namespace
 
@@ -70,12 +71,15 @@ struct FeatureComparator {
 
   bool component_extensions_auto_granted;
   bool internal;
+  bool requires_delegated_availability_check;
 };
 
 FeatureComparator::FeatureComparator(const std::string& name)
     : name(name),
       component_extensions_auto_granted(kDefaultAutoGrant),
-      internal(kDefaultInternal) {}
+      internal(kDefaultInternal),
+      requires_delegated_availability_check(
+          kDefaultRequiresDelegatedAvailabilityCheck) {}
 
 FeatureComparator::~FeatureComparator() = default;
 
@@ -100,6 +104,9 @@ void FeatureComparator::CompareFeature(const SimpleFeature* feature) {
   EXPECT_EQ(internal, feature->IsInternal()) << name;
   EXPECT_EQ(alias, feature->alias()) << name;
   EXPECT_EQ(source, feature->source()) << name;
+  EXPECT_EQ(requires_delegated_availability_check,
+            feature->RequiresDelegatedAvailabilityCheck())
+      << name;
 }
 
 TEST(FeaturesGenerationTest, FeaturesTest) {
@@ -359,6 +366,16 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
     FeatureComparator comparator("empty_contexts");
     comparator.channel = version_info::Channel::BETA;
     comparator.contexts = std::vector<Feature::Context>();
+    comparator.CompareFeature(feature);
+  }
+  {
+    const SimpleFeature* feature =
+        GetAsSimpleFeature("requires_delegated_availability_check");
+    FeatureComparator comparator("requires_delegated_availability_check");
+    comparator.channel = version_info::Channel::BETA;
+    comparator.contexts =
+        std::vector<Feature::Context>{Feature::Context::WEB_PAGE_CONTEXT};
+    comparator.requires_delegated_availability_check = true;
     comparator.CompareFeature(feature);
   }
 }

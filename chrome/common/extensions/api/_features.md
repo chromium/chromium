@@ -317,6 +317,16 @@ available on.
 The accepted values are lists of strings from `chromeos`, `fuchsia`, `lacros`,
 `linux`, `mac`, and `win`.
 
+### requires\_delegated\_availability\_check
+
+The `requires_delegated_availability_check` property specifies whether the
+feature should determine its availability through a delegated check. Delegated
+checks for a feature can be added to the `ExtensionsClient`, which will add the
+delegated check methods to the specified feature name when initialized.
+
+The only accepted value is the bool `true`. Omitting the value is equivalent to
+`false`.
+
 ### session\_types
 
 The `session_types` property specifies in which types of sessions a feature
