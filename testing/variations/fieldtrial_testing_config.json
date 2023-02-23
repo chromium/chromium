@@ -4986,6 +4986,21 @@
             ]
         }
     ],
+    "FeedBottomSyncBanner": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_BottomSyncBanner_20230223",
+                    "enable_features": [
+                        "FeedBottomSyncBanner"
+                    ]
+                }
+            ]
+        }
+    ],
     "FeedLoadingPlaceholderStudy": [
         {
             "platforms": [
