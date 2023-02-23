@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -204,7 +205,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto use_pk = Step::kPreSelectSingleAccount;
   const auto use_pk_multi = Step::kPreSelectAccount;
   const auto qr = Step::kCableV2QRCode;
+
   const auto qr1st = base::test::FeatureRef(device::kWebAuthPasskeysUI);
+  const std::vector<base::test::FeatureRef> kAllFeatures = {qr1st};
 
   const struct {
     int line_num;
@@ -469,8 +472,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     SCOPED_TRACE(RequestTypeToString(test.request_type));
     SCOPED_TRACE(testing::Message() << "At line number: " << test.line_num);
 
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(test.features, {});
+    std::vector<base::test::FeatureRef> disabled_features = kAllFeatures;
+    base::EraseIf(disabled_features, [&test](const auto& feature) {
+      return base::Contains(test.features, feature);
+    });
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(test.features, disabled_features);
 
     TransportAvailabilityInfo transports_info;
     transports_info.is_ble_powered = true;
@@ -591,6 +598,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     tai.resident_key_requirement =
         is_passkey_request ? device::ResidentKeyRequirement::kRequired
                            : device::ResidentKeyRequirement::kDiscouraged;
+    tai.is_ble_powered = true;
 
     AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
     model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
@@ -608,7 +616,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
     }
 
     // The mechanism selection sheet should now be showing.
-    EXPECT_EQ(model.current_step(), Step::kMechanismSelection);
+    EXPECT_EQ(model.current_step(), is_passkey_request
+                                        ? Step::kCableV2QRCode
+                                        : Step::kMechanismSelection);
     // Canceling the Windows UI ends the request because the user must have
     // selected the Windows option first.
     EXPECT_FALSE(model.OnWinUserCancelled());
