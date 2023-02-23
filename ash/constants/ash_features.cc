@@ -339,7 +339,7 @@ BASE_FEATURE(kCameraPrivacySwitchNotifications,
 // Mode.
 BASE_FEATURE(kCaptureModeDemoTools,
              "CaptureModeDemoTools",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, allow eSIM installation bypass the non-cellular internet
 // connectivity check.
