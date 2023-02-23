@@ -41,9 +41,9 @@
 
       :host-context([chrome-refresh-2023]):host {
         --cr-checkbox-ripple-size: 32px;
-        --cr-checkbox-checked-box-color: var(--color-button-foreground-checked,
+        --cr-checkbox-checked-box-color: var(--color-checkbox-foreground-checked,
             var(--cr-fallback-color-primary));
-        --cr-checkbox-unchecked-box-color: var(--color-button-foreground-unchecked,
+        --cr-checkbox-unchecked-box-color: var(--color-checkbox-foreground-unchecked,
             var(--cr-fallback-color-on-surface-variant));
         --cr-checkbox-ripple-checked-color: var(--cr-active-background-color);
         --cr-checkbox-ripple-unchecked-color: var(--cr-active-background-color);
@@ -58,9 +58,11 @@
 
       :host-context([chrome-refresh-2023]):host([disabled]) {
         opacity: 1;
-        --cr-checkbox-checked-box-color: var(--color-button-foreground-disabled,
-            rgba(var(--cr-fallback-color-on-surface-rgb), var(--cr-disabled-opacity)));
-        --cr-checkbox-unchecked-box-color: var(--color-button-foreground-disabled,
+        --cr-checkbox-checked-box-color: var(--color-checkbox-background-disabled,
+            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+        --cr-checkbox-unchecked-box-color: var(--color-checkbox-background-disabled,
+            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+        --cr-checkbox-mark-color: var(--color-checkbox-foreground-disabled,
             rgba(var(--cr-fallback-color-on-surface-rgb), var(--cr-disabled-opacity)));
       }
 

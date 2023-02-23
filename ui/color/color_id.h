@@ -222,6 +222,10 @@
   E_CPONLY(kColorMultitaskFeedbackButtonLabelBackground) \
   E_CPONLY(kColorMultitaskFeedbackButtonLabelForeground) \
   E_CPONLY(kColorMultitaskMenuNudgePulse) \
+  E_CPONLY(kColorCheckboxBackgroundDisabled) \
+  E_CPONLY(kColorCheckboxForegroundChecked) \
+  E_CPONLY(kColorCheckboxForegroundDisabled) \
+  E_CPONLY(kColorCheckboxForegroundUnchecked) \
   E_CPONLY(kColorComboboxBackground) \
   E_CPONLY(kColorComboboxBackgroundDisabled) \
   E_CPONLY(kColorCustomFrameCaptionForeground) \

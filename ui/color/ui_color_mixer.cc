@@ -54,6 +54,8 @@ void AddUiColorMixer(ColorProvider* provider,
       GetColorWithMaxContrast(kColorButtonBackgroundProminent);
   mixer[kColorButtonForegroundTonal] = {kColorSysOnPrimaryContainer};
   mixer[kColorButtonForegroundUnchecked] = {kColorSecondaryForeground};
+  mixer[kColorCheckboxForegroundUnchecked] = {kColorSecondaryForeground};
+  mixer[kColorCheckboxForegroundChecked] = {kColorButtonForeground};
   mixer[kColorMultitaskFeedbackButtonLabelBackground] = {
       dark_mode ? SetAlpha(SK_ColorWHITE, 0x1A)
                 : SetAlpha(SK_ColorBLACK, 0x0D)};
