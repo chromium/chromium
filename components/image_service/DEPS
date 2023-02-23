@@ -3,6 +3,7 @@ include_rules = [
   "+components/omnibox/browser",
   "+components/search_engines",
   "+components/sync/driver",
+  "+components/sync/test",
   "+components/unified_consent",
   "+mojo/public/cpp",
   "+services/network/public/cpp",

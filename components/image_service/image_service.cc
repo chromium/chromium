@@ -143,7 +143,7 @@ ImageService::ImageService(
     std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
     syncer::SyncService* sync_service)
     : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
-      url_consent_helper_(
+      personalized_data_collection_consent_helper_(
           unified_consent::UrlKeyedDataCollectionConsentHelper::
               NewPersonalizedDataCollectionConsentHelper(sync_service)) {}
 
@@ -151,6 +151,23 @@ ImageService::~ImageService() = default;
 
 base::WeakPtr<ImageService> ImageService::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+bool ImageService::HasPermissionToFetchImage(mojom::ClientId client_id) const {
+  switch (client_id) {
+    case mojom::ClientId::Journeys:
+    case mojom::ClientId::JourneysSidePanel:
+    case mojom::ClientId::NtpQuests: {
+      return personalized_data_collection_consent_helper_ &&
+             personalized_data_collection_consent_helper_->IsEnabled();
+    }
+    case mojom::ClientId::NtpRealbox:
+      // TODO(b/244507194): Figure out consent story for NTP realbox case.
+      return false;
+    case mojom::ClientId::Bookmarks:
+      // TODO(b/244507194): Add Bookmark-sync keyed consent helper.
+      return false;
+  }
 }
 
 void ImageService::FetchImageFor(mojom::ClientId client_id,
@@ -163,10 +180,9 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
     return std::move(callback).Run(GURL());
   }
 
-  // TODO(b/244507194): This one only checks Sync consent, we probably need to
-  // delegate consent checking to the UI layer entirely, since Bookmarks needs
-  // to use a Bookmarks-specific Sync permission checker.
-  DCHECK(url_consent_helper_ && url_consent_helper_->IsEnabled());
+  if (!HasPermissionToFetchImage(client_id)) {
+    return std::move(callback).Run(GURL());
+  }
 
   if (options.suggest_images &&
       base::FeatureList::IsEnabled(kImageServiceSuggestPoweredImages)) {
@@ -200,8 +216,6 @@ void ImageService::FetchImageFor(mojom::ClientId client_id,
 void ImageService::FetchImageFor(const std::u16string& search_query,
                                  const std::string& entity_id,
                                  ResultCallback callback) {
-  DCHECK(url_consent_helper_ && url_consent_helper_->IsEnabled());
-
   auto fetcher = std::make_unique<SuggestEntityImageURLFetcher>(
       autocomplete_provider_client_.get(), search_query, entity_id);
 

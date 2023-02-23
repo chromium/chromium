@@ -36,6 +36,9 @@ class ImageService : public KeyedService {
   // object whose lifetime might exceed the service.
   base::WeakPtr<ImageService> GetWeakPtr();
 
+  // Returns true if `client_id` has permission to fetch images.
+  bool HasPermissionToFetchImage(mojom::ClientId client_id) const;
+
   // Fetches an image appropriate for `page_url`, returning the result
   // asynchronously to `callback`. The callback is always invoked. If there are
   // no images available, it is invoked with an empty GURL result.
@@ -60,7 +63,7 @@ class ImageService : public KeyedService {
 
   std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
-      url_consent_helper_;
+      personalized_data_collection_consent_helper_;
 
   base::WeakPtrFactory<ImageService> weak_factory_{this};
 };
