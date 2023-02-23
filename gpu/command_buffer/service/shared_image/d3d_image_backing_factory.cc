@@ -222,7 +222,7 @@ bool D3DImageBackingFactory::IsSwapChainSupported() {
 D3DImageBackingFactory::SwapChainBackings
 D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                         const Mailbox& back_buffer_mailbox,
-                                        viz::ResourceFormat format,
+                                        viz::SharedImageFormat format,
                                         const gfx::Size& size,
                                         const gfx::ColorSpace& color_space,
                                         GrSurfaceOrigin surface_origin,
@@ -232,19 +232,16 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
 
   DXGI_FORMAT swap_chain_format;
-  switch (format) {
-    case viz::RGBA_8888:
-    case viz::RGBX_8888:
-    case viz::BGRA_8888:
-      swap_chain_format = DXGI_FORMAT_B8G8R8A8_UNORM;
-      break;
-    case viz::RGBA_F16:
-      swap_chain_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-      break;
-    default:
-      LOG(ERROR) << gfx::BufferFormatToString(viz::BufferFormat(format))
-                 << " format is not supported by swap chain.";
-      return {nullptr, nullptr};
+  if ((format == viz::SinglePlaneFormat::kRGBA_8888) ||
+      (format == viz::SinglePlaneFormat::kRGBX_8888) ||
+      (format == viz::SinglePlaneFormat::kBGRA_8888)) {
+    swap_chain_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    swap_chain_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+  } else {
+    LOG(ERROR) << format.ToString()
+               << " format is not supported by swap chain.";
+    return {nullptr, nullptr};
   }
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
@@ -257,7 +254,6 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory));
   DCHECK(dxgi_factory);
 
-  auto si_format = viz::SharedImageFormat::SinglePlane(format);
   DXGI_SWAP_CHAIN_DESC1 desc = {};
   desc.Width = size.width();
   desc.Height = size.height();
@@ -275,8 +271,8 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
   if (gl::DXGIWaitableSwapChainEnabled()) {
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
   }
-  desc.AlphaMode = si_format.HasAlpha() ? DXGI_ALPHA_MODE_PREMULTIPLIED
-                                        : DXGI_ALPHA_MODE_IGNORE;
+  desc.AlphaMode = format.HasAlpha() ? DXGI_ALPHA_MODE_PREMULTIPLIED
+                                     : DXGI_ALPHA_MODE_IGNORE;
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
   HRESULT hr = dxgi_factory->CreateSwapChainForComposition(
@@ -321,7 +317,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
   }
   auto back_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
-      back_buffer_mailbox, si_format, size, color_space, surface_origin,
+      back_buffer_mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(back_buffer_texture), swap_chain,
       /*is_back_buffer=*/true);
   if (!back_buffer_backing)
@@ -335,7 +331,7 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
     return {nullptr, nullptr};
   }
   auto front_buffer_backing = D3DImageBacking::CreateFromSwapChainBuffer(
-      front_buffer_mailbox, si_format, size, color_space, surface_origin,
+      front_buffer_mailbox, format, size, color_space, surface_origin,
       alpha_type, usage, std::move(front_buffer_texture), swap_chain,
       /*is_back_buffer=*/false);
   if (!front_buffer_backing)

@@ -181,7 +181,7 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
   auto alpha_type = kPremul_SkAlphaType;
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_SCANOUT;
   {
-    auto valid_format = viz::RGBA_8888;
+    auto valid_format = viz::SinglePlaneFormat::kRGBA_8888;
     auto backings = shared_image_factory_->CreateSwapChain(
         front_buffer_mailbox, back_buffer_mailbox, valid_format, size,
         color_space, surface_origin, alpha_type, usage);
@@ -189,7 +189,7 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
     EXPECT_TRUE(backings.back_buffer);
   }
   {
-    auto valid_format = viz::BGRA_8888;
+    auto valid_format = viz::SinglePlaneFormat::kBGRA_8888;
     auto backings = shared_image_factory_->CreateSwapChain(
         front_buffer_mailbox, back_buffer_mailbox, valid_format, size,
         color_space, surface_origin, alpha_type, usage);
@@ -197,7 +197,7 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
     EXPECT_TRUE(backings.back_buffer);
   }
   {
-    auto valid_format = viz::RGBA_F16;
+    auto valid_format = viz::SinglePlaneFormat::kRGBA_F16;
     auto backings = shared_image_factory_->CreateSwapChain(
         front_buffer_mailbox, back_buffer_mailbox, valid_format, size,
         color_space, surface_origin, alpha_type, usage);
@@ -205,7 +205,7 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
     EXPECT_TRUE(backings.back_buffer);
   }
   {
-    auto invalid_format = viz::RGBA_4444;
+    auto invalid_format = viz::SinglePlaneFormat::kRGBA_4444;
     auto backings = shared_image_factory_->CreateSwapChain(
         front_buffer_mailbox, back_buffer_mailbox, invalid_format, size,
         color_space, surface_origin, alpha_type, usage);
@@ -217,7 +217,7 @@ TEST_F(D3DImageBackingFactoryTestSwapChain, InvalidFormat) {
 TEST_F(D3DImageBackingFactoryTestSwapChain, CreateAndPresentSwapChain) {
   auto front_buffer_mailbox = Mailbox::GenerateForSharedImage();
   auto back_buffer_mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::RGBA_8888;
+  auto format = viz::SinglePlaneFormat::kRGBA_8888;
   gfx::Size size(1, 1);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   auto surface_origin = kTopLeft_GrSurfaceOrigin;
