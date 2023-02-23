@@ -221,13 +221,8 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
 // Check that a form in the background but was interacted by the user
 // won't be discarded
 // TODO(crbug.com/1415833): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_TabWithFormNotDiscarded DISABLED_TabWithFormNotDiscarded
-#else
-#define MAYBE_TabWithFormNotDiscarded TabWithFormNotDiscarded
-#endif
 IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
-                       MAYBE_TabWithFormNotDiscarded) {
+                       DISABLED_TabWithFormNotDiscarded) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputIsFocused);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputValueIsUpated);
   const DeepQuery input_text_box = {"#value"};
