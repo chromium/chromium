@@ -15,8 +15,6 @@ BROWSER_USER_DATA_KEY_IMPL(WebStateUpdateBrowserAgent)
 
 WebStateUpdateBrowserAgent::WebStateUpdateBrowserAgent(Browser* browser)
     : web_state_list_(browser->GetWebStateList()) {
-  browser_ = browser;
-  browser_observation_.Observe(browser);
   web_state_list_observation_.Observe(web_state_list_);
 
   // All the BrowserAgent are attached to the Browser during the creation,
@@ -57,14 +55,8 @@ void WebStateUpdateBrowserAgent::WebStateDetachedAt(
   }
 }
 
-#pragma mark - BrowserObserver
-
-void WebStateUpdateBrowserAgent::BrowserDestroyed(Browser* browser) {
-  DCHECK_EQ(browser, browser_);
+void WebStateUpdateBrowserAgent::WebStateListDestroyed(
+    WebStateList* web_state_list) {
   // Stop observing web state list.
-  browser->GetWebStateList()->RemoveObserver(this);
-  browser->RemoveObserver(this);
-  web_state_observations_.RemoveAllObservations();
   web_state_list_observation_.Reset();
-  browser_observation_.Reset();
 }
