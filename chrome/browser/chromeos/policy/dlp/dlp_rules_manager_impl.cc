@@ -588,6 +588,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   dst_patterns_mapping_.clear();
   src_conditions_.clear();
   dst_conditions_.clear();
+  rules_id_metadata_mapping_.clear();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   files_controller_ = nullptr;
 #endif

@@ -1072,6 +1072,28 @@ TEST_F(DlpRulesManagerImplTest, EmptyMetadataReportedIfRuleidUnset) {
   EXPECT_TRUE(rule_metadata.obfuscated_id.empty());
 }
 
+// Test that after policy refresh, the correct metadata is returned
+TEST_F(DlpRulesManagerImplTest, MetadataMapEmptiedAfterPolicyUpdate) {
+  dlp_test_util::DlpRule rule1(kRuleName1, "Block Printing", kRuleId1);
+  rule1.AddSrcUrl(kExampleUrl)
+      .AddRestriction(dlp::kPrintingRestriction, dlp::kBlockLevel);
+  UpdatePolicyPref({rule1});
+
+  dlp_test_util::DlpRule rule2(kRuleName2, "Block Printing", kRuleId2);
+  rule2.AddSrcUrl(kExampleUrl)
+      .AddRestriction(dlp::kPrintingRestriction, dlp::kBlockLevel);
+  UpdatePolicyPref({rule2});
+
+  DlpRulesManager::RuleMetadata rule_metadata;
+  EXPECT_EQ(std::string(kExampleUrl),
+            dlp_rules_manager_.GetSourceUrlPattern(
+                GURL(kExampleUrl), DlpRulesManager::Restriction::kPrinting,
+                DlpRulesManager::Level::kBlock, &rule_metadata));
+
+  EXPECT_EQ(rule_metadata.name, kRuleName2);
+  EXPECT_EQ(rule_metadata.obfuscated_id, kRuleId2);
+}
+
 // Test that for overlapping rules with same restriction, metadata of the first
 // rule in the policy is reported.
 TEST_F(DlpRulesManagerImplTest, TestOrderSameLevelPrinting) {
