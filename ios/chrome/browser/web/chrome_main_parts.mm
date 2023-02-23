@@ -445,6 +445,8 @@ void IOSChromeMainParts::SetupMetrics() {
 }
 
 void IOSChromeMainParts::StartMetricsRecording() {
+  // TODO(crbug.com/1417909) Add an EG2 test for cloned install detection.
+  application_context_->GetMetricsService()->CheckForClonedInstall();
   application_context_->GetMetricsServicesManager()->UpdateUploadPermissions(
       true);
 }
