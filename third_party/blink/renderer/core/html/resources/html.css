@@ -585,7 +585,7 @@ input[type="password" i]::-internal-reveal {
   height: 1.3em;
   cursor: default;
   flex: none;
-  background-image: -webkit-image-set(url(images/password_reveal_on.svg) 1x);
+  background-image: url(images/password_reveal_on.svg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -594,7 +594,7 @@ input[type="password" i]::-internal-reveal {
 }
 
 input[type="password" i]::-internal-reveal.reveal {
-  background-image: -webkit-image-set(url(images/password_reveal_off.svg) 1x);
+  background-image: url(images/password_reveal_off.svg);
 }
 
 input[type="password" i]::-internal-reveal:hover,
@@ -1214,7 +1214,7 @@ input[type="date" i]::-webkit-calendar-picker-indicator,
 input[type="datetime-local" i]::-webkit-calendar-picker-indicator,
 input[type="month" i]::-webkit-calendar-picker-indicator,
 input[type="week" i]::-webkit-calendar-picker-indicator {
-  background-image: -internal-light-dark(-webkit-image-set(url(images/calendar_icon.svg) 1x), -webkit-image-set(url(images/calendar_icon_white.svg) 1x));
+  background-image: -internal-light-dark(url(images/calendar_icon.svg), url(images/calendar_icon_white.svg));
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;
@@ -1234,7 +1234,7 @@ input[type="week" i]::-webkit-calendar-picker-indicator:focus-visible {
 }
 
 input[type="time" i]::-webkit-calendar-picker-indicator {
-  background-image: -internal-light-dark(-webkit-image-set(url(images/time_icon.svg) 1x), -webkit-image-set(url(images/time_icon_white.svg) 1x));
+  background-image: -internal-light-dark(url(images/time_icon.svg), url(images/time_icon_white.svg));
   background-origin: content-box;
   background-repeat: no-repeat;
   background-size: contain;

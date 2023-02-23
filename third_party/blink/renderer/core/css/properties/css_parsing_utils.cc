@@ -3474,10 +3474,14 @@ static CSSValue* ConsumeGeneratedImage(CSSParserTokenRange& range,
 static CSSImageValue* CreateCSSImageValueWithReferrer(
     const AtomicString& raw_value,
     const CSSParserContext& context) {
-  return MakeGarbageCollected<CSSImageValue>(
+  auto* image_value = MakeGarbageCollected<CSSImageValue>(
       raw_value, context.CompleteURL(raw_value), context.GetReferrer(),
       context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
       context.IsAdRelated());
+  if (context.Mode() == kUASheetMode) {
+    image_value->SetInitiator(fetch_initiator_type_names::kUacss);
+  }
+  return image_value;
 }
 
 static CSSValue* ConsumeImageSet(
@@ -3495,14 +3499,7 @@ static CSSValue* ConsumeImageSet(
              : ConsumeUrlAsStringView(args, context))
             .ToAtomicString();
     if (!url_value.IsNull()) {
-      CSSImageValue* image =
-          CreateCSSImageValueWithReferrer(url_value, context);
-
-      if (context.Mode() == kUASheetMode) {
-        image->SetInitiator(fetch_initiator_type_names::kUacss);
-      }
-
-      image_set->Append(*image);
+      image_set->Append(*CreateCSSImageValueWithReferrer(url_value, context));
     } else {
       if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
         return nullptr;
