@@ -388,7 +388,7 @@ CALayerOverlayProcessor::CALayerOverlayProcessor()
 #if BUILDFLAG(IS_MAC)
       overlays_allowed_(ui::RemoteLayerAPISupported()),
 #else
-      overlays_allowed_(true),
+      overlays_allowed_(false),
 #endif
       enable_ca_renderer_(base::FeatureList::IsEnabled(kCARenderer)),
       enable_hdr_underlays_(base::FeatureList::IsEnabled(kHDRUnderlays)) {
