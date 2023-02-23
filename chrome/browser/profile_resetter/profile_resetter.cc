@@ -254,9 +254,6 @@ void ProfileResetter::ResetCookiesAndSiteData() {
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
 
-  // Don't try to clear LSO data if it's not supported.
-  if (!prefs->GetBoolean(prefs::kClearPluginLSODataEnabled))
-    remove_mask &= ~chrome_browsing_data_remover::DATA_TYPE_PLUGIN_DATA;
   cookies_remover_->RemoveAndReply(
       base::Time(), base::Time::Max(), remove_mask,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, this);

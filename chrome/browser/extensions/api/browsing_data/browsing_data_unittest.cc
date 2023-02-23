@@ -193,9 +193,6 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     prefs->SetBoolean(browsing_data::prefs::kDeletePasswords,
                       !!(data_type_flags &
                          chrome_browsing_data_remover::DATA_TYPE_PASSWORDS));
-    prefs->SetBoolean(prefs::kClearPluginLSODataEnabled,
-                      !!(data_type_flags &
-                         chrome_browsing_data_remover::DATA_TYPE_PLUGIN_DATA));
 
     VerifyRemovalMask(expected_origin_type_mask, expected_removal_mask);
   }
@@ -216,9 +213,6 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     prefs->SetBoolean(
         browsing_data::prefs::kDeleteBrowsingHistoryBasic,
         !!(data_type_flags & chrome_browsing_data_remover::DATA_TYPE_HISTORY));
-    prefs->SetBoolean(prefs::kClearPluginLSODataEnabled,
-                      !!(data_type_flags &
-                         chrome_browsing_data_remover::DATA_TYPE_PLUGIN_DATA));
 
     VerifyRemovalMask(expected_origin_type_mask, expected_removal_mask);
   }
@@ -460,7 +454,6 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
   prefs->SetBoolean(browsing_data::prefs::kDeleteFormData, false);
   prefs->SetBoolean(browsing_data::prefs::kDeleteHostedAppsData, false);
   prefs->SetBoolean(browsing_data::prefs::kDeletePasswords, false);
-  prefs->SetBoolean(prefs::kClearPluginLSODataEnabled, false);
   uint64_t expected_mask = content::BrowsingDataRemover::DATA_TYPE_CACHE |
                            content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
                            chrome_browsing_data_remover::DATA_TYPE_HISTORY;

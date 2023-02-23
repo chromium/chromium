@@ -6035,6 +6035,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClearBrowsingData_LSOData">
+  <obsolete>
+    LSO data relates to Flash, and Flash is no longer supported.
+  </obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
 </action>

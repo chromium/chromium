@@ -1079,21 +1079,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
   }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Plugin is data not separated for protected and unprotected web origins. We
-  // check the origin_type_mask_ to prevent unintended deletion.
-  if ((remove_mask & constants::DATA_TYPE_PLUGIN_DATA) &&
-      (origin_type_mask &
-       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB)) {
-    base::RecordAction(UserMetricsAction("ClearBrowsingData_LSOData"));
-
-    if (filter_builder->MatchesAllOriginsAndDomains()) {
-      // TODO(bbudge) Figure out how to delete Flash plugin data without a
-      // Flash plugin.
-    }
-  }
-#endif
-
   //////////////////////////////////////////////////////////////////////////////
   // DATA_TYPE_MEDIA_LICENSES
   if (remove_mask & content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES) {

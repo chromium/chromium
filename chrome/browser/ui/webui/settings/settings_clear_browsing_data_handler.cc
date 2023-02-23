@@ -160,11 +160,6 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::string webui_callback_id = args_list[0].GetString();
 
   PrefService* prefs = profile_->GetPrefs();
-  uint64_t site_data_mask = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
-  // Don't try to clear LSO data if it's not supported.
-  if (!prefs->GetBoolean(prefs::kClearPluginLSODataEnabled))
-    site_data_mask &= ~chrome_browsing_data_remover::DATA_TYPE_PLUGIN_DATA;
-
   uint64_t remove_mask = 0;
   uint64_t origin_mask = 0;
   std::vector<BrowsingDataType> data_type_vector;
@@ -193,7 +188,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
         remove_mask |= content::BrowsingDataRemover::DATA_TYPE_CACHE;
         break;
       case BrowsingDataType::COOKIES:
-        remove_mask |= site_data_mask;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         origin_mask |=
             content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB;
         break;
@@ -209,7 +204,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
         remove_mask |= chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
         break;
       case BrowsingDataType::HOSTED_APPS_DATA:
-        remove_mask |= site_data_mask;
+        remove_mask |= chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
         origin_mask |= content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
         break;
       case BrowsingDataType::BOOKMARKS:

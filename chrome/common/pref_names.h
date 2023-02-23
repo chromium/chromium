@@ -822,8 +822,6 @@ extern const char kLastRsuDeviceIdUploaded[];
 extern const char kDeviceName[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-extern const char kClearPluginLSODataEnabled[];
-extern const char kPepperFlashSettingsEnabled[];
 extern const char kDiskCacheDir[];
 extern const char kDiskCacheSize[];
 

@@ -2616,13 +2616,6 @@ const char kKnownUserParentAccessCodeConfig[] =
     "child_user.parent_access_code.config";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Whether there is a Flash version installed that supports clearing LSO data.
-const char kClearPluginLSODataEnabled[] = "browser.clear_lso_data_enabled";
-
-// Whether we should show Pepper Flash-specific settings.
-const char kPepperFlashSettingsEnabled[] =
-    "browser.pepper_flash_settings_enabled";
-
 // String which specifies where to store the disk cache.
 const char kDiskCacheDir[] = "browser.disk_cache_dir";
 // Pref name for the policy specifying the maximal cache size.
