@@ -71,13 +71,6 @@ public class PeriodicBackgroundSyncChromeWakeUpTask extends NativeBackgroundTask
         return true;
     }
 
-    @Override
-    public void reschedule(Context context) {
-        BackgroundSyncBackgroundTaskScheduler.getInstance().reschedule(
-                BackgroundSyncBackgroundTaskScheduler.BackgroundSyncTask
-                        .PERIODIC_SYNC_CHROME_WAKE_UP);
-    }
-
     @NativeMethods
     interface Natives {
         void firePeriodicBackgroundSyncEvents(Runnable callback);

@@ -177,12 +177,6 @@ class BackgroundTaskSchedulerJobService implements BackgroundTaskSchedulerDelega
             }
             mBuilder.setPeriodic(periodicInfo.getIntervalMs());
         }
-
-        @Override
-        public void visit(TaskInfo.ExactInfo exactInfo) {
-            throw new RuntimeException("Exact tasks should not be scheduled with "
-                    + "JobScheduler.");
-        }
     }
 
     private static int getJobInfoNetworkTypeFromTaskNetworkType(

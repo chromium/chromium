@@ -113,7 +113,6 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
         return PrefetchBackgroundTaskJni.get().onStopTask(mNativeTask, PrefetchBackgroundTask.this);
     }
 
-    @Override
     public void reschedule(Context context) {
         // BackgroundTask::reschedule() docs explain this will only be called in situations like
         // "Google Play Services update or OS upgrade". Given that these do not happen often and

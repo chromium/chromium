@@ -73,11 +73,6 @@ public class PrefetchBackgroundTaskUnitTest {
         }
 
         @Override
-        public boolean isScheduled(Context context, int taskId) {
-            return (mTaskInfos.get(taskId) != null);
-        }
-
-        @Override
         public void doMaintenance() {}
 
         public TaskInfo getTaskInfo(int taskId) {

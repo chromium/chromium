@@ -58,6 +58,7 @@ public class BackgroundScheduler {
      * needed.
      */
     public void reschedule() {
+        // TODO(crbug.com/1414628): Investigate if this can be deleted.
         TriggerConditions triggerConditions = new TriggerConditions(false, 0, false);
         scheduleBackup(triggerConditions, DateUtils.MINUTE_IN_MILLIS * 5);
     }

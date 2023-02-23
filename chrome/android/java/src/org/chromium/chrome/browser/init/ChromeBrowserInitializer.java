@@ -198,10 +198,8 @@ public class ChromeBrowserInitializer {
      * Running in an AsyncTask as pre-loading itself may cause I/O.
      */
     private void warmUpSharedPrefs() {
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            DownloadManagerService.warmUpSharedPrefs();
-            BackgroundTaskSchedulerFactory.warmUpSharedPrefs();
-        });
+        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> { DownloadManagerService.warmUpSharedPrefs(); });
     }
 
     private void preInflationStartup() {

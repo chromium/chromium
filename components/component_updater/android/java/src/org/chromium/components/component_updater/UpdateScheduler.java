@@ -46,10 +46,6 @@ public class UpdateScheduler {
         scheduleInternal(mDelayMs);
     }
 
-    /* package */ void reschedule() {
-        scheduleInternal(mDelayMs);
-    }
-
     private UpdateScheduler() {}
 
     private void scheduleInternal(long delayMs) {

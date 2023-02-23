@@ -83,14 +83,6 @@ public class NotificationTriggerScheduler {
     }
 
     /**
-     * Method for rescheduling a background task to wake up Chrome for processing notification
-     * trigger events in the event of an OS upgrade or Google Play Services upgrade.
-     */
-    public void reschedule() {
-        schedule(mClock.currentTimeMillis() + RESCHEDULE_DELAY_TIME);
-    }
-
-    /**
      * Calls into native code to trigger all pending notifications.
      */
     public void triggerNotifications() {

@@ -72,11 +72,6 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
         return BackgroundSchedulerProcessor.getInstance().stopScheduledProcessing();
     }
 
-    @Override
-    public void reschedule(Context context) {
-        BackgroundScheduler.getInstance().reschedule();
-    }
-
     /** Wraps the callback for code reuse */
     private Callback<Boolean> wrapCallback(final TaskFinishedCallback callback) {
         return new Callback<Boolean>() {

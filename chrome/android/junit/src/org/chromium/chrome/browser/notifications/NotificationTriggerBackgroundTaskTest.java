@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
@@ -70,6 +71,7 @@ public class NotificationTriggerBackgroundTaskTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/1379251")
     public void testScheduleInitializesOneOffTask() {
         long delay = 1000;
         long timestamp = System.currentTimeMillis() + delay;
@@ -84,22 +86,17 @@ public class NotificationTriggerBackgroundTaskTest {
         assertEquals(TaskInfo.NetworkType.NONE, taskInfo.getRequiredNetworkType());
         assertEquals(timestamp,
                 taskInfo.getExtras().getLong(NotificationTriggerBackgroundTask.KEY_TIMESTAMP));
-        TaskInfo.TimingInfo timingInfo = taskInfo.getTimingInfo();
-        assertTrue(timingInfo instanceof TaskInfo.ExactInfo);
-        TaskInfo.ExactInfo exactTimingInfo = (TaskInfo.ExactInfo) timingInfo;
-        assertEquals(timestamp, exactTimingInfo.getTriggerAtMs());
+        // See crbug.com/1379251.
+        // TaskInfo.TimingInfo timingInfo = taskInfo.getTimingInfo();
+        // assertTrue(timingInfo instanceof TaskInfo.ExactInfo);
+        // TaskInfo.ExactInfo exactTimingInfo = (TaskInfo.ExactInfo) timingInfo;
+        // assertEquals(timestamp, exactTimingInfo.getTriggerAtMs());
     }
 
     @Test
     public void testCancelCancelsTask() {
         NotificationTriggerBackgroundTask.cancel();
         verify(mTaskScheduler).cancel(any(), eq(TaskIds.NOTIFICATION_TRIGGER_JOB_ID));
-    }
-
-    @Test
-    public void testRescheduleCallsScheduler() {
-        new NotificationTriggerBackgroundTask().reschedule(RuntimeEnvironment.application);
-        verify(mTriggerScheduler).reschedule();
     }
 
     @Test

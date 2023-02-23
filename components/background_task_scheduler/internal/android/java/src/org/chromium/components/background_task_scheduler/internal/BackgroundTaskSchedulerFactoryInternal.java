@@ -26,8 +26,7 @@ public final class BackgroundTaskSchedulerFactoryInternal {
         ThreadUtils.assertOnUiThread();
         if (sBackgroundTaskScheduler == null) {
             sBackgroundTaskScheduler =
-                    new BackgroundTaskSchedulerImpl(new BackgroundTaskSchedulerJobService(),
-                            new BackgroundTaskSchedulerAlarmManager());
+                    new BackgroundTaskSchedulerImpl(new BackgroundTaskSchedulerJobService());
         }
         return sBackgroundTaskScheduler;
     }

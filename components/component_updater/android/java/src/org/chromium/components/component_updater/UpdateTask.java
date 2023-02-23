@@ -45,9 +45,4 @@ public class UpdateTask extends NativeBackgroundTask {
         // Don't reschedule task here. We are rescheduling with our parameters.
         return false;
     }
-
-    @Override
-    public void reschedule(Context context) {
-        UpdateScheduler.getInstance().reschedule();
-    }
 }

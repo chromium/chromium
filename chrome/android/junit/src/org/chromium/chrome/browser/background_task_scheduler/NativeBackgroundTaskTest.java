@@ -211,9 +211,6 @@ public class NativeBackgroundTaskTest {
             return mNeedsReschedulingAfterStop;
         }
 
-        @Override
-        public void reschedule(Context context) {}
-
         boolean waitOnStartWithNativeCallback() {
             return waitOnLatch(mStartWithNativeLatch);
         }

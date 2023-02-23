@@ -25,9 +25,6 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
  */
 public class NotificationSchedulerTask extends NativeBackgroundTask {
     @Override
-    public void reschedule(Context context) {}
-
-    @Override
     protected int onStartTaskBeforeNativeLoaded(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         return StartBeforeNativeResult.LOAD_NATIVE;

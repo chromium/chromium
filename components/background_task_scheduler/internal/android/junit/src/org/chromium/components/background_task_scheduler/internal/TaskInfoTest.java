@@ -30,7 +30,6 @@ public class TaskInfoTest {
 
     @Before
     public void setUp() {
-        TestBackgroundTask.reset();
         BackgroundTaskSchedulerFactoryInternal.setBackgroundTaskFactory(
                 new TestBackgroundTaskFactory());
     }
@@ -133,16 +132,6 @@ public class TaskInfoTest {
         periodicTask.getTimingInfo().accept(visitor);
     }
 
-    @Test
-    @Feature({"BackgroundTaskScheduler"})
-    public void testExact() {
-        TaskInfo.TimingInfo timingInfo =
-                TaskInfo.ExactInfo.create().setTriggerAtMs(TEST_END_MS).build();
-        TaskInfo exactOneOffTask = TaskInfo.createTask(TaskIds.TEST, timingInfo).build();
-        CheckTimingInfoVisitor visitor = new CheckTimingInfoVisitor(TEST_END_MS, null, false);
-        exactOneOffTask.getTimingInfo().accept(visitor);
-    }
-
     private class CheckTimingInfoVisitor implements TaskInfo.TimingInfoVisitor {
         private final Long mStartOrIntervalOrTriggerMs;
         private final Long mEndOrFlexMs;
@@ -178,11 +167,6 @@ public class TaskInfoTest {
                 assertTrue(periodicInfo.hasFlex());
                 assertEquals(mEndOrFlexMs.longValue(), periodicInfo.getFlexMs());
             }
-        }
-
-        @Override
-        public void visit(TaskInfo.ExactInfo exactInfo) {
-            assertEquals(mStartOrIntervalOrTriggerMs.longValue(), exactInfo.getTriggerAtMs());
         }
     }
 }

@@ -12,32 +12,21 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskBroadcastReceiver.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskJobService.java",
-      "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerAlarmManager.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerDelegate.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerFactoryInternal.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerImpl.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerJobService.java",
-      "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerPrefs.java",
       "android/java/src/org/chromium/components/background_task_scheduler/internal/BackgroundTaskSchedulerUma.java",
-      "android/java/src/org/chromium/components/background_task_scheduler/internal/ExtrasToProtoConverter.java",
     ]
 
     deps = [
-      ":proto_java",
       "//base:base_java",
       "//build/android:build_java",
       "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
       "//components/background_task_scheduler:public_java",
       "//content/public/android:content_main_dex_java",
-      "//third_party/android_deps:chromium_play_services_availability_java",
-      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-  }
-
-  proto_java_library("proto_java") {
-    proto_path = "proto"
-    sources = [ "$proto_path/scheduled_task.proto" ]
   }
 
   static_library("native_task") {
