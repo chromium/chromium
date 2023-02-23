@@ -780,6 +780,8 @@ const char kSyncInvalidationVersions2[] = "sync.invalidation_versions2";
 
 // Deprecated 02/2023.
 const char kClearPluginLSODataEnabled[] = "browser.clear_lso_data_enabled";
+const char kContentSettingsPluginAllowlist[] =
+    "profile.content_settings.plugin_whitelist";
 const char kPepperFlashSettingsEnabled[] =
     "browser.pepper_flash_settings_enabled";
 const char kPluginsAllowOutdated[] = "plugins.allow_outdated";
@@ -1052,6 +1054,7 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 02/2023.
   registry->RegisterBooleanPref(kClearPluginLSODataEnabled, false);
+  registry->RegisterDictionaryPref(kContentSettingsPluginAllowlist);
   registry->RegisterBooleanPref(kPepperFlashSettingsEnabled, false);
   registry->RegisterBooleanPref(kPluginsAllowOutdated, false);
   registry->RegisterFilePathPref(kPluginsLastInternalDirectory,
@@ -2079,6 +2082,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 02/2023.
   profile_prefs->ClearPref(kClearPluginLSODataEnabled);
+  profile_prefs->ClearPref(kContentSettingsPluginAllowlist);
   profile_prefs->ClearPref(kPepperFlashSettingsEnabled);
   profile_prefs->ClearPref(kPluginsAllowOutdated);
   profile_prefs->ClearPref(kPluginsLastInternalDirectory);

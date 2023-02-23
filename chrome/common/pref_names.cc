@@ -1317,14 +1317,6 @@ const char kShowUpdatePromotionInfoBar[] =
 const char kUseCustomChromeFrame[] = "browser.custom_chrome_frame";
 #endif
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-// Which plugins have been allowed manually by the user.
-// Note that this used to be `kContentSettingsPluginWhitelist`, hence the
-// difference between the variable name and the string value.
-const char kContentSettingsPluginAllowlist[] =
-    "profile.content_settings.plugin_whitelist";
-#endif
-
 // Double that indicates the default zoom level.
 const char kPartitionDefaultZoomLevel[] = "partition.default_zoom_level";
 

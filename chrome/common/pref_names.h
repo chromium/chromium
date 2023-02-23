@@ -411,9 +411,6 @@ extern const char kShowUpdatePromotionInfoBar[];
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const char kUseCustomChromeFrame[];
 #endif
-#if BUILDFLAG(ENABLE_PLUGINS)
-extern const char kContentSettingsPluginAllowlist[];
-#endif
 extern const char kPartitionDefaultZoomLevel[];
 extern const char kPartitionPerHostZoomLevels[];
 
