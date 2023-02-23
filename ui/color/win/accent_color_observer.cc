@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "base/task/sequenced_task_runner.h"
 #include "skia/ext/skia_utils_win.h"
 #include "ui/gfx/color_utils.h"
 
@@ -82,8 +83,10 @@ void AccentColorObserver::OnDwmKeyUpdated() {
 
   callbacks_.Notify();
 
-  // Watch for future changes.
-  if (!dwm_key_->StartWatching(base::BindOnce(
+  // Watch for future changes. If there is no task runner, this is a test or
+  // tool context and watching is unnecessary.
+  if (!base::SequencedTaskRunner::HasCurrentDefault() ||
+      !dwm_key_->StartWatching(base::BindOnce(
           &AccentColorObserver::OnDwmKeyUpdated, base::Unretained(this)))) {
     dwm_key_.reset();
   }
