@@ -2454,7 +2454,6 @@ if (!is_android) {
         # These tests also run on Lacros, as part of
         # lacros_chrome_browsertests_run_in_series below.
         "../browser/media/webrtc/capture_handle_browsertest.cc",
-        "../browser/media/webrtc/conditional_focus_browsertest.cc",
         "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
         "../browser/ui/autofill/autofill_context_menu_manager_browsertest.cc",
         "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
@@ -4707,7 +4706,6 @@ if (!is_android) {
       # TODO(crbug.com/1290597): Enable once WebRTC becomes functional.
       sources -= [
         "../browser/media/webrtc/capture_handle_browsertest.cc",
-        "../browser/media/webrtc/conditional_focus_browsertest.cc",
         "../browser/media/webrtc/media_stream_devices_controller_browsertest.cc",
         "../browser/media/webrtc/region_capture_browsertest.cc",
         "../browser/media/webrtc/same_origin_observer_browsertest.cc",
@@ -4940,7 +4938,6 @@ if (is_chromeos_lacros) {
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
       "../browser/lacros/window_lacros_browsertest.cc",
       "../browser/media/webrtc/capture_handle_browsertest.cc",
-      "../browser/media/webrtc/conditional_focus_browsertest.cc",
       "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
       "../browser/metrics/structured/lacros_structured_metrics_recorder_browsertest.cc",
       "../browser/payments/webapps/payment_request_lacros_browsertest.cc",
@@ -9726,6 +9723,7 @@ if (!is_android) {
 
     if (toolkit_views) {
       sources += [
+        "../browser/media/webrtc/conditional_focus_browsertest.cc",
         "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.cc",
         "../browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h",
         "../browser/ui/toolbar/app_menu_fullscreen_interactive_uitest.cc",
