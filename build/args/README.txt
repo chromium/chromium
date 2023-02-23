@@ -1,10 +1,6 @@
 This directory is here to hold .gni files that contain sets of GN build
 arguments for given configurations.
 
-(Currently this directory is empty because we removed the only thing here, but
-this has come up several times so I'm confident we'll need this again. If this
-directory is still empty by 2017, feel free to delete it. --Brett)
-
 Some projects or bots may have build configurations with specific combinations
 of flags. Rather than making a new global flag for your specific project and
 adding it all over the build to each arg it should affect, you can add a .gni
