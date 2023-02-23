@@ -1368,23 +1368,20 @@
   <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_TITLE" desc="Title for the data loss warning screen if the user decided not to recover local data">
     Local data will be deleted
   </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE_P1" desc="First paragraph of subtitle message for the data loss warning screen if the user decided not to recover local data">
-    Local data is protected by your old password. If you recently changed your password, try your old password again.
-  </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE_P2" desc="Second paragraph of subtitle message for the data loss warning screen if the user decided not to recover local data">
-    If you continue without entering your old password, your local data will be deleted. You’ll sign in with your Google Account to set up this user again.
+  <message name="IDS_LOGIN_PASSWORD_CHANGED_DATA_LOSS_WARNING_SUBTITLE" desc="Subtitle message for the data loss warning screen if the user decided not to recover local data">
+    You can recover <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>, but local data will be deleted.
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVER_DATA_TITLE" desc="Title for the screen to recover local data by entering old password.">
-    Restore your local data
+    Your password has changed since the last time you signed in
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVER_DATA_SUBTITLE" desc="Subtitle for the screen to recover local data by entering old password.">
-    Your password has changed. To restore your local data, you need to enter your old password.
+    Your local data is protected by your old password. Enter your old password to recover local data.
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_AND_DELETE_BUTTON" desc="Button to continue and delete data without providing old password on the data loss warning dialog.">
-    Continue and delete data
+    Continue anyway
   </message>
-  <message name="IDS_LOGIN_PASSWORD_CHANGED_CONTINUE_WITHOUT_LOCAL_DATA_BUTTON" desc="Button to confirm continue without local data on the recover local data dialog.">
-    Continue without local data
+  <message name="IDS_LOGIN_PASSWORD_CHANGED_FORGOT_OLD_PASSWORD_BUTTON" desc="Forgot old password button on the recover local data dialog.">
+    Forgot old password
   </message>
   <message name="IDS_LOGIN_PASSWORD_CHANGED_RECOVERY_TITLE" desc="Screen title shown on the opt-in page to the user data recovery feature.">
     Turn on local data recovery to protect your data?
