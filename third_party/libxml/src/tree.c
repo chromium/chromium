@@ -1411,14 +1411,21 @@ xmlStringLenGetNodeList(const xmlDoc *doc, const xmlChar *value, int len) {
 			    if (val != NULL) xmlFree(val);
 			    goto out;
 			}
-			else if ((ent != NULL) && (ent->children == NULL)) {
+			else if ((ent != NULL) &&
+                                 ((ent->flags & XML_ENT_PARSED) == 0) &&
+                                 ((ent->flags & XML_ENT_EXPANDING) == 0)) {
 			    xmlNodePtr temp;
 
-                            /* Set to non-NULL value to avoid recursion. */
-			    ent->children = (xmlNodePtr) -1;
+                            /*
+                             * The entity should have been checked already,
+                             * but set the flag anyway to avoid recursion.
+                             */
+			    ent->flags |= XML_ENT_EXPANDING;
 			    ent->children = xmlStringGetNodeList(doc,
 				    (const xmlChar*)node->content);
 			    ent->owner = 1;
+			    ent->flags &= ~XML_ENT_EXPANDING;
+                            ent->flags |= XML_ENT_PARSED;
 			    temp = ent->children;
 			    while (temp) {
 				temp->parent = (xmlNodePtr)ent;
@@ -1607,14 +1614,21 @@ xmlStringGetNodeList(const xmlDoc *doc, const xmlChar *value) {
 			node = xmlNewReference(doc, val);
 			if (node == NULL)
 			    goto out;
-			if ((ent != NULL) && (ent->children == NULL)) {
+			if ((ent != NULL) &&
+                            ((ent->flags & XML_ENT_PARSED) == 0) &&
+                            ((ent->flags & XML_ENT_EXPANDING) == 0)) {
 			    xmlNodePtr temp;
 
-                            /* Set to non-NULL value to avoid recursion. */
-			    ent->children = (xmlNodePtr) -1;
+                            /*
+                             * The entity should have been checked already,
+                             * but set the flag anyway to avoid recursion.
+                             */
+			    ent->flags |= XML_ENT_EXPANDING;
 			    ent->children = xmlStringGetNodeList(doc,
 				    (const xmlChar*)node->content);
 			    ent->owner = 1;
+			    ent->flags &= ~XML_ENT_EXPANDING;
+                            ent->flags |= XML_ENT_PARSED;
 			    temp = ent->children;
 			    while (temp) {
 				temp->parent = (xmlNodePtr)ent;
@@ -4217,8 +4231,10 @@ xmlCopyPropList(xmlNodePtr target, xmlAttrPtr cur) {
         return(NULL);
     while (cur != NULL) {
         q = xmlCopyProp(target, cur);
-	if (q == NULL)
+	if (q == NULL) {
+            xmlFreePropList(ret);
 	    return(NULL);
+        }
 	if (p == NULL) {
 	    ret = p = q;
 	} else {

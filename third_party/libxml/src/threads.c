@@ -752,6 +752,8 @@ xmlInitThreadsInternal(void)
      */
     if (libxml_is_threaded == -1)
         libxml_is_threaded = (pthread_mutex_lock != NULL);
+    if (libxml_is_threaded == 0)
+        return;
 #endif /* XML_PTHREAD_WEAK */
     pthread_key_create(&globalkey, xmlFreeGlobalState);
     mainthread = pthread_self();

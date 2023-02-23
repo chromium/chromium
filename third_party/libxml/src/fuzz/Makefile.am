@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = -Wno-syntax
-EXTRA_PROGRAMS = genSeed html regexp schema uri xml xpath
+EXTRA_PROGRAMS = genSeed html regexp schema uri xinclude xml xpath
 check_PROGRAMS = testFuzzer
 EXTRA_DIST = html.dict regexp.dict schema.dict xml.dict xpath.dict \
 	     static_seed/uri static_seed/regexp fuzz.h
@@ -15,12 +15,11 @@ XML_SEED_CORPUS_SRC = \
     '$(top_srcdir)/test/errors/*.xml' \
     '$(top_srcdir)/test/errors10/*.xml' \
     '$(top_srcdir)/test/namespaces/*' \
+    '$(top_srcdir)/test/recurse/*.xml' \
     '$(top_srcdir)/test/SVG/*.xml' \
     '$(top_srcdir)/test/valid/*.xml' \
     '$(top_srcdir)/test/VC/*' \
     '$(top_srcdir)/test/VCM/*' \
-    '$(top_srcdir)/test/XInclude/docs/*' \
-    '$(top_srcdir)/test/XInclude/without-reader/*' \
     '$(top_srcdir)/test/xmlid/*'
 
 testFuzzer_SOURCES = testFuzzer.c fuzz.c
@@ -28,7 +27,7 @@ testFuzzer_SOURCES = testFuzzer.c fuzz.c
 .PHONY: corpus clean-corpus
 
 corpus: seed/html.stamp seed/regexp.stamp seed/schema.stamp seed/uri.stamp \
-    seed/xml.stamp seed/xpath.stamp
+    seed/xinclude.stamp seed/xml.stamp seed/xpath.stamp
 
 check-local: corpus
 	./testFuzzer$(EXEEXT)
@@ -59,6 +58,26 @@ fuzz-xml: xml$(EXEEXT) seed/xml.stamp
 	    -max_len=$(XML_MAX_LEN) \
 	    -timeout=20 \
 	    corpus/xml seed/xml
+
+# XInclude fuzzer
+
+seed/xinclude.stamp: genSeed$(EXEEXT)
+	@mkdir -p seed/xinclude
+	./genSeed$(EXEEXT) xinclude \
+	    '$(top_srcdir)/test/XInclude/docs/*' \
+	    '$(top_srcdir)/test/XInclude/without-reader/*'
+	@touch seed/xinclude.stamp
+
+xinclude_SOURCES = xinclude.c fuzz.c
+xinclude_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
+
+fuzz-xinclude: xinclude$(EXEEXT) seed/xinclude.stamp
+	@mkdir -p corpus/xinclude
+	./xinclude$(EXEEXT) \
+	    -dict=xml.dict \
+	    -max_len=$(XML_MAX_LEN) \
+	    -timeout=20 \
+	    corpus/xinclude seed/xinclude
 
 # HTML fuzzer
 

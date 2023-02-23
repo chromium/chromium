@@ -26,8 +26,9 @@
 #include "private/error.h"
 #include "private/parser.h"
 
-static xmlElementPtr xmlGetDtdElementDesc2(xmlDtdPtr dtd, const xmlChar *name,
-	                           int create);
+static xmlElementPtr
+xmlGetDtdElementDesc2(xmlValidCtxtPtr ctxt, xmlDtdPtr dtd, const xmlChar *name,
+                      int create);
 /* #define DEBUG_VALID_ALGO */
 /* #define DEBUG_REGEXP_ALGO */
 
@@ -2113,7 +2114,7 @@ xmlAddAttributeDecl(xmlValidCtxtPtr ctxt,
      * Validity Check:
      * Multiple ID per element
      */
-    elemDef = xmlGetDtdElementDesc2(dtd, elem, 1);
+    elemDef = xmlGetDtdElementDesc2(ctxt, dtd, elem, 1);
     if (elemDef != NULL) {
 
 #ifdef LIBXML_VALID_ENABLED
@@ -3277,7 +3278,8 @@ xmlGetDtdElementDesc(xmlDtdPtr dtd, const xmlChar *name) {
  */
 
 static xmlElementPtr
-xmlGetDtdElementDesc2(xmlDtdPtr dtd, const xmlChar *name, int create) {
+xmlGetDtdElementDesc2(xmlValidCtxtPtr ctxt, xmlDtdPtr dtd, const xmlChar *name,
+                      int create) {
     xmlElementTablePtr table;
     xmlElementPtr cur;
     xmlChar *uqname = NULL, *prefix = NULL;
@@ -3300,7 +3302,7 @@ xmlGetDtdElementDesc2(xmlDtdPtr dtd, const xmlChar *name, int create) {
 	    dtd->elements = (void *) table;
 	}
 	if (table == NULL) {
-	    xmlVErrMemory(NULL, "element table allocation failed");
+	    xmlVErrMemory(ctxt, "element table allocation failed");
 	    return(NULL);
 	}
     }
@@ -3313,8 +3315,8 @@ xmlGetDtdElementDesc2(xmlDtdPtr dtd, const xmlChar *name, int create) {
     if ((cur == NULL) && (create)) {
 	cur = (xmlElementPtr) xmlMalloc(sizeof(xmlElement));
 	if (cur == NULL) {
-	    xmlVErrMemory(NULL, "malloc failed");
-	    return(NULL);
+	    xmlVErrMemory(ctxt, "malloc failed");
+	    goto error;
 	}
 	memset(cur, 0, sizeof(xmlElement));
 	cur->type = XML_ELEMENT_DECL;
@@ -3326,8 +3328,13 @@ xmlGetDtdElementDesc2(xmlDtdPtr dtd, const xmlChar *name, int create) {
 	cur->prefix = xmlStrdup(prefix);
 	cur->etype = XML_ELEMENT_TYPE_UNDEFINED;
 
-	xmlHashAddEntry2(table, name, prefix, cur);
+	if (xmlHashAddEntry2(table, name, prefix, cur) < 0) {
+	    xmlVErrMemory(ctxt, "adding entry failed");
+            xmlFreeElement(cur);
+            cur = NULL;
+        }
     }
+error:
     if (prefix != NULL) xmlFree(prefix);
     if (uqname != NULL) xmlFree(uqname);
     return(cur);

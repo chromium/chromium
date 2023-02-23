@@ -540,30 +540,23 @@ xmlTextReaderDebug(xmlTextReaderPtr reader) {
  *
  * Pushes a new entity reference node on top of the entities stack
  *
- * Returns 0 in case of error, the index in the stack otherwise
+ * Returns -1 in case of error, the index in the stack otherwise
  */
 static int
 xmlTextReaderEntPush(xmlTextReaderPtr reader, xmlNodePtr value)
 {
-    if (reader->entMax <= 0) {
-	reader->entMax = 10;
-	reader->entTab = (xmlNodePtr *) xmlMalloc(reader->entMax *
-		                                  sizeof(reader->entTab[0]));
-        if (reader->entTab == NULL) {
-            xmlGenericError(xmlGenericErrorContext, "xmlMalloc failed !\n");
-            return (0);
-        }
-    }
     if (reader->entNr >= reader->entMax) {
-        reader->entMax *= 2;
-        reader->entTab =
-            (xmlNodePtr *) xmlRealloc(reader->entTab,
-                                      reader->entMax *
-                                      sizeof(reader->entTab[0]));
-        if (reader->entTab == NULL) {
+        size_t newSize = reader->entMax == 0 ? 10 : reader->entMax * 2;
+        xmlNodePtr *tmp;
+
+        tmp = (xmlNodePtr *) xmlRealloc(reader->entTab,
+                                        newSize * sizeof(*tmp));
+        if (tmp == NULL) {
             xmlGenericError(xmlGenericErrorContext, "xmlRealloc failed !\n");
-            return (0);
+            return (-1);
         }
+        reader->entTab = tmp;
+        reader->entMax = newSize;
     }
     reader->entTab[reader->entNr] = value;
     reader->ent = value;
@@ -1036,7 +1029,11 @@ xmlTextReaderValidateEntity(xmlTextReaderPtr reader) {
 	    if ((node->children != NULL) &&
 		(node->children->type == XML_ENTITY_DECL) &&
 		(node->children->children != NULL)) {
-		xmlTextReaderEntPush(reader, node);
+		if (xmlTextReaderEntPush(reader, node) < 0) {
+                    if (node == oldnode)
+                        break;
+                    goto skip_children;
+                }
 		node = node->children->children;
 		continue;
 	    } else {
@@ -1482,7 +1479,8 @@ node_found:
 	if ((reader->node->children != NULL) &&
 	    (reader->node->children->type == XML_ENTITY_DECL) &&
 	    (reader->node->children->children != NULL)) {
-	    xmlTextReaderEntPush(reader, reader->node);
+	    if (xmlTextReaderEntPush(reader, reader->node) < 0)
+                goto get_next_node;
 	    reader->node = reader->node->children->children;
 	}
 #ifdef LIBXML_REGEXP_ENABLED

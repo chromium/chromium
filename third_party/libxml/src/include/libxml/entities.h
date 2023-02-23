@@ -35,13 +35,8 @@ typedef enum {
  * and the linkind data needed for the linking in the hash table.
  */
 
-typedef enum {
-  XML_ENTITY_NOT_BEING_CHECKED,
-  XML_ENTITY_BEING_CHECKED              /* entity check is in progress */
-} xmlEntityRecursionGuard;
-
 struct _xmlEntity {
-    void               *_private;	/* application data */
+    void           *_private;	        /* application data */
     xmlElementType          type;       /* XML_ENTITY_DECL, must be second ! */
     const xmlChar          *name;	/* Entity name */
     struct _xmlNode    *children;	/* First child link */
@@ -61,11 +56,8 @@ struct _xmlEntity {
     struct _xmlEntity     *nexte;	/* unused */
     const xmlChar           *URI;	/* the full URI as computed */
     int                    owner;	/* does the entity own the childrens */
-    int                  checked;	/* was the entity content checked and */
-					/* l.o. bit: replacement contains '<' */
-					/* remaining bits: one plus count of */
-                                        /* entity references from this entity */
-    xmlEntityRecursionGuard guard;
+    int                    flags;       /* various flags */
+    unsigned long   expandedSize;       /* expanded size */
 };
 
 /*

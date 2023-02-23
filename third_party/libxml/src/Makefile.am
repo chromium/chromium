@@ -402,22 +402,7 @@ cleanup:
 dist-hook: cleanup
 	(cd $(srcdir) ; tar -cf - --exclude .git win32 os400 vms test result) | (cd $(distdir); tar xf -)
 
-dist-source: distdir
-	$(AMTAR) -chof - --exclude Tests --exclude test --exclude result $(distdir) | GZIP=$(GZIP_ENV) gzip -c >`echo "$(distdir)" | sed "s+libxml2+libxml2-sources+"`.tar.gz
-
-dist-test: distdir
-	(mkdir -p $(distdir))
-	(cd $(srcdir) ; tar -cf - --exclude .git xstc/Tests) | (cd $(distdir); tar xf -)
-	tar -cf - $(distdir)/test $(distdir)/result $(distdir)/xstc/Tests  $(distdir)/Makefile.tests $(distdir)/README.md $(distdir)/README.tests $(distdir)/testapi.c $(distdir)/runtest.c $(distdir)/runsuite.c | GZIP=$(GZIP_ENV) gzip -c >`echo "$(distdir)" | sed "s+libxml2+libxml2-tests+"`.tar.gz
-	@(rm -rf $(distdir)/xstc/Test)
-
-cleantar:
-	@(rm -f libxml*.tar.gz COPYING.LIB)
-
-rpm: cleanup cleantar
-	@(unset CDPATH ; $(MAKE) dist-source dist && rpmbuild -ta $(distdir).tar.gz)
-
-CLEANFILES = runxmlconf.log test.out *.gcda *.gcno *.res
+CLEANFILES = runsuite.log runxmlconf.log test.out *.gcda *.gcno *.res
 DISTCLEANFILES = COPYING missing.lst
 
 EXTRA_DIST = Copyright check-xml-test-suite.py gentest.py \
@@ -427,9 +412,9 @@ EXTRA_DIST = Copyright check-xml-test-suite.py gentest.py \
 	     libxml2-config.cmake.in autogen.sh \
 	     trionan.c trionan.h triostr.c triostr.h trio.c trio.h \
 	     triop.h triodef.h libxml.h \
-	     genUnicode.py TODO_SCHEMAS \
+	     genUnicode.py \
 	     dbgen.pl dbgenattr.pl \
-	     README.tests Makefile.tests libxml2.syms timsort.h \
+	     libxml2.syms timsort.h \
 	     README.zOS README.md \
 	     CMakeLists.txt config.h.cmake.in libxml2-config.cmake.cmake.in
 

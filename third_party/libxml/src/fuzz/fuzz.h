@@ -27,9 +27,12 @@ extern "C" {
 #if 1
   #define HAVE_URI_FUZZER
 #endif
+#if defined(LIBXML_XINCLUDE_ENABLED) && \
+    defined(LIBXML_READER_ENABLED)
+  #define HAVE_XINCLUDE_FUZZER
+#endif
 #if defined(LIBXML_OUTPUT_ENABLED) && \
-    defined(LIBXML_READER_ENABLED) && \
-    defined(LIBXML_XINCLUDE_ENABLED)
+    defined(LIBXML_READER_ENABLED)
   #define HAVE_XML_FUZZER
 #endif
 #if defined(LIBXML_XPATH_ENABLED)

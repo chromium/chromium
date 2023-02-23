@@ -407,6 +407,11 @@ main(int argc, const char **argv) {
         processArg = processPattern;
         globalData.processFile = processSchema;
 #endif
+    } else if (strcmp(fuzzer, "xinclude") == 0) {
+#ifdef HAVE_XINCLUDE_FUZZER
+        processArg = processPattern;
+        globalData.processFile = processXml;
+#endif
     } else if (strcmp(fuzzer, "xml") == 0) {
 #ifdef HAVE_XML_FUZZER
         processArg = processPattern;

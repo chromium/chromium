@@ -66,9 +66,7 @@ import tempfile
 #    e. Complete the review as usual
 
 PATCHES = [
-    'chromium-issue-628581.patch',
     'libxml2-2.9.4-security-xpath-nodetab-uaf.patch',
-    'chromium-issue-708434.patch',
     'undo-sax-deprecation.patch',
 ]
 

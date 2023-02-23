@@ -1171,7 +1171,8 @@ xmlSaveUri(xmlURIPtr uri) {
 			if (temp == NULL) goto mem_error;
 			ret = temp;
 		    }
-		    ret[len++] = *p++;
+                    /* TODO: escaping? */
+		    ret[len++] = (xmlChar) *p++;
 		}
 	    }
             if (uri->port > 0) {

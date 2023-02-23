@@ -88,7 +88,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 EXTRA_PROGRAMS = genSeed$(EXEEXT) html$(EXEEXT) regexp$(EXEEXT) \
-	schema$(EXEEXT) uri$(EXEEXT) xml$(EXEEXT) xpath$(EXEEXT)
+	schema$(EXEEXT) uri$(EXEEXT) xinclude$(EXEEXT) xml$(EXEEXT) \
+	xpath$(EXEEXT)
 check_PROGRAMS = testFuzzer$(EXEEXT)
 subdir = fuzz
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -143,6 +144,13 @@ uri_DEPENDENCIES = $(top_builddir)/libxml2.la
 uri_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(uri_LDFLAGS) $(LDFLAGS) -o $@
+am_xinclude_OBJECTS = xinclude.$(OBJEXT) fuzz.$(OBJEXT)
+xinclude_OBJECTS = $(am_xinclude_OBJECTS)
+xinclude_LDADD = $(LDADD)
+xinclude_DEPENDENCIES = $(top_builddir)/libxml2.la
+xinclude_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(xinclude_LDFLAGS) $(LDFLAGS) -o $@
 am_xml_OBJECTS = xml.$(OBJEXT) fuzz.$(OBJEXT)
 xml_OBJECTS = $(am_xml_OBJECTS)
 xml_LDADD = $(LDADD)
@@ -175,7 +183,8 @@ am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/fuzz.Po ./$(DEPDIR)/genSeed.Po \
 	./$(DEPDIR)/html.Po ./$(DEPDIR)/regexp.Po \
 	./$(DEPDIR)/schema.Po ./$(DEPDIR)/testFuzzer.Po \
-	./$(DEPDIR)/uri.Po ./$(DEPDIR)/xml.Po ./$(DEPDIR)/xpath.Po
+	./$(DEPDIR)/uri.Po ./$(DEPDIR)/xinclude.Po ./$(DEPDIR)/xml.Po \
+	./$(DEPDIR)/xpath.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -197,10 +206,10 @@ am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(genSeed_SOURCES) $(html_SOURCES) $(regexp_SOURCES) \
 	$(schema_SOURCES) $(testFuzzer_SOURCES) $(uri_SOURCES) \
-	$(xml_SOURCES) $(xpath_SOURCES)
+	$(xinclude_SOURCES) $(xml_SOURCES) $(xpath_SOURCES)
 DIST_SOURCES = $(genSeed_SOURCES) $(html_SOURCES) $(regexp_SOURCES) \
 	$(schema_SOURCES) $(testFuzzer_SOURCES) $(uri_SOURCES) \
-	$(xml_SOURCES) $(xpath_SOURCES)
+	$(xinclude_SOURCES) $(xml_SOURCES) $(xpath_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -444,12 +453,11 @@ XML_SEED_CORPUS_SRC = \
     '$(top_srcdir)/test/errors/*.xml' \
     '$(top_srcdir)/test/errors10/*.xml' \
     '$(top_srcdir)/test/namespaces/*' \
+    '$(top_srcdir)/test/recurse/*.xml' \
     '$(top_srcdir)/test/SVG/*.xml' \
     '$(top_srcdir)/test/valid/*.xml' \
     '$(top_srcdir)/test/VC/*' \
     '$(top_srcdir)/test/VCM/*' \
-    '$(top_srcdir)/test/XInclude/docs/*' \
-    '$(top_srcdir)/test/XInclude/without-reader/*' \
     '$(top_srcdir)/test/xmlid/*'
 
 testFuzzer_SOURCES = testFuzzer.c fuzz.c
@@ -458,6 +466,8 @@ testFuzzer_SOURCES = testFuzzer.c fuzz.c
 genSeed_SOURCES = genSeed.c fuzz.c
 xml_SOURCES = xml.c fuzz.c
 xml_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
+xinclude_SOURCES = xinclude.c fuzz.c
+xinclude_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
 html_SOURCES = html.c fuzz.c
 html_LDFLAGS = $(AM_LDFLAGS) -fsanitize=fuzzer
 regexp_SOURCES = regexp.c fuzz.c
@@ -535,6 +545,10 @@ uri$(EXEEXT): $(uri_OBJECTS) $(uri_DEPENDENCIES) $(EXTRA_uri_DEPENDENCIES)
 	@rm -f uri$(EXEEXT)
 	$(AM_V_CCLD)$(uri_LINK) $(uri_OBJECTS) $(uri_LDADD) $(LIBS)
 
+xinclude$(EXEEXT): $(xinclude_OBJECTS) $(xinclude_DEPENDENCIES) $(EXTRA_xinclude_DEPENDENCIES) 
+	@rm -f xinclude$(EXEEXT)
+	$(AM_V_CCLD)$(xinclude_LINK) $(xinclude_OBJECTS) $(xinclude_LDADD) $(LIBS)
+
 xml$(EXEEXT): $(xml_OBJECTS) $(xml_DEPENDENCIES) $(EXTRA_xml_DEPENDENCIES) 
 	@rm -f xml$(EXEEXT)
 	$(AM_V_CCLD)$(xml_LINK) $(xml_OBJECTS) $(xml_LDADD) $(LIBS)
@@ -556,6 +570,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/schema.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testFuzzer.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uri.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xinclude.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xml.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xpath.Po@am__quote@ # am--include-marker
 
@@ -726,6 +741,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/schema.Po
 	-rm -f ./$(DEPDIR)/testFuzzer.Po
 	-rm -f ./$(DEPDIR)/uri.Po
+	-rm -f ./$(DEPDIR)/xinclude.Po
 	-rm -f ./$(DEPDIR)/xml.Po
 	-rm -f ./$(DEPDIR)/xpath.Po
 	-rm -f Makefile
@@ -778,6 +794,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/schema.Po
 	-rm -f ./$(DEPDIR)/testFuzzer.Po
 	-rm -f ./$(DEPDIR)/uri.Po
+	-rm -f ./$(DEPDIR)/xinclude.Po
 	-rm -f ./$(DEPDIR)/xml.Po
 	-rm -f ./$(DEPDIR)/xpath.Po
 	-rm -f Makefile
@@ -821,7 +838,7 @@ uninstall-am:
 .PHONY: corpus clean-corpus
 
 corpus: seed/html.stamp seed/regexp.stamp seed/schema.stamp seed/uri.stamp \
-    seed/xml.stamp seed/xpath.stamp
+    seed/xinclude.stamp seed/xml.stamp seed/xpath.stamp
 
 check-local: corpus
 	./testFuzzer$(EXEEXT)
@@ -845,6 +862,23 @@ fuzz-xml: xml$(EXEEXT) seed/xml.stamp
 	    -max_len=$(XML_MAX_LEN) \
 	    -timeout=20 \
 	    corpus/xml seed/xml
+
+# XInclude fuzzer
+
+seed/xinclude.stamp: genSeed$(EXEEXT)
+	@mkdir -p seed/xinclude
+	./genSeed$(EXEEXT) xinclude \
+	    '$(top_srcdir)/test/XInclude/docs/*' \
+	    '$(top_srcdir)/test/XInclude/without-reader/*'
+	@touch seed/xinclude.stamp
+
+fuzz-xinclude: xinclude$(EXEEXT) seed/xinclude.stamp
+	@mkdir -p corpus/xinclude
+	./xinclude$(EXEEXT) \
+	    -dict=xml.dict \
+	    -max_len=$(XML_MAX_LEN) \
+	    -timeout=20 \
+	    corpus/xinclude seed/xinclude
 
 # HTML fuzzer
 
