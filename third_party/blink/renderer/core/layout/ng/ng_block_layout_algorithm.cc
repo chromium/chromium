@@ -273,9 +273,16 @@ void NGBlockLayoutAlgorithm::SetBoxType(NGPhysicalFragment::NGBoxType type) {
 
 MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput& float_input) {
+  recordreplay::Assert("[RUN-1219-1406] NGBlockLayoutAlgorithm::ComputeMinMaxSizes #0 node=%d left=%d right=%d",
+    Node().RecordReplayId(),
+    float_input.float_left_inline_size.RawValue(),
+    float_input.float_right_inline_size.RawValue());
   if (auto result =
-          CalculateMinMaxSizesIgnoringChildren(node_, BorderScrollbarPadding()))
+          CalculateMinMaxSizesIgnoringChildren(node_, BorderScrollbarPadding())) {
+    recordreplay::Assert("[RUN-1219-1406] NGBlockLayoutAlgorithm::ComputeMinMaxSizes #1");
     return *result;
+  }
+  recordreplay::Assert("[RUN-1219-1406] NGBlockLayoutAlgorithm::ComputeMinMaxSizes #2");
 
   MinMaxSizes sizes;
   bool depends_on_block_constraints = false;
@@ -286,6 +293,8 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
 
   for (NGLayoutInputNode child = Node().FirstChild(); child;
        child = child.NextSibling()) {
+    recordreplay::Assert("[RUN-1219-1406] NGBlockLayoutAlgorithm::ComputeMinMaxSizes #3 child=%d",
+      child.RecordReplayId());
     // We don't check IsRubyText() here intentionally. RubyText width should
     // affect this width.
     if (child.IsOutOfFlowPositioned() ||
