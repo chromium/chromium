@@ -153,136 +153,6 @@ void FakeCrosHealthd::SetCallbackDelay(base::TimeDelta delay) {
   callback_delay_ = delay;
 }
 
-void FakeCrosHealthd::EmitAcInsertedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : power_observers_) {
-    observer->OnAcInserted();
-  }
-}
-
-void FakeCrosHealthd::EmitAcRemovedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : power_observers_) {
-    observer->OnAcRemoved();
-  }
-}
-
-void FakeCrosHealthd::EmitOsSuspendEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : power_observers_) {
-    observer->OnOsSuspend();
-  }
-}
-
-void FakeCrosHealthd::EmitOsResumeEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : power_observers_) {
-    observer->OnOsResume();
-  }
-}
-
-void FakeCrosHealthd::EmitAdapterAddedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : bluetooth_observers_) {
-    observer->OnAdapterAdded();
-  }
-}
-
-void FakeCrosHealthd::EmitAdapterRemovedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : bluetooth_observers_) {
-    observer->OnAdapterRemoved();
-  }
-}
-
-void FakeCrosHealthd::EmitAdapterPropertyChangedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : bluetooth_observers_) {
-    observer->OnAdapterPropertyChanged();
-  }
-}
-
-void FakeCrosHealthd::EmitDeviceAddedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : bluetooth_observers_) {
-    observer->OnDeviceAdded();
-  }
-}
-
-void FakeCrosHealthd::EmitDeviceRemovedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : bluetooth_observers_) {
-    observer->OnDeviceRemoved();
-  }
-}
-
-void FakeCrosHealthd::EmitDevicePropertyChangedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : bluetooth_observers_) {
-    observer->OnDevicePropertyChanged();
-  }
-}
-
-void FakeCrosHealthd::EmitLidClosedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : lid_observers_) {
-    observer->OnLidClosed();
-  }
-}
-
-void FakeCrosHealthd::EmitLidOpenedEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : lid_observers_) {
-    observer->OnLidOpened();
-  }
-}
-
-void FakeCrosHealthd::EmitThunderboltAddEventForTesting() {
-  // Flush the receiver, so any pending observers are registered before the
-  // event is emitted.
-  event_provider_.FlushForTesting();
-
-  for (auto& observer : thunderbolt_observers_) {
-    observer->OnAdd();
-  }
-}
-
 void FakeCrosHealthd::EmitUsbAddEventForTesting() {
   // Flush the receiver, so any pending observers are registered before the
   // event is emitted.
@@ -840,17 +710,17 @@ void FakeCrosHealthd::RunBluetoothPairingRoutine(
 
 void FakeCrosHealthd::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
-  bluetooth_observers_.Add(std::move(observer));
+  NOTREACHED();
 }
 
 void FakeCrosHealthd::AddLidObserver(
     mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) {
-  lid_observers_.Add(std::move(observer));
+  NOTREACHED();
 }
 
 void FakeCrosHealthd::AddPowerObserver(
     mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) {
-  power_observers_.Add(std::move(observer));
+  NOTREACHED();
 }
 
 void FakeCrosHealthd::AddNetworkObserver(
@@ -866,7 +736,7 @@ void FakeCrosHealthd::AddAudioObserver(
 
 void FakeCrosHealthd::AddThunderboltObserver(
     mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver> observer) {
-  thunderbolt_observers_.Add(std::move(observer));
+  NOTREACHED();
 }
 
 void FakeCrosHealthd::AddUsbObserver(

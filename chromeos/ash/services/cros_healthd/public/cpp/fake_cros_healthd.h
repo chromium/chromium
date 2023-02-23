@@ -149,51 +149,6 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Adds a delay before the passed callback is called.
   void SetCallbackDelay(base::TimeDelta delay);
 
-  // Calls the power event OnAcInserted for all registered power observers.
-  void EmitAcInsertedEventForTesting();
-
-  // Calls the power event OnAcRemoved on all registered power observers.
-  void EmitAcRemovedEventForTesting();
-
-  // Calls the power event OnOsSuspend on all registered power observers.
-  void EmitOsSuspendEventForTesting();
-
-  // Calls the power event OnOsResume on all registered power observers.
-  void EmitOsResumeEventForTesting();
-
-  // Calls the Bluetooth event OnAdapterAdded for all registered Bluetooth
-  // observers.
-  void EmitAdapterAddedEventForTesting();
-
-  // Calls the Bluetooth event OnAdapterRemoved on all registered Bluetooth
-  // observers.
-  void EmitAdapterRemovedEventForTesting();
-
-  // Calls the Bluetooth event OnAdapterPropertyChanged on all registered
-  // Bluetooth observers.
-  void EmitAdapterPropertyChangedEventForTesting();
-
-  // Calls the Bluetooth event OnDeviceAdded on all registered Bluetooth
-  // observers.
-  void EmitDeviceAddedEventForTesting();
-
-  // Calls the Bluetooth event OnDeviceRemoved on all registered Bluetooth
-  // observers.
-  void EmitDeviceRemovedEventForTesting();
-
-  // Calls the Bluetooth event OnDevicePropertyChanged on all registered
-  // Bluetooth observers.
-  void EmitDevicePropertyChangedEventForTesting();
-
-  // Calls the lid event OnLidClosed for all registered lid observers.
-  void EmitLidClosedEventForTesting();
-
-  // Calls the lid event OnLidOpened for all registered lid observers.
-  void EmitLidOpenedEventForTesting();
-
-  // Calls the Thunderbolt event OnAdd on all registered Thunderbolt observers.
-  void EmitThunderboltAddEventForTesting();
-
   // Calls the USB event OnAdd on all registered USB observers.
   void EmitUsbAddEventForTesting();
 
@@ -397,17 +352,9 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   internal::ServiceProvider<mojom::CrosHealthdProbeService> probe_provider_{
       this};
 
-  // Collection of registered Bluetooth observers.
-  mojo::RemoteSet<mojom::CrosHealthdBluetoothObserver> bluetooth_observers_;
-  // Collection of registered lid observers.
-  mojo::RemoteSet<mojom::CrosHealthdLidObserver> lid_observers_;
-  // Collection of registered power observers.
-  mojo::RemoteSet<mojom::CrosHealthdPowerObserver> power_observers_;
   // Collection of registered network observers.
   mojo::RemoteSet<chromeos::network_health::mojom::NetworkEventsObserver>
       network_observers_;
-  // Collection of registered Thunderbolt observers.
-  mojo::RemoteSet<mojom::CrosHealthdThunderboltObserver> thunderbolt_observers_;
   // Collection of registered USB observers.
   mojo::RemoteSet<mojom::CrosHealthdUsbObserver> usb_observers_;
   // Collection of registered general observers grouped by category.
