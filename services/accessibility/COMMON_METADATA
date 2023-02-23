@@ -5,3 +5,6 @@ buganizer {
 buganizer_public {
   component_id: 1272898
 }
+monorail {
+  component: "OS>Accessibility"
+}
