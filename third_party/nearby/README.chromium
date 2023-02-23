@@ -1,7 +1,7 @@
 Name: Nearby Connections Library
 Short Name: Nearby
 URL: https://github.com/google/nearby
-Version: b59ed0b70f86c0dc1496c3145fa114bc38965f51
+Version: d260feced56cfdea53f941883c250d635ed6064d
 License: Apache 2.0
 License File: LICENSE
 Security Critical: yes
