@@ -619,15 +619,19 @@ void DragDropController::Drop(aura::Window* target,
       aura::client::GetDragDropDelegate(target);
 
   aura::client::DragDropDelegate::DropCallback delegate_drop_cb =
-      base::DoNothing();
+      base::NullCallback();
+  aura::client::DragDropDelegate::DropCallbackWithAnimation
+      delegate_drop_cb_animation = base::NullCallback();
 
   ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
                         event.root_location_f(), allowed_operations_);
   e.set_flags(event.flags());
   ui::Event::DispatcherApi(&e).set_target(target);
 
-  if (delegate)
+  if (delegate) {
+    delegate_drop_cb_animation = delegate->GetDropCallbackWithAnimation(e);
     delegate_drop_cb = delegate->GetDropCallback(e);
+  }
 
   base::ScopedClosureRunner drag_cancel(base::BindOnce(
       &DragDropController::DragCancel, weak_factory_.GetWeakPtr()));
@@ -642,11 +646,11 @@ void DragDropController::Drop(aura::Window* target,
 
   DropIfAllowed(
       drag_data_.get(), current_drag_info_,
-      base::BindOnce(&DragDropController::PerformDrop,
-                     weak_factory_.GetWeakPtr(), drop_location_in_screen, e,
-                     std::move(drag_data_), std::move(delegate_drop_cb),
-                     std::move(tab_drag_drop_delegate_),
-                     std::move(drag_cancel)));
+      base::BindOnce(
+          &DragDropController::PerformDrop, weak_factory_.GetWeakPtr(),
+          drop_location_in_screen, e, std::move(drag_data_),
+          std::move(delegate_drop_cb), std::move(delegate_drop_cb_animation),
+          std::move(tab_drag_drop_delegate_), std::move(drag_cancel)));
 
   // During the drop, the event target (or its ancestors) might have
   // been destroyed, eg by the client reaction. Adapt the DropTargetEvent
@@ -820,6 +824,7 @@ void DragDropController::PerformDrop(
     ui::DropTargetEvent event,
     std::unique_ptr<ui::OSExchangeData> drag_data,
     aura::client::DragDropDelegate::DropCallback drop_cb,
+    aura::client::DragDropDelegate::DropCallbackWithAnimation drop_cb_animation,
     std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
     base::ScopedClosureRunner drag_cancel) {
   // Event copy constructor dooesn't copy the target. That's why we set it here.
@@ -828,7 +833,11 @@ void DragDropController::PerformDrop(
   ui::Event::DispatcherApi(&event).set_target(drag_window_);
 
   ui::OSExchangeData copied_data(drag_data->provider().Clone());
-  if (drop_cb) {
+  if (!!drop_cb_animation) {
+    std::move(drop_cb_animation)
+        .Run(std::move(drag_data), operation_,
+             ::wm::RecreateLayers(drag_image_widget_->GetNativeWindow()));
+  } else if (!!drop_cb) {
     std::move(drop_cb).Run(std::move(drag_data), operation_);
   }
 

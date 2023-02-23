@@ -166,6 +166,8 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
                    ui::DropTargetEvent event,
                    std::unique_ptr<ui::OSExchangeData> drag_data,
                    aura::client::DragDropDelegate::DropCallback drop_cb,
+                   aura::client::DragDropDelegate::DropCallbackWithAnimation
+                       drop_cb_animation,
                    std::unique_ptr<TabDragDropDelegate> tab_drag_drop_delegate,
                    base::ScopedClosureRunner drag_cancel);
 
@@ -173,7 +175,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
 
   bool enabled_ = false;
   bool drag_drop_completed_ = true;
-  views::UniqueWidgetPtr drag_image_widget_;
+  std::unique_ptr<views::Widget> drag_image_widget_;
   gfx::Vector2d drag_image_offset_;
   std::unique_ptr<ui::OSExchangeData> drag_data_;
   int allowed_operations_ = 0;

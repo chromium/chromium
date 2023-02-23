@@ -1877,6 +1877,11 @@ View::DropCallback View::GetDropCallback(const ui::DropTargetEvent& event) {
   return base::NullCallback();
 }
 
+View::DropCallbackWithAnimation View::GetDropCallbackWithAnimation(
+    const ui::DropTargetEvent& event) {
+  return base::NullCallback();
+}
+
 // static
 bool View::ExceededDragThreshold(const gfx::Vector2d& delta) {
   return (abs(delta.x()) > GetHorizontalDragThreshold() ||
