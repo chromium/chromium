@@ -2,7 +2,8 @@ Name: Android Rust toolchain
 URL: https://android.googlesource.com/platform/prebuilts/rust.git
 Version: 1.64.0
 License: Apache License, Version 2 and the MIT License
-License File: linux-x86/1.64.0/share/doc/rust/LICENSE-APACHE, linux-x86/1.64.0/share/doc/rust/LICENSE-MIT
+License File: toolchain/share/doc/rust/LICENSE-MIT
+License File: toolchain/share/doc/rust/LICENSE-APACHE
 Security Critical: yes
 CPEPrefix: cpe:/a:rust-lang:rust:1.64.0
 Description:
