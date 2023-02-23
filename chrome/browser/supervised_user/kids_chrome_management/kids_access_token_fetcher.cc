@@ -65,7 +65,7 @@ void KidsAccessTokenFetcher::OnAccessTokenFetchComplete(
 }
 
 const OAuth2AccessTokenManager::ScopeSet& KidsAccessTokenFetcher::Scopes() {
-  static auto nonce = NoDestructor<OAuth2AccessTokenManager::ScopeSet>(
-      {GaiaConstants::kKidFamilyReadonlyOAuth2Scope});
+  static auto nonce = NoDestructor<OAuth2AccessTokenManager::ScopeSet>{
+      {GaiaConstants::kKidFamilyReadonlyOAuth2Scope}};
   return *nonce;
 }
