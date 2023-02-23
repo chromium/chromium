@@ -749,6 +749,18 @@ ios_app_bundle("chrome") {
       "//ios/third_party/material_components_ios:material_components_ios+link",
     ]
   }
+
+  # Lottie links with GLKit which does not support macCatalyst environment
+  # (see https://crbug.com/1394553 for details of the build failure). This
+  # is a stop-gap solution.
+  if (target_environment == "catalyst" ||
+      ios_provider_target !=
+      "//ios/chrome/browser/providers:chromium_providers") {
+    assert_no_deps += [
+      "//ios/third_party/lottie:lottie+bundle",
+      "//ios/third_party/lottie:lottie+link",
+    ]
+  }
 }
 
 if (current_toolchain == default_toolchain) {
