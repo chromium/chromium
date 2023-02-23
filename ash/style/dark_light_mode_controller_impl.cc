@@ -10,6 +10,7 @@
 #include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
 #include "ash/style/dark_light_mode_nudge_controller.h"
@@ -153,6 +154,17 @@ bool DarkLightModeControllerImpl::IsDarkModeEnabled() const {
   if (!features::IsDarkLightModeEnabled() && override_light_mode_as_default_)
     return false;
 
+  // Dark mode is off during OOBE when the OobeDialogState is still unknown.
+  // When the SessionState is OOBE, the OobeDialogState is HIDDEN until the
+  // first screen is shown. This fixes a bug that caused dark colors to be
+  // flashed when OOBE is loaded. See b/260008998
+  const auto session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  if (oobe_state_ == OobeDialogState::HIDDEN &&
+      session_state == session_manager::SessionState::OOBE) {
+    return false;
+  }
+
   if (features::IsDarkLightModeEnabled()) {
     if (is_dark_mode_enabled_in_oobe_for_testing_.has_value())
       return is_dark_mode_enabled_in_oobe_for_testing_.value();
@@ -263,8 +275,9 @@ void DarkLightModeControllerImpl::OnSessionStateChanged(
 
   RefreshColorsOnColorMode(IsDarkModeEnabled());
 
-  if (state == session_manager::SessionState::ACTIVE)
+  if (state == session_manager::SessionState::ACTIVE) {
     nudge_controller_->MaybeShowNudge();
+  }
 }
 
 void DarkLightModeControllerImpl::SetShowNudgeForTesting(bool value) {
