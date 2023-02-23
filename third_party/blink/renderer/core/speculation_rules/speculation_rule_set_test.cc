@@ -3116,6 +3116,382 @@ TEST_F(DocumentRulesTest, LinksWithoutComputedStyle_SelectorMatchesDisabled) {
   EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/two")));
 }
 
+TEST_F(DocumentRulesTest, LinkInsideDisplayLockedElement) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      enabled_selector_matches{true};
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  document.body()->setInnerHTML(R"HTML(
+    <div id="important-section"></div>
+  )HTML");
+  auto* important_section = document.getElementById("important-section");
+  AddAnchor(*important_section, "https://foo.com/bar");
+
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"selector_matches": "#important-section a"}
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+      });
+  EXPECT_THAT(candidates, HasURLs());
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        important_section->RemoveInlineStyleProperty(
+            CSSPropertyID::kContentVisibility);
+      });
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
+}
+
+TEST_F(DocumentRulesTest, LinkInsideNestedDisplayLockedElement) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      enabled_selector_matches{true};
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  document.body()->setInnerHTML(R"HTML(
+    <div id="important-section">
+      <div id="links"></div>
+    </div>
+  )HTML");
+  auto* important_section = document.getElementById("important-section");
+  auto* links = document.getElementById("links");
+  AddAnchor(*links, "https://foo.com/bar");
+
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"selector_matches": "#important-section a"}
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
+
+  // Scenario 1: Lock links, lock important-section, unlock important-section,
+  // unlock links.
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        links->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                      CSSValueID::kHidden);
+      });
+  EXPECT_THAT(candidates, HasURLs());
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        important_section->RemoveInlineStyleProperty(
+            CSSPropertyID::kContentVisibility);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+      });
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
+
+  // Scenario 2: Lock links, lock important-section, unlock links, unlock
+  // important-section.
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        links->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                      CSSValueID::kHidden);
+      });
+  EXPECT_THAT(candidates, HasURLs());
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        important_section->RemoveInlineStyleProperty(
+            CSSPropertyID::kContentVisibility);
+      });
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
+
+  // Scenario 3: Lock important-section, lock links, unlock important-section,
+  // unlock links.
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+      });
+  EXPECT_THAT(candidates, HasURLs());
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        links->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                      CSSValueID::kHidden);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        important_section->RemoveInlineStyleProperty(
+            CSSPropertyID::kContentVisibility);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+      });
+
+  // Scenario 4: Lock links and important-section together, unlock links and
+  // important-section together.
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+        links->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                      CSSValueID::kHidden);
+      });
+  EXPECT_THAT(candidates, HasURLs());
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        important_section->RemoveInlineStyleProperty(
+            CSSPropertyID::kContentVisibility);
+        links->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+      });
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
+}
+
+TEST_F(DocumentRulesTest, DisplayLockedLink) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      enabled_selector_matches{true};
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  document.body()->setInnerHTML(R"HTML(
+    <div id="important-section"></div>
+  )HTML");
+  auto* important_section = document.getElementById("important-section");
+  auto* anchor = AddAnchor(*important_section, "https://foo.com/bar");
+  anchor->setInnerText("Bar");
+
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"selector_matches": "#important-section a"}
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        anchor->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                       CSSValueID::kHidden);
+      });
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        anchor->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+      });
+}
+
+// Sanity test to make sure things work when display-locked elements are
+// present but "selector_matches" isn't enabled.
+TEST_F(DocumentRulesTest, DisplayLockedElementWithoutSelectorMatchesEnabled) {
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  document.body()->setInnerHTML(R"HTML(
+    <div id="important-section">
+    </div>
+  )HTML");
+  auto* important_section = document.getElementById("important-section");
+  AddAnchor(*important_section, "https://bar.com/foo");
+
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"href_matches": "https://bar.com/*"}
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://bar.com/foo")));
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kVisible);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+}
+
+TEST_F(DocumentRulesTest, AddLinkToDisplayLockedContainer) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      enabled_selector_matches{true};
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  document.body()->setInnerHTML(R"HTML(
+    <div id="important-section">
+    </div>
+  )HTML");
+  auto* important_section = document.getElementById("important-section");
+
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"selector_matches": "#important-section a"}
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs());
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  HTMLAnchorElement* anchor = nullptr;
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host,
+      [&]() { anchor = AddAnchor(*important_section, "https://foo.com/bar"); });
+  EXPECT_THAT(candidates, HasURLs());
+
+  // Tests removing a display-locked container with links.
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() { important_section->remove(); });
+  EXPECT_THAT(candidates, HasURLs());
+}
+
+TEST_F(DocumentRulesTest, DisplayLockedContainerTracking) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      enabled_selector_matches{true};
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+  Document& document = page_holder.GetDocument();
+
+  document.body()->setInnerHTML(R"HTML(
+    <div id="important-section"></div>
+    <div id="irrelevant-section"><span></span></div>
+  )HTML");
+  auto* important_section = document.getElementById("important-section");
+  auto* irrelevant_section = document.getElementById("irrelevant-section");
+  auto* anchor_1 = AddAnchor(*important_section, "https://foo.com/bar");
+  AddAnchor(*important_section, "https://foo.com/logout");
+  AddAnchor(*document.body(), "https://foo.com/logout");
+
+  String speculation_script = R"(
+    {"prefetch": [{
+      "source": "document",
+      "where": {"and": [{
+        "selector_matches": "#important-section a"
+      }, {
+        "not": {"href_matches": "https://*/logout"}
+      }]}
+    }]}
+  )";
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/bar")));
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+        anchor_1->SetHref("https://foo.com/fizz.html");
+      });
+  EXPECT_THAT(candidates, HasURLs());
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        // Changing style of the display-locked container should not cause an
+        // update.
+        important_section->SetInlineStyleProperty(CSSPropertyID::kColor,
+                                                  CSSValueID::kDarkviolet);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  PropagateRulesToStubSpeculationHostWithStyleUpdate(
+      page_holder, speculation_host, [&]() {
+        important_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kVisible);
+      });
+  EXPECT_THAT(candidates, HasURLs(KURL("https://foo.com/fizz.html")));
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        // Changing style of the display-locked container should not cause an
+        // update.
+        important_section->SetInlineStyleProperty(CSSPropertyID::kColor,
+                                                  CSSValueID::kDeepskyblue);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        irrelevant_section->SetInlineStyleProperty(
+            CSSPropertyID::kContentVisibility, CSSValueID::kHidden);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+
+  AssertNoRulesPropagatedToStubSpeculationHost(
+      page_holder, speculation_host, [&]() {
+        irrelevant_section->RemoveInlineStyleProperty(
+            CSSPropertyID::kContentVisibility);
+        page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
+      });
+}
+
 TEST_F(SpeculationRuleSetTest, EagernessRuntimeEnabledFlag) {
   ScopedSpeculationRulesEagernessForTest enable_eagerness{false};
 

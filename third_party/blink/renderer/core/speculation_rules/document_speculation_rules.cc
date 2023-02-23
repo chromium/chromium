@@ -10,6 +10,8 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -325,6 +327,94 @@ void DocumentSpeculationRules::DocumentStyleUpdated() {
   }
 }
 
+void DocumentSpeculationRules::ChildStyleRecalcBlocked(Element* root) {
+  if (!SelectorMatchesEnabled() || !initialized_) {
+    return;
+  }
+
+  if (!elements_blocking_child_style_recalc_.insert(root).is_new_entry) {
+    return;
+  }
+
+  bool queue_update = false;
+
+  Node* node = FlatTreeTraversal::Next(*root, root);
+  while (node) {
+    if (node->IsLink() && (node->HasTagName(html_names::kATag) ||
+                           node->HasTagName(html_names::kAreaTag))) {
+      HTMLAnchorElement* anchor = node->HasTagName(html_names::kATag)
+                                      ? To<HTMLAnchorElement>(node)
+                                      : To<HTMLAreaElement>(node);
+      if (stale_links_.insert(anchor).is_new_entry) {
+        InvalidateLink(anchor);
+        queue_update = true;
+      }
+    }
+
+    // If |node| is an element that is already marked as blocking child style
+    // recalc, we don't need to traverse its subtree (all of its children should
+    // already be accounted for).
+    if (auto* element = DynamicTo<Element>(node);
+        element && elements_blocking_child_style_recalc_.Contains(element)) {
+      node = FlatTreeTraversal::NextSkippingChildren(*node, root);
+      continue;
+    }
+
+    node = FlatTreeTraversal::Next(*node, root);
+  }
+
+  if (queue_update) {
+    QueueUpdateSpeculationCandidates();
+  }
+}
+
+void DocumentSpeculationRules::DidStyleChildren(Element* root) {
+  if (!SelectorMatchesEnabled() || !initialized_) {
+    return;
+  }
+
+  if (!elements_blocking_child_style_recalc_.Take(root)) {
+    return;
+  }
+
+  bool queue_update = false;
+
+  Node* node = FlatTreeTraversal::Next(*root, root);
+  while (node) {
+    if (node->IsLink() && (node->HasTagName(html_names::kATag) ||
+                           node->HasTagName(html_names::kAreaTag))) {
+      HTMLAnchorElement* anchor = node->HasTagName(html_names::kATag)
+                                      ? To<HTMLAnchorElement>(node)
+                                      : To<HTMLAreaElement>(node);
+      if (auto it = stale_links_.find(anchor); it != stale_links_.end()) {
+        stale_links_.erase(it);
+        InvalidateLink(anchor);
+        queue_update = true;
+      }
+    }
+
+    // If |node| is a display-locked element that is already marked as blocking
+    // child style recalc, we don't need to traverse its children.
+    if (auto* element = DynamicTo<Element>(node);
+        element && elements_blocking_child_style_recalc_.Contains(element)) {
+      node = FlatTreeTraversal::NextSkippingChildren(*node, root);
+      continue;
+    }
+
+    node = FlatTreeTraversal::Next(*node, root);
+  }
+
+  if (queue_update) {
+    QueueUpdateSpeculationCandidates();
+  }
+}
+
+void DocumentSpeculationRules::DisplayLockedElementDisconnected(Element* root) {
+  elements_blocking_child_style_recalc_.erase(root);
+  // Note: We don't queue an update or invalidate any links here because
+  // |root|'s children will also be disconnected shortly after this.
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);
@@ -333,6 +423,8 @@ void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   visitor->Trace(matched_links_);
   visitor->Trace(unmatched_links_);
   visitor->Trace(pending_links_);
+  visitor->Trace(stale_links_);
+  visitor->Trace(elements_blocking_child_style_recalc_);
   visitor->Trace(selectors_);
 }
 
@@ -473,20 +565,27 @@ void DocumentSpeculationRules::AddLinkBasedSpeculationCandidates(
     ExecutionContext* execution_context =
         GetSupplementable()->GetExecutionContext();
     DCHECK(execution_context);
-    const bool selector_matches_enabled = SelectorMatchesEnabled();
 
     const auto push_link_candidates =
-        [&link, &link_candidates, &execution_context,
-         &selector_matches_enabled](
+        [&link, &link_candidates, &execution_context, this](
             mojom::blink::SpeculationAction action,
             const HeapVector<Member<SpeculationRule>>& speculation_rules) {
-          // We exclude links that don't have a ComputedStyle stored (or have a
-          // ComputedStyle only because EnsureComputedStyle was called, and
-          // otherwise wouldn't). This corresponds to links that are not in the
-          // flat tree or links with a "display: none" inclusive-ancestor.
-          if (selector_matches_enabled &&
-              ComputedStyle::IsNullOrEnsured(link->GetComputedStyle())) {
-            return;
+          if (SelectorMatchesEnabled()) {
+            // We exclude links that don't have a ComputedStyle stored (or have
+            // a ComputedStyle only because EnsureComputedStyle was called, and
+            // otherwise wouldn't). This corresponds to links that are not in
+            // the flat tree or links with a "display: none" inclusive-ancestor.
+            if (ComputedStyle::IsNullOrEnsured(link->GetComputedStyle())) {
+              return;
+            }
+
+            // Links with display locked ancestors can have a stale
+            // ComputedStyle, i.e. a ComputedStyle that wasn't updated during a
+            // style update because the element isn't currently being rendered,
+            // but is not discarded either. We ignore these links as well.
+            if (stale_links_.Contains(link)) {
+              return;
+            }
           }
 
           for (SpeculationRule* rule : speculation_rules) {
@@ -578,12 +677,20 @@ void DocumentSpeculationRules::AddLink(HTMLAnchorElement* link) {
   DCHECK(!base::Contains(unmatched_links_, link));
   DCHECK(!base::Contains(matched_links_, link));
   DCHECK(!base::Contains(pending_links_, link));
+  DCHECK(!base::Contains(stale_links_, link));
 
   pending_links_.insert(link);
+  // TODO(crbug.com/1371522): A stale link is guaranteed to not match, so we
+  // should put it into |unmatched_links_| directly and skip queueing an update.
+  if (SelectorMatchesEnabled() &&
+      DisplayLockUtilities::LockedAncestorPreventingStyle(*link)) {
+    stale_links_.insert(link);
+  }
 }
 
 void DocumentSpeculationRules::RemoveLink(HTMLAnchorElement* link) {
   DCHECK(initialized_);
+  stale_links_.erase(link);
 
   if (auto it = matched_links_.find(link); it != matched_links_.end()) {
     matched_links_.erase(it);

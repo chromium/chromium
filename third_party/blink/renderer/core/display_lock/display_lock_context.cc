@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/style/toggle_trigger.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -963,6 +964,11 @@ void DisplayLockContext::ElementDisconnected() {
   // the context.
   DCHECK(!element_->GetComputedStyle());
   SetRequestedState(EContentVisibility::kVisible, g_null_atom);
+
+  if (auto* document_rules =
+          DocumentSpeculationRules::FromIfExists(*document_)) {
+    document_rules->DisplayLockedElementDisconnected(element_);
+  }
 
   // blocked_child_recalc_change_ must be cleared because things can be in an
   // inconsistent state when we add the element back (e.g. crbug.com/1262742).

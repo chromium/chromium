@@ -58,6 +58,9 @@ class CORE_EXPORT DocumentSpeculationRules
   void LinkMatchedSelectorsUpdated(HTMLAnchorElement* link);
   void LinkGainedOrLostComputedStyle(HTMLAnchorElement* link);
   void DocumentStyleUpdated();
+  void ChildStyleRecalcBlocked(Element* root);
+  void DidStyleChildren(Element* root);
+  void DisplayLockedElementDisconnected(Element* root);
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 
@@ -133,6 +136,11 @@ class CORE_EXPORT DocumentSpeculationRules
       matched_links_;
   HeapHashSet<Member<HTMLAnchorElement>> unmatched_links_;
   HeapHashSet<Member<HTMLAnchorElement>> pending_links_;
+
+  // Links with ComputedStyle that wasn't updated after the most recent style
+  // update (due to having a display-locked ancestor).
+  HeapHashSet<Member<HTMLAnchorElement>> stale_links_;
+  HeapHashSet<Member<Element>> elements_blocking_child_style_recalc_;
 
   // Collects every CSS selector from every CSS selector document rule predicate
   // in this document's speculation rules.

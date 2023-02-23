@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_init.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -229,9 +230,7 @@ class CSSSelectorPredicate : public DocumentRulePredicate {
     DCHECK(!link.GetDocument().NeedsLayoutTreeUpdate());
     const ComputedStyle* computed_style = link.GetComputedStyle();
     DCHECK(computed_style);
-    // TODO(crbug.com/1371522): If the link has a display-locked ancestor,
-    // it will have a ComputedStyle with a stale list of matched selectors
-    // (styling is skipped but the old ComputedStyle is still kept).
+    DCHECK(!DisplayLockUtilities::LockedAncestorPreventingStyle(link));
     const Persistent<HeapHashSet<WeakMember<StyleRule>>>& matched_selectors =
         computed_style->DocumentRulesSelectors();
     if (!matched_selectors) {
