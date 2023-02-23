@@ -128,7 +128,7 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnMenuEntryPositionChanged(bool leave_focus,
                                   absl::optional<gfx::Point> location);
   void FocusOnMenuEntry();
-  void ClearFocusOnMenuEntry();
+  void ClearFocus();
   void RemoveInputMenuView();
 
   void AddInputMappingView(views::Widget* overlay_widget);
@@ -165,6 +165,11 @@ class DisplayOverlayController : public ui::EventHandler,
   // Close |ActionEditMenu| Or |MessageView| if |LocatedEvent| happens outside
   // of their view bounds.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
+
+  // When the input is processed on overlay in edit mode, PlaceholderActivity
+  // task window becomes the front task window. This ensures the target task
+  // window is moved back to the front of task stack on ARC side for view mode.
+  void EnsureTaskWindowToFrontForViewMode(views::Widget* overlay_widget);
 
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();

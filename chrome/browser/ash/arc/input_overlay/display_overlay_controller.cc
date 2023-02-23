@@ -130,9 +130,14 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
 
 void DisplayOverlayController::SetEventTarget(views::Widget* overlay_widget,
                                               bool on_overlay) {
-  overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
-      on_overlay ? aura::EventTargetingPolicy::kTargetAndDescendants
-                 : aura::EventTargetingPolicy::kNone);
+  auto* overlay_window = overlay_widget->GetNativeWindow();
+  if (on_overlay) {
+    overlay_window->SetEventTargetingPolicy(
+        aura::EventTargetingPolicy::kTargetAndDescendants);
+  } else {
+    overlay_window->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
+    EnsureTaskWindowToFrontForViewMode(overlay_widget);
+  }
 }
 
 void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
@@ -260,10 +265,13 @@ void DisplayOverlayController::FocusOnMenuEntry() {
   menu_entry_->RequestFocus();
 }
 
-void DisplayOverlayController::ClearFocusOnMenuEntry() {
-  if (!menu_entry_)
+void DisplayOverlayController::ClearFocus() {
+  auto* widget =
+      views::Widget::GetWidgetForNativeWindow(touch_injector_->window());
+  if (!widget) {
     return;
-  auto* focus_manager = menu_entry_->GetFocusManager();
+  }
+  auto* focus_manager = widget->GetFocusManager();
   if (focus_manager)
     focus_manager->ClearFocus();
 }
@@ -488,6 +496,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       SetEventTarget(overlay_widget, /*on_overlay=*/true);
       break;
     case DisplayMode::kView:
+      ClearFocus();
       RemoveEditMessage();
       RemoveInputMenuView();
       RemoveEditFinishView();
@@ -499,7 +508,6 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       }
       AddInputMappingView(overlay_widget);
       AddMenuEntryView(overlay_widget);
-      ClearFocusOnMenuEntry();
       if (touch_injector_->show_nudge())
         AddNudgeView(overlay_widget);
       SetEventTarget(overlay_widget, /*on_overlay=*/false);
@@ -756,6 +764,30 @@ void DisplayOverlayController::ProcessPressedEvent(
 void DisplayOverlayController::SetMenuEntryHoverState(bool curr_hover_state) {
   if (menu_entry_)
     menu_entry_->ChangeHoverState(curr_hover_state);
+}
+
+void DisplayOverlayController::EnsureTaskWindowToFrontForViewMode(
+    views::Widget* overlay_widget) {
+  DCHECK(overlay_widget);
+  DCHECK(overlay_widget->GetNativeWindow());
+  DCHECK_EQ(overlay_widget->GetNativeWindow()->event_targeting_policy(),
+            aura::EventTargetingPolicy::kNone);
+
+  auto* shell_surface_base =
+      exo::GetShellSurfaceBaseForWindow(touch_injector_->window());
+  DCHECK(shell_surface_base);
+  auto* host_window = shell_surface_base->host_window();
+  DCHECK(host_window);
+  const auto& children = host_window->children();
+  if (children.size() > 0u) {
+    // First child is the root ExoSurface window. Focus on the root surface
+    // window can bring the task window to the front of the task stack.
+    if (!children[0]->HasFocus()) {
+      children[0]->Focus();
+    }
+  } else {
+    host_window->Focus();
+  }
 }
 
 void DisplayOverlayController::DismissEducationalViewForTesting() {
