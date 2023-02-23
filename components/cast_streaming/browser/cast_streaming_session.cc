@@ -9,7 +9,8 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/cast_streaming/browser/stream_consumer.h"
+#include "components/cast_streaming/browser/cast_message_port_converter.h"
+#include "components/cast_streaming/browser/frame/stream_consumer.h"
 #include "components/cast_streaming/public/config_conversions.h"
 #include "components/cast_streaming/public/features.h"
 #include "media/base/demuxer_stream.h"
@@ -66,22 +67,26 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
     CastStreamingSession::Client* client,
     absl::optional<RendererControllerConfig> renderer_controls,
     std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-    std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+    ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner),
       environment_(&openscreen::Clock::now, &task_runner_),
-      cast_message_port_impl_(
-          std::move(message_port),
+      cast_message_port_converter_(CastMessagePortConverter::Create(
+          std::move(message_port_provider),
           base::BindOnce(
               &CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed,
-              base::Unretained(this))),
+              base::Unretained(this)))),
       client_(client),
       weak_factory_(this) {
   DCHECK(task_runner);
   DCHECK(client_);
 
+  // This will fail if the "trivial" implementation of
+  // CastMessagePortConverter::Create is linked.
+  DCHECK(cast_message_port_converter_);
+
   receiver_session_ = std::make_unique<openscreen::cast::ReceiverSession>(
-      this, &environment_, &cast_message_port_impl_,
+      this, &environment_, &cast_message_port_converter_->GetMessagePort(),
       std::move(*av_constraints));
 
   if (renderer_controls) {
@@ -436,14 +441,14 @@ void CastStreamingSession::Start(
     Client* client,
     absl::optional<RendererControllerConfig> renderer_controls,
     std::unique_ptr<ReceiverSession::AVConstraints> av_constraints,
-    std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+    ReceiverSession::MessagePortProvider message_port_provider,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DVLOG(1) << __func__;
   DCHECK(client);
   DCHECK(!receiver_session_);
   receiver_session_ = std::make_unique<ReceiverSessionClient>(
       client, std::move(renderer_controls), std::move(av_constraints),
-      std::move(message_port), task_runner);
+      std::move(message_port_provider), task_runner);
 }
 
 void CastStreamingSession::Stop() {

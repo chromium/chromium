@@ -12,12 +12,12 @@ source_set("renderer") {
   visibility += [ "*" ]
   public = [ "public/resource_provider_factory.h" ]
   sources = [
-    "demuxer_connector.cc",
-    "demuxer_connector.h",
-    "frame_injecting_demuxer.cc",
-    "frame_injecting_demuxer.h",
-    "renderer_controller_proxy.cc",
-    "renderer_controller_proxy.h",
+    "control/renderer_controller_proxy.cc",
+    "control/renderer_controller_proxy.h",
+    "frame/demuxer_connector.cc",
+    "frame/demuxer_connector.h",
+    "frame/frame_injecting_demuxer.cc",
+    "frame/frame_injecting_demuxer.h",
     "resource_provider_impl.cc",
     "resource_provider_impl.h",
   ]
@@ -46,11 +46,11 @@ source_set("wrapping_renderer_factory_selector") {
   visibility += [ "*" ]
   public = [ "public/wrapping_renderer_factory_selector.h" ]
   sources = [
-    "playback_command_forwarding_renderer.cc",
-    "playback_command_forwarding_renderer.h",
-    "playback_command_forwarding_renderer_factory.cc",
-    "playback_command_forwarding_renderer_factory.h",
-    "wrapping_renderer_factory_selector.cc",
+    "control/playback_command_forwarding_renderer.cc",
+    "control/playback_command_forwarding_renderer.h",
+    "control/playback_command_forwarding_renderer_factory.cc",
+    "control/playback_command_forwarding_renderer_factory.h",
+    "control/wrapping_renderer_factory_selector.cc",
   ]
   public_deps = [ "//media" ]
   deps = [
@@ -82,10 +82,10 @@ source_set("resource_provider") {
 # can be merged into :renderer.
 source_set("buffer_requester") {
   public = [
-    "buffer_requester.h",
+    "frame/buffer_requester.h",
     "public/decoder_buffer_provider.h",
   ]
-  sources = [ "decoder_buffer_provider_impl.h" ]
+  sources = [ "frame/decoder_buffer_provider_impl.h" ]
   public_deps = [
     "//base",
     "//components/cast_streaming/public:demuxer_stream_traits",
@@ -129,10 +129,10 @@ source_set("unit_tests") {
   visibility += [ "//components/cast_streaming:unit_tests" ]
   public = []
   sources = [
-    "buffer_requester_unittest.cc",
-    "decoder_buffer_provider_impl_unittest.cc",
-    "playback_command_forwarding_renderer_factory_unittest.cc",
-    "playback_command_forwarding_renderer_unittest.cc",
+    "control/playback_command_forwarding_renderer_factory_unittest.cc",
+    "control/playback_command_forwarding_renderer_unittest.cc",
+    "frame/buffer_requester_unittest.cc",
+    "frame/decoder_buffer_provider_impl_unittest.cc",
     "web_codecs/delegating_decoder_buffer_provider_unittest.cc",
   ]
   deps = [

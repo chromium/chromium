@@ -1,0 +1,48 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+visibility = [ "//components/cast_streaming/browser/*" ]
+
+source_set("frame") {
+  public = [
+    "demuxer_stream_data_provider.h",
+    "stream_consumer.h",
+  ]
+  sources = [ "stream_consumer.cc" ]
+  public_deps = [
+    "//base",
+    "//components/cast_streaming/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  deps = [
+    "//base",
+    "//components/cast_streaming/browser/common",
+    "//components/cast_streaming/public",
+    "//components/cast_streaming/public:demuxer_stream_traits",
+    "//components/cast_streaming/public:remoting_utils",
+    "//components/cast_streaming/public/mojom",
+    "//media",
+    "//media/mojo/common",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//third_party/openscreen/src/cast/streaming:receiver",
+  ]
+}
+
+# TODO(crbug.com/1207721): Add more unit tests for code in this directory.
+source_set("unit_tests") {
+  testonly = true
+  public = []
+  sources = [ "demuxer_stream_data_provider_unittest.cc" ]
+  deps = [
+    ":frame",
+    "//base",
+    "//base/test:test_support",
+    "//components/cast_streaming/browser/common",
+    "//media",
+    "//media/mojo/common",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

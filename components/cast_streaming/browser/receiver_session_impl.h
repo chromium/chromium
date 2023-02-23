@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/cast_streaming/browser/cast_streaming_session.h"
-#include "components/cast_streaming/browser/demuxer_stream_data_provider.h"
+#include "components/cast_streaming/browser/frame/demuxer_stream_data_provider.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"

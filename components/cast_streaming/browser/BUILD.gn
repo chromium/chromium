@@ -4,35 +4,7 @@
 
 import("//testing/test.gni")
 
-visibility = [ ":*" ]
-
-# MessagePort cannot be used on Windows due to intersection of its PostMessage
-# method with a macro of the same name, so hide the targets that use it and all
-# that depend on it behind a platform check.
-# TODO(crbug.com/1357085): Resolve this and remove this exception.
-if (!is_win) {
-  # TODO(crbug.com/1207718): Remove cast_message_port_impl code from this
-  # component and replace with a more general interface.
-  # TODO(crbug.com/1208195): Move code to correct place with respect to the
-  # /public folder to only expose publicly needed headers.
-  source_set("core") {
-    public = [ "cast_message_port_impl.h" ]
-    sources = [ "cast_message_port_impl.cc" ]
-    public_deps = [
-      "//base",
-      "//components/cast/message_port",
-      "//third_party/openscreen/src/cast/common:public",
-    ]
-    deps = [
-      "//components/cast_streaming/common:message_serialization",
-      "//third_party/openscreen/src/platform:base",
-    ]
-    friend = [ ":unit_tests" ]
-  }
-}
-
 source_set("network_context") {
-  visibility += [ "*" ]
   public = [ "public/network_context_getter.h" ]
   sources = [ "network_context_getter.cc" ]
   public_deps = [ "//base" ]
@@ -40,28 +12,19 @@ source_set("network_context") {
 }
 
 source_set("browser") {
-  visibility += [ "*" ]
   public = [
     "public/receiver_config.h",
     "public/receiver_session.h",
   ]
   sources = [
-    "demuxer_stream_client.h",
-    "demuxer_stream_data_provider.h",
-    "playback_command_dispatcher.cc",
-    "playback_command_dispatcher.h",
+    "cast_message_port_converter.h",
+    "cast_streaming_session.cc",
+    "cast_streaming_session.h",
     "receiver_config.cc",
-    "remoting_session_client.h",
-    "renderer_control_multiplexer.cc",
-    "renderer_control_multiplexer.h",
-    "renderer_rpc_call_translator.cc",
-    "renderer_rpc_call_translator.h",
-    "rpc_demuxer_stream_handler.cc",
-    "rpc_demuxer_stream_handler.h",
-    "rpc_initialization_call_handler_base.cc",
-    "rpc_initialization_call_handler_base.h",
-    "streaming_initialization_info.cc",
-    "streaming_initialization_info.h",
+    "receiver_config_conversions.cc",
+    "receiver_config_conversions.h",
+    "receiver_session_impl.cc",
+    "receiver_session_impl.h",
   ]
   public_deps = [
     ":network_context",
@@ -74,9 +37,14 @@ source_set("browser") {
   ]
   deps = [
     "//base",
-    "//components/cast_streaming/public:demuxer_stream_traits",
-    "//components/cast_streaming/public:remoting_utils",
-    "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/browser/common",
+    "//components/cast_streaming/browser/control",
+    "//components/cast_streaming/browser/control/remoting",
+    "//components/cast_streaming/browser/frame",
+    "//components/cast_streaming/common:message_serialization",
+    "//components/cast_streaming/public",
+    "//components/cast_streaming/public:config_conversions",
+    "//components/openscreen_platform",
     "//media",
     "//media/mojo/common",
     "//media/mojo/mojom",
@@ -84,29 +52,27 @@ source_set("browser") {
     "//third_party/openscreen/src/cast/streaming:receiver",
   ]
 
+  # MessagePort cannot be used on Windows due to intersection of its
+  # PostMessage method with a macro of the same name, so hide the targets that
+  # use it and all that depend on it behind a platform check.
+  # TODO(crbug.com/1357085): Resolve this and remove this exception.
   if (!is_win) {
+    # TODO(crbug.com/1207718): Remove cast_message_port_impl code from this
+    # component and replace with a more general interface.
     sources += [
-      "cast_streaming_session.cc",
-      "cast_streaming_session.h",
-      "receiver_config_conversions.cc",
-      "receiver_config_conversions.h",
-      "receiver_session_impl.cc",
-      "receiver_session_impl.h",
-      "renderer_controller_config.cc",
-      "renderer_controller_config.h",
-      "stream_consumer.cc",
-      "stream_consumer.h",
+      "cast_message_port_impl.cc",
+      "cast_message_port_impl.h",
     ]
     deps += [
-      ":core",
       ":network_context",
       "//components/cast/message_port",
-      "//components/cast_streaming/public",
-      "//components/cast_streaming/public:config_conversions",
       "//components/openscreen_platform",
       "//mojo/public/cpp/bindings",
-      "//ui/gfx/geometry",
+      "//third_party/openscreen/src/cast/common:public",
+      "//third_party/openscreen/src/platform:base",
     ]
+  } else {
+    sources += [ "cast_message_port_converter_trivial.cc" ]
   }
 
   friend = [ ":unit_tests" ]
@@ -115,30 +81,23 @@ source_set("browser") {
 # TODO(crbug.com/1207721): Add more unit tests for code in this directory.
 source_set("unit_tests") {
   testonly = true
-  visibility += [ "//components/cast_streaming:unit_tests" ]
   public = []
-  sources = [
-    "demuxer_stream_data_provider_unittest.cc",
-    "rpc_demuxer_stream_handler_unittests.cc",
-  ]
+  sources = []
   deps = [
     ":browser",
-    "//base",
-    "//base/test:test_support",
-    "//media",
-    "//media/mojo/common",
-    "//mojo/public/cpp/bindings",
-    "//testing/gtest",
-    "//third_party/openscreen/src/cast/streaming:common",
+    "//components/cast_streaming/browser/control/remoting:unit_tests",
+    "//components/cast_streaming/browser/frame:unit_tests",
   ]
 
   if (!is_win) {
+    sources += [ "cast_message_port_impl_unittest.cc" ]
     deps += [
-      ":core",
+      "//base/test:test_support",
       "//components/cast/message_port",
       "//components/cast/message_port:test_message_port_receiver",
       "//components/cast_streaming/common:message_serialization",
+      "//testing/gtest",
+      "//third_party/openscreen/src/cast/common:public",
     ]
-    sources += [ "cast_message_port_impl_unittest.cc" ]
   }
 }

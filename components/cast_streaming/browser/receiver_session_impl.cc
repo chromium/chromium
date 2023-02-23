@@ -5,6 +5,7 @@
 #include "components/cast_streaming/browser/receiver_session_impl.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "components/cast_streaming/browser/cast_message_port_converter.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/receiver_config_conversions.h"
 #include "components/cast_streaming/public/features.h"
@@ -88,10 +89,9 @@ ReceiverSessionImpl::GetRendererControls() {
 
 void ReceiverSessionImpl::OnReceiverEnabled() {
   DVLOG(1) << __func__;
-  DCHECK(message_port_provider_);
   cast_streaming_session_.Start(this, std::move(renderer_control_config_),
                                 std::move(av_constraints_),
-                                std::move(message_port_provider_).Run(),
+                                std::move(message_port_provider_),
                                 base::SequencedTaskRunner::GetCurrentDefault());
 }
 
@@ -263,10 +263,15 @@ void ReceiverSessionImpl::PreloadBuffersAndStartPlayback() {
 void ReceiverSessionImpl::OnMojoDisconnect() {
   DVLOG(1) << __func__;
 
-  // Close the underlying connection.
+  // Close the underlying connection. This should only occur if a mojo
+  // disconnection occurs very early in the initialization of this component -
+  // specifically, before the browser and renderer processes have successfully
+  // connected via mojom::DemuxerConnector::EnableReceiver().
   if (message_port_provider_) {
-    av_constraints_ = std::make_unique<ReceiverSession::AVConstraints>();
-    std::move(message_port_provider_).Run().reset();
+    // Create this and immediately delete it to create the associated message
+    // port and delete it without including the MessagePort header.
+    CastMessagePortConverter::Create(std::move(message_port_provider_),
+                                     base::OnceClosure());
   }
 
   // Close the Cast Streaming Session. OnSessionEnded() will be called as part

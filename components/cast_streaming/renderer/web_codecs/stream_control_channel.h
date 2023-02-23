@@ -11,7 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
-#include "components/cast_streaming/renderer/buffer_requester.h"
+#include "components/cast_streaming/renderer/frame/buffer_requester.h"
 #include "components/cast_streaming/renderer/public/decoder_buffer_provider.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
