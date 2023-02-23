@@ -11,8 +11,6 @@
 namespace extensions {
 namespace image_writer {
 
-extern const int kPartitionTableSize;
-
 // Encapsulates an operation for destroying partitions.  This is achieved by
 // creating a dummy blank image which is then burned to the disk.
 class DestroyPartitionsOperation : public Operation {

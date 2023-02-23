@@ -223,9 +223,7 @@ TEST_F(ChromeContentVerifierTest, VerifyFailedOnLoad) {
     constexpr char kTamperedContent[] = "// Evil content";
     base::FilePath background_script_path =
         extension()->path().AppendASCII("d.js");
-    ASSERT_EQ(static_cast<int>(sizeof(kTamperedContent)),
-              base::WriteFile(background_script_path, kTamperedContent,
-                              sizeof(kTamperedContent)));
+    ASSERT_TRUE(base::WriteFile(background_script_path, kTamperedContent));
   }
 
   AddExtensionToContentVerifier(extension(), &verifier_observer);

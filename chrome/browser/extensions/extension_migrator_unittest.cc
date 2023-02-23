@@ -44,8 +44,7 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
     params.is_first_run = false;
     // Create prefs file to make the profile not new.
     const char prefs[] = "{}";
-    EXPECT_EQ(int(sizeof(prefs)),
-              base::WriteFile(params.pref_file, prefs, sizeof(prefs)));
+    EXPECT_TRUE(base::WriteFile(params.pref_file, prefs));
     InitializeExtensionService(params);
     service()->Init();
     AddMigratorProvider();

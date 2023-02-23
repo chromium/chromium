@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
     ASSERT_TRUE(WebAuthenticationProxyRemoteSessionStateChangeNotifier::
                     GetSessionStateChangeDir(&dir));
     ASSERT_TRUE(base::CreateDirectory(dir));
-    ASSERT_EQ(base::WriteFile(dir.AppendASCII(extension->id()), nullptr, 0), 0);
+    ASSERT_TRUE(base::WriteFile(dir.AppendASCII(extension->id()), ""));
   }
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }

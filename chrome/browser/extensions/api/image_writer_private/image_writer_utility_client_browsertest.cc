@@ -216,8 +216,8 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
   }
 
   static void FillFile(const base::FilePath& path, char pattern) {
-    const std::vector<char> fill(kTestFileSize, pattern);
-    EXPECT_TRUE(base::WriteFile(path, fill.data(), kTestFileSize));
+    const std::string fill(kTestFileSize, pattern);
+    EXPECT_TRUE(base::WriteFile(path, fill));
   }
 
   base::SequencedTaskRunner* CreateTaskRunner() {

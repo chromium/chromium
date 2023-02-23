@@ -293,8 +293,7 @@ void PersistExtensionWithPaths(
 
   std::string data = "file_data";
   for (const auto& file : file_paths) {
-    EXPECT_EQ(static_cast<int>(data.size()),
-              base::WriteFile(file, data.c_str(), data.size()));
+    EXPECT_TRUE(base::WriteFile(file, data));
   }
 
   base::Value::Dict manifest = DictionaryBuilder()
@@ -2249,10 +2248,8 @@ TEST_F(ExtensionServiceTest, PackExtension) {
 
   // Try packing with an invalid manifest.
   std::string invalid_manifest_content = "I am not a manifest.";
-  ASSERT_EQ(static_cast<int>(invalid_manifest_content.size()),
-            base::WriteFile(temp_dir2.GetPath().Append(kManifestFilename),
-                            invalid_manifest_content.c_str(),
-                            invalid_manifest_content.size()));
+  ASSERT_TRUE(base::WriteFile(temp_dir2.GetPath().Append(kManifestFilename),
+                              invalid_manifest_content));
   creator = std::make_unique<ExtensionCreator>();
   ASSERT_FALSE(creator->Run(temp_dir2.GetPath(), crx_path, privkey_path,
                             base::FilePath(), ExtensionCreator::kOverwriteCRX));
