@@ -24,9 +24,6 @@
 
 @interface PartialTranslateMediator ()
 
-// The Browser's WebStateList.
-@property(nonatomic, readonly) WebStateList* webStateList;
-
 // Whether the mediator is handling partial translate for an incognito tab.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
@@ -40,9 +37,12 @@
 
 @implementation PartialTranslateMediator {
   BooleanPrefMember _translateEnabled;
+
+  // The Browser's WebStateList.
+  base::WeakPtr<WebStateList> _webStateList;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+- (instancetype)initWithWebStateList:(base::WeakPtr<WebStateList>)webStateList
               withBaseViewController:(UIViewController*)baseViewController
                          prefService:(PrefService*)prefs
                            incognito:(BOOL)incognito {
@@ -58,7 +58,6 @@
 }
 
 - (void)shutdown {
-  _webStateList = nullptr;
   _translateEnabled.Destroy();
 }
 
