@@ -9,7 +9,9 @@
 //components/viz/test/data/anti_aliasing_dawn.png
 //components/viz/test/data/anti_aliasing_perspective_dawn.png
 //components/viz/test/data/anti_aliasing_perspective_skia.png
+//components/viz/test/data/anti_aliasing_perspective_skia_angle_metal.png
 //components/viz/test/data/anti_aliasing_skia.png
+//components/viz/test/data/anti_aliasing_skia_angle_metal.png
 //components/viz/test/data/axis_aligned.png
 //components/viz/test/data/backdrop_filter.png
 //components/viz/test/data/backdrop_filter_blur_off_axis_skia_dawn.png
@@ -83,8 +85,10 @@
 //components/viz/test/data/intersecting_blue_green.png
 //components/viz/test/data/intersecting_blue_green_squares.png
 //components/viz/test/data/intersecting_blue_green_squares_video.png
+//components/viz/test/data/intersecting_blue_green_squares_video_angle_metal.png
 //components/viz/test/data/intersecting_flipped_blue_green_half_size_rectangles.png
 //components/viz/test/data/intersecting_light_dark_squares_video.png
+//components/viz/test/data/intersecting_light_dark_squares_video_angle_metal.png
 //components/viz/test/data/intersecting_non_flipped_blue_green_half_size_rectangles.png
 //components/viz/test/data/invert_backdrop_filter_1x.png
 //components/viz/test/data/invert_backdrop_filter_1x_sw.png
@@ -228,6 +232,7 @@
 //components/viz/test/data/translucent_quads_no_aa.png
 //components/viz/test/data/translucent_rectangles.png
 //components/viz/test/data/trilinear_filtering.png
+//components/viz/test/data/trilinear_filtering_angle_metal.png
 //components/viz/test/data/trilinear_filtering_skia_vk.png
 //components/viz/test/data/video_capture/overlay_clips_ll.png
 //components/viz/test/data/video_capture/overlay_clips_ll_contentscaled.png

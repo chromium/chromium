@@ -65,15 +65,23 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/test/icc_profiles.h"
 #include "ui/gfx/video_types.h"
+#include "ui/gl/gl_implementation.h"
 
 namespace viz {
 namespace {
-
 const gfx::DisplayColorSpaces kRec601DisplayColorSpaces(
     gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTE170M,
                     gfx::ColorSpace::TransferID::SMPTE170M));
 
 #if !BUILDFLAG(IS_ANDROID)
+
+constexpr char kANGLEMetalStr[] = "_angle_metal";
+
+bool IsANGLEMetal() {
+  return gl::GetGLImplementationParts() ==
+         gl::GLImplementationParts(gl::ANGLEImplementation::kMetal);
+}
+
 template <typename T>
 base::span<const uint8_t> MakePixelSpan(const std::vector<T>& vec) {
   return base::make_span(reinterpret_cast<const uint8_t*>(vec.data()),
@@ -1328,7 +1336,7 @@ class IntersectingQuadPixelTest : public VizPixelTestWithParam {
     back_quad_state_->sorting_context_id = 1;
   }
   void AppendBackgroundAndRunTest(const cc::PixelComparator& comparator,
-                                  const base::FilePath::CharType* ref_file) {
+                                  const base::FilePath& ref_file) {
     SharedQuadState* background_quad_state =
         CreateTestSharedQuadState(gfx::Transform(), viewport_rect_,
                                   render_pass_.get(), gfx::MaskFilterInfo());
@@ -1337,8 +1345,7 @@ class IntersectingQuadPixelTest : public VizPixelTestWithParam {
     background_quad->SetNew(background_quad_state, viewport_rect_,
                             viewport_rect_, SkColors::kWhite, false);
     pass_list_.push_back(std::move(render_pass_));
-    EXPECT_TRUE(
-        this->RunPixelTest(&pass_list_, base::FilePath(ref_file), comparator));
+    EXPECT_TRUE(this->RunPixelTest(&pass_list_, ref_file, comparator));
   }
   template <typename T>
   T* CreateAndAppendDrawQuad() {
@@ -1417,7 +1424,7 @@ TEST_P(IntersectingQuadPixelTest, SolidColorQuads) {
                 SkColors::kGreen, false);
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
-      FILE_PATH_LITERAL("intersecting_blue_green.png"));
+      base::FilePath(FILE_PATH_LITERAL("intersecting_blue_green.png")));
 }
 
 TEST_P(IntersectingQuadPixelTest, TexturedQuads) {
@@ -1439,7 +1446,7 @@ TEST_P(IntersectingQuadPixelTest, TexturedQuads) {
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
-      FILE_PATH_LITERAL("intersecting_blue_green_squares.png"));
+      base::FilePath(FILE_PATH_LITERAL("intersecting_blue_green_squares.png")));
 }
 
 TEST_P(IntersectingQuadPixelTest, NonFlippedTexturedQuads) {
@@ -1465,8 +1472,8 @@ TEST_P(IntersectingQuadPixelTest, NonFlippedTexturedQuads) {
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
-      FILE_PATH_LITERAL(
-          "intersecting_non_flipped_blue_green_half_size_rectangles.png"));
+      base::FilePath(FILE_PATH_LITERAL(
+          "intersecting_non_flipped_blue_green_half_size_rectangles.png")));
 }
 
 TEST_P(IntersectingQuadPixelTest, FlippedTexturedQuads) {
@@ -1492,8 +1499,8 @@ TEST_P(IntersectingQuadPixelTest, FlippedTexturedQuads) {
 
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
-      FILE_PATH_LITERAL(
-          "intersecting_flipped_blue_green_half_size_rectangles.png"));
+      base::FilePath(FILE_PATH_LITERAL(
+          "intersecting_flipped_blue_green_half_size_rectangles.png")));
 }
 
 TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
@@ -1547,7 +1554,7 @@ TEST_P(IntersectingQuadSoftwareTest, PictureQuads) {
                      green_raster_source->GetDisplayItemList());
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
-      FILE_PATH_LITERAL("intersecting_blue_green_squares.png"));
+      base::FilePath(FILE_PATH_LITERAL("intersecting_blue_green_squares.png")));
 }
 
 TEST_P(IntersectingQuadPixelTest, RenderPassQuads) {
@@ -1590,7 +1597,7 @@ TEST_P(IntersectingQuadPixelTest, RenderPassQuads) {
   this->pass_list_.push_back(std::move(child_pass2));
   this->AppendBackgroundAndRunTest(
       cc::FuzzyPixelComparator().SetErrorPixelsPercentageLimit(2.f),
-      FILE_PATH_LITERAL("intersecting_blue_green_squares.png"));
+      base::FilePath(FILE_PATH_LITERAL("intersecting_blue_green_squares.png")));
 }
 
 TEST_P(IntersectingVideoQuadPixelTest, YUVVideoQuads) {
@@ -1617,13 +1624,19 @@ TEST_P(IntersectingVideoQuadPixelTest, YUVVideoQuads) {
       this->resource_provider_.get(), this->child_resource_provider_.get(),
       this->child_context_provider_.get());
 
-  this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelComparator()
-          .DiscardAlpha()
-          .SetErrorPixelsPercentageLimit(0.50f)
-          .SetAvgAbsErrorLimit(1.2f)
-          .SetAbsErrorLimit(2),
+  base::FilePath baseline = base::FilePath(
       FILE_PATH_LITERAL("intersecting_blue_green_squares_video.png"));
+
+  if (renderer_type() == RendererType::kSkiaGL && IsANGLEMetal()) {
+    baseline = baseline.InsertBeforeExtensionASCII(kANGLEMetalStr);
+  }
+
+  this->AppendBackgroundAndRunTest(cc::FuzzyPixelComparator()
+                                       .DiscardAlpha()
+                                       .SetErrorPixelsPercentageLimit(0.50f)
+                                       .SetAvgAbsErrorLimit(1.2f)
+                                       .SetAbsErrorLimit(2),
+                                   baseline);
 }
 
 TEST_P(IntersectingVideoQuadPixelTest, Y16VideoQuads) {
@@ -1648,9 +1661,15 @@ TEST_P(IntersectingVideoQuadPixelTest, Y16VideoQuads) {
       this->resource_provider_.get(), this->child_resource_provider_.get(),
       this->child_context_provider_.get());
 
-  this->AppendBackgroundAndRunTest(
-      cc::FuzzyPixelOffByOneComparator(),
+  base::FilePath baseline = base::FilePath(
       FILE_PATH_LITERAL("intersecting_light_dark_squares_video.png"));
+
+  if (renderer_type() == RendererType::kSkiaGL && IsANGLEMetal()) {
+    baseline = baseline.InsertBeforeExtensionASCII(kANGLEMetalStr);
+  }
+
+  this->AppendBackgroundAndRunTest(cc::FuzzyPixelOffByOneComparator(),
+                                   baseline);
 }
 
 // TODO(skaslev): The software renderer does not support non-premultplied alpha.
@@ -3148,11 +3167,16 @@ TEST_P(GPURendererPixelTest, AntiAliasing) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  EXPECT_TRUE(
-      this->RunPixelTest(&pass_list,
-                         base::FilePath(FILE_PATH_LITERAL("anti_aliasing_.png"))
-                             .InsertBeforeExtensionASCII(this->renderer_str()),
-                         cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+  base::FilePath baseline =
+      base::FilePath(FILE_PATH_LITERAL("anti_aliasing_.png"))
+          .InsertBeforeExtensionASCII(this->renderer_str());
+
+  if (renderer_type() == RendererType::kSkiaGL && IsANGLEMetal()) {
+    baseline = baseline.InsertBeforeExtensionASCII(kANGLEMetalStr);
+  }
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, baseline, cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // Software renderer does not support anti-aliased edges.
@@ -3186,11 +3210,16 @@ TEST_P(GPURendererPixelTest, AntiAliasingPerspective) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  EXPECT_TRUE(this->RunPixelTest(
-      &pass_list,
+  base::FilePath baseline =
       base::FilePath(FILE_PATH_LITERAL("anti_aliasing_perspective_.png"))
-          .InsertBeforeExtensionASCII(this->renderer_str()),
-      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
+          .InsertBeforeExtensionASCII(this->renderer_str());
+
+  if (renderer_type() == RendererType::kSkiaGL && IsANGLEMetal()) {
+    baseline = baseline.InsertBeforeExtensionASCII(kANGLEMetalStr);
+  }
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, baseline, cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
 // This test tests that anti-aliasing works for axis aligned quads.
@@ -3476,10 +3505,15 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
         base::FilePath(FILE_PATH_LITERAL("trilinear_filtering_skia_vk.png")),
         cc::AlphaDiscardingExactPixelComparator()));
   } else {
-    EXPECT_TRUE(this->RunPixelTest(
-        &pass_list,
-        base::FilePath(FILE_PATH_LITERAL("trilinear_filtering.png")),
-        cc::AlphaDiscardingExactPixelComparator()));
+    base::FilePath baseline =
+        base::FilePath(FILE_PATH_LITERAL("trilinear_filtering.png"));
+
+    if (renderer_type() == RendererType::kSkiaGL && IsANGLEMetal()) {
+      baseline = baseline.InsertBeforeExtensionASCII(kANGLEMetalStr);
+    }
+
+    EXPECT_TRUE(this->RunPixelTest(&pass_list, baseline,
+                                   cc::AlphaDiscardingExactPixelComparator()));
   }
 }
 
