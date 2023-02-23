@@ -133,7 +133,7 @@ proto::ClientResult CreateClientResultFromPredResult(
     base::Time timestamp);
 
 // Returns true if config has migrated to multi output.
-bool HasConfigMigratedToMultiOutput(Config* config);
+bool HasMigratedToMultiOutput(Config* config);
 
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

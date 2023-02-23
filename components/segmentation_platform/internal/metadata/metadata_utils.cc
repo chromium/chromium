@@ -434,9 +434,10 @@ proto::ClientResult CreateClientResultFromPredResult(
   return client_result;
 }
 
-bool HasConfigMigratedToMultiOutput(Config* config) {
+bool HasMigratedToMultiOutput(Config* config) {
   // List of migrated config segments ids supporting multi output.
-  base::flat_set<SegmentId> migrated_config_ids{};
+  base::flat_set<SegmentId> migrated_config_ids{
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER};
 
   return (config->segments.size() == 1 &&
           migrated_config_ids.contains(config->segments.begin()->first));

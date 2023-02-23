@@ -119,6 +119,14 @@ const char kAdaptiveToolbarModelLabelVoice[] = "voice";
 const char kContextualPageActionModelLabelPriceTracking[] = "price_tracking";
 const char kContextualPageActionModelLabelReaderMode[] = "reader_mode";
 
+// Labels for search user model.
+// Any updates to these strings need to also update the field trials allowlist
+// in go/segmentation-field-trials-map.
+const char kSearchUserModelLabelNone[] = "None";
+const char kSearchUserModelLabelLow[] = "Low";
+const char kSearchUserModelLabelMedium[] = "Medium";
+const char kSearchUserModelLabelHigh[] = "High";
+
 // Custom inputs for contextual page actions model.
 const char kContextualPageActionModelInputPriceTracking[] = "can_track_price";
 const char kContextualPageActionModelInputReaderMode[] = "has_reader_mode";

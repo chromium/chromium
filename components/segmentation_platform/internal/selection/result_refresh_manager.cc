@@ -82,7 +82,7 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
   bool has_expired_or_unavailable_result =
       (result_state ==
        SegmentResultProvider::ResultState::kDatabaseScoreNotReady);
-  if (run_model == false && has_expired_or_unavailable_result) {
+  if (!run_model && has_expired_or_unavailable_result) {
     GetCachedResultOrRunModel(segment_result_provider, config,
                               /*run_model=*/true);
     return;
