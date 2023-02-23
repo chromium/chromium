@@ -4,16 +4,17 @@
 
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
-#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -349,6 +350,50 @@ TEST_F(PartitionedLockManagerTest, AcquireOptionsEnsureAsync) {
     loop.Run();
     EXPECT_TRUE(callback_ran);
   }
+}
+
+TEST_F(PartitionedLockManagerTest, Locations) {
+  PartitionedLockManager lock_manager;
+
+  base::Location location1 = FROM_HERE;
+  base::Location location2 = FROM_HERE;
+  base::Location location3 = FROM_HERE;
+
+  EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
+  EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
+
+  PartitionedLockId lock_id = {0, "foo"};
+
+  PartitionedLockHolder holder1;
+  PartitionedLockHolder holder2;
+  {
+    base::test::TestFuture<void> lock_acquired;
+    lock_manager.AcquireLocks(
+        {{lock_id, PartitionedLockManager::LockType::kShared}},
+        holder1.AsWeakPtr(), lock_acquired.GetCallback(),
+        PartitionedLockManager::AcquireOptions(), location1);
+    ASSERT_TRUE(lock_acquired.Wait());
+  }
+  {
+    base::test::TestFuture<void> lock_acquired;
+    lock_manager.AcquireLocks(
+        {{lock_id, PartitionedLockManager::LockType::kShared}},
+        holder2.AsWeakPtr(), lock_acquired.GetCallback(),
+        PartitionedLockManager::AcquireOptions(), location2);
+    ASSERT_TRUE(lock_acquired.Wait());
+  }
+  {
+    lock_manager.AcquireLocks(
+        {{lock_id, PartitionedLockManager::LockType::kExclusive}},
+        holder2.AsWeakPtr(), base::DoNothing(),
+        PartitionedLockManager::AcquireOptions(), location3);
+  }
+  std::vector<base::Location> held_locations =
+      lock_manager.GetHeldAndQueuedLockLocations(
+          {{lock_id, PartitionedLockManager::LockType::kShared}});
+  ASSERT_EQ(held_locations.size(), 3ul);
+  EXPECT_THAT(held_locations,
+              testing::UnorderedElementsAre(location1, location2, location3));
 }
 
 }  // namespace

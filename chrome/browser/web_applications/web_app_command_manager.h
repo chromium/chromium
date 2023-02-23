@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -52,7 +53,8 @@ class WebAppCommandManager {
 
   // Enqueues the given command in the queue corresponding to the command's
   // `lock_description()`. `Start()` will always be called asynchronously.
-  void ScheduleCommand(std::unique_ptr<WebAppCommand> command);
+  void ScheduleCommand(std::unique_ptr<WebAppCommand> command,
+                       const base::Location& location = FROM_HERE);
 
   // Called on system shutdown. This call is also forwarded to any commands that
   // have been `Start()`ed.

@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -44,12 +45,14 @@ class WebAppLockManager {
   // destroyed.
   void AcquireLock(base::WeakPtr<content::PartitionedLockHolder> holder,
                    const LockDescription& lock,
-                   base::OnceClosure on_lock_acquired);
+                   base::OnceClosure on_lock_acquired,
+                   const base::Location& location);
 
   template <class LockType>
   void AcquireLock(
       const LockDescription& lock_description,
-      base::OnceCallback<void(std::unique_ptr<LockType>)> on_lock_acquired);
+      base::OnceCallback<void(std::unique_ptr<LockType>)> on_lock_acquired,
+      const base::Location& location);
 
   // Upgrades the given lock to a new one, and will call `on_lock_acquired` on
   // when the new lock has been acquired. This call will CHECK-fail if `lock`
@@ -59,12 +62,14 @@ class WebAppLockManager {
       std::unique_ptr<SharedWebContentsLock> lock,
       const base::flat_set<AppId>& app_ids,
       base::OnceCallback<void(std::unique_ptr<SharedWebContentsWithAppLock>)>
-          on_lock_acquired);
+          on_lock_acquired,
+      const base::Location& location = FROM_HERE);
 
   std::unique_ptr<AppLockDescription> UpgradeAndAcquireLock(
       std::unique_ptr<NoopLock> lock,
       const base::flat_set<AppId>& app_ids,
-      base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired);
+      base::OnceCallback<void(std::unique_ptr<AppLock>)> on_lock_acquired,
+      const base::Location& location = FROM_HERE);
 
  private:
   content::PartitionedLockManager lock_manager_;

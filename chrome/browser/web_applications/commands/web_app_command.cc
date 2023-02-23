@@ -6,6 +6,8 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
@@ -52,6 +54,10 @@ base::WeakPtr<WebAppCommand> WebAppCommand::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void WebAppCommand::SetScheduledLocation(const base::Location& location) {
+  scheduled_location_ = location;
+}
+
 template <typename LockType>
 WebAppCommandTemplate<LockType>::WebAppCommandTemplate(const std::string& name)
     : WebAppCommand(name) {}
@@ -63,12 +69,14 @@ template <typename LockType>
 void WebAppCommandTemplate<LockType>::RequestLock(
     WebAppCommandManager* command_manager,
     WebAppLockManager* lock_manager,
-    LockAcquiredCallback on_lock_acquired) {
+    LockAcquiredCallback on_lock_acquired,
+    const base::Location& location) {
   lock_manager->AcquireLock(
       lock_description(),
       base::BindOnce(&WebAppCommandTemplate::PrepareForStart,
                      weak_factory_.GetWeakPtr(), command_manager,
-                     std::move(on_lock_acquired)));
+                     std::move(on_lock_acquired)),
+      location);
 }
 
 template <typename LockType>
@@ -77,7 +85,6 @@ void WebAppCommandTemplate<LockType>::PrepareForStart(
     LockAcquiredCallback on_lock_acquired,
     std::unique_ptr<LockType> lock) {
   command_manager_ = command_manager;
-
   std::move(on_lock_acquired)
       .Run(base::BindOnce(&WebAppCommandTemplate::StartWithLock,
                           weak_factory_.GetWeakPtr(), std::move(lock)));

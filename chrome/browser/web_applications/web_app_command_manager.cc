@@ -12,13 +12,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
-#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
-#include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
@@ -31,11 +30,20 @@ namespace web_app {
 
 namespace {
 
-base::Value CreateLogValue(const WebAppCommand& command,
-                           absl::optional<CommandResult> result) {
+base::Value::Dict CreateCommandMetadata(const WebAppCommand& command) {
   base::Value::Dict dict;
   dict.Set("name", command.name());
   dict.Set("id", command.id());
+  if (command.scheduled_location().has_value()) {
+    dict.Set("scheduled_location",
+             command.scheduled_location().value().ToString());
+  }
+  return dict;
+}
+
+base::Value CreateLogValue(const WebAppCommand& command,
+                           absl::optional<CommandResult> result) {
+  base::Value::Dict dict = CreateCommandMetadata(command);
   base::Value debug_value = command.ToDebugValue();
   bool is_empty_dict = debug_value.is_dict() && debug_value.DictEmpty();
   if (!debug_value.is_none() && !is_empty_dict) {
@@ -82,8 +90,11 @@ void WebAppCommandManager::Start() {
 }
 
 void WebAppCommandManager::ScheduleCommand(
-    std::unique_ptr<WebAppCommand> command) {
+    std::unique_ptr<WebAppCommand> command,
+    const base::Location& location) {
   DCHECK(command);
+  command->SetScheduledLocation(location);
+  DVLOG(2) << "Scheduling command: " << CreateCommandMetadata(*command);
   if (!started_) {
     commands_waiting_for_start_.push_back(std::move(command));
     return;
@@ -98,7 +109,8 @@ void WebAppCommandManager::ScheduleCommand(
   command_it->second->RequestLock(
       this, lock_manager_.get(),
       base::BindOnce(&WebAppCommandManager::OnLockAcquired,
-                     weak_ptr_factory_.GetWeakPtr(), command_id));
+                     weak_ptr_factory_.GetWeakPtr(), command_id),
+      location);
 }
 
 void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id,
@@ -139,6 +151,7 @@ void WebAppCommandManager::StartCommandOrPrepareForLoad(
                        std::move(start_command)));
     return;
   }
+  DVLOG(2) << "Starting command: " << CreateCommandMetadata(*command);
   std::move(start_command).Run();
 }
 
@@ -165,7 +178,7 @@ void WebAppCommandManager::OnAboutBlankLoadedForCommandStart(
     provider_->install_manager().TakeCommandErrorLog(
         PassKey(), std::move(url_loader_error));
   }
-
+  DVLOG(2) << "Starting command: " << CreateCommandMetadata(*command);
   std::move(start_command).Run();
 }
 

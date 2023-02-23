@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_LOCKS_PARTITIONED_LOCK_MANAGER_H_
 
+#include <deque>
 #include <iosfwd>
 #include <list>
 #include <memory>
@@ -15,7 +16,8 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -91,11 +93,17 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
   void AcquireLocks(base::flat_set<PartitionedLockRequest> lock_requests,
                     base::WeakPtr<PartitionedLockHolder> locks_holder,
                     LocksAcquiredCallback callback,
-                    AcquireOptions acquire_options = AcquireOptions());
+                    AcquireOptions acquire_options = AcquireOptions(),
+                    const base::Location& location = FROM_HERE);
 
   enum class TestLockResult { kLocked, kFree };
   // Tests to see if the given lock request can be acquired.
   TestLockResult TestLock(PartitionedLockRequest lock_requests);
+
+  // Gets the request location of all locks currently held and queued for the
+  // given requests.
+  std::vector<base::Location> GetHeldAndQueuedLockLocations(
+      const base::flat_set<PartitionedLockRequest>& requests) const;
 
   // Filter out the list of `PartitionedLockId`s that cannot be acquired given
   // the list of `PartitionedLockRequest`.
@@ -118,12 +126,14 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
     LockRequest(LockRequest&&) noexcept;
     LockRequest(LockType type,
                 base::WeakPtr<PartitionedLockHolder> locks_holder,
-                base::OnceClosure callback);
+                base::OnceClosure callback,
+                const base::Location& location);
     ~LockRequest();
 
     LockType requested_type = LockType::kShared;
     base::WeakPtr<PartitionedLockHolder> locks_holder;
     base::OnceClosure acquired_callback;
+    base::Location location;
   };
 
   // Represents a lock, which has a lock_id. To support shared access, there can
@@ -144,15 +154,17 @@ class COMPONENT_EXPORT(LOCK_MANAGER) PartitionedLockManager {
     }
 
     int acquired_count = 0;
+    base::flat_set<base::Location> request_locations;
     LockType lock_mode = LockType::kShared;
     std::list<LockRequest> queue;
   };
 
   void AcquireLock(PartitionedLockRequest request,
                    base::WeakPtr<PartitionedLockHolder> locks_holder,
-                   base::OnceClosure acquired_callback);
+                   base::OnceClosure acquired_callback,
+                   const base::Location& location);
 
-  void LockReleased(PartitionedLockId lock_id);
+  void LockReleased(base::Location request_location, PartitionedLockId lock_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_LOCK_H_
 
+#include <iosfwd>
 #include <memory>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
@@ -45,6 +47,8 @@ class LockDescription {
   // exclusive lock on the shared web contents.
   bool IncludesSharedWebContents() const;
 
+  base::Value AsDebugValue() const;
+
  protected:
   explicit LockDescription(base::flat_set<AppId> app_ids, Type type);
 
@@ -60,6 +64,9 @@ class LockDescription {
 
   base::WeakPtrFactory<LockDescription> weak_factory_{this};
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         const LockDescription& lock_description);
 
 class Lock {
  public:
