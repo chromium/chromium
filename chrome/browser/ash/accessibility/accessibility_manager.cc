@@ -2471,14 +2471,17 @@ void AccessibilityManager::InstallPumpkinForDictation(
   install_pumpkin_callback_ = std::move(callback);
   pumpkin_installer_->MaybeInstall(
       base::BindOnce(&AccessibilityManager::OnPumpkinInstalled,
-                     base::Unretained(this)),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating([](double progress) {}),
       base::BindOnce(&AccessibilityManager::OnPumpkinError,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AccessibilityManager::OnPumpkinInstalled(bool success) {
-  DCHECK(!install_pumpkin_callback_.is_null());
+  if (install_pumpkin_callback_.is_null()) {
+    return;
+  }
+
   if (!::features::IsExperimentalAccessibilityDictationWithPumpkinEnabled() ||
       !success) {
     std::move(install_pumpkin_callback_).Run(nullptr);
@@ -2500,12 +2503,18 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
 
 void AccessibilityManager::OnPumpkinDataCreated(
     std::unique_ptr<PumpkinData> data) {
-  CHECK(!install_pumpkin_callback_.is_null());
+  if (install_pumpkin_callback_.is_null()) {
+    return;
+  }
+
   std::move(install_pumpkin_callback_).Run(std::move(data));
 }
 
 void AccessibilityManager::OnPumpkinError(const std::string& error) {
-  DCHECK(!install_pumpkin_callback_.is_null());
+  if (install_pumpkin_callback_.is_null()) {
+    return;
+  }
+
   std::move(install_pumpkin_callback_).Run(nullptr);
   is_pumpkin_installed_for_testing_ = false;
 
