@@ -8,9 +8,10 @@ changelog-seen = 2
 [llvm]
 download-ci-llvm = false
 
-# Doesn't affect LLVM build (which we don't do) but rather how rustc_llvm crate
-# is linked.
+# These don't affect the LLVM build (which we don't do) but rather how the
+# rustc_llvm crate is linked.
 static-libstdcpp = true
+ldflags = "$RUSTC_LLVM_LDFLAGS"
 
 [rust]
 download-rustc = false
