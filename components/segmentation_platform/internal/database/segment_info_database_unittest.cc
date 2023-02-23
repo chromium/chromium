@@ -286,6 +286,30 @@ TEST_P(SegmentInfoDatabaseTest, WriteResult) {
   VerifyResult(kSegmentId, absl::nullopt);
 }
 
+TEST_P(SegmentInfoDatabaseTest, WriteResultWithCache) {
+  // Initialize DB with cache enabled and one entry.
+  db_entries_.insert(
+      std::make_pair(ToString(kSegmentId), CreateSegment(kSegmentId)));
+  VerifyDb({kSegmentId});
+  SetUpDB(true);
+
+  segment_db_->Initialize(base::DoNothing());
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  EXPECT_EQ(segment_info_cache_->GetSegmentInfo(kSegmentId).first,
+            SegmentInfoCache::CachedItemState::kNotCached);
+
+  // Verify that all DB entries are loaded into cache on initialization.
+  db_->LoadCallback(true);
+  EXPECT_EQ(segment_info_cache_->GetSegmentInfo(kSegmentId).first,
+            SegmentInfoCache::CachedItemState::kCachedAndFound);
+
+  // Update results and verify that db is updated.
+  WriteResult(kSegmentId, 0.4f);
+
+  // Verify that cache is updated.
+  VerifyResult(kSegmentId, 0.4f);
+}
+
 TEST_P(SegmentInfoDatabaseTest, WriteResultForTwoSegments) {
   // Initialize DB with two entries.
   db_entries_.insert(

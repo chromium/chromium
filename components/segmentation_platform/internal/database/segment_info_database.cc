@@ -120,6 +120,11 @@ void SegmentInfoDatabase::UpdateSegment(
     absl::optional<proto::SegmentInfo> segment_info,
     SuccessCallback callback) {
   cache_->UpdateSegmentInfo(segment_id, segment_info);
+
+  // The cache has been updated now. We can notify the client synchronously.
+  std::move(callback).Run(/*success=*/true);
+
+  // Now write to the database asyncrhonously.
   auto entries_to_save = std::make_unique<
       std::vector<std::pair<std::string, proto::SegmentInfo>>>();
   auto keys_to_delete = std::make_unique<std::vector<std::string>>();
@@ -130,7 +135,7 @@ void SegmentInfoDatabase::UpdateSegment(
     keys_to_delete->emplace_back(ToString(segment_id));
   }
   database_->UpdateEntries(std::move(entries_to_save),
-                           std::move(keys_to_delete), std::move(callback));
+                           std::move(keys_to_delete), base::DoNothing());
 }
 
 void SegmentInfoDatabase::UpdateMultipleSegments(
@@ -152,12 +157,16 @@ void SegmentInfoDatabase::UpdateMultipleSegments(
         std::make_pair(ToString(segment_id), std::move(segment_info)));
   }
 
+  // The cache has been updated now. We can notify the client synchronously.
+  std::move(callback).Run(/*success=*/true);
+
+  // Now write to the database asyncrhonously.
   for (auto& segment_id : segments_to_delete) {
     entries_to_delete->emplace_back(ToString(segment_id));
   }
 
   database_->UpdateEntries(std::move(entries_to_save),
-                           std::move(entries_to_delete), std::move(callback));
+                           std::move(entries_to_delete), base::DoNothing());
 }
 
 void SegmentInfoDatabase::SaveSegmentResult(
@@ -188,19 +197,48 @@ void SegmentInfoDatabase::OnGetSegmentInfoForUpdatingResults(
     segment_info->clear_prediction_result();
   }
   cache_->UpdateSegmentInfo(segment_info->segment_id(), segment_info);
+
+  // The cache has been updated now. We can notify the client synchronously.
+  std::move(callback).Run(/*success=*/true);
+
+  // Now write to the database asyncrhonously.
   auto entries_to_save = std::make_unique<
       std::vector<std::pair<std::string, proto::SegmentInfo>>>();
   entries_to_save->emplace_back(std::make_pair(
       ToString(segment_info->segment_id()), std::move(segment_info.value())));
   database_->UpdateEntries(std::move(entries_to_save),
                            std::make_unique<std::vector<std::string>>(),
-                           std::move(callback));
+                           base::DoNothing());
 }
 
 void SegmentInfoDatabase::OnDatabaseInitialized(
     SuccessCallback callback,
     leveldb_proto::Enums::InitStatus status) {
-  std::move(callback).Run(status == leveldb_proto::Enums::InitStatus::kOK);
+  bool success = (status == leveldb_proto::Enums::InitStatus::kOK);
+
+  if (!success) {
+    std::move(callback).Run(success);
+    return;
+  }
+
+  // Initialize the cache by reading the database into the in-memory cache to be
+  // accessed hereafter.
+  database_->LoadEntries(base::BindOnce(&SegmentInfoDatabase::OnLoadAllEntries,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        std::move(callback)));
+}
+
+void SegmentInfoDatabase::OnLoadAllEntries(
+    SuccessCallback callback,
+    bool success,
+    std::unique_ptr<std::vector<proto::SegmentInfo>> all_infos) {
+  if (success) {
+    // Add all the entries to the cache on startup.
+    for (auto info : *all_infos.get()) {
+      cache_->UpdateSegmentInfo(info.segment_id(), info);
+    }
+  }
+  std::move(callback).Run(success);
 }
 
 }  // namespace segmentation_platform

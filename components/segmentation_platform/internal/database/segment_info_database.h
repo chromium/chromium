@@ -27,7 +27,9 @@ class PredictionResult;
 }  // namespace proto
 
 // Represents a DB layer that stores model metadata and prediction results to
-// the disk.
+// the disk. At startup, all stored data is loaded into cache. Following
+// interactions with this class will be directly from/to the cache. The disk
+// will be updated asynchronously by this class.
 class SegmentInfoDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
@@ -59,6 +61,8 @@ class SegmentInfoDatabase {
 
   // Called to save or update metadata for a segment. The previous data is
   // overwritten. If |segment_info| is empty, the segment will be deleted.
+  // Updates are written to the cache and callback is returned to the client.
+  // The database will be updated asynchronously after.
   // TODO(shaktisahu): How does the client know if a segment is to be deleted?
   virtual void UpdateSegment(SegmentId segment_id,
                              absl::optional<proto::SegmentInfo> segment_info,
@@ -96,6 +100,11 @@ class SegmentInfoDatabase {
       absl::optional<proto::PredictionResult> result,
       SuccessCallback callback,
       absl::optional<proto::SegmentInfo> segment_info);
+
+  void OnLoadAllEntries(
+      SuccessCallback callback,
+      bool success,
+      std::unique_ptr<std::vector<proto::SegmentInfo>> all_infos);
 
   std::unique_ptr<SegmentInfoProtoDb> database_;
 
