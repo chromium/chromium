@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/sync/ios_trusted_vault_client.h"
 
+#import "base/feature_list.h"
+#import "base/functional/callback_helpers.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/trusted_vault_client_backend.h"
 
@@ -19,6 +22,13 @@ IOSTrustedVaultClient::IOSTrustedVaultClient(
       backend_(trusted_vault_client_backend) {
   DCHECK(account_manager_service_);
   DCHECK(backend_);
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultVerifyDeviceRegistration)) {
+    backend_->SetDeviceRegistrationPublicKeyVerifierForUMA(
+        base::BindOnce(&IOSTrustedVaultClient::VerifyDeviceRegistration,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 IOSTrustedVaultClient::~IOSTrustedVaultClient() = default;
@@ -74,11 +84,27 @@ void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
 
 void IOSTrustedVaultClient::ClearDataForAccount(
     const CoreAccountInfo& account_info) {
-  // TODO(crbug.com/1273080): decide whether this logic needs to be implemented
-  // on iOS.
+  backend_->ClearLocalData(IdentityForAccount(account_info), base::DoNothing());
 }
 
 id<SystemIdentity> IOSTrustedVaultClient::IdentityForAccount(
     const CoreAccountInfo& account_info) {
   return account_manager_service_->GetIdentityWithGaiaID(account_info.gaia);
+}
+
+void IOSTrustedVaultClient::VerifyDeviceRegistration(
+    const std::string& gaia_id) {
+  backend_->GetPublicKeyForIdentity(
+      account_manager_service_->GetIdentityWithGaiaID(gaia_id),
+      base::BindOnce(
+          &IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKey,
+          weak_ptr_factory_.GetWeakPtr(), gaia_id));
+}
+
+void IOSTrustedVaultClient::VerifyDeviceRegistrationWithPublicKey(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key) {
+  // TODO(crbug.com/1416626): Issue a request to the server and log the result
+  // to metrics.
+  NOTIMPLEMENTED();
 }
