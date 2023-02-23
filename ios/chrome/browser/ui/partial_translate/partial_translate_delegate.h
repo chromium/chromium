@@ -14,6 +14,10 @@
 // Returns whether a partial translate can be handled.
 - (BOOL)canHandlePartialTranslateSelection;
 
+// Whether partial translate action should be proposed (independently of the
+// current selection).
+- (BOOL)shouldInstallPartialTranslate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PARTIAL_TRANSLATE_PARTIAL_TRANSLATE_DELEGATE_H_

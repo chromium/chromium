@@ -55,7 +55,7 @@
 }
 
 - (void)addPartialTranslate:(id<UIMenuBuilder>)builder {
-  if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+  if (![self.partialTranslateDelegate shouldInstallPartialTranslate]) {
     return;
   }
   NSString* title =
@@ -124,7 +124,7 @@
         [[UIMenuItem alloc] initWithTitle:title action:@selector(linkToText:)];
     RegisterEditMenuItem(menuItem);
   }
-  if (base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+  if ([self.partialTranslateDelegate shouldInstallPartialTranslate]) {
     NSString* title =
         l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY);
     UIMenuItem* menuItem =
@@ -163,7 +163,7 @@
 #pragma mark - PartialTranslateDelegate methods
 
 - (void)chromePartialTranslate:(UIMenuItem*)item {
-  DCHECK(base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate));
+  DCHECK([self.partialTranslateDelegate shouldInstallPartialTranslate]);
   DCHECK(self.partialTranslateDelegate);
   [self.partialTranslateDelegate handlePartialTranslateSelection];
 }

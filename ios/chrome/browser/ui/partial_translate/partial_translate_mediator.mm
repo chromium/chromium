@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/partial_translate/partial_translate_mediator.h"
 
+#import "components/prefs/pref_member.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/chrome/browser/ui/browser_container/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -36,10 +38,13 @@
 
 @end
 
-@implementation PartialTranslateMediator
+@implementation PartialTranslateMediator {
+  BooleanPrefMember _translateEnabled;
+}
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
               withBaseViewController:(UIViewController*)baseViewController
+                         prefService:(PrefService*)prefs
                            incognito:(BOOL)incognito {
   if (self = [super init]) {
     DCHECK(webStateList);
@@ -47,14 +52,14 @@
     _webStateList = webStateList;
     _baseViewController = baseViewController;
     _incognito = incognito;
+    _translateEnabled.Init(translate::prefs::kOfferTranslateEnabled, prefs);
   }
   return self;
 }
 
 - (void)shutdown {
-  if (_webStateList) {
-    _webStateList = nullptr;
-  }
+  _webStateList = nullptr;
+  _translateEnabled.Destroy();
 }
 
 - (void)handlePartialTranslateSelection {
@@ -80,6 +85,27 @@
   }
   return tabHelper->CanRetrieveSelectedText() &&
          PartialTranslateLimitMaxCharacters() > 0u;
+}
+
+- (BOOL)shouldInstallPartialTranslate {
+  if (PartialTranslateLimitMaxCharacters() == 0u) {
+    // Feature is not available.
+    return NO;
+  }
+  if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+    // Feature is not enabled.
+    return NO;
+  }
+  if (self.incognito && !ShouldShowPartialTranslateInIncognito()) {
+    // Feature is enabled, but disabled in incognito, and the current tab is in
+    // incognito.
+    return NO;
+  }
+  if (!_translateEnabled.GetValue() && _translateEnabled.IsManaged()) {
+    // Translate is a managed settings and disabled.
+    return NO;
+  }
+  return YES;
 }
 
 - (void)switchToFullTranslateWithMessage:(NSString*)message {

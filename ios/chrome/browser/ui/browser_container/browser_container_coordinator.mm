@@ -80,7 +80,8 @@
   DCHECK(!_viewController);
   Browser* browser = self.browser;
   WebStateList* webStateList = browser->GetWebStateList();
-  BOOL incognito = browser->GetBrowserState()->IsOffTheRecord();
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+  BOOL incognito = browserState->IsOffTheRecord();
   self.viewController = [[BrowserContainerViewController alloc] init];
   self.webContentAreaOverlayContainerCoordinator =
       [[OverlayContainerCoordinator alloc]
@@ -97,9 +98,13 @@
   self.browserEditMenuHandler.linkToTextDelegate = self.linkToTextMediator;
 
   if (base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+    PrefService* prefService =
+        browserState->GetOriginalChromeBrowserState()->GetPrefs();
+
     self.partialTranslateMediator = [[PartialTranslateMediator alloc]
           initWithWebStateList:webStateList
         withBaseViewController:self.viewController
+                   prefService:prefService
                      incognito:incognito];
     self.partialTranslateMediator.alertDelegate = self;
     CommandDispatcher* dispatcher = browser->GetCommandDispatcher();

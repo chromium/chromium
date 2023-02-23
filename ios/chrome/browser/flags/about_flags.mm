@@ -580,6 +580,12 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
+const FeatureEntry::FeatureParam kIOSEditMenuPartialTranslateNoIncognito[] = {
+    {kIOSEditMenuPartialTranslateNoIncognitoParam, "true"}};
+const FeatureEntry::FeatureVariation kIOSEditMenuPartialTranslateVariations[] =
+    {{"Disable on incognito", kIOSEditMenuPartialTranslateNoIncognito,
+      std::size(kIOSEditMenuPartialTranslateNoIncognito), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1347,7 +1353,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"ios-edit-menu-partial-translate",
      flag_descriptions::kIOSEditMenuPartialTranslateName,
      flag_descriptions::kIOSEditMenuPartialTranslateDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSEditMenuPartialTranslate)},
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSEditMenuPartialTranslate,
+                                    kIOSEditMenuPartialTranslateVariations,
+                                    "IOSEditMenuPartialTranslate")},
     {"ios-custom-browser-edit-menu",
      flag_descriptions::kIOSCustomBrowserEditMenuName,
      flag_descriptions::kIOSCustomBrowserEditMenuDescription, flags_ui::kOsIos,

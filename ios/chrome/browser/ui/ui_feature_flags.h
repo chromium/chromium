@@ -52,8 +52,14 @@ BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 // Feature flag to use the new Edit menu API for browser view.
 BASE_DECLARE_FEATURE(kIOSCustomBrowserEditMenu);
 
+// Feature param under kIOSEditMenuPartialTranslate to disable on incognito.
+extern const char kIOSEditMenuPartialTranslateNoIncognitoParam[];
 // Feature flag to enable partial translate in the edit menu.
 BASE_DECLARE_FEATURE(kIOSEditMenuPartialTranslate);
+
+// Helper function to check if kIOSEditMenuPartialTranslate is enabled in
+// incognito.
+bool ShouldShowPartialTranslateInIncognito();
 
 // Feature flag that shows iOS 15 context menu, instead of tooltip popover,
 // during a location bar long press gesture.

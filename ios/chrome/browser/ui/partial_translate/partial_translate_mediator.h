@@ -12,6 +12,7 @@
 @protocol ActivityServiceCommands;
 @protocol BrowserCoordinatorCommands;
 @protocol EditMenuAlertDelegate;
+class PrefService;
 class WebStateList;
 
 // Mediator that mediates between the browser container views and the
@@ -23,6 +24,7 @@ class WebStateList;
 // be non-null.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
               withBaseViewController:(UIViewController*)baseViewController
+                         prefService:(PrefService*)prefs
                            incognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

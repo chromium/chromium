@@ -55,6 +55,9 @@ BASE_FEATURE(kIOSCustomBrowserEditMenu,
              "IOSCustomBrowserEditMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kIOSEditMenuPartialTranslateNoIncognitoParam[] =
+    "IOSEditMenuPartialTranslateNoIncognitoParam";
+
 BASE_FEATURE(kIOSEditMenuPartialTranslate,
              "IOSEditMenuPartialTranslate",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -159,3 +162,12 @@ bool IsConsistencyNewAccountInterfaceEnabled() {
 BASE_FEATURE(kAddToHomeScreen,
              "AddToHomeScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldShowPartialTranslateInIncognito() {
+  if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
+    return false;
+  }
+  return !base::GetFieldTrialParamByFeatureAsBool(
+      kIOSEditMenuPartialTranslate,
+      kIOSEditMenuPartialTranslateNoIncognitoParam, false);
+}

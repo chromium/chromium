@@ -13,6 +13,7 @@
 // A handler for the Browser edit menu.
 // This class is in charge of customising the menu and executing the commands.
 @interface BrowserEditMenuHandler : NSObject
+
 // The delegate to handle link to text button selection.
 @property(nonatomic, weak) id<LinkToTextDelegate> linkToTextDelegate;
 
