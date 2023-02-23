@@ -1789,8 +1789,6 @@ static_library("ui") {
       "//chrome/browser/new_tab_page/modules/photos:mojo_bindings",
       "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings",
       "//chrome/browser/profile_resetter:profile_reset_report_proto",
-      "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
-      "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/resources/identity_internals:resources",
       "//chrome/browser/resources/support_tool:resources",
       "//chrome/browser/resources/web_app_internals:resources",

@@ -319,10 +319,6 @@
         <include name="IDR_RESET_PASSWORD_JS" file="${root_gen_dir}\chrome\browser\resources\reset_password\tsc\reset_password.js" use_base_dir="false" type="BINDATA" />
         <include name="IDR_RESET_PASSWORD_MOJOM_WEBUI_JS" file="${root_gen_dir}\chrome\browser\resources\reset_password\tsc\reset_password.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       </if>
-      <if expr="not is_android">
-        <include name="IDR_TAB_RANKER_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="resource_coordinator\tab_ranker\example_preprocessor_config.pb" type="BINDATA" />
-        <include name="IDR_TAB_RANKER_PAIRWISE_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="resource_coordinator\tab_ranker\pairwise_preprocessor_config.pb" type="BINDATA" />
-      </if>
       <if expr="chromeos_ash">
         <include name="IDR_SMART_DIM_20190521_EXAMPLE_PREPROCESSOR_CONFIG_PB" file="ash\power\ml\smart_dim\20190521_example_preprocessor_config.pb" type="BINDATA" />
       </if>

@@ -4377,8 +4377,6 @@ static_library("browser") {
       "//chrome/browser/policy:path_parser",
       "//chrome/browser/profile_resetter:profile_reset_report_proto",
       "//chrome/browser/resource_coordinator:intervention_policy_database_proto",
-      "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
-      "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/resources:component_extension_resources",
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/support_tool:support_tool_proto",

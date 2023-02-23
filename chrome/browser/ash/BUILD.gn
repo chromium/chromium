@@ -3381,7 +3381,6 @@ source_set("ash") {
     "//chrome/browser/image_decoder",
     "//chrome/browser/policy/messaging_layer/proto:crd_event_proto",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_headers",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",

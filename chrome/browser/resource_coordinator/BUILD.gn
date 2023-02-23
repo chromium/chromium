@@ -6,10 +6,6 @@ import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("tab_metrics_event_proto") {
-  sources = [ "tab_metrics_event.proto" ]
-}
-
 mojom("mojo_bindings") {
   sources = [ "lifecycle_unit_state.mojom" ]
   webui_module_path = "/"
