@@ -30,6 +30,14 @@ void AddDiscreteMapping(proto::SegmentationModelMetadata* metadata,
   }
 }
 
+std::unique_ptr<Config> CreateTestConfig(SegmentId segment_id) {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = "test_key";
+  config->segmentation_uma_name = "TestUmaKey";
+  config->AddSegmentId(segment_id);
+  return config;
+}
+
 }  // namespace
 
 class MetadataUtilsTest : public testing::Test {
@@ -813,6 +821,12 @@ TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithUMAOutput) {
       model_metadata, /*include_outputs=*/true);
   EXPECT_EQ(1u, expected.size());
   EXPECT_EQ("output", expected[0].name());
+}
+
+TEST_F(MetadataUtilsTest, HasConfigMigratedToMultiOutput) {
+  auto config =
+      CreateTestConfig(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER);
+  EXPECT_FALSE(metadata_utils::HasConfigMigratedToMultiOutput(config.get()));
 }
 
 }  // namespace segmentation_platform
