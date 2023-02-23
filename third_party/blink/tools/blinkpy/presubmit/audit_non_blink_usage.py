@@ -94,6 +94,7 @@ _CONFIG = [
             'base::OptionalToPtr',
             'base::Overloaded',
             'base::PassKey',
+            'base::PersistentHash',
             'base::PlatformThread',
             'base::PlatformThreadId',
             'base::RefCountedData',

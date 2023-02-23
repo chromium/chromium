@@ -61,6 +61,8 @@ class BloomFilter {
     return memcmp(a.bit_array_, b.bit_array_, a.kBitArrayMemorySize) == 0;
   }
 
+  unsigned* GetRawData() { return bit_array_; }
+
  private:
   using BitArrayUnit = unsigned;
   static constexpr size_t kMaxKeyBits = 16;

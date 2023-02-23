@@ -286,6 +286,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kCacheCodeOnIdleDelayServiceWorkerOnlyParam;
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kProduceCompileHints);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kProduceCompileHintsOnIdleDelayParam;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
+    kProduceCompileHintsNoiseLevel;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAlignFontDisplayAutoTimeoutWithLCPGoal);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>

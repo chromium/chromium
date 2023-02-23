@@ -69,7 +69,8 @@ class CORE_EXPORT V8CodeCache final {
   GetCompileOptions(mojom::blink::V8CacheOptions,
                     const CachedMetadataHandler*,
                     size_t source_text_length,
-                    ScriptSourceLocationType);
+                    ScriptSourceLocationType,
+                    const KURL& url);
 
   static scoped_refptr<CachedMetadata> GetCachedMetadata(
       const CachedMetadataHandler* cache_handler,

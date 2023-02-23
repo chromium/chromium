@@ -755,6 +755,14 @@ const base::FeatureParam<int> kCacheCodeOnIdleDelayParam{&kCacheCodeOnIdle,
 const base::FeatureParam<bool> kCacheCodeOnIdleDelayServiceWorkerOnlyParam{
     &kCacheCodeOnIdle, "service-worker-only", false};
 
+BASE_FEATURE(kProduceCompileHints,
+             "ProduceCompileHints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kProduceCompileHintsOnIdleDelayParam{
+    &kProduceCompileHints, "delay-in-ms", 10000};
+const base::FeatureParam<double> kProduceCompileHintsNoiseLevel{
+    &kProduceCompileHints, "noise probability", 0.9};
+
 // Make all pending 'display: auto' web fonts enter the swap or failure period
 // immediately before reaching the LCP time limit (~2500ms), so that web fonts
 // do not become a source of bad LCP.

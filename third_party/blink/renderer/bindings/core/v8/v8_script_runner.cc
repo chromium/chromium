@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/buildflags.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
@@ -155,7 +157,8 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
 
   switch (compile_options) {
     case v8::ScriptCompiler::kNoCompileOptions:
-    case v8::ScriptCompiler::kEagerCompile: {
+    case v8::ScriptCompiler::kEagerCompile:
+    case v8::ScriptCompiler::kProduceCompileHints: {
       v8::ScriptCompiler::Source source(code, origin);
       return v8::ScriptCompiler::Compile(script_state->GetContext(), &source,
                                          compile_options, no_cache_reason);
@@ -310,7 +313,8 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
   } else {
     switch (compile_options) {
       case v8::ScriptCompiler::kNoCompileOptions:
-      case v8::ScriptCompiler::kEagerCompile: {
+      case v8::ScriptCompiler::kEagerCompile:
+      case v8::ScriptCompiler::kProduceCompileHints: {
         v8::ScriptCompiler::Source source(code, origin);
         script = v8::ScriptCompiler::CompileModule(
             isolate, &source, compile_options, no_cache_reason);
@@ -567,6 +571,22 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
             classic_script->SourceUrl(), classic_script->StartPosition(),
             produce_cache_options);
       }
+
+#if BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
+      if (compile_options == v8::ScriptCompiler::kProduceCompileHints &&
+          frame != nullptr) {
+        // TODO(chromium:1406506): Add a compile hints solution for workers.
+        // TODO(chromium:1406506): Add a compile hints solution for fenced
+        // frames.
+        // TODO(chromium:1406506): Add a compile hints solution for
+        // out-of-process iframes.
+        Page* page = frame->GetPage();
+        if (page != nullptr) {
+          page->GetV8CompileHints().RecordScript(frame, execution_context,
+                                                 script, script_state);
+        }
+      }
+#endif  // BUILDFLAG(ENABLE_V8_COMPILE_HINTS)
     }
 
     // TODO(crbug/1114601): Investigate whether to check CanContinue() in other

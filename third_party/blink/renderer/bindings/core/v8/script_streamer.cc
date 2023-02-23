@@ -748,11 +748,19 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
       std::move(stream_ptr), encoding_);
 
+  // Call FeatureList::IsEnabled only once.
+  static bool compile_hints_enabled =
+      base::FeatureList::IsEnabled(features::kProduceCompileHints);
+
+  v8::ScriptCompiler::CompileOptions compile_options =
+      compile_hints_enabled ? v8::ScriptCompiler::kProduceCompileHints
+                            : v8::ScriptCompiler::kNoCompileOptions;
+
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
       script_streaming_task =
           base::WrapUnique(v8::ScriptCompiler::StartStreaming(
               V8PerIsolateData::MainThreadIsolate(), source_.get(),
-              script_type_));
+              script_type_, compile_options));
 
   if (!script_streaming_task) {
     // V8 cannot stream the script.
