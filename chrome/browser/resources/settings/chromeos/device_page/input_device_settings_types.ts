@@ -106,32 +106,24 @@ export interface PointingStickSettings {
 }
 
 export interface KeyboardObserverInterface {
-  // Fired when a keyboard is connected.
-  onKeyboardConnected(keyboard: Keyboard): void;
-  // Fired when a keyboard is removed from the list.
-  onKeyboardDisconnected(id: number): void;
+  // Fired when the keyboard list is updated.
+  onKeyboardListUpdated(keyboards: Keyboard[]): void;
 }
 
 export interface TouchpadObserverInterface {
-  // Fired when a touchpad is connected.
-  onTouchpadConnected(touchpad: Touchpad): void;
-  // Fired when a touchpad is removed from the list.
-  onTouchpadDisconnected(id: number): void;
+  // Fired when the touchpad list is updated.
+  onTouchpadListUpdated(touchpads: Touchpad[]): void;
 }
 
 export interface MouseObserverInterface {
-  // Fired when a mouse is connected.
-  onMouseConnected(mouse: Mouse): void;
-  // Fired when a mouse is removed from the list.
-  onMouseDisconnected(id: number): void;
+  // Fired when the mouse list updated.
+  onMouseListUpdated(mice: Mouse[]): void;
 }
 
 
 export interface PointingStickObserverInterface {
-  // Fired when a pointing stick is connected.
-  onPointingStickConnected(pointingStick: PointingStick): void;
-  // Fired when a pointing stick is removed from the list.
-  onPointingStickDisconnected(id: number): void;
+  // Fired when the pointing stick list is updated.
+  onPointingStickListUpdated(pointingSticks: PointingStick[]): void;
 }
 
 export interface InputDeviceSettingsProviderInterface {
