@@ -154,10 +154,7 @@ export class Background extends ChromeVoxState {
 
   /** @override */
   getCurrentRange() {
-    if (ChromeVoxRange.getCurrentRangeWithoutRecovery()?.isValid()) {
-      return ChromeVoxRange.getCurrentRangeWithoutRecovery();
-    }
-    return null;
+    return ChromeVoxRange.current;
   }
 
   /** @override */

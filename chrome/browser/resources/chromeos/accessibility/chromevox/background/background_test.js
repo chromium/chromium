@@ -1023,12 +1023,8 @@ AX_TEST_F(
     </div>
   `;
       const root = await this.runWithLoadedTree(site);
-      const assertRangeHasText = function(text) {
-        return function() {
-          assertEquals(
-              text, ChromeVoxState.instance.getCurrentRange().start.node.name);
-        };
-      };
+      const assertRangeHasText = (text) => () =>
+          assertEquals(text, ChromeVoxRange.current.start.node.name);
 
       mockFeedback.call(doCmd('nextEditText'))
           .expectSpeech('Top News Most Popular Sports')
@@ -3520,11 +3516,9 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'FocusAfterClick', async function() {
       .expectSpeech('Click me')
       .call(doCmd('forceClickOnCurrentItem'))
       .expectSpeech('Focus me')
-      .call(() => {
-        assertEquals(
-            'Focus me',
-            ChromeVoxState.instance.getCurrentRange().start.node.name);
-      });
+      .call(
+          () =>
+              assertEquals('Focus me', ChromeVoxRange.current.start.node.name));
   await mockFeedback.replay();
 });
 
