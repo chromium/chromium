@@ -28,8 +28,10 @@ std::unique_ptr<SourceLocation> CaptureSourceLocation(
         std::move(stack_trace));
   }
 
-  if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context)) {
-    Document* document = window->document();
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context);
+  Document* document = window ? window->document() : nullptr;
+  // window->document() may be null in rare cases (e.g. during header parsing).
+  if (document) {
     unsigned line_number = 0;
     if (document->GetScriptableDocumentParser() &&
         !document->IsInDocumentWrite()) {
