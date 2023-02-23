@@ -50,8 +50,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         int NUM_ENTRIES = 2;
     }
 
-    private ModalDialogProperties.Controller mController;
-
     private FadingEdgeScrollView mScrollView;
     private ViewGroup mTitleContainer;
     private TextView mTitleView;
@@ -126,21 +124,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         } else if (view == mTitleIcon) {
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.TITLE_ICON);
         }
-    }
-
-    /**
-     * @return The controller that controls the actions on the dialogs.
-     */
-    public ModalDialogProperties.Controller getController() {
-        return mController;
-    }
-
-    /**
-     * @param controller The {@link ModalDialogProperties.Controller} that handles events on user
-     *         actions.
-     */
-    void setController(ModalDialogProperties.Controller controller) {
-        mController = controller;
     }
 
     /**
