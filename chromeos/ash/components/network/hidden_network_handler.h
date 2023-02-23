@@ -38,9 +38,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HiddenNetworkHandler {
  private:
   void CleanHiddenNetworks();
 
-  // Timer ensures that wrongly configured networks are searched for on
-  // a daily basis.
+  // Allows us to have an initial delay before the first time we check for
+  // wrongly configured networks. This delay is important to ensure that
+  // networks specific to a user are available during our initial check.
+  base::OneShotTimer initial_delay_timer_;
+
+  // Allows us to check for wrongly configured networks on a daily basis.
   base::RepeatingTimer daily_event_timer_;
+
   ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
       nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;

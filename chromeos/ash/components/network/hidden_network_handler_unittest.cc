@@ -35,8 +35,9 @@ namespace {
 // initialized until the next time the timer fires, e.g. the next day.
 constexpr base::TimeDelta kTwoWeeks = base::Days(15);
 constexpr base::TimeDelta kArbitraryTime = base::Days(11686);
-constexpr base::TimeDelta kMigrationInterval = base::Seconds(5);
-constexpr char kMigrationIntervalASCII[] = "5";
+constexpr base::TimeDelta kInitialDelay = base::Seconds(30);
+constexpr base::TimeDelta kMigrationInterval = base::Seconds(60);
+constexpr char kMigrationIntervalASCII[] = "60";
 const char* kWiFiGuid1 = "wifi_guid1";
 const char* kWiFiGuid2 = "wifi_guid2";
 const char* kWiFiGuid3 = "wifi_guid3";
@@ -228,6 +229,8 @@ TEST_F(HiddenNetworkHandlerTest, MigrationIntervalOverride) {
       switches::kHiddenNetworkMigrationInterval, kMigrationIntervalASCII);
 
   MaybeRegisterAndInitializePrefs();
+  task_environment()->FastForwardBy(kInitialDelay);
+  base::RunLoop().RunUntilIdle();
 
   // Verify that the interval we check for networks to remove can be controlled
   // by the command line flag. We do this by checking before interval
@@ -238,7 +241,8 @@ TEST_F(HiddenNetworkHandlerTest, MigrationIntervalOverride) {
                                 /*total=*/1,
                                 /*sum=*/0);
 
-  task_environment()->FastForwardBy(kMigrationInterval - base::Seconds(1));
+  task_environment()->FastForwardBy(kMigrationInterval - kInitialDelay -
+                                    base::Seconds(1));
   base::RunLoop().RunUntilIdle();
   ExpectRemovalAttemptHistogram(/*bucket=*/0,
                                 /*frequency=*/1,
@@ -339,17 +343,27 @@ TEST_F(HiddenNetworkHandlerTest, NetworksAreCheckedWhenPrefsAreInitialized) {
 
   const std::string path = CreateDefaultHiddenWiFiNetwork();
   MaybeRegisterAndInitializePrefs();
+  task_environment()->FastForwardBy(kInitialDelay);
   base::RunLoop().RunUntilIdle();
 
   // We explicitly shut down and re-initialize the pref services to test that
   // whenever they are initialized the HiddenNetworkHandler class will
-  // immediately check for wrongly configured networks.
+  // check for wrongly configured networks after an initial delay.
   NetworkHandler::Get()->ShutdownPrefServices();
   base::RunLoop().RunUntilIdle();
   ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
 
   task_environment()->FastForwardBy(kTwoWeeks);
+  base::RunLoop().RunUntilIdle();
+
   MaybeRegisterAndInitializePrefs(/*should_register=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  // The network should not be removed before the initial delay.
+  ExpectNetworksRemoved(/*service_path=*/std::string(),
+                        /*total_removed_count=*/0u);
+
+  task_environment()->FastForwardBy(kInitialDelay);
   base::RunLoop().RunUntilIdle();
   ExpectNetworksRemoved(/*service_path=*/path,
                         /*total_removed_count=*/1);
@@ -367,12 +381,12 @@ TEST_F(HiddenNetworkHandlerTest, LessThanTwoWeeks) {
 
   CreateDefaultHiddenWiFiNetwork();
   ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
-  task_environment()->FastForwardBy(kTwoWeeks - base::Hours(5));
+  task_environment()->FastForwardBy(base::Days(13));
   base::RunLoop().RunUntilIdle();
   ExpectNetworksRemoved(/*service_path=*/std::string(), /*total_removed_count=*/0u);
   ExpectRemovalAttemptHistogram(/*bucket=*/1,
                                 /*frequency=*/0,
-                                /*total=*/15,
+                                /*total=*/14,
                                 /*sum=*/0);
   ExpectRemovalAttemptResultHistogram(
       /*success_count=*/0,
