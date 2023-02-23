@@ -177,8 +177,10 @@ void AutomationInternalCustomBindings::StartCachingAccessibilityTrees() {
 }
 
 void AutomationInternalCustomBindings::StopCachingAccessibilityTrees() {
-  message_filter_->Detach();
-  message_filter_.reset();
+  if (message_filter_) {
+    message_filter_->Detach();
+    message_filter_.reset();
+  }
 }
 
 //
