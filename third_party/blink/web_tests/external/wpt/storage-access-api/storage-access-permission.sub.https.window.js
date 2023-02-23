@@ -83,7 +83,7 @@
 
     const event = await p;
 
-    assert_equals(event.target.name, "storage_access");
+    assert_equals(event.target.name, "storage-access");
     assert_equals(event.target.state, "granted");
   }, "Permission state can be observed");
 })();
