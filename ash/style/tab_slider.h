@@ -38,7 +38,7 @@ class ASH_EXPORT TabSlider : public views::View {
   // distributed evenly between buttons.
   explicit TabSlider(bool has_background = true,
                      bool has_selector_animation = true,
-                     bool distribute_space_evenly = false);
+                     bool distribute_space_evenly = true);
   TabSlider(const TabSlider&) = delete;
   TabSlider& operator=(const TabSlider&) = delete;
   ~TabSlider() override;

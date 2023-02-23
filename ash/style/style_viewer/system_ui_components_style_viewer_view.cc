@@ -69,6 +69,7 @@ class SystemUIComponentsStyleViewerView::ComponentButton
     label()->SetSubpixelRenderingEnabled(false);
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
+    SetFocusBehavior(views::View::FocusBehavior::NEVER);
   }
   ComponentButton(const ComponentButton&) = delete;
   ComponentButton& operator=(const ComponentButton&) = delete;

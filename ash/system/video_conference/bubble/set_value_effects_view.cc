@@ -60,9 +60,7 @@ class ValueButtonContainer : public views::View {
     absl::optional<int> current_state = effect->get_state_callback().Run();
     DCHECK(current_state.has_value());
 
-    auto tab_slider = std::make_unique<TabSlider>(
-        /*has_background=*/true, /*has_selector_animation=*/true,
-        /*distribute_space_evenly=*/true);
+    auto tab_slider = std::make_unique<TabSlider>();
     const int num_states = effect->GetNumStates();
     DCHECK_LE(num_states, 3) << "UX Requests no more than 3 states, otherwise "
                                 "the bubble will need to be wider.";
