@@ -204,7 +204,7 @@ void ModelExecutorImpl::OnModelExecutionComplete(
         SegmentationUkmHelper::GetInstance()->RecordModelExecutionResult(
             state->segment_info.segment_id(),
             state->segment_info.model_version(), state->input_tensor,
-            result.value().at(0));
+            result.value());
       }
     }
     ModelProvider::Request input_tensor = state->input_tensor;

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_UKM_HELPER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SEGMENTATION_UKM_HELPER_H_
 
+#include <vector>
+
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -40,7 +42,7 @@ class SegmentationUkmHelper {
       SegmentId segment_id,
       int64_t model_version,
       const ModelProvider::Request& input_tensor,
-      float result);
+      const std::vector<float>& results);
 
   // Record segmentation model training data as UKM message.
   // `input_tensors` contains the values for training inputs.

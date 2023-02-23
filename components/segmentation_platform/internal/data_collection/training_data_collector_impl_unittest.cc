@@ -388,7 +388,7 @@ TEST_F(TrainingDataCollectorImplTest, ReportCollectedContinuousTrainingData) {
       {Segmentation_ModelExecution::kOptimizationTargetName,
        Segmentation_ModelExecution::kModelVersionName,
        Segmentation_ModelExecution::kInput0Name,
-       Segmentation_ModelExecution::kPredictionResultName,
+       Segmentation_ModelExecution::kPredictionResult1Name,
        Segmentation_ModelExecution::kSelectionResultName,
        Segmentation_ModelExecution::kOutputDelaySecName,
        Segmentation_ModelExecution::kActualResultName,
