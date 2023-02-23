@@ -127,7 +127,7 @@ public class ProxyChangeListenerTest {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Mockito.verify(mAppContext)
-                        .registerReceiver(Mockito.anyObject(),
+                        .registerReceiver(Mockito.any(),
                                 Mockito.argThat(
                                         (IntentFilter filter)
                                                 -> !filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
@@ -135,7 +135,7 @@ public class ProxyChangeListenerTest {
                                 ArgumentMatchers.eq(ContextUtils.RECEIVER_NOT_EXPORTED));
             } else {
                 Mockito.verify(mAppContext)
-                        .registerReceiver(Mockito.anyObject(),
+                        .registerReceiver(Mockito.any(),
                                 Mockito.argThat(
                                         (IntentFilter filter)
                                                 -> !filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
@@ -145,7 +145,7 @@ public class ProxyChangeListenerTest {
         // These are looking for the main call to register*Protected*BroadcastReceiver.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Mockito.verify(mAppContext)
-                    .registerReceiver(Mockito.anyObject(),
+                    .registerReceiver(Mockito.any(),
                             Mockito.argThat(
                                     (IntentFilter filter)
                                             -> filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
@@ -153,7 +153,7 @@ public class ProxyChangeListenerTest {
                             ArgumentMatchers.eq(0));
         } else {
             Mockito.verify(mAppContext)
-                    .registerReceiver(Mockito.anyObject(),
+                    .registerReceiver(Mockito.any(),
                             Mockito.argThat(
                                     (IntentFilter filter)
                                             -> filter.matchAction(Proxy.PROXY_CHANGE_ACTION)),
