@@ -849,9 +849,9 @@ IN_PROC_BROWSER_TEST_F(NonManagedAccount, OfficePwaHandlerHidden) {
   }
 }
 
-class ManagedAccount : public TestAccountBrowserTest {
+class EnterpriseAccount : public TestAccountBrowserTest {
  public:
-  ManagedAccount()
+  EnterpriseAccount()
       : TestAccountBrowserTest(kEnterprise, /*is_google_account=*/false) {
     feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
   }
@@ -860,10 +860,26 @@ class ManagedAccount : public TestAccountBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
-// managed user is logged in and |kUploadOfficeToCloud| is enabled.
-IN_PROC_BROWSER_TEST_F(ManagedAccount,
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when an
+// enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
+  ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
+}
+
+class ChildAccount : public TestAccountBrowserTest {
+ public:
+  ChildAccount() : TestAccountBrowserTest(kChild, /*is_google_account=*/false) {
+    feature_list_.InitAndEnableFeature(ash::features::kUploadOfficeToCloud);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a
+// child user is logged in and |kUploadOfficeToCloud| is enabled.
+IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
   ASSERT_FALSE(ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud());
 }
 
