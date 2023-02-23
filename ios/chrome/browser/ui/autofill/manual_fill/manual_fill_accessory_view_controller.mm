@@ -188,7 +188,16 @@ static NSTimeInterval MFAnimationDuration = 0.2;
                                      IDS_IOS_MANUAL_FALLBACK_SHOW_PASSWORDS)];
 
   self.passwordButton.hidden = self.isPasswordButtonHidden;
+
+  // TODO(crbug.com/1418068): Remove after minimum version required is >=
+  // iOS 15.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+  self.passwordButton.configuration.contentInsets =
+      NSDirectionalEdgeInsetsMake(0, 2, 0, 2);
+#else
   self.passwordButton.contentEdgeInsets = UIEdgeInsetsMake(0, 2, 0, 2);
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+
   [icons addObject:self.passwordButton];
 
   self.cardsButton =
