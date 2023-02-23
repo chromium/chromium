@@ -306,6 +306,9 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     std::string max_msaa_samples;
     std::string machine_model_name;
     std::string machine_model_version;
+    std::string gl_implementation;
+    std::string angle_implementation;
+    std::string display_type;
     std::string gl_version;
     std::string gl_vendor;
     std::string gl_renderer;
@@ -373,6 +376,9 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddString("pixelShaderVersion", pixel_shader_version);
   enumerator->AddString("vertexShaderVersion", vertex_shader_version);
   enumerator->AddString("maxMsaaSamples", max_msaa_samples);
+  enumerator->AddString("glImplementation", gl_implementation);
+  enumerator->AddString("angleImplementation", angle_implementation);
+  enumerator->AddString("displayType", display_type);
   enumerator->AddString("glVersion", gl_version);
   enumerator->AddString("glVendor", gl_vendor);
   enumerator->AddString("glRenderer", gl_renderer);

@@ -64,67 +64,59 @@ bool GLImplementationParts::IsAllowed(
 std::string GLImplementationParts::ToString() const {
   std::stringstream s;
   s << "(gl=";
-  switch (gl) {
-    case GLImplementation::kGLImplementationNone:
-      s << "none";
-      break;
-    case GLImplementation::kGLImplementationDesktopGL:
-      s << "desktop-gl";
-      break;
-    case GLImplementation::kGLImplementationDesktopGLCoreProfile:
-      s << "desktop-gl-core-profile";
-      break;
-    case GLImplementation::kGLImplementationEGLGLES2:
-      s << "egl-gles2";
-      break;
-    case GLImplementation::kGLImplementationMockGL:
-      s << "mock-gl";
-      break;
-    case GLImplementation::kGLImplementationStubGL:
-      s << "stub-gl";
-      break;
-    case GLImplementation::kGLImplementationDisabled:
-      s << "disabled";
-      break;
-    case GLImplementation::kGLImplementationEGLANGLE:
-      s << "egl-angle";
-      break;
-  }
+  s << GLString();
   s << ",angle=";
-  switch (angle) {
-    case ANGLEImplementation::kNone:
-      s << "none";
-      break;
-    case ANGLEImplementation::kD3D9:
-      s << "d3d9";
-      break;
-    case ANGLEImplementation::kD3D11:
-      s << "d3d11";
-      break;
-    case ANGLEImplementation::kOpenGL:
-      s << "opengl";
-      break;
-    case ANGLEImplementation::kOpenGLES:
-      s << "opengles";
-      break;
-    case ANGLEImplementation::kNull:
-      s << "null";
-      break;
-    case ANGLEImplementation::kVulkan:
-      s << "vulkan";
-      break;
-    case ANGLEImplementation::kSwiftShader:
-      s << "swiftshader";
-      break;
-    case ANGLEImplementation::kMetal:
-      s << "metal";
-      break;
-    case ANGLEImplementation::kDefault:
-      s << "default";
-      break;
-  }
+  s << ANGLEString();
   s << ")";
   return s.str();
+}
+
+std::string GLImplementationParts::GLString() const {
+  switch (gl) {
+    case GLImplementation::kGLImplementationNone:
+      return "none";
+    case GLImplementation::kGLImplementationDesktopGL:
+      return "desktop-gl";
+    case GLImplementation::kGLImplementationDesktopGLCoreProfile:
+      return "desktop-gl-core-profile";
+    case GLImplementation::kGLImplementationEGLGLES2:
+      return "egl-gles2";
+    case GLImplementation::kGLImplementationMockGL:
+      return "mock-gl";
+    case GLImplementation::kGLImplementationStubGL:
+      return "stub-gl";
+    case GLImplementation::kGLImplementationDisabled:
+      return "disabled";
+    case GLImplementation::kGLImplementationEGLANGLE:
+      return "egl-angle";
+  }
+  return "";
+}
+
+std::string GLImplementationParts::ANGLEString() const {
+  switch (angle) {
+    case ANGLEImplementation::kNone:
+      return "none";
+    case ANGLEImplementation::kD3D9:
+      return "d3d9";
+    case ANGLEImplementation::kD3D11:
+      return "d3d11";
+    case ANGLEImplementation::kOpenGL:
+      return "opengl";
+    case ANGLEImplementation::kOpenGLES:
+      return "opengles";
+    case ANGLEImplementation::kNull:
+      return "null";
+    case ANGLEImplementation::kVulkan:
+      return "vulkan";
+    case ANGLEImplementation::kSwiftShader:
+      return "swiftshader";
+    case ANGLEImplementation::kMetal:
+      return "metal";
+    case ANGLEImplementation::kDefault:
+      return "default";
+  }
+  return "";
 }
 
 namespace {

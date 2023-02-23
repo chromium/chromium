@@ -366,6 +366,15 @@ struct GPU_EXPORT GPUInfo {
   // See machine_model_name's comment.
   std::string machine_model_version;
 
+  // The GL implementation.
+  std::string gl_implementation;
+
+  // The ANGLE implementation.
+  std::string angle_implementation;
+
+  // The DisplayType requested from ANGLE.
+  std::string display_type;
+
   // The GL_VERSION string.
   std::string gl_version;
 
