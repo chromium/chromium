@@ -5524,6 +5524,9 @@
   <message name="IDS_VM_STATUS_PAGE_DEFAULT_VM_EXISTS_REQUIREMENT" desc="The message for the requirement that a VM (virtual machine) with the default name should exist">
     VM "<ph name="DEFAULT_VM_NAME">$1<ex>PvmDefault</ex></ph>" exists
   </message>
+  <message name="IDS_VM_STATUS_PAGE_INVALID_DEFAULT_VM_ERROR" desc="The error message shown when the default VM (virtual machine) is not valid">
+    VM "<ph name="DEFAULT_VM_NAME">$1<ex>PvmDefault</ex></ph>" exists, but does not appear to be a valid <ph name="VM_TYPE">$2<ex>Parallels Desktop</ex></ph> VM. Please contact your administrator.
+  </message>
   <message name="IDS_VM_STATUS_PAGE_MISSING_DEFAULT_VM_ERROR" desc="The error message shown when the default VM (virtual machine) does not exist">
     A required virtual machine does not exist. Please try setting up <ph name="VM_TYPE">$1<ex>Parallels Desktop</ex></ph> to continue
   </message>
