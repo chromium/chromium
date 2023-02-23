@@ -226,14 +226,6 @@ template("cipd_test_archive") {
   }
 }
 
-cipd_archive("web_runner") {
-  package_subdirectory = _web_engine_directory
-  description = "Prebuilt WebRunner binaries for Fuchsia."
-
-  deps = [ "//fuchsia_web/runners:web_runner_pkg" ]
-  sources = [ "${root_gen_dir}/fuchsia_web/runners/web_runner/web_runner.far" ]
-}
-
 cipd_archive("web_engine") {
   package_subdirectory = _web_engine_directory
   description = "Prebuilt WebEngine binaries for Fuchsia."
@@ -304,7 +296,6 @@ cipd_test_archive("tests") {
   deps = [
     "//base:base_unittests_pkg",
     "//fuchsia_web/runners:cast_runner_integration_tests_pkg",
-    "//fuchsia_web/runners:web_runner_integration_tests_pkg",
     "//fuchsia_web/webengine:web_engine_integration_tests_pkg",
     "//ipc:ipc_tests_pkg",
     "//media:media_unittests_pkg",
@@ -319,7 +310,6 @@ cipd_test_archive("tests") {
       far_sources = [
         "${root_gen_dir}/base/base_unittests/base_unittests.far",
         "${root_gen_dir}/fuchsia_web/runners/cast_runner_integration_tests/cast_runner_integration_tests.far",
-        "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
         "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far",
         "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
         "${root_gen_dir}/media/media_unittests/media_unittests.far",
@@ -341,10 +331,7 @@ cipd_test_archive("tests") {
     },
     {
       manifest_path = "${target_gen_dir}/web_engine_tests_manifest.json"
-      far_sources = [
-        "${root_gen_dir}/fuchsia_web/runners/web_runner_integration_tests/web_runner_integration_tests.far",
-        "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far",
-      ]
+      far_sources = [ "${root_gen_dir}/fuchsia_web/webengine/web_engine_integration_tests/web_engine_integration_tests.far" ]
     },
     {
       manifest_path = "${target_gen_dir}/cast_runner_tests_manifest.json"
@@ -415,7 +402,6 @@ group("web_engine_production_archives") {
   deps = [
     ":cast_runner${_archive_suffix}",
     ":web_engine${_archive_suffix}",
-    ":web_runner${_archive_suffix}",
   ]
 }
 

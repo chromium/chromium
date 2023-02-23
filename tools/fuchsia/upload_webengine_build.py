@@ -16,7 +16,7 @@ import subprocess
 import sys
 
 WEB_ENGINE_TARGETS = [
-    'cast_runner_pkg', 'web_engine_shell_pkg', 'web_runner_pkg',
+    'cast_runner_pkg', 'web_engine_shell_pkg',
     'performance_web_engine_test_suite'
 ]
 

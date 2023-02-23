@@ -17,7 +17,6 @@ service:
 * `./common` contains code shared by both WebEngine and Runners.
 * `./runners`contains implementations of Fuchsia `sys.runner`.
     * `./runners/cast` Enables the Fuchsia system to launch Cast applications.
-    * `./runners/web` Enables the Fuchsia system to launch HTTP or HTTPS URLs.
 * `./shell` contains WebEngineShell, a simple wrapper for launching URLs in
 WebEngine from the command line.
 * `./webengine` contains the WebEngine implementation. WebEngine is an
@@ -55,77 +54,3 @@ directory. For example, the `//fuchsia_web/webengine/test` directory, which
 contains code shared by all browser tests, and
 `//fuchsia_web/common/test`, which contains code shared by tests for both
 WebEngine and Runners.
-
-## Building and deploying the WebRunner service
-
-When you build `web_runner`, Chromium will automatically generate scripts for
-you that will automatically provision a device with Fuchsia and then install
-`web_runner` and its dependencies.
-
-To build and run `web_runner`, follow these steps:
-
-1. (Optional) Ensure that you have a device ready to boot into Fuchsia.
-
-    If you wish to have `web_runner` manage the OS deployment process, then you
-    should have the device booting into
-    [Zedboot](https://fuchsia.googlesource.com/zircon/+/master/docs/targets/usb_setup.md).
-
-2. Build `web_runner`.
-
-    ```bash
-    $ autoninja -C out/fuchsia web_runner
-    ```
-
-3. Install `web_runner`.
-
-    * For devices running Zedboot:
-
-        ```bash
-        $ out/fuchsia/bin/install_web_runner -d
-        ```
-
-    * For devices already booted into Fuchsia:
-
-        You will need to add command line flags specifying the device's IP
-        address and the path to the `ssh_config` used by the device
-        (located at `$FUCHSIA_OUT_DIR/ssh-keys/ssh_config`):
-
-        ```bash
-        $ out/fuchsia/bin/install_web_runner -d --ssh-config $PATH_TO_SSH_CONFIG
-        ```
-
-4. Press Alt-Esc key on your device to switch back to terminal mode or run
-`fx shell` from the host.
-
-5. Launch a webpage.
-
-    ```bash
-    $ tiles_ctl add https://www.chromium.org/
-    ```
-
-6. Press Alt-Esc to switch back to graphical view if needed. The browser
-window should be displayed and ready to use.
-
-7. You can deploy and run new versions of Chromium without needing to reboot.
-
-    First kill any running processes:
-
-    ```bash
-    $ killall context_provider.cm; killall web_runner.cmx
-    ```
-
-    Then repeat steps 1 through 6 from the installation instructions, excluding
-    step #3 (running Tiles).
-
-
-### Closing a webpage
-
-1. Press the Windows key to return to the terminal.
-
-2. Instruct tiles_ctl to remove the webpage's window tile. The tile's number is
-    reported by step 6, or it can be found by running `tiles_ctl list` and
-    noting the ID of the "url" entry.
-
-    ```bash
-    $ tiles_ctl remove TILE_NUMBER
-    ```

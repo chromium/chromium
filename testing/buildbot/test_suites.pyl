@@ -5172,7 +5172,6 @@
         ],
       },
       'web_engine_unittests': {},
-      'web_runner_integration_tests': {},
     },
 
     'webengine_android_gtests': {
