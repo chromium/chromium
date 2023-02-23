@@ -16,6 +16,8 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/ssl/https_only_mode_controller_client.h"
 #include "chrome/browser/ssl/insecure_form/insecure_form_controller_client.h"
@@ -309,9 +311,18 @@ ChromeSecurityBlockingPageFactory::CreateHttpsOnlyModeBlockingPage(
   std::unique_ptr<HttpsOnlyModeControllerClient> client =
       std::make_unique<HttpsOnlyModeControllerClient>(web_contents,
                                                       request_url);
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  bool is_under_advanced_protection =
+      profile &&
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile)
+          ->IsUnderAdvancedProtection();
   auto page =
       std::make_unique<security_interstitials::HttpsOnlyModeBlockingPage>(
-          web_contents, request_url, std::move(client));
+          web_contents, request_url, std::move(client),
+          is_under_advanced_protection);
   return page;
 }
 

@@ -1106,8 +1106,19 @@ class HttpsOnlyModeForAdvancedProtectionBrowserTest
     InProcessBrowserTest::SetUp();
   }
 
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    http_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(http_server_.Start());
+  }
+
  protected:
   bool is_enabled_for_advanced_protection() const { return GetParam(); }
+
+  net::EmbeddedTestServer* http_server() { return &http_server_; }
+
+ private:
+  net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1125,12 +1136,23 @@ IN_PROC_BROWSER_TEST_P(HttpsOnlyModeForAdvancedProtectionBrowserTest,
   EXPECT_FALSE(ap_manager->IsUnderAdvancedProtection());
   EXPECT_FALSE(GetPref());
 
+  GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
   ap_manager->SetAdvancedProtectionStatusForTesting(true);
   if (is_enabled_for_advanced_protection()) {
     EXPECT_TRUE(GetPref());
+
+    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+    EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+    EXPECT_TRUE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+        contents->GetPrimaryMainFrame(), "Advanced Protection"));
   } else {
     EXPECT_FALSE(GetPref());
-  }
 
-  // TODO(crbug.com/1414633): Check that the HFM UI setting is locked.
+    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  }
 }
