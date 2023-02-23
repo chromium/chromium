@@ -47376,15 +47376,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="7" label="Unknown error"/>
 </enum>
 
-<enum name="GCMConnectionResetReason">
-  <int value="0" label="Login failure"/>
-  <int value="1" label="Close command"/>
-  <int value="2" label="Heartbeat failure"/>
-  <int value="3" label="Socket failure"/>
-  <int value="4" label="Network change"/>
-  <int value="5" label="New heartbeat interval"/>
-</enum>
-
 <enum name="GCMDecryptionResult">
   <int value="0" label="Success (message unencrypted)"/>
   <int value="1" label="Success (message decrypted per draft 03)"/>
@@ -47406,11 +47397,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Failure (no keying material available)"/>
   <int value="2" label="Failure (unable to compute the shared secret)"/>
   <int value="3" label="Failure (unable to encrypt using AES-GCM)"/>
-</enum>
-
-<enum name="GCMEndpoints">
-  <int value="0" label="mtalk.google.com:5228"/>
-  <int value="1" label="mtalk.google.com:443"/>
 </enum>
 
 <enum name="GCMInvalidationsIncomingMessageStatus">

@@ -119,11 +119,13 @@ void ConnectionFactoryImpl::Connect() {
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (connecting_ || waiting_for_backoff_)
+  if (connecting_ || waiting_for_backoff_) {
     return;  // Connection attempt already in progress or pending.
+  }
 
-  if (IsEndpointReachable())
+  if (IsEndpointReachable()) {
     return;  // Already connected.
+  }
 
   ConnectWithBackoff();
 }
@@ -171,16 +173,21 @@ bool ConnectionFactoryImpl::IsEndpointReachable() const {
 }
 
 std::string ConnectionFactoryImpl::GetConnectionStateString() const {
-  if (IsEndpointReachable())
+  if (IsEndpointReachable()) {
     return "CONNECTED";
-  if (handshake_in_progress_)
+  }
+  if (handshake_in_progress_) {
     return "HANDSHAKE IN PROGRESS";
-  if (connecting_)
+  }
+  if (connecting_) {
     return "CONNECTING";
-  if (waiting_for_backoff_)
+  }
+  if (waiting_for_backoff_) {
     return "WAITING FOR BACKOFF";
-  if (waiting_for_network_online_)
+  }
+  if (waiting_for_network_online_) {
     return "WAITING FOR NETWORK CHANGE";
+  }
   return "NOT CONNECTED";
 }
 
@@ -203,23 +210,15 @@ void ConnectionFactoryImpl::SignalConnectionReset(
     listener_->OnDisconnected();
   }
 
-  UMA_HISTOGRAM_ENUMERATION("GCM.ConnectionResetReason", reason,
-                            CONNECTION_RESET_COUNT);
   recorder_->RecordConnectionResetSignaled(reason);
-  if (!last_login_time_.is_null()) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("GCM.ConnectionUpTime",
-                               NowTicks() - last_login_time_, base::Seconds(1),
-                               base::Hours(24), 50);
-    // |last_login_time_| will be reset below, before attempting the new
-    // connection.
-  }
 
   // SignalConnectionReset can be called at any time without regard to whether
   // a connection attempt is currently in progress. Only notify the event
   // tracker if there is an event in progress.
   if (event_tracker_.IsEventInProgress()) {
-    if (reason == LOGIN_FAILURE)
+    if (reason == LOGIN_FAILURE) {
       event_tracker_.ConnectionLoginFailed();
+    }
     event_tracker_.EndConnectionAttempt();
   }
 
@@ -271,8 +270,9 @@ void ConnectionFactoryImpl::SetConnectionListener(
 }
 
 base::TimeTicks ConnectionFactoryImpl::NextRetryAttempt() const {
-  if (!backoff_entry_)
+  if (!backoff_entry_) {
     return base::TimeTicks();
+  }
   return backoff_entry_->GetReleaseTime();
 }
 
@@ -296,8 +296,9 @@ void ConnectionFactoryImpl::OnConnectionChanged(
 GURL ConnectionFactoryImpl::GetCurrentEndpoint() const {
   // Note that IsEndpointReachable() returns false anytime connecting_ is true,
   // so while connecting this always uses |next_endpoint_|.
-  if (IsEndpointReachable())
+  if (IsEndpointReachable()) {
     return mcs_endpoints_[last_successful_endpoint_];
+  }
   return mcs_endpoints_[next_endpoint_];
 }
 
@@ -426,11 +427,9 @@ void ConnectionFactoryImpl::OnConnectDone(
   }
   if (result != net::OK) {
     LOG(ERROR) << "Failed to connect to MCS endpoint with error " << result;
-    UMA_HISTOGRAM_BOOLEAN("GCM.ConnectionSuccessRate", false);
     recorder_->RecordConnectionFailure(result);
     CloseSocket();
     backoff_entry_->InformOfRequest(false);
-    base::UmaHistogramSparse("GCM.ConnectionFailureErrorCode", result);
 
     event_tracker_.ConnectionAttemptFailed(result);
     event_tracker_.EndConnectionAttempt();
@@ -438,15 +437,14 @@ void ConnectionFactoryImpl::OnConnectDone(
     // If there are other endpoints available, use the next endpoint on the
     // subsequent retry.
     next_endpoint_++;
-    if (next_endpoint_ >= mcs_endpoints_.size())
+    if (next_endpoint_ >= mcs_endpoints_.size()) {
       next_endpoint_ = 0;
+    }
     connecting_ = false;
     Connect();
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("GCM.ConnectionSuccessRate", true);
-  UMA_HISTOGRAM_COUNTS_1M("GCM.ConnectionEndpoint", next_endpoint_);
   recorder_->RecordConnectionSuccess();
 
   // Reset the endpoint back to the default.
@@ -460,8 +458,9 @@ void ConnectionFactoryImpl::OnConnectDone(
   DVLOG(1) << "MCS endpoint socket connection success, starting login.";
   // |peer_addr| is only non-null if result == net::OK and the connection is not
   // through a proxy.
-  if (peer_addr)
+  if (peer_addr) {
     peer_addr_ = peer_addr.value();
+  }
   InitHandler(std::move(receive_stream), std::move(send_stream));
 }
 
@@ -471,7 +470,6 @@ void ConnectionFactoryImpl::ConnectionHandlerCallback(int result) {
     // TODO(zea): Consider how to handle errors that may require some sort of
     // user intervention (login page, etc.).
     LOG(ERROR) << "ConnectionHandler failed with net error: " << result;
-    base::UmaHistogramSparse("GCM.ConnectionDisconnectErrorCode", result);
     SignalConnectionReset(SOCKET_FAILURE);
     return;
   }
@@ -487,15 +485,17 @@ void ConnectionFactoryImpl::ConnectionHandlerCallback(int result) {
 
   event_tracker_.ConnectionAttemptSucceeded();
 
-  if (listener_)
+  if (listener_) {
     listener_->OnConnected(GetCurrentEndpoint(), peer_addr_);
+  }
 }
 
 void ConnectionFactoryImpl::CloseSocket() {
   // The connection handler needs to be reset, else it'll attempt to keep using
   // the destroyed socket.
-  if (connection_handler_)
+  if (connection_handler_) {
     connection_handler_->Reset();
+  }
 
   socket_.reset();
   peer_addr_ = net::IPEndPoint();

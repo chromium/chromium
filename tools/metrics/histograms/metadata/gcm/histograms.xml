@@ -49,56 +49,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.ConnectionDisconnectErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M77">
-  <owner>zea@chromium.org</owner>
-  <summary>URL response and error codes from GCM disconnect events.</summary>
-</histogram>
-
-<histogram name="GCM.ConnectionEndpoint" enum="GCMEndpoints"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>Number of connections made to each specific MCS endpoint.</summary>
-</histogram>
-
-<histogram name="GCM.ConnectionFailureErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>URL response and error codes from GCM connection attempts.</summary>
-</histogram>
-
-<histogram name="GCM.ConnectionLatency" units="ms" expires_after="M88">
-  <owner>peter@chromium.org</owner>
-  <owner>zea@chromium.org</owner>
-  <summary>
-    The time between the initiation of a connection and the successful
-    completion of it.
-  </summary>
-</histogram>
-
-<histogram name="GCM.ConnectionResetReason" enum="GCMConnectionResetReason"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>Reasons for GCM connection resets.</summary>
-</histogram>
-
-<histogram name="GCM.ConnectionSuccessRate" enum="BooleanSuccess"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    GCM connection success rate. Does not take into account login success. See
-    GCM.ConnectionFailureErrorCode for a breakdown of connection failure
-    reasons.
-  </summary>
-</histogram>
-
-<histogram name="GCM.ConnectionUpTime" units="ms" expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    Time (from login until reset) that a GCM connection was active.
-  </summary>
-</histogram>
-
 <histogram name="GCM.Crypto.CreateKeySuccessRate" enum="BooleanSuccess"
     expires_after="M88">
   <owner>peter@chromium.org</owner>
