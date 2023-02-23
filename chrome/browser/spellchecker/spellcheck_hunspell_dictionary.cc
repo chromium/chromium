@@ -63,19 +63,16 @@ bool SaveDictionaryData(std::unique_ptr<std::string> data,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  size_t bytes_written =
-      base::WriteFile(path, data->data(), data->length());
-  if (bytes_written != data->length()) {
+  if (!base::WriteFile(path, *data)) {
     bool success = false;
 #if BUILDFLAG(IS_WIN)
     base::FilePath dict_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &dict_dir);
     base::FilePath fallback_file_path =
         dict_dir.Append(path.BaseName());
-    bytes_written =
-        base::WriteFile(fallback_file_path, data->data(), data->length());
-    if (bytes_written == data->length())
+    if (base::WriteFile(fallback_file_path, *data)) {
       success = true;
+    }
 #endif
 
     if (!success) {

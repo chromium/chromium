@@ -551,10 +551,9 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceBrowserTest, DeleteCorruptedBDICT) {
 
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    size_t actual = base::WriteFile(
-        bdict_path, reinterpret_cast<const char*>(kCorruptedBDICT),
-        std::size(kCorruptedBDICT));
-    EXPECT_EQ(std::size(kCorruptedBDICT), actual);
+    bool success = base::WriteFile(
+        bdict_path, base::as_bytes(base::make_span(kCorruptedBDICT)));
+    EXPECT_TRUE(success);
   }
 
   // Attach an event to the SpellcheckService object so we can receive its
