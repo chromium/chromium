@@ -181,8 +181,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
   // Save the cache GUID to file to remember after restart, for test
   // verification purposes only.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_NE(-1, base::WriteFile(GetTestFilePathForCacheGuid(),
-                                cache_guid.c_str(), cache_guid.size()));
+  ASSERT_TRUE(base::WriteFile(GetTestFilePathForCacheGuid(), cache_guid));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSecondaryAccountSyncTest,
