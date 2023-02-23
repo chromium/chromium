@@ -9141,6 +9141,48 @@ TEST_P(DesksTest, DeskGuidsReorder) {
               testing::ElementsAre(desk1_guid, desk3_guid, desk2_guid));
 }
 
+// Tests that windows are closed when the user interacts with the shelf.
+TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
+  auto* shelf_model = ShelfModel::Get();
+  NewDesk();
+
+  // Create a window and a shelf item for the window.
+  WindowHolder window(CreateAppWindow());
+  const ash::ShelfID shelf_id("cool_app");
+  window.window()->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
+  window.window()->SetProperty(ash::kAppIDKey, shelf_id.app_id);
+  window.window()->SetProperty<int>(ash::kShelfItemTypeKey,
+                                    ShelfItemType::TYPE_PINNED_APP);
+  ShelfItem item;
+  item.status = ShelfItemStatus::STATUS_RUNNING;
+  item.type = ShelfItemType::TYPE_PINNED_APP;
+  item.id = shelf_id;
+  shelf_model->Add(item, std::make_unique<TestShelfItemDelegate>(item.id));
+
+  // Enter overview and close the desk.
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  ClickOnCloseAllButtonForDesk(0);
+
+  // Get the view for the shelf item.
+  int item_index = shelf_model->ItemIndexByID(shelf_id);
+  auto* view_model = GetPrimaryShelf()->GetShelfViewForTesting()->view_model();
+  views::View* item_view = view_model->view_at(item_index);
+
+  // Try opening the context menu for the shelf item with a right click.
+  gfx::Point item_view_center = item_view->GetBoundsInScreen().CenterPoint();
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(item_view_center);
+  event_generator->ClickRightButton();
+
+  // The right click should destroy the desk and the window.
+  EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+  // The window will destroy asynchronously.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(window.is_valid());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.

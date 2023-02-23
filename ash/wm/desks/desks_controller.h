@@ -379,6 +379,11 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Otherwise returns `base`.
   std::u16string CreateUniqueDeskName(const std::u16string& base) const;
 
+  // Saves metrics and resets `temporary_removed_desk_` if `toast_id` is empty
+  // or it matches the toast ID stored in `temporary_removed_desk_`.
+  void MaybeCommitPendingDeskRemoval(
+      const std::string& toast_id = std::string());
+
  private:
   class DeskTraversalsMetricsHelper;
   class RemovedDeskData;
@@ -422,11 +427,6 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // closing all windows in the desk would become a no-op, so we can still use
   // this function in the combine desks process.
   void FinalizeDeskRemoval(RemovedDeskData* removed_desk_data);
-
-  // Saves metrics and resets `temporary_removed_desk_` if `toast_id` is empty
-  // or it matches the toast ID stored in `temporary_removed_desk_`.
-  void MaybeCommitPendingDeskRemoval(
-      const std::string& toast_id = std::string());
 
   // Forcefully cleans up app windows that should be closed.
   void CleanUpClosedAppWindowsTask(
