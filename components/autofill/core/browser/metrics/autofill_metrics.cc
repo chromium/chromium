@@ -3057,7 +3057,7 @@ void AutofillMetrics::LogAutocompletePredictionCollisionTypes(
 }
 
 // static
-void AutofillMetrics::LogContextMenuImpressions(
+void AutofillMetrics::LogContextMenuImpressionsForField(
     ServerFieldType field_type,
     AutocompleteState autocomplete_state) {
   base::UmaHistogramEnumeration(
@@ -3065,6 +3065,15 @@ void AutofillMetrics::LogContextMenuImpressions(
       autocomplete_state);
   base::UmaHistogramSparse(
       "Autofill.FieldContextMenuImpressions.ByAutofillType", field_type);
+}
+
+// static
+void AutofillMetrics::LogContextMenuImpressionsForForm(
+    int num_of_fields_with_context_menu_shown) {
+  base::UmaHistogramSparse(
+      "Autofill.FormContextMenuImpressions.ByNumberOfFields",
+      base::ranges::clamp(num_of_fields_with_context_menu_shown, 0,
+                          kMaxBucketsCount));
 }
 
 const std::string PaymentsRpcResultToMetricsSuffix(

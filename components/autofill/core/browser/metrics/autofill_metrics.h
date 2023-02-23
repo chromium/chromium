@@ -1286,8 +1286,14 @@ class AutofillMetrics {
 
   // Logs the context menu impressions based on the autofill type as well as
   // based on the autocomplete type.
-  static void LogContextMenuImpressions(ServerFieldType field_type,
-                                        AutocompleteState autocomplete_state);
+  static void LogContextMenuImpressionsForField(
+      ServerFieldType field_type,
+      AutocompleteState autocomplete_state);
+
+  // Logs the context menu impressions for a submitted form. Mainly logs the
+  // number of fields in the form where the context menu was shown.
+  static void LogContextMenuImpressionsForForm(
+      int num_of_fields_with_context_menu_shown);
 
   // Returns 64-bit hash of the string of form global id, which consists of
   // |frame_token| and |renderer_id|.

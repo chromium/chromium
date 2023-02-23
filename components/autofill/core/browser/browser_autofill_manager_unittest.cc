@@ -9685,6 +9685,10 @@ TEST_P(BrowserAutofillManagerContextMenuImpressionsTest,
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.FieldContextMenuImpressions.ByAutofillType"),
               BucketsAre(base::Bucket(test_case.expected_autofill_type, 1)));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.FormContextMenuImpressions.ByNumberOfFields"),
+              BucketsAre(base::Bucket(1, 1)));
 }
 
 // Test that if a form is mixed content we show a warning instead of any

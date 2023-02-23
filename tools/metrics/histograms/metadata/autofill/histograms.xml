@@ -1876,6 +1876,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormContextMenuImpressions.ByNumberOfFields"
+    units="fields" expires_after="2023-09-01">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Number of fields on form where the context menu was shown. Recorded on the
+    form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.Address{AutofillDataAvailability}"
     enum="AutofillFormEvent" expires_after="2023-12-12">
   <owner>battre@chromium.org</owner>

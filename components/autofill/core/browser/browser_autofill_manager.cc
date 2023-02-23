@@ -298,8 +298,8 @@ void LogAutocompletePredictionCollisionTypeMetrics(
 
 void LogContextMenuImpressionsForSubmittedField(const AutofillField& field) {
   auto autocomplete_state = AutocompleteStateForSubmittedField(field);
-  AutofillMetrics::LogContextMenuImpressions(field.Type().GetStorableType(),
-                                             autocomplete_state);
+  AutofillMetrics::LogContextMenuImpressionsForField(
+      field.Type().GetStorableType(), autocomplete_state);
 }
 
 // Finds the first field in |form_structure| with |field.value|=|value|.
@@ -795,6 +795,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   }
 
   FormData form_for_autocomplete = submitted_form->ToFormData();
+  int num_fields_where_context_menu_was_shown = 0;
   for (size_t i = 0; i < submitted_form->field_count(); ++i) {
     if (submitted_form->field(i)->Type().GetStorableType() ==
         CREDIT_CARD_VERIFICATION_CODE) {
@@ -823,9 +824,15 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
     // The context menu was shown in this field, log the metrics by
     // autocomplete type, form type and autofill type prediction of the field.
-    if (submitted_form->field(i)->was_context_menu_shown())
+    if (submitted_form->field(i)->was_context_menu_shown()) {
+      num_fields_where_context_menu_was_shown++;
       LogContextMenuImpressionsForSubmittedField(*submitted_form->field(i));
+    }
   }
+
+  AutofillMetrics::LogContextMenuImpressionsForForm(
+      num_fields_where_context_menu_was_shown);
+
   single_field_form_fill_router_->OnWillSubmitForm(
       form_for_autocomplete, submitted_form.get(),
       client()->IsAutocompleteEnabled());
