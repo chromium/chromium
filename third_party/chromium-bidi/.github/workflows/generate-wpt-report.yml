@@ -61,7 +61,7 @@ jobs:
           --webdriver-arg="--verbose"
           --install-webdriver --channel=dev --yes
           --manifest MANIFEST.json
-          --metadata wpt-metadata/chromedriver
+          --metadata wpt-metadata/chromedriver/headless
           --log-wptreport out/wptreport-chromedriver.json
           chrome
           webdriver/tests/bidi/
