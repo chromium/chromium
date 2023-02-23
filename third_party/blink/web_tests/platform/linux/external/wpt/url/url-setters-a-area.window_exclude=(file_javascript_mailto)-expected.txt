@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 407 tests; 259 PASS, 148 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 409 tests; 261 PASS, 148 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -293,6 +293,8 @@ PASS <a>: Setting <http://example.net/path>.port = '65535' Port numbers are 16 b
 PASS <area>: Setting <http://example.net/path>.port = '65535' Port numbers are 16 bit integers
 FAIL <a>: Setting <http://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error assert_equals: expected "http://example.net:8080/path" but got "http://example.net:0/path"
 FAIL <area>: Setting <http://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error assert_equals: expected "http://example.net:8080/path" but got "http://example.net:0/path"
+PASS <a>: Setting <http://example.net:8080/path>.port = 'randomstring' Setting port to a string that doesn't parse as a number
+PASS <area>: Setting <http://example.net:8080/path>.port = 'randomstring' Setting port to a string that doesn't parse as a number
 FAIL <a>: Setting <non-special://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error assert_equals: expected "example.net:8080" but got ""
 FAIL <area>: Setting <non-special://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error assert_equals: expected "example.net:8080" but got ""
 PASS <a>: Setting <non-base:value>.port = '12'

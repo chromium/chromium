@@ -75,24 +75,65 @@ function test_resolution_units_parsing() {
   );
   test_valid_value_variants(
     'background-image',
+    'image-set(url("example.png") calc(2x * 3))',
+    'image-set(url("example.png") calc(6x))'
+  );
+  test_valid_value_variants(
+    'background-image',
     'image-set(url("example.png") 1dppx)'
   );
   test_valid_value_variants(
     'background-image',
+    'image-set(url("example.png") calc(1dppx * 1))',
+    'image-set(url("example.png") calc(1dppx))'
+  );
+  test_valid_value_variants(
+    'background-image',
     'image-set(url("example.png") 1dpi)'
+  );
+  test_valid_value_variants(
+    'background-image',
+    'image-set(url("example.png") calc(96dpi * 2))',
+    'image-set(url("example.png") calc(2dppx))'
   );
   test_valid_value_variants(
     'background-image',
     'image-set(url("example.png") 1dpcm)'
   );
   test_valid_value_variants(
+    'background-image',
+    'image-set(url("example.png") calc(1dpcm * 96/2.54))',
+    'image-set(url("example.png") calc(1dppx))'
+  );
+  test_valid_value_variants(
     'content',
     'image-set(url("example.png") 1dpi)'
+  );
+  test_valid_value_variants(
+    'content',
+    'image-set(url("example.png") calc(1 * 96dpi))',
+    'image-set(url("example.png") calc(1dppx))'
   );
 
   test_invalid_value_variants(
     'background-image',
     'image-set(url("example.png") 1invalidResUnit)'
+  );
+  test_invalid_value_variants(
+    'background-image',
+    'image-set(url("example.png") calc(3 * 4))'
+  );
+  test_invalid_value_variants(
+    'background-image',
+    'image-set(url("example.png") calc(2 - 1))'
+  );
+  test_invalid_value_variants(
+    'background-image',
+    'image-set(url("example.png") calc(2x - 1))'
+  );
+  test_invalid_value_variants(
+    'background-image',
+    'image-set(url("example.png") calc(1 + 4dpi))'
   );
 }
 

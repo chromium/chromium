@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 204 tests; 116 PASS, 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 205 tests; 117 PASS, 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL URL: Setting <a://example.net>.protocol = 'b' assert_equals: expected "b://example.net" but got "file:///B:///A://example.net"
@@ -147,6 +147,7 @@ PASS URL: Setting <http://example.net/path>.port = '8080stuff2' Anything other t
 PASS URL: Setting <http://example.net/path>.port = '8080+2' Anything other than ASCII digit stops the port parser in a setter but is not an error
 PASS URL: Setting <http://example.net/path>.port = '65535' Port numbers are 16 bit integers
 FAIL URL: Setting <http://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error assert_equals: expected "http://example.net:8080/path" but got "http://example.net:0/path"
+PASS URL: Setting <http://example.net:8080/path>.port = 'randomstring' Setting port to a string that doesn't parse as a number
 FAIL URL: Setting <non-special://example.net:8080/path>.port = '65536' Port numbers are 16 bit integers, overflowing is an error assert_equals: expected "example.net:8080" but got ""
 PASS URL: Setting <non-base:value>.port = '12'
 PASS URL: Setting <sc:///>.port = '12'
