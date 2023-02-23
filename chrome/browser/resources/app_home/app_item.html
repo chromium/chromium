@@ -68,14 +68,16 @@ cr-checkbox::part(label-container) {
 
 </style>
 
-<div id="iconContainer">
-  <img src="[[getIconUrl_(appInfo)]]" id="iconImage"
-    alt="[[appInfo.name]]" aria-hidden="true" draggable="false"></img>
-  <img id="deprecatedIcon"
-    src="chrome://resources/images/error_yellow900.svg"
-    hidden$="[[!appInfo.isDeprecatedApp]]"></img>
+<div title="[[appInfo.name]]" aria-hidden="true">
+  <div id="iconContainer">
+    <img src="[[getIconUrl_(appInfo)]]" id="iconImage"
+      alt="[[appInfo.name]]" aria-hidden="true" draggable="false"></img>
+    <img id="deprecatedIcon"
+      src="chrome://resources/images/error_yellow900.svg"
+      hidden$="[[!appInfo.isDeprecatedApp]]"></img>
+  </div>
+  <div id="textContainer" aria-hidden="true">[[appInfo.name]]</div>
 </div>
-<div id="textContainer" aria-hidden="true">[[appInfo.name]]</div>
 
 <cr-action-menu
     id="menu" on-mousedown="onMenuMousedown_" on-click="onMenuClick_">
