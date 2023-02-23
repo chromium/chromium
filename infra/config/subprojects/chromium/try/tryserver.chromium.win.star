@@ -308,26 +308,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "win7-rel",
-    branch_selector = branches.selector.WINDOWS_BRANCHES,
-    mirrors = [
-        "ci/Win Builder",
-        "ci/Win7 Tests (1)",
-    ],
-    cores = 16,
-    ssd = True,
-    execution_timeout = 4 * time.hour + 30 * time.minute,
-    goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
-    tryjob = try_.job(
-        location_filters = [
-            "sandbox/win/.+",
-            "sandbox/policy/win/.+",
-        ],
-    ),
-)
-
-try_.builder(
     name = "win-fieldtrial-rel",
     mirrors = ["ci/win-fieldtrial-rel"],
     os = os.WINDOWS_DEFAULT,
