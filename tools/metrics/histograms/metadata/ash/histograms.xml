@@ -1778,6 +1778,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.CloseAllZombieWindowsFound" units="windows"
+    expires_after="2024-02-21">
+  <owner>benbecker@google.com</owner>
+  <owner>chromeos-wms@google.com</owner>
+  <summary>
+    Emitted one minute after the DesksController synchronously closes all
+    windows with widgets remaining in a desk. Reports the number of windows with
+    null widgets that are still open after that time.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.ConsecutiveDailyVisits" units="days"
     expires_after="2023-07-02">
   <owner>afakhry@chromium.org</owner>
