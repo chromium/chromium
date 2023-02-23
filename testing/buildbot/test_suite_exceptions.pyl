@@ -1546,7 +1546,37 @@
           ],
         },
       },
+      'lacros-amd64-generic-chrome-skylab': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        },
+      },
       'lacros-arm-generic-chrome': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        },
+      },
+      'lacros-arm-generic-chrome-skylab': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'cpu': 'x86-64',
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        },
+      },
+      'lacros-arm64-generic-chrome-skylab': {
         'swarming': {
           'dimension_sets': [
             {

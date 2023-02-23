@@ -233,6 +233,7 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic',
+          'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
       },
@@ -266,6 +267,7 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_arm',
+          'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
       },
@@ -296,6 +298,7 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_arm64',
+          'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
       },
