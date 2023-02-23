@@ -2138,6 +2138,8 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     return;
   }
 
+  viz::SharedImageFormat source_format = source_shared_image->format();
+
   // If present, the color space is serialized into shared memory after the
   // result and before the pixel data.
   if (color_space_offset > pixels_offset) {
@@ -2149,6 +2151,13 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
 
   sk_sp<SkColorSpace> dst_color_space;
   if (color_space_size) {
+    // For multiplanar formats readback is per plane, and destination color
+    // space must be nullptr to allow letting Skia assume srgb color space.
+    if (source_format.is_multi_plane()) {
+      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                         "Unexpected color space for multiplanar shared image");
+      return;
+    }
     void* color_space_bytes = GetSharedMemoryAs<void*>(
         shm_id, shm_offset + color_space_offset, color_space_size);
     if (!color_space_bytes) {
@@ -2201,6 +2210,12 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     return;
   }
 
+  if (!source_format.IsValidPlaneIndex(plane_index)) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glReadbackImagePixels",
+                       "Invalid plane_index");
+    return;
+  }
+
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
 
@@ -2221,8 +2236,18 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
     DCHECK(wait_result);
   }
 
-  auto sk_image =
-      source_scoped_access->CreateSkImage(shared_context_state_->gr_context());
+  sk_sp<SkImage> sk_image;
+  if (source_format.is_single_plane()) {
+    // Create SkImage without plane index for single planar formats or legacy
+    // multiplanar formats with external sampler.
+    sk_image = source_scoped_access->CreateSkImage(
+        shared_context_state_->gr_context());
+  } else {
+    // Pass plane index for creating an SkImage for multiplanar formats.
+    sk_image = source_scoped_access->CreateSkImageForPlane(
+        plane_index, shared_context_state_->gr_context());
+  }
+
   if (sk_image) {
     bool success =
         sk_image->readPixels(dst_info, pixel_address, row_bytes, src_x, src_y);
@@ -2239,7 +2264,8 @@ void RasterDecoderImpl::DoReadbackARGBImagePixelsINTERNAL(
 
   if (auto end_state = source_scoped_access->TakeEndState()) {
     gr_context()->setBackendTextureState(
-        source_scoped_access->promise_image_texture()->backendTexture(),
+        source_scoped_access->promise_image_texture(plane_index)
+            ->backendTexture(),
         *end_state);
   }
 
