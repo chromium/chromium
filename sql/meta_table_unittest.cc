@@ -157,8 +157,8 @@ TEST_F(SQLMetaTableTest, VersionNumber) {
     EXPECT_EQ(kVersionFirst, meta_table.GetVersionNumber());
     EXPECT_EQ(kCompatVersionFirst, meta_table.GetCompatibleVersionNumber());
 
-    meta_table.SetVersionNumber(kVersionSecond);
-    meta_table.SetCompatibleVersionNumber(kCompatVersionSecond);
+    EXPECT_TRUE(meta_table.SetVersionNumber(kVersionSecond));
+    EXPECT_TRUE(meta_table.SetCompatibleVersionNumber(kCompatVersionSecond));
   }
 
   // Version info from Set*() calls is seen.

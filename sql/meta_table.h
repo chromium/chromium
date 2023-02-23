@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // previously set version number.
   //
   // See also Get/SetCompatibleVersionNumber().
-  bool SetVersionNumber(int version);
+  [[nodiscard]] bool SetVersionNumber(int version);
   int GetVersionNumber();
 
   // The compatible version number is the lowest current version embedded in
@@ -106,7 +106,7 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   //
   // The compatible version number will be 0 if there is no previously set
   // compatible version number.
-  bool SetCompatibleVersionNumber(int version);
+  [[nodiscard]] bool SetCompatibleVersionNumber(int version);
   int GetCompatibleVersionNumber();
 
   // Set the given arbitrary key with the given data. Returns true on success.
