@@ -350,15 +350,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ActivityTracker.Collect.AnalyzerCreationError"
-    enum="ActivityTrackerAnalyzerCreationError" expires_after="M90">
-  <owner>siggi@chromium.org</owner>
-  <summary>
-    The analyzer creation error code. Logged each time analyzer creation fails,
-    at most once per processed stability debug file.
-  </summary>
-</histogram>
-
 <histogram name="ActivityTracker.Collect.InitStatus"
     enum="ActivityTrackerCollectInitStatus" expires_after="M90">
   <owner>siggi@chromium.org</owner>
