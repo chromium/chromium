@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
@@ -14,8 +16,11 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
@@ -73,11 +78,13 @@ class ExtensionsMenuMainPageViewUnitTest : public ExtensionsToolbarUnitTest {
   // Asserts there is exactly one menu item and then returns it.
   InstalledExtensionMenuItemView* GetOnlyMenuItem();
 
+  // Since this is a unittest, the extensions menu widget sometimes needs a
+  // nudge to re-layout the views.
+  void LayoutMenuIfNecessary();
+
   void ClickPinButton(InstalledExtensionMenuItemView* menu_item);
   void ClickSitePermissionsButton(InstalledExtensionMenuItemView* menu_item);
 
-  ExtensionsToolbarButton* extensions_button();
-  ExtensionsMenuCoordinator* menu_coordinator();
   ExtensionsMenuMainPageView* main_page();
   ExtensionsMenuSitePermissionsPageView* site_permissions_page();
   std::vector<InstalledExtensionMenuItemView*> menu_items();
@@ -109,6 +116,10 @@ ExtensionsMenuMainPageViewUnitTest::GetOnlyMenuItem() {
   return *items.begin();
 }
 
+void ExtensionsMenuMainPageViewUnitTest::LayoutMenuIfNecessary() {
+  menu_coordinator()->GetExtensionsMenuWidget()->LayoutRootViewIfNecessary();
+}
+
 void ExtensionsMenuMainPageViewUnitTest::ClickPinButton(
     InstalledExtensionMenuItemView* menu_item) {
   ClickButton(menu_item->pin_button_for_testing());
@@ -119,16 +130,6 @@ void ExtensionsMenuMainPageViewUnitTest::ClickSitePermissionsButton(
     InstalledExtensionMenuItemView* menu_item) {
   ClickButton(menu_item->site_permissions_button_for_testing());
   WaitForAnimation();
-}
-
-ExtensionsToolbarButton*
-ExtensionsMenuMainPageViewUnitTest::extensions_button() {
-  return extensions_container()->GetExtensionsButton();
-}
-
-ExtensionsMenuCoordinator*
-ExtensionsMenuMainPageViewUnitTest::menu_coordinator() {
-  return extensions_container()->GetExtensionsMenuCoordinatorForTesting();
 }
 
 ExtensionsMenuMainPageView* ExtensionsMenuMainPageViewUnitTest::main_page() {
@@ -311,5 +312,158 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 
   ExtensionsMenuSitePermissionsPageView* page = site_permissions_page();
   ASSERT_TRUE(page);
-  EXPECT_EQ(page->GetExtensionIdForTesting(), extensionA->id());
+  EXPECT_EQ(page->extension_id(), extensionA->id());
+}
+
+TEST_F(ExtensionsMenuMainPageViewUnitTest,
+       AddAndRemoveExtensionWhenMainPageIsOpen) {
+  constexpr char kExtensionA[] = "A Extension";
+  constexpr char kExtensionC[] = "C Extension";
+  InstallExtension(kExtensionA);
+  InstallExtension(kExtensionC);
+
+  ShowMenu();
+
+  // Verify the order of the extensions is A,C.
+  {
+    std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+    ASSERT_EQ(items.size(), 2u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionC};
+    EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
+  }
+
+  // Add a new extension while the menu is open.
+  constexpr char kExtensionB[] = "B Extension";
+  auto extensionB = InstallExtension(kExtensionB);
+  LayoutMenuIfNecessary();
+
+  // Extension should be added in the correct place.
+  // Verify the new order is A,B,C.
+  {
+    std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+    ASSERT_EQ(items.size(), 3u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionB,
+                                            kExtensionC};
+    EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
+  }
+
+  // Remove a extension while the menu is open
+  UninstallExtension(extensionB->id());
+  LayoutMenuIfNecessary();
+
+  // Verify the new order is A,C.
+  {
+    std::vector<InstalledExtensionMenuItemView*> items = menu_items();
+    ASSERT_EQ(items.size(), 2u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionC};
+    EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
+  }
+}
+
+TEST_F(ExtensionsMenuMainPageViewUnitTest, DisableAndEnableExtension) {
+  constexpr char kName[] = "Test Extension";
+  auto extension_id = InstallExtension(kName)->id();
+
+  ShowMenu();
+
+  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  EXPECT_EQ(menu_items().size(), 1u);
+  ClickPinButton(menu_item);
+
+  DisableExtension(extension_id);
+  LayoutMenuIfNecessary();
+  WaitForAnimation();
+
+  EXPECT_EQ(menu_items().size(), 0u);
+  EXPECT_THAT(GetPinnedExtensionNames(), testing::IsEmpty());
+
+  EnableExtension(extension_id);
+  LayoutMenuIfNecessary();
+  WaitForAnimation();
+
+  EXPECT_EQ(menu_items().size(), 1u);
+  EXPECT_EQ(GetPinnedExtensionNames(), std::vector<std::string>{kName});
+}
+
+// Tests that when an extension is reloaded it remains visible in the toolbar
+// and extensions menu.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, ReloadExtension) {
+  // The extension must have a manifest to be reloaded.
+  extensions::TestExtensionDir extension_directory;
+  constexpr char kManifest[] = R"({
+        "name": "Test Extension",
+        "version": "1",
+        "manifest_version": 3
+      })";
+  extension_directory.WriteManifest(kManifest);
+  extensions::ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(extension_directory.UnpackedPath());
+
+  ShowMenu();
+
+  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  EXPECT_EQ(menu_items().size(), 1u);
+
+  ClickPinButton(menu_item);
+  EXPECT_TRUE(
+      extensions_container()->IsActionVisibleOnToolbar(extension->id()));
+
+  // Reload the extension.
+  extensions::TestExtensionRegistryObserver registry_observer(
+      extensions::ExtensionRegistry::Get(profile()));
+  ReloadExtension(extension->id());
+  ASSERT_TRUE(registry_observer.WaitForExtensionLoaded());
+  LayoutMenuIfNecessary();
+
+  // Verify the extension is visible in the menu and on the toolbar.
+  menu_item = GetOnlyMenuItem();
+  EXPECT_EQ(menu_items().size(), 1u);
+  EXPECT_TRUE(
+      extensions_container()->IsActionVisibleOnToolbar(extension->id()));
+}
+
+// Tests that a when an extension is reloaded with manifest errors, and
+// therefore fails to be loaded into Chrome, it's removed from the toolbar and
+// extensions menu.
+TEST_F(ExtensionsMenuMainPageViewUnitTest, InstalledTab_ReloadExtensionFailed) {
+  extensions::TestExtensionDir extension_directory;
+  constexpr char kManifest[] = R"({
+        "name": "Test Extension",
+        "version": "1",
+        "manifest_version": 3
+      })";
+  extension_directory.WriteManifest(kManifest);
+  extensions::ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(extension_directory.UnpackedPath());
+
+  ShowMenu();
+
+  InstalledExtensionMenuItemView* menu_item = GetOnlyMenuItem();
+  EXPECT_EQ(menu_items().size(), 1u);
+
+  ClickPinButton(menu_item);
+  EXPECT_TRUE(
+      extensions_container()->IsActionVisibleOnToolbar(extension->id()));
+
+  // Replace the extension's valid manifest with one containing errors. In this
+  // case, 'version' keys is missing.
+  constexpr char kManifestWithErrors[] = R"({
+        "name": "Test",
+        "manifest_version": 3,
+      })";
+  extension_directory.WriteManifest(kManifestWithErrors);
+
+  // Reload the extension. It should fail due to the manifest errors.
+  extension_service()->ReloadExtensionWithQuietFailure(extension->id());
+  base::RunLoop().RunUntilIdle();
+  LayoutMenuIfNecessary();
+
+  // Verify the extension is no longer visible in the menu or on the toolbar
+  // since it was removed.
+  EXPECT_EQ(menu_items().size(), 0u);
+  for (views::View* child : extensions_container()->children()) {
+    EXPECT_FALSE(views::IsViewClass<ToolbarActionView>(child));
+  }
 }

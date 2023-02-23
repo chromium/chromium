@@ -17,6 +17,8 @@ class ExtensionsMenuNavigationHandler;
 
 class ExtensionsMenuSitePermissionsPageView : public views::View {
  public:
+  METADATA_HEADER(ExtensionsMenuSitePermissionsPageView);
+
   explicit ExtensionsMenuSitePermissionsPageView(
       Browser* browser,
       std::u16string extension_name,
@@ -29,8 +31,7 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
       const ExtensionsMenuSitePermissionsPageView&) = delete;
   ~ExtensionsMenuSitePermissionsPageView() override = default;
 
-  // Accessors used by tests:
-  extensions::ExtensionId GetExtensionIdForTesting() { return extension_id_; }
+  extensions::ExtensionId extension_id() { return extension_id_; }
 
  private:
   extensions::ExtensionId extension_id_;

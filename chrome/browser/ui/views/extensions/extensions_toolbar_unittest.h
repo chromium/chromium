@@ -40,6 +40,14 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
     return browser_view()->toolbar()->extensions_container();
   }
 
+  ExtensionsToolbarButton* extensions_button() {
+    return extensions_container()->GetExtensionsButton();
+  }
+
+  ExtensionsMenuCoordinator* menu_coordinator() {
+    return extensions_container()->GetExtensionsMenuCoordinatorForTesting();
+  }
+
   // Adds the specified `extension`.
   scoped_refptr<const extensions::Extension> InstallExtension(
       const std::string& name);

@@ -22,6 +22,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
@@ -78,6 +79,21 @@ bool IsSiteSettingsToggleVisible(
 InstalledExtensionMenuItemView* GetAsMenuItem(views::View* view) {
   DCHECK(views::IsViewClass<InstalledExtensionMenuItemView>(view));
   return views::AsViewClass<InstalledExtensionMenuItemView>(view);
+}
+
+// Returns the InstalledExtensionsMenuItemView corresponding to `action_id` if
+// it is a children of `parent_view`. The children of the parent view must be
+// InstalledExtensionsMenuItemView, otherwise it will DCHECK.
+InstalledExtensionMenuItemView* GetMenuItem(
+    views::View* parent_view,
+    const ToolbarActionsModel::ActionId& action_id) {
+  for (auto* view : parent_view->children()) {
+    auto* item_view = GetAsMenuItem(view);
+    if (item_view->view_controller()->GetId() == action_id) {
+      return item_view;
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -249,6 +265,12 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 
+void ExtensionsMenuMainPageView::RemoveMenuItem(
+    const ToolbarActionsModel::ActionId& action_id) {
+  views::View* item = GetMenuItem(menu_items_, action_id);
+  menu_items_->RemoveChildViewT(item);
+}
+
 void ExtensionsMenuMainPageView::OnToggleButtonPressed() {
   // TODO(crbug.com/1390952): Update user site setting and add test.
   UpdateSiteSettingToggleText(site_settings_toggle_);
@@ -271,6 +293,12 @@ void ExtensionsMenuMainPageView::Update(content::WebContents* web_contents) {
   }
 }
 
+void ExtensionsMenuMainPageView::UpdatePinButtons() {
+  for (views::View* view : menu_items_->children()) {
+    GetAsMenuItem(view)->UpdatePinButton();
+  }
+}
+
 std::vector<InstalledExtensionMenuItemView*>
 ExtensionsMenuMainPageView::GetMenuItemsForTesting() const {
   std::vector<InstalledExtensionMenuItemView*> menu_item_views;
@@ -283,3 +311,6 @@ ExtensionsMenuMainPageView::GetMenuItemsForTesting() const {
 content::WebContents* ExtensionsMenuMainPageView::GetActiveWebContents() const {
   return browser_->tab_strip_model()->GetActiveWebContents();
 }
+
+BEGIN_METADATA(ExtensionsMenuMainPageView, views::View)
+END_METADATA
