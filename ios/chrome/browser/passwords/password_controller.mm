@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
+#import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"

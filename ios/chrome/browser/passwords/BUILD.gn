@@ -97,11 +97,17 @@ source_set("passwords") {
     "//url",
   ]
   public_deps = [
+    ":password_controller_delegate",
     ":passwords_generation_utils",
     ":store_factory",
   ]
 
   allow_circular_includes_from = [ ":passwords_generation_utils" ]
+}
+
+source_set("password_controller_delegate") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "password_controller_delegate.h" ]
 }
 
 source_set("save_passwords_consumer") {

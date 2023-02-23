@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/browser_view/common_tab_helper_delegate.h"
 
 @protocol CommonTabHelperDelegate;
+@class CommandDispatcher;
 @class DownloadManagerCoordinator;
 @class NewTabPageCoordinator;
 @protocol FollowIPHPresenter;

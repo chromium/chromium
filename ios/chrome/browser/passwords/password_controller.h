@@ -21,28 +21,13 @@
 @class CommandDispatcher;
 @class NotifyUserAutoSigninViewController;
 @protocol PasswordBreachCommands;
+@protocol PasswordControllerDelegate;
 @protocol PasswordsUiDelegate;
 @class SharedPasswordController;
 
 namespace password_manager {
 class PasswordManagerClient;
 }  // namespace password_manager
-
-// Delegate for registering view controller and displaying its view. Used to
-// add views to BVC.
-// TODO(crbug.com/1272487): Refactor this API to not be coupled to the BVC and
-// to use the UI command patterns.
-@protocol PasswordControllerDelegate
-
-// Adds `viewController` as child controller in order to display auto sign-in
-// notification. Returns YES if view was displayed, NO otherwise.
-- (BOOL)displaySignInNotification:(UIViewController*)viewController
-                        fromTabId:(NSString*)tabId;
-
-// Opens the list of saved passwords in the settings.
-- (void)displaySavedPasswordList;
-
-@end
 
 // Per-tab password controller. Handles password autofill and saving.
 // TODO(crbug.com/1272487): Refactor this into an appropriately-scoped object,
