@@ -1154,6 +1154,8 @@ bool OmniboxEditModel::InExplicitExperimentalKeywordMode() {
 
 bool OmniboxEditModel::AcceptKeyword(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
+  TRACE_EVENT0("omnibox", "OmniboxEditModel::AcceptKeyword");
+
   DCHECK(is_keyword_hint_ && !keyword_.empty());
 
   autocomplete_controller()->Stop(false);
@@ -1223,6 +1225,7 @@ void OmniboxEditModel::ClearKeyword() {
   if (!is_keyword_selected())
     return;
 
+  TRACE_EVENT0("omnibox", "OmniboxEditModel::ClearKeyword");
   autocomplete_controller()->Stop(false);
 
   // While we're always in keyword mode upon reaching here, sometimes we've just
@@ -1325,10 +1328,12 @@ void OmniboxEditModel::ClearKeyword() {
 }
 
 void OmniboxEditModel::ClearAdditionalText() {
+  TRACE_EVENT0("omnibox", "OmniboxEditModel::ClearAdditionalText");
   view_->SetAdditionalText(std::u16string());
 }
 
 void OmniboxEditModel::OnSetFocus(bool control_down) {
+  TRACE_EVENT0("omnibox", "OmniboxEditModel::OnSetFocus");
   last_omnibox_focus_ = base::TimeTicks::Now();
   user_input_since_focus_ = false;
   focus_resulted_in_navigation_ = false;
@@ -1362,6 +1367,8 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   // Early exit if the user already has a navigation or search query in mind.
   if (user_input_in_progress_ && !user_clobbered_permanent_text)
     return;
+
+  TRACE_EVENT0("omnibox", "OmniboxEditModel::StartZeroSuggestRequest");
 
   // Send the textfield contents exactly as-is, as otherwise the verbatim
   // match can be wrong. The full page URL is anyways in set_current_url().

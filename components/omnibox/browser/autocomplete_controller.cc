@@ -581,6 +581,7 @@ void AutocompleteController::Stop(bool clear_result) {
 }
 
 void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::DeleteMatch");
   DCHECK(match.SupportsDeletion());
 
   // Delete duplicate matches attached to the main match first.
@@ -623,6 +624,7 @@ void AutocompleteController::ExpireCopiedEntries() {
 void AutocompleteController::OnProviderUpdate(
     bool updated_matches,
     const AutocompleteProvider* provider) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::OnProviderUpdate");
   // Should be called even if `in_start_` is true in order to include early
   // exited async providers. If the provider is done, will log how long the
   // provider took.
@@ -648,6 +650,8 @@ void AutocompleteController::OnProviderUpdate(
 
 void AutocompleteController::AddProviderAndTriggeringLogs(
     OmniboxLog* logs) const {
+  TRACE_EVENT0("omnibox",
+               "AutocompleteController::AddProviderAndTriggeringLogs");
   logs->providers_info.clear();
   for (const auto& provider : providers_) {
     if (!ShouldRunProvider(provider.get()))
@@ -674,6 +678,9 @@ void AutocompleteController::
     UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         base::TimeDelta query_formulation_time,
         AutocompleteMatch* match) const {
+  TRACE_EVENT0("omnibox",
+               "AutocompleteController::"
+               "UpdateMatchDestinationURLWithAdditionalAssistedQueryStats");
   // The assisted_query_stats is expected to have been previously set when this
   // method is called. If that is not the case, this method is being called by
   // mistake and assisted_query_stats (and searchbox_stats) should not be
@@ -745,6 +752,7 @@ void AutocompleteController::
 
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {
+  TRACE_EVENT0("omnibox", "AutocompleteController::SetMatchDestinationURL");
   const TemplateURL* template_url =
       match->GetTemplateURL(template_url_service_, false);
   if (!template_url)
@@ -765,6 +773,8 @@ void AutocompleteController::GroupSuggestionsBySearchVsURL(size_t begin,
                                                            size_t end) {
   if (begin == end)
     return;
+  TRACE_EVENT0("omnibox",
+               "AutocompleteController::GroupSuggestionsBySearchVsURL");
   const size_t num_elements = result_.size();
   if (begin < 0 || end <= begin || end > num_elements) {
     DCHECK(false) << "Range [" << begin << "; " << end
@@ -1222,6 +1232,7 @@ void AutocompleteController::UpdateTailSuggestPrefix(
 }
 
 void AutocompleteController::NotifyChanged() {
+  TRACE_EVENT0("omnibox", "AutocompleteController::NotifyChanged");
   // Will log metrics for how many matches changed. Will also log timing metrics
   // for the current request if it's complete; otherwise, will just update
   // timestamps of when the last update changed any or the default suggestion.

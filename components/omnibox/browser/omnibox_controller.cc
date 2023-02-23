@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
+#include "base/trace_event/trace_event.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -35,6 +36,7 @@ OmniboxController::~OmniboxController() {
 
 void OmniboxController::StartAutocomplete(
     const AutocompleteInput& input) const {
+  TRACE_EVENT0("omnibox", "OmniboxController::StartAutocomplete");
   ClearPopupKeywordMode();
 
   // We don't explicitly clear OmniboxPopupModel::manually_selected_match, as
@@ -44,6 +46,7 @@ void OmniboxController::StartAutocomplete(
 
 void OmniboxController::OnResultChanged(AutocompleteController* controller,
                                         bool default_match_changed) {
+  TRACE_EVENT0("omnibox", "OmniboxController::OnResultChanged");
   DCHECK(controller == autocomplete_controller_.get());
 
   const bool was_open = omnibox_edit_model_->PopupIsOpen();
@@ -93,6 +96,7 @@ void OmniboxController::InvalidateCurrentMatch() {
 }
 
 void OmniboxController::ClearPopupKeywordMode() const {
+  TRACE_EVENT0("omnibox", "OmniboxController::ClearPopupKeywordMode");
   if (omnibox_edit_model_->PopupIsOpen()) {
     OmniboxPopupSelection selection = omnibox_edit_model_->GetPopupSelection();
     if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
