@@ -51,17 +51,21 @@ class GLDisplayManager {
     for (auto iter = gpu_preference_map_.begin();
          iter != gpu_preference_map_.end();
          /* no increment */) {
-      if (iter->second == system_device_id) {
-        gpu_preference_map_.erase(iter++);
+      if (iter->second == system_device_id && gpu_preference_map_.size() > 1) {
+        iter = gpu_preference_map_.erase(iter);
       } else {
         iter++;
       }
     }
 
-    auto iter = gpu_preference_map_.find(GpuPreference::kDefault);
-    if (iter == gpu_preference_map_.end()) {
-      gpu_preference_map_[GpuPreference::kDefault] =
-          gpu_preference_map_.begin()->second;
+    // Ensure that kDefault is always set if there is at least one other gpu
+    // preference.
+    if (!gpu_preference_map_.empty()) {
+      auto iter = gpu_preference_map_.find(GpuPreference::kDefault);
+      if (iter == gpu_preference_map_.end()) {
+        gpu_preference_map_[GpuPreference::kDefault] =
+            gpu_preference_map_.begin()->second;
+      }
     }
 
     base::AutoLock auto_lock(lock_);
