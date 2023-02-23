@@ -3489,6 +3489,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Network.Wifi.Synced.UpdateOperation.GenerateLocalNetworkConfig.Result"
+    enum="BooleanSuccess" expires_after="2023-06-18">
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    ChromeOS metric that tracks the success or failure to generate a local
+    network config. Emitted on success and failure of add/update operations.
+  </summary>
+</histogram>
+
 <histogram name="Network.Wifi.Synced.UpdateOperation.Result"
     enum="BooleanSuccess" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>

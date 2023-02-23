@@ -40,6 +40,10 @@ namespace {
 const char kFredSsid[] = "Fred";
 const char kMangoSsid[] = "Mango";
 
+// Because the identifier is created with `GenerateInvalidPskNetworkId`, this is
+// invalid because it is an invalid hex string.
+const char kInvalidSsid[] = "-423";
+
 const NetworkState* FindLocalNetworkById(const NetworkIdentifier& id) {
   NetworkStateHandler::NetworkStateList network_list;
   NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
@@ -115,6 +119,7 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
   }
   NetworkIdentifier fred_network_id() { return fred_network_id_; }
   NetworkIdentifier mango_network_id() { return mango_network_id_; }
+  NetworkIdentifier invalid_network_id() { return invalid_network_id_; }
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -128,6 +133,8 @@ class SyncedNetworkUpdaterImplTest : public testing::Test {
 
   NetworkIdentifier fred_network_id_ = GeneratePskNetworkId(kFredSsid);
   NetworkIdentifier mango_network_id_ = GeneratePskNetworkId(kMangoSsid);
+  NetworkIdentifier invalid_network_id_ =
+      GenerateInvalidPskNetworkId(kInvalidSsid);
 };
 
 TEST_F(SyncedNetworkUpdaterImplTest, TestAdd_OneNetwork) {
@@ -331,6 +338,18 @@ TEST_F(SyncedNetworkUpdaterImplTest, TestFailToRemove) {
   histogram_tester.ExpectBucketCount(kApplyFailureReasonHistogram,
                                      ApplyNetworkFailureReason::kFailedToRemove,
                                      3);
+}
+
+// Regression test for b/268408833
+TEST_F(SyncedNetworkUpdaterImplTest, InvalidSsid) {
+  base::HistogramTester histogram_tester;
+  updater()->AddOrUpdateNetwork(
+      GenerateTestWifiSpecifics(invalid_network_id()));
+
+  EXPECT_EQ(0, tracker()->GetCompletedAttempts(invalid_network_id()));
+  EXPECT_TRUE(tracker()->GetPendingUpdateById(invalid_network_id()));
+  histogram_tester.ExpectBucketCount(kApplyGenerateLocalNetworkConfigHistogram,
+                                     false, 1);
 }
 
 }  // namespace ash::sync_wifi
