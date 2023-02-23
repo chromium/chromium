@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -38,6 +39,7 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -91,15 +93,10 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
             clearHighlight();
 
             if (mDelegate.getCurrentState() == BookmarkUIState.STATE_SEARCHING) {
-                if (TextUtils.equals(mSearchText, EMPTY_QUERY)) {
-                    mDelegate.closeSearchUI();
-                } else {
-                    // We cannot rely on removing the specific list item that corresponds to the
-                    // removed node because the node might be a parent with children also shown
-                    // in the list.
-                    search(mSearchText);
-                }
-
+                // We cannot rely on removing the specific list item that corresponds to the
+                // removed node because the node might be a parent with children also shown
+                // in the list.
+                search(mSearchText);
                 return;
             }
 
@@ -370,11 +367,14 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
      *
      * @param query The query text to search for.
      */
-    public void search(String query) {
-        mSearchText = query.trim();
-        List<BookmarkId> result =
-                mDelegate.getModel().searchBookmarks(mSearchText, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
-        setBookmarks(result);
+    public void search(@Nullable String query) {
+        mSearchText = query == null ? "" : query.trim();
+
+        List<BookmarkId> bookmarks = TextUtils.isEmpty(query)
+                ? Collections.emptyList()
+                : mDelegate.getModel().searchBookmarks(
+                        mSearchText, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
+        setBookmarks(bookmarks);
     }
 
     /**

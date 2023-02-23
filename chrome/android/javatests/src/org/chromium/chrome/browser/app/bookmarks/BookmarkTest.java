@@ -650,16 +650,11 @@ public class BookmarkTest {
                                 manager.getToolbarForTests().getMenu().findItem(
                                         R.id.selection_mode_delete_menu_id)));
 
-        // Search should be exited and the folder should be gone.
-        Assert.assertEquals("Wrong state, should be in folder", BookmarkUIState.STATE_FOLDER,
-                manager.getCurrentState());
+        // Should still be searching with the folder gone.
         Assert.assertEquals(
-                "Wrong number of items before starting search.", 2, adapter.getItemCount());
+                "Wrong number of items.", 0, mItemsContainer.getAdapter().getItemCount());
 
         // Start searching, enter a query.
-        TestThreadUtils.runOnUiThreadBlocking(manager::openSearchUI);
-        Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
-                manager.getCurrentState());
         searchBookmarks("Google");
         Assert.assertEquals("Wrong number of items after searching.", 1,
                 mItemsContainer.getAdapter().getItemCount());
