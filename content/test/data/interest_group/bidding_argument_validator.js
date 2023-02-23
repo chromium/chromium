@@ -8,9 +8,9 @@ function generateBid(
   validateInterestGroup(interestGroup);
   validateAuctionSignals(auctionSignals);
   validatePerBuyerSignals(perBuyerSignals);
-  validateDirectFromSellerSignals(directFromSellerSignals);
   validateTrustedBiddingSignals(trustedBiddingSignals);
-  validateBrowserSignals(browserSignals);
+  validateBrowserSignals(browserSignals, /*isGenerateBid=*/true);
+  validateDirectFromSellerSignals(directFromSellerSignals);
 
   // Bid 2 to outbid other parties bidding 1 at auction.
   const ad = interestGroup.ads[0];
@@ -20,6 +20,17 @@ function generateBid(
       'render': ad.renderUrl,
       'adComponents': [interestGroup.adComponents[0].renderUrl]
   };
+}
+
+function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                   browserSignals, directFromSellerSignals) {
+  validateAuctionSignals(auctionSignals);
+  validatePerBuyerSignals(perBuyerSignals);
+  validateSellerSignals(sellerSignals);
+  validateBrowserSignals(browserSignals, /*isGenerateBid=*/false);
+  validateDirectFromSellerSignals(directFromSellerSignals);
+
+  sendReportTo(browserSignals.interestGroupOwner + '/echo?report_bidder');
 }
 
 function validateInterestGroup(interestGroup) {
@@ -141,21 +152,48 @@ function validateTrustedBiddingSignals(trustedBiddingSignals) {
     throw 'Wrong trustedBiddingSignals ' + trustedBiddingSignalsJSON;
 }
 
-function validateBrowserSignals(browserSignals) {
-  if (Object.keys(browserSignals).length !== 5) {
-    throw 'Wrong number of browser signals fields ' +
-        JSON.stringify(browserSignals);
-  }
+function validateBrowserSignals(browserSignals, isGenerateBid) {
+  // Common fields for generateBid() and reportWin().
   if (browserSignals.topWindowHostname !== 'c.test')
     throw 'Wrong topWindowHostname ' + browserSignals.topWindowHostname;
   if (!browserSignals.seller.startsWith('https://b.test'))
     throw 'Wrong seller ' + browserSignals.seller;
   if ('topLevelSeller' in browserSignals)
     throw 'Wrong topLevelSeller ' + browserSignals.topLevelSeller;
-  if (browserSignals.joinCount !== 1)
-    throw 'Wrong joinCount ' + browserSignals.joinCount;
-  if (browserSignals.bidCount !== 0)
-    throw 'Wrong bidCount ' + bidCount;
-  if (browserSignals.prevWins.length !== 0)
-    throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
+
+  if (isGenerateBid) {
+    if (Object.keys(browserSignals).length !== 5) {
+      throw 'Wrong number of browser signals fields ' +
+          JSON.stringify(browserSignals);
+    }
+    if (browserSignals.joinCount !== 1)
+      throw 'Wrong joinCount ' + browserSignals.joinCount;
+    if (browserSignals.bidCount !== 0)
+      throw 'Wrong bidCount ' + bidCount;
+    if (browserSignals.prevWins.length !== 0)
+      throw 'Wrong prevWins ' + JSON.stringify(browserSignals.prevWins);
+  } else {
+    if (Object.keys(browserSignals).length !== 8) {
+      throw 'Wrong number of browser signals fields ' +
+          JSON.stringify(browserSignals);
+    }
+    if (!browserSignals.interestGroupOwner.startsWith('https://a.test'))
+      throw 'Wrong interestGroupOwner ' + browserSignals.interestGroupOwner;
+    if (browserSignals.interestGroupName !== 'cars')
+      throw 'Wrong interestGroupName ' + browserSignals.interestGroupName;
+    if (browserSignals.renderUrl !== "https://example.com/render")
+      throw 'Wrong renderUrl ' + browserSignals.renderUrl;
+    if (browserSignals.bid !== 2)
+      throw 'Wrong bid ' + browserSignals.bid;
+    if (browserSignals.highestScoringOtherBid !== 0) {
+      throw 'Wrong highestScoringOtherBid ' +
+          browserSignals.highestScoringOtherBid;
+    }
+  }
+}
+
+function validateSellerSignals(sellerSignals) {
+  const sellerSignalsJson = JSON.stringify(sellerSignals);
+  if (sellerSignalsJson !== '["seller signals for winner"]')
+    throw 'Wrong sellerSignals ' + sellerSignals;
 }

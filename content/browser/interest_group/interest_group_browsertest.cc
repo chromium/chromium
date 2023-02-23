@@ -7704,6 +7704,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
                .ExtractString()),
       &observer);
   EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+
+  // Run URN to URL mapping callback manually to trigger sending reports, and
+  // validate the right URLs are requested. Do this instead of navigating to
+  // the URN because the validation logic checks a fixed URL for this test,
+  // and don't want to send a random request to port 80 on localhost, which is
+  // what example.com is mapped to.
+  observer.on_navigate_callback().Run();
+  WaitForUrl(https_server_->GetURL(kSellerHost, "/echo?report_seller"));
+  WaitForUrl(https_server_->GetURL(kSellerHost, "/echo?report_bidder"));
 }
 
 // Same as above test, but leaves out the extra bidder and uses the older
@@ -7829,6 +7838,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                .ExtractString()),
       &observer);
   EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+
+  // Run URN to URL mapping callback manually to trigger sending reports, and
+  // validate the right URLs are requested. Do this instead of navigating to
+  // the URN because the validation logic checks a fixed URL for this test,
+  // and don't want to send a random request to port 80 on localhost, which is
+  // what example.com is mapped to.
+  observer.on_navigate_callback().Run();
+  WaitForUrl(https_server_->GetURL(kSellerHost, "/echo?report_seller"));
+  WaitForUrl(https_server_->GetURL(kSellerHost, "/echo?report_bidder"));
 }
 
 // Use bidder and seller worklet files that validate their arguments all have
