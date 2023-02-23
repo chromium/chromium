@@ -16,11 +16,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/common/dummy_auth_service.h"
@@ -2034,15 +2034,13 @@ TEST_F(DriveApiRequestsTest, PermissionsInsertRequest) {
             http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
-  std::unique_ptr<base::Value> expected = base::JSONReader::ReadDeprecated(
+  base::Value::Dict expected = base::test::ParseJsonDict(
       "{\"additionalRoles\":[\"commenter\"], \"role\":\"reader\", "
       "\"type\":\"user\",\"value\":\"user@example.com\"}");
-  ASSERT_TRUE(expected);
 
-  std::unique_ptr<base::Value> result =
-      base::JSONReader::ReadDeprecated(http_request_.content);
+  base::Value::Dict result = base::test::ParseJsonDict(http_request_.content);
   EXPECT_TRUE(http_request_.has_content);
-  EXPECT_EQ(*expected, *result);
+  EXPECT_EQ(expected, result);
 
   // Add "can edit" permission to users in "example.com".
   error = OTHER_ERROR;
@@ -2067,13 +2065,12 @@ TEST_F(DriveApiRequestsTest, PermissionsInsertRequest) {
             http_request_.relative_url);
   EXPECT_EQ("application/json", http_request_.headers["Content-Type"]);
 
-  expected = base::JSONReader::ReadDeprecated(
+  expected = base::test::ParseJsonDict(
       "{\"role\":\"writer\", \"type\":\"domain\",\"value\":\"example.com\"}");
-  ASSERT_TRUE(expected);
 
-  result = base::JSONReader::ReadDeprecated(http_request_.content);
+  result = base::test::ParseJsonDict(http_request_.content);
   EXPECT_TRUE(http_request_.has_content);
-  EXPECT_EQ(*expected, *result);
+  EXPECT_EQ(expected, result);
 }
 
 TEST_F(DriveApiRequestsTest, BatchUploadRequest) {
