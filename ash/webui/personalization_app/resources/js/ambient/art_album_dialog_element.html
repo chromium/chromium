@@ -1,4 +1,4 @@
-<style>
+<style include="cros-button-style">
   cr-dialog::part(dialog) {
     min-width: 288px;
     width: 288px;
@@ -7,7 +7,7 @@
 <cr-dialog id="dialog" show-on-attach>
   <div slot="body">$i18n{ambientModeLastArtAlbumMessage}</div>
   <div slot="button-container">
-    <cr-button class="action-button" on-click="onClose_">
+    <cr-button class="action-button primary" on-click="onClose_">
       $i18n{ambientModeArtAlbumDialogCloseButtonLabel}
     </cr-button>
   </div>

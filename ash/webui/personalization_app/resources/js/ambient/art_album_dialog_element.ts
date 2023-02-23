@@ -6,6 +6,8 @@
  * @fileoverview The element for displaying information for art albums.
  */
 
+import '../../css/cros_button_style.css.js';
+
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
