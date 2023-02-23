@@ -53,6 +53,8 @@ RemoteCommandJob::Status ResultTypeToStatus(ResultType result) {
       return RemoteCommandJob::SUCCEEDED;
     case ResultType::kFailure:
       return RemoteCommandJob::FAILED;
+    case ResultType::kAcked:
+      return RemoteCommandJob::ACKED;
   }
 }
 
@@ -170,7 +172,7 @@ base::TimeDelta RemoteCommandJob::GetCommandTimeout() const {
   return kDefaultCommandTimeout;
 }
 
-enterprise_management::RemoteCommandResult::ResultType
+absl::optional<enterprise_management::RemoteCommandResult::ResultType>
 RemoteCommandJob::GetResult() const {
   switch (status_) {
     case SUCCEEDED:
@@ -179,6 +181,9 @@ RemoteCommandJob::GetResult() const {
     case FAILED:
       return enterprise_management::
           RemoteCommandResult_ResultType_RESULT_FAILURE;
+    case ACKED:
+      // We don't send any result when the command is in `ACKED` state.
+      return absl::nullopt;
     // Result type is `RESULT_IGNORED` unless the command has finished execution
     // with either success or failure.
     default:

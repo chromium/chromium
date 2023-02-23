@@ -359,21 +359,23 @@ void RemoteCommandsService::OnJobFinished(RemoteCommandJob* command) {
   // the server to keep our last acknowledged command ID.
   // See http://crbug.com/466572.
 
-  em::RemoteCommandResult result;
-  result.set_command_id(command->unique_id());
-  result.set_timestamp(command->execution_started_time().ToJavaTime());
-  result.set_result(command->GetResult());
+  if (command->GetResult()) {
+    em::RemoteCommandResult result;
+    result.set_command_id(command->unique_id());
+    result.set_timestamp(command->execution_started_time().ToJavaTime());
+    result.set_result(command->GetResult().value());
 
-  std::unique_ptr<std::string> result_payload = command->GetResultPayload();
-  if (result_payload) {
-    result.set_payload(std::move(*result_payload));
+    std::unique_ptr<std::string> result_payload = command->GetResultPayload();
+    if (result_payload) {
+      result.set_payload(std::move(*result_payload));
+    }
+
+    SYSLOG(INFO) << "Remote command " << command->unique_id()
+                 << " finished with result " << ToString(result.result())
+                 << " (" << result.result() << ")";
+
+    unsent_results_.push_back(result);
   }
-
-  SYSLOG(INFO) << "Remote command " << command->unique_id()
-               << " finished with result " << ToString(result.result()) << " ("
-               << result.result() << ")";
-
-  unsent_results_.push_back(result);
 
   RecordExecutedRemoteCommand(*command);
 

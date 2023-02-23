@@ -24,6 +24,10 @@ namespace policy {
 enum class ResultType {
   kSuccess,
   kFailure,
+  // The remote command job has finished executing with no result to send to
+  // server. This is used for the commands that has delegated the execution to
+  // other components with no callback.
+  kAcked,
 };
 
 // This class manages the execution of a remote command job. It's a base
@@ -48,7 +52,9 @@ class POLICY_EXPORT RemoteCommandJob {
     SUCCEEDED = 5,        // The job finished running successfully.
     FAILED = 6,           // The job finished running with failure.
     TERMINATED = 7,       // The job was terminated before finishing by itself.
-    STATUS_TYPE_SIZE      // Used by UMA histograms. Shall be the last.
+    ACKED = 8,  // The job finished running with no immediate result to send to
+                // server.
+    STATUS_TYPE_SIZE  // Used by UMA histograms. Shall be the last.
   };
 
   using FinishedCallback = base::OnceClosure;
@@ -107,7 +113,8 @@ class POLICY_EXPORT RemoteCommandJob {
 
   // Returns result of the command job. It'll be `RESUlT_IGNORED` until the
   // command has finished running.
-  enterprise_management::RemoteCommandResult::ResultType GetResult() const;
+  absl::optional<enterprise_management::RemoteCommandResult::ResultType>
+  GetResult() const;
 
   // Returns whether execution of this command is finished.
   bool IsExecutionFinished() const;
@@ -161,8 +168,7 @@ class POLICY_EXPORT RemoteCommandJob {
   }
 
  private:
-  // Posted tasks are expected to call this method. The result type can't be
-  // kIgnored after the execution is completed.
+  // Posted tasks are expected to call this method.
   void OnCommandExecutionFinishedWithResult(
       ResultType result,
       absl::optional<std::string> result_payload);
