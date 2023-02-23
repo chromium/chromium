@@ -641,8 +641,10 @@ TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
     }
 
     if (!frame_details.module_id.empty()) {
+      // TODO(b/270470700): Remove this on all platforms once tools/tracing is
+      // fixed.
       frame_details.module_id =
-          base::TransformModuleIDToBreakpadFormat(frame_details.module_id);
+          base::TransformModuleIDToSymbolServerFormat(frame_details.module_id);
     }
 
     // Allow uploading function names passed from unwinder, which would be
