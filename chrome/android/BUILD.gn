@@ -806,8 +806,8 @@ if (current_toolchain == default_toolchain) {
     ]
 
     deps = [
-      "//chrome/browser/password_manager:password_manager_buildflags",
       "//chrome/browser/page_info:page_info_buildflags",
+      "//chrome/browser/password_manager:password_manager_buildflags",
       "//device/vr/buildflags",
     ]
   }
