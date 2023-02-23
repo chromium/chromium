@@ -281,6 +281,12 @@
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_SINGLE_WITH_APP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a single origin, when there's an app associated with it.">
     This will clear all data and cookies stored by <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen.
   </message>
+  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_GROUP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a group of sites">
+    This action will clear all data and cookies for <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> and all sites under it
+  </message>
+  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_MESSAGE_GROUP_WITH_APP" desc="Text of the confirmation dialog when the user asks to clear all data (and app) for a group of sites, when there's an app associated with it.">
+    This action will clear all data and cookies stored by all sites under <ph name="ORIGIN">%1$s<ex>google.com</ex></ph> or by its app on your Home screen
+  </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_OFFLINE_MESSAGE" desc="Text of the confirmation dialog, explaining that all offline data will be cleared (when clearing a site/sites).">
     Any offline data will be cleared
   </message>
@@ -292,6 +298,9 @@
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of the site being cleared.">
     You'll be signed out of this site
+  </message>
+  <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_GROUP_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of the group of sites being cleared.">
+    You may be signed out of these sites
   </message>
   <message name="IDS_WEBSTORAGE_CLEAR_DATA_DIALOG_SIGN_OUT_ALL_MESSAGE" desc="Text of the confirmation dialog, explaining that the user will be signed out of all sites being cleared.">
     You'll be signed out of all sites

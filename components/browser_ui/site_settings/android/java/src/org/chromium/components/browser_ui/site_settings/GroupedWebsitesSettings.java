@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
+import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
@@ -120,6 +121,30 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
         return true;
     }
 
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        if (preference instanceof ClearWebsiteStorage) {
+            // If the activity is getting destroyed or saved, it is not allowed to modify fragments.
+            if (getFragmentManager().isStateSaved()) {
+                return;
+            }
+            Callback<Boolean> onDialogClosed = (Boolean confirmed) -> {
+                if (confirmed) {
+                    SiteDataCleaner.clearData(getSiteSettingsDelegate().getBrowserContextHandle(),
+                            mSiteGroup, mDataClearedCallback);
+                }
+            };
+            ClearWebsiteStorageDialog dialogFragment =
+                    ClearWebsiteStorageDialog.newInstance(preference, onDialogClosed,
+                            getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled(),
+                            /*isGroup=*/true);
+            dialogFragment.setTargetFragment(this, 0);
+            dialogFragment.show(getFragmentManager(), ClearWebsiteStorageDialog.TAG);
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+        }
+    }
+
     private final Runnable mDataClearedCallback = () -> {
         Activity activity = getActivity();
         if (activity == null || activity.isFinishing()) {
@@ -151,7 +176,8 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment
                     preference.getContext(), storage, cookies));
             preference.setDataForDisplay(mSiteGroup.getDomainAndRegistry(),
                     mSiteGroup.hasInstalledApp(
-                            getSiteSettingsDelegate().getOriginsWithInstalledApp()));
+                            getSiteSettingsDelegate().getOriginsWithInstalledApp()),
+                    /*isGroup=*/true);
             if (mSiteGroup.isCookieDeletionDisabled(
                         getSiteSettingsDelegate().getBrowserContextHandle())) {
                 preference.setEnabled(false);

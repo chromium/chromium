@@ -22,6 +22,9 @@ public class ClearWebsiteStorage extends DialogPreference {
     // Whether to warn that apps will also be deleted.
     boolean mClearingApps;
 
+    // Whether the dialog is for a group of sites.
+    boolean mIsGroup;
+
     public ClearWebsiteStorage(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initialize(context);
@@ -42,9 +45,17 @@ public class ClearWebsiteStorage extends DialogPreference {
         assert mHost != null;
         super.onBindViewHolder(holder);
 
-        int resourceId = mClearingApps
-                ? R.string.webstorage_clear_data_dialog_message_single_with_app
-                : R.string.webstorage_clear_data_dialog_message_single;
+        int resourceId;
+        if (!mIsGroup) {
+            resourceId = mClearingApps
+                    ? R.string.webstorage_clear_data_dialog_message_single_with_app
+                    : R.string.webstorage_clear_data_dialog_message_single;
+        } else {
+            resourceId = mClearingApps
+                    ? R.string.webstorage_clear_data_dialog_message_group_with_app
+                    : R.string.webstorage_clear_data_dialog_message_group;
+        }
+
         setDialogMessage(mContext.getString(resourceId, mHost));
     }
 
@@ -52,17 +63,21 @@ public class ClearWebsiteStorage extends DialogPreference {
      * Set the data to show in the dialog.
      * @param host The host to show in the dialog.
      * @param clearingApps True if there is one or more apps involved, whose data will be deleted.
+     * @param isGroup True if the dialog is related to a group of sites.
      */
-    public void setDataForDisplay(String host, boolean clearingApps) {
+    public void setDataForDisplay(String host, boolean clearingApps, boolean isGroup) {
         mHost = host;
         mClearingApps = clearingApps;
+        mIsGroup = isGroup;
     }
 
     /**
      * Returns the string resource id to use to explain that the user will be signed out.
+     * @param isGroup True if the dialog is related to a group of sites.
      */
-    public static int getSignedOutText() {
-        return R.string.webstorage_clear_data_dialog_sign_out_message;
+    public static int getSignedOutText(boolean isGroup) {
+        return isGroup ? R.string.webstorage_clear_data_dialog_sign_out_group_message
+                       : R.string.webstorage_clear_data_dialog_sign_out_message;
     }
 
     /**

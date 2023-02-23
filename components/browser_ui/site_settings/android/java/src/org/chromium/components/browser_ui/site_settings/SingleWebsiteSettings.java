@@ -350,7 +350,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             };
             ClearWebsiteStorageDialog dialogFragment =
                     ClearWebsiteStorageDialog.newInstance(preference, onDialogClosed,
-                            getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled());
+                            getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled(),
+                            /*isGroup=*/false);
             dialogFragment.setTargetFragment(this, 0);
             dialogFragment.show(getFragmentManager(), ClearWebsiteStorageDialog.TAG);
         } else {
@@ -542,7 +543,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                         context.getString(R.string.origin_settings_storage_usage_brief),
                         Formatter.formatShortFileSize(context, usage)));
             }
-            preference.setDataForDisplay(mSite.getTitle(), appFound);
+            preference.setDataForDisplay(mSite.getTitle(), appFound, /*isGroup=*/false);
             if (mSite.isCookieDeletionDisabled(
                         getSiteSettingsDelegate().getBrowserContextHandle())) {
                 preference.setEnabled(false);
