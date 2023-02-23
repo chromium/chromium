@@ -60,6 +60,9 @@ const char kMimeTypePDF[] = "application/pdf";
 // Parameters determining the activity flow and values.
 @property(nonatomic, strong) SharingParams* params;
 
+// Whether the coordinator is linked to an incognito browser.
+@property(nonatomic, assign) BOOL incognito;
+
 @end
 
 @implementation ActivityServiceCoordinator
@@ -83,6 +86,7 @@ const char kMimeTypePDF[] = "application/pdf";
       self.browser->GetCommandDispatcher());
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  self.incognito = browserState->IsOffTheRecord();
   bookmarks::BookmarkModel* bookmarkModel =
       ios::BookmarkModelFactory::GetForBrowserState(browserState);
   id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
@@ -254,7 +258,7 @@ const char kMimeTypePDF[] = "application/pdf";
 
   id extraItem = nil;
   if (@available(iOS 16.4, *)) {
-    if (base::FeatureList::IsEnabled(kAddToHomeScreen)) {
+    if (ShouldAddToHomeScreen(self.incognito)) {
       extraItem = webState->GetActivityItem();
     }
   }
@@ -333,7 +337,7 @@ const char kMimeTypePDF[] = "application/pdf";
       [self.mediator applicationActivitiesForDataItems:@[ URLData ]];
   id extraItem = nil;
   if (@available(iOS 16.4, *)) {
-    if (base::FeatureList::IsEnabled(kAddToHomeScreen)) {
+    if (ShouldAddToHomeScreen(self.incognito)) {
       extraItem = webState->GetActivityItem();
     }
   }

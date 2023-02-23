@@ -144,5 +144,9 @@ bool IsConsistencyNewAccountInterfaceEnabled();
 
 // Feature flag to enable add to home screen in share menu.
 BASE_DECLARE_FEATURE(kAddToHomeScreen);
+// Param to disable the feature in incognito.
+extern const char kAddToHomeScreenDisableIncognitoParam[];
+// Helper function to check the feature add to home screen.
+bool ShouldAddToHomeScreen(bool in_incognito);
 
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

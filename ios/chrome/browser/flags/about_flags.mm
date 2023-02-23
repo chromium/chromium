@@ -586,6 +586,12 @@ const FeatureEntry::FeatureVariation kIOSEditMenuPartialTranslateVariations[] =
     {{"Disable on incognito", kIOSEditMenuPartialTranslateNoIncognito,
       std::size(kIOSEditMenuPartialTranslateNoIncognito), nullptr}};
 
+const FeatureEntry::FeatureParam kAddToHomeScreenDisableIncognito[] = {
+    {kAddToHomeScreenDisableIncognitoParam, "true"}};
+const FeatureEntry::FeatureVariation kAddToHomeScreenVariations[] = {
+    {"Disable on incognito", kAddToHomeScreenDisableIncognito,
+     std::size(kAddToHomeScreenDisableIncognito), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1382,7 +1388,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kConsistencyNewAccountInterface)},
     {"add-to-home-screen", flag_descriptions::kAddToHomeScreenName,
      flag_descriptions::kAddToHomeScreenDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAddToHomeScreen)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAddToHomeScreen,
+                                    kAddToHomeScreenVariations,
+                                    "IOSEditMenuPartialTranslate")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

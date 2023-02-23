@@ -163,6 +163,20 @@ BASE_FEATURE(kAddToHomeScreen,
              "AddToHomeScreen",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kAddToHomeScreenDisableIncognitoParam[] =
+    "AddToHomeScreenDisableIncognitoParam";
+
+bool ShouldAddToHomeScreen(bool in_incognito) {
+  if (!base::FeatureList::IsEnabled(kAddToHomeScreen)) {
+    return false;
+  }
+  if (!in_incognito) {
+    return true;
+  }
+  return !base::GetFieldTrialParamByFeatureAsBool(
+      kAddToHomeScreen, kAddToHomeScreenDisableIncognitoParam, false);
+}
+
 bool ShouldShowPartialTranslateInIncognito() {
   if (!base::FeatureList::IsEnabled(kIOSEditMenuPartialTranslate)) {
     return false;
