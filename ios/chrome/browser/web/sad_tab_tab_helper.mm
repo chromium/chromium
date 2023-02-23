@@ -73,7 +73,6 @@ void SadTabTabHelper::WasShown(web::WebState* web_state) {
 
 void SadTabTabHelper::WasHidden(web::WebState* web_state) {
   if (showing_sad_tab_) {
-    DCHECK(delegate_);
     [delegate_ sadTabTabHelperDidHide:this];
   }
 }
