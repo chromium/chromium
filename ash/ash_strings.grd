@@ -5018,6 +5018,9 @@ Here are some things you can try to get started.
       <message name="IDS_PRIVACY_HUB_MICROPHONE_AND_CAMERA_OFF_NOTIFICATION_BUTTON" desc="Label for an action button that enables microphone and camera.">
         Turn on access
       </message>
+      <message name="IDS_PRIVACY_HUB_OPEN_SETTINGS_PAGE_BUTTON" desc="Label for an action button that opens the Privacy Hub settings page.">
+        Privacy controls
+      </message>
 
       <!-- Strings for camera privacy hub switch notifications -->
       <message name="IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_TITLE" desc="Title for a notification shown to the users when they disable camera via the hardware switch.">

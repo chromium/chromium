@@ -9,7 +9,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
-#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -403,24 +402,13 @@ TEST_F(PrivacyHubCameraControllerTests,
   EXPECT_TRUE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
   EXPECT_FALSE(GetUserPref());
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 0);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            0);
-
   // Enabling camera via clicking on the body should open the privacy hub
   // settings page.
   message_center->ClickOnNotification(kPrivacyHubCameraOffNotificationId);
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
   // The user pref should not be changed.
   EXPECT_FALSE(GetUserPref());
   EXPECT_FALSE(FindNotificationById(kPrivacyHubCameraOffNotificationId));
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            1);
 
   SetUserPref(true);
 
@@ -439,25 +427,14 @@ TEST_F(PrivacyHubCameraControllerTests,
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
   EXPECT_TRUE(GetUserPref());
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 1);
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            1);
-
   // Clicking on the body should open the privacy hub settings page.
   message_center->ClickOnNotification(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId);
 
-  EXPECT_EQ(GetSystemTrayClient()->show_os_settings_privacy_hub_count(), 2);
   // The user pref should not be changed.
   EXPECT_TRUE(GetUserPref());
   EXPECT_FALSE(FindNotificationById(
       kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId));
-  EXPECT_EQ(histogram_tester_.GetBucketCount(
-                privacy_hub_metrics::kPrivacyHubOpenedHistogram,
-                privacy_hub_metrics::PrivacyHubNavigationOrigin::kNotification),
-            2);
 }
 
 TEST_F(PrivacyHubCameraControllerTests,

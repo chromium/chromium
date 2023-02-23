@@ -38,10 +38,16 @@ class ASH_EXPORT PrivacyHubNotificationClickDelegate
   // When clicking on the notification message execute this `callback`.
   void SetMessageClickCallback(base::RepeatingClosure callback);
 
+  // Set the `callback` for an additional button.
+  void SetSecondButtonCallback(base::RepeatingClosure callback);
+
  private:
   ~PrivacyHubNotificationClickDelegate() override;
 
-  base::RepeatingClosure button_callback_;
+  // Run `callback` if it's not null. Do nothing otherwise.
+  void RunCallbackIfNotNull(const base::RepeatingClosure& callback);
+
+  std::array<base::RepeatingClosure, 2> button_callbacks_;
   base::RepeatingClosure message_callback_;
 };
 
@@ -93,6 +99,11 @@ class ASH_EXPORT PrivacyHubNotification {
   // again.
   void Update();
 
+  // Add an additional button to the notification. The button title will be
+  // generated from the `title_id`. Clicking the button will invoke the
+  // `callback`. Only one additional button can be active at the same time.
+  void SetSecondButton(base::RepeatingClosure callback, int title_id);
+
   // Get the underlying `SystemNotificationBuilder` to do modifications beyond
   // what this wrapper allows you to do. If you change the ID of the message
   // `Show()` and `Hide()` are not going to work reliably.
@@ -107,12 +118,18 @@ class ASH_EXPORT PrivacyHubNotification {
   // `sensors_for_apps_`.
   void SetNotificationMessage();
 
+  // Create an object of optional data fields with the defaults applying to
+  // every Privacy Hub notification.
+  message_center::RichNotificationData MakeOptionalFields() const;
+
   std::string id_;
   SystemNotificationBuilder builder_;
   MessageIds message_ids_;
   SensorSet sensors_for_apps_;
   absl::optional<base::Time> last_time_shown_;
   base::OneShotTimer remove_timer_;
+  scoped_refptr<PrivacyHubNotificationClickDelegate> delegate_;
+  std::u16string button_text_;
 };
 
 }  // namespace ash
