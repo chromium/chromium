@@ -312,6 +312,9 @@ tast_disabled_tests_from_chrome_all = [
   "enterprise.ARCBlockedAppInstall",
   "enterprise.ARCPlayStoreModeBlocklist",
 
+  # http://b/270400217 
+  "login.AuthError",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
