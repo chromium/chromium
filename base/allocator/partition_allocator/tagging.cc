@@ -12,9 +12,7 @@
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
 #include <arm_acle.h>
-#include <asm/hwcap.h>
 #include <sys/auxv.h>
-#include <sys/ifunc.h>
 #include <sys/prctl.h>
 #define PR_SET_TAGGED_ADDR_CTRL 55
 #define PR_GET_TAGGED_ADDR_CTRL 56
@@ -122,6 +120,12 @@ namespace {
 }
 
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
+static bool HasCPUMemoryTaggingExtension() {
+  return base::CPU::GetInstanceNoAllocation().has_mte();
+}
+#endif  // PA_CONFIG(HAS_MEMORY_TAGGING)
+
+#if PA_CONFIG(HAS_MEMORY_TAGGING)
 void* TagRegionRandomlyForMTE(void* ptr, size_t sz, uint64_t mask) {
   // Randomly tag a region (MTE-enabled systems only). The first 16-byte
   // granule is randomly tagged, all other granules in the region are
@@ -160,6 +164,7 @@ void* RemaskVoidPtrForMTE(void* ptr) {
   }
   return nullptr;
 }
+#endif
 
 void* TagRegionIncrementNoOp(void* ptr, size_t sz) {
   // Region parameters are checked even on non-MTE systems to check the
@@ -176,49 +181,24 @@ void* TagRegionRandomlyNoOp(void* ptr, size_t sz, uint64_t mask) {
 void* RemaskVoidPtrNoOp(void* ptr) {
   return ptr;
 }
-#endif
 
 }  // namespace
 
+void InitializeMTESupportIfNeeded() {
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
-using RemaskPtrInternalFn = void*(void* ptr);
-using TagMemoryRangeIncrementInternalFn = void*(void* ptr, size_t size);
-
-using TagMemoryRangeRandomlyInternalFn = void*(void* ptr,
-                                               size_t size,
-                                               uint64_t mask);
-
-extern "C" TagMemoryRangeIncrementInternalFn(
-    *ResolveTagMemoryRangeIncrement(int hwcap, struct __ifunc_arg_t* hw)) {
-  if ((hwcap & _IFUNC_ARG_HWCAP) && (hw->_hwcap2 & HWCAP2_MTE)) {
-    return TagRegionIncrementForMTE;
+  if (HasCPUMemoryTaggingExtension()) {
+    global_remask_void_ptr_fn = RemaskVoidPtrForMTE;
+    global_tag_memory_range_increment_fn = TagRegionIncrementForMTE;
+    global_tag_memory_range_randomly_fn = TagRegionRandomlyForMTE;
   }
-  return TagRegionIncrementNoOp;
+#endif
 }
 
-extern "C" TagMemoryRangeRandomlyInternalFn(
-    *ResolveTagMemoryRandomly(int hwcap, struct __ifunc_arg_t* hw)) {
-  if ((hwcap & _IFUNC_ARG_HWCAP) && (hw->_hwcap2 & HWCAP2_MTE)) {
-    return TagRegionRandomlyForMTE;
-  }
-  return TagRegionRandomlyNoOp;
-}
-
-extern "C" RemaskPtrInternalFn(
-    *ResolveRemaskPointer(int hwcap, struct __ifunc_arg_t* hw)) {
-  if ((hwcap & _IFUNC_ARG_HWCAP) && (hw->_hwcap2 & HWCAP2_MTE)) {
-    return RemaskVoidPtrForMTE;
-  }
-  return RemaskVoidPtrNoOp;
-}
-
-void* TagMemoryRangeIncrementInternal(void* ptr, size_t size)
-    __attribute__((ifunc("ResolveTagMemoryRangeIncrement")));
-void* TagMemoryRangeRandomlyInternal(void* ptr, size_t size, uint64_t mask)
-    __attribute__((ifunc("ResolveTagMemoryRandomly")));
-void* RemaskPointerInternal(void* ptr)
-    __attribute__((ifunc("ResolveRemaskPointer")));
-#endif // PA_CONFIG(HAS_MEMORY_TAGGING)
+RemaskPtrInternalFn* global_remask_void_ptr_fn = RemaskVoidPtrNoOp;
+TagMemoryRangeIncrementInternalFn* global_tag_memory_range_increment_fn =
+    TagRegionIncrementNoOp;
+TagMemoryRangeRandomlyInternalFn* global_tag_memory_range_randomly_fn =
+    TagRegionRandomlyNoOp;
 
 TagViolationReportingMode GetMemoryTaggingModeForCurrentThread() {
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
