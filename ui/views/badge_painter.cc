@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/i18n/rtl.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -14,6 +15,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -28,8 +30,11 @@ gfx::FontList DeriveBadgeFont(const gfx::FontList& primary_font) {
   // add a small degree of bold to prevent color smearing/blurring due to font
   // smoothing. This ensures readability on all platforms and in both light and
   // dark modes.
+  const gfx::Font::Weight weight = features::IsChromeRefresh2023()
+                                       ? gfx::Font::Weight::SEMIBOLD
+                                       : gfx::Font::Weight::MEDIUM;
   return primary_font.Derive(BadgePainter::kBadgeFontSizeAdjustment,
-                             gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
+                             gfx::Font::NORMAL, weight);
 }
 
 // Returns the highlight rect for the badge given the font and text rect
@@ -66,15 +71,17 @@ void BadgePainter::PaintBadge(gfx::Canvas* canvas,
   cc::PaintFlags flags;
   const ui::ColorProvider* color_provider = view->GetColorProvider();
   const SkColor background_color =
-      color_provider->GetColor(ui::kColorButtonBackgroundProminent);
+      color_provider->GetColor(ui::kColorBadgeBackground);
   flags.setColor(background_color);
   canvas->DrawRoundRect(
       GetBadgeRectOutsetAroundText(badge_font, badge_text_bounds),
-      kBadgeCornerRadius, flags);
+      LayoutProvider::Get()->GetCornerRadiusMetric(
+          ShapeContextTokens::kBadgeRadius),
+      flags);
 
   // Render the badge text.
   const SkColor foreground_color =
-      color_provider->GetColor(ui::kColorButtonForegroundProminent);
+      color_provider->GetColor(ui::kColorBadgeForeground);
   canvas->DrawStringRect(text, badge_font, foreground_color, badge_text_bounds);
 }
 

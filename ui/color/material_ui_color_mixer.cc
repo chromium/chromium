@@ -23,6 +23,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
            << (dark_mode ? "Dark" : "Light") << " window.";
   ColorMixer& mixer = provider->AddMixer();
 
+  mixer[kColorBadgeBackground] = {kColorSysTonalContainer};
+  mixer[kColorBadgeForeground] = {kColorSysOnTonalContainer};
   mixer[kColorButtonBackground] = {kColorSysSurface};
   mixer[kColorButtonBackgroundPressed] =
       GetResultingPaintColor({kColorSysStatePressed}, {kColorButtonBackground});

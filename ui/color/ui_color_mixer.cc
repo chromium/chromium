@@ -26,6 +26,11 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorAvatarHeaderArt] = {kColorMidground};
   mixer[kColorAvatarIconGuest] = {kColorSecondaryForeground};
   mixer[kColorAvatarIconIncognito] = {kColorPrimaryForeground};
+  mixer[kColorBadgeBackground] =
+      PickGoogleColor(kColorAccent, kColorDialogBackground,
+                      color_utils::kMinimumVisibleContrastRatio);
+  mixer[kColorBadgeForeground] =
+      GetColorWithMaxContrast(kColorButtonBackgroundProminent);
   mixer[kColorBubbleBackground] = {kColorPrimaryBackground};
   mixer[kColorBubbleBorder] = {kColorMidground};
   mixer[kColorBubbleBorderShadowLarge] = {SetAlpha(kColorShadowBase, 0x1A)};

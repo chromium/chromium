@@ -105,24 +105,24 @@
   \
   /* UI material system color tokens */ \
   /* Primary. */ \
-  E_CPONLY(kColorSysPrimary) \
   E_CPONLY(kColorSysOnPrimary) \
-  E_CPONLY(kColorSysPrimaryContainer) \
   E_CPONLY(kColorSysOnPrimaryContainer) \
+  E_CPONLY(kColorSysPrimary) \
+  E_CPONLY(kColorSysPrimaryContainer) \
   /* Secondary. */ \
-  E_CPONLY(kColorSysSecondary) \
   E_CPONLY(kColorSysOnSecondary) \
-  E_CPONLY(kColorSysSecondaryContainer) \
   E_CPONLY(kColorSysOnSecondaryContainer) \
+  E_CPONLY(kColorSysSecondary) \
+  E_CPONLY(kColorSysSecondaryContainer) \
   /* Tertiary. */ \
-  E_CPONLY(kColorSysTertiary) \
   E_CPONLY(kColorSysOnTertiary) \
-  E_CPONLY(kColorSysTertiaryContainer) \
   E_CPONLY(kColorSysOnTertiaryContainer) \
+  E_CPONLY(kColorSysTertiary) \
+  E_CPONLY(kColorSysTertiaryContainer) \
   /* Error. */ \
   E_CPONLY(kColorSysError) \
-  E_CPONLY(kColorSysOnError) \
   E_CPONLY(kColorSysErrorContainer) \
+  E_CPONLY(kColorSysOnError) \
   E_CPONLY(kColorSysOnErrorContainer) \
   /* Neutral. */ \
   E_CPONLY(kColorSysOnSurface) \
@@ -130,8 +130,8 @@
   E_CPONLY(kColorSysOutline) \
   E_CPONLY(kColorSysSurfaceVariant) \
   /* Inverse. */ \
-  E_CPONLY(kColorSysInversePrimary) \
   E_CPONLY(kColorSysInverseOnSurface) \
+  E_CPONLY(kColorSysInversePrimary) \
   /* Surfaces. */ \
   E_CPONLY(kColorSysSurface) \
   E_CPONLY(kColorSysSurface1) \
@@ -145,20 +145,20 @@
   E_CPONLY(kColorSysOnSurfaceSubtle) \
   /* Chrome surfaces. */ \
   E_CPONLY(kColorSysBase) \
+  E_CPONLY(kColorSysHeader) \
+  E_CPONLY(kColorSysHeaderInactive) \
   E_CPONLY(kColorSysOnBase) \
   E_CPONLY(kColorSysOnBaseSecondary) \
   E_CPONLY(kColorSysOnBaseDivider) \
   E_CPONLY(kColorSysOnBaseBorder) \
-  E_CPONLY(kColorSysHeader) \
-  E_CPONLY(kColorSysHeaderInactive) \
+  E_CPONLY(kColorSysOnHeaderContainer) \
+  E_CPONLY(kColorSysOnHeaderContainerInactive) \
   E_CPONLY(kColorSysOnHeaderDivider) \
   E_CPONLY(kColorSysOnHeaderDividerInactive) \
   E_CPONLY(kColorSysOnHeaderPrimary) \
   E_CPONLY(kColorSysOnHeaderPrimaryInactive) \
   E_CPONLY(kColorSysOnHeaderSecondary) \
   E_CPONLY(kColorSysOnHeaderSecondaryInactive) \
-  E_CPONLY(kColorSysOnHeaderContainer) \
-  E_CPONLY(kColorSysOnHeaderContainerInactive) \
   /* Effects. */ \
   E_CPONLY(kColorSysShadow) \
   /* States. */ \
@@ -169,6 +169,9 @@
   E_CPONLY(kColorSysStateFocusRing) \
   E_CPONLY(kColorSysStateDisabled) \
   E_CPONLY(kColorSysStateDisabledContainer) \
+  /* Containers. */ \
+  E_CPONLY(kColorSysOnTonalContainer) \
+  E_CPONLY(kColorSysTonalContainer) \
   /* Core color concepts */ \
   /* kColorAccent is used in color_provider_css_colors_test.ts. */ \
   /* If changing the variable name, the variable name in the test needs to */ \
@@ -197,6 +200,8 @@
   E_CPONLY(kColorAvatarHeaderArt) \
   E_CPONLY(kColorAvatarIconGuest) \
   E_CPONLY(kColorAvatarIconIncognito) \
+  E_CPONLY(kColorBadgeBackground) \
+  E_CPONLY(kColorBadgeForeground) \
   E_CPONLY(kColorBubbleBackground) \
   E_CPONLY(kColorBubbleBorder) \
   E_CPONLY(kColorBubbleBorderShadowLarge) \

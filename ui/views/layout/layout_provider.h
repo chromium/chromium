@@ -136,6 +136,7 @@ enum class Emphasis {
 // These context tokens are granular to the entire client and will map to
 // sys token values (see below).
 enum class ShapeContextTokens {
+  kBadgeRadius,
   kButtonRadius,
   kTextfieldRadius,
   kComboboxRadius,

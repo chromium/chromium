@@ -12,11 +12,13 @@
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/platform_font_mac.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/badge_painter.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace {
 
@@ -25,7 +27,9 @@ constexpr CGFloat kIPHDotSize = 6;
 NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
   // 1. Make the attributed string.
 
-  NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
+  NSString* badge_text = l10n_util::GetNSString(features::IsChromeRefresh2023()
+                                                    ? IDS_NEW_BADGE_UPPERCASE
+                                                    : IDS_NEW_BADGE);
 
   // The preferred font is slightly smaller and slightly more bold than the
   // menu font. The size change is required to make it look correct in the
@@ -68,10 +72,13 @@ NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
       drawingHandler:^(NSRect dest_rect) {
         NSRect badge_frame = NSInsetRect(
             dest_rect, views::BadgePainter::kBadgeHorizontalMargin, 0);
-        NSBezierPath* rounded_badge_rect = [NSBezierPath
-            bezierPathWithRoundedRect:badge_frame
-                              xRadius:views::BadgePainter::kBadgeCornerRadius
-                              yRadius:views::BadgePainter::kBadgeCornerRadius];
+        const int badge_radius =
+            views::LayoutProvider::Get()->GetCornerRadiusMetric(
+                views::ShapeContextTokens::kBadgeRadius);
+        NSBezierPath* rounded_badge_rect =
+            [NSBezierPath bezierPathWithRoundedRect:badge_frame
+                                            xRadius:badge_radius
+                                            yRadius:badge_radius];
         DCHECK(color_provider);
         NSColor* badge_color = skia::SkColorToSRGBNSColor(
             color_provider->GetColor(ui::kColorButtonBackgroundProminent));

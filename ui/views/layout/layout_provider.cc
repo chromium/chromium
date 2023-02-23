@@ -179,6 +179,7 @@ int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,
 ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
   static constexpr auto shape_token_map =
       base::MakeFixedFlatMap<ShapeContextTokens, ShapeSysTokens>({
+          {ShapeContextTokens::kBadgeRadius, ShapeSysTokens::kXSmall},
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
@@ -191,6 +192,8 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
                                           const gfx::Size& size) const {
   if (!features::IsChromeRefresh2023()) {
     switch (id) {
+      case ShapeContextTokens::kBadgeRadius:
+        return 3;
       case ShapeContextTokens::kButtonRadius:
         return 4;
       case ShapeContextTokens::kComboboxRadius:

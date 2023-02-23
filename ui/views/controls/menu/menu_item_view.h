@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/themed_vector_icon.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -675,8 +676,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // and SetIconView() explicitly calls UpdateSelectionBasedStateIfChanged().
   bool update_selection_based_state_in_view_herarchy_changed_ = true;
 
-  const std::u16string new_badge_text_ =
-      l10n_util::GetStringUTF16(IDS_NEW_BADGE);
+  const std::u16string new_badge_text_ = l10n_util::GetStringUTF16(
+      features::IsChromeRefresh2023() ? IDS_NEW_BADGE_UPPERCASE
+                                      : IDS_NEW_BADGE);
 };
 
 }  // namespace views
