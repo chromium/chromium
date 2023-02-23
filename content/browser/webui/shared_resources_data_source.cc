@@ -21,6 +21,7 @@
 #include "ui/resources/grit/webui_resources_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/grit/ash_webui_common_resources_map.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "chromeos/ash/grit/ash_resources_map.h"
 #include "chromeos/grit/chromeos_resources.h"
@@ -111,6 +112,8 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
       base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize));
   source->AddResourcePaths(base::make_span(kSkiaResources, kSkiaResourcesSize));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddResourcePaths(
+      base::make_span(kAshWebuiCommonResources, kAshWebuiCommonResourcesSize));
   AddResources(GetChromeosMojoResourceIds(), kChromeosResources,
                kChromeosResourcesSize, source);
   AddResources(GetAshMojoResourceIds(), kAshResources, kAshResourcesSize,

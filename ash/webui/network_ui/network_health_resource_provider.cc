@@ -4,10 +4,10 @@
 
 #include "ash/webui/network_ui/network_health_resource_provider.h"
 
+#include "ash/webui/grit/ash_webui_common_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
 
 namespace ash {
 namespace network_health {
@@ -56,10 +56,10 @@ struct WebUiResource {
 };
 
 constexpr WebUiResource kResources[] = {
-    {"ethernet.svg", IDR_ASH_COMMON_NETWORK_ETHERNET_SVG},
-    {"vpn.svg", IDR_ASH_COMMON_NETWORK_VPN_SVG},
-    {"wifi_0.svg", IDR_ASH_COMMON_NETWORK_WIFI_0_SVG},
-    {"cellular_0.svg", IDR_ASH_COMMON_NETWORK_CELLULAR_0_SVG},
+    {"ethernet.svg", IDR_ASH_WEBUI_COMMON_NETWORK_ETHERNET_SVG},
+    {"vpn.svg", IDR_ASH_WEBUI_COMMON_NETWORK_VPN_SVG},
+    {"wifi_0.svg", IDR_ASH_WEBUI_COMMON_NETWORK_WIFI_0_SVG},
+    {"cellular_0.svg", IDR_ASH_WEBUI_COMMON_NETWORK_CELLULAR_0_SVG},
 };
 
 }  // namespace

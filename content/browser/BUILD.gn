@@ -2414,6 +2414,7 @@ source_set("browser") {
       "//ui/base/ime/ash",
       "//ui/chromeos/styles:cros_styles_views",
     ]
+    public_deps += [ "//ash/webui/common/resources:resources" ]
   }
 
   if (is_castos) {

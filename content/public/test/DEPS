@@ -68,5 +68,8 @@ specific_include_rules = {
   ],
   "browser_test_base.cc": [
     "+ui/platform_window/fuchsia/initialize_presenter_api_view.h"
+  ],
+  "browser_test_utils.cc": [
+    "+ash/webui/grit/ash_webui_common_resources.h"
   ]
 }

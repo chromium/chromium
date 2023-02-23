@@ -135,7 +135,10 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/latency/latency_info.h"
-#include "ui/resources/grit/webui_resources.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/webui/grit/ash_webui_common_resources.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <combaseapi.h>
@@ -2042,7 +2045,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
   std::string script;
   scoped_refptr<base::RefCountedMemory> bytes =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
-          IDR_ASH_COMMON_WEBUI_RESOURCE_TEST_JS);
+          IDR_ASH_WEBUI_COMMON_WEBUI_RESOURCE_TEST_JS);
 
   if (HasGzipHeader(*bytes))
     AppendGzippedResource(*bytes, &script);

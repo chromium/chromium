@@ -223,7 +223,7 @@ generate_grd("build_html_css_wrapper_files_grdp") {
   resource_path_prefix = "ash/common"
 }
 
-generate_grd("build_grdp") {
+generate_grd("build_grd") {
   input_files = [
     "fake_method_resolver.js",
     "fake_observables.js",
@@ -275,11 +275,37 @@ generate_grd("build_grdp") {
     "network_health/test_warning.png",
   ]
   input_files_base_dir = rebase_path(".", "//")
-  public_deps = [ ":preprocess" ]
-  manifest_files = [ "$target_gen_dir/$preprocessed_manifest" ]
-  grd_prefix = "ash_common"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+  grd_prefix = "ash_webui_common"
+  out_grd = "$target_gen_dir/resources.grd"
   resource_path_prefix = "ash/common"
+
+  deps = [
+    ":build_html_css_wrapper_files_grdp",
+    ":preprocess",
+    "hotspot:build_grdp",
+    "typescript_utils:build_grdp",
+  ]
+
+  manifest_files = [ "$target_gen_dir/$preprocessed_manifest" ]
+  grdp_files = [
+    "$target_gen_dir/hotspot/resources.grdp",
+    "$target_gen_dir/typescript_utils/resources.grdp",
+    "$target_gen_dir/html_css_wrapper_files_resources.grdp",
+  ]
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/ash_webui_common_resources.h",
+    "grit/ash_webui_common_resources_map.cc",
+    "grit/ash_webui_common_resources_map.h",
+    "ash_webui_common_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/ash/webui"
 }
 
 generate_definitions_js_files = [

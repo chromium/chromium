@@ -630,6 +630,10 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [3030],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/common/resources/resources.grd": {
+    "META": {"sizes": {"includes": [400]}},
+    "includes": [3035],
+  },
   "ash/webui/help_app_ui/resources/help_app_resources.grd": {
     "includes": [3040],
   },
