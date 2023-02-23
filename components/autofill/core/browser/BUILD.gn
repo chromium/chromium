@@ -917,6 +917,7 @@ source_set("unit_tests") {
     "manual_testing_profile_import_unittest.cc",
     "merchant_promo_code_manager_unittest.cc",
     "metrics/autofill_metrics_unittest.cc",
+    "metrics/form_events/address_form_event_logger_unittest.cc",
     "metrics/form_events/form_event_logger_base_unittest.cc",
     "metrics/payments/iban_metrics_unittest.cc",
     "metrics/payments/offers_metrics_unittest.cc",

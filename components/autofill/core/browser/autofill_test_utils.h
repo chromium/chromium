@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
@@ -265,6 +266,10 @@ AutofillProfile GetServerProfile();
 
 // Returns a server profile full of dummy info, different to the above.
 AutofillProfile GetServerProfile2();
+
+// Sets the `profile`s source and initial creator to match `category`.
+void SetProfileCategory(AutofillProfile& profile,
+                        AutofillProfileSourceCategory category);
 
 // Returns an IBAN full of dummy info.
 IBAN GetIBAN();

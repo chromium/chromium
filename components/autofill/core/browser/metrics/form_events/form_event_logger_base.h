@@ -157,10 +157,10 @@ class FormEventLoggerBase {
 
   // Whether a filled form and submitted form required no fixes to filled
   // fields.
-  void RecordFillingCorrectness(LogBuffer& logs) const;
+  virtual void RecordFillingCorrectness(LogBuffer& logs) const;
 
   // Whether a submitted form was filled.
-  void RecordFillingAssistance(LogBuffer& logs) const;
+  virtual void RecordFillingAssistance(LogBuffer& logs) const;
 
   // Whether a (non-)autofilled form was submitted.
   void RecordFormSubmission(LogBuffer& logs) const;

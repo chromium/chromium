@@ -11,11 +11,26 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/sync_utils.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
+
+// To measure the added value of kAccount profiles, the filling assistance
+// metric is split by profile category. Since the metric is emitted at
+// navigation (not at filling time), multiple profiles can be used to fill a
+// single form. This is represented by kMixed.
+enum class CategoryResolvedFillingAssistanceBucket {
+  kNone = 0,
+  kLocalOrSyncable = 1,
+  kAccountChrome = 2,
+  kAccountNonChrome = 3,
+  kMixed = 4,
+  kMaxValue = kMixed
+};
 
 class AddressFormEventLogger : public FormEventLoggerBase {
  public:
@@ -47,6 +62,15 @@ class AddressFormEventLogger : public FormEventLoggerBase {
   void OnLog(const std::string& name,
              FormEvent event,
              const FormStructure& form) const override;
+
+  // Assistance and correctness metrics resolved by profile category.
+  void RecordFillingAssistance(LogBuffer& logs) const override;
+  void RecordFillingCorrectness(LogBuffer& logs) const override;
+
+ private:
+  // All profile categories for which the user has accepted at least one
+  // suggestion - used for metrics.
+  DenseSet<AutofillProfileSourceCategory> profile_categories_filled_;
 };
 
 }  // namespace autofill

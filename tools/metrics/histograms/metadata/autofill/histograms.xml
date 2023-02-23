@@ -2421,6 +2421,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Leipzig.FillingAssistanceOrigin"
+    enum="AutofillCategoryResolvedFillingAssistance" expires_after="2023-12-12">
+  <owner>koerber@chromium.org</owner>
+  <owner>fleimgruber@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingAssistance.Address, but split by profile
+    category.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Leipzig.FillingCorrectness.{Category}"
+    enum="BooleanAutofillFillingCorrectness" expires_after="2023-12-12">
+  <owner>koerber@chromium.org</owner>
+  <owner>fleimgruber@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    Like Autofill.KeyMetrics.FillingCorrectness.Address, but split by profile
+    category.
+  </summary>
+  <token key="Category">
+    <variant name="AccountChrome"
+        summary="Only kAccount profiles originating from Chrome were used"/>
+    <variant name="AccountNonChrome"
+        summary="Only kAccount profiles originating from outside Chrome were
+                 used"/>
+    <variant name="Legacy" summary="Only kLegacyOrSyncable profiles were used"/>
+    <variant name="Mixed"
+        summary="Multiple profiles of mixed categories were used"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.LocalCardMigrationBubbleOffer.{ShowType}"
     enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2023-09-01">
   <owner>siyua@chromium.org</owner>

@@ -13,6 +13,8 @@
 #include "base/metrics/user_metrics_action.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 
@@ -39,7 +41,7 @@ void AddressFormEventLogger::OnDidFillSuggestion(
 
   form_interactions_ukm_logger_->LogDidFillSuggestion(
       record_type,
-      /*is_for_for_credit_card=*/false, form, field);
+      /*is_for_credit_card=*/false, form, field);
 
   if (record_type == AutofillProfile::SERVER_PROFILE) {
     Log(FORM_EVENT_SERVER_SUGGESTION_FILLED, form);
@@ -62,6 +64,11 @@ void AddressFormEventLogger::OnDidFillSuggestion(
 
   ++form_interaction_counts_.autofill_fills;
   UpdateFlowId();
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAccountProfilesUnionView)) {
+    profile_categories_filled_.insert(GetCategoryOfProfile(profile));
+  }
 }
 
 void AddressFormEventLogger::OnDidSeeFillableDynamicForm(
@@ -110,6 +117,51 @@ void AddressFormEventLogger::RecordParseForm() {
 void AddressFormEventLogger::RecordShowSuggestions() {
   base::RecordAction(
       base::UserMetricsAction("Autofill_ShowedProfileSuggestions"));
+}
+
+void AddressFormEventLogger::RecordFillingAssistance(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFillingAssistance(logs);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAccountProfilesUnionView)) {
+    return;
+  }
+  // Log the origin-resolved filling assistance metric by converting the
+  // `profile_categories_filled` to an CategoryResolvedFillingAssistanceBucket.
+  auto filled_categories_to_bucket = [&] {
+    if (profile_categories_filled_.empty()) {
+      return CategoryResolvedFillingAssistanceBucket::kNone;
+    }
+    if (profile_categories_filled_.size() > 1) {
+      return CategoryResolvedFillingAssistanceBucket::kMixed;
+    }
+    switch (*profile_categories_filled_.begin()) {
+      case AutofillProfileSourceCategory::kLocalOrSyncable:
+        return CategoryResolvedFillingAssistanceBucket::kLocalOrSyncable;
+      case AutofillProfileSourceCategory::kAccountChrome:
+        return CategoryResolvedFillingAssistanceBucket::kAccountChrome;
+      case AutofillProfileSourceCategory::kAccountNonChrome:
+        return CategoryResolvedFillingAssistanceBucket::kAccountNonChrome;
+    }
+  };
+  base::UmaHistogramEnumeration("Autofill.Leipzig.FillingAssistanceCategory",
+                                filled_categories_to_bucket());
+}
+
+void AddressFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {
+  FormEventLoggerBase::RecordFillingCorrectness(logs);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillAccountProfilesUnionView)) {
+    return;
+  }
+  // Non-empty because correctness is only logged when an Autofill
+  // suggestion was accepted.
+  DCHECK(!profile_categories_filled_.empty());
+  const std::string kBucket =
+      profile_categories_filled_.size() == 1
+          ? GetProfileCategorySuffix(*profile_categories_filled_.begin())
+          : "Mixed";
+  base::UmaHistogramBoolean("Autofill.Leipzig.FillingCorrectness." + kBucket,
+                            !has_logged_edited_autofilled_field_);
 }
 
 }  // namespace autofill

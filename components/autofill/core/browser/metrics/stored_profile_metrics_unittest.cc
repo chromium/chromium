@@ -14,8 +14,6 @@
 
 namespace autofill::autofill_metrics {
 
-constexpr int kNonChromeCreatorOrModifier = 1234;
-
 // Separate stored profile count metrics exist for every profile category. Test
 // them in a parameterized way.
 class StoredProfileMetricsTest
@@ -31,25 +29,6 @@ class StoredProfileMetricsTest
 
   // Returns the suffix used for the metrics.
   std::string GetSuffix() const { return GetProfileCategorySuffix(Category()); }
-
-  // Sets the `profile`s source and initial creator to match `category`.
-  void SetProfileCategory(AutofillProfile& profile,
-                          AutofillProfileSourceCategory category) {
-    switch (category) {
-      case AutofillProfileSourceCategory::kLocalOrSyncable:
-        profile.set_source_for_testing(
-            AutofillProfile::Source::kLocalOrSyncable);
-        break;
-      case AutofillProfileSourceCategory::kAccountChrome:
-      case AutofillProfileSourceCategory::kAccountNonChrome:
-        profile.set_source_for_testing(AutofillProfile::Source::kAccount);
-        profile.set_initial_creator_id(
-            category == AutofillProfileSourceCategory::kAccountChrome
-                ? AutofillProfile::kInitialCreatorOrModifierChrome
-                : kNonChromeCreatorOrModifier);
-        break;
-    }
-  }
 
  private:
   base::test::ScopedFeatureList features_;
@@ -93,13 +72,13 @@ TEST_P(StoredProfileMetricsTest, StoredProfiles) {
   // Create a recently used (3 days ago) profile.
   AutofillProfile profile0 = test::GetFullProfile();
   profile0.set_use_date(AutofillClock::Now() - base::Days(3));
-  SetProfileCategory(profile0, Category());
+  test::SetProfileCategory(profile0, Category());
 
   // Create a profile used a long time (200 days) ago without a country.
   AutofillProfile profile1 = test::GetFullProfile2();
   profile1.ClearFields({ADDRESS_HOME_COUNTRY});
   profile1.set_use_date(AutofillClock::Now() - base::Days(200));
-  SetProfileCategory(profile1, Category());
+  test::SetProfileCategory(profile1, Category());
 
   // Log the metrics and verify expectations.
   base::HistogramTester histogram_tester;
