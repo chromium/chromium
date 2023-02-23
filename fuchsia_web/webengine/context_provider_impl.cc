@@ -10,7 +10,9 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 
-ContextProviderImpl::ContextProviderImpl() = default;
+ContextProviderImpl::ContextProviderImpl(
+    sys::OutgoingDirectory& outgoing_directory)
+    : web_instance_host_(outgoing_directory) {}
 
 ContextProviderImpl::~ContextProviderImpl() = default;
 
@@ -40,5 +42,5 @@ void ContextProviderImpl::Create(
 }
 
 fuchsia::web::Debug* ContextProviderImpl::debug_api() {
-  return web_instance_host_.debug_api();
+  return &web_instance_host_.debug_api();
 }

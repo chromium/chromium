@@ -2,41 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 {
-    include: [
-        "syslog/client.shard.cml",
+  include: [
+    "//fuchsia_web/webinstance_host/web_instance_host_with_svc_directory.shard.cml",
+    "syslog/client.shard.cml",
+  ],
+  program: {
+    runner: "elf",
+    binary: "web_engine_exe",
+    args: [
+      "--context-provider",
     ],
-    program: {
-        runner: "elf",
-        binary: "web_engine_exe",
-        args: [
-            "--context-provider",
-        ],
+  },
+  capabilities: [
+    {
+      protocol: [
+        "fuchsia.web.ContextProvider",
+        "fuchsia.web.Debug",
+      ],
     },
-    capabilities: [
-        {
-            protocol: [
-                "fuchsia.web.ContextProvider",
-                "fuchsia.web.Debug",
-            ],
-        },
-    ],
-    use: [
-        {
-            protocol: [
-                "fuchsia.feedback.ComponentDataRegister",
-                "fuchsia.feedback.CrashReportingProductRegister",
-                "fuchsia.sys.Environment",
-                "fuchsia.sys.Loader",
-            ],
-        },
-    ],
-    expose: [
-        {
-            protocol: [
-                "fuchsia.web.ContextProvider",
-                "fuchsia.web.Debug",
-            ],
-            from: "self",
-        },
-    ],
+  ],
+  expose: [
+    {
+      protocol: [
+        "fuchsia.web.ContextProvider",
+        "fuchsia.web.Debug",
+      ],
+      from: "self",
+    },
+  ],
 }
