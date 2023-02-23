@@ -41,7 +41,7 @@ outlined below. (However, LED can be used for many other purposes. See the full
 list of features via `led help`.)
 
 1. Select a builder whose builds you'd like to reproduce. (Example:
-[linux-rel][7])
+[ToTLinux][7])
 2. Record its full builder name, along with its bucket. (The bucket name is
 present in the URL of the builder page, and is very likely "chromium/ci".)
 3. Checkout the [tools/build][3] repo (if not already present) and navigate to
@@ -53,7 +53,7 @@ before proceeding by running `recipes.py test train` via the [recipes.py][10]
 script.
 5. Launch a build with the given recipe change. This can be done with a single
 chained LED invocation, eg:
-`led get-builder chromium/ci:linux-rel | led edit-recipe-bundle | led launch`
+`led get-builder chromium/ci:ToTLinux | led edit-recipe-bundle | led launch`
 6. The LED invocation above will print out a link to the build that was
 launched. Repeat steps 4 & 5 until the triggered builds behave as expected
 with the new recipe change.
@@ -70,7 +70,7 @@ reach out to infra-dev@chromium.org or [file a bug][11]!
 [4]: /tools/mb/mb_config.pyl
 [5]: /testing/buildbot/
 [6]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests/trybots.py
-[7]: https://ci.chromium.org/p/chromium/builders/ci/linux-rel
+[7]: https://ci.chromium.org/p/chromium/builders/ci/ToTLinux
 [8]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium/api.py
 [9]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests/api.py
 [10]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipes.py
