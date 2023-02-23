@@ -1019,6 +1019,34 @@ TEST_F(CaptureModeDemoToolsTest, KeyComboWidgetDeIntersectsWithAutoClickBar) {
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 }
 
+// Tests that the key combo viewer widget will display for key event coming from
+// on-screen keyboard. For such key event, the key combo viewer will show on key
+// down of a modifier key whose `flags()` is not 0 or non-modifier key that is
+// allowed to show independently.
+TEST_F(CaptureModeDemoToolsTest, OnScreenKeyboardKeyEventTest) {
+  CaptureModeController* controller = StartCaptureSession(
+      CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  controller->EnableDemoTools(true);
+  StartVideoRecordingImmediately();
+  EXPECT_TRUE(controller->is_recording_in_progress());
+  CaptureModeDemoToolsController* demo_tools_controller =
+      GetCaptureModeDemoToolsController();
+  EXPECT_TRUE(demo_tools_controller);
+  CaptureModeDemoToolsTestApi demo_tools_test_api(demo_tools_controller);
+
+  auto* event_generator = GetEventGenerator();
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_A, ui::EF_CONTROL_DOWN);
+  EXPECT_THAT(demo_tools_test_api.GetShownModifiersKeyCodes(),
+              testing::ElementsAre(ui::VKEY_CONTROL));
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_A);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
+
+  PressAndReleaseKeyOnVK(event_generator, ui::VKEY_TAB, ui::EF_NONE);
+  EXPECT_TRUE(demo_tools_test_api.GetShownModifiersKeyCodes().empty());
+  EXPECT_EQ(demo_tools_test_api.GetShownNonModifierKeyCode(), ui::VKEY_TAB);
+  FireTimerAndVerifyWidget(/*should_hide_view=*/true);
+}
+
 // Tests that the metrics that record if a recording starts with demo tools
 // feature enabled are recorded correctly in a capture session both in clamshell
 // and tablet mode.
