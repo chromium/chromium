@@ -18463,7 +18463,7 @@
       {
         "args": [
           "--log-wptreport",
-          "--use-upstream-wpt",
+          "--no-wpt-internal",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",

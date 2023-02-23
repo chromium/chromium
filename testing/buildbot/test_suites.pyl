@@ -5506,7 +5506,7 @@
       'wpt_tests_ios': {
         'args': [
           '--log-wptreport',
-          '--use-upstream-wpt',
+          '--no-wpt-internal',
         ],
         'merge': {
           'args': [
