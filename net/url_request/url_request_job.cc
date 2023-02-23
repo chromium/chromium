@@ -23,6 +23,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_server.h"
+#include "net/base/schemeful_site.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/log/net_log.h"
@@ -84,7 +85,12 @@ class URLRequestJob::URLRequestJobSourceStream : public SourceStream {
   const raw_ptr<URLRequestJob> job_;
 };
 
-URLRequestJob::URLRequestJob(URLRequest* request) : request_(request) {}
+URLRequestJob::URLRequestJob(URLRequest* request)
+    : request_(request),
+      request_initiator_site_(request->initiator().has_value()
+                                  ? absl::make_optional(net::SchemefulSite(
+                                        request->initiator().value()))
+                                  : absl::nullopt) {}
 
 URLRequestJob::~URLRequestJob() = default;
 

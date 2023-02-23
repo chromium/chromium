@@ -877,10 +877,11 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
     bool has_storage_access) const {
-  // TODO(https://crbug.com/1401089): the overrides ought to exclude Storage
-  // Access API grants unless the frame has opted in.
-  return net::CookieSettingOverrides(
-      net::CookieSettingOverride::kStorageAccessGrantEligible);
+  net::CookieSettingOverrides overrides;
+  if (has_storage_access) {
+    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  }
+  return overrides;
 }
 
 }  // namespace network

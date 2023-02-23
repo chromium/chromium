@@ -278,6 +278,15 @@ void URLRequestHttpJob::Start() {
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
 
+  // Add/remove the Storage Access override enum based on whether the request's
+  // url and initiator are same-site, to prevent cross-site sibling iframes
+  // benefit from each other's storage access API grants.
+  request()->cookie_setting_overrides().PutOrRemove(
+      net::CookieSettingOverride::kStorageAccessGrantEligible,
+      request()->has_storage_access() && request_initiator_site().has_value() &&
+          request_initiator_site().value() ==
+              net::SchemefulSite(request()->url()));
+
   bool should_add_cookie_header = ShouldAddCookieHeader();
   UMA_HISTOGRAM_BOOLEAN("Net.HttpJob.CanIncludeCookies",
                         should_add_cookie_header);

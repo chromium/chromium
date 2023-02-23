@@ -664,13 +664,10 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlEqualsMatch_WithStorageAccess) {
   auto options = mojom::CookieManagerGetOptions::New();
   options->name = "cookie-name";
   options->match_type = mojom::CookieMatchType::EQUALS;
-  // TODO(https://crbug.com/1401089): third-party cookies should be inaccessible
-  // when `has_storage_access` is false. Fix this to expect an empty vector.
-  EXPECT_THAT(
-      sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
-                                  kOtherOrigin, /*has_storage_access=*/false,
-                                  options.Clone()),
-      ElementsAre(net::MatchesCookieNameValue("cookie-name", "cookie-value")));
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  kDefaultUrlWithPath, net::SiteForCookies(), kOtherOrigin,
+                  /*has_storage_access=*/false, options.Clone()),
+              IsEmpty());
 
   // When `has_storage_access` is true, Storage Access grants may be used to
   // access cookies.
@@ -1214,9 +1211,7 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookie_WithStorageAccess) {
       base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*source=*/"",
       /*incognito=*/false)});
 
-  // TODO(https://crbug.com/1401089): this write should fail, since
-  // `has_storage_access` is false.
-  EXPECT_TRUE(sync_service_->SetCanonicalCookie(
+  EXPECT_FALSE(sync_service_->SetCanonicalCookie(
       *net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "new-name", "new-value", "example.com", "/", base::Time(),
           base::Time(), base::Time(), base::Time(), /*secure=*/true,
@@ -1610,12 +1605,10 @@ TEST_P(RestrictedCookieManagerTest, CookiesEnabledFor_WithStorageAccess) {
       /*incognito=*/false)});
 
   bool result;
-  // TODO(https://crbug.com/1401089): access should not be allowed when
-  // `has_storage_access` is false.
   EXPECT_TRUE(backend()->CookiesEnabledFor(
       kDefaultUrl, net::SiteForCookies(), kOtherOrigin,
       /*has_storage_access=*/false, &result));
-  EXPECT_TRUE(result);
+  EXPECT_FALSE(result);
 
   // When `has_storage_access` is true, access is allowed since there's a
   // matching permission grant.
