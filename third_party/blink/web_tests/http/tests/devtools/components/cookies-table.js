@@ -88,7 +88,7 @@
   }
 
   function createSortAndDumpCookies(cookieData, sortColumn, isAsc) {
-    const table = new CookieTable.CookiesTable(SDK.targetManager.mainTarget(), true);
+    const table = new CookieTable.CookiesTable(SDK.targetManager.rootTarget(), true);
     const cookies = cookieData.map(createCookie);
     table.dataGrid = mockDataGrid({sortColumn, isAsc});
     table.sortCookies(cookies);
@@ -97,7 +97,7 @@
   }
 
   function createBuildAndDumpTable(cookieData, selectedNode, isAsc, lastEditedColumn) {
-    const table = new CookieTable.CookiesTable(SDK.targetManager.mainTarget(), true);
+    const table = new CookieTable.CookiesTable(SDK.targetManager.rootTarget(), true);
     const cookies = cookieData && cookieData.map(createCookie);
     const rootNode = mockNode({});
     table.lastEditedColumnId = lastEditedColumn || null;
