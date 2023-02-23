@@ -70391,6 +70391,7 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="Accepted scheme (eg. https)"/>
   <int value="3" label="Intent scheme"/>
   <int value="4" label="MDoc scheme"/>
+  <int value="5" label="openid4vp"/>
 </enum>
 
 <enum name="NavigationIsGuest">

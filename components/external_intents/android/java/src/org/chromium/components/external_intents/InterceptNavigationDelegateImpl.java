@@ -87,7 +87,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
      */
     @IntDef({InterceptScheme.NOT_INTERCEPTED, InterceptScheme.UNKNOWN_SCHEME,
             InterceptScheme.ACCEPTED_SCHEME, InterceptScheme.INTENT_SCHEME,
-            InterceptScheme.MDOC_SCHEME, InterceptScheme.NUM_ENTRIES})
+            InterceptScheme.MDOC_SCHEME, InterceptScheme.OPENID4VP_SCHEME,
+            InterceptScheme.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface InterceptScheme {
         int NOT_INTERCEPTED = 0;
@@ -95,10 +96,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         int ACCEPTED_SCHEME = 2;
         int INTENT_SCHEME = 3;
         int MDOC_SCHEME = 4;
-        int NUM_ENTRIES = 5;
+        int OPENID4VP_SCHEME = 5;
+        int NUM_ENTRIES = 6;
     }
     private static final List<String> MDOC_SCHEMES =
             new ArrayList<String>(Arrays.asList("mdoc", "mdl-openid4vp", "mdoc-openid4vp"));
+    private static final String OPENID4VP_SCHEME = "openid4vp";
 
     private static final String MAIN_FRAME_INTENT_LAUNCH_NAME =
             "Android.Intent.MainFrameIntentLaunch";
@@ -284,6 +287,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             scheme = InterceptScheme.INTENT_SCHEME;
         } else if (MDOC_SCHEMES.contains(escapedUrl.getScheme())) {
             scheme = InterceptScheme.MDOC_SCHEME;
+        } else if (OPENID4VP_SCHEME.equals(escapedUrl.getScheme())) {
+            scheme = InterceptScheme.OPENID4VP_SCHEME;
         }
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.TabNavigationIntercept.Scheme", scheme, InterceptScheme.NUM_ENTRIES);
