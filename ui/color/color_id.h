@@ -174,6 +174,7 @@
   /* If changing the variable name, the variable name in the test needs to */ \
   /* be changed as well. */ \
   E_CPONLY(kColorAccent) \
+  E_CPONLY(kColorAccentWithGuaranteedContrastAtopPrimaryBackground) \
   E_CPONLY(kColorAlertHighSeverity) \
   E_CPONLY(kColorAlertLowSeverity) \
   E_CPONLY(kColorAlertMediumSeverity) \
