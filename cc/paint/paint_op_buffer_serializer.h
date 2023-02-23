@@ -81,7 +81,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   void SerializeBuffer(SkCanvas* canvas,
                        const PaintOpBuffer& buffer,
                        const std::vector<size_t>* offsets);
-  // Returns whether searilization of |op| succeeded and we need to serialize
+  // Returns whether serialization of |op| succeeded and we need to serialize
   // the next PaintOp in the PaintOpBuffer.
   bool WillSerializeNextOp(const PaintOp& op,
                            SkCanvas* canvas,
@@ -110,6 +110,7 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
   SerializeCallback serialize_cb_;
   PaintOp::SerializeOptions options_;
 
+  size_t serialized_op_count_ = 0;
   bool valid_ = true;
 };
 
