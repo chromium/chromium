@@ -44,6 +44,7 @@ bool IsFormatSupported(viz::ResourceFormat resource_format) {
     case viz::ResourceFormat::BGRX_8888:
     case viz::ResourceFormat::RGBA_F16:
     case viz::ResourceFormat::RED_8:
+    case viz::ResourceFormat::RG_88:
     case viz::ResourceFormat::BGRA_1010102:
     case viz::ResourceFormat::RGBA_1010102:
       return true;
