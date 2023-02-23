@@ -1026,4 +1026,66 @@ void ForEachRegistryRunValueWithPrefix(
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
+void ForEachServiceWithPrefix(
+    const std::wstring& service_name_prefix,
+    const std::wstring& display_name_prefix,
+    base::RepeatingCallback<void(const std::wstring&)> callback) {
+  for (base::win::RegistryKeyIterator it(HKEY_LOCAL_MACHINE,
+                                         L"SYSTEM\\CurrentControlSet\\Services",
+                                         KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const std::wstring service_name = it.Name();
+    if (base::StartsWith(service_name, service_name_prefix)) {
+      if (display_name_prefix.empty()) {
+        callback.Run(service_name);
+        continue;
+      }
+
+      base::win::RegKey key;
+      if (key.Open(HKEY_LOCAL_MACHINE,
+                   base::StrCat(
+                       {L"SYSTEM\\CurrentControlSet\\Services\\", service_name})
+                       .c_str(),
+                   Wow6432(KEY_READ)) != ERROR_SUCCESS) {
+        continue;
+      }
+
+      std::wstring display_name;
+      if (key.ReadValue(L"DisplayName", &display_name) != ERROR_SUCCESS) {
+        continue;
+      }
+
+      if (base::StartsWith(display_name, display_name_prefix)) {
+        callback.Run(service_name);
+      }
+    }
+  }
+}
+
+[[nodiscard]] bool DeleteService(const std::wstring& service_name) {
+  SC_HANDLE scm = ::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
+  if (!scm) {
+    return false;
+  }
+
+  SC_HANDLE service = ::OpenService(scm, service_name.c_str(), DELETE);
+  bool is_service_deleted = !service;
+  if (!is_service_deleted) {
+    is_service_deleted =
+        ::DeleteService(service)
+            ? true
+            : ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
+
+    ::CloseServiceHandle(service);
+  }
+  ::CloseServiceHandle(scm);
+
+  if (!DeleteRegValue(HKEY_LOCAL_MACHINE, UPDATER_KEY, service_name)) {
+    return false;
+  }
+
+  return is_service_deleted;
+}
+
 }  // namespace updater

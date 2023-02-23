@@ -122,31 +122,6 @@ HRESULT CreateLocalServer(GUID clsid,
   return result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND;
 }
 
-[[nodiscard]] bool DeleteService(const std::wstring& service_name) {
-  SC_HANDLE scm = ::OpenSCManager(
-      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
-  if (!scm)
-    return false;
-
-  SC_HANDLE service = ::OpenService(scm, service_name.c_str(), DELETE);
-  bool is_service_deleted = !service;
-  if (!is_service_deleted) {
-    is_service_deleted =
-        ::DeleteService(service)
-            ? true
-            : ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
-
-    ::CloseServiceHandle(service);
-  }
-  ::CloseServiceHandle(scm);
-
-  if (!DeleteRegValue(HKEY_LOCAL_MACHINE, UPDATER_KEY, service_name)) {
-    return false;
-  }
-
-  return is_service_deleted;
-}
-
 [[nodiscard]] bool IsServiceGone(const std::wstring& service_name) {
   SC_HANDLE scm = ::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
@@ -172,21 +147,6 @@ HRESULT CreateLocalServer(GUID clsid,
   return is_service_gone &&
          !base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_KEY, Wow6432(KEY_READ))
               .HasValue(service_name.c_str());
-}
-
-// Runs `callback` for each system service that matches `prefix`.
-void ForEachService(
-    const std::wstring& prefix,
-    base::RepeatingCallback<void(const std::wstring&)> callback) {
-  for (base::win::RegistryKeyIterator it(HKEY_LOCAL_MACHINE,
-                                         L"SYSTEM\\CurrentControlSet\\Services",
-                                         KEY_WOW64_32KEY);
-       it.Valid(); ++it) {
-    const std::wstring service_name = it.Name();
-    if (base::StartsWith(service_name, prefix)) {
-      callback.Run(service_name);
-    }
-  }
 }
 
 // Checks the installation states (installed or uninstalled) and versions (SxS
@@ -298,10 +258,11 @@ void CheckInstallation(UpdaterScope scope,
 // build containing fix r1105318 is published.
 #if 0
       if (!is_installed) {
-        ForEachService(
+        ForEachServiceWithPrefix(
             base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
                           is_internal_service ? kWindowsInternalServiceName
                                               : kWindowsServiceName}),
+            base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
             base::BindRepeating([](const std::wstring& service_name) {
               ADD_FAILURE() << "Unexpected service found: " << service_name;
             }));
@@ -611,10 +572,12 @@ void Clean(UpdaterScope scope) {
   }
 
   if (IsSystemInstall(scope)) {
-    ForEachService(base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
-                   base::BindRepeating([](const std::wstring& service_name) {
-                     EXPECT_TRUE(DeleteService(service_name));
-                   }));
+    ForEachServiceWithPrefix(
+        base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+        base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
+        base::BindRepeating([](const std::wstring& service_name) {
+          EXPECT_TRUE(DeleteService(service_name));
+        }));
   }
 
   scoped_refptr<TaskScheduler> task_scheduler =

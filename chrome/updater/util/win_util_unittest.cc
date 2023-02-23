@@ -44,6 +44,46 @@
 
 namespace updater {
 
+namespace {
+
+// Allows access to all authenticated users on the machine.
+CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
+  CSecurityDesc sd;
+  CDacl dacl;
+  dacl.AddAllowedAce(Sids::System(), accessmask);
+  dacl.AddAllowedAce(Sids::Admins(), accessmask);
+  dacl.AddAllowedAce(Sids::Interactive(), accessmask);
+
+  sd.SetDacl(dacl);
+  sd.MakeAbsolute();
+  return sd;
+}
+
+[[nodiscard]] bool CreateService(const std::wstring& service_name,
+                                 const std::wstring& display_name,
+                                 const std::wstring& command_line) {
+  SC_HANDLE scm = ::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
+  if (!scm) {
+    return false;
+  }
+
+  SC_HANDLE service = ::CreateService(
+      scm, service_name.c_str(), display_name.c_str(),
+      DELETE | SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG,
+      SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
+      command_line.c_str(), nullptr, nullptr, nullptr, nullptr, nullptr);
+  if (!service && ::GetLastError() != ERROR_SERVICE_EXISTS) {
+    return false;
+  }
+
+  ::CloseServiceHandle(service);
+  ::CloseServiceHandle(scm);
+  return true;
+}
+
+}  // namespace
+
 TEST(WinUtil, GetDownloadProgress) {
   EXPECT_EQ(GetDownloadProgress(0, 50), 0);
   EXPECT_EQ(GetDownloadProgress(12, 50), 24);
@@ -142,23 +182,6 @@ TEST(WinUtil, RunElevated) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), DWORD{0});
 }
-
-namespace {
-
-// Allows access to all authenticated users on the machine.
-CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
-  CSecurityDesc sd;
-  CDacl dacl;
-  dacl.AddAllowedAce(Sids::System(), accessmask);
-  dacl.AddAllowedAce(Sids::Admins(), accessmask);
-  dacl.AddAllowedAce(Sids::Interactive(), accessmask);
-
-  sd.SetDacl(dacl);
-  sd.MakeAbsolute();
-  return sd;
-}
-
-}  // namespace
 
 TEST(WinUtil, RunDeElevated_Exe) {
   if (!::IsUserAnAdmin() || !IsUACOn())
@@ -384,7 +407,7 @@ TEST(WinUtil, IsGuid) {
 
 TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
   constexpr int kRunEntries = 6;
-  constexpr wchar_t kRunEntryPrefix[] = L"foobar";
+  constexpr wchar_t kRunEntryPrefix[] = L"win_util_unittest";
 
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
@@ -411,7 +434,7 @@ TEST(WinUtil, ForEachRegistryRunValueWithPrefix) {
 
 TEST(WinUtil, DeleteRegValue) {
   constexpr int kRegValues = 6;
-  constexpr wchar_t kRegValuePrefix[] = L"foobar";
+  constexpr wchar_t kRegValuePrefix[] = L"win_util_unittest";
 
   base::win::RegKey key;
   ASSERT_EQ(key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
@@ -427,6 +450,50 @@ TEST(WinUtil, DeleteRegValue) {
     EXPECT_TRUE(DeleteRegValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, entry_name));
     EXPECT_FALSE(key.HasValue(entry_name.c_str()));
     EXPECT_TRUE(DeleteRegValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, entry_name));
+  }
+}
+
+TEST(WinUtil, ForEachServiceWithPrefix) {
+  if (!::IsUserAnAdmin()) {
+    return;
+  }
+
+  constexpr int kNumServices = 6;
+  constexpr wchar_t kServiceNamePrefix[] = L"win_util_unittest";
+
+  for (int count = 0; count < kNumServices; ++count) {
+    std::wstring service_name(kServiceNamePrefix);
+    service_name.push_back(L'0' + count);
+    EXPECT_TRUE(
+        CreateService(service_name, service_name, L"C:\\temp\\temp.exe"));
+  }
+
+  int count_entries = 0;
+  ForEachServiceWithPrefix(
+      kServiceNamePrefix, kServiceNamePrefix,
+      base::BindLambdaForTesting([&count_entries, kServiceNamePrefix](
+                                     const std::wstring& service_name) {
+        EXPECT_TRUE(base::StartsWith(service_name, kServiceNamePrefix));
+        ++count_entries;
+        EXPECT_TRUE(DeleteService(service_name));
+      }));
+  EXPECT_EQ(count_entries, kNumServices);
+}
+
+TEST(WinUtil, DeleteService) {
+  if (!::IsUserAnAdmin()) {
+    return;
+  }
+
+  constexpr int kNumServices = 6;
+  constexpr wchar_t kServiceNamePrefix[] = L"win_util_unittest";
+
+  for (int count = 0; count < kNumServices; ++count) {
+    std::wstring service_name(kServiceNamePrefix);
+    service_name.push_back(L'0' + count);
+    ASSERT_TRUE(
+        CreateService(service_name, service_name, L"C:\\temp\\temp.exe"));
+    EXPECT_TRUE(DeleteService(service_name));
   }
 }
 

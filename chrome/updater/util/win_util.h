@@ -359,6 +359,17 @@ void ForEachRegistryRunValueWithPrefix(
                                   const std::wstring& path,
                                   const std::wstring& value);
 
+// Runs `callback` for each system service that matches `service_name_prefix`
+// and `display_name_prefix`. `display_name_prefix` can be empty, in which case,
+// only `service_name_prefix` is used for the matching.
+void ForEachServiceWithPrefix(
+    const std::wstring& service_name_prefix,
+    const std::wstring& display_name_prefix,
+    base::RepeatingCallback<void(const std::wstring&)> callback);
+
+// Deletes `service_name` system service and returns `true` on success.
+[[nodiscard]] bool DeleteService(const std::wstring& service_name);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_
