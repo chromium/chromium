@@ -53,6 +53,7 @@ source_set("credential_provider_promo_ui") {
     "//ios/chrome/browser/ui/credential_provider_promo/resources:animation_files",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
 
     # TODO(crbug.com/1412808): uncomment once Lottie framework is added.
     # "//ios/third_party/lottie",

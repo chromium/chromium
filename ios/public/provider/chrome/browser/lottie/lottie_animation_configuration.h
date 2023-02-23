@@ -16,8 +16,6 @@
 @property(nonatomic, copy) NSString* animationName;
 // Subdirectory to the json animation file.
 @property(nonatomic, copy) NSString* subdirectory;
-// Configuration parameters for LottieAnimation.
-@property(nonatomic, strong) UIView* view;
 // The bundle in which the animation is located.
 @property(nonatomic, strong) NSBundle* bundle;
 // The loop behavior of the animation.

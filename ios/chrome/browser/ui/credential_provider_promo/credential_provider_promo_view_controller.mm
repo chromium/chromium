@@ -4,12 +4,11 @@
 
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_view_controller.h"
 
-// TODO(crbug.com/1412808): uncomment once Lottie framework is added.
-// #import <Lottie/Lottie.h>
-
 #import "base/values.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
+#import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,23 +24,14 @@ constexpr CGFloat kPreferredCornerRadius = 20;
 @interface CredentialProviderPromoViewController ()
 
 // Custom animation view used in the full-screen promo.
-// TODO(crbug.com/1412808): replace with comment once Lottie framework is added.
-// @property(nonatomic, strong) LOTAnimationView* animationView;
-@property(nonatomic, strong) UIView* animationView;
+@property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
 
 // Child view controller used to display the alert screen for the half-screen
 // and full-screen promos.
 @property(nonatomic, strong) ConfirmationAlertViewController* alertScreen;
 
-// Vertical constraint for `alertScreen` when the device is in portrait
-// orientation. `alertScreen` is half the height of the screen.
-@property(nonatomic, strong)
-    NSLayoutConstraint* alertScreenPortraitModeVerticalConstraint;
-
-// Vertical constraint for `alertScreen` when the device is in landscape
-// orientation. `alertScreen` is the full height of the screen.
-@property(nonatomic, strong)
-    NSLayoutConstraint* alertScreenLandscapeModeVerticalConstraint;
+// TopAnchor constraint for `alertScreen`.
+@property(nonatomic, strong) NSLayoutConstraint* alertScreenTopAnchorConstraint;
 
 // Returns true if the animationView should be displayed.
 @property(nonatomic, assign, readonly) BOOL shouldShowAnimation;
@@ -55,28 +45,18 @@ constexpr CGFloat kPreferredCornerRadius = 20;
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  if (self.animationView) {
+  if (self.animationViewWrapper) {
     [self configureAndLayoutAnimationView];
   }
   [self configureAlertScreen];
   [self layoutAlertScreen];
 }
 
-// Called when the device is rotated. In landscape orientation, `animationView`
-// is hidden and `alertScreenPortraitModeVerticalConstraint` is activated. In
-// portrait orientation, both `alertScreen` and `animationView` are displayed,
-// and `alertScreenLandscapeModeVerticalConstraint` is activated.
+// Called when the device is rotated. (Un)Hide the animation accordingly.
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if ([self shouldShowAnimation]) {
-    self.alertScreenPortraitModeVerticalConstraint.active = NO;
-    self.alertScreenLandscapeModeVerticalConstraint.active = YES;
-    self.animationView.hidden = NO;
-  } else {
-    self.alertScreenLandscapeModeVerticalConstraint.active = NO;
-    self.alertScreenPortraitModeVerticalConstraint.active = YES;
-    self.animationView.hidden = YES;
-  }
+  self.animationViewWrapper.animationView.hidden = ![self shouldShowAnimation];
+  [self updateAlertScreenTopAnchorConstraint];
 }
 
 #pragma mark - CredentialProviderPromoConsumer
@@ -100,13 +80,14 @@ constexpr CGFloat kPreferredCornerRadius = 20;
   self.alertScreen = alertScreen;
 }
 
-- (void)setAnimation:(NSString*)animationAssetPath {
+- (void)setAnimation:(NSString*)animationAssetName {
   DCHECK(!self.isViewLoaded);
-  // TODO(crbug.com/1412808): replace line with comment once Lottie framework is
-  // added.
-  //_animationView = [LOTAnimationView
-  // animationWithFilePath:animationAssetPath];
-  _animationView = [[UIView alloc] init];
+
+  LottieAnimationConfiguration* config =
+      [[LottieAnimationConfiguration alloc] init];
+  config.animationName = animationAssetName;
+  config.loopAnimationCount = 1000;
+  _animationViewWrapper = ios::provider::GenerateLottieAnimation(config);
 }
 
 #pragma mark - Private
@@ -132,7 +113,7 @@ constexpr CGFloat kPreferredCornerRadius = 20;
 
 // Sets the layout of the alertScreen view.
 - (void)layoutAlertScreen {
-  if (self.animationView) {
+  if (self.animationViewWrapper.animationView) {
     [self layoutAlertScreenForPromoWithAnimation];
   } else {
     [self layoutAlertScreenForPromoWithoutAnimation];
@@ -143,12 +124,6 @@ constexpr CGFloat kPreferredCornerRadius = 20;
 // shown with the animation view (full-screen promo).
 - (void)layoutAlertScreenForPromoWithAnimation {
   self.alertScreen.view.translatesAutoresizingMaskIntoConstraints = NO;
-  self.alertScreenPortraitModeVerticalConstraint =
-      [self.alertScreen.view.topAnchor
-          constraintEqualToAnchor:self.view.topAnchor];
-  self.alertScreenLandscapeModeVerticalConstraint =
-      [self.alertScreen.view.topAnchor
-          constraintEqualToAnchor:self.view.centerYAnchor];
   [NSLayoutConstraint activateConstraints:@[
     [self.alertScreen.view.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor],
@@ -157,11 +132,21 @@ constexpr CGFloat kPreferredCornerRadius = 20;
     [self.alertScreen.view.widthAnchor
         constraintEqualToAnchor:self.view.widthAnchor],
   ]];
+  [self updateAlertScreenTopAnchorConstraint];
+}
+
+// Updates the top anchor of the alertScreen.
+// Called when the screen rotates, or in the initial layout.
+- (void)updateAlertScreenTopAnchorConstraint {
+  self.alertScreenTopAnchorConstraint.active = NO;
   if ([self shouldShowAnimation]) {
-    self.alertScreenLandscapeModeVerticalConstraint.active = YES;
+    self.alertScreenTopAnchorConstraint = [self.alertScreen.view.topAnchor
+        constraintEqualToAnchor:self.view.centerYAnchor];
   } else {
-    self.alertScreenPortraitModeVerticalConstraint.active = YES;
+    self.alertScreenTopAnchorConstraint = [self.alertScreen.view.topAnchor
+        constraintEqualToAnchor:self.view.topAnchor];
   }
+  self.alertScreenTopAnchorConstraint.active = YES;
 }
 
 // Sets the layout of the alertScreen view when the promo will be
@@ -184,27 +169,34 @@ constexpr CGFloat kPreferredCornerRadius = 20;
 
 // Configures the animation view and its constraints.
 - (void)configureAndLayoutAnimationView {
-  [self.view addSubview:self.animationView];
-  self.animationView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.animationView.contentMode = UIViewContentModeScaleAspectFit;
-  // TODO(crbug.com/1412808): uncomment once Lottie framework is added.
-  // self.animationView.loopAnimation = YES;
-  //[self.animationView play];
+  [self.view addSubview:self.animationViewWrapper.animationView];
+
+  self.animationViewWrapper.animationView
+      .translatesAutoresizingMaskIntoConstraints = NO;
+  self.animationViewWrapper.animationView.contentMode =
+      UIViewContentModeScaleAspectFit;
+
   [NSLayoutConstraint activateConstraints:@[
-    [self.animationView.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-    [self.animationView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [self.animationView.bottomAnchor
+    [self.animationViewWrapper.animationView.leftAnchor
+        constraintEqualToAnchor:self.view.leftAnchor],
+    [self.animationViewWrapper.animationView.rightAnchor
+        constraintEqualToAnchor:self.view.rightAnchor],
+    [self.animationViewWrapper.animationView.topAnchor
+        constraintEqualToAnchor:self.view.topAnchor],
+    [self.animationViewWrapper.animationView.bottomAnchor
         constraintEqualToAnchor:self.view.centerYAnchor],
   ]];
+
+  [self.animationViewWrapper play];
 }
 
 // Returns YES if the view should display the animation view.
 // The animation view should be displayed if `animationView` is not null and the
 // device is in portrait orientation.
 - (BOOL)shouldShowAnimation {
-  return self.animationView && self.traitCollection.verticalSizeClass !=
-                                   UIUserInterfaceSizeClassCompact;
+  return self.animationViewWrapper.animationView &&
+         self.traitCollection.verticalSizeClass !=
+             UIUserInterfaceSizeClassCompact;
 }
 
 @end

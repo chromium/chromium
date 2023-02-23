@@ -138,7 +138,7 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 // Sets the animation to the consumer that corresponds to the value of
 // promoContext. Depending on the value of promoContext, either the 'first step'
-// or 'learn more' animation path is set.
+// or 'learn more' animation name is set.
 - (void)setAnimation {
   DCHECK(self.consumer);
   NSString* animationName;
@@ -147,9 +147,7 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   } else {
     animationName = kLearnMoreAnimation;
   }
-  NSString* path = [[NSBundle mainBundle] pathForResource:animationName
-                                                   ofType:@"json"];
-  [self.consumer setAnimation:path];
+  [self.consumer setAnimation:animationName];
 }
 
 // Sets the text and image to the consumer. The text set depends on the value of
