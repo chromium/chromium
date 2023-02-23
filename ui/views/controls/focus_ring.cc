@@ -203,11 +203,14 @@ void FocusRing::Layout() {
     expansion_insets.set_right(min_x_inset);
     focus_bounds.Inset(expansion_insets);
   }
-
-  focus_bounds.Inset(gfx::Insets(halo_inset_));
-
-  if (parent()->GetProperty(kDrawFocusRingBackgroundOutline))
-    focus_bounds.Inset(gfx::Insets(-2 * kOutlineThickness));
+  if (ShouldDrawInnerStroke()) {
+    focus_bounds.Outset(halo_thickness_);
+  } else {
+    focus_bounds.Inset(gfx::Insets(halo_inset_));
+    if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
+      focus_bounds.Inset(gfx::Insets(-2 * kOutlineThickness));
+    }
+  }
 
   SetBoundsRect(focus_bounds);
 
@@ -237,20 +240,48 @@ void FocusRing::OnPaint(gfx::Canvas* canvas) {
   if (!ShouldPaint()) {
     return;
   }
-
-  const SkRRect ring_rect = GetRingRoundRect();
+  SkRRect ring_rect = GetRingRoundRect();
   cc::PaintFlags paint;
   paint.setAntiAlias(true);
   paint.setStyle(cc::PaintFlags::kStroke_Style);
+  if (ShouldDrawInnerStroke()) {
+    // Overlap between the outer stroke
+    // and inner stroke to avoid cracking between the two strokes.
+    const float kStrokeOverlap = halo_thickness_ / 2.0f;
 
-  if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
-    // Draw with full stroke width + 2x outline thickness to effectively paint
-    // the outline thickness on both sides of the FocusRing.
-    paint.setStrokeWidth(halo_thickness_ + 2 * kOutlineThickness);
-    paint.setColor(GetCascadingBackgroundColor(this));
-    canvas->sk_canvas()->drawRRect(ring_rect, paint);
+    float inner_ring_bounds_adjustment =
+        halo_thickness_ / 2.0f - kStrokeOverlap / 2.0f;
+    SkRRect inner_ring_bounds = ring_rect;
+    inner_ring_bounds.inset(inner_ring_bounds_adjustment,
+                            inner_ring_bounds_adjustment);
+    paint.setStrokeWidth(halo_thickness_ + kStrokeOverlap);
+    // The parent of the focus ring is the host view. Get the cascading
+    // background color starting at the parent of the host view if it exists.
+    // We assume focus ring colors will be
+    // set to correctly contrast against the host's parent's background.
+    View* host_parent = parent()->parent();
+    // We don't expect to be placing focus when a host parent does not exist. If
+    // this check fails then we need to re-evaluate.
+    CHECK(host_parent) << "Parent of the host view is null";
+    paint.setColor(GetCascadingBackgroundColor(host_parent));
+    canvas->sk_canvas()->drawRRect(inner_ring_bounds, paint);
+
+    SkRRect outer_ring_bounds = ring_rect;
+    float outer_ring_bounds_adjustment = halo_thickness_ / 2;
+    outer_ring_bounds.outset(outer_ring_bounds_adjustment,
+                             outer_ring_bounds_adjustment);
+    ring_rect = outer_ring_bounds;
+  } else {
+    // TODO(crbug.com/1417057): kDrawFocusRingBackgroundOutline should be
+    // removed when ChromeRefresh is fully rolled out.
+    if (parent()->GetProperty(kDrawFocusRingBackgroundOutline)) {
+      // Draw with full stroke width + 2x outline thickness to effectively paint
+      // the outline thickness on both sides of the FocusRing.
+      paint.setStrokeWidth(halo_thickness_ + 2 * kOutlineThickness);
+      paint.setColor(GetCascadingBackgroundColor(this));
+      canvas->sk_canvas()->drawRRect(ring_rect, paint);
+    }
   }
-
   paint.setColor(GetPaintColor(this, !invalid_));
   paint.setStrokeWidth(halo_thickness_);
   canvas->sk_canvas()->drawRRect(ring_rect, paint);
@@ -339,6 +370,14 @@ void FocusRing::RefreshLayer() {
   } else {
     DestroyLayer();
   }
+}
+
+bool FocusRing::ShouldDrawInnerStroke() const {
+  // TODO(crbug.com/1417057): Some places set a custom `halo_inset_` value to
+  // move the focus ring away from the host. If those places want to instead
+  // draw an inner stroke, they need to be audited separately with UX.
+  return features::IsChromeRefresh2023() && inner_stroke_enabled_ &&
+         halo_inset_ == FocusRing::kDefaultHaloInset;
 }
 
 bool FocusRing::ShouldPaint() {

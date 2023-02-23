@@ -185,7 +185,9 @@ LocationBarView::LocationBarView(Browser* browser,
       return v->omnibox_view_->model()->is_caret_visible() &&
              !v->GetOmniboxPopupView()->IsOpen();
     });
-
+    if (features::IsChromeRefresh2023()) {
+      views::FocusRing::Get(this)->SetInnerStrokeDisabled();
+    }
     views::InstallPillHighlightPathGenerator(this);
 
 #if BUILDFLAG(IS_MAC)
