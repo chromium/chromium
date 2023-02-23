@@ -3815,7 +3815,8 @@ void VerifyStaleContentOnFrameEviction(
   EvictionStateWaiter waiter{delegated_frame_host};
   render_widget_host_view_aura->WasOccluded();
   static_cast<viz::FrameEvictorClient*>(delegated_frame_host)
-      ->EvictDelegatedFrame();
+      ->EvictDelegatedFrame(delegated_frame_host->GetFrameEvictorForTesting()
+                                ->CollectSurfaceIdsForEviction());
   EXPECT_EQ(delegated_frame_host->frame_eviction_state(),
             DelegatedFrameHost::FrameEvictionState::kPendingEvictionRequests);
   // Wait until the stale frame content is copied and set onto the layer, i.e.

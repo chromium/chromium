@@ -5,15 +5,22 @@
 #ifndef COMPONENTS_VIZ_CLIENT_FRAME_EVICTOR_H_
 #define COMPONENTS_VIZ_CLIENT_FRAME_EVICTOR_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "components/viz/client/frame_eviction_manager.h"
+#include "components/viz/common/surfaces/surface_id.h"
 
 namespace viz {
 
 class FrameEvictorClient {
  public:
-  virtual ~FrameEvictorClient() {}
-  virtual void EvictDelegatedFrame() = 0;
+  virtual ~FrameEvictorClient() = default;
+  virtual void EvictDelegatedFrame(
+      const std::vector<SurfaceId>& surface_ids) = 0;
+  virtual std::vector<SurfaceId> CollectSurfaceIdsForEviction() const = 0;
+  virtual SurfaceId GetCurrentSurfaceId() const = 0;
+  virtual SurfaceId GetPreNavigationSurfaceId() const = 0;
 };
 
 // Keeps track of the visibility state of a child and notifies when the parent
@@ -41,6 +48,9 @@ class VIZ_CLIENT_EXPORT FrameEvictor : public FrameEvictionManagerClient {
   void SetVisible(bool visible);
 
   bool visible() const { return visible_; }
+
+  // Return the collection of SurfaceIds that should be evicted.
+  std::vector<SurfaceId> CollectSurfaceIdsForEviction() const;
 
  private:
   // FrameEvictionManagerClient implementation.

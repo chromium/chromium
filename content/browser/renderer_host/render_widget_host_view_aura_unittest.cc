@@ -3231,9 +3231,9 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFrames) {
   // Make sure |parent_view_| is evicted to avoid interfering with the code
   // below.
   parent_view_->Hide();
-  static_cast<viz::FrameEvictorClient*>(
-      parent_view_->delegated_frame_host_.get())
-      ->EvictDelegatedFrame();
+  auto* dfh = parent_view_->delegated_frame_host_.get();
+  static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
+      dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
 
   size_t max_renderer_frames =
       FrameEvictionManager::GetInstance()->GetMaxNumberOfSavedFrames();
@@ -3348,9 +3348,9 @@ TEST_F(RenderWidgetHostViewAuraTest, DiscardDelegatedFramesWithMemoryPressure) {
   // Make sure |parent_view_| is evicted to avoid interfering with the code
   // below.
   parent_view_->Hide();
-  static_cast<viz::FrameEvictorClient*>(
-      parent_view_->delegated_frame_host_.get())
-      ->EvictDelegatedFrame();
+  auto* dfh = parent_view_->delegated_frame_host_.get();
+  static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
+      dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
 
   // The test logic below relies on having max_renderer_frames > 2.  By default,
   // this value is calculated from total physical memory and causes the test to
@@ -5693,8 +5693,9 @@ TEST_F(RenderWidgetHostViewAuraTest, AllocateLocalSurfaceIdOnEviction) {
   view_->Show();
   viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   view_->Hide();
-  static_cast<viz::FrameEvictorClient*>(view_->delegated_frame_host_.get())
-      ->EvictDelegatedFrame();
+  auto* dfh = view_->delegated_frame_host_.get();
+  static_cast<viz::FrameEvictorClient*>(dfh)->EvictDelegatedFrame(
+      dfh->GetFrameEvictorForTesting()->CollectSurfaceIdsForEviction());
   view_->Show();
   viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
   EXPECT_NE(id1, id2);

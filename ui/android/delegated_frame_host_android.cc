@@ -106,7 +106,7 @@ DelegatedFrameHostAndroid::DelegatedFrameHostAndroid(
 }
 
 DelegatedFrameHostAndroid::~DelegatedFrameHostAndroid() {
-  EvictDelegatedFrame();
+  EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
   DetachFromCompositor();
   host_frame_sink_manager_->InvalidateFrameSinkId(frame_sink_id_);
 }
@@ -168,42 +168,15 @@ bool DelegatedFrameHostAndroid::CanCopyFromCompositingSurface() const {
   return local_surface_id_.is_valid();
 }
 
-void DelegatedFrameHostAndroid::EvictDelegatedFrame() {
+void DelegatedFrameHostAndroid::EvictDelegatedFrame(
+    const std::vector<viz::SurfaceId>& surface_ids) {
   content_layer_->SetSurfaceId(viz::SurfaceId(),
                                cc::DeadlinePolicy::UseDefaultDeadline());
-  std::vector<viz::SurfaceId> surface_ids;
   // If we have a surface from before a navigation, evict it, regardless of
   // visibility state.
-  if (pre_navigation_local_surface_id_.is_valid()) {
-    viz::SurfaceId pre_nav =
-        viz::SurfaceId(frame_sink_id_, pre_navigation_local_surface_id_);
-    surface_ids.push_back(pre_nav);
-  } else if (!HasSavedFrame() || frame_evictor_->visible()) {
+  if (!pre_navigation_local_surface_id_.is_valid() &&
+      (!HasSavedFrame() || frame_evictor_->visible())) {
     return;
-  }
-
-  viz::SurfaceId current = viz::SurfaceId(frame_sink_id_, local_surface_id_);
-  if (local_surface_id_.is_valid()) {
-    if (base::FeatureList::IsEnabled(features::kEvictSubtree)) {
-      auto child_surfaces = client_->CollectSurfaceIdsForEviction();
-      if (current.is_valid()) {
-        if (child_surfaces.empty()) {
-          // TODO(crbug.com/1393349): This can occur when the RenderViewHostImpl
-          // is not active, such as during navigations. We should see how much
-          // subtrees we are missing during these conditions.
-          surface_ids.push_back(current);
-        } else {
-          auto it =
-              std::find(child_surfaces.begin(), child_surfaces.end(), current);
-          CHECK(it != child_surfaces.end())
-              << "Surface to Evict not in FrameTree: " << current.ToString();
-          std::move(child_surfaces.begin(), child_surfaces.end(),
-                    std::back_inserter(surface_ids));
-        }
-      }
-    } else {
-      surface_ids.push_back(current);
-    }
   }
 
   UMA_HISTOGRAM_COUNTS_100("MemoryAndroid.EvictedTreeSize2",
@@ -220,6 +193,22 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame() {
   client_->WasEvicted();
 }
 
+std::vector<viz::SurfaceId>
+DelegatedFrameHostAndroid::CollectSurfaceIdsForEviction() const {
+  if (base::FeatureList::IsEnabled(features::kEvictSubtree)) {
+    return client_->CollectSurfaceIdsForEviction();
+  }
+  return std::vector<viz::SurfaceId>();
+}
+
+viz::SurfaceId DelegatedFrameHostAndroid::GetCurrentSurfaceId() const {
+  return viz::SurfaceId(frame_sink_id_, local_surface_id_);
+}
+
+viz::SurfaceId DelegatedFrameHostAndroid::GetPreNavigationSurfaceId() const {
+  return viz::SurfaceId(frame_sink_id_, pre_navigation_local_surface_id_);
+}
+
 void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
   const absl::optional<viz::SurfaceId> fallback_surface_id =
       content_layer_->oldest_acceptable_fallback();
@@ -228,7 +217,7 @@ void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
   // guarantee that Navigation will complete, evict our surfaces which are from
   // a previous Navigation.
   if (fallback_surface_id && fallback_surface_id->is_valid()) {
-    EvictDelegatedFrame();
+    EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
     content_layer_->SetOldestAcceptableFallback(viz::SurfaceId());
   }
 }
@@ -248,7 +237,7 @@ void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
   // If we have a surface from before a navigation, evict it as well.
   if (pre_navigation_local_surface_id_.is_valid() &&
       !first_local_surface_id_after_navigation_.is_valid()) {
-    EvictDelegatedFrame();
+    EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
     content_layer_->SetBackgroundColor(SkColors::kTransparent);
   }
 
@@ -261,7 +250,7 @@ bool DelegatedFrameHostAndroid::HasDelegatedContent() const {
 }
 
 void DelegatedFrameHostAndroid::CompositorFrameSinkChanged() {
-  EvictDelegatedFrame();
+  EvictDelegatedFrame(frame_evictor_->CollectSurfaceIdsForEviction());
   if (registered_parent_compositor_)
     AttachToCompositor(registered_parent_compositor_);
 }
