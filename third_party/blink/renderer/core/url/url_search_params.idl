@@ -9,10 +9,10 @@
 ] interface URLSearchParams {
     [RaisesException] constructor(optional (sequence<sequence<USVString>> or record<USVString, USVString> or USVString) init = "");
     void append(USVString name, USVString value);
-    [ImplementedAs=deleteAllWithName] void delete(USVString name);
+    [ImplementedAs=deleteAllWithName, CallWith=ExecutionContext] void delete(USVString name, optional any ignored);
     USVString? get(USVString name);
     sequence<USVString> getAll(USVString name);
-    boolean has(USVString name);
+    [CallWith=ExecutionContext] boolean has(USVString name, optional any ignored);
     void set(USVString name, USVString value);
 
     void sort();

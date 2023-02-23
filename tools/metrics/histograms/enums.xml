@@ -42357,6 +42357,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4475" label="CreateNSResolverWithNonElements2"/>
   <int value="4476" label="GetDisplayMediaWithPreferCurrentTabTrue"/>
   <int value="4477" label="FencedFrameConfigAttribute"/>
+  <int value="4478" label="URLSearchParams_Has_Delete_MultipleArguments"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

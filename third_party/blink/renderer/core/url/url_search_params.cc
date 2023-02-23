@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_usvstring_usvstringsequencesequence_usvstringusvstringrecord.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
@@ -184,7 +186,7 @@ void URLSearchParams::append(const String& name, const String& value) {
   RunUpdateSteps();
 }
 
-void URLSearchParams::deleteAllWithName(const String& name) {
+void URLSearchParams::deleteAllWithName(ExecutionContext*, const String& name) {
   for (wtf_size_t i = 0; i < params_.size();) {
     if (params_[i].first == name)
       params_.EraseAt(i);
@@ -192,6 +194,14 @@ void URLSearchParams::deleteAllWithName(const String& name) {
       i++;
   }
   RunUpdateSteps();
+}
+
+void URLSearchParams::deleteAllWithName(ExecutionContext* execution_context,
+                                        const String& name,
+                                        const ScriptValue& ignored) {
+  UseCounter::Count(execution_context,
+                    WebFeature::kURLSearchParams_Has_Delete_MultipleArguments);
+  deleteAllWithName(execution_context, name);
 }
 
 String URLSearchParams::get(const String& name) const {
@@ -211,12 +221,20 @@ Vector<String> URLSearchParams::getAll(const String& name) const {
   return result;
 }
 
-bool URLSearchParams::has(const String& name) const {
+bool URLSearchParams::has(ExecutionContext*, const String& name) const {
   for (const auto& param : params_) {
     if (param.first == name)
       return true;
   }
   return false;
+}
+
+bool URLSearchParams::has(ExecutionContext* execution_context,
+                          const String& name,
+                          const ScriptValue& ignored) const {
+  UseCounter::Count(execution_context,
+                    WebFeature::kURLSearchParams_Has_Delete_MultipleArguments);
+  return has(execution_context, name);
 }
 
 void URLSearchParams::set(const String& name, const String& value) {
