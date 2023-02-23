@@ -403,9 +403,9 @@ bool IsHtmlFile(const base::FilePath& path);
 bool IsOfficeFile(const base::FilePath& path);
 
 // Updates the default task for each of the office file types.
-void SetWordFileHandler(Profile* profile, const TaskDescriptor& task);
-void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task);
-void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task);
+void SetWordFileHandler(Profile* profile, TaskDescriptor& task);
+void SetExcelFileHandler(Profile* profile, TaskDescriptor& task);
+void SetPowerPointFileHandler(Profile* profile, TaskDescriptor& task);
 
 // TODO(petermarshall): Move these to a new file office_file_tasks.cc/h
 // Updates the default task for each of the office file types to a Files
