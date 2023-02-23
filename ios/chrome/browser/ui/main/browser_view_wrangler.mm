@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
-#import "ios/chrome/browser/sessions/scene_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
@@ -528,23 +527,6 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
 - (void)setSessionIDForBrowser:(Browser*)browser {
   NSString* sceneSessionID = [self sceneSessionIDForBrowser:browser];
-  // The location were the session and snapshots are stored can change due to
-  // multiple factors, such as upgrading Chrome or iOS from a version that did
-  // not support multiple windows to one that does (e.g. Chrome M86 or earlier
-  // to M87, iOS 12.x to iOS 13.0+), or upgrading Chrome from M87-M89 to M90+,
-  // or restoring an iPhone backup to an iPad.
-  //
-  // As the migration code is relatively quick when there is nothing to do, it
-  // is always attempted (will result in one directory lookup). Trying to check
-  // if the migration has to be done can be quite tricky, as both permanent and
-  // off-the-record BrowserState need to be independently migrated, migration
-  // also needs to happen on device that do support multiple scenes, ...
-  //
-  // Once the migration has been performed, the function will be a no-op, so it
-  // is safe to call it multiple time for the same BrowserState.
-  MigrateSessionStorageForDirectory(
-      browser->GetBrowserState()->GetStatePath(), sceneSessionID,
-      _sceneState.appState.previousSingleWindowSessionID);
 
   SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(sceneSessionID);
 
