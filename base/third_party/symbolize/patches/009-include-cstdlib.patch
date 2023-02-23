@@ -1,0 +1,12 @@
+diff --git a/base/third_party/symbolize/symbolize.cc b/base/third_party/symbolize/symbolize.cc
+index 5287e5bb11007..a3b8399f411bf 100644
+--- a/base/third_party/symbolize/symbolize.cc
++++ b/base/third_party/symbolize/symbolize.cc
+@@ -59,6 +59,7 @@
+ #if defined(HAVE_SYMBOLIZE)
+ 
+ #include <cstring>
++#include <cstdlib>
+ 
+ #include <algorithm>
+ #include <limits>

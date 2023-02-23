@@ -59,6 +59,7 @@
 #if defined(HAVE_SYMBOLIZE)
 
 #include <cstring>
+#include <cstdlib>
 
 #include <algorithm>
 #include <limits>
