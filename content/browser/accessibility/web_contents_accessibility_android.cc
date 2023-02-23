@@ -30,6 +30,7 @@
 #include "net/base/data_url.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_assistant_structure.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
 #include "ui/events/android/motion_event_android.h"
 
@@ -1302,8 +1303,12 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(JNIEnv* env) {
 
   DeleteAutofillPopupProxy();
 
-  g_autofill_popup_proxy_node_ax_node = new ui::AXNode(nullptr, nullptr, -1, 0);
+  // The node is isolated (tree is nullptr) and its id is not important,
+  // it should only be not equal to kInvalidAXNodeID to be considered valid.
+  ui::AXNodeID id = ~ui::kInvalidAXNodeID;
+  g_autofill_popup_proxy_node_ax_node = new ui::AXNode(nullptr, nullptr, id, 0);
   ui::AXNodeData ax_node_data;
+  ax_node_data.id = id;
   ax_node_data.role = ax::mojom::Role::kMenu;
   ax_node_data.SetName("Autofill");
   ax_node_data.SetRestriction(ax::mojom::Restriction::kReadOnly);
