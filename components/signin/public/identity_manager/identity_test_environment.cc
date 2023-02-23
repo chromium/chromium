@@ -439,9 +439,11 @@ AccountInfo IdentityTestEnvironment::MakePrimaryAccountAvailable(
                                              consent_level);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void IdentityTestEnvironment::RevokeSyncConsent() {
   signin::RevokeSyncConsent(identity_manager());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void IdentityTestEnvironment::ClearPrimaryAccount() {
   signin::ClearPrimaryAccount(identity_manager());

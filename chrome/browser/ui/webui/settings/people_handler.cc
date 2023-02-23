@@ -617,19 +617,11 @@ void PeopleHandler::HandleAttemptUserExit(const base::Value::List& args) {
 }
 
 void PeopleHandler::HandleTurnOnSync(const base::Value::List& args) {
-  // TODO(https://crbug.com/1050677)
-  NOTIMPLEMENTED();
+  NOTREACHED() << "It is not possible to toggle Sync on Ash";
 }
 
 void PeopleHandler::HandleTurnOffSync(const base::Value::List& args) {
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  DCHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-  DCHECK(ChromeSigninClientFactory::GetForProfile(profile_)
-             ->IsRevokeSyncConsentAllowed());
-
-  identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
-      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
-      signin_metrics::SignoutDelete::kIgnoreMetric);
+  NOTREACHED() << "It is not possible to toggle Sync on Ash";
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

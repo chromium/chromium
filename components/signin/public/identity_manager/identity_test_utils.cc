@@ -231,6 +231,7 @@ AccountInfo MakePrimaryAccountAvailable(IdentityManager* identity_manager,
   return primary_account_info;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void RevokeSyncConsent(IdentityManager* identity_manager) {
   if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync))
     return;
@@ -251,6 +252,7 @@ void RevokeSyncConsent(IdentityManager* identity_manager) {
       signin_metrics::SignoutDelete::kIgnoreMetric);
   run_loop.Run();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ClearPrimaryAccount(IdentityManager* identity_manager) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

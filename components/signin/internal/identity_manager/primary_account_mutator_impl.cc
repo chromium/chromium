@@ -117,21 +117,23 @@ bool PrimaryAccountMutatorImpl::CanTransitionFromSyncToSigninConsentLevel()
 }
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Users cannot revoke the Sync consent on Ash. They can only turn off all Sync
+// data types if they want. Revoking sync consent can lead to breakages in
+// IdentityManager dependencies like `chrome.identity` extension API - that
+// assume that an account will always be available at sync consent level in Ash.
 void PrimaryAccountMutatorImpl::RevokeSyncConsent(
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!CanTransitionFromSyncToSigninConsentLevel()) {
     ClearPrimaryAccount(source_metric, delete_metric);
     return;
   }
-#endif
   primary_account_manager_->RevokeSyncConsent(source_metric, delete_metric);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
@@ -141,6 +143,6 @@ bool PrimaryAccountMutatorImpl::ClearPrimaryAccount(
   primary_account_manager_->ClearPrimaryAccount(source_metric, delete_metric);
   return true;
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace signin

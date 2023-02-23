@@ -34,13 +34,13 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
       const CoreAccountId& account_id,
       ConsentLevel consent_level,
       signin_metrics::AccessPoint access_point) override;
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void RevokeSyncConsent(signin_metrics::ProfileSignout source_metric,
                          signin_metrics::SignoutDelete delete_metric) override;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   bool ClearPrimaryAccount(
       signin_metrics::ProfileSignout source_metric,
       signin_metrics::SignoutDelete delete_metric) override;
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

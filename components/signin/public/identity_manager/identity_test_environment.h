@@ -177,9 +177,11 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   std::vector<AccountInfo> MakeAccountsAvailableWithCookies(
       const std::vector<std::string>& emails);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Revokes sync consent from the primary account: the primary account is left
   // at ConsentLevel::kSignin.
   void RevokeSyncConsent();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Clears the primary account, removes all accounts and revokes the sync
   // consent. Blocks until the primary account is cleared.

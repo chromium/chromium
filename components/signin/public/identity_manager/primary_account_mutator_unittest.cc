@@ -29,8 +29,8 @@ namespace {
 
 // Constants used by the different tests.
 const char kPrimaryAccountEmail[] = "primary.account@example.com";
-const char kAnotherAccountEmail[] = "another.account@example.com";
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+const char kAnotherAccountEmail[] = "another.account@example.com";
 const char kUnknownAccountId[] = "{unknown account id}";
 #endif
 
@@ -96,6 +96,7 @@ class ClearPrimaryAccountTestObserver
       scoped_observation_{this};
 };
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper for testing of RevokeSyncConsent/ClearPrimaryAccount(). This function
 // requires lots of tests due to having different behaviors based on its
 // arguments. But the setup and execution of these test is all the boiler plate
@@ -194,14 +195,10 @@ void RunRevokeConsentTest(
           signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
     case RevokeConsentAction::kClearPrimaryAccount:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      NOTREACHED();
-#else
       primary_account_mutator->ClearPrimaryAccount(
           signin_metrics::ProfileSignout::kTest,
           signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
-#endif
   }
   run_loop.Run();
 
@@ -242,7 +239,6 @@ void RunRevokeSyncConsentTest(
                        auth_expection);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void RunClearPrimaryAccountTest(
     signin::AccountConsistencyMethod account_consistency_method) {
   RunRevokeConsentTest(
@@ -482,7 +478,7 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
                            RemoveAccountExpectation::kKeepAll
 #else
                            RemoveAccountExpectation::kRemoveAll
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
   );
 }
 
@@ -491,24 +487,6 @@ TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DiceConsistency) {
   RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDice,
                            RemoveAccountExpectation::kKeepAll);
-}
-
-#else  //! BUILDFLAG(IS_CHROMEOS_ASH)
-
-TEST_F(PrimaryAccountMutatorTest, CROS_ASH_RevokeSyncConsent) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDisabled,
-                           RemoveAccountExpectation::kKeepAll);
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
-                           RemoveAccountExpectation::kKeepAll);
-}
-
-TEST_F(PrimaryAccountMutatorTest, CROS_ASH_RevokeSyncConsent_AuthError) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDisabled,
-                           RemoveAccountExpectation::kKeepAll,
-                           AuthExpectation::kAuthError);
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
-                           RemoveAccountExpectation::kKeepAll,
-                           AuthExpectation::kAuthError);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
