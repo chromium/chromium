@@ -68,13 +68,10 @@ public final class PedalSuggestionViewBinder<T extends View>
             view.getPedalChipView().setOnClickListener(
                     omniboxPedalListItem.model.get(PedalViewProperties.ON_PEDAL_CLICK));
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
-            view.getPedalView().setForeground(
-                    BaseSuggestionViewBinder.getForegroundDrawable(model, view));
+            BaseSuggestionViewBinder.applySelectableBackground(model, view.getPedalView());
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view.getPedalView(), model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));
-        } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
-            BaseSuggestionViewBinder.updateBackground(model, view);
         } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
             BaseSuggestionViewBinder.updateMargin(model, view);
         }

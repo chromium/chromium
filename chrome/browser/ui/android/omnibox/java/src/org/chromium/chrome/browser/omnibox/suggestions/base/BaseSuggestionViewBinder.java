@@ -8,6 +8,7 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
@@ -18,8 +19,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -36,6 +37,7 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.List;
 
@@ -49,6 +51,10 @@ import java.util.List;
  */
 public final class BaseSuggestionViewBinder<T extends View>
         implements ViewBinder<PropertyModel, BaseSuggestionView<T>, PropertyKey> {
+    /** Drawable ConstantState used to expedite creation of Focus ripples. */
+    private static Drawable.ConstantState sFocusableDrawableState;
+    private static @BrandedColorScheme int sFocusableDrawableStateTheme;
+    private static boolean sFocusableDrawableStateInNightMode;
     private final ViewBinder<PropertyModel, T, PropertyKey> mContentBinder;
 
     public BaseSuggestionViewBinder(ViewBinder<PropertyModel, T, PropertyKey> contentBinder) {
@@ -74,7 +80,6 @@ public final class BaseSuggestionViewBinder<T extends View>
             roundSuggestionViewCorners(model, view);
         } else if (DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
             roundSuggestionViewCorners(model, view);
-            updateBackground(model, view);
         } else if (DropdownCommonProperties.TOP_MARGIN == propertyKey) {
             updateMargin(model, view);
         } else if (BaseSuggestionViewProperties.ACTIONS == propertyKey) {
@@ -109,14 +114,13 @@ public final class BaseSuggestionViewBinder<T extends View>
         view.setActionButtonsCount(actionCount);
 
         // Drawable retrieved once here (expensive) and will be copied multiple times (cheap).
-        Drawable foregroundDrawable = getForegroundDrawable(model, view);
         final List<ImageView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionCount; index++) {
             final ImageView actionView = actionViews.get(index);
             final Action action = actions.get(index);
             actionView.setOnClickListener(v -> action.callback.run());
             actionView.setContentDescription(action.accessibilityDescription);
-            actionView.setForeground(copyDrawable(foregroundDrawable));
+            applySelectableBackground(model, actionView);
             updateIcon(actionView, action.icon,
                     ChromeColors.getPrimaryIconTintRes(isIncognito(model)));
 
@@ -144,9 +148,9 @@ public final class BaseSuggestionViewBinder<T extends View>
     /** Update visual theme to reflect dark mode UI theme update. */
     private static <T extends View> void updateColorScheme(
             PropertyModel model, BaseSuggestionView<T> view) {
+        maybeResetCachedFocusableDrawableState(model, view);
         updateSuggestionIcon(model, view);
-        Drawable foregroundDrawable = getForegroundDrawable(model, view);
-        view.getDecoratedSuggestionView().setForeground(foregroundDrawable);
+        applySelectableBackground(model, view.getDecoratedSuggestionView());
 
         final List<Action> actions = model.get(BaseSuggestionViewProperties.ACTIONS);
         // Setting ACTIONS and updating actionViews can happen later. Appropriate color scheme will
@@ -156,7 +160,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         final List<ImageView> actionViews = view.getActionButtons();
         for (int index = 0; index < actionViews.size(); index++) {
             ImageView actionView = actionViews.get(index);
-            actionView.setForeground(copyDrawable(foregroundDrawable));
+            applySelectableBackground(model, actionView);
             updateIcon(actionView, actions.get(index).icon,
                     ChromeColors.getPrimaryIconTintRes(isIncognito(model)));
         }
@@ -247,36 +251,62 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     /**
-     * Retrieves selectable drawable from resources to be applied as Foreground.
+     * Applies selectable drawable from cache (where possible) or resources (otherwise).
      *
-     * Depending on the intended outcome, there are two different ways to apply these drawables:
-     * 1. If the intention is to _expand the existing_ focus area of the suggestion, the exact
-     *    same copy should be applied to all of the related UI elements.
-     * 2. If the intention is to _define a new_ focus area, a new copy should be applied.
+     * The method internally stores the ConstantState for the drawable to be returned to
+     * accelerate creation of subsequent objects.
      *
-     * Wherever possible, use {@link #copyDrawable(Drawable)} to create new copies of this drawable,
-     * as it offers an order of magnitude better performance in incognito.
-     * The drawable should be used only once, all other uses should make a copy.
-     *
-     * @param view A view that provides context.
      * @param model A property model to look up relevant properties.
-     * @return A selectable (foreground) drawable.
+     * @param view A view that receives background.
      */
-    public static Drawable getForegroundDrawable(PropertyModel model, View view) {
-        return OmniboxResourceProvider.resolveAttributeToDrawable(view.getContext(),
+    public static void applySelectableBackground(PropertyModel model, View view) {
+        if (sFocusableDrawableState != null) {
+            view.setBackground(sFocusableDrawableState.newDrawable());
+            return;
+        }
+
+        // Background color to be used for suggestions
+        var ctx = view.getContext();
+        var background = new ColorDrawable(isIncognito(model)
+                        ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
+                        : ChromeColors.getSurfaceColor(
+                                ctx, R.dimen.omnibox_suggestion_bg_elevation));
+        // Ripple effect to use when the user interacts with the suggestion.
+        var ripple = OmniboxResourceProvider.resolveAttributeToDrawable(ctx,
                 model.get(SuggestionCommonProperties.COLOR_SCHEME),
                 R.attr.selectableItemBackground);
+
+        var layer = new LayerDrawable(new Drawable[] {background, ripple});
+
+        // Cache the drawable state for faster retrieval.
+        // See go/omnibox:drawables for more details.
+        sFocusableDrawableState = layer.getConstantState();
+        view.setBackground(layer);
     }
 
     /**
-     * Creates a copy of the drawable. The drawable should be used only once, all other uses should
-     * make a copy.
+     * Checks whether cached FocusableDrawableState should be reset.
      *
-     * @param original Original drawable to be copied.
-     * @return Copied drawable.
+     * TODO(ender): Relocate this to appropriate OmniboxResourceManager class.
+     *
+     * @param model The model to supply app-driven changes.
+     * @param view The view to supply additional information, such as UI configuration.
      */
-    private static Drawable copyDrawable(Drawable original) {
-        return original.getConstantState().newDrawable();
+    @VisibleForTesting
+    public static void maybeResetCachedFocusableDrawableState(PropertyModel model, View view) {
+        // The color theme has changed, or the user opened Incognito window.
+        // Reset the cached drawable state to prevent using old colors.
+        var theme = model.get(SuggestionCommonProperties.COLOR_SCHEME);
+        // The theme change may also originate from the system.
+        // Be sure we respond to these changes as well.
+        // This aspect should only be relevant when the theme is APP_DEFAULT.
+        var isInNightMode = ColorUtils.inNightMode(view.getContext());
+        if (theme != sFocusableDrawableStateTheme
+                || isInNightMode != sFocusableDrawableStateInNightMode) {
+            sFocusableDrawableState = null;
+            sFocusableDrawableStateTheme = theme;
+            sFocusableDrawableStateInNightMode = isInNightMode;
+        }
     }
 
     /** Update image view using supplied drawable state object. */
@@ -296,16 +326,6 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         view.setImageDrawable(sds.drawable);
         ImageViewCompat.setImageTintList(view, tint);
-    }
-
-    /**
-     * Update the background for the view, also add the margin for the view.
-     *
-     * @param model A property model to look up relevant properties.
-     * @param view A view that need to be updated.
-     */
-    public static void updateBackground(PropertyModel model, View view) {
-        view.setBackground(getBackgroundDrawable(model, view));
     }
 
     /**
@@ -330,17 +350,6 @@ public final class BaseSuggestionViewBinder<T extends View>
                     .setMargins(sideSpacing, topSpacing, sideSpacing, bottomSpacing);
         }
         view.setLayoutParams(layoutParams);
-    }
-
-    /**
-     * Retrieves background drawable for the view.
-     *
-     * @param model A property model to look up relevant properties.
-     * @param view A view that provides context.
-     * @return The suggestion background drawable.
-     */
-    public static Drawable getBackgroundDrawable(PropertyModel model, View view) {
-        return new ColorDrawable(getBackgroundDrawableColor(isIncognito(model), view));
     }
 
     /**
@@ -375,17 +384,9 @@ public final class BaseSuggestionViewBinder<T extends View>
         view.setClipToOutline(true);
     }
 
-    /**
-     * Retrieves color for background gradient based on identifying incognito mode.
-     *
-     * @param isIncognito whether the view is in incognito mode.
-     * @param view A view that provides context.
-     * @return The color for suggestion background drawable.
-
-     */
-    static @ColorInt int getBackgroundDrawableColor(boolean isIncognito, View view) {
-        return isIncognito ? view.getContext().getColor(R.color.omnibox_suggestion_bg_incognito)
-                           : ChromeColors.getSurfaceColor(
-                                   view.getContext(), R.dimen.omnibox_suggestion_bg_elevation);
+    /** @return Cached ConstantState for testing. */
+    @VisibleForTesting
+    public static Drawable.ConstantState getFocusableDrawableStateForTesting() {
+        return sFocusableDrawableState;
     }
 }
