@@ -48,7 +48,8 @@ struct LanguageDetectionDetails {
   // e.g., translate-internals.
   //
   // Whether language detection has been run on the page. Under
-  // kRetryLanguageDetection, this is only done if page content was captured.
+  // kSkipLanguageDetectionOnEmptyContent, this is only done if page content was
+  // captured.
   bool has_run_lang_detection;
   // The time at which language the language detection was performed. Used only
   // for debugging.
