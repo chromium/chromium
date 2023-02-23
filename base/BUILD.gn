@@ -2137,6 +2137,9 @@ component("base") {
 
     if (use_blink) {
       sources += [
+        "files/file_path_watcher_kqueue.cc",
+        "files/file_path_watcher_kqueue.h",
+        "files/file_path_watcher_mac.cc",
         "process/memory_mac.mm",
         "process/process_iterator_ios.mm",
         "sync_socket_posix.cc",
@@ -3662,6 +3665,10 @@ test("base_unittests") {
         "allocator/partition_allocator/shim/allocator_interception_mac_unittest.mm",
         "allocator/partition_allocator/shim/malloc_zone_functions_mac_unittest.cc",
       ]
+    }
+
+    if (use_blink) {
+      sources += [ "files/file_path_watcher_unittest.cc" ]
     }
   }
 
