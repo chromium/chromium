@@ -248,28 +248,22 @@ void SharedWorkerHost::Start(
     policy_container_host = std::move(creator_policy_container_host_);
   } else {
     // https://html.spec.whatwg.org/C/#creating-a-policy-container-from-a-fetch-response
-    policy_container_host = base::MakeRefCounted<PolicyContainerHost>(
-        // This does not parse the referrer policy, which will be
-        // updated in ServiceWorkerGlobalScope::Initialize
-        PolicyContainerPolicies(final_response_url,
-                                main_script_load_params->response_head.get(),
-                                nullptr));
+    // This does not parse the referrer policy, which will be
+    // updated in `SharedWorkerGlobalScope::Initialize()`.
+    PolicyContainerPolicies policies(
+        final_response_url, main_script_load_params->response_head.get(),
+        nullptr);
 
-    // TODO(https://crbug.com/1410095): Set `is_web_secure_context` to false
-    // inside `policy_container_host` if the creator is not a secure context.
-    // Then `worker_client_security_state_` can just copy the bit directly from
-    // `policy_container_host`, or even use `DeriveClientSecurityState()`.
+    // A worker context can only be secure if its creator also is.
+    if (!creator_policy_container_host_->policies().is_web_secure_context) {
+      policies.is_web_secure_context = false;
+    }
 
-    worker_client_security_state_->ip_address_space =
-        policy_container_host->ip_address_space();
-    worker_client_security_state_->is_web_secure_context =
-        policy_container_host->policies().is_web_secure_context &&
-        creator_policy_container_host_->policies().is_web_secure_context;
-    worker_client_security_state_->private_network_request_policy =
-        DerivePrivateNetworkRequestPolicy(
-            worker_client_security_state_->ip_address_space,
-            worker_client_security_state_->is_web_secure_context,
-            PrivateNetworkRequestContext::kWorker);
+    worker_client_security_state_ = DeriveClientSecurityState(
+        policies, PrivateNetworkRequestContext::kWorker);
+
+    policy_container_host =
+        base::MakeRefCounted<PolicyContainerHost>(std::move(policies));
 
     if (main_script_load_params->response_head->parsed_headers) {
       worker_client_security_state_->cross_origin_embedder_policy =
