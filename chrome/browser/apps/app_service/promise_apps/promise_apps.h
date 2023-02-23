@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PROMISE_APPS_PROMISE_APPS_H_
 
 #include "chrome/browser/apps/app_service/package_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apps {
 
@@ -18,7 +19,7 @@ struct PromiseApp {
   explicit PromiseApp(const apps::PackageId& package_id)
       : package_id(package_id) {}
   PackageId package_id;
-  float progress;
+  absl::optional<float> progress;
 };
 
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;

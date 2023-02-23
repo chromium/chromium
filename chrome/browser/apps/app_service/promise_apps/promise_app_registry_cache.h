@@ -7,9 +7,10 @@
 #include <map>
 #include <memory>
 
-namespace apps {
+#include "base/sequence_checker.h"
+#include "chrome/browser/apps/app_service/package_id.h"
 
-class PackageId;
+namespace apps {
 
 struct PromiseApp;
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;
@@ -26,13 +27,26 @@ class PromiseAppRegistryCache {
 
   ~PromiseAppRegistryCache();
 
+  // Add a promise app to the PromiseAppRegistry.
   void AddPromiseApp(PromiseAppPtr promise_app);
+
+  // Update the installation progress of a registered promise app.
+  void UpdatePromiseAppProgress(PackageId& package_id, float progress);
 
  private:
   friend class PromiseAppRegistryCacheTest;
   friend class PublisherTest;
 
   apps::PromiseAppCacheMap promise_app_map_;
+
+  // Flag to check whether an update to a promise app is already in progress. We
+  // shouldn't have more than one concurrent update to a package_id,
+  // e.g. if UpdatePromiseAppProgress notifies observers and triggers them to
+  // call UpdatePromiseAppProgress again (before the first call to
+  // UpdatePromiseAppProgress completes), we want to prevent overwriting fields.
+  bool update_in_progress_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace apps

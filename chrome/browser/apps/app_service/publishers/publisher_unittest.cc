@@ -474,7 +474,7 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     PromiseAppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())
             ->PromiseAppRegistryCache();
-    return cache.promise_app_map_[package_id];
+    return cache.promise_app_map_.find(package_id)->second;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1396,14 +1396,14 @@ TEST_F(PublisherTest, ArcPublishPromiseApps) {
   PackageId package_id = PackageId(AppType::kArc, package_name);
 
   // Confirm that there isn't a promise app yet.
-  ASSERT_TRUE(GetPromiseApp(package_id) == nullptr);
+  ASSERT_FALSE(GetPromiseApp(package_id));
 
   // Notify the publisher about a started installation.
   arc_test.app_instance()->SendInstallationStarted(package_name);
 
   // Verify the ARC promise app is added to PromiseAppRegistryCache.
   PromiseAppPtr& promise_app = GetPromiseApp(package_id);
-  ASSERT_FALSE(promise_app == nullptr);
+  ASSERT_TRUE(promise_app);
   ASSERT_EQ(promise_app->package_id, package_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
