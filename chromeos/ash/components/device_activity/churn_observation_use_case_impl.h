@@ -32,14 +32,34 @@ class FresnelImportDataRequest;
 // (0, 202302-202304)
 // (1, 202301-202303)
 // (2, 202212-202302)
-struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
     ObservationWindow {
+ public:
+  static constexpr char kObservationPeriodFormat[] = "YYYYMM-YYYYMM";
+
+  ObservationWindow() = default;
+  ObservationWindow(int period, const std::string& observation_period);
+  ObservationWindow(const ObservationWindow&) = delete;
+  ObservationWindow& operator=(const ObservationWindow&) = default;
+  ~ObservationWindow() = default;
+
+  bool IsObservationWindowSet() const;
+
+  int GetPeriod() const;
+
+  const std::string& GetObservationPeriod() const;
+
+  bool SetPeriod(int period);
+
+  bool SetObservationPeriod(const std::string& observation_period);
+
+ private:
   // Observation window period should be between [0, 2].
-  int period = -1;
+  int period_ = -1;
 
   // String representing the observation period formatted
   // as "YYYYMM-YYYYMM" where the period length is 3 months.
-  std::string observation_period;
+  std::string observation_period_;
 };
 
 // Contains the methods required to report the churn observation device active.
