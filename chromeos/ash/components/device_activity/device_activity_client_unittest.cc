@@ -1618,4 +1618,55 @@ TEST_F(DeviceActivityClientTest,
   EXPECT_EQ(updated_active_status_value, kFakeAfterChurnActvieStatus);
 }
 
+TEST_F(DeviceActivityClientTest, ChurnActiveStatusTest) {
+  int kFakeBeforeChurnActiveStatus = 71565325;
+  int kFakeAfterChurnActvieStatus = 72351849;
+
+  // Set the past ping month to 2022-10.
+  base::Time new_daily_ts = base::Time::Now() - base::Days(70);
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    use_case->SetLastKnownPingTimestamp(new_daily_ts);
+  }
+
+  // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
+  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+
+  // Last Churn Cohort month is: 2022-10, months is 273
+  // Current Churn Cohort month is: 2023-01, months is 276
+  // 273->276:   0100010001->0100010100
+  // 2022-10 active value: 71565325 -> 0100010001 000000000000001101
+  // 2023-01 active value: 72351849 -> 0100010100 000000000001101001
+
+  SetWifiNetworkState(shill::kStateOnline);
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_TRUE(use_case->IsLastKnownPingTimestampSet());
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+
+    SimulateImportResponse(std::string(), net::HTTP_OK);
+    task_environment_.RunUntilIdle();
+
+    EXPECT_GE(use_case->GetLastKnownPingTimestamp(), new_daily_ts);
+  }
+
+  // Check the new churn active status after ping.
+  int updated_active_status_value = churn_active_status_->GetValueAsInt();
+  EXPECT_EQ(updated_active_status_value, kFakeAfterChurnActvieStatus);
+
+  private_computing::SaveStatusRequest save_request =
+      device_activity_client_->GetSaveStatusRequest();
+  for (auto status : save_request.active_status()) {
+    if (status.use_case() == private_computing::PrivateComputingUseCase::
+                                 CROS_FRESNEL_CHURN_MONTHLY_COHORT) {
+      EXPECT_EQ(status.churn_active_status(), kFakeAfterChurnActvieStatus);
+    }
+  }
+}
+
 }  // namespace ash::device_activity

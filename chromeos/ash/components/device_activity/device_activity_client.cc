@@ -465,12 +465,6 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
         }
       }
 
-      // TODO(hirthanan): Get/Set active_status from the churn cohort use case
-      // in a future CL. We will also update the local state with the retrieved
-      // preserved file value.
-      (void)churn_active_status_ptr_;
-      (void)local_state_;
-
       // TODO(hirthanan): Get/Set period status for churn observation status in
       // future CL.
       private_computing::ChurnObservationStatus period_status;
@@ -511,6 +505,24 @@ void DeviceActivityClient::OnGetLastPingDatesStatusFetched(
       if (device_active_use_case_ptr == nullptr) {
         LOG(ERROR) << "Device active use case is not defined.";
         return;
+      }
+
+      // Update the churn active value in local_state_ and ChurnActiveStatus
+      // if possible.
+      if (use_case == private_computing::PrivateComputingUseCase::
+                          CROS_FRESNEL_CHURN_MONTHLY_COHORT) {
+        int churn_status_value = 0;
+        if (status.has_churn_active_status()) {
+          churn_status_value = status.churn_active_status();
+        }
+        if (local_state_->GetInteger(
+                prefs::kDeviceActiveLastKnownChurnActiveStatus) == 0 &&
+            churn_status_value != 0) {
+          churn_active_status_ptr_->InitializeValue(churn_status_value);
+          local_state_->SetInteger(
+              prefs::kDeviceActiveLastKnownChurnActiveStatus,
+              churn_status_value);
+        }
       }
 
       if (!device_active_use_case_ptr->IsLastKnownPingTimestampSet()) {
