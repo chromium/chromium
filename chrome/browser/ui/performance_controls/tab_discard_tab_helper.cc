@@ -62,7 +62,10 @@ void TabDiscardTabHelper::DidStartNavigation(
     // them causes the state to get reset.
     return;
   }
-  was_discarded_ = navigation_handle->ExistingDocumentWasDiscarded();
+  discard_reason_ = GetDiscardReason(navigation_handle);
+  was_discarded_ =
+      discard_reason_.has_value() &&
+      discard_reason_.value() == mojom::LifecycleUnitDiscardReason::PROACTIVE;
   was_animated_ = false;
   was_chip_hidden_ = false;
   is_page_supported_ = DoesChipSupportPage(navigation_handle->GetURL());
@@ -70,6 +73,22 @@ void TabDiscardTabHelper::DidStartNavigation(
 
 bool TabDiscardTabHelper::DoesChipSupportPage(const GURL& url) const {
   return !url.SchemeIs(content::kChromeUIScheme);
+}
+
+absl::optional<mojom::LifecycleUnitDiscardReason>
+TabDiscardTabHelper::GetDiscardReason(
+    content::NavigationHandle* navigation_handle) const {
+  if (navigation_handle->ExistingDocumentWasDiscarded()) {
+    auto* pre_discard_resource_usage = performance_manager::user_tuning::
+        UserPerformanceTuningManager::PreDiscardResourceUsage::FromWebContents(
+            navigation_handle->GetWebContents());
+    return pre_discard_resource_usage == nullptr
+               ? absl::nullopt
+               : absl::make_optional<mojom::LifecycleUnitDiscardReason>(
+                     pre_discard_resource_usage->discard_reason());
+  }
+
+  return absl::nullopt;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabDiscardTabHelper);

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_DISCARD_TAB_HELPER_H_
 #define CHROME_BROWSER_UI_PERFORMANCE_CONTROLS_TAB_DISCARD_TAB_HELPER_H_
 
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -58,10 +59,14 @@ class TabDiscardTabHelper
   // given URL
   bool DoesChipSupportPage(const GURL& url) const;
 
+  absl::optional<mojom::LifecycleUnitDiscardReason> GetDiscardReason(
+      content::NavigationHandle* navigation_handle) const;
+
   bool was_discarded_ = false;
   bool was_animated_ = false;
   bool was_chip_hidden_ = false;
   bool is_page_supported_ = false;
+  absl::optional<mojom::LifecycleUnitDiscardReason> discard_reason_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
