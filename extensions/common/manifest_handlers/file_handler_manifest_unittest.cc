@@ -93,7 +93,7 @@ TEST_F(FileHandlersManifestTest, NotPlatformApp) {
 
 class WebFileHandlersTest : public ManifestTest {
  public:
-  WebFileHandlersTest() : channel_(version_info::Channel::CANARY) {
+  WebFileHandlersTest() : channel_(version_info::Channel::DEV) {
     feature_list_.InitAndEnableFeature(extensions_features::kWebFileHandlers);
   }
 
@@ -114,7 +114,7 @@ class WebFileHandlersTest : public ManifestTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  extensions::ScopedCurrentChannel channel_{version_info::Channel::CANARY};
+  extensions::ScopedCurrentChannel channel_;
 };
 
 // `file_handlers` examples.

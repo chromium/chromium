@@ -169,7 +169,7 @@
       ]
     },
     {
-      "channel": "canary",
+      "channel": "dev",
       "extension_types": ["extension"],
       "min_manifest_version": 3
     }
