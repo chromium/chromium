@@ -7,23 +7,18 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "components/signin/public/base/signin_buildflags.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kForYouFre);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 extern const base::FeatureParam<bool> kForYouFreCloseShouldProceed;
 
 enum class SigninPromoVariant { kSignIn, kMakeYourOwn, kDoMore };
 extern const base::FeatureParam<SigninPromoVariant>
     kForYouFreSignInPromoVariant;
-
-BASE_DECLARE_FEATURE(kForYouFreStudy);
-
-extern const base::FeatureParam<std::string> kForYouFreStudyGroup;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif
+#endif
 
 BASE_DECLARE_FEATURE(kProcessGaiaRemoveLocalAccountHeader);
 

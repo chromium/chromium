@@ -11,7 +11,7 @@
 // Enables the new style, "For You" First Run Experience
 BASE_FEATURE(kForYouFre, "ForYouFre", base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Whether the browser should be opened when the user closes the FRE window. If
 // false, we just exit Chrome and the user will get straight to the browser on
 // the next process launch.
@@ -30,19 +30,8 @@ const base::FeatureParam<SigninPromoVariant> kForYouFreSignInPromoVariant{
     &kForYouFre, /*name=*/"signin_promo_variant",
     /*default_value=*/SigninPromoVariant::kSignIn,
     /*options=*/&kSignInPromoVariantOptions};
-
-// Feature that indicates that we should put the client in a study group to
-// be able to look at metrics in the long term. Does not affect the client's
-// behavior by itself, instead this is done through the `kForYouFre` feature.
-BASE_FEATURE(kForYouFreStudy,
-             "ForYouFreStudy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// String that refers to the study group in which this install was enrolled.
-// Used to implement the sticky experiment tracking.
-const base::FeatureParam<std::string> kForYouFreStudyGroup{
-    &kForYouFreStudy, /*name=*/"group_name", /*default_value=*/""};
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif
+#endif
 
 // Enables the client-side processing of the HTTP response header
 // Google-Accounts-RemoveLocalAccount.
