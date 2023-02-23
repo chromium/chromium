@@ -10,6 +10,7 @@ PASS Test remove with a NaN duration.
 PASS Test remove while update pending.
 PASS Test aborting a remove operation.
 PASS Test remove with a start at the duration.
+PASS Test remove with a nanosecond range.
 PASS Test remove transitioning readyState from 'ended' to 'open'.
 FAIL Test removing all appended data. assert_equals: Initial buffered range. expected "{ [0.112, 6.552) }" but got "{ [0.000, 6.552) }"
 FAIL Test removing beginning of appended data. assert_equals: Initial buffered range. expected "{ [0.112, 6.552) }" but got "{ [0.000, 6.552) }"
