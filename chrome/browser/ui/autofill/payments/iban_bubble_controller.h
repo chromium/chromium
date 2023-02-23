@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_IBAN_BUBBLE_CONTROLLER_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_IBAN_BUBBLE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_H_
+#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_H_
 
 #include <string>
 
@@ -17,19 +17,19 @@ class AutofillBubbleBase;
 class IBAN;
 enum class IbanBubbleType;
 
-// Interface that exposes controller functionality to save IBAN bubbles.
-class SaveIbanBubbleController {
+// Interface that exposes controller functionality to save and manage IBAN
+// bubbles.
+class IbanBubbleController {
  public:
-  SaveIbanBubbleController() = default;
-  SaveIbanBubbleController(const SaveIbanBubbleController&) = delete;
-  SaveIbanBubbleController& operator=(const SaveIbanBubbleController&) = delete;
-  virtual ~SaveIbanBubbleController() = default;
+  IbanBubbleController() = default;
+  IbanBubbleController(const IbanBubbleController&) = delete;
+  IbanBubbleController& operator=(const IbanBubbleController&) = delete;
+  virtual ~IbanBubbleController() = default;
 
-  // Returns a reference to the SaveIbanBubbleController associated with the
+  // Returns a reference to the IbanBubbleController associated with the
   // given `web_contents`. If controller does not exist, this will create the
   // controller from the `web_contents` then return the reference.
-  static SaveIbanBubbleController* GetOrCreate(
-      content::WebContents* web_contents);
+  static IbanBubbleController* GetOrCreate(content::WebContents* web_contents);
 
   // Returns the title that should be displayed in the bubble.
   virtual std::u16string GetWindowTitle() const = 0;
@@ -38,14 +38,16 @@ class SaveIbanBubbleController {
   virtual std::u16string GetAcceptButtonText() const = 0;
   virtual std::u16string GetDeclineButtonText() const = 0;
 
-  // Returns the IBAN that will be saved if the user accepts.
+  // Returns the IBAN that will be saved in save bubble view or the IBAN that
+  // has been saved in manage bubble view.
   virtual const IBAN& GetIBAN() const = 0;
 
-  virtual AutofillBubbleBase* GetSaveBubbleView() const = 0;
+  virtual AutofillBubbleBase* GetPaymentBubbleView() const = 0;
 
   // Interaction.
-  virtual void OnSaveButton(const std::u16string& nickname) = 0;
+  virtual void OnAcceptButton(const std::u16string& nickname) = 0;
   virtual void OnCancelButton() = 0;
+  virtual void OnManageSavedIbanExtraButtonClicked() = 0;
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
 
   // Returns the current state of the bubble.
@@ -54,4 +56,4 @@ class SaveIbanBubbleController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_SAVE_IBAN_BUBBLE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_H_

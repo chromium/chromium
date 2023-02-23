@@ -140,7 +140,8 @@ class SaveCardBubbleControllerImpl
   bool ShouldShowSaveFailureBadge() const override;
   void OnAnimationEnded() override;
   bool IsIconVisible() const override;
-  AutofillBubbleBase* GetSaveBubbleView() const override;
+  AutofillBubbleBase* GetPaymentBubbleView() const override;
+  PaymentBubbleType GetPaymentBubbleType() const override;
 
  protected:
   explicit SaveCardBubbleControllerImpl(content::WebContents* web_contents);

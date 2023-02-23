@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
-#include "chrome/browser/ui/autofill/payments/save_iban_bubble_controller.h"
+#include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -27,7 +27,7 @@ class SaveIbanBubbleView : public AutofillBubbleBase,
   // Bubble will be anchored to `anchor_view`.
   SaveIbanBubbleView(views::View* anchor_view,
                      content::WebContents* web_contents,
-                     SaveIbanBubbleController* controller);
+                     IbanBubbleController* controller);
 
   SaveIbanBubbleView(const SaveIbanBubbleView&) = delete;
   SaveIbanBubbleView& operator=(const SaveIbanBubbleView&) = delete;
@@ -50,7 +50,7 @@ class SaveIbanBubbleView : public AutofillBubbleBase,
 
   virtual void CreateMainContentView();
 
-  SaveIbanBubbleController* controller() const { return controller_; }
+  IbanBubbleController* controller() const { return controller_; }
 
   // Attributes IDs to the dialog's DialogDelegate-supplied buttons. This is for
   // testing purposes, which is needed when the browser tries to find the view
@@ -76,7 +76,7 @@ class SaveIbanBubbleView : public AutofillBubbleBase,
   // The view that toggles the masking/unmasking of an IBAN value.
   raw_ptr<views::ToggleImageButton> iban_value_masking_button_ = nullptr;
   raw_ptr<views::Label> iban_value_ = nullptr;
-  raw_ptr<SaveIbanBubbleController> controller_;
+  raw_ptr<IbanBubbleController> controller_;
 };
 
 }  // namespace autofill

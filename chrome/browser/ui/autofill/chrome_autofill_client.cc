@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
-#include "chrome/browser/ui/autofill/payments/save_iban_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
@@ -559,9 +559,9 @@ void ChromeAutofillClient::ConfirmSaveIBANLocally(
     const IBAN& iban,
     bool should_show_prompt,
     LocalSaveIBANPromptCallback callback) {
-  // Do lazy initialization of SaveIbanBubbleControllerImpl.
-  SaveIbanBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveIbanBubbleControllerImpl::FromWebContents(web_contents())
+  // Do lazy initialization of IbanBubbleControllerImpl.
+  IbanBubbleControllerImpl::CreateForWebContents(web_contents());
+  IbanBubbleControllerImpl::FromWebContents(web_contents())
       ->OfferLocalSave(iban, should_show_prompt, std::move(callback));
 }
 

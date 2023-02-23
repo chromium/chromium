@@ -8,9 +8,11 @@
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/autofill/payments/save_iban_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/manage_saved_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -44,12 +46,12 @@ constexpr char kIbanValue[] = "DE91 1000 0000 0123 4567 89";
 
 namespace autofill {
 
-class SaveIbanBubbleViewFullFormBrowserTest
+class IbanBubbleViewFullFormBrowserTest
     : public SyncTest,
       public IBANSaveManager::ObserverForTest,
-      public SaveIbanBubbleControllerImpl::ObserverForTest {
+      public IbanBubbleControllerImpl::ObserverForTest {
  protected:
-  SaveIbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
+  IbanBubbleViewFullFormBrowserTest() : SyncTest(SINGLE_CLIENT) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{autofill::features::kAutofillFillIbanFields,
                               autofill::features::kAutofillParseIBANFields},
@@ -57,11 +59,11 @@ class SaveIbanBubbleViewFullFormBrowserTest
   }
 
  public:
-  SaveIbanBubbleViewFullFormBrowserTest(
-      const SaveIbanBubbleViewFullFormBrowserTest&) = delete;
-  SaveIbanBubbleViewFullFormBrowserTest& operator=(
-      const SaveIbanBubbleViewFullFormBrowserTest&) = delete;
-  ~SaveIbanBubbleViewFullFormBrowserTest() override = default;
+  IbanBubbleViewFullFormBrowserTest(const IbanBubbleViewFullFormBrowserTest&) =
+      delete;
+  IbanBubbleViewFullFormBrowserTest& operator=(
+      const IbanBubbleViewFullFormBrowserTest&) = delete;
+  ~IbanBubbleViewFullFormBrowserTest() override = default;
 
  protected:
   class TestAutofillManager : public BrowserAutofillManager {
@@ -145,7 +147,7 @@ class SaveIbanBubbleViewFullFormBrowserTest
     }
   }
 
-  // SaveIbanBubbleControllerImpl::ObserverForTest:
+  // IbanBubbleControllerImpl::ObserverForTest:
   void OnBubbleShown() override {
     if (event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::BUBBLE_SHOWN);
@@ -199,21 +201,34 @@ class SaveIbanBubbleViewFullFormBrowserTest
   }
 
   views::View* FindViewInBubbleById(DialogViewId view_id) {
-    SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
-    CHECK(save_iban_bubble_views);
-
-    views::View* specified_view =
-        save_iban_bubble_views->GetViewByID(static_cast<int>(view_id));
-
+    views::View* specified_view = nullptr;
+    LocationBarBubbleDelegateView* iban_bubble_view = nullptr;
+    switch (GetBubbleType()) {
+      case IbanBubbleType::kLocalSave: {
+        iban_bubble_view = GetSaveIbanBubbleView();
+        CHECK(iban_bubble_view);
+        specified_view =
+            iban_bubble_view->GetViewByID(static_cast<int>(view_id));
+        break;
+      }
+      case IbanBubbleType::kManageSavedIban: {
+        iban_bubble_view = GetManageSavedIbanBubbleView();
+        CHECK(iban_bubble_view);
+        specified_view =
+            iban_bubble_view->GetViewByID(static_cast<int>(view_id));
+        break;
+      }
+      case IbanBubbleType::kInactive:
+        NOTREACHED();
+    }
     if (!specified_view) {
-      // Many of the save IBAN bubble's inner Views are not child views but
-      // rather contained by the dialog. If we didn't find what we were looking
-      // for, check there as well.
+      // Many of the save IBAN bubble's inner views are not child views but
+      // rather contained by the dialog. If we didn't find what we were
+      // looking for, check there as well.
       specified_view =
-          save_iban_bubble_views->GetWidget()->GetRootView()->GetViewByID(
+          iban_bubble_view->GetWidget()->GetRootView()->GetViewByID(
               static_cast<int>(view_id));
     }
-
     return specified_view;
   }
 
@@ -262,19 +277,28 @@ class SaveIbanBubbleViewFullFormBrowserTest
   }
 
   SaveIbanBubbleView* GetSaveIbanBubbleView() {
-    SaveIbanBubbleController* save_iban_bubble_controller =
-        SaveIbanBubbleController::GetOrCreate(GetActiveWebContents());
-    if (!save_iban_bubble_controller) {
+    AutofillBubbleBase* iban_bubble_view = GetIbanBubbleView();
+    if (!iban_bubble_view) {
       return nullptr;
     }
+    return static_cast<SaveIbanBubbleView*>(iban_bubble_view);
+  }
 
-    AutofillBubbleBase* save_iban_bubble_view =
-        save_iban_bubble_controller->GetSaveBubbleView();
-    if (!save_iban_bubble_view) {
+  ManageSavedIbanBubbleView* GetManageSavedIbanBubbleView() {
+    AutofillBubbleBase* iban_bubble_view = GetIbanBubbleView();
+    if (!iban_bubble_view) {
       return nullptr;
     }
+    return static_cast<ManageSavedIbanBubbleView*>(iban_bubble_view);
+  }
 
-    return static_cast<SaveIbanBubbleView*>(save_iban_bubble_view);
+  IbanBubbleType GetBubbleType() {
+    IbanBubbleController* iban_bubble_controller =
+        IbanBubbleController::GetOrCreate(GetActiveWebContents());
+    if (!iban_bubble_controller) {
+      return IbanBubbleType::kInactive;
+    }
+    return iban_bubble_controller->GetBubbleType();
   }
 
   SavePaymentIconView* GetSaveIbanIconView() {
@@ -292,9 +316,9 @@ class SaveIbanBubbleViewFullFormBrowserTest
   }
 
   void AddEventObserverToController() {
-    SaveIbanBubbleControllerImpl* save_iban_bubble_controller_impl =
-        static_cast<SaveIbanBubbleControllerImpl*>(
-            SaveIbanBubbleController::GetOrCreate(GetActiveWebContents()));
+    IbanBubbleControllerImpl* save_iban_bubble_controller_impl =
+        static_cast<IbanBubbleControllerImpl*>(
+            IbanBubbleController::GetOrCreate(GetActiveWebContents()));
     CHECK(save_iban_bubble_controller_impl);
     save_iban_bubble_controller_impl->SetEventObserverForTesting(this);
   }
@@ -347,6 +371,15 @@ class SaveIbanBubbleViewFullFormBrowserTest
   raw_ptr<IBANSaveManager, DanglingUntriaged> iban_save_manager_ = nullptr;
 
  private:
+  AutofillBubbleBase* GetIbanBubbleView() {
+    IbanBubbleController* iban_bubble_controller =
+        IbanBubbleController::GetOrCreate(GetActiveWebContents());
+    if (!iban_bubble_controller) {
+      return nullptr;
+    }
+    return iban_bubble_controller->GetPaymentBubbleView();
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
@@ -354,7 +387,7 @@ class SaveIbanBubbleViewFullFormBrowserTest
 
 // Tests the local save bubble. Ensures that clicking the 'No thanks' button
 // successfully causes the bubble to go away, and causes a strike to be added.
-IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingNoThanksClosesBubble) {
   base::HistogramTester histogram_tester;
   FillForm(kIbanValue);
@@ -381,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
 // example of declining the prompt max times and ensuring that the
 // offer-to-save bubble does not appear on the next try. Then, ensures that no
 // strikes are added if the IBAN already has max strikes.
-IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
                        StrikeDatabase_Local_FullFlowTest) {
   base::HistogramTester histogram_tester;
   // Show and ignore the bubble enough times in order to accrue maximum strikes.
@@ -436,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the 'Save' button
 // successfully causes the bubble to go away.
-IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingSaveClosesBubble) {
   base::HistogramTester histogram_tester;
   FillForm();
@@ -459,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the 'Save' button
 // successfully causes the bubble to go away.
-IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingSaveClosesBubble_WithNickname) {
   base::HistogramTester histogram_tester;
   FillForm();
@@ -483,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the [X] button will still
 // see the omnibox icon.
-IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingClosesBubbleStillShowOmnibox) {
   base::HistogramTester histogram_tester;
   FillForm();
@@ -502,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the eye icon button
 // successfully causes the IBAN value to be hidden or shown.
-IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
                        Local_ClickingHideOrShowIbanValueEyeIcon) {
   FillForm(kIbanValue);
   SubmitFormAndWaitForIbanLocalSaveBubble();
@@ -520,6 +553,53 @@ IN_PROC_BROWSER_TEST_F(SaveIbanBubbleViewFullFormBrowserTest,
 
   ClickOnIbanValueTogglelButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
+}
+
+// Tests the local save bubble. Ensures that clicking the omnibox icon opens
+// manage saved IBAN bubble with IBAN nickname.
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+                       Local_SavedIbanHasNickname) {
+  const std::u16string kNickname = u"My doctor's IBAN";
+  FillForm();
+  SubmitFormAndWaitForIbanLocalSaveBubble();
+  nickname_input()->SetText(kNickname);
+
+  ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
+  ClickOnSaveButton();
+  WaitForObservedEvent();
+
+  // Open up manage IBANs bubble.
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  ClickOnView(GetSaveIbanIconView());
+  WaitForObservedEvent();
+
+  const views::Label* nickname_label = static_cast<views::Label*>(
+      FindViewInBubbleById(DialogViewId::NICKNAME_LABEL));
+  EXPECT_TRUE(nickname_label);
+  EXPECT_EQ(nickname_label->GetText(), kNickname);
+  // Verify the bubble type is manage saved IBAN.
+  EXPECT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
+}
+
+// Tests the local save bubble. Ensures that clicking the omnibox icon opens
+// manage saved IBAN bubble without IBAN nickname.
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+                       Local_SavedIbanNoNickname) {
+  FillForm();
+  SubmitFormAndWaitForIbanLocalSaveBubble();
+
+  ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
+  ClickOnSaveButton();
+  WaitForObservedEvent();
+
+  // Open up manage IBANs bubble.
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  ClickOnView(GetSaveIbanIconView());
+  WaitForObservedEvent();
+
+  EXPECT_FALSE(FindViewInBubbleById(DialogViewId::NICKNAME_LABEL));
+  // Verify the bubble type is manage saved IBAN.
+  EXPECT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
 }
 
 }  // namespace autofill
