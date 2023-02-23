@@ -228,6 +228,8 @@ component("gl") {
       sources += [
         "gl_image_native_pixmap.cc",
         "gl_image_native_pixmap.h",
+        "native_pixmap_egl_binding_helper.cc",
+        "native_pixmap_egl_binding_helper.h",
       ]
     }
 
