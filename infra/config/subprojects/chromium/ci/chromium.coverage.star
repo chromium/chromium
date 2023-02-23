@@ -258,6 +258,7 @@ coverage_builder(
     name = "linux-fuzz-coverage",
     executable = "recipe:chromium_fuzz_coverage",
     builderless = True,
+    os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
             category = "linux-fuzz",
