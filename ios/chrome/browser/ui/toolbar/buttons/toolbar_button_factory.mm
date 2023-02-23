@@ -231,8 +231,17 @@ const CGFloat kSymbolToolbarPointSize = 24;
   [cancelButton
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
+
+  // TODO(crbug.com/1418068): Remove after minimum version required is >=
+  // iOS 15.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+  cancelButton.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+      0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+#else
   cancelButton.contentEdgeInsets = UIEdgeInsetsMake(
       0, kCancelButtonHorizontalInset, 0, kCancelButtonHorizontalInset);
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+
   cancelButton.hidden = YES;
   [cancelButton addTarget:self.actionHandler
                    action:@selector(cancelOmniboxFocusAction)

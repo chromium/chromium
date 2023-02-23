@@ -149,8 +149,15 @@
   [button setTitle:title forState:UIControlStateNormal];
   [button setTitleColor:[UIColor colorNamed:kTextPrimaryColor]
                forState:UIControlStateNormal];
+  // TODO(crbug.com/1418068): Remove after minimum version required is >=
+  // iOS 15.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+  button.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+      0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
+#else
   button.contentEdgeInsets =
       UIEdgeInsetsMake(0, kHorizontalEdgeInset, 0, kHorizontalEdgeInset);
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
   button.clipsToBounds = YES;
   [button.titleLabel setFont:[UIFont systemFontOfSize:kButtonTitleFontSize
                                                weight:UIFontWeightMedium]];

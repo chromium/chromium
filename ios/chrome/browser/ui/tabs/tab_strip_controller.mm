@@ -549,9 +549,17 @@ const CGFloat kSymbolSize = 18;
     [_buttonNewTab setImage:buttonNewTabImage forState:UIControlStateNormal];
     [_buttonNewTab.imageView setTintColor:[UIColor colorNamed:kGrey500Color]];
 
+    // TODO(crbug.com/1418068): Remove after minimum version required is >=
+    // iOS 15.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+    _buttonNewTab.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+        0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
+#else
     UIEdgeInsets imageInsets = UIEdgeInsetsMake(
         0, kNewTabButtonLeadingImageInset, kNewTabButtonBottomImageInset, 0);
     _buttonNewTab.imageEdgeInsets = imageInsets;
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+
     SetA11yLabelAndUiAutomationName(
         _buttonNewTab,
         _isIncognito ? IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB

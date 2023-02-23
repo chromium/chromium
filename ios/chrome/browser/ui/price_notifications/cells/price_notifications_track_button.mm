@@ -33,9 +33,17 @@ const CGFloat kTrackButtonTopPadding = 4;
                        IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TRACK_BUTTON)
           forState:UIControlStateNormal];
 
+    // TODO(crbug.com/1418068): Remove after minimum version required is >=
+    // iOS 15.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+    self.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kTrackButtonTopPadding, kTrackButtonSidePadding, kTrackButtonTopPadding,
+        kTrackButtonSidePadding);
+#else
     self.contentEdgeInsets =
         UIEdgeInsetsMake(kTrackButtonTopPadding, kTrackButtonSidePadding,
                          kTrackButtonTopPadding, kTrackButtonSidePadding);
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
   }
   return self;
 }

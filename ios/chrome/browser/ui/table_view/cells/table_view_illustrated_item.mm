@@ -116,9 +116,18 @@ const CGFloat kButtonCornerRadius = 8.0;
         setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]];
     _button.layer.cornerRadius = kButtonCornerRadius;
     _button.translatesAutoresizingMaskIntoConstraints = NO;
+
+    // TODO(crbug.com/1418068): Remove after minimum version required is >=
+    // iOS 15.
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
+    _button.configuration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+#else
     _button.contentEdgeInsets = UIEdgeInsetsMake(
         kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
         kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+#endif  // __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_15_0
 
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
       _illustratedImageView, _titleLabel, _subtitleLabel, _button
