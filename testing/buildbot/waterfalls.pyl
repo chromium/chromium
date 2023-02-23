@@ -3749,6 +3749,28 @@
         },
         'os_type': 'mac',
       },
+      'mac13-arm64-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'mac_beta_x64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'mac',
+      },
+      'mac13-wpt-content-shell-fyi-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'mac_beta_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'wpt_web_tests_content_shell',
+        },
+        'os_type': 'mac',
+      },
       'win-annotator-rel': {
         'test_suites': {
           'scripts': 'test_traffic_annotation_auditor_script',
