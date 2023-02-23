@@ -104,6 +104,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/compositor/CompositorVisibilityTest.java",
   "javatests/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerTest.java",
   "javatests/src/org/chromium/chrome/browser/compositor/layouts/MockLayoutHost.java",
+  "javatests/src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManagerTest.java",
   "javatests/src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripTest.java",
   "javatests/src/org/chromium/chrome/browser/contacts_picker/ContactsPickerLauncherTest.java",
   "javatests/src/org/chromium/chrome/browser/content_settings/ContentSettingsObserverTest.java",

@@ -136,7 +136,8 @@ public class RenderTestRule extends TestWatcher {
             Component.UI_BROWSER_SHARING, Component.UI_BROWSER_SHOPPING,
             Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
             Component.UI_BROWSER_SHOPPING_PRICE_TRACKING, Component.UI_BROWSER_TOOLBAR,
-            Component.UI_BROWSER_WEB_APP_INSTALLS, Component.UI_SETTINGS_PRIVACY})
+            Component.UI_BROWSER_THUMBNAIL, Component.UI_BROWSER_WEB_APP_INSTALLS,
+            Component.UI_SETTINGS_PRIVACY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Component {
         String BLINK_CONTACTS = "Blink>Contacts";
@@ -177,6 +178,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_SHOPPING = "UI>Browser>Shopping";
         String UI_BROWSER_SHOPPING_MERCHANT_TRUST = "UI>Browser>Shopping>MerchantTrust";
         String UI_BROWSER_SHOPPING_PRICE_TRACKING = "UI>Browser>Shopping>PriceTracking";
+        String UI_BROWSER_THUMBNAIL = "UI>Browser>Thumbnail";
         String UI_BROWSER_TOOLBAR = "UI>Browser>Toolbar";
         String UI_BROWSER_WEB_APP_INSTALLS = "UI>Browser>WebAppInstalls";
         String UI_SETTINGS_PRIVACY = "UI>Settings>Privacy";

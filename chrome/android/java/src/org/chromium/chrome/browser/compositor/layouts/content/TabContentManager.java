@@ -219,6 +219,13 @@ public class TabContentManager {
     }
 
     @CalledByNative
+    private Tab getTabById(int tabId) {
+        if (mTabFinder == null) return null;
+
+        return mTabFinder.getTabById(tabId);
+    }
+
+    @CalledByNative
     private long getNativePtr() {
         return mNativeTabContentManager;
     }
@@ -228,7 +235,7 @@ public class TabContentManager {
      * @param tab Tab whose cc layer will be attached.
      */
     public void attachTab(Tab tab) {
-        if (mNativeTabContentManager == 0) return;
+        if (mNativeTabContentManager == 0 || sThumbnailCacheRefactor.isEnabled()) return;
         TabContentManagerJni.get().attachTab(mNativeTabContentManager, tab, tab.getId());
     }
 
@@ -237,7 +244,7 @@ public class TabContentManager {
      * @param tab Tab whose cc layer will be detached.
      */
     public void detachTab(Tab tab) {
-        if (mNativeTabContentManager == 0) return;
+        if (mNativeTabContentManager == 0 || sThumbnailCacheRefactor.isEnabled()) return;
         TabContentManagerJni.get().detachTab(mNativeTabContentManager, tab, tab.getId());
     }
 
@@ -350,9 +357,7 @@ public class TabContentManager {
         getTabThumbnailFromDisk(tabId, thumbnailSize, (diskBitmap) -> {
             if (diskBitmap != null) callback.onResult(diskBitmap);
 
-            if (mTabFinder == null) return;
-
-            Tab tab = mTabFinder.getTabById(tabId);
+            Tab tab = getTabById(tabId);
             if (tab == null) return;
 
             captureThumbnail(tab, writeBack, (bitmap) -> {
