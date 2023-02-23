@@ -420,6 +420,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Preload.UnusedResource" enum="BooleanSuccess"
+    expires_after="2024-02-17">
+  <owner>yoavweiss@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>Counts the number of unused preloads per ResourceType.</summary>
+</histogram>
+
 <histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
     units="ms" expires_after="2023-02-28">
   <owner>fdoray@chromium.org</owner>

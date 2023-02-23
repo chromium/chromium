@@ -1999,6 +1999,8 @@ void ResourceFetcher::WarnUnusedPreloads() {
         CreateTracedValueForUnusedPreload(
             resource->Url(), Resource::MatchStatus::kOk,
             resource->GetResourceRequest().GetDevToolsId().value_or(String())));
+    UMA_HISTOGRAM_COUNTS_100("Renderer.Preload.UnusedResource",
+                             static_cast<int>(resource->GetType()));
   }
 
   for (auto& pair : early_hints_preloaded_resources_) {

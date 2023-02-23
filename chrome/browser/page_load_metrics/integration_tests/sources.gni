@@ -15,5 +15,6 @@ metric_integration_sources = [
   "//chrome/browser/page_load_metrics/integration_tests/render_blocking_browsertest.cc",
   "//chrome/browser/page_load_metrics/integration_tests/smoothness_metric_browsertest.cc",
   "//chrome/browser/page_load_metrics/integration_tests/total_input_delay_browsertest.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/unused_preloads_browsertest.cc",
   "//chrome/browser/page_load_metrics/integration_tests/user_timing_browsertest.cc",
 ]
