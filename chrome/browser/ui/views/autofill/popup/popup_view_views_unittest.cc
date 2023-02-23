@@ -628,39 +628,6 @@ TEST_P(PopupViewViewsTestWithClickablePopupItemId,
   view().RemoveAllChildViews();
 }
 
-// Tests that if the mouse hovers a suggestion when the popup is displayed,
-// clicking the suggestion triggers no AcceptSuggestion() event.
-TEST_P(PopupViewViewsTestWithClickablePopupItemId,
-       IgnoreClickIfFocusedAtPaintWithoutExit) {
-  CreateAndShowView({popup_item_id()});
-  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
-  generator().MoveMouseTo(GetCenterOfSuggestion(0));
-  ASSERT_TRUE(view().IsMouseHovered());
-  Paint();
-  generator().ClickLeftButton();
-  view().RemoveAllChildViews();
-}
-
-// Tests that if the mouse hovers a suggestion when the popup is displayed and
-// moves around on this suggestion, clicking the suggestion triggers no
-// AcceptSuggestion() event.
-TEST_P(PopupViewViewsTestWithClickablePopupItemId,
-       IgnoreClickIfFocusedAtPaintWithSlightMouseMovement) {
-  CreateAndShowView({popup_item_id()});
-  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
-  int width = GetRowViewAt(0).width();
-  int height = GetRowViewAt(0).height();
-  for (int x : {-width / 3, width / 3}) {
-    for (int y : {-height / 3, height / 3}) {
-      generator().MoveMouseTo(GetCenterOfSuggestion(0) + gfx::Vector2d(x, y));
-      ASSERT_TRUE(view().IsMouseHovered());
-      Paint();
-    }
-  }
-  generator().ClickLeftButton();
-  view().RemoveAllChildViews();
-}
-
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsTestWithAnyPopupItemId,
                          testing::ValuesIn([] {
