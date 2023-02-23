@@ -1096,10 +1096,6 @@ void URLLoader::FollowRedirect(
   // also calls the devtools observer.
   seen_raw_request_headers_ = false;
 
-  // Reset the state of the PNA checker - redirects should be treated like new
-  // requests by the same client.
-  private_network_access_checker_.Reset();
-
   memory_cache_writer_.reset();
 
   // Removing headers can't make the set of pre-existing headers unsafe, but
@@ -1116,6 +1112,14 @@ void URLLoader::FollowRedirect(
   if (allow_cookies_from_browser_) {
     cookies_from_browser_ =
         GetCookiesFromHeaders(modified_headers, modified_cors_exempt_headers);
+  }
+
+  // Reset the state of the PNA checker - redirects should be treated like new
+  // requests by the same client.
+  if (new_url.has_value()) {
+    private_network_access_checker_.ResetForRedirect(*new_url);
+  } else {
+    private_network_access_checker_.ResetForRedirect(*deferred_redirect_url_);
   }
 
   deferred_redirect_url_.reset();
@@ -1229,7 +1233,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
       // If the cached entry was blocked by the private network access check
       // without a preflight, we'll start over and attempt to request from the
       // network, so resetting the checker.
-      private_network_access_checker_.Reset();
+      private_network_access_checker_.ResetForRetry();
       return net::
           ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY;
     }

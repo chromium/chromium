@@ -252,6 +252,15 @@ const AddressSpaceMap& NonPublicAddressSpaceMap() {
   return *kMap;
 }
 
+}  // namespace
+
+IPAddressSpace IPAddressToIPAddressSpace(const IPAddress& address) {
+  return NonPublicAddressSpaceMap().Apply(address).value_or(
+      IPAddressSpace::kPublic);
+}
+
+namespace {
+
 IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
   if (!endpoint.address().IsValid()) {
     return IPAddressSpace::kUnknown;
@@ -262,9 +271,7 @@ IPAddressSpace IPEndPointToIPAddressSpace(const IPEndPoint& endpoint) {
     return *space;
   }
 
-  return NonPublicAddressSpaceMap()
-      .Apply(endpoint.address())
-      .value_or(IPAddressSpace::kPublic);
+  return IPAddressToIPAddressSpace(endpoint.address());
 }
 
 }  // namespace

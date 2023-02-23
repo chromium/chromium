@@ -14,6 +14,7 @@
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 namespace {
@@ -67,6 +68,8 @@ PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
       is_same_origin_(
           request.request_initiator.has_value() &&
           request.request_initiator.value().IsSameOriginWith(request.url)) {
+  SetRequestUrl(request.url);
+
   if (!client_security_state_ ||
       client_security_state_->private_network_request_policy ==
           mojom::PrivateNetworkRequestPolicy::kAllow) {
@@ -82,6 +85,14 @@ PrivateNetworkAccessChecker::~PrivateNetworkAccessChecker() = default;
 
 PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
     const net::TransportInfo& transport_info) {
+  // If the request URL host was a private IP, record whether we ended up
+  // connecting to that IP address. See https://crbug.com/1381471#c2.
+  if (request_url_private_ip_) {
+    base::UmaHistogramBoolean(
+        "Security.PrivateNetworkAccess.PrivateIpResolveMatch",
+        *request_url_private_ip_ == transport_info.endpoint.address());
+  }
+
   mojom::IPAddressSpace resource_address_space =
       TransportInfoToIPAddressSpace(transport_info);
 
@@ -95,13 +106,28 @@ PrivateNetworkAccessCheckResult PrivateNetworkAccessChecker::Check(
         "Security.PrivateNetworkAccess.CachedResourceCheckResult", result);
   }
 
+  // If we are connecting to a private IP endpoint over HTTP, and have failed
+  // the check, record whether we could have avoided the failure by inferring
+  // the target IP address space from the request URL.
+  if (resource_address_space == mojom::IPAddressSpace::kPrivate &&
+      is_request_url_scheme_http_ && result == Result::kBlockedByPolicyBlock) {
+    base::UmaHistogramBoolean(
+        "Security.PrivateNetworkAccess.PrivateIpInferrable",
+        request_url_private_ip_ != nullptr);
+  }
+
   response_address_space_ = resource_address_space;
   return result;
 }
 
-void PrivateNetworkAccessChecker::Reset() {
+void PrivateNetworkAccessChecker::ResetForRedirect(const GURL& new_url) {
+  SetRequestUrl(new_url);
+  ResetForRetry();
+}
+
+void PrivateNetworkAccessChecker::ResetForRetry() {
   // The target IP address space is no longer relevant, it only applied to the
-  // URL before the first redirect. Consider the following scenario:
+  // URL before the first redirect/retry. Consider the following scenario:
   //
   // 1. `https://public.example` fetches `http://localhost/foo`
   // 2. `OnConnected()` notices that the remote endpoint's IP address space is
@@ -191,14 +217,11 @@ Result PrivateNetworkAccessChecker::CheckInternal(
     // for this request. Further checks should not be run, otherwise we might
     // return `kBlockedByPolicyPreflightWarn` and trigger a new preflight to be
     // sent, thus causing https://crbug.com/1279376 all over again.
-    //
-    // Redirection blocked by PNA check in https://crbug.com/1334689.
-    // A request with HTTPS is under PNA warning mode other than allow mode.
-    // Private network access checker should not be applied to these requests.
     if (policy == mojom::PrivateNetworkRequestPolicy::kPreflightWarn) {
       return Result::kAllowedByPolicyPreflightWarn;
     }
 
+    // See also https://crbug.com/1334689.
     if (policy == mojom::PrivateNetworkRequestPolicy::kWarn) {
       return Result::kAllowedByPolicyWarn;
     }
@@ -230,6 +253,21 @@ Result PrivateNetworkAccessChecker::CheckInternal(
                  ? Result::kAllowedSecureSameOrigin
                  : Result::kBlockedByPolicyPreflightBlock;
   }
+}
+
+void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {
+  is_request_url_scheme_http_ = url.scheme_piece() == url::kHttpScheme;
+
+  net::IPAddress address;
+  if (!address.AssignFromIPLiteral(url.HostNoBracketsPiece())) {
+    return;
+  }
+
+  if (IPAddressToIPAddressSpace(address) != mojom::IPAddressSpace::kPrivate) {
+    return;
+  }
+
+  request_url_private_ip_ = std::make_unique<net::IPAddress>(address);
 }
 
 }  // namespace network

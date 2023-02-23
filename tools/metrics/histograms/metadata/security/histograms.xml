@@ -317,6 +317,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.PrivateNetworkAccess.PrivateIpInferrable"
+    enum="Boolean" expires_after="2023-12-31">
+  <owner>titouan@chromium.org</owner>
+  <owner>lyf@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <summary>
+    Records whether a failed PNA check could have been avoided by inferring the
+    request's target IP address space by recognizing that the request URL's host
+    is a literal private IP address. Recorded at most once per URL request.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateNetworkAccess.PrivateIpResolveMatch"
+    enum="Boolean" expires_after="2023-12-31">
+  <owner>titouan@chromium.org</owner>
+  <owner>lyf@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <summary>
+    Records whether a request to a literal private IP address resolved to that
+    private IP address. Recorded at most once per call to
+    `network::URLLoader::OnConnected()`, which may be more than once per URL
+    request.
+  </summary>
+</histogram>
+
 <histogram name="Security.SafetyTips.GetDomainInfoTime" units="ms"
     expires_after="2023-06-04">
   <owner>jdeblasio@chromium.org</owner>

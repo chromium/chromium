@@ -4,6 +4,7 @@
 
 #include "services/network/private_network_access_checker.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "net/base/ip_address.h"
@@ -17,6 +18,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using ::testing::Optional;
 
@@ -30,12 +32,19 @@ constexpr base::StringPiece kCheckResultHistogramName =
 
 constexpr char kNoAcceptChFrame[] = "";
 
+// For better readability than literal `nullptr`.
+constexpr mojom::ClientSecurityState* kNullClientSecurityState = nullptr;
+
 net::IPEndPoint LocalEndpoint() {
   return net::IPEndPoint(net::IPAddress::IPv4Localhost(), 80);
 }
 
 net::IPEndPoint PrivateEndpoint() {
   return net::IPEndPoint(net::IPAddress(10, 0, 0, 1), 80);
+}
+
+GURL PrivateEndpointUrl() {
+  return GURL("http://10.0.0.1");
 }
 
 net::IPEndPoint PublicEndpoint() {
@@ -591,13 +600,13 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectTargetAddressSpace) {
       request, factory_params.client_security_state.get(),
       mojom::kURLLoadOptionNone);
 
-  checker.Reset();
+  checker.ResetForRedirect(GURL("http://foo.com"));
 
   // The target address space has been cleared.
   EXPECT_EQ(checker.TargetAddressSpace(), mojom::IPAddressSpace::kUnknown);
 
   // This succeeds even though the IP address space does not match the target
-  // passed at construction time, thanks to `Reset()`.
+  // passed at construction time, thanks to `ResetForRedirect()`.
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedNoLessPublic);
 }
@@ -611,7 +620,7 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectResponseAddressSpace) {
 
   checker.Check(DirectTransport(PrivateEndpoint()));
 
-  checker.Reset();
+  checker.ResetForRedirect(GURL("http://foo.com"));
 
   EXPECT_EQ(checker.ResponseAddressSpace(), absl::nullopt);
 
@@ -619,6 +628,298 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectResponseAddressSpace) {
   // previous endpoint passed to `Check()`, thanks to `ResetForRedirect()`.
   EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
             Result::kAllowedMissingClientSecurityState);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     DoesNotRecordPrivateIpInferrableHistogramForPublicEndpoint) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://192.168.1.1");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PublicEndpoint()));
+
+  histogram_tester.ExpectTotalCount(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", 0);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     DoesNotRecordPrivateIpInferrableHistogramForHttpsScheme) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("https://192.168.1.1");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectTotalCount(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", 0);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     DoesNotRecordPrivateIpInferrableHistogramWithTargetIpAddressSpace) {
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
+
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://192.168.1.1");
+  request.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
+
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectTotalCount(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", 0);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpInferrableHistogramWrongPolicy) {
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
+
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://192.168.1.1");
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectTotalCount(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", 0);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpInferrableHistogramNoLessPublic) {
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kBlock;
+
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://192.168.1.1");
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectTotalCount(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", 0);
+}
+
+TEST(PrivateNetworkAccessCheckerTest, RecordsPrivateIpInferrableHistogramTrue) {
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kBlock;
+
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://192.168.1.1");
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", true, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpInferrableHistogramTrueIpv6) {
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kBlock;
+
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://[fc00::]");
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(net::IPEndPoint(
+      net::IPAddress(0xfc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 80)));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", true, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpInferrableHistogramFalse) {
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kBlock;
+
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://foo");
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpInferrable", false, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpInferrableHistogramAfterResetForRetry) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = PrivateEndpointUrl();
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.ResetForRetry();
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", true, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpInferrableHistogramAfterResetForRedirect) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://1.2.3.4");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.ResetForRedirect(PrivateEndpointUrl());
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", true, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     DoesNotRecordPrivateIpResolveMatchHistogramLocalhost) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://127.0.0.1");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectTotalCount(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", 0);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     DoesNotRecordPrivateIpResolveMatchHistogramDomain) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://foo");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectTotalCount(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", 0);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpResolveMatchHistogramFalse) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://192.168.1.1");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", false, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpResolveMatchHistogramTrue) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = PrivateEndpointUrl();
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", true, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpResolveMatchHistogramTrueIpv6) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://[fc00::]");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.Check(DirectTransport(net::IPEndPoint(
+      net::IPAddress(0xfc, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 80)));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", true, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpResolveMatchHistogramAfterResetForRetry) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://192.168.1.1");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.ResetForRetry();
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", false, 1);
+}
+
+TEST(PrivateNetworkAccessCheckerTest,
+     RecordsPrivateIpResolveMatchHistogramAfterResetForRedirect) {
+  base::HistogramTester histogram_tester;
+
+  ResourceRequest request;
+  request.url = GURL("http://192.168.1.1");
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
+
+  checker.ResetForRedirect(PrivateEndpointUrl());
+  checker.Check(DirectTransport(PrivateEndpoint()));
+
+  histogram_tester.ExpectUniqueSample(
+      "Security.PrivateNetworkAccess.PrivateIpResolveMatch", true, 1);
 }
 
 }  // namespace
