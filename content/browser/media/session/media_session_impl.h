@@ -328,7 +328,7 @@ class MediaSessionImpl : public MediaSession,
   void OnAudioOutputSinkChangingDisabled();
 
   // Update the value of `remote_playback_metadata_`.
-  void SetRemotePlaybackMetadata(
+  CONTENT_EXPORT void SetRemotePlaybackMetadata(
       media_session::mojom::RemotePlaybackMetadataPtr metadata);
 
   // Returns whether the action should be routed to |routed_service_|.
