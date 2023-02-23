@@ -9,6 +9,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -173,7 +174,7 @@ public abstract class PartialCustomTabBaseStrategy
             if (isFullHeight()) {
                 // We should update CCT position before Window#FLAG_LAYOUT_NO_LIMITS is set,
                 // otherwise it is not possible to get the correct content height.
-                mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+                configureLayoutBeyondScreen(false);
 
                 // Clean up the state initiated by IME so the height can be restored when
                 // rotating back to non-full-height mode later.
@@ -353,12 +354,37 @@ public abstract class PartialCustomTabBaseStrategy
         if (mFinishRunnable != null) return;
 
         mFinishRunnable = finishRunnable;
+        configureLayoutBeyondScreen(true);
+        AnimatorUpdateListener updater = animator -> setWindowY((int) animator.getAnimatedValue());
+        int start = mActivity.getWindow().getAttributes().y;
+        startAnimation(start, mHeight, updater, this::onCloseAnimationEnd);
+    }
 
+    protected void configureLayoutBeyondScreen(boolean enable) {
         Window window = mActivity.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        WindowManager.LayoutParams attrs = window.getAttributes();
+        if (enable) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
 
-        startAnimation(attrs.y, mHeight, (animator) -> {}, this::onCloseAnimationEnd);
+    protected void setWindowX(int x) {
+        var attrs = mActivity.getWindow().getAttributes();
+        attrs.x = x;
+        mActivity.getWindow().setAttributes(attrs);
+    }
+
+    protected void setWindowY(int y) {
+        var attrs = mActivity.getWindow().getAttributes();
+        attrs.y = y;
+        mActivity.getWindow().setAttributes(attrs);
+    }
+
+    protected void setWindowWidth(int width) {
+        var attrs = mActivity.getWindow().getAttributes();
+        attrs.width = width;
+        mActivity.getWindow().setAttributes(attrs);
     }
 
     protected void onCloseAnimationEnd() {

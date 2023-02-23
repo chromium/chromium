@@ -120,15 +120,6 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         startAnimation(start, end, closeAnimation, this::onCloseAnimationEnd, true);
     }
 
-    private void configureLayoutBeyondScreen(boolean enable) {
-        Window window = mActivity.getWindow();
-        if (enable) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
-    }
-
     @Override
     public void onToolbarInitialized(
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
@@ -173,24 +164,6 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         }
         startAnimation(start, end, updateListener, () -> onMaximizeEnd(animate), animate);
         return mIsMaximized;
-    }
-
-    private void setWindowX(int x) {
-        var attrs = mActivity.getWindow().getAttributes();
-        attrs.x = x;
-        mActivity.getWindow().setAttributes(attrs);
-    }
-
-    private void setWindowY(int y) {
-        var attrs = mActivity.getWindow().getAttributes();
-        attrs.y = y;
-        mActivity.getWindow().setAttributes(attrs);
-    }
-
-    private void setWindowWidth(int width) {
-        var attrs = mActivity.getWindow().getAttributes();
-        attrs.width = width;
-        mActivity.getWindow().setAttributes(attrs);
     }
 
     private void onMaximizeEnd(boolean animate) {
