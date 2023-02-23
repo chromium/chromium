@@ -540,11 +540,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   if (self.hasSavedOffsetFromPreviousScrollState) {
     [self setContentOffset:self.savedScrollOffset];
   }
-  [self updateStickyElements];
-}
-
-- (void)updateStickyElements {
-  [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
 }
 
 #pragma mark - NewTabPageConsumer
