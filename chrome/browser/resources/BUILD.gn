@@ -141,7 +141,6 @@ if (is_chromeos_ash && enable_js_type_check) {
       "gaia_auth_host:closure_compile",
       "nearby_internals:closure_compile",
       "nearby_share:closure_compile",
-      "nearby_share/shared:closure_compile_module",
     ]
   }
 }

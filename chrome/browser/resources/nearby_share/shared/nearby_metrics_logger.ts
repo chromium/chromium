@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
 /**
@@ -11,15 +11,14 @@ import {Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/p
  * change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
- * @enum {number}
  */
-export const NearbyShareOnboardingFinalState = {
-  DEVICE_NAME_PAGE: 0,
-  VISIBILITY_PAGE: 1,
-  COMPLETE: 2,
-  INITIAL_PAGE: 3,
-  MAX: 4,
-};
+export enum NearbyShareOnboardingFinalState {
+  DEVICE_NAME_PAGE = 0,
+  VISIBILITY_PAGE = 1,
+  COMPLETE = 2,
+  INITIAL_PAGE = 3,
+  MAX = 4,
+}
 
 /**
  * This enum is tied directly to a UMA enum defined in
@@ -27,15 +26,14 @@ export const NearbyShareOnboardingFinalState = {
  * change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
- * @enum {number}
  */
-const NearbyShareOnboardingEntryPoint = {
-  SETTINGS: 0,
-  TRAY: 1,
-  SHARE_SHEET: 2,
-  NEARBY_DEVICE_TRYING_TO_SHARE_NOTIFICATION: 3,
-  MAX: 4,
-};
+enum NearbyShareOnboardingEntryPoint {
+  SETTINGS = 0,
+  TRAY = 1,
+  SHARE_SHEET = 2,
+  NEARBY_DEVICE_TRYING_TO_SHARE_NOTIFICATION = 3,
+  MAX = 4,
+}
 
 /**
  * This enum is tied directly to a UMA enum defined in
@@ -43,20 +41,19 @@ const NearbyShareOnboardingEntryPoint = {
  * change one without changing the other).
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
- * @enum {number}
  */
-const NearbyShareOnboardingFlowEvent = {
-  ONBOARDING_SHOWN: 1,
-  CONFIRM_ON_INITIAL_PAGE: 12,
-  CANCEL_ON_INITIAL_PAGE: 13,
-  VISIBILITY_CLICKED_ON_INITIAL_PAGE: 14,
-  DEVICE_VISIBILITY_PAGE_SHOWN: 141,
-  ALL_CONTACTS_SELECTED_AND_CONFIRMED: 1412,
-  SOME_CONTACTS_SELECTED_AND_CONFIRMED: 1413,
-  HIDDEN_SELECTED_AND_CONFIRMED: 1414,
-  MANAGE_CONTACTS_SELECTED: 1415,
-  CANCEL_SELECTED_ON_VISIBILITY_PAGE: 1416,
-};
+enum NearbyShareOnboardingFlowEvent {
+  ONBOARDING_SHOWN = 1,
+  CONFIRM_ON_INITIAL_PAGE = 12,
+  CANCEL_ON_INITIAL_PAGE = 13,
+  VISIBILITY_CLICKED_ON_INITIAL_PAGE = 14,
+  DEVICE_VISIBILITY_PAGE_SHOWN = 141,
+  ALL_CONTACTS_SELECTED_AND_CONFIRMED = 1412,
+  SOME_CONTACTS_SELECTED_AND_CONFIRMED = 1413,
+  HIDDEN_SELECTED_AND_CONFIRMED = 1414,
+  MANAGE_CONTACTS_SELECTED = 1415,
+  CANCEL_SELECTED_ON_VISIBILITY_PAGE = 1416,
+}
 
 const NearbyShareOnboardingResultHistogramName =
     'Nearby.Share.Onboarding.Result';
@@ -70,17 +67,16 @@ const NearbyShareOnboardingFlowEventHistogramName =
 /**
  * Tracks time that onboarding is started. Gets set to null after onboarding is
  * complete as a way to track if onboarding is in progress.
- * @type {?number}
  */
-let onboardingInitiatedTimestamp;
+let onboardingInitiatedTimestamp: number|null;
 
 /**
  * Records the onboarding flow entrypoint and stores the time at which
  * onboarding was initiated. The url param is used to infer the entrypoint.
- * @param {URL} url
  */
-export function processOnboardingInitiatedMetrics(url) {
-  let nearbyShareOnboardingEntryPoint;
+export function processOnboardingInitiatedMetrics(url: URL): void {
+  let nearbyShareOnboardingEntryPoint: NearbyShareOnboardingEntryPoint|null =
+      null;
 
   if (url.hostname === 'nearby') {
     nearbyShareOnboardingEntryPoint =
@@ -89,7 +85,7 @@ export function processOnboardingInitiatedMetrics(url) {
     const urlParams = new URLSearchParams(url.search);
 
     nearbyShareOnboardingEntryPoint =
-        getOnboardingEntrypointFromQueryParam_(urlParams.get('entrypoint'));
+        getOnboardingEntrypointFromQueryParam(urlParams.get('entrypoint'));
   } else {
     assertNotReached('Invalid nearbyShareOnboardingEntryPoint');
   }
@@ -107,10 +103,10 @@ export function processOnboardingInitiatedMetrics(url) {
  * Records the one-page onboarding flow entrypoint and stores the time at which
  * one-page onboarding was initiated. The url param is used to infer the
  * entrypoint.
- * @param {URL} url
  */
-export function processOnePageOnboardingInitiatedMetrics(url) {
-  let nearbyShareOnboardingEntryPoint;
+export function processOnePageOnboardingInitiatedMetrics(url: URL): void {
+  let nearbyShareOnboardingEntryPoint: NearbyShareOnboardingEntryPoint|null =
+      null;
 
   if (url.hostname === 'nearby') {
     nearbyShareOnboardingEntryPoint =
@@ -119,7 +115,7 @@ export function processOnePageOnboardingInitiatedMetrics(url) {
     const urlParams = new URLSearchParams(url.search);
 
     nearbyShareOnboardingEntryPoint =
-        getOnboardingEntrypointFromQueryParam_(urlParams.get('entrypoint'));
+        getOnboardingEntrypointFromQueryParam(urlParams.get('entrypoint'));
   } else {
     assertNotReached('Invalid nearbyShareOnboardingEntryPoint');
   }
@@ -139,13 +135,8 @@ export function processOnePageOnboardingInitiatedMetrics(url) {
   onboardingInitiatedTimestamp = window.performance.now();
 }
 
-/**
- * @param {?string} queryParam
- * @return {NearbyShareOnboardingEntryPoint}
- *
- * @private
- */
-function getOnboardingEntrypointFromQueryParam_(queryParam) {
+function getOnboardingEntrypointFromQueryParam(queryParam: string|null):
+    NearbyShareOnboardingEntryPoint {
   switch (queryParam) {
     case 'settings':
       return NearbyShareOnboardingEntryPoint.SETTINGS;
@@ -160,11 +151,9 @@ function getOnboardingEntrypointFromQueryParam_(queryParam) {
 /**
  * If onboarding was cancelled this function is invoked to record during which
  * step the cancellation occurred.
- *
- * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
  */
 export function processOnboardingCancelledMetrics(
-    nearbyShareOnboardingFinalState) {
+    nearbyShareOnboardingFinalState: NearbyShareOnboardingFinalState): void {
   if (!onboardingInitiatedTimestamp) {
     return;
   }
@@ -179,11 +168,9 @@ export function processOnboardingCancelledMetrics(
 /**
  * If one-page onboarding was cancelled this function is invoked to record
  * during which step the cancellation occurred.
- *
- * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
  */
 export function processOnePageOnboardingCancelledMetrics(
-    nearbyShareOnboardingFinalState) {
+    nearbyShareOnboardingFinalState: NearbyShareOnboardingFinalState): void {
   if (!onboardingInitiatedTimestamp) {
     return;
   }
@@ -195,20 +182,14 @@ export function processOnePageOnboardingCancelledMetrics(
 
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
-    getOnboardingCancelledFlowEvent_(nearbyShareOnboardingFinalState),
+    getOnboardingCancelledFlowEvent(nearbyShareOnboardingFinalState),
   ]);
   onboardingInitiatedTimestamp = null;
 }
 
-/**
- * Get the corresponding onboarding canceling event.
- *
- * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
- * @returns {NearbyShareOnboardingFlowEvent}
- *
- * @private
- */
-function getOnboardingCancelledFlowEvent_(nearbyShareOnboardingFinalState) {
+function getOnboardingCancelledFlowEvent(
+    nearbyShareOnboardingFinalState: NearbyShareOnboardingFinalState):
+    NearbyShareOnboardingFlowEvent {
   switch (nearbyShareOnboardingFinalState) {
     case NearbyShareOnboardingFinalState.INITIAL_PAGE:
       return NearbyShareOnboardingFlowEvent.CANCEL_ON_INITIAL_PAGE;
@@ -223,7 +204,7 @@ function getOnboardingCancelledFlowEvent_(nearbyShareOnboardingFinalState) {
  * Records a metric for successful onboarding flow completion and the time it
  * took to complete.
  */
-export function processOnboardingCompleteMetrics() {
+export function processOnboardingCompleteMetrics(): void {
   if (!onboardingInitiatedTimestamp) {
     return;
   }
@@ -244,20 +225,17 @@ export function processOnboardingCompleteMetrics() {
 /**
  * Records a metric for successful one-page onboarding flow completion and the
  * time it took to complete.
- *
- * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
- * @param {?Visibility} visibility
  */
 export function processOnePageOnboardingCompleteMetrics(
-    nearbyShareOnboardingFinalState, visibility) {
+    nearbyShareOnboardingFinalState: NearbyShareOnboardingFinalState,
+    visibility: Visibility|null): void {
   if (!onboardingInitiatedTimestamp) {
     return;
   }
 
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
-    getOnboardingCompleteFlowEvent_(
-        nearbyShareOnboardingFinalState, visibility),
+    getOnboardingCompleteFlowEvent(nearbyShareOnboardingFinalState, visibility),
   ]);
 
   chrome.send('metricsHandler:recordInHistogram', [
@@ -277,20 +255,15 @@ export function processOnePageOnboardingCompleteMetrics(
 /**
  * Gets the corresponding onboarding complete flow event based on final state
  * and visibility selected.
- *
- * @param {NearbyShareOnboardingFinalState} nearbyShareOnboardingFinalState
- * @param {?Visibility} visibility
- * @returns {NearbyShareOnboardingFlowEvent}
- *
- * @private
  */
-function getOnboardingCompleteFlowEvent_(
-    nearbyShareOnboardingFinalState, visibility) {
+function getOnboardingCompleteFlowEvent(
+    nearbyShareOnboardingFinalState: NearbyShareOnboardingFinalState,
+    visibility: Visibility|null): NearbyShareOnboardingFlowEvent {
   switch (nearbyShareOnboardingFinalState) {
     case NearbyShareOnboardingFinalState.INITIAL_PAGE:
       return NearbyShareOnboardingFlowEvent.CONFIRM_ON_INITIAL_PAGE;
     case NearbyShareOnboardingFinalState.VISIBILITY_PAGE:
-      return getOnboardingCompleteFlowEventOnVisibilityPage_(visibility);
+      return getOnboardingCompleteFlowEventOnVisibilityPage(visibility);
     default:
       assertNotReached('Invalid final state');
   }
@@ -299,13 +272,9 @@ function getOnboardingCompleteFlowEvent_(
 /**
  * Gets the corresponding onboarding complete flow event on visibility
  * selection page based on final visibility selected.
- *
- * @param {?Visibility} visibility
- * @returns {NearbyShareOnboardingFlowEvent}
- *
- * @private
  */
-function getOnboardingCompleteFlowEventOnVisibilityPage_(visibility) {
+function getOnboardingCompleteFlowEventOnVisibilityPage(
+    visibility: Visibility|null): NearbyShareOnboardingFlowEvent {
   switch (visibility) {
     case Visibility.kAllContacts:
       return NearbyShareOnboardingFlowEvent.ALL_CONTACTS_SELECTED_AND_CONFIRMED;
@@ -324,7 +293,7 @@ function getOnboardingCompleteFlowEventOnVisibilityPage_(visibility) {
  * the initial onboarding page.
  */
 export function
-processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics() {
+processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics(): void {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
     NearbyShareOnboardingFlowEvent.VISIBILITY_CLICKED_ON_INITIAL_PAGE,
@@ -334,7 +303,7 @@ processOnePageOnboardingVisibilityButtonOnInitialPageClickedMetrics() {
 /**
  * Records a metrics for successfully displaying visibility selection page.
  */
-export function processOnePageOnboardingVisibilityPageShownMetrics() {
+export function processOnePageOnboardingVisibilityPageShownMetrics(): void {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
     NearbyShareOnboardingFlowEvent.DEVICE_VISIBILITY_PAGE_SHOWN,
@@ -345,7 +314,7 @@ export function processOnePageOnboardingVisibilityPageShownMetrics() {
  * Records a metrics for users clicking Manage Contacts button on the
  * visibility selection page.
  */
-export function processOnePageOnboardingManageContactsMetrics() {
+export function processOnePageOnboardingManageContactsMetrics(): void {
   chrome.send('metricsHandler:recordSparseHistogram', [
     NearbyShareOnboardingFlowEventHistogramName,
     NearbyShareOnboardingFlowEvent.MANAGE_CONTACTS_SELECTED,

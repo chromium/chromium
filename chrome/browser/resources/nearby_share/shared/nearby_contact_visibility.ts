@@ -18,31 +18,29 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './nearby_page_template.js';
 import './nearby_shared_icons.html.js';
 
-import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
-import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {ContactManagerInterface, ContactRecord, DownloadContactsObserverInterface, DownloadContactsObserverReceiver, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {ContactManagerInterface, ContactRecord, DownloadContactsObserverReceiver, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getContactManager, observeContactManager} from './nearby_contact_manager.js';
 import {getTemplate} from './nearby_contact_visibility.html.js';
-import {NearbySettings} from './nearby_share_settings_behavior.js';
+import {NearbySettings} from './nearby_share_settings_mixin.js';
 
-/** @enum {string} */
-const ContactsState = {
-  PENDING: 'pending',
-  FAILED: 'failed',
-  HAS_CONTACTS: 'hascontacts',
-  ZERO_CONTACTS: 'zerocontacts',
-};
+enum ContactsState {
+  PENDING = 'pending',
+  FAILED = 'failed',
+  HAS_CONTACTS = 'hascontacts',
+  ZERO_CONTACTS = 'zerocontacts',
+}
 
 /**
  * Maps visibility string to the mojo enum
- * @param {?string} visibilityString
- * @return {?Visibility}
  */
-const visibilityStringToValue = function(visibilityString) {
+function visibilityStringToValue(visibilityString: string|null): Visibility|
+    null {
   switch (visibilityString) {
     case 'all':
       return Visibility.kAllContacts;
@@ -53,14 +51,12 @@ const visibilityStringToValue = function(visibilityString) {
     default:
       return null;
   }
-};
+}
 
 /**
  * Maps visibility mojo enum to a string for the radio button selection
- * @param {?Visibility} visibility
- * @return {?string}
  */
-const visibilityValueToString = function(visibility) {
+function visibilityValueToString(visibility: Visibility|null): string|null {
   switch (visibility) {
     case Visibility.kAllContacts:
       return 'all';
@@ -71,43 +67,31 @@ const visibilityValueToString = function(visibility) {
     default:
       return null;
   }
-};
+}
 
-/**
- * @type {string}
- */
+function isHtmlAnchorElement(node: ChildNode): node is HTMLAnchorElement {
+  return node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A';
+}
+
 const DEVICE_VISIBILITY_LIGHT_ICON =
     'nearby-images:nearby-device-visibility-light';
 
-/**
- * @type {string}
- */
 const DEVICE_VISIBILITY_DARK_ICON =
     'nearby-images:nearby-device-visibility-dark';
 
-/**
- * @typedef {{
- *            id:string,
- *            name:string,
- *            description:string,
- *            checked:boolean,
- *          }}
- */
-export let NearbyVisibilityContact;
+export interface NearbyVisibilityContact {
+  id: string;
+  name: string;
+  description: string;
+  checked: boolean;
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const NearbyContactVisibilityElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const NearbyContactVisibilityElementBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class NearbyContactVisibilityElement extends
     NearbyContactVisibilityElementBase {
   static get is() {
-    return 'nearby-contact-visibility';
+    return 'nearby-contact-visibility' as const;
   }
 
   static get template() {
@@ -116,27 +100,24 @@ export class NearbyContactVisibilityElement extends
 
   static get properties() {
     return {
-      /** @type {Object} */
       ContactsState: {
         type: Object,
         value: ContactsState,
       },
 
-      /** @type {string} */
       contactsState: {
         type: String,
         value: ContactsState.PENDING,
       },
 
-      /** @type {?NearbySettings} */
       settings: {
         type: Object,
         notify: true,
       },
 
       /**
-       * @type {?string} Which of visibility setting is selected as a string or
-       *      null for no selection. ('all', 'some', 'none', null).
+       * Which of visibility setting is selected as a string or
+       * null for no selection. ('all', 'some', 'none', null).
        */
       selectedVisibility: {
         type: String,
@@ -145,22 +126,19 @@ export class NearbyContactVisibilityElement extends
       },
 
       /**
-       * @type {?Array<NearbyVisibilityContact>} The user's contacts
-       *     re-formatted for binding.
+       * The user's contacts re-formatted for binding.
        */
       contacts: {
         type: Array,
         value: null,
       },
 
-      /** @private */
       numUnreachable_: {
         type: Number,
         value: 0,
         observer: 'updateNumUnreachableMessage_',
       },
 
-      /** @private */
       numUnreachableMessage_: {
         type: String,
         value: '',
@@ -175,7 +153,6 @@ export class NearbyContactVisibilityElement extends
 
       /**
        * Whether the contact visibility page is being rendered in dark mode.
-       * @private {boolean}
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -190,32 +167,41 @@ export class NearbyContactVisibilityElement extends
     ];
   }
 
+  contacts: NearbyVisibilityContact[];
+  // Mirroring the enum to allow usage in Polymer HTML bindings.
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  ContactsState: ContactsState;
+  contactsState: ContactsState;
+  isVisibilitySelected: boolean;
+  selectedVisibility: string|null;
+  settings: NearbySettings|null;
+
+  private contactManager_: ContactManagerInterface|null;
+  private downloadContactsObserverReceiver_: DownloadContactsObserverReceiver|
+      null;
+  private downloadTimeoutId_: number|null;
+  private isDarkModeActive_: boolean;
+  private numUnreachable_: number;
+  private numUnreachableMessage_: string;
+
   constructor() {
     super();
-    /** @private {?ContactManagerInterface} */
     this.contactManager_ = null;
-
-    /** @private {?DownloadContactsObserverReceiver} */
     this.downloadContactsObserverReceiver_ = null;
-
-    /** @private {?number} */
     this.downloadTimeoutId_ = null;
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.contactManager_ = getContactManager();
-    this.downloadContactsObserverReceiver_ = observeContactManager(
-        /** @type {!DownloadContactsObserverInterface} */ (this));
+    this.downloadContactsObserverReceiver_ = observeContactManager(this);
     // Start a contacts download now so we have it by the time the component is
     // shown.
     this.downloadContacts_();
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
     if (this.downloadContactsObserverReceiver_) {
@@ -225,55 +211,44 @@ export class NearbyContactVisibilityElement extends
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
-   * @param {?string} selectedVisibility
-   * @return {boolean} Returns true when the current selectedVisibility has a
+   * @return Returns true when the current selectedVisibility has a
    *     value other than null.
-   * @private
    */
-  isVisibilitySelected_(selectedVisibility) {
+  private isVisibilitySelected_(): boolean {
     return this.selectedVisibility !== null;
   }
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
-   * @param {?string} selectedVisibility
-   * @param {string} visibilityString
-   * @return {boolean} returns true when the current selectedVisibility equals
+   * @return true when the current selectedVisibility equals
    *     the passed arguments.
-   * @private
    */
-  isVisibility_(selectedVisibility, visibilityString) {
-    return this.selectedVisibility === visibilityString;
+  private isVisibility_(
+      selectedVisibility: string|null, visibilityString: string): boolean {
+    return selectedVisibility === visibilityString;
   }
 
   /**
    * Makes a mojo request to download the latest version of contacts.
-   * @private
    */
-  downloadContacts_() {
+  private downloadContacts_(): void {
     // Don't show pending UI if we already have some contacts.
     if (!this.contacts) {
       this.contactsState = ContactsState.PENDING;
     }
-    this.contactManager_.downloadContacts();
+    this.contactManager_!.downloadContacts();
     // Time out after 30 seconds and show the failure page if we don't get a
     // response.
     this.downloadTimeoutId_ =
         setTimeout(this.onContactsDownloadFailed.bind(this), 30 * 1000);
   }
 
-  /**
-   * @param {boolean} allowed
-   * @param {!ContactRecord} contactRecord
-   * @return {!NearbyVisibilityContact}
-   * @private
-   */
-  toNearbyVisibilityContact_(allowed, contactRecord) {
+  private toNearbyVisibilityContact_(
+      allowed: boolean, contactRecord: ContactRecord): NearbyVisibilityContact {
     // TODO (vecore): Support multiple identifiers with template string.
     // We should always have at least 1 identifier.
     assert(contactRecord.identifiers.length > 0);
 
-    /** @type {string} */
     const description = contactRecord.identifiers[0].accountName ||
         contactRecord.identifiers[0].phoneNumber || '';
 
@@ -288,27 +263,28 @@ export class NearbyContactVisibilityElement extends
   /**
    * From DownloadContactsObserver, called when contacts have
    * been successfully downloaded.
-   * @param {!Array<!string>} allowedContacts the server ids of the contacts
+   * @param allowedContacts the server ids of the contacts
    *     that are allowed to see this device when visibility is
    *     kSelectedContacts. This corresponds to the checkbox shown next to the
    *     contact for kSelectedContacts visibility.
-   * @param {!Array<!ContactRecord>} contactRecords the full
+   * @param contactRecords the full
    *     set of contacts returned from the people api. All contacts are shown to
    *     the user so they can see who can see their device for visibility
    *     kAllContacts and so they can choose which contacts are
    *     |allowedContacts| for kSelectedContacts visibility.
-   * @param {number} numUnreachableExcluded the number of contact records that
+   * @param numUnreachableExcluded the number of contact records that
    *     are not reachable for Nearby Share. These are not included in the list
    *     of contact records.
    */
   onContactsDownloaded(
-      allowedContacts, contactRecords, numUnreachableExcluded) {
-    clearTimeout(this.downloadTimeoutId_);
+      allowedContacts: string[], contactRecords: ContactRecord[],
+      numUnreachableExcluded: number): void {
+    clearTimeout(this.downloadTimeoutId_!);
 
     // TODO(vecore): Do a smart two-way merge that only splices actual changes.
     // For now we will do simple regenerate and bind.
     const allowed = new Set(allowedContacts);
-    const items = [];
+    const items: NearbyVisibilityContact[] = [];
     for (const contact of contactRecords) {
       const visibilityContact =
           this.toNearbyVisibilityContact_(allowed.has(contact.id), contact);
@@ -324,18 +300,16 @@ export class NearbyContactVisibilityElement extends
    * From DownloadContactsObserver, called when contacts have
    * failed to download or the local timeout has triggered.
    */
-  onContactsDownloadFailed() {
+  onContactsDownloadFailed(): void {
     this.contactsState = ContactsState.FAILED;
-    clearTimeout(this.downloadTimeoutId_);
+    clearTimeout(this.downloadTimeoutId_!);
   }
 
   /**
    * Used to show/hide parts of the UI based on current visibility selection.
-   * @return {boolean} returns true when checkboxes should be shown for
-   *     contacts.
-   * @private
+   * @return true when checkboxes should be shown for contacts.
    */
-  showContactCheckBoxes_() {
+  private showContactCheckBoxes_(): boolean {
     return this.selectedVisibility === 'some' ||
         this.selectedVisibility === 'none';
   }
@@ -343,11 +317,10 @@ export class NearbyContactVisibilityElement extends
   /**
    * When the contact check boxes are visible, the contact name and description
    * can be aria-hidden since they are used as labels for the checkbox.
-   * @return {string|undefined} Whether the contact name and description should
+   * @return Whether the contact name and description should
    *     be aria-hidden. "true" or undefined.
-   * @private
    */
-  getContactAriaHidden_() {
+  private getContactAriaHidden_(): string|undefined {
     if (this.showContactCheckBoxes_()) {
       return 'true';
     }
@@ -356,21 +329,14 @@ export class NearbyContactVisibilityElement extends
 
   /**
    * Used to show/hide ui elements based on the contacts download state.
-   * @param {string} contactsState
-   * @param {string} expectedState
-   * @return {boolean} true when in the expected state
-   * @private
    */
-  inContactsState_(contactsState, expectedState) {
+  private inContactsState_(contactsState: string, expectedState: string):
+      boolean {
     return contactsState === expectedState;
   }
 
-  /**
-   * @param {?NearbySettings} settings
-   * @private
-   */
-  settingsChanged_(settings) {
-    if (this.settings && this.settings.visibility) {
+  private settingsChanged_(): void {
+    if (this.settings && this.settings.visibility !== null) {
       this.selectedVisibility =
           visibilityValueToString(this.settings.visibility);
     } else {
@@ -378,45 +344,25 @@ export class NearbyContactVisibilityElement extends
     }
   }
 
-  /**
-   * @param {string} contactsState
-   * @return {boolean} true when the radio group should be disabled
-   * @private
-   */
-  disableRadioGroup_(contactsState) {
+  private disableRadioGroup_(contactsState: string): boolean {
     return contactsState === ContactsState.PENDING ||
         contactsState === ContactsState.FAILED;
   }
 
-  /**
-   * @param {string} selectedVisibility
-   * @param {string} contactsState
-   * @return {boolean} true when zero state should be shown
-   * @private
-   */
-  showZeroState_(selectedVisibility, contactsState) {
+  private showZeroState_(selectedVisibility: string, contactsState: string):
+      boolean {
     return !selectedVisibility && contactsState !== ContactsState.PENDING &&
         contactsState !== ContactsState.FAILED;
   }
 
-  /**
-   * @param {string} selectedVisibility
-   * @param {string} contactsState
-   * @return {boolean} true when explanation container should be shown
-   * @private
-   */
-  showContactsContainer_(selectedVisibility, contactsState) {
+  private showContactsContainer_(
+      selectedVisibility: string, contactsState: string): boolean {
     return this.showExplanationState_(selectedVisibility, contactsState) ||
         this.showContactList_(selectedVisibility, contactsState);
   }
 
-  /**
-   * @param {string} selectedVisibility
-   * @param {string} contactsState
-   * @return {boolean} true when explanation state should be shown
-   * @private
-   */
-  showExplanationState_(selectedVisibility, contactsState) {
+  private showExplanationState_(
+      selectedVisibility: string, contactsState: string): boolean {
     if (!selectedVisibility || contactsState === ContactsState.PENDING ||
         contactsState === ContactsState.FAILED) {
       return false;
@@ -426,24 +372,14 @@ export class NearbyContactVisibilityElement extends
         contactsState === ContactsState.HAS_CONTACTS;
   }
 
-  /**
-   * @param {string} selectedVisibility
-   * @param {string} contactsState
-   * @return {boolean} true when empty state should be shown
-   * @private
-   */
-  showEmptyState_(selectedVisibility, contactsState) {
+  private showEmptyState_(selectedVisibility: string, contactsState: string):
+      boolean {
     return (selectedVisibility === 'all' || selectedVisibility === 'some') &&
         contactsState === ContactsState.ZERO_CONTACTS;
   }
 
-  /**
-   * @param {string} selectedVisibility
-   * @param {string} contactsState
-   * @return {boolean} true when contact list should be shown
-   * @private
-   */
-  showContactList_(selectedVisibility, contactsState) {
+  private showContactList_(selectedVisibility: string, contactsState: string):
+      boolean {
     return (selectedVisibility === 'all' || selectedVisibility === 'some') &&
         contactsState === ContactsState.HAS_CONTACTS;
   }
@@ -456,12 +392,10 @@ export class NearbyContactVisibilityElement extends
    * doesn't exist when the dialog loads, only once the template is added to the
    * DOM.
    * TODO(crbug.com/1170849): Extract this logic into a general method.
-   *
-   * @private
    */
-  domChangeDownloadFailed_() {
+  private domChangeDownloadFailed_(): void {
     const contactsFailedMessage =
-        this.shadowRoot.querySelector('#contactsFailedMessage');
+        this.shadowRoot!.querySelector('#contactsFailedMessage');
     if (!contactsFailedMessage) {
       return;
     }
@@ -469,7 +403,7 @@ export class NearbyContactVisibilityElement extends
         this.i18nAdvanced('nearbyShareContactVisibilityDownloadFailed');
     contactsFailedMessage.innerHTML = localizedString;
 
-    const ariaLabelledByIds = [];
+    const ariaLabelledByIds: string[] = [];
     contactsFailedMessage.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
@@ -478,13 +412,13 @@ export class NearbyContactVisibilityElement extends
         spanNode.textContent = node.textContent;
         spanNode.id = `contactsFailedMessage${index}`;
         ariaLabelledByIds.push(spanNode.id);
-        spanNode.setAttribute('aria-hidden', true);
+        spanNode.setAttribute('aria-hidden', 'true');
         node.replaceWith(spanNode);
         return;
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
-      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
+      if (isHtmlAnchorElement(node)) {
         node.id = `tryAgainLink`;
         ariaLabelledByIds.push(node.id);
         return;
@@ -522,17 +456,15 @@ export class NearbyContactVisibilityElement extends
    * from getAriaLabelledContent_ in <localized-link>, which can't be
    * used directly because this is Polymer element is used outside settings.
    * TODO(crbug.com/1170849): Extract this logic into a general method.
-   * @return {string}
-   * @private
    */
-  getAriaLabelledZeroStateText_() {
+  private getAriaLabelledZeroStateText_(): string|TrustedHTML {
     const tempEl = document.createElement('div');
     const localizedString =
         this.i18nAdvanced('nearbyShareContactVisibilityZeroStateText');
     const linkUrl = this.i18n('nearbyShareLearnMoreLink');
     tempEl.innerHTML = localizedString;
 
-    const ariaLabelledByIds = [];
+    const ariaLabelledByIds: string[] = [];
     tempEl.childNodes.forEach((node, index) => {
       // Text nodes should be aria-hidden and associated with an element id
       // that the anchor element can be aria-labelledby.
@@ -541,13 +473,13 @@ export class NearbyContactVisibilityElement extends
         spanNode.textContent = node.textContent;
         spanNode.id = `zeroStateText${index}`;
         ariaLabelledByIds.push(spanNode.id);
-        spanNode.setAttribute('aria-hidden', true);
+        spanNode.setAttribute('aria-hidden', 'true');
         node.replaceWith(spanNode);
         return;
       }
       // The single element node with anchor tags should also be aria-labelledby
       // itself in-order with respect to the entire string.
-      if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === 'A') {
+      if (isHtmlAnchorElement(node)) {
         node.id = `zeroStateHelpLink`;
         ariaLabelledByIds.push(node.id);
         return;
@@ -577,16 +509,11 @@ export class NearbyContactVisibilityElement extends
     return tempEl.innerHTML;
   }
 
-  /**
-   * @return {boolean} true if the unreachable contacts message should be shown
-   * @private
-   */
-  showUnreachableContactsMessage_() {
+  private showUnreachableContactsMessage_(): boolean {
     return this.numUnreachable_ > 0;
   }
 
-  /** @private */
-  updateNumUnreachableMessage_() {
+  private updateNumUnreachableMessage_(): void {
     if (this.numUnreachable_ === 0) {
       this.numUnreachableMessage_ = '';
       return;
@@ -594,22 +521,17 @@ export class NearbyContactVisibilityElement extends
 
     // Template: "# contacts are not available." with correct plural of
     // "contact".
-    const labelTemplate =
-        sendWithPromise(
-            'getPluralString', 'nearbyShareContactVisibilityNumUnreachable',
-            this.numUnreachable_)
-            .then((labelTemplate) => {
-              this.numUnreachableMessage_ = loadTimeData.substituteString(
-                  labelTemplate, this.numUnreachable_);
-            });
+    sendWithPromise(
+        'getPluralString', 'nearbyShareContactVisibilityNumUnreachable',
+        this.numUnreachable_)
+        .then((labelTemplate) => {
+          this.numUnreachableMessage_ = loadTimeData.substituteString(
+              labelTemplate, this.numUnreachable_);
+        });
   }
 
-  /**
-   * @param {string} selectedVisibility
-   * @return {string}
-   * @private
-   */
-  getVisibilityDescription_(selectedVisibility) {
+  private getVisibilityDescription_(selectedVisibility: string): string
+      |TrustedHTML {
     switch (visibilityStringToValue(selectedVisibility)) {
       case Visibility.kAllContacts:
         return this.i18n('nearbyShareContactVisibilityOwnAll');
@@ -624,15 +546,14 @@ export class NearbyContactVisibilityElement extends
 
   /**
    * Save visibility setting and sync allowed contacts with contact manager.
-   * @public
    */
-  saveVisibilityAndAllowedContacts() {
+  saveVisibilityAndAllowedContacts(): void {
     const visibility = visibilityStringToValue(this.selectedVisibility);
     if (visibility) {
       this.set('settings.visibility', visibility);
     }
 
-    const allowedContacts = [];
+    const allowedContacts: string[] = [];
     if (this.contacts) {
       for (const contact of this.contacts) {
         if (contact.checked) {
@@ -640,27 +561,29 @@ export class NearbyContactVisibilityElement extends
         }
       }
     }
-    this.contactManager_.setAllowedContacts(allowedContacts);
+    this.contactManager_!.setAllowedContacts(allowedContacts);
   }
 
   /**
    * Return the selected visibility as a enum to nearby_visibiity_page when
    * logging metric to avoid potential race condition
-   * @return {?Visibility}
-   * @public
    */
-  getSelectedVisibility() {
+  getSelectedVisibility(): Visibility|null {
     return visibilityStringToValue(this.selectedVisibility);
   }
 
   /**
    * Returns the icon based on Light/Dark mode.
-   * @returns {string}
-   * @private
    */
-  getDeviceVisibilityIcon_() {
+  private getDeviceVisibilityIcon_(): string {
     return this.isDarkModeActive_ ? DEVICE_VISIBILITY_DARK_ICON :
                                     DEVICE_VISIBILITY_LIGHT_ICON;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NearbyContactVisibilityElement.is]: NearbyContactVisibilityElement;
   }
 }
 

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://nearby/strings.m.js';
+import 'chrome://nearby/shared/nearby_contact_visibility.js';
 
 import {setContactManagerForTesting} from 'chrome://nearby/shared/nearby_contact_manager.js';
-import {NearbyContactVisibilityElement} from 'chrome://nearby/shared/nearby_contact_visibility.js';
 import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -28,7 +28,7 @@ suite('nearby-contact-visibility', () => {
     visibilityElement = /** @type {!NearbyContactVisibilityElement} */ (
         document.createElement('nearby-contact-visibility'));
 
-    visibilityElement.settings = {
+    visibilityElement.settings = /** @type {!NearbySettings} */ ({
       enabled: false,
       fastInitiationNotificationState: FastInitiationNotificationState.kEnabled,
       isFastInitiationHardwareSupported: true,
@@ -37,7 +37,7 @@ suite('nearby-contact-visibility', () => {
       visibility: Visibility.kUnknown,
       isOnboardingComplete: false,
       allowedContacts: [],
-    };
+    });
 
     document.body.appendChild(visibilityElement);
   });

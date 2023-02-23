@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://nearby/shared/nearby_progress.js';
+
 import {ShareTarget} from 'chrome://nearby/mojo/nearby_share.mojom-webui.js';
-import {NearbyProgressElement} from 'chrome://nearby/shared/nearby_progress.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
 
 import {assertEquals} from '../../chromeos/chai_assert.js';

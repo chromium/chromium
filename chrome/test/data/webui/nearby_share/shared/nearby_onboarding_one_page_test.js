@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://nearby/strings.m.js';
+import 'chrome://nearby/shared/nearby_onboarding_one_page.js';
 
-import {NearbyOnboardingOnePageElement} from 'chrome://nearby/shared/nearby_onboarding_one_page.js';
 import {setNearbyShareSettingsForTesting} from 'chrome://nearby/shared/nearby_share_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {DataUsage, DeviceNameValidationResult, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
@@ -78,8 +78,8 @@ suite('nearby-onboarding-one-page', function() {
 
     const input = /** @type {!CrInputElement} */ (
         element.shadowRoot.querySelector('#deviceName'));
-    const pageTemplate =
-        element.shadowRoot.querySelector('nearby-page-template');
+    const pageTemplate = /** @type {!NearbyPageTemplateElement} */ (
+        element.shadowRoot.querySelector('nearby-page-template'));
 
     fakeSettings.setNextDeviceNameResult(
         DeviceNameValidationResult.kErrorEmpty);

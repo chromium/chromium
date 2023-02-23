@@ -85,7 +85,6 @@ js_library("nearby_share_app_test") {
     "shared:fake_nearby_contact_manager",
     "shared:fake_nearby_share_settings",
     "//chrome/browser/resources/nearby_share:app",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

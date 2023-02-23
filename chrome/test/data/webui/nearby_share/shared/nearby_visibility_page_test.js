@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://nearby/strings.m.js';
+import 'chrome://nearby/shared/nearby_visibility_page.js';
 
-import {NearbyVisibilityPageElement} from 'chrome://nearby/shared/nearby_visibility_page.js';
 import {DataUsage, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

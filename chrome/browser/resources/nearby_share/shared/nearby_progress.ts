@@ -16,14 +16,15 @@ import './nearby_shared_icons.html.js';
 import './nearby_device_icon.js';
 
 import {ShareTarget} from '/mojo/nearby_share.mojom-webui.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {NearbyDeviceIconElement} from './nearby_device_icon.js';
 import {getTemplate} from './nearby_progress.html.js';
 
-/** @polymer */
 export class NearbyProgressElement extends PolymerElement {
   static get is() {
-    return 'nearby-progress';
+    return 'nearby-progress' as const;
   }
 
   static get template() {
@@ -35,7 +36,6 @@ export class NearbyProgressElement extends PolymerElement {
       /**
        * The share target to show the progress for. Expected to start as null,
        * then change to a valid object before this component is shown.
-       * @type {?ShareTarget}
        */
       shareTarget: {
         type: Object,
@@ -45,7 +45,6 @@ export class NearbyProgressElement extends PolymerElement {
       /**
        * If true, displays an animation representing an unknown amount of
        * progress; otherwise, the progress bar is hidden.
-       * @type {boolean}
        */
       showIndeterminateProgress: {
         type: Boolean,
@@ -56,14 +55,13 @@ export class NearbyProgressElement extends PolymerElement {
        * If true, then set progress stroke to red, stop any animation, show
        * 100% instead, and set icons to grey. If |showProgress| is |NONE|, then
        * the progress bar is still hidden.
-       * @type {boolean}
        */
       hasError: {
         type: Boolean,
         value: false,
       },
 
-      /** @const {number} Size of the target image/icon in pixels. */
+      /** Size of the target image/icon in pixels. */
       targetImageSize: {
         type: Number,
         readOnly: true,
@@ -72,18 +70,20 @@ export class NearbyProgressElement extends PolymerElement {
     };
   }
 
-  ready() {
+  hasError: boolean;
+  shareTarget: ShareTarget|null;
+  showIndeterminateProgress: boolean;
+  targetImageSize: number;
+
+  override ready(): void {
     super.ready();
 
     this.updateStyles({'--target-image-size': this.targetImageSize + 'px'});
     this.listenToTargetImageLoad_();
   }
 
-  /**
-   * @return {string} The css class to be applied to the progress wheel.
-   */
-  getProgressWheelClass_() {
-    const classes = [];
+  private getProgressWheelClass_(): string {
+    const classes: string[] = [];
     if (this.hasError) {
       classes.push('has-error');
     }
@@ -97,20 +97,16 @@ export class NearbyProgressElement extends PolymerElement {
 
   /**
    * Allow focusing on the progress bar. Ignored by Chromevox otherwise.
-   * @return {number} The tabindex to be applied to the progress wheel.
+   * The tabindex to be applied to the progress wheel.
    */
-  getProgressBarTabIndex_() {
+  private getProgressBarTabIndex_(): number {
     if (this.showIndeterminateProgress && !this.hasError) {
       return 0;
     }
     return -1;
   }
 
-  /**
-   * @return {!string} The URL of the target image.
-   * @private
-   */
-  getTargetImageUrl_() {
+  private getTargetImageUrl_(): string {
     if (!(this.shareTarget && this.shareTarget.imageUrl &&
           this.shareTarget.imageUrl.url &&
           this.shareTarget.imageUrl.url.length)) {
@@ -121,9 +117,10 @@ export class NearbyProgressElement extends PolymerElement {
     return this.shareTarget.imageUrl.url + '=s' + this.targetImageSize;
   }
 
-  /** @private */
-  listenToTargetImageLoad_() {
-    const autoImg = this.shadowRoot.querySelector('#share-target-image');
+  private listenToTargetImageLoad_(): void {
+    const autoImg =
+        this.shadowRoot!.querySelector<HTMLImageElement>('#share-target-image');
+    assert(autoImg);
     if (autoImg.complete && autoImg.naturalHeight !== 0) {
       this.onTargetImageLoad_();
     } else {
@@ -133,11 +130,17 @@ export class NearbyProgressElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onTargetImageLoad_() {
-    this.shadowRoot.querySelector('#share-target-image').style.display =
-        'inline';
-    this.shadowRoot.querySelector('#icon').style.display = 'none';
+  private onTargetImageLoad_(): void {
+    this.shadowRoot!.querySelector<HTMLImageElement>(
+                        '#share-target-image')!.style.display = 'inline';
+    this.shadowRoot!.querySelector<NearbyDeviceIconElement>(
+                        '#icon')!.style.display = 'none';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NearbyProgressElement.is]: NearbyProgressElement;
   }
 }
 
