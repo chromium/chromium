@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 
 class PrefRegistrySimple;
 class Profile;
@@ -44,6 +45,13 @@ class FirstRunService : public KeyedService {
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Ensures that the user's experiment group is appropriately reported
+  // to track the effect of the first run experience over time. Should be called
+  // once per browser process startup.
+  static void EnsureStickToFirstRunCohort();
+#endif
+
   explicit FirstRunService(Profile* profile);
   ~FirstRunService() override;
 
@@ -73,6 +81,23 @@ class FirstRunService : public KeyedService {
 
  private:
   friend class FirstRunServiceFactory;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Enrolls this client with a synthetic field trial based on the Finch params.
+  // Should be called when the FRE is launched, then the client needs to
+  // register again on each process startup by calling
+  // `RegisterSyntheticFieldTrial()`.
+  static void JoinFirstRunCohort();
+
+  // Reports to the launch study for the First Run rollout.
+  // Notes:
+  // - This is declared here so it can have access to some private functions
+  // that need to be friended to be used.
+  // - The function is Dice-only as on Lacros (where this build flag is not set)
+  // the ForYouFre feature rollout will not go through this study process. The
+  // feature only guards an internal refactoring that does not have a
+  // user-visible effect. If will only have a killswitch.
+  static void RegisterSyntheticFieldTrial(const std::string& group_name);
+#endif
 
   // Asynchronously attempts to complete the first run silently.
   // By the time `callback` is run (if non-null), either:

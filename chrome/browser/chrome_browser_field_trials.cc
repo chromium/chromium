@@ -20,10 +20,12 @@
 #include "chrome/browser/metrics/chrome_browser_sampling_trials.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/version_info/version_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -179,4 +181,7 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
         fre_consistency_trial_variation_id_);
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  FirstRunService::EnsureStickToFirstRunCohort();
+#endif
 }
