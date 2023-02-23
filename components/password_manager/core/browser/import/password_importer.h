@@ -41,10 +41,12 @@ class PasswordImporter {
 
   // Imports passwords from the file at |path| into the |to_store|.
   // |results_callback| is used to return import summary back to the user.
+  // |cleanup_callback] is called when current object can be destroyed.
   // The only supported file format is CSV.
   void Import(const base::FilePath& path,
               password_manager::PasswordForm::Store to_store,
-              ImportResultsCallback results_callback);
+              ImportResultsCallback results_callback,
+              base::OnceClosure cleanup_callback);
 
   // Returns the file extensions corresponding to supported formats.
   static std::vector<std::vector<base::FilePath::StringType>>

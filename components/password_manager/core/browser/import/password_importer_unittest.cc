@@ -86,9 +86,12 @@ class PasswordImporterTest : public testing::Test {
           password_manager::PasswordForm::Store::kProfileStore) {
     importer_.Import(input_file, to_store,
                      base::BindOnce(&PasswordImporterTest::OnPasswordsConsumed,
+                                    base::Unretained(this)),
+                     base::BindOnce(&PasswordImporterTest::CleanupCallback,
                                     base::Unretained(this)));
     task_environment_.RunUntilIdle();
     ASSERT_TRUE(results_callback_called_);
+    ASSERT_TRUE(cleanup_callback_called_);
   }
 
   std::vector<CredentialUIEntry> stored_passwords() {
@@ -130,9 +133,12 @@ class PasswordImporterTest : public testing::Test {
     import_results_ = results;
   }
 
+  void CleanupCallback() { cleanup_callback_called_ = true; }
+
   base::test::TaskEnvironment task_environment_;
   password_manager::ImportResults import_results_;
   bool results_callback_called_ = false;
+  bool cleanup_callback_called_ = false;
   FakePasswordParserService service_;
   mojo::Receiver<mojom::CSVPasswordParser> receiver_;
   scoped_refptr<TestPasswordStore> profile_store_ =

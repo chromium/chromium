@@ -291,8 +291,10 @@ void PasswordImporter::ParseCSVPasswordsInSandbox(
 
 void PasswordImporter::Import(const base::FilePath& path,
                               password_manager::PasswordForm::Store to_store,
-                              ImportResultsCallback results_callback) {
-  results_callback_ = std::move(results_callback);
+                              ImportResultsCallback results_callback,
+                              base::OnceClosure cleanup_callback) {
+  results_callback_ =
+      std::move(results_callback).Then(std::move(cleanup_callback));
 
   // Posting with USER_VISIBLE priority, because the result of the import is
   // visible to the user in the password settings page.

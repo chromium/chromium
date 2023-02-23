@@ -80,7 +80,7 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
 
   void ExportPasswordsToPath(const base::FilePath& path);
 
-  void ImportDone(const password_manager::ImportResults&);
+  void ImportDone();
 
   void ExportDone();
 
