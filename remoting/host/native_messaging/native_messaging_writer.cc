@@ -38,7 +38,7 @@ NativeMessagingWriter::NativeMessagingWriter(base::File file)
 
 NativeMessagingWriter::~NativeMessagingWriter() = default;
 
-bool NativeMessagingWriter::WriteMessage(const base::Value& message) {
+bool NativeMessagingWriter::WriteMessage(base::ValueView message) {
   if (fail_) {
     LOG(ERROR) << "Stream marked as corrupt.";
     return false;

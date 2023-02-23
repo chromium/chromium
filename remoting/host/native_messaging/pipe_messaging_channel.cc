@@ -55,8 +55,7 @@ void PipeMessagingChannel::Start(EventHandler* event_handler) {
       base::BindOnce(&PipeMessagingChannel::Shutdown, weak_ptr_));
 }
 
-void PipeMessagingChannel::ProcessMessage(
-    std::unique_ptr<base::Value> message) {
+void PipeMessagingChannel::ProcessMessage(base::Value message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (event_handler_) {
@@ -64,7 +63,8 @@ void PipeMessagingChannel::ProcessMessage(
   }
 }
 
-void PipeMessagingChannel::SendMessage(std::unique_ptr<base::Value> message) {
+void PipeMessagingChannel::SendMessage(
+    absl::optional<base::ValueView> message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool success = message && native_messaging_writer_;

@@ -11,10 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
+#include "base/values.h"
 
 namespace base {
 class SequencedTaskRunner;
-class Value;
 }  // namespace base
 
 namespace remoting {
@@ -23,8 +23,7 @@ namespace remoting {
 // webapp.
 class NativeMessagingReader {
  public:
-  typedef base::RepeatingCallback<void(std::unique_ptr<base::Value>)>
-      MessageCallback;
+  typedef base::RepeatingCallback<void(base::Value)> MessageCallback;
 
   explicit NativeMessagingReader(base::File file);
 
@@ -48,7 +47,7 @@ class NativeMessagingReader {
   // Wrappers posted to by the read thread to trigger the message and EOF
   // callbacks on the caller thread, and have them safely dropped if the reader
   // has been deleted before they are processed.
-  void InvokeMessageCallback(std::unique_ptr<base::Value> message);
+  void InvokeMessageCallback(base::Value message);
   void InvokeEofCallback();
 
   // Holds the information that the read thread needs to access, such as the

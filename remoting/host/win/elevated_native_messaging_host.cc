@@ -34,13 +34,12 @@ ElevatedNativeMessagingHost::~ElevatedNativeMessagingHost() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-void ElevatedNativeMessagingHost::OnMessage(
-    std::unique_ptr<base::Value> message) {
+void ElevatedNativeMessagingHost::OnMessage(const base::Value& message) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   // Simply pass along the response from the elevated host to the client.
   std::string message_json;
-  base::JSONWriter::Write(*message, &message_json);
+  base::JSONWriter::Write(message, &message_json);
   client_->PostMessageFromNativeHost(message_json);
 }
 
@@ -80,9 +79,9 @@ ProcessLaunchResult ElevatedNativeMessagingHost::EnsureElevatedHostCreated() {
 }
 
 void ElevatedNativeMessagingHost::SendMessage(
-    std::unique_ptr<base::Value> message) {
+    const base::Value::Dict& message) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  elevated_channel_->SendMessage(std::move(message));
+  elevated_channel_->SendMessage(message);
 }
 
 void ElevatedNativeMessagingHost::DisconnectHost() {

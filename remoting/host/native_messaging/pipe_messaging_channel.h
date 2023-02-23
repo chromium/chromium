@@ -12,13 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "extensions/browser/api/messaging/native_messaging_channel.h"
 #include "remoting/host/native_messaging/native_messaging_reader.h"
 #include "remoting/host/native_messaging/native_messaging_writer.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace remoting {
 
@@ -52,11 +49,11 @@ class PipeMessagingChannel : public extensions::NativeMessagingChannel {
 
   // extensions::NativeMessagingChannel implementation.
   void Start(EventHandler* event_handler) override;
-  void SendMessage(std::unique_ptr<base::Value> message) override;
+  void SendMessage(absl::optional<base::ValueView> message) override;
 
  private:
   // Processes a message received from the client app.
-  void ProcessMessage(std::unique_ptr<base::Value> message);
+  void ProcessMessage(base::Value message);
 
   // Initiates shutdown.
   void Shutdown();
