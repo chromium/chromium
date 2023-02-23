@@ -1826,12 +1826,6 @@ Polymer({
         this.managedProperties_.source !== OncSource.kNone) {
       return false;
     }
-
-    // Insecure WiFi networks are always shared.
-    if (this.mojoType_ === NetworkType.kWiFi &&
-        this.securityType_ === SecurityType.kNone) {
-      return false;
-    }
     return true;
   },
 

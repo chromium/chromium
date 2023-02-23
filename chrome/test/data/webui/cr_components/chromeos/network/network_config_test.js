@@ -1156,7 +1156,7 @@ suite('network-config', function() {
       return flushAsync().then(() => {
         const share = networkConfig.$$('#share');
         assertTrue(!!share);
-        assertTrue(share.disabled);
+        assertFalse(share.disabled);
         assertTrue(share.checked);
       });
     });
@@ -1173,24 +1173,33 @@ suite('network-config', function() {
       });
     });
 
-    test('New Config: Authenticated, Not secure to secure', async function() {
-      // set default to insecure network
-      setNetworkType(NetworkType.kWiFi);
-      setAuthenticated();
-      initNetworkConfig();
-      await flushAsync();
-      const share = networkConfig.$$('#share');
-      assertTrue(!!share);
-      assertTrue(share.disabled);
-      assertTrue(share.checked);
+    test(
+        'New Config: Authenticated, Not secure to secure to not secure',
+        async function() {
+          // set default to insecure network
+          setNetworkType(NetworkType.kWiFi);
+          setAuthenticated();
+          initNetworkConfig();
+          await flushAsync();
+          const share = networkConfig.$$('#share');
+          assertTrue(!!share);
+          assertFalse(share.disabled);
+          assertTrue(share.checked);
 
-      // change to secure network
-      networkConfig.securityType_ = SecurityType.kWepPsk;
-      await flushAsync();
-      assertTrue(!!share);
-      assertFalse(share.disabled);
-      assertFalse(share.checked);
-    });
+          // change to secure network
+          networkConfig.securityType_ = SecurityType.kWepPsk;
+          await flushAsync();
+          assertTrue(!!share);
+          assertFalse(share.disabled);
+          assertFalse(share.checked);
+
+          // change back to insecure network
+          networkConfig.securityType_ = SecurityType.kNone;
+          await flushAsync();
+          assertTrue(!!share);
+          assertFalse(share.disabled);
+          assertTrue(share.checked);
+        });
 
     // Existing networks hide the shared control in the config UI.
     test('Existing Hides Shared', function() {
