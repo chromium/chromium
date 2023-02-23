@@ -100,9 +100,8 @@ AccountInfo GetPrimaryAccount(const IdentityManager& identity_manager) {
       identity_manager.GetPrimaryAccountInfo(ConsentLevel::kSignin));
 }
 
-std::vector<const FamilyMember>::iterator FindFamilyMemberWithRole(
-    const std::vector<FamilyMember>& members,
-    const FamilyRole role) {
+auto FindFamilyMemberWithRole(const std::vector<FamilyMember>& members,
+                              const FamilyRole role) {
   return find(members, role,
               [](const FamilyMember& member) { return member.role(); });
 }
