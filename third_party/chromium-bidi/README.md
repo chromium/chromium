@@ -1,11 +1,14 @@
 # WebDriver BiDi for Chromium [![chromium-bidi on npm](https://img.shields.io/npm/v/chromium-bidi)](https://www.npmjs.com/package/chromium-bidi)
 
-![Unit Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/unit.yml/badge.svg)
-![E2E Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/e2e.yml/badge.svg)
-![WPT Tests (mapper)](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt-mapper.yml/badge.svg)
-![WPT Tests (chromedriver)](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt-chromedriver.yml/badge.svg)
+## CI status
 
-![pre-commit](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/pre-commit.yml/badge.svg)
+![E2E Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/e2e.yml/badge.svg)
+![Unit Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/unit.yml/badge.svg)
+![WPT Tests (chromedriver)](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt-chromedriver.yml/badge.svg)
+![WPT Tests (mapper)](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt-mapper.yml/badge.svg)
+
+![Generate WPT Report](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/generate-wpt-report.yml/badge.svg)
+![Pre-commit](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/pre-commit.yml/badge.svg)
 
 This is an implementation of the
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol with some
