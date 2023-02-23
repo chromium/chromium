@@ -727,11 +727,25 @@ TEST_F(JavaScriptFindInPageManagerImplTest, FindInPageNextUpdatesMatchCount) {
 
 // Tests that Find in Page logs correct UserActions for given API calls.
 TEST_F(JavaScriptFindInPageManagerImplTest, FindUserActions) {
+  // Setup fake page with three matches.
+  auto three = std::make_unique<base::Value>(3.0);
+  auto frame_with_three_matches =
+      CreateMainWebFrameWithJsResultForFind(three.get());
+  AddWebFrame(std::move(frame_with_three_matches));
+
   ASSERT_EQ(0,
             user_action_tester_.GetActionCount("IOS.FindInPage.SearchStarted"));
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
   EXPECT_EQ(1,
             user_action_tester_.GetActionCount("IOS.FindInPage.SearchStarted"));
+
+  // Wait for JavaScript completion. This is required as the FindNext
+  // and FindPrevious user actions are only recorded if a sufficient number of
+  // matches has been reported to the manager (>2).
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    base::RunLoop().RunUntilIdle();
+    return fake_delegate_.state() && fake_delegate_.state()->match_count == 3;
+  }));
 
   ASSERT_EQ(0, user_action_tester_.GetActionCount("IOS.FindInPage.FindNext"));
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);

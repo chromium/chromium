@@ -230,22 +230,32 @@ void FindInPageManagerImpl::PollActiveFindSession() API_AVAILABLE(ios(16)) {
   NSInteger new_result_count = findSession.resultCount;
   NSInteger new_highlighted_result_index = findSession.highlightedResultIndex;
 
-  // If the index increased by one or wrapped from the last match to the first,
-  // then it is very likely the user tapped "Next match" or used the associated
-  // keybinding.
-  if (new_highlighted_result_index == current_highlighted_result_index_ + 1 ||
-      (current_highlighted_result_index_ == new_result_count - 1 &&
-       new_highlighted_result_index == 0)) {
-    RecordFindNextAction();
-  }
+  // Record FindNext/FindPrevious user actions depending on index change. This
+  // can only be done if the result count is greater than 2 though, since there
+  // is no way to differentiate between wrapping forward and wrapping backward
+  // with 2 matches or less.
+  if (new_result_count > 2) {
+    // If the index increased by one or wrapped from the last match to the
+    // first, then it is very likely the user tapped "Next match" or used the
+    // associated keybinding.
+    bool highlighted_result_index_moved_forward =
+        new_highlighted_result_index == current_highlighted_result_index_ + 1 ||
+        (current_highlighted_result_index_ == new_result_count - 1 &&
+         new_highlighted_result_index == 0);
+    if (highlighted_result_index_moved_forward) {
+      RecordFindNextAction();
+    }
 
-  // If the index decreased by one or wrapped from the first match to the last,
-  // then it is very likely the user tapped "Previous match" or used the
-  // associated keybinding.
-  if (new_highlighted_result_index == current_highlighted_result_index_ - 1 ||
-      (current_highlighted_result_index_ == 0 &&
-       new_highlighted_result_index == new_result_count - 1)) {
-    RecordFindPreviousAction();
+    // If the index decreased by one or wrapped from the first match to the
+    // last, then it is very likely the user tapped "Previous match" or used the
+    // associated keybinding.
+    bool highlighted_result_index_moved_backward =
+        new_highlighted_result_index == current_highlighted_result_index_ - 1 ||
+        (current_highlighted_result_index_ == 0 &&
+         new_highlighted_result_index == new_result_count - 1);
+    if (highlighted_result_index_moved_backward) {
+      RecordFindPreviousAction();
+    }
   }
 
   // If there are results but none is selected, select the first one.

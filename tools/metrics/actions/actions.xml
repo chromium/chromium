@@ -11700,7 +11700,8 @@ should be able to be added at any place in this file.
   <description>
     The number of times the user navigated to the next match in Find in Page on
     iOS. For instance, the user pressed the Next button in the system Find panel
-    or Chrome Find bar, or used the associated keybinding.
+    or Chrome Find bar, or used the associated keybinding. From M112 onwards,
+    this is not recorded if the total number of matches is 2 or less.
   </description>
 </action>
 
@@ -11710,7 +11711,8 @@ should be able to be added at any place in this file.
   <description>
     The number of times the user navigated to the previous match in Find in Page
     on iOS. For instance, the user pressed the Previous button in the system
-    Find panel or Chrome Find bar, or used the associated keybinding.
+    Find panel or Chrome Find bar, or used the associated keybinding. From M112
+    onwards, this is not recorded if the total number of matches is 2 or less.
   </description>
 </action>
 

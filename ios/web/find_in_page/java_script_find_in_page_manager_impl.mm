@@ -253,14 +253,26 @@ void JavaScriptFindInPageManagerImpl::SelectDidFinish(
 }
 
 void JavaScriptFindInPageManagerImpl::SelectNextMatch() {
-  RecordFindNextAction();
+  if (last_find_request_.GetTotalMatchCount() > 2) {
+    // Only record if number of matches is greater than 2 so
+    // JavaScriptFindInPageManagerImpl and FindInPageManagerImpl can be
+    // compared. The latter lacks the ability to differentiate between FindNext
+    // and FindPrevious metrics for 2 matches or less.
+    RecordFindNextAction();
+  }
   if (last_find_request_.GoToNextMatch()) {
     SelectCurrentMatch();
   }
 }
 
 void JavaScriptFindInPageManagerImpl::SelectPreviousMatch() {
-  RecordFindPreviousAction();
+  if (last_find_request_.GetTotalMatchCount() > 2) {
+    // Only record if number of matches is greater than 2 so
+    // JavaScriptFindInPageManagerImpl and FindInPageManagerImpl can be
+    // compared. The latter lacks the ability to differentiate between FindNext
+    // and FindPrevious metrics for 2 matches or less.
+    RecordFindPreviousAction();
+  }
   if (last_find_request_.GoToPreviousMatch()) {
     SelectCurrentMatch();
   }
