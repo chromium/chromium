@@ -23,6 +23,10 @@ tsc_input_dir = "$target_gen_dir/$tsc_input_folder"
 tsc_output_folder = "tsc"
 tsc_output_dir = "$target_gen_dir/$tsc_output_folder"
 
+nearby_share_mojo_dir = "$root_gen_dir/chrome/browser/resources/nearby_share/preprocessed/mojom-webui/chrome/browser/ui/webui/nearby_share"
+nearby_share_tsc_dir =
+    "$root_gen_dir/chrome/browser/resources/nearby_share/shared/tsc"
+
 if (optimize_webui) {
   build_manifest_v3 = "build_v3_manifest.json"
 
@@ -55,7 +59,10 @@ if (optimize_webui) {
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
       "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js",
       "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
-      "mojo/nearby_share.mojom-webui.js",
+    ]
+    external_paths = [
+      "/mojo/|" + rebase_path(nearby_share_mojo_dir, root_build_dir),
+      "/shared/|" + rebase_path(nearby_share_tsc_dir, root_build_dir),
     ]
   }
 }
@@ -85,15 +92,14 @@ ts_library("build_ts") {
     "//chrome/browser/resources/nearby_share:generate_definitions",
   ]
   path_mappings = [
-    # Additional path mappings for Nearby share Mojo files
-    "/mojo/nearby_share*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/nearby_share/preprocessed/mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share*",
-            target_gen_dir),
+    # Additional path mappings for Nearby share code
+    "/mojo/*|" + rebase_path("$nearby_share_mojo_dir/*", target_gen_dir),
+    "/shared/*|" + rebase_path("$nearby_share_tsc_dir/*", target_gen_dir),
   ]
   definitions = ts_definition_files
   root_dir = tsc_input_dir
-  in_files = src_ts_files + html_wrapper_files + css_wrapper_files +
-             mojom_webui_files + shared_nearby_share_files
+  in_files =
+      src_ts_files + html_wrapper_files + css_wrapper_files + mojom_webui_files
   out_dir = tsc_output_dir
 
   composite = true
@@ -256,8 +262,8 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
-    "../../nearby_share:build_mojo_grdp",
-    "../../nearby_share/shared:build_json_grdp",
+    "//chrome/browser/resources/nearby_share:build_mojo_grdp",
+    "//chrome/browser/resources/nearby_share/shared:build_json_grdp",
   ]
   grdp_files = [
     "$root_gen_dir/chrome/browser/resources/nearby_share/nearby_share_mojo_resources.grdp",
@@ -281,8 +287,8 @@ generate_grd("build_grd") {
       "//chrome/browser/resources/nearby_share/shared:build_v3_grdp",
     ]
     grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
-    manifest_files += [ "$target_gen_dir/build_ts.manifest" ]
-    resource_path_rewrites += [ "chromeos/os_settings.html|os_settings.html" ]
+    manifest_files +=
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   }
 }
 

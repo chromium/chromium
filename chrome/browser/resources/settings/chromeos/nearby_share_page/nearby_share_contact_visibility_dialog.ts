@@ -10,16 +10,15 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import '../../shared/nearby_contact_visibility.js';
-import '../../shared/nearby_onboarding_page.js';
-import '../../shared/nearby_visibility_page.js';
+import '/shared/nearby_contact_visibility.js';
+import '/shared/nearby_onboarding_page.js';
+import '/shared/nearby_visibility_page.js';
 
+import {NearbyContactVisibilityElement} from '/shared/nearby_contact_visibility.js';
+import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {NearbyContactVisibilityElement} from '../../shared/nearby_contact_visibility.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_mixin.js';
 
 import {getTemplate} from './nearby_share_contact_visibility_dialog.html.js';
 

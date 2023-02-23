@@ -10,7 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 assert(is_chromeos, "Nearby Share is CrOS only")
 
 preprocessed_dir = "$target_gen_dir/preprocessed"
-os_settings_dir = "$root_gen_dir/chrome/browser/resources/settings/chromeos"
+tsc_dir = "$target_gen_dir/tsc"
 
 # Grdp of JSON files for OS Settings.
 generate_grd("build_json_grdp") {
@@ -25,6 +25,8 @@ generate_grd("build_json_grdp") {
   ]
 }
 
+# TODO(b/207087930) Consider moving these shared files to chrome://resources.
+# b/207087942 provides context why chrome://resources did not work previously.
 generate_grd("build_v3_grdp") {
   grd_prefix = "nearby_share"
   out_grd = "$target_gen_dir/${grd_prefix}_resources_v3.grdp"
@@ -98,7 +100,7 @@ ts_library("build_ts") {
   ]
   root_dir = preprocessed_dir
   in_files = web_component_files + non_web_component_files + html_wrapper_files
-  out_dir = "$os_settings_dir/tsc_input/shared"
+  out_dir = tsc_dir
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   path_mappings = [
     # Additional path mappings for Nearby share Mojo files

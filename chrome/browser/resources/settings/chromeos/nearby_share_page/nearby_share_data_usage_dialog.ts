@@ -13,12 +13,11 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
+import {getNearbyShareSettings} from '/shared/nearby_share_settings.js';
+import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {getNearbyShareSettings} from '../../shared/nearby_share_settings.js';
-import {NearbySettings} from '../../shared/nearby_share_settings_mixin.js';
 
 import {getTemplate} from './nearby_share_data_usage_dialog.html.js';
 import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';

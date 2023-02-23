@@ -140,6 +140,9 @@ import * as fakeCrosAudioConfig from './device_page/fake_cros_audio_config.js';
  * into a single JS file. The exports below are necessary so they can be
  * imported into browser tests.
  */
+export {getContactManager, observeContactManager, setContactManagerForTesting} from '/shared/nearby_contact_manager.js';
+export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '/shared/nearby_share_settings.js';
+export {NearbySettings, NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
 export {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 export {BrowserProxy as AppManagementComponentBrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 export {PageType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
@@ -151,9 +154,6 @@ export {ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_p
 export {PageStatus, StatusAction, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.js';
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
-export {getContactManager, observeContactManager, setContactManagerForTesting} from '../shared/nearby_contact_manager.js';
-export {getNearbyShareSettings, observeNearbyShareSettings, setNearbyShareSettingsForTesting} from '../shared/nearby_share_settings.js';
-export {NearbySettings, NearbyShareSettingsMixin} from '../shared/nearby_share_settings_mixin.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './device_page/fake_input_device_data.js';

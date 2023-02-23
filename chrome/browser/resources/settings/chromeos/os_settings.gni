@@ -432,37 +432,5 @@ mojom_webui_files = [
   "mojom-webui/setting.mojom-webui.js",
 ]
 
-# TODO(b/207087930) Consider moving these shared files to chrome://resources
-# Files below are from Nearby Share and shared with ChromeOS Settings
-shared_nearby_share_files = [
-  "shared/nearby_contact_visibility.js",
-  "shared/nearby_contact_visibility.html.js",
-  "shared/nearby_device_icon.js",
-  "shared/nearby_device_icon.html.js",
-  "shared/nearby_device.js",
-  "shared/nearby_device.html.js",
-  "shared/nearby_onboarding_one_page.js",
-  "shared/nearby_onboarding_one_page.html.js",
-  "shared/nearby_onboarding_page.js",
-  "shared/nearby_onboarding_page.html.js",
-  "shared/nearby_page_template.js",
-  "shared/nearby_page_template.html.js",
-  "shared/nearby_preview.js",
-  "shared/nearby_preview.html.js",
-  "shared/nearby_progress.js",
-  "shared/nearby_progress.html.js",
-  "shared/nearby_visibility_page.js",
-  "shared/nearby_visibility_page.html.js",
-
-  "shared/nearby_contact_manager.js",
-  "shared/nearby_metrics_logger.js",
-  "shared/nearby_share_settings_mixin.js",
-  "shared/nearby_share_settings.js",
-  "shared/types.js",
-
-  "shared/nearby_shared_icons.html.js",
-  "shared/nearby_shared_share_type_icons.html.js",
-]
-
 # Files sourced from their checked-in version under src
 src_ts_files = non_web_component_files + web_component_files
