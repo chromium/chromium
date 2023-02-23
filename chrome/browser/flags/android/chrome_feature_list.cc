@@ -352,6 +352,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kSuggestionAnswersColorReverse,
     &omnibox::kUpdatedConnectionSecurityIndicators,
     &optimization_guide::features::kPushNotifications,
+    &page_info::kPageInfoAboutThisSiteNewIcon,
     &page_info::kPageInfoAboutThisSiteEn,
     &page_info::kPageInfoAboutThisSiteMoreInfo,
     &page_info::kPageInfoAboutThisSiteNonEn,

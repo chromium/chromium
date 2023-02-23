@@ -1,0 +1,13 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chrome/browser/page_info/buildflags.gni")
+
+buildflag_header("page_info_buildflags") {
+  header = "page_info_buildflags.h"
+  flags = [
+    "PAGE_INFO_USE_INTERNAL_ANDROID_RESOURCES=$page_info_use_internal_android_resources",
+  ]
+}

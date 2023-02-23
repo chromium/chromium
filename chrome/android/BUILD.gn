@@ -25,6 +25,7 @@ import("//chrome/browser/commerce/price_tracking/android/java_sources.gni")
 import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
 import(
     "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
+import("//chrome/browser/page_info/buildflags.gni")
 import("//chrome/browser/password_manager/buildflags.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
@@ -690,6 +691,10 @@ if (current_toolchain == default_toolchain) {
       deps +=
           [ "//chrome/browser/supervised_user:website_parent_approval_java" ]
     }
+
+    if (page_info_use_internal_android_resources) {
+      deps += [ "//clank/components/page_info:java_resources" ]
+    }
   }
 
   # Template for strict mode detection enabling/disabling so that proguard strips out
@@ -802,6 +807,7 @@ if (current_toolchain == default_toolchain) {
 
     deps = [
       "//chrome/browser/password_manager:password_manager_buildflags",
+      "//chrome/browser/page_info:page_info_buildflags",
       "//device/vr/buildflags",
     ]
   }

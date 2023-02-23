@@ -184,9 +184,6 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
             return;
         }
 
-        boolean more_info_enabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO);
-
         Resources resources = mRowView.getContext().getResources();
         String subtitle = mSiteInfo.hasDescription()
                 ? mSiteInfo.getDescription().getDescription()
@@ -196,10 +193,19 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
         rowParams.subtitle = subtitle;
         rowParams.singleLineSubTitle = true;
         rowParams.visible = true;
-        rowParams.iconResId = R.drawable.ic_info_outline_grey_24dp;
+        rowParams.iconResId = isNewIconFeatureEnabled()
+                ? PageInfoAboutThisSiteControllerJni.get().getJavaDrawableIconId()
+                : R.drawable.ic_info_outline_grey_24dp;
+        rowParams.iconNeedsTint = !isNewIconFeatureEnabled();
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::onAboutThisSiteRowClicked;
         mRowView.setParams(rowParams);
+    }
+
+    private boolean isNewIconFeatureEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NEW_ICON)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO);
     }
 
     private String getTitle() {
@@ -248,6 +254,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
     @NativeMethods
     interface Natives {
         boolean isFeatureEnabled();
+        int getJavaDrawableIconId();
         byte[] getSiteInfo(BrowserContextHandle browserContext, GURL url, WebContents webContents);
         void onAboutThisSiteRowClicked(boolean withDescription);
     }
