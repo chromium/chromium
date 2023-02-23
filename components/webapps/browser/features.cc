@@ -14,6 +14,13 @@ BASE_FEATURE(kAddToHomescreenMessaging,
              "AddToHomescreenMessaging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAmbientBadgeSiteEngagement,
+             "AmbientBadgeSiteEngagement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+extern const base::FeatureParam<int> kAmbientBadgeSiteEngagement_MinEngagement{
+    &kAmbientBadgeSiteEngagement, "minimal_engagement", 0};
+
 // Enables or disables the installable ambient badge infobar.
 BASE_FEATURE(kInstallableAmbientBadgeInfoBar,
              "InstallableAmbientBadgeInfoBar",

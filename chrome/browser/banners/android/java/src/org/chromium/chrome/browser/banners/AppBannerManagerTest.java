@@ -385,6 +385,13 @@ public class AppBannerManagerTest {
         }
     }
 
+    private void waitForBadgeStatus(Tab tab, int expectedValue) {
+        CriteriaHelper.pollUiThread(() -> {
+            return getAppBannerManager(tab.getWebContents()).getBadgeStatusForTesting()
+                    == expectedValue;
+        });
+    }
+
     private void waitUntilBottomSheetStatus(ChromeActivityTestRule<? extends ChromeActivity> rule,
             @BottomSheetController.SheetState int status) {
         CriteriaHelper.pollUiThread(() -> {
@@ -819,15 +826,18 @@ public class AppBannerManagerTest {
         // Waiting two months shouldn't be long enough.
         AppBannerManager.setTimeDeltaForTesting(61);
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
-        InfoBarUtil.waitUntilNoInfoBarsExist(mTabbedActivityTestRule.getInfoBars());
+        waitForBadgeStatus(tab, AmbientBadgeState.BLOCKED);
+        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
         AppBannerManager.setTimeDeltaForTesting(62);
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
-        InfoBarUtil.waitUntilNoInfoBarsExist(mTabbedActivityTestRule.getInfoBars());
+        waitForBadgeStatus(tab, AmbientBadgeState.BLOCKED);
+        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
         // Waiting three months should allow the ambient badge to reappear.
         AppBannerManager.setTimeDeltaForTesting(91);
         new TabLoadObserver(tab).fullyLoadUrl(webBannerUrl);
+        waitForBadgeStatus(tab, AmbientBadgeState.SHOWING);
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
 
         Assert.assertEquals(
@@ -1260,15 +1270,11 @@ public class AppBannerManagerTest {
 
         // As the page doesn't have service worker, we do not expect to
         // see an ambient badge.
-        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
-
-        // Even after waiting for three months, there should not be no ambient badge.
-        AppBannerManager.setTimeDeltaForTesting(91);
-        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        waitForBadgeStatus(tab, AmbientBadgeState.PENDING_WORKER);
         checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
         // Tap to trigger beforeinstallprompt.prompt, we expect to see the modal banner.
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         tapAndWaitForModalBanner(tab);
     }
 
@@ -1282,10 +1288,11 @@ public class AppBannerManagerTest {
         resetEngagementForUrl(webBannerUrl, 10);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
 
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        waitForBadgeStatus(tab, AmbientBadgeState.SHOWING);
         waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
 
         // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
         tapAndWaitForModalBanner(tab);
     }
 
@@ -1369,5 +1376,49 @@ public class AppBannerManagerTest {
         checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
 
         ContextUtils.initApplicationContextForTests(contextToRestore);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AppBanners"})
+    @CommandLineFlags.Add({"enable-features=AmbientBadgeSiteEngagement:minimal_engagement/100"})
+    public void testAmbientBadgeInsufficientEngagement() throws Exception {
+        String url = WebappTestPage.getServiceWorkerUrlWithAction(
+                mTestServer, "call_stashed_prompt_on_click");
+        // Set the engagement to trigger beforeinstall event but not ambient badge.
+        resetEngagementForUrl(url, 10);
+
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
+
+        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
+
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        waitForBadgeStatus(tab, AmbientBadgeState.PENDING_ENGAGEMENT);
+        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
+
+        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
+        tapAndWaitForModalBanner(tab);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AppBanners"})
+    @CommandLineFlags.Add({"enable-features=AmbientBadgeSiteEngagement:minimal_engagement/100"})
+    public void testAmbientBadgeSufficientEngagement() throws Exception {
+        String url = WebappTestPage.getServiceWorkerUrlWithAction(
+                mTestServer, "call_stashed_prompt_on_click");
+        // Set the engagement big enough for ambient badge.
+        resetEngagementForUrl(url, 100);
+
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
+
+        assertAppBannerPipelineStatus(AppBannerManagerState.PENDING_PROMPT_NOT_CANCELED);
+
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        waitForBadgeStatus(tab, AmbientBadgeState.SHOWING);
+        waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
+
+        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
+        tapAndWaitForModalBanner(tab);
     }
 }

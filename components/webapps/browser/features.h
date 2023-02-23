@@ -14,6 +14,8 @@ namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kAddToHomescreenMessaging);
+BASE_DECLARE_FEATURE(kAmbientBadgeSiteEngagement);
+extern const base::FeatureParam<int> kAmbientBadgeSiteEngagement_MinEngagement;
 BASE_DECLARE_FEATURE(kInstallableAmbientBadgeInfoBar);
 BASE_DECLARE_FEATURE(kInstallableAmbientBadgeMessage);
 extern const base::FeatureParam<int>
