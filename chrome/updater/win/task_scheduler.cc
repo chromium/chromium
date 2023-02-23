@@ -119,7 +119,8 @@ void PinModule(const wchar_t* module_name) {
 // A task scheduler class uses the V2 API of the task scheduler.
 class TaskSchedulerV2 final : public TaskScheduler {
  public:
-  explicit TaskSchedulerV2(UpdaterScope scope) : scope_(scope) {
+  TaskSchedulerV2(UpdaterScope scope, bool use_task_subfolders)
+      : scope_(scope), use_task_subfolders_(use_task_subfolders) {
     task_service_ = GetTaskService();
     DCHECK(task_service_);
     task_folder_ = GetUpdaterTaskFolder();
@@ -403,6 +404,10 @@ class TaskSchedulerV2 final : public TaskScheduler {
     }
 
     DCHECK(!IsTaskRegistered(task_name));
+
+    if (!use_task_subfolders_) {
+      return true;
+    }
 
     // Try to delete \\Company\Product first and \\Company second.
     if (DeleteFolderIfEmpty(GetTaskSubfolderName())) {
@@ -731,11 +736,13 @@ class TaskSchedulerV2 final : public TaskScheduler {
   }
 
   std::wstring GetTaskSubfolderName() override {
+    DCHECK(use_task_subfolders_);
+
     return base::StrCat(
         {GetTaskCompanyFolder(), L"\\" PRODUCT_FULLNAME_STRING});
   }
 
-  void ForEachTask(
+  void ForEachTaskWithPrefix(
       const std::wstring& prefix,
       base::RepeatingCallback<void(const std::wstring&)> callback) override {
     if (!task_folder_) {
@@ -860,6 +867,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
   // task folders have a "System" suffix, and User task folders have a "User"
   // suffix.
   std::wstring GetTaskCompanyFolder() const {
+    DCHECK(use_task_subfolders_);
+
     return base::StrCat({L"\\" COMPANY_SHORTNAME_STRING,
                          IsSystemInstall(scope_) ? L"System" : L"User"});
   }
@@ -1085,6 +1094,10 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return nullptr;
     }
 
+    if (!use_task_subfolders_) {
+      return root_task_folder;
+    }
+
     // Try to find the folder first.
     Microsoft::WRL::ComPtr<ITaskFolder> folder;
     base::win::ScopedBstr task_subfolder_name(GetTaskSubfolderName());
@@ -1284,6 +1297,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
   ~TaskSchedulerV2() override = default;
 
   const UpdaterScope scope_;
+  const bool use_task_subfolders_;
 
   Microsoft::WRL::ComPtr<ITaskService> task_service_;
 
@@ -1308,8 +1322,10 @@ TaskScheduler::TaskInfo& TaskScheduler::TaskInfo::operator=(
 TaskScheduler::TaskInfo::~TaskInfo() = default;
 
 // static.
-scoped_refptr<TaskScheduler> TaskScheduler::CreateInstance(UpdaterScope scope) {
-  return base::MakeRefCounted<TaskSchedulerV2>(scope);
+scoped_refptr<TaskScheduler> TaskScheduler::CreateInstance(
+    UpdaterScope scope,
+    bool use_task_subfolders) {
+  return base::MakeRefCounted<TaskSchedulerV2>(scope, use_task_subfolders);
 }
 
 TaskScheduler::TaskScheduler() = default;

@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
@@ -468,6 +469,77 @@ TEST_F(TaskSchedulerTests, GetTaskInfoTriggerType) {
     }
 
     RunGetTaskInfoTriggerTypeTest(expected_trigger_type);
+  }
+}
+
+TEST(TaskSchedulerTest, NoSubfolders) {
+  scoped_refptr<TaskScheduler> task_scheduler = TaskScheduler::CreateInstance(
+      GetTestScope(), /*use_task_subfolders=*/false);
+  ASSERT_TRUE(task_scheduler);
+
+  constexpr int kNumTasks = 6;
+  const std::wstring kTaskNamePrefix(base::ASCIIToWide(test::GetTestName()));
+
+  for (int count = 0; count < kNumTasks; ++count) {
+    std::wstring task_name(kTaskNamePrefix);
+    task_name.push_back(L'0' + count);
+
+    ASSERT_TRUE(task_scheduler->RegisterTask(
+        task_name.c_str(), task_name.c_str(),
+        base::CommandLine::FromString(L"C:\\temp\\temp.exe"),
+        TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, false));
+
+    ASSERT_TRUE(task_scheduler->DeleteTask(task_name.c_str()));
+  }
+}
+
+TEST(TaskSchedulerTest, ForEachTaskWithPrefix) {
+  for (bool use_task_subfolders : {true, false}) {
+    scoped_refptr<TaskScheduler> task_scheduler =
+        TaskScheduler::CreateInstance(GetTestScope(), use_task_subfolders);
+    ASSERT_TRUE(task_scheduler);
+
+    constexpr int kNumTasks = 6;
+    const std::wstring kTaskNamePrefix(base::ASCIIToWide(test::GetTestName()));
+
+    for (int count = 0; count < kNumTasks; ++count) {
+      std::wstring task_name(kTaskNamePrefix);
+      task_name.push_back(L'0' + count);
+
+      EXPECT_TRUE(task_scheduler->RegisterTask(
+          task_name.c_str(), task_name.c_str(),
+          base::CommandLine::FromString(L"C:\\temp\\temp.exe"),
+          TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, false));
+    }
+
+    scoped_refptr<TaskScheduler> task_scheduler_different_namespace =
+        TaskScheduler::CreateInstance(GetTestScope(), !use_task_subfolders);
+    ASSERT_TRUE(task_scheduler_different_namespace);
+
+    int count_entries = 0;
+
+    task_scheduler_different_namespace->ForEachTaskWithPrefix(
+        kTaskNamePrefix,
+        base::BindLambdaForTesting(
+            [&count_entries](const std::wstring& /*task_name*/) {
+              ++count_entries;
+            }));
+
+    EXPECT_EQ(count_entries, 0);
+
+    count_entries = 0;
+
+    task_scheduler->ForEachTaskWithPrefix(
+        kTaskNamePrefix,
+        base::BindLambdaForTesting(
+            [&count_entries, &task_scheduler,
+             kTaskNamePrefix](const std::wstring& task_name) {
+              EXPECT_TRUE(base::StartsWith(task_name, kTaskNamePrefix));
+              ++count_entries;
+              task_scheduler->DeleteTask(task_name.c_str());
+            }));
+
+    EXPECT_EQ(count_entries, kNumTasks);
   }
 }
 

@@ -96,7 +96,15 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
     TriggerType trigger_type = TRIGGER_TYPE_MAX;
   };
 
-  static scoped_refptr<TaskScheduler> CreateInstance(UpdaterScope scope);
+  // Creates an instance of the task scheduler for the given `scope`.
+  // `use_task_subfolders` dictates whether the scheduler creates and works with
+  // tasks that are created within a subfolder (`true` by default), or tasks
+  // that are created at the root folder. When `use_task_subfolders` is `true`,
+  // the tasks are created within the subfolder returned by
+  // `GetTaskSubfolderName()`.
+  static scoped_refptr<TaskScheduler> CreateInstance(
+      UpdaterScope scope,
+      bool use_task_subfolders = true);
 
   TaskScheduler(const TaskScheduler&) = delete;
   TaskScheduler& operator=(const TaskScheduler&) = delete;
@@ -155,7 +163,7 @@ class TaskScheduler : public base::RefCountedThreadSafe<TaskScheduler> {
   virtual std::wstring GetTaskSubfolderName() = 0;
 
   // Runs `callback` for each task that matches `prefix`.
-  virtual void ForEachTask(
+  virtual void ForEachTaskWithPrefix(
       const std::wstring& prefix,
       base::RepeatingCallback<void(const std::wstring&)> callback) = 0;
 

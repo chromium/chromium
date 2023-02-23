@@ -291,7 +291,7 @@ void CheckInstallation(UpdaterScope scope,
                       L"*/chrome/updater/*=2"})
             .c_str());
   } else {
-    task_scheduler->ForEachTask(
+    task_scheduler->ForEachTaskWithPrefix(
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
         base::BindRepeating([](const std::wstring& task_name) {
           ADD_FAILURE() << "Unexpected task found: " << task_name;
@@ -582,7 +582,7 @@ void Clean(UpdaterScope scope) {
 
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope);
-  task_scheduler->ForEachTask(
+  task_scheduler->ForEachTaskWithPrefix(
       base::ASCIIToWide(PRODUCT_FULLNAME_STRING),
       base::BindRepeating(
           [](scoped_refptr<TaskScheduler> task_scheduler,
