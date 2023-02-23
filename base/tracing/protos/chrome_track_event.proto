@@ -1110,9 +1110,51 @@ message TabSwitchMeasurement {
   optional TabState tab_state = 2;
 }
 
+// Data about scroll deltas and offsets.
+// All values are in physical screen pixels.
+message ScrollDeltas {
+  // The trace_id of the current input.
+  optional int64 trace_id = 1;
+  // The original delta for current input. That is, this is the delta that
+  // the Browser receives from Android, but already scaled to the device's
+  // screen.
+  optional float original_delta_x = 2;
+  optional float original_delta_y = 3;
+  // The trace_id of the input that the current input is coalesced with.
+  // If input is not coalesced, this field is null.
+  optional int64 coalesced_to_trace_id = 4;
+  // The delta which arrived to compositor.
+  // This is the sum of all the inputs coalesced together
+  // with the resampler applied to them.
+  // This delta is used to calculate a |visual_offset|.
+  optional float provided_to_compositor_delta_x = 5;
+  optional float provided_to_compositor_delta_y = 6;
+  // The offset which compositor set.
+  optional int64 visual_offset_x = 7;
+  optional int64 visual_offset_y = 8;
+
+  // Data which GPU returns.
+  // Number of inputs which were shown together in one GPU frame.
+  optional int32 event_count_in_gpu_frame = 9;
+  // The trace_ids of inputs which were shown together in one GPU frame.
+  repeated int64 trace_ids_in_gpu_frame = 10;
+  // The sum of original deltas of inputs which were shown together in one GPU
+  // frame.
+  optional float original_delta_in_gpu_frame_y = 11;
+  // The sum of predicted deltas of inputs which were shown together in one GPU
+  // frame.
+  optional float predicted_delta_in_gpu_frame_y = 12;
+  // The array of original deltas of inputs which were shown together in one GPU
+  // frame.
+  repeated float segregated_original_deltas_in_gpu_frame_y = 13;
+  // The array of predicted deltas of inputs which were shown together in one
+  // GPU frame.
+  repeated float segregated_predicted_deltas_in_gpu_frame_y = 14;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1047
+  // Next ID: 1048
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1212,5 +1254,7 @@ message ChromeTrackEvent {
     optional BlinkHighEntropyAPI high_entropy_api = 1045;
 
     optional TabSwitchMeasurement tab_switch_measurement = 1046;
+
+    optional ScrollDeltas scroll_deltas = 1047;
   }
 }

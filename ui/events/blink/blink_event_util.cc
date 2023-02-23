@@ -609,18 +609,23 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
       default:
         break;
     }
-    TRACE_EVENT(
-        "input", "TranslateAndScaleWebInputEvent",
-        [trace_id, scale, delta_x = gesture_event->data.scroll_update.delta_x,
-         delta_y = gesture_event->data.scroll_update.delta_y](
-            perfetto::EventContext& ctx) {
-          if (trace_id.has_value()) {
-            ctx.AddDebugAnnotation("trace_id", *trace_id);
-          }
-          ctx.AddDebugAnnotation("scale", scale);
-          ctx.AddDebugAnnotation("delta_x", delta_x);
-          ctx.AddDebugAnnotation("delta_y", delta_y);
-        });
+
+    if (gesture_event->GetType() ==
+            blink::WebInputEvent::Type::kGestureScrollUpdate &&
+        trace_id.has_value()) {
+      TRACE_EVENT("input", "TranslateAndScaleWebInputEvent",
+                  [trace_id_value = *trace_id,
+                   delta_x = gesture_event->data.scroll_update.delta_x,
+                   delta_y = gesture_event->data.scroll_update.delta_y](
+                      perfetto::EventContext& ctx) {
+                    auto* event =
+                        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                    auto* scroll_data = event->set_scroll_deltas();
+                    scroll_data->set_trace_id(trace_id_value);
+                    scroll_data->set_original_delta_x(delta_x);
+                    scroll_data->set_original_delta_y(delta_y);
+                  });
+    }
   }
   return scaled_event;
 }

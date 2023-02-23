@@ -218,36 +218,35 @@ void TraceScrollJankMetrics(const EventMetrics::List& events_metrics,
                             int32_t fling_input_count,
                             int32_t normal_input_count,
                             perfetto::EventContext& ctx) {
-  using TraceId = base::IdType64<class ui::LatencyInfo>;
-  auto dict = std::make_unique<base::trace_event::TracedValue>();
+  auto* track_event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+  auto* scroll_data = track_event->set_scroll_deltas();
   float delta = 0;
   float predicted_delta = 0;
-  std::vector<absl::optional<TraceId>> trace_ids;
-  std::vector<float> original_deltas;
-  std::vector<float> predicted_deltas;
 
   for (const auto& event : events_metrics) {
     auto type = event->type();
-    if (type != EventMetrics::EventType::kGestureScrollUpdate &&
-        type != EventMetrics::EventType::kFirstGestureScrollUpdate &&
-        type != EventMetrics::EventType::kInertialGestureScrollUpdate) {
+    if (UNLIKELY(type != EventMetrics::EventType::kGestureScrollUpdate &&
+                 type != EventMetrics::EventType::kFirstGestureScrollUpdate &&
+                 type !=
+                     EventMetrics::EventType::kInertialGestureScrollUpdate)) {
       continue;
     }
-    original_deltas.push_back(event->AsScrollUpdate()->delta());
-    predicted_deltas.push_back(event->AsScrollUpdate()->predicted_delta());
-    trace_ids.push_back(event->AsScrollUpdate()->trace_id());
-    delta += event->AsScrollUpdate()->delta();
-    predicted_delta += event->AsScrollUpdate()->predicted_delta();
+    auto* scroll_update_event = event->AsScrollUpdate();
+    if (scroll_update_event->trace_id().has_value()) {
+      scroll_data->add_trace_ids_in_gpu_frame(
+          scroll_update_event->trace_id()->value());
+      scroll_data->add_segregated_original_deltas_in_gpu_frame_y(
+          scroll_update_event->delta());
+      scroll_data->add_segregated_predicted_deltas_in_gpu_frame_y(
+          scroll_update_event->predicted_delta());
+    }
+    delta += scroll_update_event->delta();
+    predicted_delta += scroll_update_event->predicted_delta();
   }
-  if (trace_ids.empty()) {
-    return;
-  }
-  ctx.AddDebugAnnotation("event_count", fling_input_count + normal_input_count);
-  ctx.AddDebugAnnotation("original_delta", delta);
-  ctx.AddDebugAnnotation("predicted_delta", predicted_delta);
-  ctx.AddDebugAnnotation("trace_ids", trace_ids);
-  ctx.AddDebugAnnotation("segregated_original_deltas", original_deltas);
-  ctx.AddDebugAnnotation("segregated_predicted_deltas", predicted_deltas);
+  scroll_data->set_event_count_in_gpu_frame(fling_input_count +
+                                            normal_input_count);
+  scroll_data->set_original_delta_in_gpu_frame_y(delta);
+  scroll_data->set_predicted_delta_in_gpu_frame_y(predicted_delta);
 }
 
 }  // namespace
