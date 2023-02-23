@@ -266,24 +266,28 @@ ReadAnythingFontModel::~ReadAnythingFontModel() = default;
 ReadAnythingColorsModel::ReadAnythingColorsModel() {
   // Define the possible sets of colors available to the user.
   ColorInfo kDefaultColors = {
-      u"Default", IDS_READING_MODE_DEFAULT_PNG, kColorReadAnythingForeground,
+      l10n_util::GetStringUTF16(IDS_READING_MODE_DEFAULT_COLOR_LABEL),
+      IDS_READING_MODE_DEFAULT_PNG, kColorReadAnythingForeground,
       kColorReadAnythingBackground, kColorReadAnythingSeparator};
 
   ColorInfo kLightColors = {
-      u"Light", IDS_READING_MODE_LIGHT_PNG, kColorReadAnythingForegroundLight,
+      l10n_util::GetStringUTF16(IDS_READING_MODE_LIGHT_COLOR_LABEL),
+      IDS_READING_MODE_LIGHT_PNG, kColorReadAnythingForegroundLight,
       kColorReadAnythingBackgroundLight, kColorReadAnythingSeparatorLight};
 
   ColorInfo kDarkColors = {
-      u"Dark", IDS_READING_MODE_DARK_PNG, kColorReadAnythingForegroundDark,
+      l10n_util::GetStringUTF16(IDS_READING_MODE_DARK_COLOR_LABEL),
+      IDS_READING_MODE_DARK_PNG, kColorReadAnythingForegroundDark,
       kColorReadAnythingBackgroundDark, kColorReadAnythingSeparatorDark};
 
-  ColorInfo kYellowColors = {u"Yellow", IDS_READING_MODE_YELLOW_PNG,
-                             kColorReadAnythingForegroundYellow,
-                             kColorReadAnythingBackgroundYellow,
-                             kColorReadAnythingSeparatorYellow};
+  ColorInfo kYellowColors = {
+      l10n_util::GetStringUTF16(IDS_READING_MODE_YELLOW_COLOR_LABEL),
+      IDS_READING_MODE_YELLOW_PNG, kColorReadAnythingForegroundYellow,
+      kColorReadAnythingBackgroundYellow, kColorReadAnythingSeparatorYellow};
 
   ColorInfo kBlueColors = {
-      u"Blue", IDS_READING_MODE_BLUE_PNG, kColorReadAnythingForegroundBlue,
+      l10n_util::GetStringUTF16(IDS_READING_MODE_BLUE_COLOR_LABEL),
+      IDS_READING_MODE_BLUE_PNG, kColorReadAnythingForegroundBlue,
       kColorReadAnythingBackgroundBlue, kColorReadAnythingSeparatorBlue};
 
   colors_choices_.emplace_back(kDefaultColors);
