@@ -34,6 +34,8 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/trace_util.h"
 #include "extensions/common/user_script.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 using perfetto::protos::pbzero::ChromeTrackEvent;
 
@@ -356,6 +358,95 @@ std::vector<const Extension*> GetExtensionsInjectingContentScripts(
   return extensions_injecting_content_scripts;
 }
 
+void RecordUkm(content::NavigationHandle* navigation,
+               int extensions_injecting_content_script_count) {
+  using PermissionID = extensions::mojom::APIPermissionID;
+  const ExtensionSet& enabled_extensions =
+      ExtensionRegistry::Get(
+          navigation->GetRenderFrameHost()->GetProcess()->GetBrowserContext())
+          ->enabled_extensions();
+  int enabled_extension_count = 0;
+  int enabled_extension_count_has_host_permissions = 0;
+  int web_request_permission_count = 0;
+  int web_request_auth_provider_permission_count = 0;
+  int web_request_blocking_permission_count = 0;
+  int declarative_net_request_permission_count = 0;
+  int declarative_net_request_feedback_permission_count = 0;
+  int declarative_net_request_with_host_access_permission_count = 0;
+  int declarative_web_request_permission_count = 0;
+  for (const scoped_refptr<const Extension>& extension : enabled_extensions) {
+    if (!extension->is_extension()) {
+      continue;
+    }
+    // Ignore component extensions.
+    if (Manifest::IsComponentLocation(extension->location())) {
+      continue;
+    }
+    enabled_extension_count++;
+    const PermissionsData* permissions = extension->permissions_data();
+    if (!permissions) {
+      continue;
+    }
+    if (!permissions->HasHostPermission(navigation->GetURL())) {
+      continue;
+    }
+    enabled_extension_count_has_host_permissions++;
+    if (permissions->HasAPIPermission(PermissionID::kWebRequest)) {
+      web_request_permission_count++;
+    }
+    if (permissions->HasAPIPermission(PermissionID::kWebRequestAuthProvider)) {
+      web_request_auth_provider_permission_count++;
+    }
+    if (permissions->HasAPIPermission(PermissionID::kWebRequestBlocking)) {
+      web_request_blocking_permission_count++;
+    }
+    if (permissions->HasAPIPermission(PermissionID::kDeclarativeNetRequest)) {
+      declarative_net_request_permission_count++;
+    }
+    if (permissions->HasAPIPermission(
+            PermissionID::kDeclarativeNetRequestFeedback)) {
+      declarative_net_request_feedback_permission_count++;
+    }
+    if (permissions->HasAPIPermission(
+            PermissionID::kDeclarativeNetRequestWithHostAccess)) {
+      declarative_net_request_with_host_access_permission_count++;
+    }
+    if (permissions->HasAPIPermission(PermissionID::kDeclarativeWebRequest)) {
+      declarative_web_request_permission_count++;
+    }
+  }
+
+  const double kBucketSpacing = 2;
+  ukm::builders::Extensions_OnNavigation(navigation->GetNextPageUkmSourceId())
+      .SetEnabledExtensionCount(
+          ukm::GetExponentialBucketMin(enabled_extension_count, kBucketSpacing))
+      .SetEnabledExtensionCount_InjectContentScript(
+          ukm::GetExponentialBucketMin(
+              extensions_injecting_content_script_count, kBucketSpacing))
+      .SetEnabledExtensionCount_HaveHostPermissions(
+          ukm::GetExponentialBucketMin(
+              enabled_extension_count_has_host_permissions, kBucketSpacing))
+      .SetWebRequestPermissionCount(ukm::GetExponentialBucketMin(
+          web_request_permission_count, kBucketSpacing))
+      .SetWebRequestAuthProviderPermissionCount(ukm::GetExponentialBucketMin(
+          web_request_auth_provider_permission_count, kBucketSpacing))
+      .SetWebRequestBlockingPermissionCount(ukm::GetExponentialBucketMin(
+          web_request_blocking_permission_count, kBucketSpacing))
+      .SetDeclarativeNetRequestPermissionCount(ukm::GetExponentialBucketMin(
+          declarative_net_request_permission_count, kBucketSpacing))
+      .SetDeclarativeNetRequestFeedbackPermissionCount(
+          ukm::GetExponentialBucketMin(
+              declarative_net_request_feedback_permission_count,
+              kBucketSpacing))
+      .SetDeclarativeNetRequestWithHostAccessPermissionCount(
+          ukm::GetExponentialBucketMin(
+              declarative_net_request_with_host_access_permission_count,
+              kBucketSpacing))
+      .SetDeclarativeWebRequestPermissionCount(ukm::GetExponentialBucketMin(
+          declarative_web_request_permission_count, kBucketSpacing))
+      .Record(ukm::UkmRecorder::Get());
+}
+
 const Extension* FindExtensionByHostId(content::BrowserContext* browser_context,
                                        const mojom::HostID& host_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -486,6 +577,8 @@ void ContentScriptTracker::DidFinishNavigation(
       GetExtensionsInjectingContentScripts(navigation);
   StoreExtensionsInjectingContentScripts(extensions_injecting_content_scripts,
                                          process);
+
+  RecordUkm(navigation, extensions_injecting_content_scripts.size());
 }
 
 // static

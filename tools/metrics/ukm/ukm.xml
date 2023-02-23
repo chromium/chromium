@@ -7361,6 +7361,159 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Extensions.OnNavigation" singular="True">
+  <owner>chikamune@chromium.org</owner>
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>sisidovski@chromium.org</owner>
+  <owner>hiroshige@chromium.org</owner>
+  <owner>kouhei@chromium.org</owner>
+  <summary>
+    Records the extension related metrics that might have negative impacts on
+    LCP. This is recorded when navigation is finished.
+  </summary>
+  <metric name="DeclarativeNetRequestFeedbackPermissionCount">
+    <summary>
+      The number of enabled extensions that have a DeclarativeNetRequestFeedback
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DeclarativeNetRequestPermissionCount">
+    <summary>
+      The number of enabled extensions that have a DeclarativeNetRequest
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DeclarativeNetRequestWithHostAccessPermissionCount">
+    <summary>
+      The number of enabled extensions that have a
+      DeclarativeNetRequestWithHostAccess permission. The exponential bucketing
+      is applied for privacy reasons by using
+      ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="DeclarativeWebRequestPermissionCount">
+    <summary>
+      The number of enabled extensions that have a DeclarativeWebRequest
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EnabledExtensionCount">
+    <summary>
+      The number of enabled extensions that are not themes nor apps nor
+      components. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EnabledExtensionCount.HaveHostPermissions">
+    <summary>
+      The number of enabled extensions that have host permissions for the
+      navigation target URL. The exponential bucketing is applied for privacy
+      reasons by using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EnabledExtensionCount.InjectContentScript">
+    <summary>
+      The number of enabled extensions that inject content scripts. The
+      exponential bucketing is applied for privacy reasons by using
+      ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WebRequestAuthProviderPermissionCount">
+    <summary>
+      The number of enabled extensions that have a WebRequestAuthProvider
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WebRequestBlockingPermissionCount">
+    <summary>
+      The number of enabled extensions that have a WebRequestBlocking
+      permission. The exponential bucketing is applied for privacy reasons by
+      using ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="WebRequestPermissionCount">
+    <summary>
+      The number of enabled extensions that have a WebRequest permission. The
+      exponential bucketing is applied for privacy reasons by using
+      ukm::GetExponentialBucketMin(value, 2).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Extensions.WebRequest.KeepaliveRequestFinished">
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>

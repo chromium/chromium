@@ -126,6 +126,7 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -6277,6 +6278,150 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                        u"Unchecked runtime.lastError: You do not have "
                        u"permission to use blocking webRequest listeners."))
       << errors[0]->message();
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  TestExtensionDir test_dir1;
+  test_dir1.WriteManifest(R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "content_scripts": [
+             {
+               "matches": ["<all_urls>"],
+               "js": ["contentscript.js"]
+             }
+           ],
+           "permissions": [
+             "webRequest",
+             "webRequestBlocking",
+             "webRequestAuthProvider",
+             "declarativeNetRequest",
+             "declarativeNetRequestFeedback",
+             "declarativeNetRequestWithHostAccess"
+           ],
+           "host_permissions": ["http://a.com/*"],
+           "background": {"service_worker": "background.js"}
+         })");
+  test_dir1.WriteFile(FILE_PATH_LITERAL("contentscript.js"), /*contents=*/"");
+  test_dir1.WriteFile(FILE_PATH_LITERAL("background.js"),
+                      "chrome.test.sendMessage('ready');");
+  ASSERT_TRUE(LoadPolicyExtension(test_dir1));
+
+  // declarativeWebRequest is only supported by manifest version 2 or lower.
+  TestExtensionDir test_dir2;
+  test_dir2.WriteManifest(R"({
+           "name": "MV2 WebRequest",
+           "version": "0.1",
+           "manifest_version": 2,
+           "content_scripts": [
+             {
+               "matches": ["<all_urls>"],
+               "js": ["contentscript.js"]
+             }
+           ],
+           "permissions": [
+             "declarativeWebRequest",
+             "http://b.com/*"
+           ],
+           "background": {"scripts": ["background.js"], "persistent": true}
+         })");
+  test_dir2.WriteFile(FILE_PATH_LITERAL("contentscript.js"), /*contents=*/"");
+  test_dir2.WriteFile(FILE_PATH_LITERAL("background.js"),
+                      "chrome.test.sendMessage('ready');");
+  ExtensionTestMessageListener listener("ready");
+  ASSERT_TRUE(LoadExtension(test_dir2.UnpackedPath()));
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  base::RunLoop ukm_loop;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  ukm_recorder.SetOnAddEntryCallback(
+      ukm::builders::Extensions_OnNavigation::kEntryName,
+      base::BindLambdaForTesting([&]() {
+        if (ukm_recorder
+                .GetMergedEntriesByName(
+                    ukm::builders::Extensions_OnNavigation::kEntryName)
+                .size() == 2) {
+          ukm_loop.Quit();
+        }
+      }));
+
+  const GURL kUrlA = embedded_test_server()->GetURL("a.com", "/simple.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrlA));
+
+  const GURL kUrlB = embedded_test_server()->GetURL("b.com", "/simple.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrlB));
+
+  // Waits until UKM data is recorded.
+  ukm_loop.Run();
+
+  const double kBucketSpacing = 2;
+  auto merged_entries = ukm_recorder.GetMergedEntriesByName(
+      ukm::builders::Extensions_OnNavigation::kEntryName);
+  EXPECT_EQ(2u, merged_entries.size());
+  for (const auto& entry : merged_entries) {
+    const ukm::mojom::UkmEntry* ukm_entry = entry.second.get();
+    const GURL& url =
+        ukm_recorder.GetSourceForSourceId(ukm_entry->source_id)->url();
+    ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, url);
+    ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+        ukm_entry, "EnabledExtensionCount",
+        ukm::GetExponentialBucketMin(2u, kBucketSpacing));
+    ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+        ukm_entry, "EnabledExtensionCount.InjectContentScript",
+        ukm::GetExponentialBucketMin(2u, kBucketSpacing));
+    ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+        ukm_entry, "EnabledExtensionCount.HaveHostPermissions",
+        ukm::GetExponentialBucketMin(1u, kBucketSpacing));
+    if (url == kUrlA) {
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "WebRequestAuthProviderPermissionCount",
+          ukm::GetExponentialBucketMin(1u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "WebRequestBlockingPermissionCount",
+          ukm::GetExponentialBucketMin(1u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "WebRequestPermissionCount",
+          ukm::GetExponentialBucketMin(1u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "DeclarativeNetRequestFeedbackPermissionCount",
+          ukm::GetExponentialBucketMin(1u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "DeclarativeNetRequestPermissionCount",
+          ukm::GetExponentialBucketMin(1u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "DeclarativeNetRequestWithHostAccessPermissionCount",
+          ukm::GetExponentialBucketMin(1u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "DeclarativeWebRequestPermissionCount",
+          ukm::GetExponentialBucketMin(0u, kBucketSpacing));
+    } else if (url == kUrlB) {
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "WebRequestAuthProviderPermissionCount",
+          ukm::GetExponentialBucketMin(0u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "WebRequestBlockingPermissionCount",
+          ukm::GetExponentialBucketMin(0u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "WebRequestPermissionCount",
+          ukm::GetExponentialBucketMin(0u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "DeclarativeNetRequestFeedbackPermissionCount",
+          ukm::GetExponentialBucketMin(0u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "DeclarativeNetRequestPermissionCount",
+          ukm::GetExponentialBucketMin(0u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "DeclarativeNetRequestWithHostAccessPermissionCount",
+          ukm::GetExponentialBucketMin(0u, kBucketSpacing));
+      ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
+          ukm_entry, "DeclarativeWebRequestPermissionCount",
+          ukm::GetExponentialBucketMin(1u, kBucketSpacing));
+    } else {
+      NOTREACHED();
+    }
+  }
 }
 
 }  // namespace extensions
