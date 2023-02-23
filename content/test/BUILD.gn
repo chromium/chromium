@@ -1859,7 +1859,6 @@ test("content_browsertests") {
       "../shell/android/browsertests_apk/content_browser_tests_jni_onload.cc",
     ]
     sources -= [
-      "../browser/keyboard_lock_browsertest.cc",
       "../browser/media/session/audio_focus_delegate_default_browsertest.cc",
       "../browser/pointer_lock_browsertest.cc",
       "../browser/pointer_lock_browsertest.h",
@@ -2050,6 +2049,14 @@ test("content_browsertests") {
       "../browser/snapshot_browsertest.cc",
     ]
   }
+
+  # KeyboardLock is currently not supported in Android, Fuchsia and
+  # Chromecast builds. TODO(crbug.com/1414160): Re-enable on Fuchsia
+  # once its platform support is available.
+  if (is_android || is_fuchsia || is_castos) {
+    sources -= [ "../browser/keyboard_lock_browsertest.cc" ]
+  }
+
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
