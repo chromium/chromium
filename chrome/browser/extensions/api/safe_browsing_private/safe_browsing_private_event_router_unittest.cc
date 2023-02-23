@@ -193,6 +193,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
     rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
     rule->set_rule_name("fake rule");
     rule->set_rule_id("12345");
+    rule->set_url_category("test rule category");
 
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnAnalysisConnectorResult(
@@ -1025,6 +1026,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Allowed) {
   EXPECT_EQ("fake rule",
             *triggered_rule.FindString(
                 SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
+  EXPECT_EQ("test rule category",
+            *triggered_rule.FindString(
+                SafeBrowsingPrivateEventRouter::kKeyUrlCategory));
   EXPECT_EQ("scan_id",
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
@@ -1077,6 +1081,9 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnSensitiveDataEvent_Blocked) {
   EXPECT_EQ("fake rule",
             *triggered_rule.FindString(
                 SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName));
+  EXPECT_EQ("test rule category",
+            *triggered_rule.FindString(
+                SafeBrowsingPrivateEventRouter::kKeyUrlCategory));
   EXPECT_EQ("scan_id",
             *event->FindString(SafeBrowsingPrivateEventRouter::kKeyScanId));
 }
