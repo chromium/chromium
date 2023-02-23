@@ -18,7 +18,6 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/display/screen_base.h"
-#include "ui/display/test/scoped_screen_override.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
@@ -128,12 +127,18 @@ class WindowManagementPermissionContextTest
 class MultiscreenWindowManagementPermissionContextTest
     : public WindowManagementPermissionContextTest {
  public:
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  ~MultiscreenWindowManagementPermissionContextTest() override {
+    display::Screen::SetScreenInstance(nullptr);
+  }
+#endif
+
   void SetScreenInstance() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Use the default, see SetUpOnMainThread.
     WindowManagementPermissionContextTest::SetScreenInstance();
 #else
-    screen_override_.emplace(&screen_);
+    display::Screen::SetScreenInstance(&screen_);
     screen_.display_list().AddDisplay({1, gfx::Rect(100, 100, 801, 802)},
                                       display::DisplayList::Type::PRIMARY);
     screen_.display_list().AddDisplay({2, gfx::Rect(901, 100, 802, 802)},
@@ -150,13 +155,11 @@ class MultiscreenWindowManagementPermissionContextTest
         .UpdateDisplay("100+100-801x802,901+100-802x802");
     ASSERT_EQ(2, display::Screen::GetScreen()->GetNumDisplays());
 #endif
-
     WindowManagementPermissionContextTest::SetUpOnMainThread();
   }
 
  private:
   display::ScreenBase screen_;
-  absl::optional<display::test::ScopedScreenOverride> screen_override_;
 };
 
 // Tests gesture requirements (a gesture is only needed to prompt the user).
