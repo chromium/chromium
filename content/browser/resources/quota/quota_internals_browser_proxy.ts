@@ -23,6 +23,9 @@ interface GetGlobalUsageResult {
   unlimitedUsage: bigint;
 }
 
+interface SimulateStoragePressureAvailableResult {
+  available: boolean;
+}
 export interface RetrieveBucketsTableResult {
   entries: BucketTableEntry[];
 }
@@ -66,6 +69,11 @@ export class QuotaInternalsBrowserProxy {
     newOrigin.port = urlPort(originUrl);
 
     this.handler.simulateStoragePressure(newOrigin);
+  }
+
+  isSimulateStoragePressureAvailable():
+      Promise<SimulateStoragePressureAvailableResult> {
+    return this.handler.isSimulateStoragePressureAvailable();
   }
 
   retrieveBucketsTable(): Promise<RetrieveBucketsTableResult> {

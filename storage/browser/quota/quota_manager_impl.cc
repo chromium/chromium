@@ -16,6 +16,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -2169,7 +2170,23 @@ void QuotaManagerImpl::MaybeRunStoragePressureCallback(
 
 void QuotaManagerImpl::SimulateStoragePressure(const url::Origin& origin_url) {
   const StorageKey key = StorageKey::CreateFirstParty(origin_url);
+  // In Incognito, since no data is stored on disk, storage pressure should be
+  // ignored.
+  DCHECK_EQ(is_incognito_, storage_pressure_callback_.is_null());
+
+  if (storage_pressure_callback_.is_null()) {
+    return;
+  }
+
   storage_pressure_callback_.Run(key);
+}
+
+void QuotaManagerImpl::IsSimulateStoragePressureAvailable(
+    IsSimulateStoragePressureAvailableCallback callback) {
+  // We assume this is only the case in incognito. If it changes, update this.
+  DCHECK_EQ(is_incognito_, storage_pressure_callback_.is_null());
+
+  std::move(callback).Run(!storage_pressure_callback_.is_null());
 }
 
 void QuotaManagerImpl::DetermineStoragePressure(int64_t total_space,

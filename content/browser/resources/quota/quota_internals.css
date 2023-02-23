@@ -54,3 +54,6 @@ th {
 .total-space {
   text-align: center;
 }
+#simulate-storage-pressure-activation-message {
+  color: red;
+}

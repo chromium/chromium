@@ -51,4 +51,7 @@ interface QuotaInternalsHandler {
     // Returns the global usage and unlimited usage for a given storage type.
     GetGlobalUsageForInternals(StorageType storage_type) =>
         (int64 usage, int64 unlimited_usage);
+
+    // Returns whether simulate storage pressure is available.
+    IsSimulateStoragePressureAvailable() => (bool available);
 };

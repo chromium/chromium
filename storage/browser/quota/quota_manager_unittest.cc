@@ -3504,4 +3504,22 @@ TEST_F(QuotaManagerImplTest, DeleteHostData_CallbackDeletesQuotaManager) {
   EXPECT_EQ(QuotaStatusCode::kOk, delete_host_data_result);
 }
 
+TEST_F(QuotaManagerImplTest, SimulateStoragePressure_Incognito) {
+  bool callback_ran = false;
+
+  auto cb = base::BindLambdaForTesting(
+      [&callback_ran](StorageKey storage_key) { callback_ran = true; });
+
+  SetStoragePressureCallback(std::move(cb));
+
+  ResetQuotaManagerImpl(/*is_incognito=*/true);
+
+  // This command should return and never execute the callback since it was
+  // setup to be in Incognito.
+  quota_manager_impl_->SimulateStoragePressure(
+      url::Origin::Create(GURL("https://example.com")));
+
+  EXPECT_FALSE(callback_ran);
+}
+
 }  // namespace storage

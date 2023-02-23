@@ -266,11 +266,25 @@ async function renderUsageAndQuotaStats() {
   }
 }
 
+async function renderSimulateStoragePressureButton() {
+  getProxy().isSimulateStoragePressureAvailable().then(result => {
+    if (!result.available) {
+      document.body
+          .querySelector('#simulate-storage-pressure-activation-message')
+          ?.removeAttribute('hidden');
+      document.body.querySelector('#trigger-notification')!.setAttribute(
+          'disabled', '');
+    }
+  });
+
+  document.body.querySelector('#trigger-notification')!.addEventListener(
+      'click', () => getProxy().simulateStoragePressure());
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   renderDiskAvailabilityAndTempPoolSize();
   renderEvictionStats();
   renderGlobalUsage();
   renderUsageAndQuotaStats();
-  document.body.querySelector('#trigger-notification')!.addEventListener(
-      'click', () => getProxy().simulateStoragePressure());
+  renderSimulateStoragePressureButton();
 });

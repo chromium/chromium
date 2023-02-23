@@ -382,6 +382,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetGlobalUsageForInternals(
       storage::mojom::StorageType storage_type,
       GetGlobalUsageForInternalsCallback callback) override;
+  // Used from quota-internals page to test behavior of the storage pressure
+  // callback.
+  void SimulateStoragePressure(const url::Origin& origin_url) override;
+  void IsSimulateStoragePressureAvailable(
+      IsSimulateStoragePressureAvailableCallback callback) override;
 
   // QuotaEvictionHandler.
   void EvictExpiredBuckets(StatusCallback done) override;
@@ -700,9 +705,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void MaybeRunStoragePressureCallback(const blink::StorageKey& storage_key,
                                        int64_t total_space,
                                        int64_t available_space);
-  // Used from quota-internals page to test behavior of the storage pressure
-  // callback.
-  void SimulateStoragePressure(const url::Origin& origin_url) override;
 
   // Evaluates disk statistics to identify storage pressure
   // (low disk space availability) and starts the storage
