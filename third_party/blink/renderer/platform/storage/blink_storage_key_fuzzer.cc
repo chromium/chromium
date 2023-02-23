@@ -5,6 +5,7 @@
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "net/base/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -13,13 +14,16 @@
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h"
 
-struct IcuEnvironment {
-  IcuEnvironment() { CHECK(base::i18n::InitializeICU()); }
+struct Environment {
+  Environment() {
+    CHECK(base::i18n::InitializeICU());
+    mojo::core::Init();
+  }
   // used by ICU integration.
   base::AtExitManager at_exit_manager;
 };
 
-IcuEnvironment* env = new IcuEnvironment();
+Environment* env = new Environment();
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string serialized_storage_key(reinterpret_cast<const char*>(data), size);
