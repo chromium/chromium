@@ -437,6 +437,7 @@ enum class ToolbarKind {
   id<ToolbarCommands> _toolbarCommandsHandler;
   absl::optional<ToolbarKind> _nextToolbarToPresent;
   CredentialProviderPromoCoordinator* _credentialProviderPromoCoordinator;
+  BOOL _isOffTheRecord;
 }
 
 #pragma mark - ChromeCoordinator
@@ -845,6 +846,8 @@ enum class ToolbarKind {
   // HandlerForProtocol method.
   _viewControllerDependencies.omniboxCommandsHandler =
       static_cast<id<OmniboxCommands>>(_dispatcher);
+  _viewControllerDependencies.isOffTheRecord =
+      self.browser->GetBrowserState()->IsOffTheRecord();
 }
 
 - (void)updateViewControllerDependencies {

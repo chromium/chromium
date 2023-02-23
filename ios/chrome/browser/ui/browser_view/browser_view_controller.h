@@ -81,6 +81,7 @@ typedef struct {
   id<ToolbarCommands> toolbarCommandsHandler;
   id<LoadQueryCommands> loadQueryCommandsHandler;
   id<OmniboxCommands> omniboxCommandsHandler;
+  BOOL isOffTheRecord;
 } BrowserViewControllerDependencies;
 
 // The top-level view controller for the browser UI. Manages other controllers

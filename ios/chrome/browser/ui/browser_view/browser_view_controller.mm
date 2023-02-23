@@ -278,8 +278,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   BOOL _isShutdown;
 
   // Whether or not Incognito* is enabled.
-  // TODO(crbug.com/1329092): Set this in the init.
   BOOL _isOffTheRecord;
+
   // Whether the current content is incognito and requires biometric
   // authentication from the user before it can be accessed.
   BOOL _itemsRequireAuthentication;
@@ -516,14 +516,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.toolbarCommandsHandler = dependencies.toolbarCommandsHandler;
     self.loadQueryCommandsHandler = dependencies.loadQueryCommandsHandler;
     self.omniboxCommandsHandler = dependencies.omniboxCommandsHandler;
+    _isOffTheRecord = dependencies.isOffTheRecord;
 
     dependencies.lensCoordinator.delegate = self;
 
     _inNewTabAnimation = NO;
     self.fullscreenController = dependencies.fullscreenController;
     _footerFullscreenProgress = 1.0;
-
-    _isOffTheRecord = browser->GetBrowserState()->IsOffTheRecord();
 
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
@@ -791,7 +790,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                      focusOmnibox:(BOOL)focusOmnibox
                     inheritOpener:(BOOL)inheritOpener {
   const base::TimeTicks startTime = base::TimeTicks::Now();
-  BOOL offTheRecord = _isOffTheRecord;
+  const BOOL offTheRecord = _isOffTheRecord;
   ProceduralBlock oldForegroundTabWasAddedCompletionBlock =
       self.foregroundTabWasAddedCompletionBlock;
   id<OmniboxCommands> omniboxCommandHandler = self.omniboxHandler;
@@ -831,7 +830,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
   params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
-  params.in_incognito = _isOffTheRecord;
+  params.in_incognito = offTheRecord;
   params.inherit_opener = inheritOpener;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
