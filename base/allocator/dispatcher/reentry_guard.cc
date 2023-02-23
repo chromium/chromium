@@ -17,15 +17,25 @@
 namespace base::allocator::dispatcher {
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-pthread_key_t ReentryGuard::entered_key_ = 0;
+// pthread_key_t has different signedness on Mac and Android. Store the null
+// value in a strongly-typed constant to avoid "comparison of integers of
+// different signs" warnings when comparing with 0.
+constexpr pthread_key_t kNullKey = 0;
+
+pthread_key_t ReentryGuard::entered_key_ = kNullKey;
 
 void ReentryGuard::InitTLSSlot() {
-  if (entered_key_ == 0) {
+  if (entered_key_ == kNullKey) {
     int error = pthread_key_create(&entered_key_, nullptr);
     CHECK(!error);
+    // Touch the TLS slot immediately to force any allocations.
+    // TODO(https://crbug.com/1411454): Use this technique to avoid allocations
+    // in PoissonAllocationSampler::ScopedMuteThreadSamples, which will make
+    // ReentryGuard redundant.
+    pthread_setspecific(entered_key_, nullptr);
   }
 
-  DCHECK(entered_key_ != 0);
+  DCHECK_NE(entered_key_, kNullKey);
 }
 
 #else
