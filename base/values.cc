@@ -1209,10 +1209,6 @@ Value* Value::SetStringPath(StringPiece path, StringPiece16 value) {
   return GetDict().SetByDottedPath(path, value);
 }
 
-bool Value::RemovePath(StringPiece path) {
-  return GetDict().RemoveByDottedPath(path);
-}
-
 Value* Value::SetPath(std::initializer_list<StringPiece> path, Value&& value) {
   DCHECK_GE(path.size(), 2u) << "Use SetKey() for a path of length 1.";
   return SetPath(make_span(path.begin(), path.size()), std::move(value));

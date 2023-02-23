@@ -845,18 +845,6 @@ class BASE_EXPORT GSL_OWNER Value {
   Value* SetPath(std::initializer_list<StringPiece> path, Value&& value);
   Value* SetPath(span<const StringPiece> path, Value&& value);
 
-  // Tries to remove a Value at the given path.
-  //
-  // If the current value is not a dictionary or any path component does not
-  // exist, this operation fails, leaves underlying Values untouched and returns
-  // `false`. In case intermediate dictionaries become empty as a result of this
-  // path removal, they will be removed as well.
-  // Note: If there is only one component in the path, use `RemoveKey()`
-  // instead.
-  //
-  // DEPRECATED: Use `Value::Dict::RemoveByDottedPath()`.
-  bool RemovePath(StringPiece path);
-
   using dict_iterator_proxy = detail::dict_iterator_proxy;
   using const_dict_iterator_proxy = detail::const_dict_iterator_proxy;
 
