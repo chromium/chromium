@@ -254,8 +254,8 @@
       'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
 
-      'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none_reclient',
-      'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_alloc_none_reclient',
+      'Dawn Mac x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
+      'Dawn Mac x64 DEPS Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
 
       'Dawn Win10 x64 ASAN Release': 'dawn_tests_asan_release_bot_dcheck_always_on_reclient',
       'Dawn Win10 x64 Builder': 'dawn_tests_release_bot_dcheck_always_on_reclient',
@@ -1123,9 +1123,9 @@
       'android-dawn-arm-rel': 'dawn_tests_android_release_trybot',
       'dawn-android-arm-deps-rel': 'dawn_tests_android_release_trybot',
       'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
-      'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_alloc_none_reclient',
-      'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_alloc_none',
-      'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_alloc_none',
+      'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
+      'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot',
+      'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot',
       'dawn-try-win-x64-intel-exp': 'dawn_tests_release_trybot_reclient',
       'dawn-try-win-x86-intel-exp': 'dawn_tests_release_trybot_x86_reclient',
       'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_trybot_reclient',
@@ -1133,7 +1133,7 @@
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86_reclient',
       'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
-      'mac-dawn-rel': 'dawn_tests_release_trybot_alloc_none',
+      'mac-dawn-rel': 'dawn_tests_release_trybot',
       'win-dawn-rel': 'dawn_tests_release_trybot_reclient',
     },
 
@@ -2428,12 +2428,6 @@
       'dawn_tests', 'asan', 'release_trybot_reclient',
     ],
 
-    # https://crbug.com/dawn/1200: temporarily avoid using partition alloc
-    # while we investigate a crash in the mac AMD shader compiler.
-    'dawn_tests_release_bot_dcheck_always_on_alloc_none_reclient': [
-      'dawn_tests', 'release_trybot_minimal_symbols_reclient', 'padisabled',
-    ],
-
     'dawn_tests_release_bot_dcheck_always_on_reclient': [
       'dawn_tests', 'release_trybot_minimal_symbols_reclient',
     ],
@@ -2442,18 +2436,9 @@
       'dawn_tests', 'release_trybot_minimal_symbols_reclient', 'x86',
     ],
 
-    # https://crbug.com/dawn/1200: temporarily avoid using partition alloc
-    # while we investigate a crash in the mac AMD shader compiler.
-    'dawn_tests_release_trybot_alloc_none': [
-      'dawn_tests', 'release_trybot', 'padisabled',
+    'dawn_tests_release_trybot': [
+      'dawn_tests', 'release_trybot',
     ],
-
-    # https://crbug.com/dawn/1200: temporarily avoid using partition alloc
-    # while we investigate a crash in the mac AMD shader compiler.
-    'dawn_tests_release_trybot_alloc_none_reclient': [
-      'dawn_tests', 'release_trybot_reclient', 'padisabled',
-    ],
-
 
     'dawn_tests_release_trybot_reclient': [
       'dawn_tests', 'release_trybot_reclient',
@@ -4490,12 +4475,6 @@
     # angle on Linux Ozone/X11/Wayland yet).
     'ozone_linux_non_x11': {
       'gn_args': 'ozone_platform_x11=false'
-    },
-
-    # https://crbug.com/dawn/1200: Used to disable partition alloc while we
-    # investigate a crash in the mac AMD shader compiler.
-    'padisabled': {
-      'gn_args': 'use_partition_alloc_as_malloc=false enable_backup_ref_ptr_support=false enable_mte_checked_ptr_support=false',
     },
 
     # Used to pass the list of files to instrument for coverage to the compile
