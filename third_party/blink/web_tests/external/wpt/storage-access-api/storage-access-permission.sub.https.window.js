@@ -34,7 +34,7 @@
     return;
   }
 
-  // We're in an iframe test now.
+  // We're in a cross-origin, same-site iframe test now.
   test_driver.set_test_context(window.top);
 
   promise_test(async t => {
@@ -79,7 +79,7 @@
     });
 
     await test_driver.set_permission({ name: 'storage-access' }, 'granted');
-    await RunCallbackWithGesture(() => document.requestStorageAccess());
+    await document.requestStorageAccess();
 
     const event = await p;
 
