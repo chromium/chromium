@@ -441,6 +441,7 @@ class TaskEnvironment {
   class MockTimeDomain;
 
   void InitializeThreadPool();
+  void ShutdownAndJoinThreadPool();
   void DestroyThreadPool();
 
   void CompleteInitialization();
