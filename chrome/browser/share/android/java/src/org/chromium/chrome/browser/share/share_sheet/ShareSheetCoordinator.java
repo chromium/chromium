@@ -35,8 +35,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -130,15 +128,6 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 } else {
                     mBottomSheet.getContentView().removeOnLayoutChangeListener(
                             ShareSheetCoordinator.this::onLayoutChange);
-                }
-            }
-
-            @Override
-            public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
-                if (state == SheetState.HIDDEN) {
-                    RecordHistogram.recordEnumeratedHistogram(
-                            "Sharing.SharingHubAndroid.CloseReason", reason,
-                            StateChangeReason.MAX_VALUE + 1);
                 }
             }
         };
