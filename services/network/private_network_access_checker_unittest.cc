@@ -14,7 +14,6 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,41 +70,26 @@ net::TransportInfo MakeTransport(net::TransportType type,
   return net::TransportInfo(type, endpoint, kNoAcceptChFrame);
 }
 
-mojom::URLLoaderFactoryParamsPtr FactoryParamsWithClientAddressSpace(
-    mojom::IPAddressSpace space) {
-  auto params = mojom::URLLoaderFactoryParams::New();
-  params->client_security_state = mojom::ClientSecurityState::New();
-  params->client_security_state->ip_address_space = space;
-  return params;
-}
-
 TEST(PrivateNetworkAccessCheckerTest, ClientSecurityStateNull) {
-  mojom::URLLoaderFactoryParams factory_params;
-
   PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+      ResourceRequest(), kNullClientSecurityState, mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.client_security_state(), nullptr);
   EXPECT_EQ(checker.ClientAddressSpace(), mojom::IPAddressSpace::kUnknown);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ClientSecurityStateFromFactory) {
-  auto factory_params =
-      FactoryParamsWithClientAddressSpace(mojom::IPAddressSpace::kPublic);
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
-  EXPECT_EQ(checker.client_security_state(),
-            factory_params->client_security_state.get());
+  EXPECT_EQ(checker.client_security_state(), &client_security_state);
   EXPECT_EQ(checker.ClientAddressSpace(), mojom::IPAddressSpace::kPublic);
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ClientSecurityStateFromRequest) {
-  mojom::URLLoaderFactoryParams factory_params;
-
   ResourceRequest request;
   request.trusted_params.emplace();
   request.trusted_params->client_security_state =
@@ -113,9 +97,8 @@ TEST(PrivateNetworkAccessCheckerTest, ClientSecurityStateFromRequest) {
   request.trusted_params->client_security_state->ip_address_space =
       mojom::IPAddressSpace::kPrivate;
 
-  PrivateNetworkAccessChecker checker(
-      request, factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(request, kNullClientSecurityState,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_NE(checker.client_security_state(), nullptr);
   EXPECT_EQ(checker.ClientAddressSpace(), mojom::IPAddressSpace::kPrivate);
@@ -124,10 +107,9 @@ TEST(PrivateNetworkAccessCheckerTest, ClientSecurityStateFromRequest) {
 TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionUnknown) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionBlockLocalRequest);
+  PrivateNetworkAccessChecker checker(ResourceRequest(),
+                                      kNullClientSecurityState,
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
   EXPECT_EQ(checker.Check(DirectTransport(net::IPEndPoint())),
             Result::kAllowedMissingClientSecurityState);
@@ -136,10 +118,9 @@ TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionUnknown) {
 TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionPublic) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionBlockLocalRequest);
+  PrivateNetworkAccessChecker checker(ResourceRequest(),
+                                      kNullClientSecurityState,
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
   EXPECT_EQ(checker.Check(DirectTransport(PublicEndpoint())),
             Result::kAllowedMissingClientSecurityState);
@@ -148,10 +129,9 @@ TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionPublic) {
 TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionPrivate) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionBlockLocalRequest);
+  PrivateNetworkAccessChecker checker(ResourceRequest(),
+                                      kNullClientSecurityState,
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kBlockedByLoadOption);
@@ -163,10 +143,9 @@ TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionPrivate) {
 TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionLocal) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionBlockLocalRequest);
+  PrivateNetworkAccessChecker checker(ResourceRequest(),
+                                      kNullClientSecurityState,
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
   EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
             Result::kBlockedByLoadOption);
@@ -178,10 +157,8 @@ TEST(PrivateNetworkAccessCheckerTest, CheckLoadOptionLocal) {
 TEST(PrivateNetworkAccessCheckerTest, CheckAllowedMissingClientSecurityState) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
   PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+      ResourceRequest(), kNullClientSecurityState, mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
             Result::kAllowedMissingClientSecurityState);
@@ -194,10 +171,8 @@ TEST(PrivateNetworkAccessCheckerTest,
      CheckAllowedMissingClientSecurityStateInconsistentIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
   PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+      ResourceRequest(), kNullClientSecurityState, mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(LocalEndpoint())),
             Result::kAllowedMissingClientSecurityState);
@@ -214,16 +189,13 @@ TEST(PrivateNetworkAccessCheckerTest,
 TEST(PrivateNetworkAccessCheckerTest, CheckAllowedNoLessPublic) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
-  factory_params.client_security_state = mojom::ClientSecurityState::New();
-  factory_params.client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPrivate;
-  factory_params.client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kBlock;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedNoLessPublic);
@@ -235,16 +207,13 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedNoLessPublic) {
 TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyAllow) {
   base::HistogramTester histogram_tester;
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kAllow;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedByPolicyAllow);
@@ -257,16 +226,13 @@ TEST(PrivateNetworkAccessCheckerTest,
      CheckAllowedByPolicyWarnInconsistentIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kWarn;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedByPolicyWarn);
@@ -281,16 +247,13 @@ TEST(PrivateNetworkAccessCheckerTest,
      CheckAllowedByPolicyAllowInconsistentIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kAllow;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedByPolicyAllow);
@@ -307,16 +270,13 @@ TEST(PrivateNetworkAccessCheckerTest,
 TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyWarn) {
   base::HistogramTester histogram_tester;
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kWarn;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedByPolicyWarn);
@@ -328,16 +288,13 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyWarn) {
 TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByPolicyBlock) {
   base::HistogramTester histogram_tester;
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kBlock;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kBlockedByPolicyBlock);
@@ -349,16 +306,13 @@ TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByPolicyBlock) {
 TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByPolicyPreflightWarn) {
   base::HistogramTester histogram_tester;
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kBlockedByPolicyPreflightWarn);
@@ -370,16 +324,13 @@ TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByPolicyPreflightWarn) {
 TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByPolicyPreflightBlock) {
   base::HistogramTester histogram_tester;
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kBlockedByPolicyPreflightBlock);
@@ -391,19 +342,16 @@ TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByPolicyPreflightBlock) {
 TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByTargetIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
-  factory_params.client_security_state = mojom::ClientSecurityState::New();
-  factory_params.client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params.client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
   ResourceRequest request;
   request.target_ip_address_space = mojom::IPAddressSpace::kPublic;
 
-  PrivateNetworkAccessChecker checker(
-      request, factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kBlockedByTargetIpAddressSpace);
@@ -415,19 +363,16 @@ TEST(PrivateNetworkAccessCheckerTest, CheckBlockedByTargetIpAddressSpace) {
 TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyPreflightWarn) {
   base::HistogramTester histogram_tester;
 
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 
   ResourceRequest request;
   request.target_ip_address_space = mojom::IPAddressSpace::kLocal;
 
-  PrivateNetworkAccessChecker checker(
-      request, factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedByPolicyPreflightWarn);
@@ -439,19 +384,16 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByPolicyPreflightWarn) {
 TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByTargetIpAddressSpace) {
   base::HistogramTester histogram_tester;
 
-  mojom::URLLoaderFactoryParams factory_params;
-  factory_params.client_security_state = mojom::ClientSecurityState::New();
-  factory_params.client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params.client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
   ResourceRequest request;
   request.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
 
-  PrivateNetworkAccessChecker checker(
-      request, factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PrivateEndpoint())),
             Result::kAllowedByTargetIpAddressSpace);
@@ -462,16 +404,13 @@ TEST(PrivateNetworkAccessCheckerTest, CheckAllowedByTargetIpAddressSpace) {
 
 TEST(PrivateNetworkAccessCheckerTest,
      CheckAllowedByPolicyPreflightWarnInconsistent) {
-  auto factory_params = mojom::URLLoaderFactoryParams::New();
-  factory_params->client_security_state = mojom::ClientSecurityState::New();
-  factory_params->client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPublic;
-  factory_params->client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightWarn;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params->client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   checker.Check(DirectTransport(PublicEndpoint()));
 
@@ -486,16 +425,13 @@ TEST(PrivateNetworkAccessCheckerTest,
 
 TEST(PrivateNetworkAccessCheckerTest,
      CheckBlockedByInconsistentIpAddressSpace) {
-  mojom::URLLoaderFactoryParams factory_params;
-  factory_params.client_security_state = mojom::ClientSecurityState::New();
-  factory_params.client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPrivate;
-  factory_params.client_security_state->private_network_request_policy =
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(ResourceRequest(), &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.Check(DirectTransport(PublicEndpoint())),
             Result::kAllowedNoLessPublic);
@@ -511,11 +447,8 @@ TEST(PrivateNetworkAccessCheckerTest,
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ResponseAddressSpace) {
-  mojom::URLLoaderFactoryParams factory_params;
-
   PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+      ResourceRequest(), kNullClientSecurityState, mojom::kURLLoadOptionNone);
 
   EXPECT_EQ(checker.ResponseAddressSpace(), absl::nullopt);
 
@@ -531,11 +464,9 @@ TEST(PrivateNetworkAccessCheckerTest, ResponseAddressSpace) {
 }
 
 TEST(PrivateNetworkAccessCheckerTest, ProxiedTransportAddressSpaceIsUnknown) {
-  mojom::URLLoaderFactoryParams factory_params;
-
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionBlockLocalRequest);
+  PrivateNetworkAccessChecker checker(ResourceRequest(),
+                                      kNullClientSecurityState,
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
   // This succeeds in spite of the load option, because the proxied transport
   // is not considered any less public than `kPublic`.
@@ -548,11 +479,9 @@ TEST(PrivateNetworkAccessCheckerTest, ProxiedTransportAddressSpaceIsUnknown) {
 
 TEST(PrivateNetworkAccessCheckerTest,
      CachedFromProxyTransportAddressSpaceIsUnknown) {
-  mojom::URLLoaderFactoryParams factory_params;
-
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionBlockLocalRequest);
+  PrivateNetworkAccessChecker checker(ResourceRequest(),
+                                      kNullClientSecurityState,
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
   // This succeeds in spite of the load option, because the cached-from-proxy
   // transport is not considered any less public than `kPublic`.
@@ -565,11 +494,9 @@ TEST(PrivateNetworkAccessCheckerTest,
 }
 
 TEST(PrivateNetworkAccessCheckerTest, CachedTransportAddressSpace) {
-  mojom::URLLoaderFactoryParams factory_params;
-
-  PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionBlockLocalRequest);
+  PrivateNetworkAccessChecker checker(ResourceRequest(),
+                                      kNullClientSecurityState,
+                                      mojom::kURLLoadOptionBlockLocalRequest);
 
   // The cached transport is treated like a direct transport to the same
   // endpoint, so the load option does not fail the check.
@@ -585,20 +512,17 @@ TEST(PrivateNetworkAccessCheckerTest, CachedTransportAddressSpace) {
   EXPECT_EQ(checker.ResponseAddressSpace(), mojom::IPAddressSpace::kLocal);
 }
 
-TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectTargetAddressSpace) {
-  mojom::URLLoaderFactoryParams factory_params;
-  factory_params.client_security_state = mojom::ClientSecurityState::New();
-  factory_params.client_security_state->ip_address_space =
-      mojom::IPAddressSpace::kPrivate;
-  factory_params.client_security_state->private_network_request_policy =
+TEST(PrivateNetworkAccessCheckerTest, ResetTargetAddressSpace) {
+  mojom::ClientSecurityState client_security_state;
+  client_security_state.ip_address_space = mojom::IPAddressSpace::kPrivate;
+  client_security_state.private_network_request_policy =
       mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
 
   ResourceRequest request;
   request.target_ip_address_space = mojom::IPAddressSpace::kPublic;
 
-  PrivateNetworkAccessChecker checker(
-      request, factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+  PrivateNetworkAccessChecker checker(request, &client_security_state,
+                                      mojom::kURLLoadOptionNone);
 
   checker.ResetForRedirect(GURL("http://foo.com"));
 
@@ -611,12 +535,9 @@ TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectTargetAddressSpace) {
             Result::kAllowedNoLessPublic);
 }
 
-TEST(PrivateNetworkAccessCheckerTest, ResetForRedirectResponseAddressSpace) {
-  mojom::URLLoaderFactoryParams factory_params;
-
+TEST(PrivateNetworkAccessCheckerTest, ResetResponseAddressSpace) {
   PrivateNetworkAccessChecker checker(
-      ResourceRequest(), factory_params.client_security_state.get(),
-      mojom::kURLLoadOptionNone);
+      ResourceRequest(), kNullClientSecurityState, mojom::kURLLoadOptionNone);
 
   checker.Check(DirectTransport(PrivateEndpoint()));
 
