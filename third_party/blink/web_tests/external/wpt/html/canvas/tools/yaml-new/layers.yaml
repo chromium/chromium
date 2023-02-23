@@ -112,7 +112,7 @@
 
     ctx.endLayer();
     ctx.endLayer();
-  reference:
+  reference: |
     var circle = new Path2D();
     circle.arc(90, 90, 40, 0, 2 * Math.PI);
     ctx.fill(circle);
@@ -154,7 +154,7 @@
     ctx.endLayer();
 
     ctx.fillRect(70, 70, 75, 50);
-  reference:
+  reference: |
     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
     ctx.fillRect(50, 50, 75, 50);
     ctx.globalAlpha = 0.5;
@@ -195,7 +195,7 @@
 
       ctx.endLayer();
     }
-  reference:
+  reference: |
     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
     ctx.fillRect(50, 50, 95, 70);
 
@@ -268,7 +268,7 @@
     ctx.fillRect(70, 70, 75, 50);
 
     ctx.endLayer();
-  reference:
+  reference: |
     ctx.fillStyle = 'rgba(0, 0, 255, 1)';
     ctx.fillRect(60, 60, 75, 50);
     ctx.globalAlpha = 0.5;
