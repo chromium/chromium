@@ -96,6 +96,7 @@ source_set("vaapi") {
     ":vaapi_status",
     "//base",
     "//build:chromeos_buildflags",
+    "//gpu/command_buffer/service:gles2",
     "//gpu/config",
     "//gpu/ipc/common",
     "//gpu/ipc/service",

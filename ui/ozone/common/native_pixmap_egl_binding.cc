@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_native_pixmap.h"
+#include "ui/gl/native_pixmap_egl_binding_helper.h"
 
 namespace ui {
 
@@ -50,9 +50,9 @@ unsigned BufferFormatToGLDataType(gfx::BufferFormat format) {
 }  // namespace
 
 NativePixmapEGLBinding::NativePixmapEGLBinding(
-    scoped_refptr<gl::GLImageNativePixmap> gl_image,
+    std::unique_ptr<gl::NativePixmapEGLBindingHelper> binding_helper,
     gfx::BufferFormat format)
-    : gl_image_(std::move(gl_image)), format_(format) {}
+    : binding_helper_(std::move(binding_helper)), format_(format) {}
 NativePixmapEGLBinding::~NativePixmapEGLBinding() = default;
 
 // static
@@ -64,22 +64,22 @@ std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
-  auto gl_image = gl::GLImageNativePixmap::CreateForPlane(
+  auto binding_helper = gl::NativePixmapEGLBindingHelper::CreateForPlane(
       plane_size, plane_format, plane, std::move(pixmap), color_space, target,
       texture_id);
-  if (!gl_image) {
-    LOG(ERROR) << "Unable to initialize GL image from pixmap";
+  if (!binding_helper) {
+    LOG(ERROR) << "Unable to initialize binding from pixmap";
     return nullptr;
   }
 
-  auto binding = std::make_unique<NativePixmapEGLBinding>(std::move(gl_image),
-                                                          plane_format);
+  auto binding = std::make_unique<NativePixmapEGLBinding>(
+      std::move(binding_helper), plane_format);
 
   return binding;
 }
 
 GLuint NativePixmapEGLBinding::GetInternalFormat() {
-  return gl_image_->GetInternalFormat();
+  return binding_helper_->GetInternalFormat();
 }
 
 GLenum NativePixmapEGLBinding::GetDataType() {

@@ -36,7 +36,6 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/buildflags.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/shared_image/skia_vk_ozone_image_representation.h"

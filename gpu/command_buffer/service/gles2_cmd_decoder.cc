@@ -120,10 +120,10 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_usage_util.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
@@ -499,7 +499,7 @@ class BackTexture {
 #if BUILDFLAG(IS_OZONE)
   // The image that backs the texture, if its backed by a native
   // GpuMemoryBuffer.
-  scoped_refptr<gl::GLImageNativePixmap> image_;
+  scoped_refptr<GLImageNativePixmap> image_;
 #endif
 };
 
@@ -2522,7 +2522,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   // Note: Creation of anonymous images is possible only on Ozone.
 #if BUILDFLAG(IS_OZONE)
   bool SupportsCreateAnonymousImage();
-  scoped_refptr<gl::GLImageNativePixmap> CreateAnonymousImage(
+  scoped_refptr<GLImageNativePixmap> CreateAnonymousImage(
       const gfx::Size& size,
       gfx::BufferFormat format,
       bool* is_cleared,
@@ -3242,7 +3242,7 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
     // duplicate BGRX_8888.
     buffer_format = gfx::BufferFormat::BGRX_8888;
   }
-  scoped_refptr<gl::GLImageNativePixmap> image = decoder_->CreateAnonymousImage(
+  scoped_refptr<GLImageNativePixmap> image = decoder_->CreateAnonymousImage(
       size, buffer_format, &is_cleared, Target(), id());
   if (!image)
     return false;
@@ -19592,7 +19592,7 @@ bool GLES2DecoderImpl::SupportsCreateAnonymousImage() {
       .supports_native_pixmaps;
 }
 
-scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
+scoped_refptr<GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool* is_cleared,
@@ -19612,8 +19612,8 @@ scoped_refptr<gl::GLImageNativePixmap> GLES2DecoderImpl::CreateAnonymousImage(
                << gfx::BufferUsageToString(usage);
     return nullptr;
   }
-  auto image = gl::GLImageNativePixmap::Create(size, format, std::move(pixmap),
-                                               target, texture_id);
+  auto image = GLImageNativePixmap::Create(size, format, std::move(pixmap),
+                                           target, texture_id);
   if (!image) {
     LOG(ERROR) << "Failed to create GLImage " << size.ToString() << ", "
                << gfx::BufferFormatToString(format) << ", usage "

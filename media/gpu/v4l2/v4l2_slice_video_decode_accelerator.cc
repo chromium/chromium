@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/media_switches.h"
 #include "media/base/scopedfd_helper.h"
@@ -49,7 +50,6 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -1444,7 +1444,7 @@ void V4L2SliceVideoDecodeAccelerator::CreateGLImageFor(
     return;
   }
 
-  scoped_refptr<gl::GLImageNativePixmap> gl_image =
+  scoped_refptr<gpu::GLImageNativePixmap> gl_image =
       gl_device->CreateGLImage(visible_size, fourcc, std::move(handle),
                                gl_device->GetTextureTarget(), texture_id);
   if (!gl_image) {

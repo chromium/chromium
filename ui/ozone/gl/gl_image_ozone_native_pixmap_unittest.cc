@@ -5,10 +5,10 @@
 #include <stdint.h>
 #include <memory>
 
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/gl/test/gl_image_test_template.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -83,7 +83,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
       glGenTextures(1, &texture_id_);
     }
 
-    auto image = gl::GLImageNativePixmap::Create(
+    auto image = gpu::GLImageNativePixmap::Create(
         size, format, std::move(pixmap), GetTextureTarget(), texture_id_);
     EXPECT_TRUE(image);
     return image;
@@ -100,8 +100,9 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
         format == gfx::BufferFormat::YUV_420_BIPLANAR) {
       return 1;
     }
-    if (format == gfx::BufferFormat::P010)
+    if (format == gfx::BufferFormat::P010) {
       return 3;
+    }
     return 0;
   }
 

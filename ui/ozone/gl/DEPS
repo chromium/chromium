@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # NOTE: See comment in ./BUILD.gn with respect to this dependency.
+  "gl_image_ozone_native_pixmap_unittest\.cc": [
+    "+gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h",
+  ],
+}

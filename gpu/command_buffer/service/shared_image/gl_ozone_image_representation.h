@@ -14,7 +14,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gl/gl_image_native_pixmap.h"
 #include "ui/ozone/public/native_pixmap_gl_binding.h"
 
 namespace gpu {

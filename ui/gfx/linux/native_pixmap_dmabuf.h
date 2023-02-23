@@ -17,7 +17,7 @@
 namespace gfx {
 
 // This class converts a gfx::NativePixmapHandle to a gfx::NativePixmap.
-// It is useful because gl::GLImageNativePixmap::Initialize only takes
+// It is useful because gpu::GLImageNativePixmap::Initialize only takes
 // a gfx::NativePixmap as input.
 class GFX_EXPORT NativePixmapDmaBuf : public gfx::NativePixmap {
  public:

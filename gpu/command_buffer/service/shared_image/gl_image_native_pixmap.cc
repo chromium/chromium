@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/gl_image_native_pixmap.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 
-namespace gl {
+#include "ui/ozone/public/native_pixmap_gl_binding.h"
+#include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
+
+namespace gpu {
 
 scoped_refptr<GLImageNativePixmap> GLImageNativePixmap::Create(
     const gfx::Size& size,
@@ -47,18 +51,18 @@ bool GLImageNativePixmap::InitializeFromNativePixmap(
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
-  binding_helper_ = NativePixmapEGLBindingHelper::CreateForPlane(
-      size_, format, plane, std::move(pixmap), color_space, target, texture_id);
+  pixmap_gl_binding_ =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->GetCurrentGLOzone()
+          ->ImportNativePixmap(std::move(pixmap), format, plane, size_,
+                               color_space, target, texture_id);
 
-  return !!binding_helper_;
+  return !!pixmap_gl_binding_;
 }
 
 gfx::Size GLImageNativePixmap::GetSize() {
   return size_;
 }
 
-unsigned GLImageNativePixmap::GetInternalFormat() {
-  return binding_helper_->GetInternalFormat();
-}
-
-}  // namespace gl
+}  // namespace gpu
