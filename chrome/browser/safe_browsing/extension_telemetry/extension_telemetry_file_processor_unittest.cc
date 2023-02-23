@@ -40,13 +40,12 @@ std::string HashContent(const std::string& content) {
 void WriteExtensionFile(const base::FilePath& path,
                         const std::string& file_name,
                         const std::string& content) {
-  ASSERT_TRUE(base::WriteFile(path.AppendASCII(file_name), content.data(),
-                              static_cast<int>(content.size())));
+  ASSERT_TRUE(base::WriteFile(path.AppendASCII(file_name), content));
 }
 
 void WriteEmptyFile(const base::FilePath& path, const std::string& file_name) {
   base::FilePath file_path = path.AppendASCII(file_name);
-  base::WriteFile(file_path, nullptr, 0);
+  base::WriteFile(file_path, base::StringPiece());
 
   int64_t file_size;
   EXPECT_TRUE(base::GetFileSize(file_path, &file_size));

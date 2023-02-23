@@ -800,9 +800,7 @@ void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(
   }
 
   std::string file_contents = "corrupt archive file";
-  ASSERT_EQ(
-      static_cast<int>(file_contents.size()),
-      base::WriteFile(tmp_path_, file_contents.data(), file_contents.size()));
+  ASSERT_TRUE(base::WriteFile(tmp_path_, file_contents));
 
   RunLoop run_loop;
   download_service_->CheckClientDownload(
@@ -1521,10 +1519,9 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
   std::string file_contents = "dummy file";
   {
     // In this case, it only contains a text file.
-    ASSERT_EQ(static_cast<int>(file_contents.size()),
-              base::WriteFile(zip_source_dir.GetPath().Append(
-                                  FILE_PATH_LITERAL("file.txt")),
-                              file_contents.data(), file_contents.size()));
+    ASSERT_TRUE(base::WriteFile(
+        zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.txt")),
+        file_contents));
     ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path_, false));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -1539,10 +1536,9 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
   }
   {
     // Now check with an executable in the zip file as well.
-    ASSERT_EQ(static_cast<int>(file_contents.size()),
-              base::WriteFile(zip_source_dir.GetPath().Append(
-                                  FILE_PATH_LITERAL("file.exe")),
-                              file_contents.data(), file_contents.size()));
+    ASSERT_TRUE(base::WriteFile(
+        zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.exe")),
+        file_contents));
     ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path_, false));
     EXPECT_CALL(*sb_service_->mock_database_manager(),
                 MatchDownloadAllowlistUrl(_))
@@ -1588,10 +1584,9 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
   {
     // Repeat the test with an archive inside the zip file in addition to the
     // executable.
-    ASSERT_EQ(static_cast<int>(file_contents.size()),
-              base::WriteFile(zip_source_dir.GetPath().Append(
-                                  FILE_PATH_LITERAL("file.rar")),
-                              file_contents.data(), file_contents.size()));
+    ASSERT_TRUE(base::WriteFile(
+        zip_source_dir.GetPath().Append(FILE_PATH_LITERAL("file.rar")),
+        file_contents));
     ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path_, false));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
