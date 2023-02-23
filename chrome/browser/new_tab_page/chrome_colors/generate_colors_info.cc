@@ -84,8 +84,7 @@ void GenerateColorsInfoFile(std::string output_dir) {
   if (!base::DirectoryExists(directory))
     base::CreateDirectory(directory);
 
-  if (base::WriteFile(output_path, output.c_str(),
-                      static_cast<uint32_t>(output.size())) <= 0) {
+  if (!base::WriteFile(output_path, output)) {
     LOG(ERROR) << "Failed to write output to " << output_path;
   }
 }
