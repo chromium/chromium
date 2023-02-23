@@ -4733,6 +4733,126 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   EXPECT_TRUE(TryLoadBundle("redirected.wbn", js_url_str));
 }
 
+// Ensure web request listener can intercept requests for web bundles with the
+// resource type "webbundle".
+IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
+                       WebBundleRequestCanceledWithResourceType) {
+  // Create an extension that cancels 'webbundle' resource type request in
+  // chrome.webRequest.onBeforeRequest listener.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+        "name": "Web Request Subresource Web Bundles Test",
+        "manifest_version": 2,
+        "version": "0.1",
+        "background": { "scripts": ["background.js"], "persistent": true },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+  std::string opt_extra_info_spec = "'blocking'";
+  if (GetExtraInfoSpec() == ExtraInfoSpec::kExtraHeaders) {
+    opt_extra_info_spec += ", 'extraHeaders'";
+  }
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(R"(
+        self.numOnBeforeRequestCalled = 0;
+        self.unexpectedRequests = [];
+        chrome.webRequest.onBeforeRequest.addListener(function(details) {
+          self.numOnBeforeRequestCalled++;
+          if (details.type != 'webbundle') {
+            self.unexpectedRequests.push(details);
+          }
+          return {cancel: true};
+        }, {urls: ['<all_urls>'], types: ['webbundle']}, [%s]);
+
+        chrome.test.sendMessage('ready');
+      )",
+                                        opt_extra_info_spec.c_str()));
+  const Extension* extension = nullptr;
+  {
+    ExtensionTestMessageListener listener("ready");
+    extension = LoadExtension(test_dir.UnpackedPath());
+    ASSERT_TRUE(extension);
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  std::string web_bundle;
+  RegisterWebBundleRequestHandler("/web_bundle.wbn", &web_bundle);
+
+  std::string page_html = R"(
+        <title>Page loaded</title>
+        <body>
+        <script>
+          (() => {
+            const script = document.createElement('script');
+            script.type = 'webbundle';
+            script.textContent = JSON.stringify({
+              'source': 'web_bundle.wbn',
+              'resources': ['cancel.js']
+            });
+            script.addEventListener('error', () => {
+              document.title = 'web_bundle.wbn loading canceled';
+            });
+            script.addEventListener('load', () => {
+              document.title = 'web_bundle.wbn loaded';
+            });
+            document.body.appendChild(script);
+          })();
+        </script>
+        </body>
+      )";
+  RegisterRequestHandler("/test.html", "text/html", page_html);
+
+  std::string pass_js = "document.title = 'pass.js loaded';";
+  RegisterRequestHandler("/pass.js", "application/javascript", pass_js);
+
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Create a web bundle.
+  web_package::WebBundleBuilder builder;
+  GURL cancel_js_url = embedded_test_server()->GetURL("/cancel.js");
+  builder.AddExchange(
+      cancel_js_url,
+      {{":status", "200"}, {"content-type", "application/javascript"}},
+      "document.title = 'cancel.js loaded';");
+  std::vector<uint8_t> bundle = builder.CreateBundle();
+  web_bundle = std::string(bundle.begin(), bundle.end());
+
+  GURL page_url = embedded_test_server()->GetURL("/test.html");
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  EXPECT_EQ(page_url, web_contents->GetLastCommittedURL());
+
+  std::u16string expected_title1 = u"web_bundle.wbn loading canceled";
+  content::TitleWatcher title_watcher1(web_contents, expected_title1);
+  title_watcher1.AlsoWaitForTitle(u"web_bundle.wbn loaded");
+  // Check that the request for web_bundle.wbn was correctly canceled.
+  EXPECT_EQ(expected_title1, title_watcher1.WaitAndGetTitle());
+
+  // Check that the onBeforeRequest listener is called for the 'webbundle'
+  // resource type request.
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.numOnBeforeRequestCalled"));
+  static constexpr char kScript[] =
+      "chrome.test.sendScriptResult(JSON.stringify(self.unexpectedRequests));";
+  EXPECT_EQ("[]",
+            ExecuteScriptAndReturnString(extension->id(), profile(), kScript));
+
+  // Try 'script' resource type request to check that the onBeforeRequest
+  // listener is invoked only for a 'webbundle' resource type request.
+  std::u16string expected_title2 = u"pass.js loaded";
+  content::TitleWatcher title_watcher2(web_contents, expected_title2);
+  EXPECT_TRUE(TryLoadScript("pass.js"));
+  // Check that the pass.js was correctly loaded.
+  EXPECT_EQ(expected_title2, title_watcher2.WaitAndGetTitle());
+
+  // Check that the onBeforeRequest listener is not called for the 'script'
+  // resource type request.
+  EXPECT_EQ(1, GetCountFromBackgroundScript(extension, profile(),
+                                            "self.numOnBeforeRequestCalled"));
+  EXPECT_EQ("[]",
+            ExecuteScriptAndReturnString(extension->id(), profile(), kScript));
+}
+
 // TODO(crbug.com/1082020) When we implement variant matching of subresource
 // web bundles, we should add test for request header modification.
 
