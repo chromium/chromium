@@ -20,6 +20,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/device_image_info.h"
@@ -274,9 +276,10 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
       continue;
     }
 
-    const std::string& string_key = info.device().account_key();
-    const std::vector<uint8_t> binary_key(string_key.begin(), string_key.end());
-    if (account_key_filter.IsAccountKeyInFilter(binary_key)) {
+    const std::string& device_account_key_str = info.device().account_key();
+    const std::vector<uint8_t> key_bytes(device_account_key_str.begin(),
+                                         device_account_key_str.end());
+    if (account_key_filter.IsAccountKeyInFilter(key_bytes)) {
       nearby::fastpair::StoredDiscoveryItem device;
       if (device.ParseFromString(info.device().discovery_item_bytes())) {
         QP_LOG(INFO) << "Account key matched with a paired device: "
@@ -285,7 +288,7 @@ void FastPairRepositoryImpl::CheckAccountKeysImpl(
             device.id(),
             base::BindOnce(&FastPairRepositoryImpl::CompleteAccountKeyLookup,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           std::move(binary_key)));
+                           key_bytes));
         return;
       }
     }
@@ -565,6 +568,81 @@ void FastPairRepositoryImpl::DeleteAssociatedDevice(
                      std::move(callback)));
 }
 
+void FastPairRepositoryImpl::UpdateAssociatedDeviceFootprintsName(
+    const std::string& mac_address,
+    const std::string& display_name,
+    bool cache_may_be_stale) {
+  absl::optional<const std::vector<uint8_t>> account_key =
+      saved_device_registry_->GetAccountKey(mac_address);
+  if (!account_key.has_value()) {
+    // If the device does not have an account key it must not be saved. If the
+    // device was not saved, there is nothing to update. Log a warning and
+    // return.
+    QP_LOG(WARNING) << __func__ << ": No saved account key.";
+    return;
+  }
+  std::string account_key_str =
+      std::string(account_key->begin(), account_key->end());
+
+  QP_LOG(VERBOSE) << __func__
+                  << ": changing device display name to: " << display_name;
+
+  // First check if the device is already in |user_devices_cache_| before
+  // querying the server for it.
+  for (const auto& info : user_devices_cache_.fast_pair_info()) {
+    if (!info.has_device()) {
+      continue;
+    }
+    const std::string& device_account_key_str = info.device().account_key();
+
+    if (account_key_str == device_account_key_str) {
+      nearby::fastpair::StoredDiscoveryItem item;
+      item.ParseFromString(info.device().discovery_item_bytes());
+
+      // Write to Footprints with the new device name.
+      GetDeviceMetadata(
+          item.id(),
+          base::BindOnce(&FastPairRepositoryImpl::
+                             WriteAccountAssociationToFootprintsWithMetadata,
+                         weak_ptr_factory_.GetWeakPtr(), item.id(), mac_address,
+                         display_name, account_key.value(),
+                         /*device_protocol=*/absl::nullopt));
+
+      // Update |footprints_last_updated_| to make the cache invalid after the
+      // name change.
+      footprints_last_updated_ = base::Time();
+      return;
+    }
+  }
+
+  // If it's our first time through, then |cache_may_be_stale| will be set to
+  // true in which case we refresh the cache and try again.
+  if (cache_may_be_stale) {
+    footprints_fetcher_->GetUserDevices(base::BindOnce(
+        &FastPairRepositoryImpl::UpdateCacheAndRetryChangeDisplayName,
+        weak_ptr_factory_.GetWeakPtr(), mac_address, display_name));
+  }
+}
+
+void FastPairRepositoryImpl::UpdateCacheAndRetryChangeDisplayName(
+    const std::string& mac_address,
+    const std::string& display_name,
+    absl::optional<nearby::fastpair::UserReadDevicesResponse> user_devices) {
+  QP_LOG(INFO) << __func__;
+  if (user_devices) {
+    UpdateUserDevicesCache(user_devices);
+  } else {
+    QP_LOG(WARNING) << __func__ << ": Failed to update user devices cache.";
+    return;
+  }
+
+  // Perform the retry. The cache has now been refreshed so set
+  // |cache_may_be_stale| to false to prevent calling this function again,
+  // infinitely.
+  FastPairRepositoryImpl::UpdateAssociatedDeviceFootprintsName(
+      mac_address, display_name, /*cache_may_be_stale=*/false);
+}
+
 void FastPairRepositoryImpl::OnDeleteAssociatedDevice(
     const std::string& mac_address,
     DeleteAssociatedDeviceCallback callback,
@@ -803,7 +881,7 @@ FastPairRepositoryImpl::GetDeviceDisplayNameFromCache(
       return item.title();
     }
   }
-  return nullptr;
+  return absl::nullopt;
 }
 
 void FastPairRepositoryImpl::CompleteFetchDeviceImages(

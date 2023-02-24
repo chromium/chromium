@@ -90,6 +90,15 @@ class FastPairRepository {
       const std::string& mac_address,
       DeleteAssociatedDeviceCallback callback) = 0;
 
+  // Updates the display name of the device saved on the Footprints server. The
+  // function will first check the cache for the device, if the device is not
+  // found in the cache and |cache_may_be_stale| is set to true, it will trigger
+  // a server call to refresh the cache.
+  virtual void UpdateAssociatedDeviceFootprintsName(
+      const std::string& mac_address,
+      const std::string& nickname,
+      bool cache_may_be_stale) = 0;
+
   // Deletes the associated data for a given |account_key|.
   // Runs true if a delete is successful for this account key, false
   // otherwise on |callback|.

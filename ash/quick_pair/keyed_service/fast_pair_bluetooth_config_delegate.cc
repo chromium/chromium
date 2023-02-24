@@ -37,6 +37,13 @@ void FastPairBluetoothConfigDelegate::ForgetDevice(
   FastPairRepository::Get()->EvictDeviceImages(mac_address);
 }
 
+void FastPairBluetoothConfigDelegate::UpdateDeviceNickname(
+    const std::string& mac_address,
+    const std::string& nickname) {
+  FastPairRepository::Get()->UpdateAssociatedDeviceFootprintsName(
+      mac_address, nickname, /*cache_may_be_stale=*/true);
+}
+
 void FastPairBluetoothConfigDelegate::SetAdapterStateController(
     bluetooth_config::AdapterStateController* adapter_state_controller) {
   adapter_state_controller_ = adapter_state_controller;
