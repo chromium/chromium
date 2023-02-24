@@ -147,8 +147,8 @@ struct MEDIA_EXPORT H264SPS {
   bool qpprime_y_zero_transform_bypass_flag;
 
   bool seq_scaling_matrix_present_flag;
-  int scaling_list4x4[6][kH264ScalingList4x4Length];
-  int scaling_list8x8[6][kH264ScalingList8x8Length];
+  uint8_t scaling_list4x4[6][kH264ScalingList4x4Length];
+  uint8_t scaling_list8x8[6][kH264ScalingList8x8Length];
 
   int log2_max_frame_num_minus4;
   int pic_order_cnt_type;
@@ -254,8 +254,8 @@ struct MEDIA_EXPORT H264PPS {
   bool transform_8x8_mode_flag;
 
   bool pic_scaling_matrix_present_flag;
-  int scaling_list4x4[6][kH264ScalingList4x4Length];
-  int scaling_list8x8[6][kH264ScalingList8x8Length];
+  uint8_t scaling_list4x4[6][kH264ScalingList4x4Length];
+  uint8_t scaling_list8x8[6][kH264ScalingList8x8Length];
 
   int second_chroma_qp_index_offset;
 };
@@ -562,7 +562,7 @@ class MEDIA_EXPORT H264Parser {
   Result ReadSE(int* val, int* num_bits_read);
 
   // Parse scaling lists (see spec).
-  Result ParseScalingList(int size, int* scaling_list, bool* use_default);
+  Result ParseScalingList(int size, uint8_t* scaling_list, bool* use_default);
   Result ParseSPSScalingLists(H264SPS* sps);
   Result ParsePPSScalingLists(const H264SPS& sps, H264PPS* pps);
 
