@@ -11,10 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
-#include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/overlay_state/win/overlay_state_service.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
-#include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
@@ -34,8 +32,6 @@ namespace viz {
 
 namespace {
 
-constexpr int kDCLayerDebugBorderWidth = 4;
-constexpr gfx::Insets kDCLayerDebugBorderInsets = gfx::Insets(-2);
 // This is the number of frames we should wait before actual overlay promotion
 // under multi-video cases.
 constexpr int kDCLayerFramesDelayedBeforeOverlay = 5;
@@ -472,12 +468,10 @@ bool IsClearVideoQuad(const QuadList::ConstIterator& it) {
 }  // namespace
 
 DCLayerOverlayProcessor::DCLayerOverlayProcessor(
-    const DebugRendererSettings* debug_settings,
     int allowed_yuv_overlay_count,
     bool skip_initialization_for_testing)
     : has_overlay_support_(skip_initialization_for_testing),
       allowed_yuv_overlay_count_(allowed_yuv_overlay_count),
-      debug_settings_(debug_settings),
       no_undamaged_overlay_promotion_(base::FeatureList::IsEnabled(
           features::kNoUndamagedOverlayPromotion)) {
   if (!skip_initialization_for_testing) {
@@ -601,55 +595,6 @@ void DCLayerOverlayProcessor::UpdateRootDamageRect(
   }
   damage_rect->Intersect(gfx::ToEnclosingRect(display_rect));
   damages_to_be_removed_.clear();
-}
-
-void DCLayerOverlayProcessor::InsertDebugBorderDrawQuad(
-    const OverlayCandidateList* dc_layer_overlays,
-    AggregatedRenderPass* render_pass,
-    const gfx::RectF& display_rect,
-    gfx::Rect* damage_rect) {
-  auto* shared_quad_state = render_pass->CreateAndAppendSharedQuadState();
-  auto& quad_list = render_pass->quad_list;
-
-  // Add debug borders for the root damage rect after overlay promotion.
-  {
-    SkColor4f border_color = SkColors::kGreen;
-    auto it =
-        quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
-            quad_list.begin(), 1u);
-    auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
-
-    gfx::Rect rect = *damage_rect;
-    rect.Inset(kDCLayerDebugBorderInsets);
-    debug_quad->SetNew(shared_quad_state, rect, rect, border_color,
-                       kDCLayerDebugBorderWidth);
-  }
-
-  // Add debug borders for overlays/underlays
-  for (const auto& dc_layer : *dc_layer_overlays) {
-    gfx::Rect overlay_rect = gfx::ToEnclosingRect(
-        OverlayCandidate::DisplayRectInTargetSpace(dc_layer));
-    if (dc_layer.clip_rect)
-      overlay_rect.Intersect(*dc_layer.clip_rect);
-
-    // Overlay:red, Underlay:blue.
-    SkColor4f border_color =
-        dc_layer.plane_z_order > 0 ? SkColors::kRed : SkColors::kBlue;
-    auto it =
-        quad_list.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
-            quad_list.begin(), 1u);
-    auto* debug_quad = static_cast<DebugBorderDrawQuad*>(*it);
-
-    overlay_rect.Inset(kDCLayerDebugBorderInsets);
-    debug_quad->SetNew(shared_quad_state, overlay_rect, overlay_rect,
-                       border_color, kDCLayerDebugBorderWidth);
-  }
-
-  // Mark the entire output as damaged because the border quads might not be
-  // inside the current damage rect.  It's far simpler to mark the entire output
-  // as damaged instead of accounting for individual border quads which can
-  // change positions across frames.
-  damage_rect->Union(gfx::ToEnclosingRect(display_rect));
 }
 
 bool DCLayerOverlayProcessor::IsPreviousFrameUnderlayRect(
@@ -976,11 +921,6 @@ void DCLayerOverlayProcessor::Process(
 
     RecordOverlayHistograms(dc_layer_overlays,
                             this_frame_has_occluding_damage_rect, damage_rect);
-  }
-
-  if (debug_settings_->show_dc_layer_debug_borders) {
-    InsertDebugBorderDrawQuad(dc_layer_overlays, render_pass, display_rect,
-                              damage_rect);
   }
 }
 

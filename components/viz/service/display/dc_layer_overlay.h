@@ -22,7 +22,6 @@
 #include "ui/gl/direct_composition_support.h"
 
 namespace viz {
-struct DebugRendererSettings;
 class DisplayResourceProvider;
 
 class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
@@ -33,7 +32,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // When |skip_initialization_for_testing| is true, object will be isolated
   // for unit tests.
   explicit DCLayerOverlayProcessor(
-      const DebugRendererSettings* debug_settings,
       int allowed_yuv_overlay_count,
       bool skip_initialization_for_testing = false);
 
@@ -102,10 +100,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
 
   void RemoveOverlayDamageRect(const QuadList::Iterator& it);
 
-  void InsertDebugBorderDrawQuad(const OverlayCandidateList* dc_layer_overlays,
-                                 AggregatedRenderPass* render_pass,
-                                 const gfx::RectF& display_rect,
-                                 gfx::Rect* damage_rect);
   bool IsPreviousFrameUnderlayRect(const gfx::Rect& quad_rectangle,
                                    size_t index);
 
@@ -138,9 +132,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   const int allowed_yuv_overlay_count_;
   int processed_yuv_overlay_count_ = 0;
   uint64_t frames_since_last_qualified_multi_overlays_ = 0;
-
-  // Reference to the global viz singleton.
-  const raw_ptr<const DebugRendererSettings> debug_settings_;
 
   bool previous_frame_underlay_is_opaque_ = true;
   bool allow_promotion_hinting_ = false;

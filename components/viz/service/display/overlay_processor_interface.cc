@@ -110,12 +110,12 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
 
   return std::make_unique<OverlayProcessorWin>(
-      output_surface,
+      output_surface, debug_settings,
       std::make_unique<DCLayerOverlayProcessor>(
-          debug_settings, /*allowed_yuv_overlay_count=*/capabilities
-                                  .supports_two_yuv_hardware_overlays
-                              ? 2
-                              : 1));
+          /*allowed_yuv_overlay_count=*/capabilities
+                  .supports_two_yuv_hardware_overlays
+              ? 2
+              : 1));
 #elif BUILDFLAG(IS_OZONE)
 #if !BUILDFLAG(IS_CASTOS)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.
