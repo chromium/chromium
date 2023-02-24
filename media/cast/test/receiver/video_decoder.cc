@@ -196,12 +196,12 @@ class VideoDecoder::FakeImpl final : public VideoDecoder::ImplBase {
     // Make sure this is a JSON string.
     if (!len || data[0] != '{')
       return nullptr;
-    std::unique_ptr<base::Value> values(base::JSONReader::ReadDeprecated(
-        base::StringPiece(reinterpret_cast<char*>(data), len)));
+    absl::optional<base::Value> values = base::JSONReader::Read(
+        base::StringPiece(reinterpret_cast<char*>(data), len));
     if (!values || !values->is_dict())
       return nullptr;
 
-    int id = values->FindIntKey("id").value_or(0);
+    int id = values->GetDict().FindInt("id").value_or(0);
     DCHECK(id == last_decoded_id_ + 1);
     last_decoded_id_ = id;
     return media::VideoFrame::CreateBlackFrame(gfx::Size(2, 2));
