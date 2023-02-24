@@ -38,6 +38,7 @@
 #include "chrome/browser/metrics/structured/event_logging_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -211,6 +212,11 @@ class AppPlatformMetricsServiceTest
     }
 
     InstallApps();
+    // The WebAppProvider system must be started after the apps are added, as
+    // the tests explicitly check that the apps start in the 'initializing'
+    // state (where they have not yet been registered with the WebAppProvider
+    // system).
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override {

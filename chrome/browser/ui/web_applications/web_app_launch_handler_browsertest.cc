@@ -357,8 +357,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
             (LaunchHandler{ClientMode::kNavigateExisting}));
 
   // Launch the app three times in quick succession.
-  Browser* browser_1 = LaunchWebAppBrowser(app_id);
-  Browser* browser_2 = LaunchWebAppBrowser(app_id);
+  Browser* browser_1 = LaunchWebAppBrowserAndWait(app_id);
+  Browser* browser_2 = LaunchWebAppBrowserAndWait(app_id);
   Browser* browser_3 = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_EQ(browser_1, browser_2);
   EXPECT_EQ(browser_2, browser_3);
