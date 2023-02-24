@@ -58,6 +58,7 @@ class BrowserDesktopWindowTreeHostLacros
   void OnBoundsChanged(const BoundsChange& change) override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
+  void OnImmersiveModeChanged(bool enabled) override;
 
   const raw_ptr<BrowserView> browser_view_;
   raw_ptr<views::DesktopNativeWidgetAura> desktop_native_widget_aura_ = nullptr;
