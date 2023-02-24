@@ -1652,11 +1652,6 @@ BASE_FEATURE(kProjectorAppDebug,
              "ProjectorAppDebug",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the Projector exclude transcript feature is enabled.
-BASE_FEATURE(kProjectorExcludeTranscript,
-             "ProjectorExcludeTranscript",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to fold short gap between transcript into the previous
 // transcript.
 BASE_FEATURE(kProjectorFoldShortGapIntoPreviousTranscript,
@@ -2989,10 +2984,6 @@ bool IsProjectorManagedUserEnabled() {
 
 bool IsProjectorAppDebugMode() {
   return base::FeatureList::IsEnabled(kProjectorAppDebug);
-}
-
-bool IsProjectorExcludeTranscriptEnabled() {
-  return base::FeatureList::IsEnabled(kProjectorExcludeTranscript);
 }
 
 bool IsProjectorTutorialVideoViewEnabled() {

@@ -2965,11 +2965,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "enable-projector-exclude-transcript",
-    "owners": [ "llin", "cros-projector@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "enable-projector-local-playback",
     "owners": [ "tobyhuang", "cros-projector@google.com" ],
     "expiry_milestone": 108

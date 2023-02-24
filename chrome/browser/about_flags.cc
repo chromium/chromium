@@ -8610,11 +8610,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProjectorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProjector)},
 
-    {"enable-projector-exclude-transcript",
-     flag_descriptions::kProjectorExcludeTranscriptName,
-     flag_descriptions::kProjectorExcludeTranscriptDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kProjectorExcludeTranscript)},
-
     {"enable-projector-local-playback",
      flag_descriptions::kProjectorLocalPlaybackName,
      flag_descriptions::kProjectorLocalPlaybackDescription, kOsCrOS,
