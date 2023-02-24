@@ -2284,7 +2284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy"
-    enum="RevalidationPolicy" expires_after="2023-04-01">
+    enum="RevalidationPolicy" expires_after="2023-10-01">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
@@ -2309,7 +2309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.Dead"
-    enum="RevalidationPolicy" expires_after="2023-04-01">
+    enum="RevalidationPolicy" expires_after="2023-10-01">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
@@ -2335,7 +2335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.Preload"
-    enum="RevalidationPolicy" expires_after="2023-04-01">
+    enum="RevalidationPolicy" expires_after="2023-10-01">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
