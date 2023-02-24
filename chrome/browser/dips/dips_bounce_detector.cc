@@ -318,7 +318,9 @@ void DIPSBounceDetector::DidStartNavigation(
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
-  if (!render_frame_host->IsInPrimaryMainFrame()) {
+  if (!render_frame_host->IsInPrimaryMainFrame() || details.blocked_by_policy ||
+      !net::SiteForCookies::FromUrl(details.first_party_url)
+           .IsFirstParty(details.url)) {
     return;
   }
 
@@ -342,7 +344,9 @@ void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
 void DIPSWebContentsObserver::OnCookiesAccessed(
     NavigationHandle* navigation_handle,
     const content::CookieAccessDetails& details) {
-  if (!navigation_handle->IsInPrimaryMainFrame()) {
+  if (!navigation_handle->IsInPrimaryMainFrame() || details.blocked_by_policy ||
+      !net::SiteForCookies::FromUrl(details.first_party_url)
+           .IsFirstParty(details.url)) {
     return;
   }
 

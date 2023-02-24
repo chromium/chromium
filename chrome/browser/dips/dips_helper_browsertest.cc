@@ -408,6 +408,57 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   EXPECT_FALSE(state_b.has_value());
 }
 
+IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
+                       StorageNotRecordedForThirdPartySubresource) {
+  // We host the "image" on an HTTPS server, because for it to write a
+  // cookie, the cookie needs to be SameSite=None and Secure.
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  GURL page_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL image_url =
+      https_server.GetURL("b.test", "/set-cookie?foo=bar;Secure;SameSite=None");
+  content::WebContents* web_contents = GetActiveWebContents();
+  base::Time time = base::Time::FromDoubleT(1);
+
+  SetDIPSTime(time);
+  // Set SameSite=None cookie on b.test.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, https_server.GetURL(
+                        "b.test", "/set-cookie?foo=bar;Secure;SameSite=None")));
+  ASSERT_TRUE(GetDIPSState(image_url).has_value());
+  EXPECT_EQ(GetDIPSState(image_url).value().site_storage_times->second, time);
+
+  // Navigate top-level page to a.test.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, page_url));
+
+  // Advance time and cause a third-party cookie read by loading an "image" from
+  // b.test.
+  SetDIPSTime(time + base::Seconds(10));
+  FrameCookieAccessObserver observer(web_contents,
+                                     web_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              content::JsReplace(
+                                  R"(
+    let img = document.createElement('img');
+    img.src = $1;
+    document.body.appendChild(img);)",
+                                  image_url),
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  observer.Wait();
+
+  // Nothing recorded for a.test (the top-level frame).
+  EXPECT_FALSE(GetDIPSState(page_url).has_value());
+
+  // The last site storage timestamp for b.test (the site hosting the image)
+  // should be unchanged, since we don't record cookie accesses from loading
+  // third-party resources.
+  EXPECT_EQ(GetDIPSState(image_url).value().site_storage_times->second, time);
+}
+
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   GURL url = embedded_test_server()->GetURL("a.test", "/set-cookie?foo=bar");
   base::Time time = base::Time::FromDoubleT(1);

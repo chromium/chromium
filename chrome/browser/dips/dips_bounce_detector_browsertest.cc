@@ -158,8 +158,7 @@ void WCOCallbackLogger::OnCookiesAccessed(
     const content::CookieAccessDetails& details) {
   // Callbacks for favicons are ignored only in testing logs because their
   // ordering is variable and would cause flakiness
-  if (!render_frame_host->IsInPrimaryMainFrame() ||
-      FormatURL(details.url).find("favicon.ico") != std::string::npos) {
+  if (details.url.path() == "/favicon.ico") {
     return;
   }
 
