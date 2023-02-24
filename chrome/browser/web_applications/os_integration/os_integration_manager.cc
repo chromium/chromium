@@ -192,8 +192,8 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
   auto shortcut_menu_handling_sub_manager =
       std::make_unique<ShortcutMenuHandlingSubManager>(
           profile_->GetPath(), *icon_manager, *registrar);
-  auto run_on_os_login_sub_manager =
-      std::make_unique<RunOnOsLoginSubManager>(*registrar);
+  auto run_on_os_login_sub_manager = std::make_unique<RunOnOsLoginSubManager>(
+      *profile_, *registrar, *sync_bridge, *icon_manager);
   auto uninstallation_via_os_settings_sub_manager =
       std::make_unique<UninstallationViaOsSettingsSubManager>(*registrar);
   sub_managers_.push_back(std::move(shortcut_sub_manager));
