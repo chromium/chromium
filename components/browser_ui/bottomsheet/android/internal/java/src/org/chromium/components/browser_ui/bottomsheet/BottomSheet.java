@@ -193,12 +193,6 @@ class BottomSheet extends FrameLayout
         }
     }
 
-    /**
-     * The instance passed to the current content that is allowed to
-     * change the sheet offset.
-     */
-    private Callback<Integer> mOffsetController;
-
     @Override
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
         // If the sheet is scrolling off-screen or in the process of hiding, gestures should not
@@ -539,12 +533,7 @@ class BottomSheet extends FrameLayout
 
         // Remove this as listener from previous content layout and size changes.
         if (mSheetContent != null) {
-            mSheetContent.setContentSizeListener(null);
             mSheetContent.getContentView().removeOnLayoutChangeListener(this);
-            if (mOffsetController != null) {
-                mSheetContent.setOffsetController(null);
-                mOffsetController = null;
-            }
         }
 
         if (content != null && getParent() == null) {
@@ -1273,34 +1262,16 @@ class BottomSheet extends FrameLayout
     protected void onSheetContentChanged(@Nullable final BottomSheetContent content) {
         mSheetContent = content;
 
-        if (content != null) {
-            if (isFullHeightWrapContent()) {
-                // Listen for layout/size changes.
-                if (!content.setContentSizeListener(this::onContentSizeChanged)) {
-                    content.getContentView().addOnLayoutChangeListener(this);
-                }
+        if (content != null && isFullHeightWrapContent()) {
+            // Listen for layout/size changes.
+            content.getContentView().addOnLayoutChangeListener(this);
 
-                invalidateContentDesiredHeight();
-                ensureContentIsWrapped(/* animate= */ true);
+            invalidateContentDesiredHeight();
+            ensureContentIsWrapped(/* animate= */ true);
 
-                // HALF state is forbidden when wrapping the content.
-                if (mCurrentState == SheetState.HALF) {
-                    setSheetState(SheetState.FULL, /* animate= */ true);
-                }
-            }
-            if (content.contentControlsOffset()) {
-                mOffsetController = new Callback<Integer>() {
-                    @Override
-                    public void onResult(Integer offsetPx) {
-                        if (this != mOffsetController) return;
-
-                        cancelAnimation();
-                        setSheetOffsetFromBottom(
-                                MathUtils.clamp(offsetPx, 0, (int) getMaxOffsetPx()),
-                                StateChangeReason.NONE, /* reportOpenClosed=*/false);
-                    }
-                };
-                content.setOffsetController(mOffsetController);
+            // HALF state is forbidden when wrapping the content.
+            if (mCurrentState == SheetState.HALF) {
+                setSheetState(SheetState.FULL, /* animate= */ true);
             }
         }
 
@@ -1321,28 +1292,6 @@ class BottomSheet extends FrameLayout
         mContentWidth = right - left;
         invalidateContentDesiredHeight();
         ensureContentIsWrapped(/* animate= */ true);
-    }
-
-    /**
-     * Called when the sheet content size changed.
-     */
-    private void onContentSizeChanged(int width, int height, int oldWidth, int oldHeight) {
-        boolean heightChanged = mContentDesiredHeight != height;
-        boolean widthChanged = mContentWidth != width;
-
-        // onContentSizeChanged() is sometimes called when there's no size change, because of
-        // animations running in the content. Ignore these calls.
-        if (!heightChanged && !widthChanged) return;
-
-        mContentDesiredHeight = height;
-        mContentWidth = width;
-
-        if (heightChanged && mCurrentState == SheetState.SCROLLING) {
-            endAnimations();
-            return;
-        }
-
-        ensureContentIsWrapped(/* animate= */ false);
     }
 
     private void ensureContentIsWrapped(boolean animate) {

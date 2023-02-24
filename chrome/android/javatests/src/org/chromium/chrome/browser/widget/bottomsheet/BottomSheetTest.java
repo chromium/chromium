@@ -7,10 +7,7 @@ package org.chromium.chrome.browser.widget.bottomsheet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE;
@@ -27,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
@@ -41,9 +37,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightM
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -314,48 +308,6 @@ public class BottomSheetTest {
         BottomSheetTestSupport.waitForState(mSheetController, SheetState.FULL);
 
         assertEquals(endingHeight, mSheetController.getCurrentOffset());
-    }
-
-    @Test
-    @MediumTest
-    public void testOffsetController() {
-        mLowPriorityContent.setContentControlsOffset(true);
-
-        BottomSheetObserver forbidStateChanges = new EmptyBottomSheetObserver() {
-            @Override
-            public void onSheetOpened(@StateChangeReason int reason) {
-                fail("onSheetOpened unexpected");
-            }
-
-            @Override
-            public void onSheetClosed(@StateChangeReason int reason) {
-                fail("onSheetClosed unexpected");
-            }
-        };
-        runOnUiThreadBlocking(() -> {
-            assertTrue(mSheetController.requestShowContent(mLowPriorityContent, false));
-
-            Callback<Integer> offsetController = mLowPriorityContent.getOffsetController();
-            assertNotNull(offsetController);
-
-            mSheetController.addObserver(forbidStateChanges);
-
-            int startOffset = mSheetController.getCurrentOffset();
-            int modifiedOffset = startOffset / 2;
-            offsetController.onResult(modifiedOffset);
-            assertEquals(modifiedOffset, mSheetController.getCurrentOffset());
-
-            offsetController.onResult(0);
-            assertEquals(0, mSheetController.getCurrentOffset());
-
-            offsetController.onResult(startOffset);
-            assertEquals(startOffset, mSheetController.getCurrentOffset());
-
-            mSheetController.removeObserver(forbidStateChanges);
-
-            mSheetController.hideContent(mLowPriorityContent, false);
-            assertNull(mLowPriorityContent.getOffsetController());
-        });
     }
 
     private void hideSheet() {
