@@ -1693,6 +1693,14 @@ void PaintLayerScrollableArea::RemoveScrollbarsForReconstruction() {
     GetLayoutBox()->GetDocument().SetAnnotatedRegionsDirty(true);
 }
 
+CompositorElementId PaintLayerScrollableArea::GetScrollCornerElementId() const {
+  CompositorElementId scrollable_element_id = GetScrollElementId();
+  DCHECK(scrollable_element_id);
+  return CompositorElementIdFromUniqueObjectId(
+      scrollable_element_id.GetStableId(),
+      CompositorElementIdNamespace::kScrollCorner);
+}
+
 bool PaintLayerScrollableArea::SetHasHorizontalScrollbar(bool has_scrollbar) {
   if (IsHorizontalScrollbarFrozen())
     return false;

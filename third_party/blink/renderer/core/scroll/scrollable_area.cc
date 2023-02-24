@@ -938,6 +938,12 @@ void ScrollableArea::DidCompositorScroll(const gfx::PointF& position) {
   SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor);
 }
 
+Scrollbar* ScrollableArea::GetScrollbar(
+    ScrollbarOrientation orientation) const {
+  return orientation == kHorizontalScrollbar ? HorizontalScrollbar()
+                                             : VerticalScrollbar();
+}
+
 CompositorElementId ScrollableArea::GetScrollbarElementId(
     ScrollbarOrientation orientation) {
   CompositorElementId scrollable_element_id = GetScrollElementId();

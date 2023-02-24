@@ -622,6 +622,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return last_cull_rect_update_scroll_position_;
   }
 
+  CompositorElementId GetScrollCornerElementId() const;
+
  private:
   // This also updates main thread scrolling reasons and the LayoutBox's
   // background paint location.

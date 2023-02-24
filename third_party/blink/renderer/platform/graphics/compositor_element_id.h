@@ -29,6 +29,7 @@ enum class CompositorElementIdNamespace {
   kTranslateTransform,
   kVerticalScrollbar,
   kHorizontalScrollbar,
+  kScrollCorner,
   kViewTransitionElement,
   kDOMNodeId,
   // The following values are for internal usage only.

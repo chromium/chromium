@@ -1026,8 +1026,7 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
       DCHECK(next_effect);
       DCHECK_EQ(cc_effect_id_for_backdrop_effect, cc::kInvalidPropertyNodeId);
       transform = &next_effect->LocalTransformSpace().Unalias();
-      PopulateCcEffectNode(synthetic_effect, *next_effect, clip_id,
-                           /*can_be_shared_element_resource=*/true);
+      PopulateCcEffectNode(synthetic_effect, *next_effect, clip_id);
       cc_effect_id_for_backdrop_effect = synthetic_effect.id;
       should_realize_backdrop_effect = false;
     } else {
@@ -1100,12 +1099,14 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
     // shared element resource ID.
     // Since a shared element resource ID must be associated with a single CC
     // effect node, the code ensures that only one CC effect node (associated
-    // with the first contigious set of chunks) is tagged with the shared
-    // element resource ID. The content excluded as a result is the root
-    // scrollbar. See crbug.com/1303081 for details.
-    bool can_be_shared_element_resource = !has_multiple_groups;
-    PopulateCcEffectNode(effect_node, next_effect, output_clip_id,
-                         can_be_shared_element_resource);
+    // with the first contiguous set of chunks) is tagged with the shared
+    // element resource ID. The view transition should either prevent such
+    // content or ensure effect nodes are contiguous. See crbug.com/1303081 for
+    // details.
+    DCHECK(!next_effect.ViewTransitionElementId().valid() ||
+           !has_multiple_groups)
+        << next_effect.ToString();
+    PopulateCcEffectNode(effect_node, next_effect, output_clip_id);
   } else {
     // We have used the outermost synthetic effect for |next_effect| in
     // SynthesizeCcEffectsForClipsIfNeeded(), so |effect_node| is just a dummy
@@ -1191,8 +1192,7 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
 void PropertyTreeManager::PopulateCcEffectNode(
     cc::EffectNode& effect_node,
     const EffectPaintPropertyNode& effect,
-    int output_clip_id,
-    bool can_be_shared_element_resource) {
+    int output_clip_id) {
   effect_node.stable_id = effect.GetCompositorElementId().GetStableId();
   effect_node.clip_id = output_clip_id;
   effect_node.render_surface_reason = RenderSurfaceReasonForEffect(effect);
@@ -1214,12 +1214,10 @@ void PropertyTreeManager::PopulateCcEffectNode(
   effect_node.double_sided = !transform.IsBackfaceHidden();
   effect_node.effect_changed = effect.NodeChangeAffectsRaster();
 
-  if (can_be_shared_element_resource) {
-    effect_node.view_transition_shared_element_id =
-        effect.ViewTransitionElementId();
-    effect_node.view_transition_element_resource_id =
-        effect.ViewTransitionElementResourceId();
-  }
+  effect_node.view_transition_shared_element_id =
+      effect.ViewTransitionElementId();
+  effect_node.view_transition_element_resource_id =
+      effect.ViewTransitionElementResourceId();
 }
 
 void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
