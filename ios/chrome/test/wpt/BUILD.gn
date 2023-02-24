@@ -34,10 +34,15 @@ script_test("wpt_tests_ios") {
     "//.vpython3",
   ]
   data_deps = [
+    ":tools",
     "//testing:test_scripts_shared",
     "//third_party/catapult/third_party/typ:typ",
     "//tools/imagediff",
   ]
+}
+
+group("tools") {
+  data = [ "tools/" ]
 }
 
 group("all_tests") {
