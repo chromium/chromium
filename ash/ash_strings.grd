@@ -4670,6 +4670,18 @@ Connect your device to power.
         Calendar view, <ph name="date">$1<ex>Wednesday, May 25, 2022</ex></ph>, <ph name="time">$2<ex>14:07</ex></ph>
       </message>
 
+      <message name="IDS_ASH_CALENDAR_EVENT_POSITION_ACCESSIBLE_DESCRIPTION" desc="The accessible label of the position in the event list of a calendar event entry.">
+        Event <ph name="event_position">$1<ex>1</ex></ph> of <ph name="event_total_count">$2<ex>2</ex></ph>
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION_JELLY" desc="The accessible label of a calendar event list item jelly entry.">
+        <ph name="event_position">$1<ex>Event 1 of 2</ex></ph>
+        <ph name="event_summary">$2<ex>Lunch break</ex></ph>,
+        <ph name="start_time">$3<ex>12 PM</ex></ph> to
+        <ph name="end_time">$4<ex>1 PM</ex></ph>,
+        <ph name="time_zone">$5<ex>Pacific time</ex></ph>. Select for more details in Google Calendar.
+      </message>
+
       <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar event entry.">
         <ph name="start_time">$1<ex>12 PM</ex></ph> to
         <ph name="end_time">$2<ex>1 PM</ex></ph>,

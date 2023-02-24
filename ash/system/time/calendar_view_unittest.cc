@@ -2605,4 +2605,33 @@ TEST_F(
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
+TEST_F(
+    CalendarViewWithJellyEnabledTest,
+    ShouldFocusEventListCloseButton_WhenEventListViewLaunchedFromUpNextView) {
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateMockEventListWithEventStartTimeTenMinsAway());
+
+  // When fetched events are in the next 10 mins, then up next should have been
+  // created.
+  ASSERT_TRUE(up_next_view());
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  up_next_todays_events_button()->RequestFocus();
+  ASSERT_EQ(up_next_todays_events_button(), focus_manager->GetFocusedView());
+
+  PressEnter();
+  ASSERT_TRUE(event_list_view());
+
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
+}
+
 }  // namespace ash

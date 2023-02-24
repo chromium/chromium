@@ -128,6 +128,16 @@ class CalendarUpNextViewTest : public AshTestBase {
     PressScrollButton(GetScrollRightButton());
   }
 
+  void PressTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
+  }
+
+  void PressShiftTab() {
+    ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+    generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  }
+
   int ScrollPosition() { return GetScrollView()->GetVisibleRect().x(); }
 
   void ScrollHorizontalPositionTo(int position_in_px) {
@@ -461,6 +471,62 @@ TEST_F(CalendarUpNextViewTest,
   EXPECT_EQ(GetSystemTrayClient()->show_google_meet_count(), 1);
   histogram_tester->ExpectTotalCount(
       "Ash.Calendar.UpNextView.JoinMeetingButton.Pressed", 1);
+}
+
+// Greenlines can be found in b/258648030.
+TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Create up next view with 2 upcoming google meet events.
+  CreateUpNextView(
+      CreateUpcomingEvents(2, false, "https://meet.google.com/abc-123"));
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(2));
+  auto* focus_manager = up_next_view()->GetFocusManager();
+
+  // First the event list item view should be focused.
+  PressTab();
+  auto* first_item = GetContentsView()->children()[0];
+  ASSERT_TRUE(first_item);
+  EXPECT_EQ(first_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
+
+  // Next, the "Join" button should be focused.
+  PressTab();
+  EXPECT_EQ(first_item->GetViewByID(kJoinButtonID),
+            focus_manager->GetFocusedView());
+
+  // Next, the second event list item view should be focused.
+  PressTab();
+  auto* second_item = GetContentsView()->children()[1];
+  ASSERT_TRUE(second_item);
+  EXPECT_EQ(second_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
+
+  // Next, the second event list item view "Join" button should be focused.
+  PressTab();
+  EXPECT_EQ(second_item->GetViewByID(kJoinButtonID),
+            focus_manager->GetFocusedView());
+
+  // Finally, the show upcoming events button should be focused.
+  PressTab();
+  EXPECT_EQ(GetTodaysEventsButton(), focus_manager->GetFocusedView());
+
+  // Going back, the second event list item view "Join" button should be
+  // focused.
+  PressShiftTab();
+  EXPECT_EQ(second_item->GetViewByID(kJoinButtonID),
+            focus_manager->GetFocusedView());
+
+  // Going back again, the second event list item view should be focused.
+  PressShiftTab();
+  EXPECT_EQ(second_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
 }
 
 class CalendarUpNextViewAnimationTest : public CalendarUpNextViewTest {
