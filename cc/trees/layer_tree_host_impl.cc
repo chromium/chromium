@@ -5237,4 +5237,12 @@ void LayerTreeHostImpl::ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
       frame_token, std::move(callbacks));
 }
 
+std::string LayerTreeHostImpl::GetHungCommitDebugInfo() const {
+  return base::StringPrintf(
+      "ptfp%d pwpd%d tmrta%d ", static_cast<int>(pending_tree_fully_painted_),
+      static_cast<int>(paint_worklet_painter_ &&
+                       paint_worklet_painter_->HasOngoingDispatch()),
+      static_cast<int>(tile_manager_.IsReadyToActivate()));
+}
+
 }  // namespace cc
