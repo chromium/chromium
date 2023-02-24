@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/notifier_catalogs.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #endif
 
 namespace {
@@ -191,6 +192,14 @@ void WebUsbDetector::Initialize() {
   // buggy devices and drivers.
   if (!base::FeatureList::IsEnabled(features::kWebUsbDeviceDetection))
     return;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Delegate to the Lacros browser if it is primary to prevent duplicate
+  // notifications.
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Tests may set a fake manager.
   if (!device_manager_) {
