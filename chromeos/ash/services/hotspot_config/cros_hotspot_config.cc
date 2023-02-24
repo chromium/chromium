@@ -92,4 +92,9 @@ void CrosHotspotConfig::OnHotspotCapabilitiesChanged() {
     observer->OnHotspotInfoChanged();
 }
 
+void CrosHotspotConfig::ObserveEnabledStateChanges(
+    mojo::PendingRemote<mojom::HotspotEnabledStateObserver> observer) {
+  hotspot_controller_->ObserveEnabledStateChanges(std::move(observer));
+}
+
 }  // namespace ash::hotspot_config

@@ -22,6 +22,7 @@ component("network") {
     "//chromeos/ash/components/network/metrics",
     "//chromeos/ash/components/network/onc",
     "//chromeos/ash/components/network/proxy",
+    "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/mojom",
     "//chromeos/components/onc",
     "//chromeos/dbus/common",

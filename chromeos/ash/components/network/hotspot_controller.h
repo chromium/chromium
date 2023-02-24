@@ -13,6 +13,7 @@
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
 #include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/services/hotspot_config/public/cpp/hotspot_enabled_state_provider.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-forward.h"
 
 namespace ash {
@@ -27,12 +28,13 @@ namespace ash {
 // Enable or disable requests are queued and executes one request at a time in
 // order.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotController
-    : public TechnologyStateController::HotspotOperationDelegate {
+    : public TechnologyStateController::HotspotOperationDelegate,
+      public hotspot_config::HotspotEnabledStateProvider {
  public:
   HotspotController();
   HotspotController(const HotspotController&) = delete;
   HotspotController& operator=(const HotspotController&) = delete;
-  virtual ~HotspotController();
+  ~HotspotController() override;
 
   void Init(HotspotCapabilitiesProvider* hotspot_capabilities_provider,
             HotspotStateHandler* hotspot_state_handler,

@@ -16,6 +16,7 @@ static_library("hotspot_config") {
     "//base",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/services/hotspot_config/public/cpp",
     "//chromeos/ash/services/hotspot_config/public/mojom",
   ]
 }

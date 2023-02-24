@@ -120,6 +120,10 @@ interface CrosHotspotConfig {
   // Adds an observer that can listen to hotspot related events.
   AddObserver(pending_remote<CrosHotspotConfigObserver> observer);
 
+  // Adds an observer to listen to hotspot turned on/off events.
+  ObserveEnabledStateChanges(
+    pending_remote<HotspotEnabledStateObserver> observer);
+
   // Returns HotspotInfo structure containing state, client count, capabilities,
   // supported security modes and configuration properties of Hotspot.
   GetHotspotInfo() => (HotspotInfo hotspot_info);
@@ -141,4 +145,12 @@ interface CrosHotspotConfigObserver {
   // Called when there is a state, client count, configuration or capability
   // change within Hotspot.
   OnHotspotInfoChanged();
+};
+
+// HotspotEnabledStateObserver is implemented by any module that needs
+// to observe changes to the hotspot enabled state.
+interface HotspotEnabledStateObserver {
+  // Called when Hotspot is successfully turned on. `wifi_turned_off`
+  // indicates that WiFi was disabled in order to turn on Hotspot.
+  OnHotspotTurnedOn(bool wifi_turned_off);
 };

@@ -149,6 +149,10 @@ void HotspotController::CompleteCurrentRequest(
         NetworkTypePattern::WiFi(), /*enabled=*/true,
         network_handler::ErrorCallback());
   }
+  if (result == hotspot_config::mojom::HotspotControlResult::kSuccess &&
+      current_request_->enabled) {
+    NotifyHotspotTurnedOn(current_request_->wifi_turned_off);
+  }
   std::move(current_request_->callback).Run(result);
   current_request_.reset();
 
