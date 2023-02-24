@@ -66,10 +66,6 @@ GRD_BEGIN_TEMPLATE = '<?xml version="1.0" encoding="UTF-8"?>\n'\
 GRD_INCLUDE_TEMPLATE = '      <include name="{name}" ' \
                        'file="{file}" resource_path="{path}" ' \
                        'use_base_dir="false" type="{type}" />\n'
-GRD_INCLUDE_TEMPLATE_PP = '      <include name="{name}" ' \
-                          'file="{file}" resource_path="{path}" ' \
-                          'use_base_dir="false" preprocess="true" '\
-                          'type="{type}" />\n'
 
 GRD_END_TEMPLATE = '    </includes>\n'\
                    '  </release>\n'\
@@ -97,16 +93,6 @@ def _generate_include_row(grd_prefix, filename, pathname, \
   if resource_path_prefix != None:
     resource_path = resource_path_prefix + '/' + resource_path
   assert '\\' not in resource_path
-
-  # This is a temporary workaround, since Polymer 2 shared resource files are
-  # not preprocessed.
-  # TODO(rbpotter): Remove this once OS Settings has been migrated to Polymer 3.
-  if ('vulcanized' in pathname or 'crisper' in pathname):
-    return GRD_INCLUDE_TEMPLATE_PP.format(
-        file=pathname,
-        path=resource_path,
-        name=name,
-        type=type)
 
   return GRD_INCLUDE_TEMPLATE.format(
       file=pathname,
