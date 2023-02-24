@@ -720,14 +720,8 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-// Times out Windows 7. https://crbug.com/1291800
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CtrlEnterKey DISABLED_CtrlEnterKey
-#else
-#define MAYBE_CtrlEnterKey CtrlEnterKey
-#endif
 // Tests that Ctrl+Enter/Cmd+Enter keys on a link open the background tab.
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_CtrlEnterKey) {
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CtrlEnterKey) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   GURL url(embedded_test_server()->GetURL(
@@ -849,20 +843,11 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 }
 
-#if BUILDFLAG(IS_WIN)
-// Frequently timing out on Win7 CI builder. See https://crbug.com/1251717.
-#define MAYBE_PopupTriggeredFromDifferentWebContents \
-  DISABLED_PopupTriggeredFromDifferentWebContents
-#else
-#define MAYBE_PopupTriggeredFromDifferentWebContents \
-  PopupTriggeredFromDifferentWebContents
-#endif
-
 // Make sure the poput is attributed to the right WebContents when it is
 // triggered from a different WebContents. Regression test for
 // https://crbug.com/1128495
 IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
-                       MAYBE_PopupTriggeredFromDifferentWebContents) {
+                       PopupTriggeredFromDifferentWebContents) {
   const GURL url(
       embedded_test_server()->GetURL("/popup_blocker/popup-in-href.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
