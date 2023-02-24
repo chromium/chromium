@@ -7,11 +7,6 @@ kbr@chromium.org
 per-file check_static_initializers.py=thakis@chromium.org
 per-file check_static_initializers.py=thomasanderson@chromium.org
 
-per-file run_wpt_tests.py=weizhong@google.com
-per-file wpt_common.py=weizhong@google.com
-per-file run_wpt_tests.py=jonathanjlee@google.com
-per-file wpt_common.py=jonathanjlee@google.com
-
 per-file run_performance_tests.py=johnchen@chromium.org
 per-file run_performance_tests.py=wenbinzhang@google.com
 
