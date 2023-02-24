@@ -61673,6 +61673,7 @@ from previous Chrome versions.
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
   <int value="-96820962"
       label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:enabled"/>
+  <int value="-94535722" label="TimeOfDayWallpaper:enabled"/>
   <int value="-94335249" label="UseAAudioDriver:enabled"/>
   <int value="-93619449" label="video-tutorials-instant-fetch"/>
   <int value="-92116820" label="InlineUpdateFlow:enabled"/>
@@ -64615,6 +64616,7 @@ from previous Chrome versions.
   <int value="1586251544" label="VoiceButtonInTopToolbar:disabled"/>
   <int value="1586476635" label="LargeFaviconFromGoogle:enabled"/>
   <int value="1587521886" label="SSLCommittedInterstitials:enabled"/>
+  <int value="1587972722" label="TimeOfDayWallpaper:disabled"/>
   <int value="1588716465" label="CrostiniUseLxd4:disabled"/>
   <int value="1589341623" label="disable-easy-unlock"/>
   <int value="1590278995"

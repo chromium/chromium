@@ -2002,6 +2002,11 @@ BASE_FEATURE(kTerminalTmuxIntegration,
              "TerminalTmuxIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables time of day wallpaper.
+BASE_FEATURE(kTimeOfDayWallpaper,
+             "TimeOfDayWallpaper",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the TrafficCountersHandler class to auto-reset traffic counters
 // and shows Data Usage in the Celluar Settings UI.
 BASE_FEATURE(kTrafficCountersEnabled,
@@ -3127,6 +3132,10 @@ bool IsSystemTrayShadowEnabled() {
 
 bool IsStylusBatteryStatusEnabled() {
   return base::FeatureList::IsEnabled(kStylusBatteryStatus);
+}
+
+bool IsTimeOfDayWallpaperEnabled() {
+  return base::FeatureList::IsEnabled(kTimeOfDayWallpaper);
 }
 
 bool IsTabClusterUIEnabled() {

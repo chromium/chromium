@@ -3470,6 +3470,9 @@ extern const char kTerminalTmuxIntegrationDescription[];
 extern const char kTetherName[];
 extern const char kTetherDescription[];
 
+extern const char kTimeOfDayWallpaperName[];
+extern const char kTimeOfDayWallpaperDescription[];
+
 extern const char kTouchscreenCalibrationName[];
 extern const char kTouchscreenCalibrationDescription[];
 

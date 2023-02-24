@@ -6846,6 +6846,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "time-of-day-wallpaper",
+    "owners": [ "esum", "jasontt", "assistive-eng@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "tint-composited-content",
     "owners": [ "chromeos-gfx@google.com" ],
     // This flag is used for QA & development on ChromeOS, which has no way to

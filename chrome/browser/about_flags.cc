@@ -3775,6 +3775,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kPolicyProvidedTrustAnchorsAllowedAtLockScreen)},
+    {"time-of-day-wallpaper", flag_descriptions::kTimeOfDayWallpaperName,
+     flag_descriptions::kTimeOfDayWallpaperDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTimeOfDayWallpaper)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
