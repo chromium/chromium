@@ -44,11 +44,6 @@
 // The subtitle displayed by this InfobarBanner.
 - (void)setSubtitleText:(NSString*)subtitleText;
 
-// Applies a custom style (e.g. bold, italic) to a range of the subtitle
-// displayed by the InfobarBanner.
-- (void)addCustomStyle:(UIFontDescriptorSymbolicTraits)symbolicTraits
-       toSubtitleRange:(NSRange)range;
-
 // If YES, restricts the number of lines in subtitle to 1.
 - (void)setRestrictSubtitleTextToSingleLine:
     (BOOL)restrictSubtitleTextToSingleLine;

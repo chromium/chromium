@@ -58,21 +58,6 @@ const CGFloat kChangeInPositionForDismissal = -15.0;
 constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 }  // namespace
 
-#pragma mark - StyledRange
-
-// Used to track ranges of a string that should receive custom styling.
-@interface StyledRange : NSObject
-
-@property(nonatomic) UIFontDescriptorSymbolicTraits symbolicTraits;
-@property(nonatomic) NSRange range;
-
-@end
-
-@implementation StyledRange
-@end
-
-#pragma mark - InfobarBannerViewController
-
 @interface InfobarBannerViewController ()
 
 // Properties backing the InfobarBannerConsumer protocol.
@@ -82,7 +67,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 @property(nonatomic, assign) BOOL presentsModal;
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
-@property(nonatomic, copy) NSMutableArray<StyledRange*>* subtitleStyledRanges;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
 @property(nonatomic, assign) BOOL ignoreIconColorWithTint;
 @property(nonatomic, strong) UIColor* iconImageTintColor;
@@ -135,7 +119,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
     _useIconBackgroundTint = YES;
     _ignoreIconColorWithTint = YES;
     _restrictSubtitleTextToSingleLine = NO;
-    _subtitleStyledRanges = [[NSMutableArray alloc] init];
   }
   return self;
 }
@@ -222,8 +205,11 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
                                       forAxis:UILayoutConstraintAxisVertical];
 
   self.subTitleLabel = [[UILabel alloc] init];
-  self.subTitleLabel.attributedText = [self subtitleAttributedText];
+  self.subTitleLabel.text = self.subtitleText;
+  self.subTitleLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   self.subTitleLabel.adjustsFontForContentSizeCategory = YES;
+  self.subTitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   if (_restrictSubtitleTextToSingleLine) {
     self.subTitleLabel.numberOfLines = 1;
   } else {
@@ -422,7 +408,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 
 - (void)setSubtitleText:(NSString*)subtitleText {
   _subtitleText = subtitleText;
-  self.subTitleLabel.attributedText = [self subtitleAttributedText];
+  self.subTitleLabel.text = _subtitleText;
   self.subTitleLabel.hidden = !self.subtitleText.length;
 }
 
@@ -454,14 +440,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 
 - (void)setIconBackgroundColor:(UIColor*)iconBackgroundColor {
   _iconBackgroundColor = iconBackgroundColor;
-}
-
-- (void)addCustomStyle:(UIFontDescriptorSymbolicTraits)symbolicTraits
-       toSubtitleRange:(NSRange)range {
-  StyledRange* styledRange = [[StyledRange alloc] init];
-  styledRange.symbolicTraits = symbolicTraits;
-  styledRange.range = range;
-  [_subtitleStyledRanges addObject:styledRange];
 }
 
 - (void)setRestrictSubtitleTextToSingleLine:
@@ -670,35 +648,6 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
         [NSString stringWithFormat:@"%@,%@", self.titleText, self.subtitleText];
   }
   return self.titleText;
-}
-
-- (NSMutableAttributedString*)subtitleAttributedText {
-  if (!self.self.subtitleText) {
-    return nil;
-  }
-
-  UIFontDescriptor* defaultDescriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleFootnote];
-  // Passing 0 defers the size responsibility to the descriptor.
-  UIFont* defaultFont = [UIFont fontWithDescriptor:defaultDescriptor size:0.0];
-  NSMutableAttributedString* attributedText = [[NSMutableAttributedString alloc]
-      initWithString:self.subtitleText
-          attributes:@{
-            NSFontAttributeName : defaultFont,
-            NSForegroundColorAttributeName :
-                [UIColor colorNamed:kTextSecondaryColor]
-          }];
-
-  for (StyledRange* styledRange in self.subtitleStyledRanges) {
-    UIFontDescriptor* customDescriptor = [defaultDescriptor
-        fontDescriptorWithSymbolicTraits:styledRange.symbolicTraits];
-    // Passing 0 defers the size responsibility to the descriptor.
-    UIFont* customFont = [UIFont fontWithDescriptor:customDescriptor size:0.0];
-    [attributedText addAttribute:NSFontAttributeName
-                           value:customFont
-                           range:styledRange.range];
-  }
-  return attributedText;
 }
 
 @end
