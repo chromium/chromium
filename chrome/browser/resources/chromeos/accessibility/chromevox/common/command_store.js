@@ -291,18 +291,24 @@ export const CommandCategory = {
 };
 
 /**
- * Collection of command properties.
- * @type {Object<!Command, {
- *                  announce: boolean,
- *                  category: (undefined|!CommandCategory),
- *                  msgId: (undefined|string),
- *                  denySignedOut: (undefined|boolean)}>}
+ * @typedef {{
+ *     announce: boolean,
+ *     category: (undefined|!CommandCategory),
+ *     msgId: (undefined|string),
+ *     denySignedOut: (undefined|boolean)
+ * }}
  *  announce: Whether to call finishNavCommand and announce the current
  *            position after the command is done.
  *  category: The command's category.
  *  msgId: The message resource describing the command.
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
  *             other signed-out contexts. Defaults to false.
+ */
+let DataEntry;
+
+/**
+ * Collection of command properties.
+ * @type {Object<!Command, !DataEntry>}
  */
 CommandStore.COMMAND_DATA = {
   [Command.TOGGLE_STICKY_MODE]: {
