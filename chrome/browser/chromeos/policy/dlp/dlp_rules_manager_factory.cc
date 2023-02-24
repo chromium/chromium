@@ -82,7 +82,14 @@ DlpRulesManager* DlpRulesManagerFactory::GetForPrimaryProfile() {
 }
 
 DlpRulesManagerFactory::DlpRulesManagerFactory()
-    : ProfileKeyedServiceFactory("DlpRulesManager") {}
+    : ProfileKeyedServiceFactory(
+          "DlpRulesManager",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 bool DlpRulesManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   // We have to create the instance immediately because it's responsible for

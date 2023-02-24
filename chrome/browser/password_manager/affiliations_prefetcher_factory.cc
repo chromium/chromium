@@ -12,7 +12,14 @@
 #include "content/public/browser/browser_context.h"
 
 AffiliationsPrefetcherFactory::AffiliationsPrefetcherFactory()
-    : ProfileKeyedServiceFactory("AffiliationsPrefetcher") {
+    : ProfileKeyedServiceFactory(
+          "AffiliationsPrefetcher",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(AffiliationServiceFactory::GetInstance());
 }
 

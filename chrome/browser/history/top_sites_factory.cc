@@ -120,7 +120,14 @@ scoped_refptr<history::TopSites> TopSitesFactory::BuildTopSites(
 }
 
 TopSitesFactory::TopSitesFactory()
-    : RefcountedProfileKeyedServiceFactory("TopSites") {
+    : RefcountedProfileKeyedServiceFactory(
+          "TopSites",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
   // This dependency is only used when the experimental

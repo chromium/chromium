@@ -29,7 +29,14 @@ GuestOsServiceFactory* GuestOsServiceFactory::GetInstance() {
 }
 
 GuestOsServiceFactory::GuestOsServiceFactory()
-    : ProfileKeyedServiceFactory("GuestOsService") {}
+    : ProfileKeyedServiceFactory(
+          "GuestOsService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 GuestOsServiceFactory::~GuestOsServiceFactory() = default;
 

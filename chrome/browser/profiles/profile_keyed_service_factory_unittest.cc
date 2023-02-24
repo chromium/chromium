@@ -139,7 +139,7 @@ TEST_P(ProfileKeyedServiceFactoryUnittest, DefaultFactoryTest) {
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), nullptr);
 
-  TestProfileToUse(factory, guest_profile(), guest_profile());
+  TestProfileToUse(factory, guest_profile(), nullptr);
   TestProfileToUse(factory, guest_profile_otr(), nullptr);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
@@ -242,7 +242,7 @@ TEST_P(ProfileKeyedServiceFactoryUnittest, DefaultRefcountedFactoryTest) {
   TestProfileToUse(factory, regular_profile(), regular_profile());
   TestProfileToUse(factory, incognito_profile(), nullptr);
 
-  TestProfileToUse(factory, guest_profile(), guest_profile());
+  TestProfileToUse(factory, guest_profile(), nullptr);
   TestProfileToUse(factory, guest_profile_otr(), nullptr);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)

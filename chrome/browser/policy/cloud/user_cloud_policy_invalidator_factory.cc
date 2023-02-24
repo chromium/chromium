@@ -24,7 +24,14 @@ UserCloudPolicyInvalidatorFactory*
 }
 
 UserCloudPolicyInvalidatorFactory::UserCloudPolicyInvalidatorFactory()
-    : ProfileKeyedServiceFactory("UserCloudPolicyInvalidator") {
+    : ProfileKeyedServiceFactory(
+          "UserCloudPolicyInvalidator",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }
 

@@ -36,7 +36,14 @@ SendTabToSelfClientServiceFactory::GetInstance() {
 }
 
 SendTabToSelfClientServiceFactory::SendTabToSelfClientServiceFactory()
-    : ProfileKeyedServiceFactory("SendTabToSelfClientService") {
+    : ProfileKeyedServiceFactory(
+          "SendTabToSelfClientService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
 }

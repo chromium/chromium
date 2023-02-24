@@ -23,7 +23,14 @@ AppShortcutManagerFactory* AppShortcutManagerFactory::GetInstance() {
 }
 
 AppShortcutManagerFactory::AppShortcutManagerFactory()
-    : ProfileKeyedServiceFactory("AppShortcutManager") {
+    : ProfileKeyedServiceFactory(
+          "AppShortcutManager",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   web_app::WebAppShortcutManager::SetUpdateShortcutsForAllAppsCallback(
       base::BindRepeating(&web_app::UpdateShortcutsForAllApps));
 }

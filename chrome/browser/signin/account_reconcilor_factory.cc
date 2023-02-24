@@ -118,7 +118,14 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
 }  // namespace
 
 AccountReconcilorFactory::AccountReconcilorFactory()
-    : ProfileKeyedServiceFactory("AccountReconcilor") {
+    : ProfileKeyedServiceFactory(
+          "AccountReconcilor",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }

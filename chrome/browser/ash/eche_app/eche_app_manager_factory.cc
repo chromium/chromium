@@ -205,7 +205,14 @@ void EcheAppManagerFactory::LaunchEcheApp(
 }
 
 EcheAppManagerFactory::EcheAppManagerFactory()
-    : ProfileKeyedServiceFactory("EcheAppManager") {
+    : ProfileKeyedServiceFactory(
+          "EcheAppManager",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(phonehub::PhoneHubManagerFactory::GetInstance());
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());

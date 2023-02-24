@@ -215,7 +215,14 @@ SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(Profile* profile) {
 }
 
 SyncServiceFactory::SyncServiceFactory()
-    : ProfileKeyedServiceFactory("SyncService") {
+    : ProfileKeyedServiceFactory(
+          "SyncService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   // The SyncServiceImpl depends on various SyncableServices being around
   // when it is shut down.  Specify those dependencies here to build the proper
   // destruction order. Note that some of the dependencies are listed here but

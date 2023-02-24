@@ -49,7 +49,14 @@ EasyUnlockService* EasyUnlockServiceFactory::GetForBrowserContext(
 }
 
 EasyUnlockServiceFactory::EasyUnlockServiceFactory()
-    : ProfileKeyedServiceFactory("EasyUnlockService") {
+    : ProfileKeyedServiceFactory(
+          "EasyUnlockService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(EasyUnlockTpmKeyManagerFactory::GetInstance());

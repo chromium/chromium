@@ -49,7 +49,14 @@ AccessCodeCastSinkServiceFactory::GetInstance() {
 }
 
 AccessCodeCastSinkServiceFactory::AccessCodeCastSinkServiceFactory()
-    : ProfileKeyedServiceFactory("AccessCodeSinkService") {
+    : ProfileKeyedServiceFactory(
+          "AccessCodeSinkService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   // TODO(b/238212430): Add a browsertest case to ensure that all media router
   // objects are created before the ACCSS.
   DependsOn(media_router::ChromeMediaRouterFactory::GetInstance());

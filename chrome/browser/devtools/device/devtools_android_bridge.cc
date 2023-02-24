@@ -86,7 +86,14 @@ DevToolsAndroidBridge* DevToolsAndroidBridge::Factory::GetForProfile(
 }
 
 DevToolsAndroidBridge::Factory::Factory()
-    : ProfileKeyedServiceFactory("DevToolsAndroidBridge") {}
+    : ProfileKeyedServiceFactory(
+          "DevToolsAndroidBridge",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 DevToolsAndroidBridge::Factory::~Factory() {}
 

@@ -35,7 +35,14 @@ BrowsingTopicsServiceFactory* BrowsingTopicsServiceFactory::GetInstance() {
 }
 
 BrowsingTopicsServiceFactory::BrowsingTopicsServiceFactory()
-    : ProfileKeyedServiceFactory("BrowsingTopicsService") {
+    : ProfileKeyedServiceFactory(
+          "BrowsingTopicsService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(PrivacySandboxSettingsFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(PageContentAnnotationsServiceFactory::GetInstance());

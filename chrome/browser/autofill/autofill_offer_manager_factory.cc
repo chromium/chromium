@@ -29,7 +29,14 @@ AutofillOfferManagerFactory* AutofillOfferManagerFactory::GetInstance() {
 }
 
 AutofillOfferManagerFactory::AutofillOfferManagerFactory()
-    : ProfileKeyedServiceFactory("AutofillOfferManager") {
+    : ProfileKeyedServiceFactory(
+          "AutofillOfferManager",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(PersonalDataManagerFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(CouponServiceFactory::GetInstance());

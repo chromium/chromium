@@ -41,7 +41,14 @@ KeystoreServiceFactoryAsh* KeystoreServiceFactoryAsh::GetInstance() {
 }
 
 KeystoreServiceFactoryAsh::KeystoreServiceFactoryAsh()
-    : ProfileKeyedServiceFactory("KeystoreServiceFactoryAsh") {
+    : ProfileKeyedServiceFactory(
+          "KeystoreServiceFactoryAsh",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(ash::platform_keys::PlatformKeysServiceFactory::GetInstance());
   DependsOn(ash::platform_keys::KeyPermissionsServiceFactory::GetInstance());
 }

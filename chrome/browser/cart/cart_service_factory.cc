@@ -24,7 +24,14 @@ CartService* CartServiceFactory::GetForProfile(Profile* profile) {
 }
 
 CartServiceFactory::CartServiceFactory()
-    : ProfileKeyedServiceFactory("ChromeCartService") {
+    : ProfileKeyedServiceFactory(
+          "ChromeCartService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(HistoryServiceFactory::GetInstance());
 }
 

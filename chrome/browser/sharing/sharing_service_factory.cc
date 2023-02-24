@@ -72,7 +72,14 @@ SharingService* SharingServiceFactory::GetForBrowserContext(
 
 SharingServiceFactory::SharingServiceFactory()
     // Sharing features are disabled in incognito.
-    : ProfileKeyedServiceFactory(kServiceName) {
+    : ProfileKeyedServiceFactory(
+          kServiceName,
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());

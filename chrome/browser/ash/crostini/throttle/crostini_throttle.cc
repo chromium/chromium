@@ -53,7 +53,14 @@ class CrostiniThrottleFactory : public ProfileKeyedServiceFactory {
   friend class base::NoDestructor<CrostiniThrottleFactory>;
 
   CrostiniThrottleFactory()
-      : ProfileKeyedServiceFactory("CrostiniThrottleFactory") {}
+      : ProfileKeyedServiceFactory(
+            "CrostiniThrottleFactory",
+            ProfileSelections::Builder()
+                .WithRegular(ProfileSelection::kOriginalOnly)
+                // TODO(crbug.com/1418376): Check if this service is needed in
+                // Guest mode.
+                .WithGuest(ProfileSelection::kOriginalOnly)
+                .Build()) {}
   ~CrostiniThrottleFactory() override = default;
 
   // BrowserContextKeyedServiceFactory:

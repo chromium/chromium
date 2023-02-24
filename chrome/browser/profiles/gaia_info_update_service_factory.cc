@@ -14,7 +14,14 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 
 GAIAInfoUpdateServiceFactory::GAIAInfoUpdateServiceFactory()
-    : ProfileKeyedServiceFactory("GAIAInfoUpdateService") {
+    : ProfileKeyedServiceFactory(
+          "GAIAInfoUpdateService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

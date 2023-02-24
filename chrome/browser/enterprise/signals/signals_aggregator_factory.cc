@@ -63,7 +63,14 @@ device_signals::SignalsAggregator* SignalsAggregatorFactory::GetForProfile(
 }
 
 SignalsAggregatorFactory::SignalsAggregatorFactory()
-    : ProfileKeyedServiceFactory("SignalsAggregator") {
+    : ProfileKeyedServiceFactory(
+          "SignalsAggregator",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(SystemSignalsServiceHostFactory::GetInstance());
   DependsOn(UserPermissionServiceFactory::GetInstance());
 }

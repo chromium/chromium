@@ -23,7 +23,14 @@ PrintJobReportingServiceFactory::GetInstance() {
 }
 
 PrintJobReportingServiceFactory::PrintJobReportingServiceFactory()
-    : ProfileKeyedServiceFactory("PrintJobReportingServiceFactory") {}
+    : ProfileKeyedServiceFactory(
+          "PrintJobReportingServiceFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 PrintJobReportingServiceFactory::~PrintJobReportingServiceFactory() = default;
 

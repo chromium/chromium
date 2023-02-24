@@ -10,7 +10,14 @@
 #include "content/public/browser/browser_context.h"
 
 TrustSafetySentimentServiceFactory::TrustSafetySentimentServiceFactory()
-    : ProfileKeyedServiceFactory("TrustSafetySentimentService") {
+    : ProfileKeyedServiceFactory(
+          "TrustSafetySentimentService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(HatsServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }

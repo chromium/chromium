@@ -88,8 +88,14 @@ SessionProtoDB<T>* SessionProtoDBFactory<T>::GetForProfile(
 
 template <typename T>
 SessionProtoDBFactory<T>::SessionProtoDBFactory()
-
-    : ProfileKeyedServiceFactory("SessionProtoDBFactory") {}
+    : ProfileKeyedServiceFactory(
+          "SessionProtoDBFactory",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 template <typename T>
 SessionProtoDBFactory<T>::~SessionProtoDBFactory() = default;

@@ -8,7 +8,14 @@
 #include "chrome/browser/profiles/profile.h"
 
 ChromeSigninClientFactory::ChromeSigninClientFactory()
-    : ProfileKeyedServiceFactory("ChromeSigninClient") {
+    : ProfileKeyedServiceFactory(
+          "ChromeSigninClient",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(ProfileNetworkContextServiceFactory::GetInstance());
 }
 

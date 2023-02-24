@@ -64,6 +64,8 @@ class ProfileKeyedServiceFactory : public BrowserContextKeyedServiceFactory {
  protected:
   // Default constructor, will build the Factory with the default implementation
   // for `ProfileSelections`.
+  // Check `ProfileSelections::BuildDefault()` for details on which Profile the
+  // service will be constructed for.
   explicit ProfileKeyedServiceFactory(const char* name);
   // Constructor taking in the overridden `ProfileSelections` for customized
   // Profile types service creation. This is the only way to override the

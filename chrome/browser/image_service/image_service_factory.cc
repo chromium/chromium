@@ -28,7 +28,14 @@ ImageServiceFactory& ImageServiceFactory::GetInstance() {
 }
 
 ImageServiceFactory::ImageServiceFactory()
-    : ProfileKeyedServiceFactory("ImageService") {
+    : ProfileKeyedServiceFactory(
+          "ImageService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }

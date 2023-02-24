@@ -17,7 +17,14 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 AffiliationServiceFactory::AffiliationServiceFactory()
-    : ProfileKeyedServiceFactory("AffiliationService") {}
+    : ProfileKeyedServiceFactory(
+          "AffiliationService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {}
 
 AffiliationServiceFactory::~AffiliationServiceFactory() = default;
 

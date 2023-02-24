@@ -43,7 +43,14 @@ RealTimeUrlLookupServiceFactory::GetInstance() {
 }
 
 RealTimeUrlLookupServiceFactory::RealTimeUrlLookupServiceFactory()
-    : ProfileKeyedServiceFactory("RealTimeUrlLookupService") {
+    : ProfileKeyedServiceFactory(
+          "RealTimeUrlLookupService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(VerdictCacheManagerFactory::GetInstance());

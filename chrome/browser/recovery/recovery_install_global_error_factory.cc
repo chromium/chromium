@@ -11,7 +11,14 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 
 RecoveryInstallGlobalErrorFactory::RecoveryInstallGlobalErrorFactory()
-    : ProfileKeyedServiceFactory("RecoveryInstallGlobalError") {
+    : ProfileKeyedServiceFactory(
+          "RecoveryInstallGlobalError",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // TODO(crbug.com/1418376): Check if this service is needed in
+              // Guest mode.
+              .WithGuest(ProfileSelection::kOriginalOnly)
+              .Build()) {
   DependsOn(GlobalErrorServiceFactory::GetInstance());
 }
 
