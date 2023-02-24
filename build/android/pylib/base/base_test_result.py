@@ -82,6 +82,10 @@ class BaseTestResult:
     """Get the test name."""
     return self._name
 
+  def GetNameForResultSink(self):
+    """Get the test name to be reported to resultsink."""
+    return self._name
+
   def SetType(self, test_type):
     """Set the test result type."""
     assert test_type in ResultType.GetTypes()
@@ -126,6 +130,10 @@ class BaseTestResult:
   def GetLinks(self):
     """Get dict containing links to test result data."""
     return self._links
+
+  def GetVariantForResultSink(self):  # pylint: disable=no-self-use
+    """Get the variant dict to be reported to result sink."""
+    return None
 
 
 class TestRunResults:
