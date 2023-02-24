@@ -1008,7 +1008,6 @@
           'gtest_tests': 'android_pie_gtests',
         }
       },
-      # To be kept in sync with android-pie-arm64-rel-rts
       'android-pie-arm64-rel': {
         'mixins': [
           'has_native_resultdb_integration',

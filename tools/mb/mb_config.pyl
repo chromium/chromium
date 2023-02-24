@@ -1082,7 +1082,6 @@
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto_reclient',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg_reclient',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
-      'chromeos-amd64-generic-rel-rts': 'chromeos_amd64-generic_use_fake_dbus_clients',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg_try_reclient',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on_reclient',
       'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks_reclient',
@@ -2024,10 +2023,6 @@
 
     'chromeos_amd64-generic_lacros_rel_skylab_reclient': [
       'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'is_skylab',
-    ],
-
-    'chromeos_amd64-generic_use_fake_dbus_clients':[
-      'chromeos_amd64-generic', 'use_fake_dbus_clients', 'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients_goma':[
@@ -3891,10 +3886,6 @@
 
     'chromeos': {
       'gn_args': 'target_os="chromeos"',
-    },
-
-    'chromeos_amd64-generic': {
-      'mixins': ['chromeos_device', 'amd64-generic',]
     },
 
     'chromeos_amd64-generic-crostoolchain': {

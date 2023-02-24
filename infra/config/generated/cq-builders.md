@@ -490,9 +490,6 @@ as required builders.
 * [linux-1mbu-compile-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/linux-1mbu-compile-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-1mbu-compile-fyi-rel""))
   * Experiment percentage: 5.0
 
-* [linux-chromeos-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-rel-rts""))
-  * Experiment percentage: 5.0
-
 * [linux-rel-ml](https://ci.chromium.org/p/chromium/builders/try/linux-rel-ml) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-ml""))
   * Experiment percentage: 5.0
 

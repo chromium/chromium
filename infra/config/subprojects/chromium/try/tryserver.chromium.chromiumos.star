@@ -345,23 +345,3 @@ try_.builder(
         ],
     ),
 )
-
-# RTS builders
-
-try_.builder(
-    name = "linux-chromeos-rel-rts",
-    mirrors = [
-        "ci/linux-chromeos-rel",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.ALWAYS,
-        ),
-    ),
-    builderless = False,
-    coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-    use_clang_coverage = True,
-)
