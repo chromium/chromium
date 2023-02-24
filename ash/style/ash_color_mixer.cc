@@ -83,17 +83,8 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
   mixer[kColorAshShieldAndBaseOpaque] = {
       SkColorSetA(background_color, SK_AlphaOPAQUE)};
 
-  // TODO(conniekxu): Remove these colorIds when the DarkLightModeEnabled flag
-  // is removed.
-  mixer[kColorAshShieldAndBase20Light] = {SkColorSetA(SK_ColorWHITE, kAlpha20)};
-  mixer[kColorAshShieldAndBase40Light] = {SkColorSetA(SK_ColorWHITE, kAlpha40)};
-  mixer[kColorAshShieldAndBase60Light] = {SkColorSetA(SK_ColorWHITE, kAlpha60)};
+  // TODO(b/270468758): Remove when the last caller has been deleted.
   mixer[kColorAshShieldAndBase80Light] = {SkColorSetA(SK_ColorWHITE, kAlpha80)};
-  mixer[kColorAshInvertedShieldAndBase80Light] = {
-      SkColorSetA(color_utils::InvertColor(SK_ColorWHITE), kAlpha80)};
-  mixer[kColorAshShieldAndBase95Light] = {SkColorSetA(SK_ColorWHITE, kAlpha95)};
-  mixer[kColorAshShieldAndBaseOpaqueLight] = {
-      SkColorSetA(SK_ColorWHITE, SK_AlphaOPAQUE)};
 }
 
 // Mappings of Controls Colors for Material 2.
