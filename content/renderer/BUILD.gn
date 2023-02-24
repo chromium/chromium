@@ -365,7 +365,6 @@ target(link_target_type, "renderer") {
     deps += [
       "//components/cast_streaming/public",
       "//components/cast_streaming/renderer:resource_provider",
-      "//components/cast_streaming/renderer:wrapping_renderer_factory_selector",
     ]
   }
 

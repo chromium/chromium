@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CAST_STREAMING_RENDERER_FRAME_BUFFER_REQUESTER_H_
-#define COMPONENTS_CAST_STREAMING_RENDERER_FRAME_BUFFER_REQUESTER_H_
+#ifndef COMPONENTS_CAST_STREAMING_RENDERER_COMMON_BUFFER_REQUESTER_H_
+#define COMPONENTS_CAST_STREAMING_RENDERER_COMMON_BUFFER_REQUESTER_H_
 
 #include <memory>
 
@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/demuxer_stream_traits.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
-#include "components/cast_streaming/renderer/frame/decoder_buffer_provider_impl.h"
+#include "components/cast_streaming/renderer/common/decoder_buffer_provider_impl.h"
 #include "components/cast_streaming/renderer/public/decoder_buffer_provider.h"
 #include "media/mojo/mojom/media_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/test.gni")
-
 visibility = [ ":*" ]
 
 # Public target on which all external code requiring a resource_provider
@@ -12,22 +10,17 @@ source_set("renderer") {
   visibility += [ "*" ]
   public = [ "public/resource_provider_factory.h" ]
   sources = [
-    "control/renderer_controller_proxy.cc",
-    "control/renderer_controller_proxy.h",
-    "frame/demuxer_connector.cc",
-    "frame/demuxer_connector.h",
-    "frame/frame_injecting_demuxer.cc",
-    "frame/frame_injecting_demuxer.h",
     "resource_provider_impl.cc",
     "resource_provider_impl.h",
   ]
   public_deps = [ ":resource_provider" ]
   deps = [
-    ":buffer_requester",
     "//base",
     "//components/cast_streaming/public",
     "//components/cast_streaming/public:demuxer_stream_traits",
     "//components/cast_streaming/public/mojom",
+    "//components/cast_streaming/renderer/control",
+    "//components/cast_streaming/renderer/frame",
     "//media",
     "//media/mojo/common",
     "//media/mojo/mojom",
@@ -40,122 +33,56 @@ source_set("renderer") {
 # cast_streaming operations. This target is included in ALL chromium builds
 # that use the Chromium media pipeline, so be careful when adding new
 # dependencies here.
-# TODO(crbug.com/1357085): Move the code that //content depends on to its
-# own folder and enforce use via DEPS file(s).
-source_set("wrapping_renderer_factory_selector") {
-  visibility += [ "*" ]
-  public = [ "public/wrapping_renderer_factory_selector.h" ]
-  sources = [
-    "control/playback_command_forwarding_renderer.cc",
-    "control/playback_command_forwarding_renderer.h",
-    "control/playback_command_forwarding_renderer_factory.cc",
-    "control/playback_command_forwarding_renderer_factory.h",
-    "control/wrapping_renderer_factory_selector.cc",
-  ]
-  public_deps = [ "//media" ]
-  deps = [
-    ":resource_provider",
-    "//base",
-    "//media",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/bindings",
-  ]
-  friend = [ ":unit_tests" ]
-}
-
-# This target is a dependency of :wrapping_renderer_factory_selector, which is
-# included in ALL chromium builds that use the Chromium media pipeline.
-# Be careful when adding new dependencies here.
 source_set("resource_provider") {
-  visibility += [ "*" ]
-  public = [ "public/resource_provider.h" ]
-  sources = [ "resource_provider.cc" ]
-  public_deps = [
-    "//base",
-    "//components/cast_streaming/public/mojom",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/bindings",
+  visibility += [
+    "//components/cast_streaming/renderer/*",
+    "//content/renderer:renderer",
   ]
-}
-
-# TODO(crbug.com/1357085): Once WebCodecs work is complete, see if this target
-# can be merged into :renderer.
-source_set("buffer_requester") {
   public = [
-    "frame/buffer_requester.h",
-    "public/decoder_buffer_provider.h",
+    "public/resource_provider.h",
+    "public/wrapping_renderer_factory_selector.h",
   ]
-  sources = [ "frame/decoder_buffer_provider_impl.h" ]
+  sources = [
+    "resource_provider.cc",
+    "wrapping_renderer_factory_selector.cc",
+  ]
   public_deps = [
     "//base",
-    "//components/cast_streaming/public:demuxer_stream_traits",
     "//components/cast_streaming/public/mojom",
     "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
-    "//mojo/public/cpp/system",
   ]
   deps = [
-    "//base",
-    "//components/cast_streaming/public:decoder_buffer_reader",
+    "//components/cast_streaming/renderer/control:renderer",
     "//media",
-    "//media/mojo/common",
-    "//mojo/public/cpp/system",
   ]
-  friend = [ ":unit_tests" ]
 }
 
-source_set("web_codecs") {
-  # TODO(crbug.com/1357085): Move public headers here when they are used and move
-  # associated `deps` to `public_deps`.
-  public = []
-  sources = [
-    "web_codecs/delegating_decoder_buffer_provider.h",
-    "web_codecs/stream_control_channel.cc",
-    "web_codecs/stream_control_channel.h",
-  ]
-  deps = [
-    ":buffer_requester",
-    "//base",
-    "//components/cast_streaming/public/mojom",
-    "//media/mojo/common",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/bindings",
-  ]
-  friend = [ ":unit_tests" ]
+# This file is to be used with the WebCodecs-based receiver. An instance of this
+# type will be directly handled by blink.
+source_set("decoder_buffer_provider") {
+  visibility += [ "*" ]
+  public = [ "public/decoder_buffer_provider.h" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   visibility += [ "//components/cast_streaming:unit_tests" ]
-  public = []
-  sources = [
-    "control/playback_command_forwarding_renderer_factory_unittest.cc",
-    "control/playback_command_forwarding_renderer_unittest.cc",
-    "frame/buffer_requester_unittest.cc",
-    "frame/decoder_buffer_provider_impl_unittest.cc",
-    "web_codecs/delegating_decoder_buffer_provider_unittest.cc",
-  ]
+  sources = []
   deps = [
-    ":buffer_requester",
-    ":web_codecs",
-    ":wrapping_renderer_factory_selector",
-    "//base",
-    "//base/test:test_support",
-    "//components/cast_streaming/public/mojom",
-    "//media:test_support",
-    "//media/",
-    "//media/mojo/common",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/bindings",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//ui/gfx",
+    "//components/cast_streaming/renderer/common:unit_tests",
+    "//components/cast_streaming/renderer/control:unit_tests",
+    "//components/cast_streaming/renderer/web_codecs:unit_tests",
   ]
 
-  # The following are not used by the tests but have no explicit deps path on
-  # platforms that do not use this functionality. Add a deps here to ensure that
-  # they are built on all platforms even when bots don't build "all".
+  # The following are not used by the tests, but have been explicitly added
+  # as deps to ensure changes outside of this component do not remove their CQ
+  # coverage.
   # TODO(crbug.com/1357085): Add tests or handle this in a more appropriate way.
-  # Merging of other targets (see other TODOs) may address this.
-  deps += [ ":renderer" ]
+  deps += [
+    ":decoder_buffer_provider",
+    ":renderer",
+    ":resource_provider",
+  ]
 }

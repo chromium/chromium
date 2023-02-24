@@ -12,7 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/cast_streaming/public/demuxer_stream_traits.h"
-#include "components/cast_streaming/renderer/frame/buffer_requester.h"
+#include "components/cast_streaming/renderer/common/buffer_requester.h"
 #include "components/cast_streaming/renderer/frame/demuxer_connector.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"

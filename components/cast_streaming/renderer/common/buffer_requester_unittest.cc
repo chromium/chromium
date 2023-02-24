@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/cast_streaming/renderer/frame/buffer_requester.h"
+#include "components/cast_streaming/renderer/common/buffer_requester.h"
 
 #include <utility>
 
