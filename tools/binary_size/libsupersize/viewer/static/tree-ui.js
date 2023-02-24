@@ -785,10 +785,22 @@ class MetricsTreeUi extends TreeUi {
    */
   function extractMetricsTree(metadata) {
     const EMPTY_OBJ = {};
-
     const diffMode = state.getDiffMode();
-    const containers = metadata?.size_file?.containers ?? [];
-    const beforeContainers = metadata?.before_size_file?.containers ?? [];
+
+    const getOrMakeContainers = (size_file) => {
+      if (size_file) {
+        if (size_file.containers)
+          return size_file.containers;
+        // For old format without explicit containers, synthesize one.
+        const container = {name: '(Default container)'};
+        if (size_file.metrics_by_file)
+          container.metrics_by_file = size_file.metrics_by_file;
+        return [container];
+      }
+      return [];
+    };
+    const containers = getOrMakeContainers(metadata?.size_file);
+    const beforeContainers = getOrMakeContainers(metadata?.before_size_file);
 
     const makeContainerMap = (curContainers) => {
       const ret = new Map();

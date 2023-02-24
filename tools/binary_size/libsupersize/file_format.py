@@ -263,6 +263,7 @@ def _SaveSizeInfoToFile(size_info,
     # Write using old format.
     fields['metadata'] = size_info.metadata_legacy
     fields['section_sizes'] = size_info.containers[0].section_sizes
+    fields['metrics_by_file'] = size_info.containers[0].metrics_by_file
 
   fields_str = json.dumps(fields, indent=2, sort_keys=True)
 
@@ -442,7 +443,7 @@ def _LoadSizeInfoFromFile(file_obj, size_path):
         models.Container(name='',
                          metadata=metadata,
                          section_sizes=section_sizes,
-                         metrics_by_file={}))
+                         metrics_by_file=fields.get('metrics_by_file', {})))
   models.BaseContainer.AssignShortNames(containers)
 
   has_components = fields.get('has_components', False)
