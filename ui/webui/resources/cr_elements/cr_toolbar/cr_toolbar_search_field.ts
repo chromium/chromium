@@ -7,22 +7,31 @@ import '../cr_icons.css.js';
 import '../icons.html.js';
 import '../cr_shared_style.css.js';
 import '../cr_shared_vars.css.js';
+import '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {DomIf, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
+import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
+import {DomIf, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrSearchFieldMixin} from '../cr_search_field/cr_search_field_mixin.js';
+import {CrSearchFieldMixin, CrSearchFieldMixinInterface} from '../cr_search_field/cr_search_field_mixin.js';
 
 import {getTemplate} from './cr_toolbar_search_field.html.js';
 
 export interface CrToolbarSearchFieldElement {
   $: {
     searchInput: HTMLInputElement,
+    searchTerm: HTMLElement,
     spinnerTemplate: DomIf,
   };
 }
 
-const CrToolbarSearchFieldElementBase = CrSearchFieldMixin(PolymerElement);
+const CrToolbarSearchFieldElementBase =
+    mixinBehaviors([PaperRippleBehavior], CrSearchFieldMixin(PolymerElement)) as
+    {
+      new (): PolymerElement & CrSearchFieldMixinInterface &
+          PaperRippleBehavior,
+    };
 
 
 export class CrToolbarSearchFieldElement extends
@@ -85,8 +94,12 @@ export class CrToolbarSearchFieldElement extends
 
   override ready() {
     super.ready();
-
     this.addEventListener('click', e => this.showSearch_(e));
+
+    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
+      FocusOutlineManager.forDocument(document);
+      this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+    }
   }
 
   override getSearchInput(): HTMLInputElement {
@@ -174,6 +187,15 @@ export class CrToolbarSearchFieldElement extends
 
     this.setValue('');
     this.getSearchInput().blur();
+  }
+
+  private onPointerDown_(event: PointerEvent) {
+    // Hide the paper-ripple if the pointerdown event happened on a
+    // cr-icon-button. noink is a property inherited from PaperRippleBehavior.
+    this.noink = event.composedPath().some(item => {
+      return (item as HTMLElement).tagName === 'CR-ICON-BUTTON';
+    });
+    this.ensureRipple();
   }
 }
 

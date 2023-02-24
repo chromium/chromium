@@ -220,12 +220,12 @@
         z-index: -1;
       }
 
-      :host-context([chrome-refresh-2023]):host(
+      :host-context([chrome-refresh-2023].focus-outline-visible):host(
             [search-focused_]:not([narrow])) {
         outline: 2px solid var(--cr-focus-outline-color);
       }
 
-      :host-context([chrome-refresh-2023]):host(
+      :host-context([chrome-refresh-2023].focus-outline-visible):host(
             [search-focused_]:not([narrow])) #background {
         background-clip: padding-box;
       }
@@ -271,6 +271,16 @@
         /* 18px to line up with the Menu icon by default. */
         margin-inline-start:
             var(--cr-toolbar-search-icon-margin-inline-start, 18px);
+      }
+
+      paper-ripple {
+        display: none;
+      }
+
+      :host-context([chrome-refresh-2023]):host paper-ripple {
+        color: var(--cr-active-background-color);
+        display: block;
+        --paper-ripple-opacity: 1;
       }
     </style>
     <div id="background"></div>
