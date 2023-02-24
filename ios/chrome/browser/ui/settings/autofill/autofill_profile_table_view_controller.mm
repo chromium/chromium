@@ -651,8 +651,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (deletionConfirmationString == nil) {
     return;
   }
-  // TODO(crbug.com/1407666): Explore attaching the sheet coordinator to the
-  // cell of the indexPath calling it.
+
   self.deletionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
