@@ -256,18 +256,6 @@ void UpgradeToVersion2(sync_pb::LocalTrustedVault* local_trusted_vault) {
   local_trusted_vault->set_data_version(2);
 }
 
-void RecordVerifyRegistrationStatus(
-    int device_registered_version,
-    TrustedVaultDownloadKeysStatusForUMA status) {
-  base::UmaHistogramEnumeration(
-      "Sync.TrustedVaultVerifyDeviceRegistrationState", status);
-
-  if (device_registered_version == 1) {
-    base::UmaHistogramEnumeration(
-        "Sync.TrustedVaultVerifyDeviceRegistrationStateV1", status);
-  }
-}
-
 }  // namespace
 
 StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
@@ -1127,13 +1115,13 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
       FindUserVault(*ongoing_fetch_keys_gaia_id_);
 
   if (status_for_uma.has_value()) {
-    const bool also_log_with_v1_suffx =
+    const bool also_log_with_v1_suffix =
         per_user_vault &&
         per_user_vault->local_device_registration_info().device_registered() &&
         per_user_vault->local_device_registration_info()
                 .device_registered_version() == 1;
     RecordTrustedVaultDownloadKeysStatus(*status_for_uma,
-                                         also_log_with_v1_suffx);
+                                         also_log_with_v1_suffix);
   }
 
   std::vector<std::vector<uint8_t>> vault_keys;
@@ -1220,12 +1208,16 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
     return;
   }
 
+  static_assert(kCurrentDeviceRegistrationVersion == 1);
+  const bool also_log_with_v1_suffix =
+      per_user_vault->local_device_registration_info()
+          .device_registered_version() == 1;
+
   if (AreConnectionRequestsThrottled()) {
     // Keys download attempt is not possible.
     RecordVerifyRegistrationStatus(
-        per_user_vault->local_device_registration_info()
-            .device_registered_version(),
-        TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide);
+        TrustedVaultDownloadKeysStatusForUMA::kThrottledClientSide,
+        also_log_with_v1_suffix);
     return;
   }
 
@@ -1235,19 +1227,13 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
                                  .private_key_material()));
   if (!key_pair) {
     RecordVerifyRegistrationStatus(
-        per_user_vault->local_device_registration_info()
-            .device_registered_version(),
-        TrustedVaultDownloadKeysStatusForUMA::
-            kCorruptedLocalDeviceRegistration);
+        TrustedVaultDownloadKeysStatusForUMA::kCorruptedLocalDeviceRegistration,
+        also_log_with_v1_suffix);
     return;
   }
 
   // Guaranteed by |device_registered| check above.
   DCHECK(!per_user_vault->vault_key().empty());
-
-  const int device_registered_version =
-      per_user_vault->local_device_registration_info()
-          .device_registered_version();
 
   ongoing_verify_registration_request_ = connection_->DownloadNewKeys(
       *primary_account_,
@@ -1257,15 +1243,15 @@ void StandaloneTrustedVaultBackend::VerifyDeviceRegistrationForUMA(
           per_user_vault->last_vault_key_version()),
       std::move(key_pair),
       base::BindOnce(
-          [](int device_registered_version,
+          [](bool also_log_with_v1_suffix,
              TrustedVaultDownloadKeysStatus status,
              const std::vector<std::vector<uint8_t>>& new_vault_keys,
              int last_vault_key_version) {
             RecordVerifyRegistrationStatus(
-                device_registered_version,
-                GetDownloadKeysStatusForUMAFromResponse(status));
+                GetDownloadKeysStatusForUMAFromResponse(status),
+                also_log_with_v1_suffix);
           },
-          device_registered_version));
+          also_log_with_v1_suffix));
 }
 
 void StandaloneTrustedVaultBackend::WriteDataToDisk() {

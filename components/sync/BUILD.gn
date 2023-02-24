@@ -282,6 +282,7 @@ source_set("unit_tests") {
       "trusted_vault/trusted_vault_connection_impl_unittest.cc",
       "trusted_vault/trusted_vault_crypto_unittest.cc",
       "trusted_vault/trusted_vault_degraded_recoverability_handler_unittest.cc",
+      "trusted_vault/trusted_vault_registration_verifier_unittest.cc",
       "trusted_vault/trusted_vault_request_unittest.cc",
       "trusted_vault/trusted_vault_server_constants_unittest.cc",
     ]

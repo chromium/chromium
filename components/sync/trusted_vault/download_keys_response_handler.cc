@@ -139,6 +139,32 @@ DownloadKeysResponseHandler::ProcessedResponse::operator=(
 
 DownloadKeysResponseHandler::ProcessedResponse::~ProcessedResponse() = default;
 
+// static
+absl::optional<TrustedVaultDownloadKeysStatus>
+DownloadKeysResponseHandler::GetErrorFromHttpStatus(
+    TrustedVaultRequest::HttpStatus http_status) {
+  switch (http_status) {
+    case TrustedVaultRequest::HttpStatus::kSuccess:
+      return absl::nullopt;
+    case TrustedVaultRequest::HttpStatus::kNotFound:
+      return TrustedVaultDownloadKeysStatus::kMemberNotFound;
+    case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
+    case TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError:
+    case TrustedVaultRequest::HttpStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+      return TrustedVaultDownloadKeysStatus::kAccessTokenFetchingFailure;
+    case TrustedVaultRequest::HttpStatus::kNetworkError:
+      return TrustedVaultDownloadKeysStatus::kNetworkError;
+    case TrustedVaultRequest::HttpStatus::kBadRequest:
+    case TrustedVaultRequest::HttpStatus::kConflict:
+    case TrustedVaultRequest::HttpStatus::kOtherError:
+      return TrustedVaultDownloadKeysStatus::kOtherError;
+  }
+
+  NOTREACHED();
+  return absl::nullopt;
+}
+
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(
     const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
     std::unique_ptr<SecureBoxKeyPair> device_key_pair)
@@ -153,27 +179,10 @@ DownloadKeysResponseHandler::ProcessedResponse
 DownloadKeysResponseHandler::ProcessResponse(
     TrustedVaultRequest::HttpStatus http_status,
     const std::string& response_body) const {
-  switch (http_status) {
-    case TrustedVaultRequest::HttpStatus::kSuccess:
-      break;
-    case TrustedVaultRequest::HttpStatus::kNotFound:
-      return ProcessedResponse(
-          /*status=*/TrustedVaultDownloadKeysStatus::kMemberNotFound);
-    case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
-    case TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError:
-    case TrustedVaultRequest::HttpStatus::
-        kPrimaryAccountChangeAccessTokenFetchError:
-      return ProcessedResponse(
-          /*status=*/TrustedVaultDownloadKeysStatus::
-              kAccessTokenFetchingFailure);
-    case TrustedVaultRequest::HttpStatus::kNetworkError:
-      return ProcessedResponse(
-          /*status=*/TrustedVaultDownloadKeysStatus::kNetworkError);
-    case TrustedVaultRequest::HttpStatus::kBadRequest:
-    case TrustedVaultRequest::HttpStatus::kConflict:
-    case TrustedVaultRequest::HttpStatus::kOtherError:
-      return ProcessedResponse(
-          /*status=*/TrustedVaultDownloadKeysStatus::kOtherError);
+  absl::optional<TrustedVaultDownloadKeysStatus> error_from_http_status =
+      GetErrorFromHttpStatus(http_status);
+  if (error_from_http_status.has_value()) {
+    return ProcessedResponse(*error_from_http_status);
   }
 
   sync_pb::SecurityDomainMember member;

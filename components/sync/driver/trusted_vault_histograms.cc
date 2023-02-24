@@ -77,11 +77,22 @@ void RecordTrustedVaultURLFetchResponse(
 
 void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status,
-    bool also_log_with_v1_suffx) {
+    bool also_log_with_v1_suffix) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus", status);
-  if (also_log_with_v1_suffx) {
+  if (also_log_with_v1_suffix) {
     base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatusV1",
                                   status);
+  }
+}
+
+void RecordVerifyRegistrationStatus(TrustedVaultDownloadKeysStatusForUMA status,
+                                    bool also_log_with_v1_suffix) {
+  base::UmaHistogramEnumeration(
+      "Sync.TrustedVaultVerifyDeviceRegistrationState", status);
+
+  if (also_log_with_v1_suffix) {
+    base::UmaHistogramEnumeration(
+        "Sync.TrustedVaultVerifyDeviceRegistrationStateV1", status);
   }
 }
 
