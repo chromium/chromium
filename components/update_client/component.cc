@@ -118,10 +118,9 @@ void InstallOnBlockingTaskRunner(
   base::ScopedTempDir unpack_path_owner;
   std::ignore = unpack_path_owner.Set(unpack_path);
 
-  if (static_cast<int>(fingerprint.size()) !=
-      base::WriteFile(
+  if (!base::WriteFile(
           unpack_path.Append(FILE_PATH_LITERAL("manifest.fingerprint")),
-          fingerprint.c_str(), base::checked_cast<int>(fingerprint.size()))) {
+          fingerprint)) {
     const CrxInstaller::Result result(InstallError::FINGERPRINT_WRITE_FAILED);
     main_task_runner->PostTask(
         FROM_HERE,

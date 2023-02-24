@@ -189,9 +189,7 @@ TEST_F(CrxCacheTest, CheckPutPreexistingCrxReplacementSucceeds) {
               result.crx_cache_path));
           EXPECT_TRUE(base::DeleteFile(result.crx_cache_path));
           std::string corrupted_data("c0rrupt3d d4t4");
-          EXPECT_TRUE(base::WriteFile(result.crx_cache_path,
-                                      corrupted_data.c_str(),
-                                      corrupted_data.size()));
+          EXPECT_TRUE(base::WriteFile(result.crx_cache_path, corrupted_data));
           EXPECT_FALSE(base::ContentsEqual(
               DuplicateTestFile("jebgalgnebhfojomionfpkfelancnnkf.crx"),
               result.crx_cache_path));
