@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("libfuzzer_main_ios") {
+source_set("fuzzing_engine_main_ios") {
   sources = [
+    "fuzzer_engine_main.cc",
     "fuzzer_support.h",
     "fuzzer_support.mm",
-    "libfuzzer_main.cc",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

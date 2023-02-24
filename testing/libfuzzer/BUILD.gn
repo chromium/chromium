@@ -11,14 +11,19 @@
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
-# TODO(mmoroz): we should eventually rename this into "fuzzing_engine_main".
+# Temporary target for legacy reasons. Some third party repos explicitly
+# refer to libfuzzer_main though they should refer to fuzzer_engine_main
+# instead, and so do some infrastructure repos. We should migrate them
+# all to point to :fuzzing_engine_main instead.
+# TODO: remove this target once they've all migrated.
 source_set("libfuzzer_main") {
   deps = []
   sources = []
   if (use_libfuzzer) {
     deps += [ "//third_party/libFuzzer:libfuzzer" ]
     if (is_ios) {
-      deps += [ "//testing/libfuzzer/fuzzer_support_ios:libfuzzer_main_ios" ]
+      deps +=
+          [ "//testing/libfuzzer/fuzzer_support_ios:fuzzing_engine_main_ios" ]
     }
   } else if (use_afl) {
     deps += [ "//third_party/libFuzzer:afl_driver" ]
@@ -33,6 +38,12 @@ source_set("libfuzzer_main") {
     # target's isolate.
     data = [ "//tools/code_coverage/" ]
   }
+}
+
+# The currently selected fuzzing engine, providing a main() function.
+# Fuzzers should depend upon this.
+group("fuzzing_engine_main") {
+  deps = [ ":libfuzzer_main" ]
 }
 
 # A config used by all fuzzer_tests.
