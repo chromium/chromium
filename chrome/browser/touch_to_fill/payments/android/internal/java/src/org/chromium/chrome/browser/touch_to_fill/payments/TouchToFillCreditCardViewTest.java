@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.SHEET_ITEMS;
@@ -64,6 +65,10 @@ public class TouchToFillCreditCardViewTest {
             createLocalCreditCard("Visa", "4111111111111111", "5", "2050");
     private static final CreditCard MASTER_CARD =
             createLocalCreditCard("MasterCard", "5555555555554444", "8", "2050");
+    private static final CreditCard VIRTUAL_CARD = createVirtualCreditCard(/* name= */ "Mojo Jojo",
+            /* number= */ "4111111111111111", /* month= */ "4", /* year= */ "2090",
+            /* network= */ "Visa", /* iconId= */ 0, /* cardNameForAutofillDisplay= */ "Visa",
+            /* obfuscatedLastFourDigits= */ "1111");
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -134,11 +139,13 @@ public class TouchToFillCreditCardViewTest {
             mTouchToFillCreditCardModel.set(VISIBLE, true);
             mTouchToFillCreditCardModel.get(SHEET_ITEMS)
                     .add(new ListItem(CREDIT_CARD, createCardModel(MASTER_CARD)));
+            mTouchToFillCreditCardModel.get(SHEET_ITEMS)
+                    .add(new ListItem(CREDIT_CARD, createCardModel(VIRTUAL_CARD)));
         });
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        assertThat(getCreditCards().getChildCount(), is(2));
+        assertThat(getCreditCards().getChildCount(), is(3));
 
         assertThat(getCreditCardNameAt(0).getText(), is(VISA.getCardNameForAutofillDisplay()));
         assertThat(getCreditCardNumberAt(0).getText(), is(VISA.getObfuscatedLastFourDigits()));
@@ -150,6 +157,12 @@ public class TouchToFillCreditCardViewTest {
                 getCreditCardNumberAt(1).getText(), is(MASTER_CARD.getObfuscatedLastFourDigits()));
         assertThat(getCreditCardExpirationAt(1).getText(),
                 is(createExpirationDateString(MASTER_CARD)));
+
+        assertThat(
+                getCreditCardNameAt(2).getText(), is(VIRTUAL_CARD.getCardNameForAutofillDisplay()));
+        assertThat(
+                getCreditCardNumberAt(2).getText(), is(VIRTUAL_CARD.getObfuscatedLastFourDigits()));
+        assertThat(getCreditCardExpirationAt(2).getText(), is(getVirtualCardLabel()));
     }
 
     @Test
@@ -254,15 +267,23 @@ public class TouchToFillCreditCardViewTest {
     }
 
     private static PropertyModel createCardModel(CreditCard card) {
-        return new PropertyModel
-                .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
-                .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
-                        card.getCardNameForAutofillDisplay())
-                .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
-                        card.getObfuscatedLastFourDigits())
-                .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
-                        createExpirationDateString(card))
-                .build();
+        PropertyModel.Builder creditCardModelBuilder =
+                new PropertyModel
+                        .Builder(TouchToFillCreditCardProperties.CreditCardProperties.ALL_KEYS)
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NAME,
+                                card.getCardNameForAutofillDisplay())
+                        .with(TouchToFillCreditCardProperties.CreditCardProperties.CARD_NUMBER,
+                                card.getObfuscatedLastFourDigits());
+        if (card.getIsVirtual()) {
+            creditCardModelBuilder.with(
+                    TouchToFillCreditCardProperties.CreditCardProperties.VIRTUAL_CARD_LABEL,
+                    getVirtualCardLabel());
+        } else {
+            creditCardModelBuilder.with(
+                    TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
+                    createExpirationDateString(card));
+        }
+        return creditCardModelBuilder.build();
     }
 
     private static String createExpirationDateString(CreditCard card) {
@@ -270,5 +291,10 @@ public class TouchToFillCreditCardViewTest {
                 .getString(R.string.autofill_credit_card_two_line_label_from_card_number)
                 .replace("$1",
                         card.getFormattedExpirationDate(ContextUtils.getApplicationContext()));
+    }
+
+    private static String getVirtualCardLabel() {
+        return ContextUtils.getApplicationContext().getString(
+                R.string.autofill_virtual_card_number_switch_label);
     }
 }
