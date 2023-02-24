@@ -108,7 +108,7 @@ std::unique_ptr<views::Button> CreateTodaysEventsButton(
     views::Button::PressedCallback callback) {
   return views::Builder<views::Button>(
              std::make_unique<IconButton>(
-                 std::move(callback), IconButton::Type::kXSmall,
+                 std::move(callback), IconButton::Type::kXSmallFloating,
                  &kCalendarUpNextTodaysEventsButtonIcon,
                  IDS_ASH_CALENDAR_UP_NEXT_TODAYS_EVENTS_BUTTON))
       .Build();
