@@ -315,6 +315,8 @@ static_library("test_support") {
     "test_model_handler.h",
     "test_model_info_builder.cc",
     "test_model_info_builder.h",
+    "test_new_optimization_guide_decider.cc",
+    "test_new_optimization_guide_decider.h",
     "test_optimization_guide_model_provider.cc",
     "test_optimization_guide_model_provider.h",
   ]

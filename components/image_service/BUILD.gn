@@ -17,6 +17,8 @@ source_set("image_service") {
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
     "//components/sync/driver",
     "//components/unified_consent",
@@ -32,7 +34,11 @@ source_set("unit_tests") {
     ":image_service",
     "//base/test:test_support",
     "//components/omnibox/browser",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/sync:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
