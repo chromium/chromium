@@ -90,19 +90,15 @@ struct StartTimeComparator {
 using SortedDownloadUIModelSet =
     std::multiset<DownloadUIModelPtrList::iterator, StartTimeComparator>;
 
-bool AddModelIfRequired(DownloadUIModelPtr model,
-                        base::Time cutoff_time,
-                        std::vector<DownloadUIModelPtr>& models_aggregate) {
+void MaybeAddModel(DownloadUIModelPtr model,
+                   base::Time cutoff_time,
+                   DownloadUIModelPtrList& models_aggregate,
+                   SortedDownloadUIModelSet& sorted_ui_model_iters) {
   if (model->ShouldShowInBubble() &&
       DownloadUIModelIsRecent(model.get(), cutoff_time)) {
-    models_aggregate.push_back(std::move(model));
-    return true;
+    models_aggregate.push_front(std::move(model));
+    sorted_ui_model_iters.insert(models_aggregate.begin());
   }
-  return false;
-}
-
-bool ShouldStopAddingModels(std::vector<DownloadUIModelPtr>& models_aggregate) {
-  return (models_aggregate.size() >= kMaxDownloadsToShow);
 }
 
 }  // namespace
@@ -311,28 +307,47 @@ std::vector<DownloadUIModelPtr>
 DownloadBubbleUIController::GetAllItemsToDisplay() {
   base::Time cutoff_time =
       base::Time::Now() - base::Days(kShowDownloadsInBubbleForNumDays);
-  std::vector<DownloadUIModelPtr> models_aggregate;
+
+  // This list will contain all models, not limited to kMaxDownloadsToShow.
+  // Must use a list, not a vector, because we are storing iterators which must
+  // not be invalidated.
+  DownloadUIModelPtrList models_aggregate;
+  // Sort iterators into the above vector in a set, as a set does not allow
+  // move semantics over unique_ptr, preventing us from putting
+  // DownloadUIModelPtr directly in the set.
+  SortedDownloadUIModelSet sorted_ui_model_iters;
   for (const OfflineItem& item : GetOfflineItems()) {
-    if (AddModelIfRequired(
-            OfflineItemModel::Wrap(
-                offline_manager_, item,
-                std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
-            cutoff_time, models_aggregate) &&
-        ShouldStopAddingModels(models_aggregate)) {
-      return models_aggregate;
-    }
+    DownloadUIModelPtr model = OfflineItemModel::Wrap(
+        offline_manager_, item,
+        std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+    MaybeAddModel(std::move(model), cutoff_time, models_aggregate,
+                  sorted_ui_model_iters);
   }
   for (download::DownloadItem* item : GetDownloadItems()) {
-    if (AddModelIfRequired(
-            DownloadItemModel::Wrap(
-                item,
-                std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()),
-            cutoff_time, models_aggregate) &&
-        ShouldStopAddingModels(models_aggregate)) {
-      return models_aggregate;
+    DownloadUIModelPtr model = DownloadItemModel::Wrap(
+        item, std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>());
+    MaybeAddModel(std::move(model), cutoff_time, models_aggregate,
+                  sorted_ui_model_iters);
+  }
+
+  std::vector<DownloadUIModelPtr> items_to_display;
+  if (models_aggregate.empty()) {
+    return items_to_display;
+  }
+
+  DCHECK(!sorted_ui_model_iters.empty());
+  SortedDownloadUIModelSet::const_iterator sorted_it =
+      sorted_ui_model_iters.begin();
+  for (size_t i = 0; i < kMaxDownloadsToShow; ++i) {
+    DownloadUIModelPtrList::iterator model_it = *sorted_it;
+    DCHECK(model_it != models_aggregate.end());
+    items_to_display.push_back(std::move(*model_it));
+    ++sorted_it;
+    if (sorted_it == sorted_ui_model_iters.end()) {
+      break;
     }
   }
-  return models_aggregate;
+  return items_to_display;
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
@@ -340,31 +355,19 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
   // Prune just to keep the list of offline entries small.
   PruneOfflineItems();
 
-  // Aggregate downloads and offline items
-  std::vector<DownloadUIModelPtr> models_aggregate = GetAllItemsToDisplay();
-
-  // Store list of DownloadUIModelPtrs. Sort list iterators in a set, as a set
-  // does not allow move semantics over unique_ptr, preventing us from putting
-  // DownloadUIModelPtr directly in the set.
-  DownloadUIModelPtrList filtered_models_list;
-  SortedDownloadUIModelSet sorted_ui_model_iters;
-  for (auto& model : models_aggregate) {
-    // Partial view entries are removed if viewed on the main view.
-    if (is_main_view || !model->WasActionedOn()) {
-      if (is_main_view) {
-        model->SetActionedOn(true);
-      }
-      filtered_models_list.push_front(std::move(model));
-      sorted_ui_model_iters.insert(filtered_models_list.begin());
+  std::vector<DownloadUIModelPtr> all_items = GetAllItemsToDisplay();
+  std::vector<DownloadUIModelPtr> items_to_return;
+  for (auto& model : all_items) {
+    if (!is_main_view && model->WasActionedOn()) {
+      continue;
     }
+    // Partial view entries are removed if viewed on the main view.
+    if (is_main_view) {
+      model->SetActionedOn(true);
+    }
+    items_to_return.push_back(std::move(model));
   }
-
-  // Convert set iterators to sorted vector.
-  std::vector<DownloadUIModelPtr> models_return_arr;
-  for (const auto& model_iter : sorted_ui_model_iters) {
-    models_return_arr.push_back(std::move((*model_iter)));
-  }
-  return models_return_arr;
+  return items_to_return;
 }
 
 std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetMainView() {
