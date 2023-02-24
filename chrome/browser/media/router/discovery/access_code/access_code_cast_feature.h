@@ -18,6 +18,7 @@ class TimeDelta;
 namespace features {
 BASE_DECLARE_FEATURE(kAccessCodeCastRememberDevices);
 BASE_DECLARE_FEATURE(kAccessCodeCastTabSwitchingUI);
+BASE_DECLARE_FEATURE(kAccessCodeCastFreezeUI);
 }
 
 namespace media_router {
