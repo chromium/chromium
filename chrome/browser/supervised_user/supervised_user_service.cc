@@ -29,7 +29,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -152,7 +151,7 @@ base::FilePath SupervisedUserService::GetDenylistPathForTesting() {
 void SupervisedUserService::Init() {
   DCHECK(!did_init_);
   did_init_ = true;
-  DCHECK(GetSettingsService()->IsReady());
+  DCHECK(settings_service_->IsReady());
 
   pref_change_registrar_.Init(&user_prefs_.get());
   pref_change_registrar_.Add(
@@ -263,8 +262,10 @@ SupervisedUserService::SupervisedUserService(
     Profile* profile,
     signin::IdentityManager* identity_manager,
     PrefService& user_prefs,
+    supervised_user::SupervisedUserSettingsService& settings_service,
     ValidateURLSupportCallback check_webstore_url_callback)
     : user_prefs_(user_prefs),
+      settings_service_(settings_service),
       profile_(profile),
       identity_manager_(identity_manager),
       active_(false),
@@ -329,8 +330,8 @@ void SupervisedUserService::
   // currently set indirectly by setting geolocation requests. Update Kids
   // Management server to set a new bit for extension permissions and update
   // this setter function.
-  GetSettingsService()->SetLocalSetting(supervised_user::kGeolocationDisabled,
-                                        base::Value(!enabled));
+  settings_service_->SetLocalSetting(supervised_user::kGeolocationDisabled,
+                                     base::Value(!enabled));
   user_prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
                           enabled);
 }
@@ -395,7 +396,7 @@ void SupervisedUserService::SetActive(bool active) {
     sync_service->GetSetupInProgressHandle();
   }
 
-  GetSettingsService()->SetActive(active_);
+  settings_service_->SetActive(active_);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   SetExtensionsActive();
@@ -480,12 +481,6 @@ void SupervisedUserService::SetActive(bool active) {
 void SupervisedUserService::OnCustodianInfoChanged() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnCustodianInfoChanged();
-}
-
-supervised_user::SupervisedUserSettingsService*
-SupervisedUserService::GetSettingsService() {
-  return SupervisedUserSettingsServiceFactory::GetForKey(
-      profile_->GetProfileKey());
 }
 
 void SupervisedUserService::OnSupervisedUserIdChanged() {
