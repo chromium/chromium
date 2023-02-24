@@ -54,10 +54,7 @@ void VideoFrameWriter::WriteFrameToPath(const webrtc::DesktopFrame& frame,
   }
 
   // Dump contents (unsigned chars) to a file as a sequence of chars.
-  int write_bytes = base::WriteFile(
-      image_path, reinterpret_cast<char*>(&*png_encoded_data.begin()),
-      static_cast<int>(png_encoded_data.size()));
-  if (write_bytes != static_cast<int>(png_encoded_data.size())) {
+  if (!base::WriteFile(image_path, png_encoded_data)) {
     LOG(WARNING) << "Failed to write frame to disk";
   }
 }
