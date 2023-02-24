@@ -174,8 +174,9 @@ void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
 }
 
 void DisplayOverlayController::RemoveNudgeView() {
-  if (!nudge_view_alpha_ && !nudge_view_)
+  if (!ShowingNudge()) {
     return;
+  }
 
   if (nudge_view_alpha_) {
     nudge_view_alpha_->parent()->RemoveChildViewT(nudge_view_alpha_);
@@ -642,7 +643,7 @@ void DisplayOverlayController::OnActionRemoved(Action* action) {
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
-  if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
+  if ((display_mode_ == DisplayMode::kView && !ShowingNudge()) ||
       event->type() != ui::ET_MOUSE_PRESSED) {
     return;
   }
@@ -651,7 +652,7 @@ void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
-  if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
+  if ((display_mode_ == DisplayMode::kView && !ShowingNudge()) ||
       event->type() != ui::ET_TOUCH_PRESSED) {
     return;
   }
@@ -729,8 +730,9 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
 
 void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
-  if (!action_edit_menu_ && !message_ && !input_menu_view_ && !nudge_view_)
+  if (!action_edit_menu_ && !message_ && !input_menu_view_ && !ShowingNudge()) {
     return;
+  }
 
   auto root_location = event.root_location();
   // Convert the LocatedEvent root location to screen location.
@@ -757,8 +759,9 @@ void DisplayOverlayController::ProcessPressedEvent(
   }
 
   // Dismiss the nudge, regardless where the click was.
-  if (nudge_view_)
+  if (ShowingNudge()) {
     OnNudgeDismissed();
+  }
 }
 
 void DisplayOverlayController::SetMenuEntryHoverState(bool curr_hover_state) {
@@ -788,6 +791,10 @@ void DisplayOverlayController::EnsureTaskWindowToFrontForViewMode(
   } else {
     host_window->Focus();
   }
+}
+
+bool DisplayOverlayController::ShowingNudge() {
+  return nudge_view_ || nudge_view_alpha_;
 }
 
 void DisplayOverlayController::DismissEducationalViewForTesting() {
