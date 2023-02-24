@@ -9,6 +9,7 @@ source_set("web_state") {
     ":policy_decision_state_tracker",
     ":web_state_impl_header",
     "//base",
+    "//build:blink_buildflags",
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_messaging",
@@ -32,6 +33,10 @@ source_set("web_state") {
     "//net",
     "//ui/gfx",
   ]
+
+  if (use_blink) {
+    deps += [ "//ios/web/content" ]
+  }
 
   sources = [
     "global_web_state_event_tracker.h",

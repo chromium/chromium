@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+assert(use_blink, "Content is only supported in Blink builds.")
+
+source_set("content") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "js_messaging/content_web_frames_manager.h",
+    "js_messaging/content_web_frames_manager.mm",
+    "navigation/content_navigation_manager.h",
+    "navigation/content_navigation_manager.mm",
+    "web_state/content_web_state.h",
+    "web_state/content_web_state.mm",
+    "web_state/crc_web_view_proxy_impl.h",
+    "web_state/crc_web_view_proxy_impl.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/web/public",
+    "//ios/web/public/favicon",
+    "//ios/web/public/js_messaging",
+  ]
+}
