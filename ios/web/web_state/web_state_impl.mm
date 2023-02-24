@@ -68,21 +68,6 @@ void IgnoreOverRealizationCheck() {
   g_last_realized_count = 0;
 }
 
-#pragma mark - WebState factory methods
-
-/* static */
-std::unique_ptr<WebState> WebState::Create(const CreateParams& params) {
-  return std::make_unique<WebStateImpl>(params);
-}
-
-/* static */
-std::unique_ptr<WebState> WebState::CreateWithStorageSession(
-    const CreateParams& params,
-    CRWSessionStorage* session_storage) {
-  DCHECK(session_storage);
-  return std::make_unique<WebStateImpl>(params, session_storage);
-}
-
 #pragma mark - WebStateImpl public methods
 
 WebStateImpl::WebStateImpl(const CreateParams& params)
