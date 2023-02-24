@@ -46,6 +46,7 @@ SupervisedUserServiceFactory* SupervisedUserServiceFactory::GetInstance() {
 KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
   return new SupervisedUserService(
       profile, IdentityManagerFactory::GetInstance()->GetForProfile(profile),
+      *profile->GetPrefs(),
       base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL));
 }
 

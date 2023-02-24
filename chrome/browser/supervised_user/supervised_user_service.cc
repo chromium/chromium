@@ -26,7 +26,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_observer.h"
@@ -105,11 +104,11 @@ base::FilePath GetDenylistPath() {
   return denylist_dir.AppendASCII(supervised_user::kDenylistFilename);
 }
 
-bool AreWebFilterPrefsDefault(PrefService* pref_service) {
+bool AreWebFilterPrefsDefault(const PrefService& pref_service) {
   return pref_service
-             ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
+             .FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
              ->IsDefaultValue() ||
-         pref_service->FindPreference(prefs::kSupervisedUserSafeSites)
+         pref_service.FindPreference(prefs::kSupervisedUserSafeSites)
              ->IsDefaultValue();
 }
 
@@ -155,7 +154,7 @@ void SupervisedUserService::Init() {
   did_init_ = true;
   DCHECK(GetSettingsService()->IsReady());
 
-  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Init(&user_prefs_.get());
   pref_change_registrar_.Add(
       prefs::kSupervisedUserId,
       base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
@@ -189,33 +188,32 @@ std::string SupervisedUserService::GetExtensionRequestId(
 }
 
 std::string SupervisedUserService::GetCustodianEmailAddress() const {
-  return profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianEmail);
+  return user_prefs_->GetString(prefs::kSupervisedUserCustodianEmail);
 }
 
 std::string SupervisedUserService::GetCustodianObfuscatedGaiaId() const {
-  return profile_->GetPrefs()->GetString(
+  return user_prefs_->GetString(
       prefs::kSupervisedUserCustodianObfuscatedGaiaId);
 }
 
 std::string SupervisedUserService::GetCustodianName() const {
   std::string name =
-      profile_->GetPrefs()->GetString(prefs::kSupervisedUserCustodianName);
+      user_prefs_->GetString(prefs::kSupervisedUserCustodianName);
   return name.empty() ? GetCustodianEmailAddress() : name;
 }
 
 std::string SupervisedUserService::GetSecondCustodianEmailAddress() const {
-  return profile_->GetPrefs()->GetString(
-      prefs::kSupervisedUserSecondCustodianEmail);
+  return user_prefs_->GetString(prefs::kSupervisedUserSecondCustodianEmail);
 }
 
 std::string SupervisedUserService::GetSecondCustodianObfuscatedGaiaId() const {
-  return profile_->GetPrefs()->GetString(
+  return user_prefs_->GetString(
       prefs::kSupervisedUserSecondCustodianObfuscatedGaiaId);
 }
 
 std::string SupervisedUserService::GetSecondCustodianName() const {
-  std::string name = profile_->GetPrefs()->GetString(
-      prefs::kSupervisedUserSecondCustodianName);
+  std::string name =
+      user_prefs_->GetString(prefs::kSupervisedUserSecondCustodianName);
   return name.empty() ? GetSecondCustodianEmailAddress() : name;
 }
 
@@ -264,8 +262,10 @@ void SupervisedUserService::RemoveObserver(
 SupervisedUserService::SupervisedUserService(
     Profile* profile,
     signin::IdentityManager* identity_manager,
+    PrefService& user_prefs,
     ValidateURLSupportCallback check_webstore_url_callback)
-    : profile_(profile),
+    : user_prefs_(user_prefs),
+      profile_(profile),
       identity_manager_(identity_manager),
       active_(false),
       delegate_(nullptr),
@@ -318,7 +318,7 @@ bool SupervisedUserService::
   DCHECK(IsChild())
       << "Calling GetSupervisedUserExtensionsMayRequestPermissionsPref() only "
          "makes sense for supervised users";
-  return profile_->GetPrefs()->GetBoolean(
+  return user_prefs_->GetBoolean(
       prefs::kSupervisedUserExtensionsMayRequestPermissions);
 }
 
@@ -331,8 +331,8 @@ void SupervisedUserService::
   // this setter function.
   GetSettingsService()->SetLocalSetting(supervised_user::kGeolocationDisabled,
                                         base::Value(!enabled));
-  profile_->GetPrefs()->SetBoolean(
-      prefs::kSupervisedUserExtensionsMayRequestPermissions, enabled);
+  user_prefs_->SetBoolean(prefs::kSupervisedUserExtensionsMayRequestPermissions,
+                          enabled);
 }
 
 bool SupervisedUserService::CanInstallExtensions() const {
@@ -359,8 +359,9 @@ void SupervisedUserService::RecordExtensionEnablementUmaMetrics(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 void SupervisedUserService::ReportNonDefaultWebFilterValue() const {
-  if (AreWebFilterPrefsDefault(profile_->GetPrefs()))
+  if (AreWebFilterPrefsDefault(*user_prefs_)) {
     return;
+  }
 
   url_filter_.ReportManagedSiteListMetrics();
   url_filter_.ReportWebFilterTypeMetrics();
@@ -487,19 +488,13 @@ SupervisedUserService::GetSettingsService() {
       profile_->GetProfileKey());
 }
 
-PrefService* SupervisedUserService::GetPrefService() {
-  PrefService* pref_service = profile_->GetPrefs();
-  DCHECK(pref_service) << "PrefService not found";
-  return pref_service;
-}
-
 void SupervisedUserService::OnSupervisedUserIdChanged() {
   SetActive(IsChild());
 }
 
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
-  int behavior_value = profile_->GetPrefs()->GetInteger(
-      prefs::kDefaultSupervisedUserFilteringBehavior);
+  int behavior_value =
+      user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
   SupervisedUserURLFilter::FilteringBehavior behavior =
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
   url_filter_.SetDefaultFilteringBehavior(behavior);
@@ -510,7 +505,7 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 
   SupervisedUserURLFilter::WebFilterType filter_type =
       url_filter_.GetWebFilterType();
-  if (!AreWebFilterPrefsDefault(profile_->GetPrefs()) &&
+  if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
     url_filter_.ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
@@ -519,7 +514,7 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
 
 bool SupervisedUserService::IsSafeSitesEnabled() const {
   return profile_->IsChild() &&
-         profile_->GetPrefs()->GetBoolean(prefs::kSupervisedUserSafeSites);
+         user_prefs_->GetBoolean(prefs::kSupervisedUserSafeSites);
 }
 
 void SupervisedUserService::OnSafeSitesSettingChanged() {
@@ -540,7 +535,7 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 
   SupervisedUserURLFilter::WebFilterType filter_type =
       url_filter_.GetWebFilterType();
-  if (!AreWebFilterPrefsDefault(profile_->GetPrefs()) &&
+  if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
     url_filter_.ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
@@ -548,8 +543,8 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 }
 
 void SupervisedUserService::UpdateAsyncUrlChecker() {
-  int behavior_value = profile_->GetPrefs()->GetInteger(
-      prefs::kDefaultSupervisedUserFilteringBehavior);
+  int behavior_value =
+      user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
   SupervisedUserURLFilter::FilteringBehavior behavior =
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
 
@@ -669,7 +664,7 @@ void SupervisedUserService::UpdateDenylist() {
 
 void SupervisedUserService::UpdateManualHosts() {
   const base::Value::Dict& dict =
-      profile_->GetPrefs()->GetDict(prefs::kSupervisedUserManualHosts);
+      user_prefs_->GetDict(prefs::kSupervisedUserManualHosts);
   std::map<std::string, bool> host_map;
   for (auto it : dict) {
     DCHECK(it.second.is_bool());
@@ -680,13 +675,14 @@ void SupervisedUserService::UpdateManualHosts() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-  if (!AreWebFilterPrefsDefault(profile_->GetPrefs()))
+  if (!AreWebFilterPrefsDefault(*user_prefs_)) {
     url_filter_.ReportManagedSiteListMetrics();
+  }
 }
 
 void SupervisedUserService::UpdateManualURLs() {
   const base::Value::Dict& dict =
-      profile_->GetPrefs()->GetDict(prefs::kSupervisedUserManualURLs);
+      user_prefs_->GetDict(prefs::kSupervisedUserManualURLs);
   std::map<GURL, bool> url_map;
   for (auto it : dict) {
     DCHECK(it.second.is_bool());
@@ -697,8 +693,9 @@ void SupervisedUserService::UpdateManualURLs() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
 
-  if (!AreWebFilterPrefsDefault(profile_->GetPrefs()))
+  if (!AreWebFilterPrefsDefault(*user_prefs_)) {
     url_filter_.ReportManagedSiteListMetrics();
+  }
 }
 
 void SupervisedUserService::Shutdown() {
@@ -884,8 +881,7 @@ void SupervisedUserService::UpdateApprovedExtension(
     const std::string& extension_id,
     const std::string& version,
     ApprovedExtensionChange type) {
-  PrefService* pref_service = GetPrefService();
-  ScopedDictPrefUpdate update(pref_service,
+  ScopedDictPrefUpdate update(&user_prefs_.get(),
                               prefs::kSupervisedUserApprovedExtensions);
   base::Value::Dict& approved_extensions = update.Get();
   bool success = false;
@@ -922,7 +918,7 @@ void SupervisedUserService::RefreshApprovedExtensionsFromPrefs() {
   // for backwards compatibility. Remove the version information once sufficient
   // users have migrated away from M83.
   const base::Value::Dict& dict =
-      profile_->GetPrefs()->GetDict(prefs::kSupervisedUserApprovedExtensions);
+      user_prefs_->GetDict(prefs::kSupervisedUserApprovedExtensions);
   for (auto it : dict) {
     approved_extensions_set_.insert(it.first);
     extensions_to_be_checked.insert(it.first);
