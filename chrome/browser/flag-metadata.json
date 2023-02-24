@@ -4729,7 +4729,7 @@
   {
     "name": "mac-address-randomization",
     "owners": [ "chadduffin", "cros-connectivity@google.com"],
-    "expiry_milestone": 113
+    "expiry_milestone": 125
   },
   {
     "name": "mac-syscall-sandbox",
