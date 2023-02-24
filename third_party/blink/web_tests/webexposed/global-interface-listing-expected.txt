@@ -3137,9 +3137,8 @@ interface HTMLButtonElement : HTMLElement
     getter formTarget
     getter labels
     getter name
-    getter popoverHideTargetElement
-    getter popoverShowTargetElement
-    getter popoverToggleTargetElement
+    getter popoverTargetAction
+    getter popoverTargetElement
     getter type
     getter validationMessage
     getter validity
@@ -3156,9 +3155,8 @@ interface HTMLButtonElement : HTMLElement
     setter formNoValidate
     setter formTarget
     setter name
-    setter popoverHideTargetElement
-    setter popoverShowTargetElement
-    setter popoverToggleTargetElement
+    setter popoverTargetAction
+    setter popoverTargetElement
     setter type
     setter value
 interface HTMLCanvasElement : HTMLElement
@@ -3804,9 +3802,8 @@ interface HTMLInputElement : HTMLElement
     getter name
     getter pattern
     getter placeholder
-    getter popoverHideTargetElement
-    getter popoverShowTargetElement
-    getter popoverToggleTargetElement
+    getter popoverTargetAction
+    getter popoverTargetElement
     getter readOnly
     getter required
     getter selectionDirection
@@ -3862,9 +3859,8 @@ interface HTMLInputElement : HTMLElement
     setter name
     setter pattern
     setter placeholder
-    setter popoverHideTargetElement
-    setter popoverShowTargetElement
-    setter popoverToggleTargetElement
+    setter popoverTargetAction
+    setter popoverTargetElement
     setter readOnly
     setter required
     setter selectionDirection

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 interface mixin PopoverTargetElement {
-  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect=popovertoggletarget] attribute Element? popoverToggleTargetElement;
-  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect=popoverhidetarget] attribute Element? popoverHideTargetElement;
-  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect=popovershowtarget] attribute Element? popoverShowTargetElement;
+  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect=popovertarget] attribute Element? popoverTargetElement;
+  [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect,ReflectOnly=("toggle","show","hide"),ReflectEmpty="toggle",ReflectInvalid="toggle",ReflectMissing="toggle"] attribute DOMString popoverTargetAction;
 };

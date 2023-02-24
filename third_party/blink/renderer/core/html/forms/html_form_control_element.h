@@ -93,7 +93,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     DISALLOW_NEW();
     WeakMember<HTMLElement> popover;
     PopoverTriggerAction action;
-    QualifiedName attribute_name;
     void Trace(Visitor* visitor) const { visitor->Trace(popover); }
   };
 
@@ -102,9 +101,7 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
     kSupported,
   };
 
-  // Retrieves the element pointed to by 'popovertoggletarget',
-  // 'popovershowtarget', and/or 'popoverhidetarget' content attributes, if any,
-  // and only if this form control element supports popover triggering.
+  // Retrieves the popover target element and triggering behavior.
   PopoverTargetElement popoverTargetElement();
   virtual PopoverTriggerSupport SupportsPopoverTriggering() const {
     return PopoverTriggerSupport::kNone;
