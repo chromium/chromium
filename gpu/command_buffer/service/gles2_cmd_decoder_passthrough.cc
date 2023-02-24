@@ -2578,6 +2578,13 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
   auto gl_context = gl::init::CreateGLContext(impl_->context_->share_group(),
                                               gl_surface.get(), attribs);
   if (!gl_context) {
+    LOG(ERROR) << "Failed to create GLES3 context, fallback to GLES2.";
+    attribs.client_major_es_version = 2;
+    attribs.client_minor_es_version = 0;
+    gl_context = gl::init::CreateGLContext(impl_->context_->share_group(),
+                                           gl_surface.get(), attribs);
+  }
+  if (!gl_context) {
     impl_->InsertError(
         GL_INVALID_OPERATION,
         "ContextResult::kFatalFailure: Failed to create GL Context "
