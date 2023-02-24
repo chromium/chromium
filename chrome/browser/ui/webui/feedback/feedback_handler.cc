@@ -105,7 +105,10 @@ void FeedbackHandler::HandleShowBluetoothLogsInfo(
 
 void FeedbackHandler::HandleShowAutofillMetadataInfo(
     const base::Value::List& args) {
-  // TODO(crbug.com/1407646): Introduce autofill metadata child page.
+  ShowChildPage(
+      Profile::FromWebUI(web_ui()), dialog_,
+      ChildPageURL("html/autofill_metadata_info.html"),
+      l10n_util::GetStringUTF16(IDS_FEEDBACK_AUTOFILL_METADATA_PAGE_TITLE));
 }
 
 void FeedbackHandler::HandleShowSystemInfo(const base::Value::List& args) {

@@ -8603,6 +8603,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_FEEDBACK_SEND_REPORT" desc="Text for OK button of the send feedback dialog">
           Send
         </message>
+        <message name="IDS_FEEDBACK_AUTOFILL_METADATA_PAGE_TITLE" desc="The title of the autofill metadata preview page">
+          Autofill Metadata Preview
+        </message>
         <message name="IDS_FEEDBACK_SYSINFO_PAGE_TITLE" desc="The title of the system information preview page">
           System Information Preview
         </message>
