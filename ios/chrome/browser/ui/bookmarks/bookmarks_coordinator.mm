@@ -602,9 +602,7 @@ enum class PresentedState {
 // `self.bookmarkNavigationController` to the UINavigationController subclass
 // used. If `replacementViewControllers` is not nil, those controllers are
 // swapped in to the UINavigationController instead of `viewController`.
-- (void)presentTableViewController:
-            (ChromeTableViewController<
-                UIAdaptivePresentationControllerDelegate>*)viewController
+- (void)presentTableViewController:(ChromeTableViewController*)viewController
     withReplacementViewControllers:
         (NSArray<ChromeTableViewController*>*)replacementViewControllers {
   TableViewNavigationController* navController =
@@ -678,6 +676,15 @@ enum class PresentedState {
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerWillDismiss:
+    (UIPresentationController*)presentationController {
+  DCHECK_EQ(PresentedState::BOOKMARK_BROWSER, self.currentPresentedState);
+  DCHECK(self.bookmarkNavigationController);
+  DCHECK_EQ(self.bookmarkBrowser,
+            self.bookmarkNavigationController.topViewController);
+  [self.bookmarkBrowser willDismissBySwipeDown];
+}
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {

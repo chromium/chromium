@@ -41,8 +41,7 @@ class GURL;
 
 // Class to navigate the bookmark hierarchy.
 @interface BookmarksHomeViewController
-    : ChromeTableViewController <KeyCommandActions,
-                                 UIAdaptivePresentationControllerDelegate>
+    : ChromeTableViewController <KeyCommandActions>
 
 // Delegate for presenters. Note that this delegate is currently being set only
 // in case of handset, and not tablet. In the future it will be used by both
@@ -77,6 +76,10 @@ class GURL;
 
 // Whether the browser can be dismissed.
 - (BOOL)canDismiss;
+
+// Called when the user is swiping down the view, and
+// `BookmarksHomeViewController` is on the top of the navigation view.
+- (void)willDismissBySwipeDown;
 
 @end
 

@@ -224,8 +224,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   const bookmarks::BookmarkNode* _externalBookmark;
 }
 
-#pragma mark - Initializer
-
 - (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
 
@@ -341,6 +339,14 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     [stack addObject:controller];
   }
   return stack;
+}
+
+- (void)willDismissBySwipeDown {
+  if (self.searchController.active) {
+    // Dismiss the keyboard if trying to dismiss the VC so the keyboard doesn't
+    // linger until the VC dismissal has completed.
+    [self.searchController.searchBar endEditing:YES];
+  }
 }
 
 #pragma mark - UIViewController
@@ -2534,25 +2540,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
                                                actionProvider:actionProvider];
-}
-
-#pragma mark UIAdaptivePresentationControllerDelegate
-
-- (void)presentationControllerWillDismiss:
-    (UIPresentationController*)presentationController {
-  if (self.searchController.active) {
-    // Dismiss the keyboard if trying to dismiss the VC so the keyboard doesn't
-    // linger until the VC dismissal has completed.
-    [self.searchController.searchBar endEditing:YES];
-  }
-}
-
-- (void)presentationControllerDidDismiss:
-    (UIPresentationController*)presentationController {
-  base::RecordAction(
-      base::UserMetricsAction("IOSBookmarkManagerCloseWithSwipe"));
-  // Cleanup once the dismissal is complete.
-  [self dismissWithURL:GURL()];
 }
 
 #pragma mark - TableViewURLDragDataSource
