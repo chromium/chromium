@@ -472,6 +472,7 @@ include_rules = [
   # cc/base here, if this is needed these files need to move to base/
   "+cc/base/features.h",
   "+cc/base/switches.h",
+  "+cc/slim/features.h",
 
   # Unsafe to use from //chrome, see http://goo.gl/QQG5wo
   "-content/public/test/test_browser_context.h",

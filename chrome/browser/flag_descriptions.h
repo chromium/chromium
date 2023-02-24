@@ -2309,6 +2309,9 @@ extern const char kShareSheetMigrationAndroidDescription[];
 extern const char kSiteIsolationForPasswordSitesName[];
 extern const char kSiteIsolationForPasswordSitesDescription[];
 
+extern const char kSlimCompositorName[];
+extern const char kSlimCompositorDescription[];
+
 extern const char kSmartSuggestionForLargeDownloadsName[];
 extern const char kSmartSuggestionForLargeDownloadsDescription[];
 

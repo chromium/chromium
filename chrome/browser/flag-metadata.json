@@ -6555,6 +6555,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "slim-compositor",
+    "owners": [ "boliu", "kylechar" ],
+    "expiry_milestone": 119
+  },
+  {
     "name": "smart-sorting-new-overflow-menu",
     "owners": [ "bwwilliams@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 114
