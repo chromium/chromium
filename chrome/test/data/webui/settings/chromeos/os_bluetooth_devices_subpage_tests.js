@@ -53,6 +53,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   function init(opt_urlParams) {
     bluetoothDevicesSubpage =
         document.createElement('os-settings-bluetooth-devices-subpage');
+    setFastPairPrefEnabled(true);
     document.body.appendChild(bluetoothDevicesSubpage);
     flush();
 
@@ -69,6 +70,12 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     bluetoothConfig.observeSystemProperties(propertiesObserver);
     Router.getInstance().navigateTo(routes.BLUETOOTH_DEVICES, opt_urlParams);
     return flushAsync();
+  }
+
+  function setFastPairPrefEnabled(enabled) {
+    bluetoothDevicesSubpage.prefs = {
+      'ash': {'fast_pair': {'enabled': {value: enabled}}},
+    };
   }
 
   function flushAsync() {
@@ -211,6 +218,65 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     await flushAsync();
     assertToggleEnabledState(/*enabled=*/ false);
     assertTrue(enableBluetoothToggle.disabled);
+  });
+
+  test('Bluetooth toggle affects Fast Pair toggle', async function() {
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+    await init();
+
+    const enableBluetoothToggle =
+        bluetoothDevicesSubpage.$.enableBluetoothToggle;
+    assertTrue(!!enableBluetoothToggle);
+
+    const enableFastPairToggle =
+        bluetoothDevicesSubpage.shadowRoot.querySelector(
+            '#enableFastPairToggle');
+    const fastPairToggle = enableFastPairToggle.$.toggle;
+    assertTrue(!!fastPairToggle);
+
+    // Bluetooth is enabled, so Fast Pair should reset to pref (enabled).
+    assertTrue(fastPairToggle.checked);
+    assertFalse(fastPairToggle.disabled);
+
+    // Toggle off Bluetooth.
+    bluetoothConfig.setSystemState(BluetoothSystemState.kDisabled);
+    await flushAsync();
+
+    // Bluetooth is disabled, so Fast Pair should be off and disabled.
+    assertFalse(fastPairToggle.checked);
+    assertTrue(fastPairToggle.disabled);
+
+    // Toggle on Bluetooth.
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabling);
+    await flushAsync();
+
+    // Bluetooth is enabling, so Fast Pair should reset to pref (enabled).
+    assertTrue(fastPairToggle.checked);
+    assertFalse(fastPairToggle.disabled);
+
+    // Toggle off Fast Pair pref.
+    setFastPairPrefEnabled(false);
+    await flushAsync();
+
+    // Bluetooth is enabling, so Fast Pair should reset to pref (disabled).
+    assertFalse(fastPairToggle.checked);
+    assertFalse(fastPairToggle.disabled);
+
+    // Toggle off Bluetooth.
+    bluetoothConfig.setSystemState(BluetoothSystemState.kDisabling);
+    await flushAsync();
+
+    // Bluetooth is disabling, so Fast Pair should be off and disabled.
+    assertFalse(fastPairToggle.checked);
+    assertTrue(fastPairToggle.disabled);
+
+    // Toggle on Bluetooth.
+    bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+    await flushAsync();
+
+    // Bluetooth is enabling, so Fast Pair should reset to pref (disabled).
+    assertFalse(fastPairToggle.checked);
+    assertFalse(fastPairToggle.disabled);
   });
 
   test('Device lists states', async function() {
