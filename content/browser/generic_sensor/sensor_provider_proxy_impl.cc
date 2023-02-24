@@ -37,9 +37,7 @@ SensorProviderProxyImpl::SensorProviderBinder& GetBinderOverride() {
 
 SensorProviderProxyImpl::SensorProviderProxyImpl(
     RenderFrameHost* render_frame_host)
-    : DocumentUserData<SensorProviderProxyImpl>(render_frame_host) {
-  DCHECK(render_frame_host);
-}
+    : DocumentUserData<SensorProviderProxyImpl>(render_frame_host) {}
 
 SensorProviderProxyImpl::~SensorProviderProxyImpl() = default;
 
