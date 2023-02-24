@@ -1781,10 +1781,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Google Translate
       </message>
       <message name="IDS_IOS_PARTIAL_TRANSLATE_ERROR_GENERIC" desc="Error message when when the process failed (unknown reason).">
-        Partial translation failed.
+        Partial translation not available.
       </message>
       <message name="IDS_IOS_PARTIAL_TRANSLATE_ERROR_STRING_EMPTY" desc="Error message when the string is empty.">
-        The selected text is empty.
+        You didn't select any text.
       </message>
       <message name="IDS_IOS_PARTIAL_TRANSLATE_ERROR_STRING_TOO_LONG_ERROR" desc="Error message when the string is too long.">
         The selected text is too large for partial translation.
