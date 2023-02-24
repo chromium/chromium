@@ -454,6 +454,18 @@ void PrintBackendServiceImpl::PrintingContextDelegate::SetAppLocale(
   locale_ = locale;
 }
 
+// Holds the context and associated delegate for persistent usage across
+// multiple settings calls until they are ready to be used to print a
+// document.  Required since `PrintingContext` does not own the corresponding
+// delegate object that it relies upon.
+struct PrintBackendServiceImpl::ContextContainer {
+  ContextContainer() = default;
+  ~ContextContainer() = default;
+
+  std::unique_ptr<PrintingContextDelegate> delegate;
+  std::unique_ptr<PrintingContext> context;
+};
+
 PrintBackendServiceImpl::PrintBackendServiceImpl(
     mojo::PendingReceiver<mojom::PrintBackendService> receiver)
     : receiver_(this, std::move(receiver)) {}
@@ -468,6 +480,7 @@ void PrintBackendServiceImpl::InitCommon(
     const std::string& locale
 #endif  // BUILDFLAG(IS_WIN)
 ) {
+  locale_ = locale;
   context_delegate_.SetAppLocale(locale);
 #if BUILDFLAG(IS_WIN)
   if (remote.is_valid())
@@ -621,6 +634,28 @@ void PrintBackendServiceImpl::FetchCapabilities(
   std::move(callback).Run(
       mojom::PrinterCapsAndInfoResult::NewPrinterCapsAndInfo(
           std::move(caps_and_info)));
+}
+
+void PrintBackendServiceImpl::EstablishPrintingContext(uint32_t context_id
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+                                                       ,
+                                                       uint32_t parent_window_id
+#endif
+) {
+  auto context_container = std::make_unique<ContextContainer>();
+
+  context_container->delegate = CreatePrintingContextDelegate();
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  context_container->delegate->SetParentWindow(parent_window_id);
+#endif
+
+  context_container->context = PrintingContext::Create(
+      context_container->delegate.get(), /*skip_system_calls=*/false);
+
+  bool inserted = persistent_printing_contexts_
+                      .insert({context_id, std::move(context_container)})
+                      .second;
+  DCHECK(inserted);
 }
 
 void PrintBackendServiceImpl::UseDefaultSettings(
@@ -851,6 +886,13 @@ void PrintBackendServiceImpl::OnDidCancel(
 
   // Do nothing more with this document.
   RemoveDocumentHelper(document_helper);
+}
+
+std::unique_ptr<PrintBackendServiceImpl::PrintingContextDelegate>
+PrintBackendServiceImpl::CreatePrintingContextDelegate() {
+  auto context_delegate = std::make_unique<PrintingContextDelegate>();
+  context_delegate->SetAppLocale(locale_);
+  return context_delegate;
 }
 
 PrintBackendServiceImpl::DocumentHelper*

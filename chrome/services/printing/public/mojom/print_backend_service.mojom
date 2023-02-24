@@ -121,6 +121,27 @@ interface PrintBackendService {
   FetchCapabilities(string printer_name)
     => (PrinterCapsAndInfoResult printer_caps_and_info);
 
+  // Creates a printing context that can persist across multiple calls.
+  // Necessary to ensure that the context used for system dialogs is still
+  // available by the time that printing is started.  The printing context
+  // is to be referenced by the provided `context_id` in all future calls that
+  // need to use it.
+  // Once an established printing context has been attached to a print job by
+  // calling StartPrinting() then it will be automatically cleaned up as a
+  // result of that print job completing successfully or being canceled.  It is
+  // automatically destroyed upon any failure during UseDefaultSettings() or
+  // AskUserForSettings().
+  // The `parent_window_id` parameter, for configurations where it is
+  // applicable, specifies an ID which is cross-process safe to represent the
+  // native window which owns the modal print dialog used for prompting the
+  // user. This can be needed if:
+  //   - The AskUserForSettings() call will be invoked.
+  //   - (Windows-specific)  If the job settings provided to StartPrinting()
+  //     signal to use a system dialog.
+  EstablishPrintingContext(uint32 context_id,
+                           [EnableIf=enable_oop_basic_print_dialog]
+                           uint32 parent_window_id);
+
   // Generates a print settings object based upon the default settings for the
   // default printer.
   UseDefaultSettings()

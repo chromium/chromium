@@ -257,6 +257,35 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
           base::Unretained(this), std::move(context)));
 }
 
+PrintBackendServiceManager::ContextId
+PrintBackendServiceManager::EstablishPrintingContext(
+    const std::string& printer_name
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+    ,
+    gfx::NativeView parent_view
+#endif
+) {
+  // This call is intended for use with a service that will not be reclaimed
+  // due to an idle timeout.  The client could be used for a system print
+  // dialog and/or for printing a document.  Either `kQueryWithUi` or
+  // `kPrintDocument` would satisfy guaranteeing this persists for as long as
+  // could be needed.  Associate this with the printing document client type,
+  // given that most cases would fall into this usage.
+  CallbackContext context;
+  auto& service = GetServiceAndCallbackContext(
+      printer_name, ClientType::kPrintDocument, context);
+
+  LogCallToRemote("EstablishPrintingContext", context);
+  ContextId context_id = ContextId(++last_context_id_);
+  service->EstablishPrintingContext(*context_id
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+                                    ,
+                                    NativeViewToUint(parent_view)
+#endif
+  );
+  return context_id;
+}
+
 void PrintBackendServiceManager::UseDefaultSettings(
     const std::string& printer_name,
     mojom::PrintBackendService::UseDefaultSettingsCallback callback) {
