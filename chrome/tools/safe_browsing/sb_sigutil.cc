@@ -44,11 +44,8 @@ int main(int argc, char* argv[]) {
                             &signature_info);
 
   std::string serialized_info = signature_info.SerializeAsString();
-  int bytes_written = base::WriteFile(
-      cmd_line->GetSwitchValuePath(kOutputFile),
-      serialized_info.data(),
-      serialized_info.size());
-  if (bytes_written != static_cast<int>(serialized_info.size())) {
+  if (!base::WriteFile(cmd_line->GetSwitchValuePath(kOutputFile),
+                       serialized_info)) {
     LOG(ERROR) << "Error writing output file";
     return 1;
   }
