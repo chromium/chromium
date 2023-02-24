@@ -97,12 +97,12 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class Status {
-    kAllowed,
-    kRestricted,
-    kIncognitoProfile,
-    kApisDisabled,
-    kSiteDataAccessBlocked,
-    kMismatchedConsent,
+    kAllowed = 0,
+    kRestricted = 1,
+    kIncognitoProfile = 2,
+    kApisDisabled = 3,
+    kSiteDataAccessBlocked = 4,
+    kMismatchedConsent = 5,
     kMaxValue = kMismatchedConsent,
   };
 
