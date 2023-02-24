@@ -63,10 +63,8 @@ TEST_F(PasswordsGrouperTest, GetAffiliatedGroupsWithGroupingInfo) {
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(
           base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
-  grouper().GroupPasswords(
-      {std::make_pair("key1", form), std::make_pair("key2", federated_form),
-       std::make_pair("key3", blocked_form)},
-      base::DoNothing());
+  grouper().GroupPasswords({form, federated_form, blocked_form},
+                           base::DoNothing());
 
   CredentialUIEntry credential1(form), credential2(federated_form);
   EXPECT_THAT(
@@ -107,11 +105,8 @@ TEST_F(PasswordsGrouperTest, GroupPasswords) {
 
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
-  grouper().GroupPasswords(
-      {std::make_pair("key1", form1), std::make_pair("key2", form2),
-       std::make_pair("key3", blocked_form),
-       std::make_pair("key4", federated_form)},
-      base::DoNothing());
+  grouper().GroupPasswords({form1, form2, blocked_form, federated_form},
+                           base::DoNothing());
 
   CredentialUIEntry credential1(form1), credential2(form2),
       credential3(federated_form);
@@ -145,11 +140,8 @@ TEST_F(PasswordsGrouperTest, GroupPasswordsWithoutAffiliation) {
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(
           base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
-  grouper().GroupPasswords(
-      {std::make_pair("key1", form1), std::make_pair("key2", form2),
-       std::make_pair("key3", blocked_form),
-       std::make_pair("key4", federated_form)},
-      base::DoNothing());
+  grouper().GroupPasswords({form1, form2, blocked_form, federated_form},
+                           base::DoNothing());
 
   CredentialUIEntry credential1(form1), credential2(form2),
       credential3(federated_form);
@@ -170,7 +162,7 @@ TEST_F(PasswordsGrouperTest, HttpCredentialsSupported) {
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(
           base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
-  grouper().GroupPasswords({std::make_pair("key1", form)}, base::DoNothing());
+  grouper().GroupPasswords({form}, base::DoNothing());
 
   CredentialUIEntry credential(form);
   EXPECT_THAT(
@@ -192,9 +184,7 @@ TEST_F(PasswordsGrouperTest, FederatedCredentialsGroupedWithRegular) {
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(
           base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
-  grouper().GroupPasswords(
-      {std::make_pair("key1", form), std::make_pair("key2", federated_form)},
-      base::DoNothing());
+  grouper().GroupPasswords({form, federated_form}, base::DoNothing());
 
   CredentialUIEntry credential(form);
   EXPECT_THAT(grouper().GetAffiliatedGroupsWithGroupingInfo(),
@@ -229,14 +219,7 @@ TEST_F(PasswordsGrouperTest, GroupsWithMatchingMainDomainsMerged) {
 
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
-  grouper().GroupPasswords(
-      {
-          std::make_pair("key1", forms[0]),
-          std::make_pair("key2", forms[1]),
-          std::make_pair("key3", forms[2]),
-          std::make_pair("key4", forms[3]),
-      },
-      base::DoNothing());
+  grouper().GroupPasswords(forms, base::DoNothing());
 
   CredentialUIEntry credential1(forms[0]), credential2(forms[1]),
       credential3(forms[2]), credential4(forms[3]);
@@ -271,14 +254,7 @@ TEST_F(PasswordsGrouperTest, MainDomainComputationUsesPSLExtensions) {
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(base::test::RunOnceCallback<0>(grouped_facets));
 
-  grouper.GroupPasswords(
-      {
-          std::make_pair("key1", forms[0]),
-          std::make_pair("key2", forms[1]),
-          std::make_pair("key3", forms[2]),
-          std::make_pair("key4", forms[3]),
-      },
-      base::DoNothing());
+  grouper.GroupPasswords(forms, base::DoNothing());
 
   CredentialUIEntry credential1(forms[0]), credential2(forms[1]),
       credential3(forms[2]), credential4(forms[3]);
@@ -302,9 +278,7 @@ TEST_F(PasswordsGrouperTest, HttpAndHttpsGroupedTogether) {
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(
           base::test::RunOnceCallback<0>(std::vector<GroupedFacets>()));
-  grouper().GroupPasswords(
-      {std::make_pair("key1", form1), std::make_pair("key2", form2)},
-      base::DoNothing());
+  grouper().GroupPasswords({form1, form2}, base::DoNothing());
 
   CredentialUIEntry credential({form1, form2});
   EXPECT_THAT(

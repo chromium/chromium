@@ -32,12 +32,9 @@ class PasswordsGrouper {
   // "m.facebook.com" that have the same username and password. These
   // credentials are part of the same affiliated group so they will be grouped
   // together.
-  // |sort_key_to_password_forms| is used by SavedPasswordsPresenter to keep
-  // track of current PasswordForms.
+  // |forms| PasswordForms to be grouped.
   // |callback| is called after the grouping is finished.
-  // TODO(crbug.com/1354196): Pass vector of PasswordForms instead.
-  void GroupPasswords(const std::multimap<std::string, PasswordForm>&
-                          sort_key_to_password_forms,
+  void GroupPasswords(std::vector<PasswordForm> forms,
                       base::OnceClosure callback);
 
   // Returns a list of affiliated groups created with the password grouping
@@ -67,8 +64,7 @@ class PasswordsGrouper {
   std::map<std::string, GroupId> MapFacetsToGroupId(
       const std::vector<GroupedFacets>& groups);
 
-  void GroupPasswordsImpl(const std::multimap<std::string, PasswordForm>&
-                              sort_key_to_password_forms,
+  void GroupPasswordsImpl(std::vector<PasswordForm> forms,
                           const std::vector<GroupedFacets>& groups);
 
   void InitializePSLExtensionList(std::vector<std::string> psl_extension_list);
