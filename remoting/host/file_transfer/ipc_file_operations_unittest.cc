@@ -460,10 +460,7 @@ TEST_F(IpcFileOperationsTest, ReadsThreeChunks) {
   base::FilePath path = TestDir().Append(kTestFilename);
   std::vector<std::uint8_t> contents =
       ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
-  ASSERT_EQ(
-      static_cast<int>(contents.size()),
-      base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
-                      contents.size()));
+  ASSERT_TRUE(base::WriteFile(path, contents));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();
@@ -511,10 +508,7 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesEof) {
   base::FilePath path = TestDir().Append(kTestFilename);
   std::vector<std::uint8_t> contents =
       ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
-  ASSERT_EQ(
-      static_cast<int>(contents.size()),
-      base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
-                      contents.size()));
+  ASSERT_TRUE(base::WriteFile(path, contents));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();
@@ -565,7 +559,7 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesEof) {
 TEST_F(IpcFileOperationsTest, ReaderHandlesZeroSize) {
   constexpr std::size_t kChunkSize = 5;
   base::FilePath path = TestDir().Append(kTestFilename);
-  ASSERT_EQ(0, base::WriteFile(path, "", 0));
+  ASSERT_TRUE(base::WriteFile(path, ""));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();
@@ -610,10 +604,7 @@ TEST_F(IpcFileOperationsTest, ConcurrentReadOperationsSupported) {
   std::vector<std::uint8_t> contents =
       ByteArrayFrom(kTestDataOne, kTestDataTwo, kTestDataThree);
   for (const auto& path : paths) {
-    ASSERT_EQ(
-        static_cast<int>(contents.size()),
-        base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
-                        contents.size()));
+    ASSERT_TRUE(base::WriteFile(path, contents));
   }
 
   std::vector<std::unique_ptr<FileOperations::Reader>> readers;
@@ -758,10 +749,7 @@ TEST_F(IpcFileOperationsTest, ConcurrentReadAndWriteOperationsSupported) {
   // which doesn't conflict with this |read_path|.
   base::FilePath read_path(
       base_path.InsertBeforeExtension(FILE_PATH_LITERAL("(read)")));
-  ASSERT_EQ(
-      static_cast<int>(contents.size()),
-      base::WriteFile(read_path, reinterpret_cast<const char*>(contents.data()),
-                      contents.size()));
+  ASSERT_TRUE(base::WriteFile(read_path, contents));
 
   // Pending open file operations.
   absl::optional<FileOperations::Writer::Result> open_for_write_result;
@@ -1044,7 +1032,7 @@ TEST_F(IpcFileOperationsTest, ErrorWhenCloseCalledBeforeOpen) {
 TEST_F(IpcFileOperationsTest, ErrorWhenReadChunkCalledAfterReceiverDisconnect) {
   constexpr std::size_t kChunkSize = 5;
   base::FilePath path = TestDir().Append(kTestFilename);
-  ASSERT_EQ(0, base::WriteFile(path, "", 0));
+  ASSERT_TRUE(base::WriteFile(path, ""));
 
   std::unique_ptr<FileOperations::Reader> reader =
       file_operations_->CreateReader();

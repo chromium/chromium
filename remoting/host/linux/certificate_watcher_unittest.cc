@@ -87,9 +87,7 @@ class CertificateWatcherTest : public testing::Test {
     if (base::PathExists(path)) {
       EXPECT_TRUE(base::AppendToFile(path, testWriteString));
     } else {
-      EXPECT_EQ(static_cast<int>(testWriteString.length()),
-                base::WriteFile(path, testWriteString.c_str(),
-                                testWriteString.length()));
+      ASSERT_TRUE(base::WriteFile(path, testWriteString));
     }
   }
 

@@ -35,7 +35,7 @@ class HostConfigTest : public testing::Test {
   HostConfigTest() = default;
 
   static void WriteTestFile(const base::FilePath& filename) {
-    base::WriteFile(filename, kTestConfig, std::strlen(kTestConfig));
+    base::WriteFile(filename, kTestConfig);
   }
 
   // The temporary directory used to contain the test operations.
