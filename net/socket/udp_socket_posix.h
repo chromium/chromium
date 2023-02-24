@@ -272,9 +272,6 @@ class NET_EXPORT UDPSocketPosix {
   // Sets iOS Network Service Type for option SO_NET_SERVICE_TYPE.
   int SetIOSNetworkServiceType(int ios_network_service_type);
 
-  // Sets "don't close" flag for the socket.
-  void SetDontClose(bool dont_close);
-
   // Takes ownership of `socket`, which should be a socket descriptor opened
   // with the specified address family. The socket should only be created but
   // not bound or connected to an address.
@@ -461,9 +458,6 @@ class NET_EXPORT UDPSocketPosix {
   // Manages decrementing the global open UDP socket counter when this
   // UDPSocket is destroyed.
   OwnedUDPSocketCount owned_socket_count_;
-
-  // Flag to signify if |socket_| should not be closed.
-  bool dont_close_ = false;
 
   THREAD_CHECKER(thread_checker_);
 };
