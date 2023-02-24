@@ -3466,6 +3466,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Extensions.Navigation.Scheme" enum="NavigationScheme"
+    expires_after="2024-01-01">
+  <owner>jkokatsu@google.com</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Counts usage of various schemes (e.g. file:, chrome:, http:) when a
+    navigation is triggered from an extension (such as through tabs API).
+  </summary>
+</histogram>
+
 <histogram name="Extensions.NetworkDelay" units="ms" expires_after="2023-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>

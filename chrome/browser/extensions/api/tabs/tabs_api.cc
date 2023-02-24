@@ -589,8 +589,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
     // Second, resolve, validate and convert them to GURLs.
     for (auto& url_string : url_strings) {
-      auto url =
-          ExtensionTabUtil::PrepareURLForNavigation(url_string, extension());
+      auto url = ExtensionTabUtil::PrepareURLForNavigation(
+          url_string, extension(), browser_context());
       if (!url.has_value()) {
         return RespondNow(Error(std::move(url.error())));
       }
@@ -1597,7 +1597,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
 bool TabsUpdateFunction::UpdateURL(const std::string& url_string,
                                    int tab_id,
                                    std::string* error) {
-  auto url = ExtensionTabUtil::PrepareURLForNavigation(url_string, extension());
+  auto url = ExtensionTabUtil::PrepareURLForNavigation(url_string, extension(),
+                                                       browser_context());
   if (!url.has_value()) {
     *error = std::move(url.error());
     return false;

@@ -212,7 +212,8 @@ class ExtensionTabUtil {
   // Returns the url if successful, otherwise returns an error string.
   static base::expected<GURL, std::string> PrepareURLForNavigation(
       const std::string& url_string,
-      const Extension* extension);
+      const Extension* extension,
+      content::BrowserContext* browser_context);
 
   // Opens a tab for the specified |web_contents|.
   static void CreateTab(std::unique_ptr<content::WebContents> web_contents,
