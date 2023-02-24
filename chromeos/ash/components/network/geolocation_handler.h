@@ -17,7 +17,7 @@
 
 namespace ash {
 
-// This class provices Shill Wifi Access Point and Cell Tower data. It
+// This class provides Shill Wifi Access Point and Cell Tower data. It
 // currently relies on polling because that is the usage model in
 // content::WifiDataProvider. This class requests data asynchronously,
 // returning the most recent available data. A typical usage pattern,
@@ -80,13 +80,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) GeolocationHandler
   // Callback for receiving Geolocation data.
   void GeolocationCallback(absl::optional<base::Value::Dict> properties);
 
-  bool cellular_enabled_;
-  bool wifi_enabled_;
+  bool cellular_enabled_ = false;
+  bool wifi_enabled_ = false;
 
-  void AddCellTowerFromDict(const base::Value& entry);
-  void AddAccessPointFromDict(const base::Value& entry);
+  void AddCellTowerFromDict(const base::Value::Dict& entry);
+  void AddAccessPointFromDict(const base::Value::Dict& entry);
 
-  // Cached netork information and update time
+  // Cached network information and update time
   WifiAccessPointVector wifi_access_points_;
   CellTowerVector cell_towers_;
   base::Time geolocation_received_time_;

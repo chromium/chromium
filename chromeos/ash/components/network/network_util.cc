@@ -215,7 +215,7 @@ bool ParseCellularSIMSlotInfo(
 
 base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
   // Get the properties from the NetworkState.
-  base::Value shill_dictionary(base::Value::Type::DICT);
+  base::Value::Dict shill_dictionary;
   network->GetStateProperties(&shill_dictionary);
 
   // Get any Device properties required to translate state.
@@ -224,15 +224,14 @@ base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
         NetworkHandler::Get()->network_state_handler()->GetDeviceState(
             network->device_path());
     if (device) {
-      base::Value device_dict(base::Value::Type::DICT);
+      base::Value::Dict device_dict;
       // We need to set Device.Cellular.ProviderRequiresRoaming so that
       // Cellular.RoamingState can be set correctly for badging network icons.
-      device_dict.SetKey(shill::kProviderRequiresRoamingProperty,
-                         base::Value(device->provider_requires_roaming()));
+      device_dict.Set(shill::kProviderRequiresRoamingProperty,
+                      device->provider_requires_roaming());
       // Scanning is also used in the UI when displaying a list of networks.
-      device_dict.SetKey(shill::kScanningProperty,
-                         base::Value(device->scanning()));
-      shill_dictionary.SetKey(shill::kDeviceProperty, std::move(device_dict));
+      device_dict.Set(shill::kScanningProperty, device->scanning());
+      shill_dictionary.Set(shill::kDeviceProperty, std::move(device_dict));
     }
   }
 
@@ -247,8 +246,8 @@ base::Value::Dict TranslateNetworkStateToONC(const NetworkState* network) {
       ->FindPolicyByGUID(user_id_hash, network->guid(), &onc_source);
 
   base::Value::Dict onc_dictionary = onc::TranslateShillServiceToONCPart(
-      shill_dictionary.GetDict(), onc_source,
-      &chromeos::onc::kNetworkWithStateSignature, network);
+      shill_dictionary, onc_source, &chromeos::onc::kNetworkWithStateSignature,
+      network);
 
   // Remove IPAddressConfigType/NameServersConfigType as these were
   // historically not provided by TranslateNetworkStateToONC.

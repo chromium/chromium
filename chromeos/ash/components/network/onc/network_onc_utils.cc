@@ -367,7 +367,7 @@ NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type) {
   return NetworkTypePattern::Default();
 }
 
-base::Value::Dict ConvertOncProxySettingsToProxyConfig(
+absl::optional<base::Value::Dict> ConvertOncProxySettingsToProxyConfig(
     const base::Value::Dict& onc_proxy_settings) {
   std::string type = GetString(onc_proxy_settings, ::onc::proxy::kType);
 
@@ -388,7 +388,7 @@ base::Value::Dict ConvertOncProxySettingsToProxyConfig(
         onc_proxy_settings.FindDict(::onc::proxy::kManual);
     if (!manual_dict) {
       NET_LOG(ERROR) << "Manual proxy missing dictionary";
-      return base::Value::Dict();
+      return absl::nullopt;
     }
     std::string manual_spec;
     AppendProxyServerForScheme(*manual_dict, ::onc::proxy::kFtp, &manual_spec);
@@ -407,10 +407,10 @@ base::Value::Dict ConvertOncProxySettingsToProxyConfig(
                                                      bypass_rules.ToString());
   }
   NOTREACHED();
-  return base::Value::Dict();
+  return absl::nullopt;
 }
 
-base::Value ConvertProxyConfigToOncProxySettings(
+absl::optional<base::Value::Dict> ConvertProxyConfigToOncProxySettings(
     const base::Value::Dict& proxy_config_dict) {
   // Create a ProxyConfigDictionary from the dictionary.
   ProxyConfigDictionary proxy_config(proxy_config_dict.Clone());
@@ -418,8 +418,9 @@ base::Value ConvertProxyConfigToOncProxySettings(
   // Create the result Value and populate it.
   base::Value::Dict proxy_settings;
   ProxyPrefs::ProxyMode mode;
-  if (!proxy_config.GetMode(&mode))
-    return base::Value();
+  if (!proxy_config.GetMode(&mode)) {
+    return absl::nullopt;
+  }
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT: {
       proxy_settings.Set(::onc::proxy::kType, ::onc::proxy::kDirect);
@@ -471,10 +472,10 @@ base::Value ConvertProxyConfigToOncProxySettings(
     }
     default: {
       LOG(ERROR) << "Unexpected proxy mode in Shill config: " << mode;
-      return base::Value();
+      return absl::nullopt;
     }
   }
-  return base::Value(std::move(proxy_settings));
+  return proxy_settings;
 }
 
 base::flat_map<std::string, std::string> GetVariableExpansionsForUser(

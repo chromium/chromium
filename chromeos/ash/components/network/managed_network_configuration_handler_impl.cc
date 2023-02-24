@@ -1143,13 +1143,14 @@ void ManagedNetworkConfigurationHandlerImpl::GetDeviceStateProperties(
     NET_LOG(DEBUG)
         << "GetDeviceStateProperties: Setting IPv4 properties from network: "
         << NetworkId(network);
-    if (!network->ipv4_config().is_none())
-      ip_configs.Append(network->ipv4_config().Clone());
+    if (network->ipv4_config().has_value()) {
+      ip_configs.Append(network->ipv4_config()->Clone());
+    }
   } else {
-    // Convert the DeviceState IPConfigs dictionary to a base::Value::Type::LIST
-    // Value.
-    for (const auto iter : device_state->ip_configs())
+    // Convert the DeviceState IPConfigs dictionary to a list.
+    for (const auto iter : device_state->ip_configs()) {
       ip_configs.Append(iter.second.Clone());
+    }
   }
   if (!ip_configs.empty()) {
     properties->Set(shill::kIPConfigsProperty, std::move(ip_configs));

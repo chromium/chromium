@@ -164,24 +164,21 @@ hotspot_config::mojom::HotspotConfigPtr ShillTetheringConfigToMojomConfig(
   return result;
 }
 
-base::Value MojomConfigToShillConfig(
+base::Value::Dict MojomConfigToShillConfig(
     const hotspot_config::mojom::HotspotConfigPtr mojom_config) {
   using hotspot_config::mojom::HotspotConfig;
 
-  base::Value result(base::Value::Type::DICT);
-  result.GetDict().Set(shill::kTetheringConfAutoDisableProperty,
-                       base::Value(mojom_config->auto_disable));
-  result.GetDict().Set(shill::kTetheringConfBandProperty,
-                       base::Value(MojomBandToString(mojom_config->band)));
-  result.GetDict().Set(
-      shill::kTetheringConfSecurityProperty,
-      base::Value(MojomSecurityToString(mojom_config->security)));
-  result.GetDict().Set(shill::kTetheringConfSSIDProperty,
-                       base::Value(HexEncode(mojom_config->ssid)));
-  result.GetDict().Set(shill::kTetheringConfPassphraseProperty,
-                       base::Value(mojom_config->passphrase));
-  result.GetDict().Set(shill::kTetheringConfMARProperty,
-                       base::Value(mojom_config->bssid_randomization));
+  base::Value::Dict result;
+  result.Set(shill::kTetheringConfAutoDisableProperty,
+             mojom_config->auto_disable);
+  result.Set(shill::kTetheringConfBandProperty,
+             MojomBandToString(mojom_config->band));
+  result.Set(shill::kTetheringConfSecurityProperty,
+             MojomSecurityToString(mojom_config->security));
+  result.Set(shill::kTetheringConfSSIDProperty, HexEncode(mojom_config->ssid));
+  result.Set(shill::kTetheringConfPassphraseProperty, mojom_config->passphrase);
+  result.Set(shill::kTetheringConfMARProperty,
+             mojom_config->bssid_randomization);
   return result;
 }
 

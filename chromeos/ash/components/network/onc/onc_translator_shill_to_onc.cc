@@ -768,11 +768,11 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
     absl::optional<base::Value::Dict> proxy_config =
         chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
     if (proxy_config.has_value()) {
-      base::Value proxy_settings =
-          ConvertProxyConfigToOncProxySettings(*proxy_config);
-      if (!proxy_settings.is_none()) {
+      absl::optional<base::Value::Dict> proxy_settings =
+          ConvertProxyConfigToOncProxySettings(proxy_config.value());
+      if (proxy_settings) {
         onc_object_.Set(::onc::network_config::kProxySettings,
-                        std::move(proxy_settings));
+                        std::move(proxy_settings.value()));
       }
     }
   }

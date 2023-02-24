@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
     virtual void ShowMobileActivationError(const std::string& network_id) = 0;
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // Creates the global NetworkConnect object. |delegate| is owned by the
@@ -107,9 +107,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
   // Configures a network with a dictionary of Shill properties, then sends a
   // connect request. The profile is set according to 'shared' if allowed.
   // TODO(stevenjb): Use ONC properties instead of shill.
-  virtual void ConfigureNetworkIdAndConnect(const std::string& network_id,
-                                            const base::Value& shill_properties,
-                                            bool shared) = 0;
+  virtual void ConfigureNetworkIdAndConnect(
+      const std::string& network_id,
+      const base::Value::Dict& shill_properties,
+      bool shared) = 0;
 
   // Requests a new network configuration to be created from a dictionary of
   // Shill properties and sends a connect request if the configuration succeeds.

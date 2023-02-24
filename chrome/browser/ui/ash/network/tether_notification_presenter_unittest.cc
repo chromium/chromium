@@ -31,8 +31,8 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
  public:
   class TestNetworkConnect : public NetworkConnect {
    public:
-    TestNetworkConnect() {}
-    ~TestNetworkConnect() override {}
+    TestNetworkConnect() = default;
+    ~TestNetworkConnect() override = default;
 
     std::string network_id_to_connect() { return network_id_to_connect_; }
 
@@ -45,7 +45,7 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
     void ShowPortalSignin(const std::string& network_id,
                           NetworkConnect::Source source) override {}
     void ConfigureNetworkIdAndConnect(const std::string& network_id,
-                                      const base::Value& shill_properties,
+                                      const base::Value::Dict& shill_properties,
                                       bool shared) override {}
     void CreateConfigurationAndConnect(base::Value::Dict shill_properties,
                                        bool shared) override {}
@@ -63,8 +63,8 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
   class TestSettingsUiDelegate
       : public TetherNotificationPresenter::SettingsUiDelegate {
    public:
-    TestSettingsUiDelegate() {}
-    ~TestSettingsUiDelegate() override {}
+    TestSettingsUiDelegate() = default;
+    ~TestSettingsUiDelegate() override = default;
 
     Profile* last_profile() { return last_profile_; }
     std::string last_settings_subpage() { return last_settings_subpage_; }

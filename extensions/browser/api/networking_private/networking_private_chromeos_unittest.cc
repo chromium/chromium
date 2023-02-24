@@ -263,13 +263,9 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   int GetNetworkPriority(const ash::NetworkState* network) {
-    base::Value properties(base::Value::Type::DICT);
+    base::Value::Dict properties;
     network->GetStateProperties(&properties);
-    absl::optional<int> priority =
-        properties.GetDict().FindInt(shill::kPriorityProperty);
-    if (!priority)
-      return -1;
-    return priority.value();
+    return properties.FindInt(shill::kPriorityProperty).value_or(-1);
   }
 
   bool HasServiceProfile(const std::string& service_path,

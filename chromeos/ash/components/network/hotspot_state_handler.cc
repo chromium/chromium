@@ -99,11 +99,12 @@ void HotspotStateHandler::SetHotspotConfig(
     return;
   }
 
-  base::Value shill_tethering_config =
+  base::Value::Dict shill_tethering_config =
       MojomConfigToShillConfig(std::move(mojom_config));
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->SetProperty(
-      shill::kTetheringConfigProperty, std::move(shill_tethering_config),
+      shill::kTetheringConfigProperty,
+      base::Value(std::move(shill_tethering_config)),
       base::BindOnce(&HotspotStateHandler::OnSetHotspotConfigSuccess,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback_split.first)),

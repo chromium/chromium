@@ -18,7 +18,7 @@ TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
                               "iccid", u"name", u"nickname", u"serviceProvider",
                               "activationCode");
 
-  base::Value dictionary = profile.ToDictionaryValue();
+  base::Value::Dict dictionary = profile.ToDictionaryValue();
   absl::optional<CellularESimProfile> from_dictionary =
       CellularESimProfile::FromDictionaryValue(dictionary);
   EXPECT_TRUE(from_dictionary);
@@ -34,15 +34,9 @@ TEST(CellularESimProfileTest, ConvertToAndFromDictionary) {
 }
 
 TEST(CellularESimProfileTest, InvalidDictionary) {
-  // Try to convert a non-dictionary.
-  base::Value non_dictionary(1337);
-  absl::optional<CellularESimProfile> from_non_dictionary =
-      CellularESimProfile::FromDictionaryValue(non_dictionary);
-  EXPECT_FALSE(from_non_dictionary);
-
   // Try to convert a dictionary without the required keys.
-  base::Value dictionary(base::Value::Type::DICT);
-  dictionary.SetPath("sampleKey", base::Value("sampleValue"));
+  base::Value::Dict dictionary;
+  dictionary.Set("sampleKey", "sampleValue");
   absl::optional<CellularESimProfile> from_dictionary =
       CellularESimProfile::FromDictionaryValue(dictionary);
   EXPECT_FALSE(from_dictionary);

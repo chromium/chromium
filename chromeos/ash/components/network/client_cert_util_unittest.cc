@@ -240,8 +240,7 @@ TEST(ClientCertUtilTest, SetShillProperties_OpenVPN) {
   base::Value::Dict shill_properties;
   SetShillProperties(ConfigType::kOpenVpn, 2, "abcd1234", shill_properties);
 
-  EXPECT_THAT(base::Value(std::move(shill_properties)), base::test::IsJson(
-                                                            R"({
+  EXPECT_THAT(shill_properties, base::test::IsJson(R"({
          "OpenVPN.Pkcs11.PIN": "111111",
          "OpenVPN.Pkcs11.ID": "abcd1234"
        })"));
@@ -251,8 +250,7 @@ TEST(ClientCertUtilTest, SetShillProperties_L2TPIPsec) {
   base::Value::Dict shill_properties;
   SetShillProperties(ConfigType::kL2tpIpsec, 2, "abcd1234", shill_properties);
 
-  EXPECT_THAT(base::Value(std::move(shill_properties)), base::test::IsJson(
-                                                            R"({
+  EXPECT_THAT(shill_properties, base::test::IsJson(R"({
          "L2TPIPsec.PIN": "111111",
          "L2TPIPsec.ClientCertID": "abcd1234",
          "L2TPIPsec.ClientCertSlot": "2"
@@ -263,8 +261,7 @@ TEST(ClientCertUtilTest, SetShillProperties_IKEv2) {
   base::Value::Dict shill_properties;
   SetShillProperties(ConfigType::kIkev2, 2, "abcd1234", shill_properties);
 
-  EXPECT_THAT(base::Value(std::move(shill_properties)), base::test::IsJson(
-                                                            R"({
+  EXPECT_THAT(shill_properties, base::test::IsJson(R"({
          "IKEv2.ClientCertID": "abcd1234",
          "IKEv2.ClientCertSlot": "2"
        })"));
@@ -274,8 +271,7 @@ TEST(ClientCertUtilTest, SetShillProperties_EAP) {
   base::Value::Dict shill_properties;
   SetShillProperties(ConfigType::kEap, 2, "abcd1234", shill_properties);
 
-  EXPECT_THAT(base::Value(std::move(shill_properties)), base::test::IsJson(
-                                                            R"({
+  EXPECT_THAT(shill_properties, base::test::IsJson(R"({
          "EAP.PIN": "111111",
          "EAP.CertID": "2:abcd1234",
          "EAP.KeyID": "2:abcd1234"
@@ -286,8 +282,7 @@ TEST(ClientCertUtilTest, SetEmptyShillProperties_OpenVPN) {
   base::Value::Dict shill_properties;
   SetEmptyShillProperties(ConfigType::kOpenVpn, shill_properties);
 
-  EXPECT_THAT(base::Value(std::move(shill_properties)), base::test::IsJson(
-                                                            R"({
+  EXPECT_THAT(shill_properties, base::test::IsJson(R"({
          "OpenVPN.Pkcs11.PIN": "",
          "OpenVPN.Pkcs11.ID": ""
        })"));
@@ -297,8 +292,7 @@ TEST(ClientCertUtilTest, SetEmptyShillProperties_L2TPIPsec) {
   base::Value::Dict shill_properties;
   SetEmptyShillProperties(ConfigType::kL2tpIpsec, shill_properties);
 
-  EXPECT_THAT(base::Value(std::move(shill_properties)), base::test::IsJson(
-                                                            R"({
+  EXPECT_THAT(shill_properties, base::test::IsJson(R"({
          "L2TPIPsec.PIN": "",
          "L2TPIPsec.ClientCertID": "",
          "L2TPIPsec.ClientCertSlot": ""
@@ -309,8 +303,7 @@ TEST(ClientCertUtilTest, SetEmptyShillProperties_IKEv2) {
   base::Value::Dict shill_properties;
   SetEmptyShillProperties(ConfigType::kIkev2, shill_properties);
 
-  EXPECT_THAT(base::Value(std::move(shill_properties)), base::test::IsJson(
-                                                            R"({
+  EXPECT_THAT(shill_properties, base::test::IsJson(R"({
          "IKEv2.ClientCertID": "",
          "IKEv2.ClientCertSlot": ""
        })"));
@@ -320,8 +313,7 @@ TEST(ClientCertUtilTest, SetEmptyShillProperties_EAP) {
   base::Value::Dict shill_properties;
   SetEmptyShillProperties(ConfigType::kEap, shill_properties);
 
-  EXPECT_THAT(base::Value(std::move(shill_properties)), base::test::IsJson(
-                                                            R"({
+  EXPECT_THAT(shill_properties, base::test::IsJson(R"({
          "EAP.PIN": "",
          "EAP.CertID": "",
          "EAP.KeyID": ""

@@ -65,11 +65,8 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     initial_property_updates(GetTypeString(type))[path] += 1;
   }
 
-  void ProfileListChanged(const base::Value& profile_list) override {
-    if (!profile_list.is_list()) {
-      return;
-    }
-    profile_list_size_ = profile_list.GetList().size();
+  void ProfileListChanged(const base::Value::List& profile_list) override {
+    profile_list_size_ = profile_list.size();
   }
 
   void UpdateNetworkServiceProperty(const std::string& service_path,

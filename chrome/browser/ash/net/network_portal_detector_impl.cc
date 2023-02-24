@@ -179,7 +179,7 @@ void NetworkPortalDetectorImpl::PortalStateChanged(
   }
 
   default_network_id_ = default_network->guid();
-  bool has_proxy = !default_network->proxy_config().is_none();
+  bool has_proxy = default_network->proxy_config().has_value();
   NET_LOG(EVENT) << "PortalStateChanged, id="
                  << NetworkGuidId(default_network_id_)
                  << " state=" << default_network->connection_state()
@@ -457,7 +457,7 @@ void NetworkPortalDetectorImpl::DetectionCompleted(
     SetNetworkPortalState(network, portal_state);
 
     base::UmaHistogramBoolean("Network.NetworkPortalDetectorHasProxy",
-                              !network->proxy_config().is_none());
+                              network->proxy_config().has_value());
   }
 
   ResetCountersAndSendMetrics();

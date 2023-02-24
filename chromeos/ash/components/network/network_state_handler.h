@@ -488,7 +488,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // The list of profiles changed (i.e. a user has logged in). Re-request
   // properties for all services since they may have changed.
-  void ProfileListChanged(const base::Value& profile_list) override;
+  void ProfileListChanged(const base::Value::List& profile_list) override;
 
   // Parses the properties for the network service or device. Mostly calls
   // managed->PropertyChanged(key, value) for each dictionary entry.
@@ -746,7 +746,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void SetDefaultNetworkValues(const std::string& path, bool metered);
 
   // Determines whether the user is logged in and sets |is_user_logged_in_|.
-  void ProcessIsUserLoggedIn(const base::Value& profile_list);
+  void ProcessIsUserLoggedIn(const base::Value::List& profile_list);
 
   // Shill property handler instance, owned by this class.
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
@@ -791,7 +791,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   absl::optional<base::ElapsedTimer> time_in_portal_;
 
   // Tracks the default network proxy config for triggering PortalStateChanged.
-  base::Value default_network_proxy_config_;
+  absl::optional<base::Value::Dict> default_network_proxy_config_;
 
   // DHCP Hostname.
   std::string hostname_;
