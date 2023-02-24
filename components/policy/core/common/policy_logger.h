@@ -16,37 +16,39 @@
 #include "base/values.h"
 #include "components/policy/policy_export.h"
 
-namespace policy {
-
 // Note: the DLOG_POLICY macro has no "#if DCHECK_IS_ON()" check because some
 // messages logged with DLOG are still important to be seen on the
 // chrome://policy/logs page in release mode. The DLOG call in StreamLog() will
 // do the check as usual for command line logging.
 #if BUILDFLAG(IS_ANDROID)
-#define LOG_POLICY(log_severity, log_source) \
-  LOG_POLICY_##log_severity(PolicyLogger::LogHelper::LogType::kLog, log_source)
-#define DLOG_POLICY(log_severity, log_source) \
-  LOG_POLICY_##log_severity(PolicyLogger::LogHelper::LogType::kDLog, log_source)
-#define VLOG_POLICY(log_verbosity, log_source)                     \
-  PolicyLogger::LogHelper(PolicyLogger::LogHelper::LogType::kVLog, \
-                          PolicyLogger::Log::Severity::kVerbose,   \
-                          log_verbosity, log_source, FROM_HERE)
-#define DVLOG_POLICY(log_verbosity, log_source)                    \
-  PolicyLogger::LogHelper(PolicyLogger::LogHelper::LogType::kDLog, \
-                          PolicyLogger::Log::Severity::kVerbose,   \
-                          log_verbosity, log_source, FROM_HERE)
-#define LOG_POLICY_INFO(log_type, log_source)                                 \
-  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kInfo,       \
-                          PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-                          FROM_HERE)
-#define LOG_POLICY_WARNING(log_type, log_source)                              \
-  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kWarning,    \
-                          PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-                          FROM_HERE)
-#define LOG_POLICY_ERROR(log_type, log_source)                                \
-  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kError,      \
-                          PolicyLogger::LogHelper::kNoVerboseLog, log_source, \
-                          FROM_HERE)
+#define LOG_POLICY(log_severity, log_source)                                  \
+  LOG_POLICY_##log_severity(::policy::PolicyLogger::LogHelper::LogType::kLog, \
+                            log_source)
+#define DLOG_POLICY(log_severity, log_source)                                  \
+  LOG_POLICY_##log_severity(::policy::PolicyLogger::LogHelper::LogType::kDLog, \
+                            log_source)
+#define VLOG_POLICY(log_verbosity, log_source)                        \
+  ::policy::PolicyLogger::LogHelper(                                  \
+      ::policy::PolicyLogger::LogHelper::LogType::kVLog,              \
+      ::policy::PolicyLogger::Log::Severity::kVerbose, log_verbosity, \
+      log_source, FROM_HERE)
+#define DVLOG_POLICY(log_verbosity, log_source)                       \
+  ::policy::PolicyLogger::LogHelper(                                  \
+      ::policy::PolicyLogger::LogHelper::LogType::kDLog,              \
+      ::policy::PolicyLogger::Log::Severity::kVerbose, log_verbosity, \
+      log_source, FROM_HERE)
+#define LOG_POLICY_INFO(log_type, log_source)                 \
+  ::policy::PolicyLogger::LogHelper(                          \
+      log_type, ::policy::PolicyLogger::Log::Severity::kInfo, \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
+#define LOG_POLICY_WARNING(log_type, log_source)                 \
+  ::policy::PolicyLogger::LogHelper(                             \
+      log_type, ::policy::PolicyLogger::Log::Severity::kWarning, \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
+#define LOG_POLICY_ERROR(log_type, log_source)                 \
+  ::policy::PolicyLogger::LogHelper(                           \
+      log_type, ::policy::PolicyLogger::Log::Severity::kError, \
+      ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
 #else
 #define LOG_POLICY(log_severity, log_source) LOG(log_severity)
 #define DLOG_POLICY(log_severity, log_source) DLOG(log_severity)
@@ -54,11 +56,13 @@ namespace policy {
 #define DVLOG_POLICY(log_verbosity, log_source) DVLOG(log_verbosity)
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#define POLICY_AUTH PolicyLogger::Log::Source::kAuthentication
-#define POLICY_PROCESSING PolicyLogger::Log::Source::kPolicyProcessing
-#define CBCM_ENROLLMENT PolicyLogger::Log::Source::kCBCMEnrollment
-#define POLICY_FETCHING PolicyLogger::Log::Source::kPolicyFetching
-#define PLATFORM_POLICY PolicyLogger::Log::Source::kPlatformPolicy
+#define POLICY_AUTH ::policy::PolicyLogger::Log::Source::kAuthentication
+#define POLICY_PROCESSING ::policy::PolicyLogger::Log::Source::kPolicyProcessing
+#define CBCM_ENROLLMENT ::policy::PolicyLogger::Log::Source::kCBCMEnrollment
+#define POLICY_FETCHING ::policy::PolicyLogger::Log::Source::kPolicyFetching
+#define PLATFORM_POLICY ::policy::PolicyLogger::Log::Source::kPlatformPolicy
+
+namespace policy {
 
 // Collects logs to be displayed in chrome://policy-logs.
 class POLICY_EXPORT PolicyLogger {
