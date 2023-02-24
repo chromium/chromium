@@ -751,7 +751,25 @@ xmlInitThreadsInternal(void)
      * long-standing behavior and hard to work around.
      */
     if (libxml_is_threaded == -1)
-        libxml_is_threaded = (pthread_mutex_lock != NULL);
+        libxml_is_threaded =
+            (pthread_getspecific != NULL) &&
+            (pthread_setspecific != NULL) &&
+            (pthread_key_create != NULL) &&
+            (pthread_key_delete != NULL) &&
+            (pthread_mutex_init != NULL) &&
+            (pthread_mutex_destroy != NULL) &&
+            (pthread_mutex_lock != NULL) &&
+            (pthread_mutex_unlock != NULL) &&
+            (pthread_cond_init != NULL) &&
+            (pthread_cond_destroy != NULL) &&
+            (pthread_cond_wait != NULL) &&
+            /*
+             * pthread_equal can be inline, resuting in -Waddress warnings.
+             * Let's assume it's available if all the other functions are.
+             */
+            /* (pthread_equal != NULL) && */
+            (pthread_self != NULL) &&
+            (pthread_cond_signal != NULL);
     if (libxml_is_threaded == 0)
         return;
 #endif /* XML_PTHREAD_WEAK */
@@ -790,6 +808,10 @@ void
 xmlCleanupThreadsInternal(void)
 {
 #ifdef HAVE_POSIX_THREADS
+#ifdef XML_PTHREAD_WEAK
+    if (libxml_is_threaded == 0)
+        return;
+#endif /* XML_PTHREAD_WEAK */
     pthread_key_delete(globalkey);
 #elif defined(HAVE_WIN32_THREADS)
 #if !defined(HAVE_COMPILER_TLS)

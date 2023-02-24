@@ -356,14 +356,16 @@ target_include_directories(
 	$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}/libxml2>
 )
 
-if(HAVE_DLOPEN)
-	target_link_libraries(LibXml2 PRIVATE dl)
-	set(MODULE_PLATFORM_LIBS "-ldl")
-endif()
+if(LIBXML2_WITH_MODULES)
+	if(HAVE_DLOPEN)
+		target_link_libraries(LibXml2 PRIVATE dl)
+		set(MODULE_PLATFORM_LIBS "-ldl")
+	endif()
 
-if(HAVE_SHLLOAD)
-	target_link_libraries(LibXml2 PRIVATE dld)
-	set(MODULE_PLATFORM_LIBS "-ldld")
+	if(HAVE_SHLLOAD)
+		target_link_libraries(LibXml2 PRIVATE dld)
+		set(MODULE_PLATFORM_LIBS "-ldld")
+	endif()
 endif()
 
 if(UNIX)

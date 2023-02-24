@@ -214,6 +214,11 @@ FILES_TO_REMOVE = [
     'src/xpointer.c',
     'src/xstc',
     'src/xzlib.c',
+    'linux/.deps',
+    'linux/doc',
+    'linux/example',
+    'linux/fuzz',
+    'linux/python',
 ]
 
 
