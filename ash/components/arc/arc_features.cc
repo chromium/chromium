@@ -336,4 +336,23 @@ BASE_FEATURE(kVmBroadcastPreNotifyANR,
 BASE_FEATURE(kVmmSwapKeyboardShortcut,
              "ArcvmSwapoutKeyboardShortcut",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls experimental key to enable and swap out ARCVM by policy.
+BASE_FEATURE(kVmmSwapPolicy,
+             "ArcVmmSwapPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls the time interval between create staging memory and swap out. The
+// default value is 10 seconds.
+const base::FeatureParam<int> kVmmSwapOutDelaySecond{&kVmmSwapPolicy,
+                                                     "delay_sec", 10};
+
+// Controls the time interval between two swap out. The default value is 12
+// hours.
+const base::FeatureParam<int> kVmmSwapOutTimeIntervalSecond{
+    &kVmmSwapPolicy, "swapout_interval_sec", 60 * 60 * 12};
+
+// Controls the time interval of ARC silence. The default value is 15 minutes.
+const base::FeatureParam<int> kVmmSwapArcSilenceIntervalSecond{
+    &kVmmSwapPolicy, "arc_silence_interval_sec", 60 * 15};
 }  // namespace arc
