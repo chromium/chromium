@@ -806,13 +806,7 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
   if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
     return false;
   }
-  // TODO(crbug.com/969114): Not all shared image factory implementations
-  // support concurrent read/write usage.
-  constexpr uint32_t kInvalidUsage =
-      SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE | SHARED_IMAGE_USAGE_CPU_UPLOAD;
-  if (usage & kInvalidUsage) {
-    return false;
-  }
+
   if (!IsFormatSupported(format)) {
     return false;
   }

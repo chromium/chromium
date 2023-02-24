@@ -30,7 +30,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU;
-}
+
+}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 // EGLImageBackingFactory

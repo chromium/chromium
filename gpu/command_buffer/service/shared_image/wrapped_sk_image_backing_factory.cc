@@ -29,7 +29,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_CPU_UPLOAD | SHARED_IMAGE_USAGE_MIPMAP;
 
 bool IsUsageSupported(uint32_t usage) {
-  return (usage & kSupportedUsage) && !(usage & ~kSupportedUsage);
+  // Must have at least one of the supported usage flags.
+  return usage & kSupportedUsage;
 }
 
 }  // namespace

@@ -204,12 +204,6 @@ bool ExternalVkImageBackingFactory::IsSupported(
     return false;
   }
 
-  // TODO(crbug.com/969114): Not all shared image factory implementations
-  // support concurrent read/write usage.
-  constexpr uint32_t kInvalidUsages = SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-  if (usage & kInvalidUsages) {
-    return false;
-  }
   if (thread_safe) {
     LOG(ERROR) << "ExternalVkImageBackingFactory currently do not support "
                   "cross-thread usage.";

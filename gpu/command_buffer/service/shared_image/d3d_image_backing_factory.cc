@@ -530,14 +530,6 @@ bool D3DImageBackingFactory::IsSupported(uint32_t usage,
     return false;
   }
 
-  if (usage & SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE) {
-    return false;
-  }
-
-  if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
-    return false;
-  }
-
   if (gmb_type == gfx::EMPTY_BUFFER) {
     if (GetDXGIFormatForCreateTexture(format) == DXGI_FORMAT_UNKNOWN) {
       return false;

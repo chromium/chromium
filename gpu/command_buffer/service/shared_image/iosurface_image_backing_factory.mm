@@ -236,9 +236,7 @@ bool IOSurfaceImageBackingFactory::IsSupported(
   if (gmb_type == gfx::SHARED_MEMORY_BUFFER) {
     return false;
   }
-  if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD) {
-    return false;
-  }
+
   // On macOS, there is no separate interop factory. Any GpuMemoryBuffer-backed
   // image can be used with both OpenGL and Metal
 

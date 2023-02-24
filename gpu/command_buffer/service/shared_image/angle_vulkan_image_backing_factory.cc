@@ -131,10 +131,6 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
 bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
     uint32_t usage,
     gfx::GpuMemoryBufferType gmb_type) const {
-  if (usage & ~kSupportedUsage) {
-    return false;
-  }
-
   if (!IsGMBSupported(gmb_type))
     return false;
 
