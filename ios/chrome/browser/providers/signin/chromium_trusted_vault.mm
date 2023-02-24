@@ -98,7 +98,7 @@ void ChromiumTrustedVaultClientBackend::CancelDialog(BOOL animated,
 void ChromiumTrustedVaultClientBackend::ClearLocalData(
     id<SystemIdentity> identity,
     base::OnceCallback<void(bool)> callback) {
-  NOTREACHED();
+  // Do nothing.
 }
 
 void ChromiumTrustedVaultClientBackend::GetPublicKeyForIdentity(
