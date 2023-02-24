@@ -37,12 +37,13 @@ namespace {
 
 class BrowserShutdownHandler {
  public:
+  typedef base::OnceCallback<void(int)> ShutdownCallback;
+
   BrowserShutdownHandler(const BrowserShutdownHandler&) = delete;
   BrowserShutdownHandler& operator=(const BrowserShutdownHandler&) = delete;
 
-  static void Install(base::OnceClosure shutdown_callback) {
-    GetInstance().Init(content::GetUIThreadTaskRunner({}),
-                       std::move(shutdown_callback));
+  static void Install(ShutdownCallback shutdown_callback) {
+    GetInstance().Init(std::move(shutdown_callback));
 
     // We need to handle SIGTERM, because that is how many POSIX-based distros
     // ask processes to quit gracefully at shutdown time.
@@ -73,15 +74,17 @@ class BrowserShutdownHandler {
     return *instance;
   }
 
-  void Init(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-            base::OnceClosure shutdown_callback) {
-    task_runner_ = std::move(task_runner);
+  void Init(ShutdownCallback shutdown_callback) {
+    task_runner_ = content::GetUIThreadTaskRunner({});
     shutdown_callback_ = std::move(shutdown_callback);
   }
 
   void Shutdown(int signal) {
     if (shutdown_callback_) {
-      if (!task_runner_->PostTask(FROM_HERE, std::move(shutdown_callback_))) {
+      int exit_code = 0x80u + signal;
+      if (!task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(std::move(shutdown_callback_), exit_code))) {
         RAW_LOG(WARNING, "No valid task runner, exiting ungracefully.");
         kill(getpid(), signal);
       }
@@ -115,7 +118,7 @@ class BrowserShutdownHandler {
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  base::OnceClosure shutdown_callback_;
+  ShutdownCallback shutdown_callback_;
 };
 
 }  // namespace
@@ -125,8 +128,8 @@ constexpr char kProductName[] = "HeadlessChrome";
 #endif
 
 void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
-  BrowserShutdownHandler::Install(
-      base::BindOnce(&HeadlessBrowserImpl::Shutdown, browser_->GetWeakPtr()));
+  BrowserShutdownHandler::Install(base::BindOnce(
+      &HeadlessBrowserImpl::ShutdownWithExitCode, browser_->GetWeakPtr()));
 
 #if BUILDFLAG(IS_LINUX)
 

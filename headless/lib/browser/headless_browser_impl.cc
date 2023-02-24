@@ -160,6 +160,11 @@ void HeadlessBrowserImpl::Shutdown() {
   browser_main_parts_->QuitMainMessageLoop();
 }
 
+void HeadlessBrowserImpl::ShutdownWithExitCode(int exit_code) {
+  exit_code_ = exit_code;
+  Shutdown();
+}
+
 std::vector<HeadlessBrowserContext*>
 HeadlessBrowserImpl::GetAllBrowserContexts() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
