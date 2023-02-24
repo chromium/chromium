@@ -27,22 +27,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     absl::optional<blink::StorageKey> maybe_storage_key =
         blink::StorageKey::Deserialize(serialized_storage_key);
     if (maybe_storage_key) {
-      // We need to force enable third-party partitioning before serializing
-      // to ensure no information is lost due to partitioning being disabled.
-      assert(
-          maybe_storage_key->CopyWithForceEnabledThirdPartyStoragePartitioning()
-              .Serialize() == serialized_storage_key);
+      assert(maybe_storage_key->Serialize() == serialized_storage_key);
     }
 
     // LocalStorage deserialization test.
     maybe_storage_key =
         blink::StorageKey::DeserializeForLocalStorage(serialized_storage_key);
     if (maybe_storage_key) {
-      // We need to force enable third-party partitioning before serializing
-      // to ensure no information is lost due to partitioning being disabled.
-      assert(
-          maybe_storage_key->CopyWithForceEnabledThirdPartyStoragePartitioning()
-              .SerializeForLocalStorage() == serialized_storage_key);
+      assert(maybe_storage_key->SerializeForLocalStorage() ==
+             serialized_storage_key);
     }
   }
   return 0;
