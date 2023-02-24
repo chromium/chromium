@@ -129,9 +129,10 @@ class MockPersonalDataManager : public TestPersonalDataManager {
 class MockAutofillClient : public TestAutofillClient {
  public:
   explicit MockAutofillClient(
-      std::unique_ptr<TestPersonalDataManager> pdm = nullptr)
-      : TestAutofillClient(pdm ? std::move(pdm)
-                               : std::make_unique<TestPersonalDataManager>()) {}
+      std::unique_ptr<TestPersonalDataManager> pdm = nullptr) {
+    set_personal_data_manager(
+        pdm ? std::move(pdm) : std::make_unique<TestPersonalDataManager>());
+  }
   ~MockAutofillClient() override = default;
   MOCK_METHOD(VirtualCardEnrollmentManager*,
               GetVirtualCardEnrollmentManager,

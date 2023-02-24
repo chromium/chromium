@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -391,9 +392,9 @@ void AutofillClientImpl::LoadRiskData(
 }
 
 AutofillClientImpl::AutofillClientImpl(content::WebContents* web_contents)
-    : content::WebContentsUserData<AutofillClientImpl>(*web_contents),
+    : autofill::ContentAutofillClient(
+          web_contents,
+          base::BindRepeating(&autofill::AndroidDriverInitHook, this)),
       content::WebContentsObserver(web_contents) {}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillClientImpl);
 
 }  // namespace weblayer

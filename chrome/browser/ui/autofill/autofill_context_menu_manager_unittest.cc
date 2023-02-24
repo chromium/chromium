@@ -12,8 +12,8 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -27,6 +27,12 @@ using testing::_;
 namespace autofill {
 
 namespace {
+
+ContentAutofillDriverFactoryTestApi test_api(
+    ContentAutofillDriverFactory* cadf) {
+  return ContentAutofillDriverFactoryTestApi(cadf);
+}
+
 // Generates a ContextMenuParams for the Autofill context menu options.
 content::ContextMenuParams CreateContextMenuParams(
     absl::optional<autofill::FormRendererId> form_renderer_id = absl::nullopt,
@@ -86,7 +92,13 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
     pdm->AddProfile(test::GetFullProfile());
     pdm->AddCreditCard(test::GetCreditCard());
 
-    autofill_client_ = std::make_unique<TestAutofillClient>(std::move(pdm));
+    auto autofill_client =
+        std::make_unique<TestContentAutofillClient>(web_contents());
+    autofill_client->set_personal_data_manager(std::move(pdm));
+    autofill_client_ = autofill_client.get();
+    web_contents()->SetUserData(autofill_client_->UserDataKey(),
+                                std::move(autofill_client));
+
     menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
         *main_rfh(), content::ContextMenuParams());
@@ -105,7 +117,7 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     autofill_context_menu_manager_.reset();
     render_view_context_menu_.reset();
-    autofill_client_.reset();
+    web_contents()->RemoveUserData(autofill_client_->UserDataKey());
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -114,12 +126,12 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
       content::RenderFrameHost* rfh,
       std::unique_ptr<MockAutofillDriver> driver) {
     auto* raw_driver = driver.get();
-    ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-        web_contents(), autofill_client_.get(),
-        ContentAutofillDriverFactory::DriverInitCallback());
-    auto* cadf = ContentAutofillDriverFactory::FromWebContents(web_contents());
-    ContentAutofillDriverFactoryTestApi(cadf).SetDriver(rfh, std::move(driver));
+    test_api(factory()).SetDriver(rfh, std::move(driver));
     return raw_driver;
+  }
+
+  ContentAutofillDriverFactory* factory() {
+    return autofill_client_->GetAutofillDriverFactory();
   }
 
   ui::SimpleMenuModel* menu_model() const { return menu_model_.get(); }
@@ -131,7 +143,7 @@ class AutofillContextMenuManagerTest : public ChromeRenderViewHostTestHarness {
   MockAutofillDriver* driver() const { return driver_; }
 
  private:
-  std::unique_ptr<TestAutofillClient> autofill_client_;
+  raw_ptr<TestContentAutofillClient> autofill_client_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;

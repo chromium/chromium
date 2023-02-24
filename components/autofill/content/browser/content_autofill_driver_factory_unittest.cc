@@ -132,8 +132,7 @@ class ContentAutofillDriverFactoryTest
 
     factory_ = ContentAutofillDriverFactoryTestApi::Create(
         web_contents(), client_.get(),
-        base::BindRepeating(&autofill::BrowserDriverInitHook, client_.get(),
-                            "en-US"));
+        base::BindRepeating(&BrowserDriverInitHook, client_.get(), "en-US"));
   }
 
   void TearDown() override {

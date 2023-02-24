@@ -14,8 +14,11 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/locale_utils.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check_op.h"
 #include "base/notreached.h"
+#include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/autofill_provider_android.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
@@ -40,6 +43,20 @@ using base::android::ScopedJavaLocalRef;
 using content::WebContents;
 
 namespace android_webview {
+
+void AwAutofillClient::CreateForWebContents(content::WebContents* contents,
+                                            bool use_android_autofill_manager) {
+  DCHECK(contents);
+  if (!FromWebContents(contents)) {
+    contents->SetUserData(UserDataKey(),
+                          base::WrapUnique(new AwAutofillClient(
+                              contents, use_android_autofill_manager)));
+  }
+#if DCHECK_IS_ON()
+  DCHECK_EQ(use_android_autofill_manager,
+            FromWebContents(contents)->use_android_autofill_manager_);
+#endif
+}
 
 AwAutofillClient::~AwAutofillClient() {
   HideAutofillPopup(autofill::PopupHidingReason::kTabGone);
@@ -389,8 +406,20 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
 // AwContents. The native object creates the java peer which handles most
 // autofill functionality at the java side. The java peer is owned by Java
 // AwContents. The native object only maintains a weak ref to it.
-AwAutofillClient::AwAutofillClient(WebContents* contents)
-    : content::WebContentsUserData<AwAutofillClient>(*contents) {
+AwAutofillClient::AwAutofillClient(WebContents* contents,
+                                   bool use_android_autofill_manager)
+    : autofill::ContentAutofillClient(
+          contents,
+          use_android_autofill_manager
+              ? base::BindRepeating(&autofill::AndroidDriverInitHook, this)
+              : base::BindRepeating(&autofill::BrowserDriverInitHook,
+                                    this,
+                                    base::android::GetDefaultLocaleString()))
+#if DCHECK_IS_ON()
+      ,
+      use_android_autofill_manager_(use_android_autofill_manager)
+#endif
+{
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> delegate;
   delegate.Reset(
@@ -449,9 +478,7 @@ content::WebContents& AwAutofillClient::GetWebContents() const {
   // spots and the content public API doesn't have const accessors. So the const
   // cast is the lesser of two evils.
   return const_cast<content::WebContents&>(
-      content::WebContentsUserData<AwAutofillClient>::GetWebContents());
+      ContentAutofillClient::GetWebContents());
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AwAutofillClient);
 
 }  // namespace android_webview

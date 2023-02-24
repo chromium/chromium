@@ -22,10 +22,10 @@
 #include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/content/browser/content_autofill_router_test_api.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -58,6 +58,19 @@ using ::testing::SaveArg;
 namespace {
 
 const char kAppLocale[] = "en-US";
+
+ContentAutofillDriverFactoryTestApi test_api(
+    ContentAutofillDriverFactory* cadf) {
+  return ContentAutofillDriverFactoryTestApi(cadf);
+}
+
+ContentAutofillRouterTestApi test_api(ContentAutofillRouter* cad) {
+  return ContentAutofillRouterTestApi(cad);
+}
+
+ContentAutofillDriverTestApi test_api(ContentAutofillDriver* cad) {
+  return ContentAutofillDriverTestApi(cad);
+}
 
 class FakeAutofillAgent : public mojom::AutofillAgent {
  public:
@@ -321,11 +334,12 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
     // happy for when AppendChild is called.
     NavigateAndCommit(GURL("about:blank"));
 
-    test_autofill_client_ = std::make_unique<TestAutofillClient>();
-    router_ = std::make_unique<ContentAutofillRouter>();
-    driver_ = std::make_unique<TestContentAutofillDriver>(
-        web_contents()->GetPrimaryMainFrame(), router_.get(),
-        test_autofill_client_.get());
+    auto client = std::make_unique<TestContentAutofillClient>(web_contents());
+    client_ = client.get();
+    web_contents()->SetUserData(client_->UserDataKey(), std::move(client));
+    factory_ = client_->GetAutofillDriverFactory();
+    router_ = &test_api(factory_).router();
+    driver_ = CreateDriver(web_contents()->GetPrimaryMainFrame());
 
     blink::AssociatedInterfaceProvider* remote_interfaces =
         web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
@@ -335,10 +349,19 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
                             base::Unretained(&fake_agent_)));
   }
 
+  TestContentAutofillDriver* CreateDriver(content::RenderFrameHost* rfh) {
+    auto driver =
+        std::make_unique<TestContentAutofillDriver>(rfh, router_, client_);
+    auto* raw_driver = driver.get();
+    test_api(factory_).SetDriver(raw_driver->render_frame_host(),
+                                 std::move(driver));
+    return raw_driver;
+  }
+
   void TearDown() override {
     // Reset the driver now to cause all pref observers to be removed and avoid
     // crashes that otherwise occur in the destructor.
-    driver_.reset();
+    web_contents()->RemoveUserData(client_->UserDataKey());
     content::RenderViewHostTestHarness::TearDown();
   }
 
@@ -377,9 +400,10 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
   base::test::ScopedFeatureList scoped_feature_list_;
   test::AutofillEnvironment autofill_environment_;
 
-  std::unique_ptr<TestAutofillClient> test_autofill_client_;
-  std::unique_ptr<ContentAutofillRouter> router_;
-  std::unique_ptr<TestContentAutofillDriver> driver_;
+  TestContentAutofillClient* client_;
+  ContentAutofillDriverFactory* factory_;
+  ContentAutofillRouter* router_;
+  TestContentAutofillDriver* driver_;
 
   FakeAutofillAgent fake_agent_;
 };
@@ -407,11 +431,9 @@ TEST_P(ContentAutofillDriverTest, NavigatedMainFramePrerenderedPageActivation) {
 TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
   FormData form;
-  form.fields.push_back(FormFieldData());
-  FormData form2 = ContentAutofillDriverTestApi(driver_.get())
-                       .GetFormWithFrameAndFormMetaData(form);
-  ContentAutofillDriverTestApi(driver_.get())
-      .SetFrameAndFormMetaData(form, nullptr);
+  form.fields.emplace_back();
+  FormData form2 = test_api(driver_).GetFormWithFrameAndFormMetaData(form);
+  test_api(driver_).SetFrameAndFormMetaData(form, nullptr);
 
   EXPECT_EQ(
       form.host_frame,
@@ -443,8 +465,7 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_AboutScheme) {
   ASSERT_TRUE(main_rfh()->GetLastCommittedURL().IsAboutBlank());
 
   FormData form;
-  ContentAutofillDriverTestApi(driver_.get())
-      .SetFrameAndFormMetaData(form, nullptr);
+  test_api(driver_).SetFrameAndFormMetaData(form, nullptr);
 
   EXPECT_TRUE(form.url.is_empty());
 }
@@ -454,12 +475,10 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm_Version) {
   ASSERT_TRUE(main_rfh()->GetLastCommittedURL().IsAboutBlank());
 
   FormData form1;
-  ContentAutofillDriverTestApi(driver_.get())
-      .SetFrameAndFormMetaData(form1, nullptr);
+  test_api(driver_).SetFrameAndFormMetaData(form1, nullptr);
 
   FormData form2;
-  ContentAutofillDriverTestApi(driver_.get())
-      .SetFrameAndFormMetaData(form2, nullptr);
+  test_api(driver_).SetFrameAndFormMetaData(form2, nullptr);
 
   EXPECT_LT(form1.version, form2.version);
 }
@@ -478,14 +497,12 @@ TEST_P(ContentAutofillDriverTest,
           GURL("about:blank"),
           content::RenderFrameHostTester::For(child_rfh)->AppendChild(
               "grandchild"));
-  auto grandchild_driver = std::make_unique<TestContentAutofillDriver>(
-      grandchild_rfh, router_.get(), test_autofill_client_.get());
+  TestContentAutofillDriver* grandchild_driver = CreateDriver(grandchild_rfh);
   ASSERT_TRUE(child_rfh->GetLastCommittedURL().IsAboutBlank());
   ASSERT_TRUE(grandchild_rfh->GetLastCommittedURL().IsAboutBlank());
 
   FormData form;
-  ContentAutofillDriverTestApi(grandchild_driver.get())
-      .SetFrameAndFormMetaData(form, nullptr);
+  test_api(grandchild_driver).SetFrameAndFormMetaData(form, nullptr);
 
   EXPECT_EQ(form.url, GURL("https://hostname"));
 }
@@ -495,11 +512,10 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   // We test that `SetFrameAndFormMetaData(form, &field) sets the meta data not
   // just of |form|'s fields but also of an additional individual |field|.
   FormData form;
-  form.fields.push_back(FormFieldData());
+  form.fields.emplace_back();
   FormFieldData field = form.fields.back();
   FormSignature signature_without_meta_data = CalculateFormSignature(form);
-  ContentAutofillDriverTestApi(driver_.get())
-      .SetFrameAndFormMetaData(form, &field);
+  test_api(driver_).SetFrameAndFormMetaData(form, &field);
 
   EXPECT_NE(signature_without_meta_data, CalculateFormSignature(form));
   EXPECT_EQ(
@@ -574,8 +590,7 @@ TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   driver_->renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
 
-  ContentAutofillDriverTestApi(driver_.get())
-      .SetFrameAndFormMetaData(form, nullptr);
+  test_api(driver_).SetFrameAndFormMetaData(form, nullptr);
   ASSERT_EQ(augmented_forms.size(), 1u);
   EXPECT_TRUE(augmented_forms.front().SameFormAs(form));
 
@@ -664,31 +679,21 @@ TEST_P(ContentAutofillDriverTest, PreviewFieldWithValue) {
 }
 
 TEST_P(ContentAutofillDriverTest, SetShouldSuppressKeyboard) {
-  auto driver_test_api = ContentAutofillDriverTestApi(driver_.get());
-  ASSERT_FALSE(driver_test_api.should_suppress_keyboard());
-  ContentAutofillRouterTestApi(&driver_test_api.autofill_router())
-      .set_last_queried_source(driver_.get());
+  ASSERT_FALSE(test_api(driver_).should_suppress_keyboard());
+  test_api(router_).set_last_queried_source(driver_);
 
   driver_->SetShouldSuppressKeyboard(true);
-  EXPECT_TRUE(driver_test_api.should_suppress_keyboard());
+  EXPECT_TRUE(test_api(driver_).should_suppress_keyboard());
 }
 
 TEST_P(ContentAutofillDriverTest, TriggerReparseInAllFrames) {
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
-  ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
-      web_contents(), test_autofill_client_.get(),
-      ContentAutofillDriverFactory::DriverInitCallback());
-  auto factory_test_api = ContentAutofillDriverFactoryTestApi(
-      ContentAutofillDriverFactory::FromWebContents(web_contents()));
-  content::RenderFrameHost* rfh = driver_->render_frame_host();
-  factory_test_api.SetDriver(rfh, std::move(driver_));
-  ContentAutofillDriver* driver = factory_test_api.GetDriver(rfh);
   base::OnceCallback<void(bool)> trigger_reparse_finished_callback;
 
   EXPECT_CALL(fake_agent_, TriggerReparseWithResponse)
       .WillOnce(MoveArg<0>(&trigger_reparse_finished_callback));
-  driver->browser_events().TriggerReparseInAllFrames(base::BindOnce(
+  driver_->browser_events().TriggerReparseInAllFrames(base::BindOnce(
       [](base::RunLoop* run_loop, bool success) { run_loop->Quit(); },
       &run_loop));
   run_loop.RunUntilIdle();
