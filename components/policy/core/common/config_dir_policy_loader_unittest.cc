@@ -162,8 +162,7 @@ void TestHarness::WriteConfigFile(const std::string& data,
   const base::FilePath mandatory_dir(test_dir().Append(kMandatoryPath));
   ASSERT_TRUE(base::CreateDirectory(mandatory_dir));
   const base::FilePath file_path(mandatory_dir.AppendASCII(file_name));
-  ASSERT_EQ((int)data.size(),
-            base::WriteFile(file_path, data.c_str(), data.size()));
+  ASSERT_TRUE(base::WriteFile(file_path, data));
 }
 
 std::string TestHarness::NextConfigFileName() {
