@@ -27,7 +27,7 @@ constexpr int kPaddingWide = 12;
 constexpr int kPaddingNarrow = 8;
 
 // Dogfood feedback button layout values.
-constexpr int kButtonWidth = 130;
+constexpr int kButtonWidth = 120;
 constexpr int kButtonHeight = 28;
 
 }  // namespace
