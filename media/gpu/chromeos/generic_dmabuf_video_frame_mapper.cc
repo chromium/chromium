@@ -85,9 +85,9 @@ uint8_t* Mmap(const size_t length, const int fd, int permissions) {
   void* addr = mmap(nullptr, length, permissions, MAP_SHARED, fd, 0u);
 
   if (addr == MAP_FAILED) {
-    VLOGF(1) << "Failed to mmap.";
     return nullptr;
   }
+
   return static_cast<uint8_t*>(addr);
 }
 
@@ -226,6 +226,12 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
     }
 
     uint8_t* mapped_addr = Mmap(mapped_size, dmabuf_fds[i].get(), permissions);
+    if (!mapped_addr) {
+      VLOGF(1) << "nullptr returned by Mmap";
+      MunmapBuffers(chunks, /*video_frame=*/nullptr);
+      return nullptr;
+    }
+
     chunks.emplace_back(mapped_addr, mapped_size);
     for (size_t j = i; j < next_buf; ++j)
       plane_addrs[j] = mapped_addr + planes[j].offset;
