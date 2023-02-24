@@ -2740,6 +2740,24 @@
             ]
         }
     ],
+    "ChromeOSQsRevampExperiments": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "params": {
+                        "launch_stage": "dogfood"
+                    },
+                    "enable_features": [
+                        "QsRevamp"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSRawPSIMetrics": [
         {
             "platforms": [
