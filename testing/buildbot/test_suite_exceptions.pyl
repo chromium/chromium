@@ -71,7 +71,7 @@
               'device_type': 'sailfish',
             },
           ],
-          'shards': 3,
+          'shards': 4,
           'quickrun_shards': 6,
         },
       },
