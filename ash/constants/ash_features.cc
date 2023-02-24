@@ -2002,6 +2002,11 @@ BASE_FEATURE(kTerminalTmuxIntegration,
              "TerminalTmuxIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables time of day screen saver.
+BASE_FEATURE(kTimeOfDayScreenSaver,
+             "TimeOfDayScreenSaver",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables time of day wallpaper.
 BASE_FEATURE(kTimeOfDayWallpaper,
              "TimeOfDayWallpaper",
@@ -3132,6 +3137,11 @@ bool IsSystemTrayShadowEnabled() {
 
 bool IsStylusBatteryStatusEnabled() {
   return base::FeatureList::IsEnabled(kStylusBatteryStatus);
+}
+
+bool IsTimeOfDayScreenSaverEnabled() {
+  return base::FeatureList::IsEnabled(kTimeOfDayScreenSaver) &&
+         IsTimeOfDayWallpaperEnabled();
 }
 
 bool IsTimeOfDayWallpaperEnabled() {

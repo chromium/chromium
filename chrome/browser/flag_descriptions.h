@@ -3478,6 +3478,9 @@ extern const char kTerminalTmuxIntegrationDescription[];
 extern const char kTetherName[];
 extern const char kTetherDescription[];
 
+extern const char kTimeOfDayScreenSaverName[];
+extern const char kTimeOfDayScreenSaverDescription[];
+
 extern const char kTimeOfDayWallpaperName[];
 extern const char kTimeOfDayWallpaperDescription[];
 

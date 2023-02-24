@@ -58202,6 +58202,7 @@ from previous Chrome versions.
   <int value="-2041091005" label="OmniboxDomainSuggestions:enabled"/>
   <int value="-2040471724" label="CrOSComponent:disabled"/>
   <int value="-2040360427" label="DesktopScreenshots:disabled"/>
+  <int value="-2040154722" label="TimeOfDayScreenSaver:enabled"/>
   <int value="-2040115518" label="load-media-router-component-extension"/>
   <int value="-2039971160" label="UseNAT64ForIPv4Literal:enabled"/>
   <int value="-2039439354"
@@ -61481,6 +61482,7 @@ from previous Chrome versions.
   <int value="-222282965"
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
   <int value="-221649438" label="AllowTouchpadHapticClickSettings:disabled"/>
+  <int value="-220829663" label="TimeOfDayScreenSaver:disabled"/>
   <int value="-220599034" label="UsePdfCompositorServiceForPrint:enabled"/>
   <int value="-220298483" label="ImeOptionsInSettings:enabled"/>
   <int value="-218843425" label="auto-framing-override"/>

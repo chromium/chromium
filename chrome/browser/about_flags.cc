@@ -3779,6 +3779,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kPolicyProvidedTrustAnchorsAllowedAtLockScreen)},
+    {"time-of-day-screen-saver", flag_descriptions::kTimeOfDayScreenSaverName,
+     flag_descriptions::kTimeOfDayScreenSaverDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTimeOfDayScreenSaver)},
     {"time-of-day-wallpaper", flag_descriptions::kTimeOfDayWallpaperName,
      flag_descriptions::kTimeOfDayWallpaperDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kTimeOfDayWallpaper)},

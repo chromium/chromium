@@ -6042,6 +6042,11 @@ const char kTetherDescription[] =
     "Enables Instant Tethering. Instant Tethering allows your nearby Google "
     "phone to share its Internet connection with this device.";
 
+const char kTimeOfDayScreenSaverName[] = "Time of Day Screen Saver";
+const char kTimeOfDayScreenSaverDescription[] =
+    "Enables Time of Day Screen Saver feature on supported devices. Requires "
+    "Time Of Day Wallpaper feature to be enabled.";
+
 const char kTimeOfDayWallpaperName[] = "Time of Day Wallpaper";
 const char kTimeOfDayWallpaperDescription[] =
     "Enables Time of Day Wallpaper feature on supported devices.";
