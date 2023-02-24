@@ -8,8 +8,9 @@ PASS public to public: success.
 FAIL treat-as-public to local: failure. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 FAIL treat-as-public to private: failure. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 PASS treat-as-public to public: success.
-PASS private https to local: failure.
-PASS public https to private: failure.
-PASS public https to local: failure.
+PASS local https to local https: success.
+FAIL private https to local https: failure. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+FAIL public https to private https: failure. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+FAIL public https to local https: failure. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 Harness: the test ran to completion.
 
