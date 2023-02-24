@@ -22,7 +22,7 @@ namespace web {
 static const int kMaxAnnotationsTextLength = 65535;
 
 AnnotationsTextManagerImpl::AnnotationsTextManagerImpl(WebState* web_state)
-    : web_state_(web_state) {
+    : web_state_(web_state), seq_id_(1) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
 }
@@ -42,13 +42,19 @@ void AnnotationsTextManagerImpl::RemoveObserver(
 }
 
 void AnnotationsTextManagerImpl::DecorateAnnotations(WebState* web_state,
-                                                     base::Value& annotations) {
+                                                     base::Value& annotations,
+                                                     int seq_id) {
   DCHECK_EQ(web_state_, web_state);
+  // This can happen if `RemoveDecorations` is called before this is called.
+  if (seq_id != seq_id_) {
+    return;
+  }
   AnnotationsJavaScriptFeature::GetInstance()->DecorateAnnotations(web_state_,
                                                                    annotations);
 }
 
 void AnnotationsTextManagerImpl::RemoveDecorations() {
+  seq_id_++;
   AnnotationsJavaScriptFeature::GetInstance()->RemoveDecorations(web_state_);
 }
 
@@ -64,8 +70,9 @@ void AnnotationsTextManagerImpl::StartExtractingText() {
     return;
   }
 
+  seq_id_++;
   AnnotationsJavaScriptFeature::GetInstance()->ExtractText(
-      web_state_, kMaxAnnotationsTextLength);
+      web_state_, kMaxAnnotationsTextLength, seq_id_);
 }
 
 #pragma mark - WebStateObserver methods.
@@ -87,16 +94,23 @@ void AnnotationsTextManagerImpl::WebStateDestroyed(WebState* web_state) {
 #pragma mark - JS Methods
 
 void AnnotationsTextManagerImpl::OnTextExtracted(WebState* web_state,
-                                                 const std::string& text) {
+                                                 const std::string& text,
+                                                 int seq_id) {
+  if (!web_state_ || seq_id != seq_id_) {
+    return;
+  }
   DCHECK(web_state_ == web_state);
   for (auto& observer : observers_) {
-    observer.OnTextExtracted(web_state, text);
+    observer.OnTextExtracted(web_state, text, seq_id);
   }
 }
 
 void AnnotationsTextManagerImpl::OnDecorated(WebState* web_state,
                                              int successes,
                                              int annotations) {
+  if (!web_state_) {
+    return;
+  }
   DCHECK(web_state_ == web_state);
   for (auto& observer : observers_) {
     observer.OnDecorated(web_state, successes, annotations);
@@ -107,6 +121,9 @@ void AnnotationsTextManagerImpl::OnClick(WebState* web_state,
                                          const std::string& text,
                                          CGRect rect,
                                          const std::string& data) {
+  if (!web_state_) {
+    return;
+  }
   DCHECK(web_state_ == web_state);
   for (auto& observer : observers_) {
     observer.OnClick(web_state, text, rect, data);

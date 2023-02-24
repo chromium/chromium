@@ -65,8 +65,11 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   TestAnnotationTextObserver& operator=(const TestAnnotationTextObserver&) =
       delete;
 
-  void OnTextExtracted(WebState* web_state, const std::string& text) override {
+  void OnTextExtracted(WebState* web_state,
+                       const std::string& text,
+                       int seq_id) override {
     extracted_text_ = text;
+    seq_id_ = seq_id;
   }
 
   void OnDecorated(WebState* web_state,
@@ -87,10 +90,11 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   int successes() const { return successes_; }
   int annotations() const { return annotations_; }
   int clicks() const { return clicks_; }
+  int seq_id() const { return seq_id_; }
 
  private:
   std::string extracted_text_;
-  int successes_, annotations_, clicks_;
+  int successes_, annotations_, clicks_, seq_id_;
 };
 
 }  // namespace
@@ -168,7 +172,9 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
 
   // Creates and applies annotations based on `source` text and all matching
   // `items`.
-  void CreateAndApplyAnnotations(NSString* source, NSArray<NSString*>* items) {
+  void CreateAndApplyAnnotations(NSString* source,
+                                 NSArray<NSString*>* items,
+                                 int seq_id) {
     // Create annotation.
     base::Value::List annotations;
     for (NSString* item in items) {
@@ -178,7 +184,7 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
     }
     auto* manager = AnnotationsTextManager::FromWebState(web_state());
     base::Value value = base::Value(std::move(annotations));
-    manager->DecorateAnnotations(web_state(), value);
+    manager->DecorateAnnotations(web_state(), value, seq_id);
 
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
       return observer()->annotations() > 0;
@@ -267,7 +273,7 @@ TEST_F(AnnotationTextManagerTest, DecorateText) {
 
   // Create annotation.
   NSString* source = base::SysUTF8ToNSString(text);
-  CreateAndApplyAnnotations(source, @[ @"annotation" ]);
+  CreateAndApplyAnnotations(source, @[ @"annotation" ], observer() -> seq_id());
 
   EXPECT_EQ(observer()->successes(), 1);
   EXPECT_EQ(observer()->annotations(), 1);
@@ -293,8 +299,8 @@ TEST_F(AnnotationTextManagerTest, DecorateTextCrossingElements) {
   LoadHtmlAndExtractText(html);
 
   NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotations(source,
-                            @[ @"a", @"c\nd", @"f\nghi\nj", @"l\nmno" ]);
+  CreateAndApplyAnnotations(source, @[ @"a", @"c\nd", @"f\nghi\nj", @"l\nmno" ],
+                            observer() -> seq_id());
 
   // Check the resulting html is annotating at the right place.
   CheckHtml("<html><body>"
@@ -323,7 +329,7 @@ TEST_F(AnnotationTextManagerTest, ClickAnnotation) {
                          "<p>text</p>"
                          "</body></html>");
   NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotations(source, @[ @"annotation" ]);
+  CreateAndApplyAnnotations(source, @[ @"annotation" ], observer() -> seq_id());
   ClickAnnotation(0);
   EXPECT_EQ(observer()->clicks(), 1);
 }

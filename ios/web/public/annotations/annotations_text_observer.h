@@ -12,14 +12,21 @@ class WebState;
 
 // Allows observation of web page text extracted, for annotations or other
 // purpose (like language detection). All methods are called on main thread.
+// `seq_id` is needed for any calls to
+// `AnnotationsTextManager::DecorateAnnotations`, to make sure the annotations
+// apply to the same text extracted (which can, for example, be replaced by
+// translate).
 class AnnotationsTextObserver : public base::CheckedObserver {
  public:
   // Called on page load, after `text` has been extracted.
-  virtual void OnTextExtracted(WebState* web_state, const std::string& text) {}
+  virtual void OnTextExtracted(WebState* web_state,
+                               const std::string& text,
+                               int seq_id) {}
 
   // Called when decorations have been applied. `successes` is the number of
   // annotations that were successfully stylized in the page. `annotations` is
-  // the number of annotations that were sent for decorating.
+  // the number of annotations that were sent for decorating. There is no
+  // guarantee this will be called.
   virtual void OnDecorated(WebState* web_state,
                            int successes,
                            int annotations) {}

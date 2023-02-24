@@ -36,7 +36,8 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
 
   // AnnotationsTextObserver methods:
   void OnTextExtracted(web::WebState* web_state,
-                       const std::string& text) override;
+                       const std::string& text,
+                       int seq_id) override;
   void OnDecorated(web::WebState* web_state,
                    int successes,
                    int annotations) override;
@@ -56,7 +57,11 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
   explicit AnnotationsTabHelper(web::WebState* web_state);
 
   // Receiver for text classifier extracted intents. Must run on main thread.
-  void ApplyDeferredProcessing(absl::optional<base::Value> deferred);
+  // `seq_id` comes from `OnTextExtracted` and is meant to be passed on to
+  // `AnnotationsTextManager::DecorateAnnotations` to validate decorations
+  // against the text extracted.
+  void ApplyDeferredProcessing(int seq_id,
+                               absl::optional<base::Value> deferred);
 
   UIViewController* base_view_controller_ = nil;
 
