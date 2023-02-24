@@ -3301,6 +3301,13 @@
                     "enable_features": [
                         "EnableEventSequenceLogging"
                     ]
+                },
+                {
+                    "name": "AppDiscoveryLogging",
+                    "enable_features": [
+                        "AppDiscoveryLogging",
+                        "EnableEventSequenceLogging"
+                    ]
                 }
             ]
         }
