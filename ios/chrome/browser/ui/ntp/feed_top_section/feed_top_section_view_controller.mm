@@ -107,8 +107,13 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
     DCHECK(!self.promoView);
     self.promoViewContainer = [[UIView alloc] init];
     self.promoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    self.promoViewContainer.backgroundColor =
-        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    if (IsDiscoverFeedTopSyncPromoCompact()) {
+      self.promoViewContainer.backgroundColor =
+          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+    } else {
+      self.promoViewContainer.backgroundColor =
+          [UIColor colorNamed:kGrey100Color];
+    }
     self.promoViewContainer.layer.cornerRadius =
         kPromoViewContainerBorderRadius;
 
@@ -188,9 +193,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   promoView.titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE);
   promoView.textLabel.text =
-      IsDiscoverFeedTopSyncPromoCompact()
-          ? l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY)
-          : l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_FULL_PROMO_BODY);
+      l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_COMPACT_PROMO_BODY);
   // TODO(crbug.com/1331010): Update the Promo icon.
   [promoView setNonProfileImage:[UIImage imageNamed:kPromoViewImageName]];
   return promoView;

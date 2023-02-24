@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -79,11 +80,13 @@ using l10n_util::GetNSStringF;
       break;
     }
     case SigninPromoViewStyleTitled: {
-      [self configureTitledPromoView:signinPromoView];
+      [self configureTitledPromoView:signinPromoView
+                           withStyle:SigninPromoViewStyleTitled];
       break;
     }
     case SigninPromoViewStyleTitledCompact: {
-      [self configureTitledPromoView:signinPromoView];
+      [self configureTitledPromoView:signinPromoView
+                           withStyle:SigninPromoViewStyleTitledCompact];
       break;
     }
   }
@@ -128,12 +131,17 @@ using l10n_util::GetNSStringF;
 
 // Configures the view elements of the `signinPromoView` to conform to
 // `SigninPromoViewStyleTitled` or `SigninPromoViewStyleTitledCompact` style.
-- (void)configureTitledPromoView:(SigninPromoView*)signinPromoView {
+- (void)configureTitledPromoView:(SigninPromoView*)signinPromoView
+                       withStyle:(SigninPromoViewStyle)promoStyle {
   // In the titled Promo views (both compact and non compact the primary button
   // text will use "continue" regardless of the promo mode.
   signinPromoView.titleLabel.hidden = NO;
-  //  signinPromoView.secondaryButton.hidden = YES;
-  NSString* signInString = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
+  // TODO(crbug.com/1331010): Change promoStyle to
+  // `IsDiscoverFeedTopSyncPromoCompact()`
+  NSString* signInString =
+      (promoStyle == SigninPromoViewStyleTitledCompact)
+          ? GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)
+          : GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
   [signinPromoView.primaryButton setTitle:signInString
                                  forState:UIControlStateNormal];
 }

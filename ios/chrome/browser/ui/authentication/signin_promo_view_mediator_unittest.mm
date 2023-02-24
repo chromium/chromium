@@ -183,7 +183,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void ExpectNoAccountsConfiguration(SigninPromoViewStyle style) {
     OCMExpect([signin_promo_view_ setMode:SigninPromoViewModeNoAccounts]);
     NSString* title = nil;
-    if (style != SigninPromoViewStyleStandard) {
+    if (style == SigninPromoViewStyleTitledCompact) {
       title = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
     } else {
       title = GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC);
@@ -229,7 +229,12 @@ class SigninPromoViewMediatorTest : public PlatformTest {
             forState:UIControlStateNormal]);
         break;
       }
-      case SigninPromoViewStyleTitled:
+      case SigninPromoViewStyleTitled: {
+        OCMExpect([primary_button_
+            setTitle:GetNSString(IDS_IOS_SYNC_PROMO_TURN_ON_SYNC)
+            forState:UIControlStateNormal]);
+        break;
+      }
       case SigninPromoViewStyleTitledCompact: {
         OCMExpect([primary_button_
             setTitle:GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)

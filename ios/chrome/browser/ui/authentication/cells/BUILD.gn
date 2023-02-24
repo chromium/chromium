@@ -32,6 +32,7 @@ source_set("cells") {
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/collection_view/cells",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/common/ui/colors",
