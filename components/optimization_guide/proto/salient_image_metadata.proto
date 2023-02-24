@@ -4,6 +4,8 @@
 
 syntax = "proto2";
 
+import "components/optimization_guide/proto/common_types.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.proto";
 option java_outer_classname = "SalientImageMetadataProto";
@@ -12,6 +14,12 @@ package optimization_guide.proto;
 
 message Thumbnail {
   optional string image_url = 1;
+  // The time for which the associated image URL expires.
+  //
+  // Querying the image_url beyond this time will result in errors.
+  // Additionally, the image may not be available even if not expired (ex:
+  // takedowns).
+  optional Timestamp expiration_timestamp = 2;
 }
 
 message SalientImageMetadata {
