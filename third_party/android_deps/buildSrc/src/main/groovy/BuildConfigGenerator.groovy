@@ -490,7 +490,7 @@ class BuildConfigGenerator extends DefaultTask {
             String depTargetName = translateTargetName(dep.id) + '_java'
 
             /* groovylint-disable-next-line EmptyIfStatement */
-            if (DISALLOW_DEPS.get(dep.id) || dep.exclude) {
+            if (dep.id in DISALLOW_DEPS || dep.exclude) {
               // Do not depend on excluded or disallowed deps.
             } else if (existingLib) {
                 depsStr += "\"${existingLib}\","
