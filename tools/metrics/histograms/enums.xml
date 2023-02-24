@@ -63727,6 +63727,7 @@ from previous Chrome versions.
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
   <int value="1064317648" label="UseMojoVideoDecoderForPepper:disabled"/>
+  <int value="1065347448" label="CrOSLateBootAudioAPNoiseCancellation:enabled"/>
   <int value="1065451331" label="NtpRealboxPedals:disabled"/>
   <int value="1065481614" label="SystemEmojiPickerGIFSupport:disabled"/>
   <int value="1065547630" label="EnableInputNoiseCancellationUi:disabled"/>
@@ -65342,6 +65343,8 @@ from previous Chrome versions.
   <int value="1964816410" label="AndroidPayIntegrationV2:enabled"/>
   <int value="1965055310" label="SyncSetupFriendlySettings:enabled"/>
   <int value="1965148406" label="AssistMultiWordLacrosSupport:disabled"/>
+  <int value="1965526499"
+      label="CrOSLateBootAudioAPNoiseCancellation:disabled"/>
   <int value="1965534355" label="conversions-debug-mode"/>
   <int value="1965976546" label="NewOverviewAnimations:disabled"/>
   <int value="1966730288" label="disable-threaded-compositing"/>

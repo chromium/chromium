@@ -415,6 +415,11 @@
     "expiry_milestone": 117
   },
   {
+    "name": "audio-ap-noise-cancellation",
+    "owners": ["aaronyu", "hunghsienchen", "chromeos-audio@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "audio-flexible-loopback",
     "owners": ["aaronyu", "htcheong", "chromeos-audio@google.com" ],
     "expiry_milestone": 120
