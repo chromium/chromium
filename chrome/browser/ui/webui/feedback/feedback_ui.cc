@@ -6,11 +6,13 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/feedback_resources.h"
 #include "chrome/grit/feedback_resources_map.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -91,3 +93,7 @@ FeedbackUI::FeedbackUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 }
 
 FeedbackUI::~FeedbackUI() = default;
+
+bool FeedbackUI::IsFeedbackEnabled(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed);
+}

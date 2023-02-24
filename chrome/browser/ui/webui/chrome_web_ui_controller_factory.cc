@@ -908,8 +908,10 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.host_piece() == chrome::kChromeUINewTabPageThirdPartyHost)
       return &NewWebUI<NewTabPageThirdPartyUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIFeedbackHost)
+  if (url.host_piece() == chrome::kChromeUIFeedbackHost &&
+      FeedbackUI::IsFeedbackEnabled(profile)) {
     return &NewWebUI<FeedbackUI>;
+  }
   if (url.host_piece() == chrome::kChromeUIReadLaterHost)
     return &NewWebUI<ReadingListUI>;
   if (url.host_piece() == chrome::kChromeUIBookmarksSidePanelHost)
@@ -1135,7 +1137,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (url.host_piece() == chrome::kChromeUICastFeedbackHost &&
-      media_router::MediaRouterEnabled(profile)) {
+      media_router::MediaRouterEnabled(profile) &&
+      FeedbackUI::IsFeedbackEnabled(profile)) {
     return &NewWebUI<media_router::CastFeedbackUI>;
   }
 #endif
