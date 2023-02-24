@@ -6,7 +6,7 @@
  * @fileoverview Defines a Tts interface.
  * All TTS engines in ChromeVox conform to the this interface.
  */
-import {QueueMode, TtsSpeechProperties} from './tts_types.js';
+import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 /**
  * An interface for clients who want to get notified when an utterance
@@ -42,9 +42,7 @@ export class TtsInterface {
    */
   isSpeaking() {}
 
-  /**
-   * Stops speech.
-   */
+  /** Stops speech. */
   stop() {}
 
   /**

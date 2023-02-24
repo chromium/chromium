@@ -15,9 +15,9 @@
  */
 import {LocalStorage} from '../../../common/local_storage.js';
 import {Msgs} from '../../common/msgs.js';
-import {TtsInterface} from '../../common/tts_interface.js';
 import {Personality, QueueMode, TtsCategory, TtsSpeechProperties} from '../../common/tts_types.js';
 import {ChromeVoxState} from '../chromevox_state.js';
+import {TtsInterface} from '../tts_interface.js';
 
 /**
  * A class containing the information needed to speak

@@ -106,7 +106,8 @@ MockFeedback = class {
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule(
         'NavBraille', '/chromevox/common/braille/nav_braille.js');
-    await importModule('TtsInterface', '/chromevox/common/tts_interface.js');
+    await importModule(
+        'TtsInterface', '/chromevox/background/tts_interface.js');
     await importModule('QueueMode', '/chromevox/common/tts_types.js');
   }
 
