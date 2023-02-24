@@ -271,13 +271,13 @@ def create_component_info_provider(info_dir, component):
 
 
 def get_file_contents(filename):
-    with open(filename) as f:
+    with open(filename, encoding='utf-8') as f:
         return f.read()
 
 
 def read_file_to_list(filename):
     """Returns a list of (stripped) lines for a given filename."""
-    with open(filename) as f:
+    with open(filename, encoding='utf-8') as f:
         return [line.rstrip('\n') for line in f]
 
 
@@ -302,7 +302,7 @@ def resolve_cygpath(cygdrive_names):
 
 def read_idl_files_list_from_file(filename):
     """Similar to read_file_to_list, but also resolves cygpath."""
-    with open(filename) as input_file:
+    with open(filename, encoding='utf-8') as input_file:
         file_names = sorted(shlex.split(input_file))
         idl_file_names = [
             file_name for file_name in file_names
@@ -329,7 +329,7 @@ def read_pickle_file(pickle_filename):
 def write_file(new_text, destination_filename):
     # If |new_text| is same with the file content, we skip updating.
     if os.path.isfile(destination_filename):
-        with open(destination_filename) as destination_file:
+        with open(destination_filename, encoding='utf-8') as destination_file:
             if destination_file.read() == new_text:
                 return
 
