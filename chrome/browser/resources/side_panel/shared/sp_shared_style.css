@@ -1,0 +1,25 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./sp_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+.sp-card {
+  display: contents;
+}
+
+:host-context([chrome-refresh-2023]) .sp-card {
+  background: var(--color-side-panel-card-background);
+  border-radius: 12px;
+  display: block;
+  margin: 0 var(--sp-body-padding);
+  padding: var(--sp-card-block-padding) 0;
+}
+
+:host-context([chrome-refresh-2023]) .sp-card sp-heading {
+  margin: 0;
+  padding: 0 var(--sp-card-inline-padding);
+}
