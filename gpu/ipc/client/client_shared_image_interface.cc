@@ -153,8 +153,9 @@ ClientSharedImageInterface::CreateSwapChain(viz::ResourceFormat format,
                                             SkAlphaType alpha_type,
                                             uint32_t usage) {
   DCHECK(gpu::IsValidClientUsage(usage));
-  auto mailboxes = proxy_->CreateSwapChain(format, size, color_space,
-                                           surface_origin, alpha_type, usage);
+  auto mailboxes =
+      proxy_->CreateSwapChain(viz::SharedImageFormat::SinglePlane(format), size,
+                              color_space, surface_origin, alpha_type, usage);
   AddMailbox(mailboxes.front_buffer);
   AddMailbox(mailboxes.back_buffer);
   return mailboxes;

@@ -399,9 +399,8 @@ void SharedImageStub::OnCreateSwapChain(
 
   if (!factory_->CreateSwapChain(
           params->front_buffer_mailbox, params->back_buffer_mailbox,
-          viz::SharedImageFormat::SinglePlane(params->format), params->size,
-          params->color_space, params->surface_origin, params->alpha_type,
-          params->usage)) {
+          params->format, params->size, params->color_space,
+          params->surface_origin, params->alpha_type, params->usage)) {
     DLOG(ERROR) << "SharedImageStub: Unable to create swap chain";
     OnError();
     return;

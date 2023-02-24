@@ -72,7 +72,7 @@ class SharedImageInterfaceProxy {
   void Flush();
 
   SharedImageInterface::SwapChainMailboxes CreateSwapChain(
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,

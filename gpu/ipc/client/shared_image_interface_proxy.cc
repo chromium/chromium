@@ -402,7 +402,7 @@ bool SharedImageInterfaceProxy::GetSHMForPixelData(
 }
 
 SharedImageInterface::SwapChainMailboxes
-SharedImageInterfaceProxy::CreateSwapChain(viz::ResourceFormat format,
+SharedImageInterfaceProxy::CreateSwapChain(viz::SharedImageFormat format,
                                            const gfx::Size& size,
                                            const gfx::ColorSpace& color_space,
                                            GrSurfaceOrigin surface_origin,

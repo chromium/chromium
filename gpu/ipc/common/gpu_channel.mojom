@@ -704,7 +704,7 @@ struct CreateSwapChainParams {
   Mailbox back_buffer_mailbox;
 
   // Pixel format of the front and back buffers.
-  viz.mojom.ResourceFormat format;
+  viz.mojom.SharedImageFormat format;
 
   // Size of the buffers.
   gfx.mojom.Size size;
