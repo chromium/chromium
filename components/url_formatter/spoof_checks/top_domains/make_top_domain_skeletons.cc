@@ -38,8 +38,7 @@ base::FilePath GetPath(base::StringPiece basename) {
 
 bool WriteToFile(const std::string& content, base::StringPiece basename) {
   base::FilePath path = GetPath(basename);
-  int size = base::checked_cast<int>(content.size());
-  bool succeeded = base::WriteFile(path, content.data(), size) == size;
+  bool succeeded = base::WriteFile(path, content.data());
   if (!succeeded)
     std::cerr << "Failed to write to " << path.AsUTF8Unsafe() << '\n';
   return succeeded;

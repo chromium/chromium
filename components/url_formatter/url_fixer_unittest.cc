@@ -297,7 +297,7 @@ static bool MakeTempFile(const base::FilePath& dir,
                          const base::FilePath& file_name,
                          base::FilePath* full_path) {
   *full_path = dir.Append(file_name);
-  return base::WriteFile(*full_path, "", 0) == 0;
+  return base::WriteFile(*full_path, "");
 }
 
 // Returns true if the given URL is a file: URL that matches the given file
