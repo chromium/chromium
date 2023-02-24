@@ -33,6 +33,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/metrics/metrics_service.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -42,10 +43,12 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -105,8 +108,9 @@ void SetIsFirstRun(bool is_first_run) {
   // browser that the test fixtures rely on.
   // So are manipulating flags here instead of during `SetUpX` methods on
   // purpose.
-  if (first_run::IsChromeFirstRun() == is_first_run)
+  if (first_run::IsChromeFirstRun() == is_first_run) {
     return;
+  }
 
   if (is_first_run) {
     // This switch is added by InProcessBrowserTest
@@ -214,6 +218,13 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
 
   profiles::testing::WaitForPickerWidgetCreated();
   EXPECT_FALSE(GetFirstRunFinishedPrefValue());
+
+  // We don't expect synthetic trials to be registered here, since no group
+  // is configured with the feature. For the positive test case, see
+  // `FirstRunServiceCohortBrowserTest.GroupRegisteredAfterFre`.
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kFirstRunStudyGroup));
+  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
 
   ProfilePicker::Hide();
   run_loop.Run();
@@ -385,7 +396,89 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceNotForYouBrowserTest,
   EXPECT_TRUE(ShouldOpenFirstRun(profile()));
   EXPECT_EQ(nullptr, fre_service());
 }
-#endif
+
+class FirstRunServiceCohortBrowserTest : public FirstRunServiceBrowserTest {
+ public:
+  static constexpr char kStudyTestGroupName1[] = "test_group_1";
+  static constexpr char kStudyTestGroupName2[] = "test_group_2";
+
+  FirstRunServiceCohortBrowserTest() {
+    variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
+        ->ResetForTesting();
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {kForYouFreStudy, {{"group_name", kStudyTestGroupName1}}},
+            {kForYouFre, {}},
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
+                       PRE_GroupRegisteredAfterFre) {
+  EXPECT_TRUE(ShouldOpenFirstRun(browser()->profile()));
+
+  // We don't expect the synthetic trial to be registered before the FRE runs.
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kFirstRunStudyGroup));
+  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
+
+  base::RunLoop run_loop;
+  fre_service()->OpenFirstRunIfNeeded(
+      FirstRunService::EntryPoint::kOther,
+      ExpectProceed(true).Then(run_loop.QuitClosure()));
+
+  // Opening the FRE triggers recording of the group.
+  EXPECT_EQ(kStudyTestGroupName1,
+            local_state->GetString(prefs::kFirstRunStudyGroup));
+  EXPECT_TRUE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
+                                                  kStudyTestGroupName1));
+
+  profiles::testing::WaitForPickerWidgetCreated();
+  ProfilePicker::Hide();
+  profiles::testing::WaitForPickerClosed();
+  run_loop.Run();
+}
+IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
+                       GroupRegisteredAfterFre) {
+  EXPECT_FALSE(ShouldOpenFirstRun(browser()->profile()));
+
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_EQ(kStudyTestGroupName1,
+            local_state->GetString(prefs::kFirstRunStudyGroup));
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
+                                                  kStudyTestGroupName1));
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest,
+                       PRE_PRE_GroupViaPrefs) {
+  // Setting the pref, we expect it to get picked up in an upcoming startup.
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kFirstRunStudyGroup, kStudyTestGroupName2);
+
+  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
+}
+IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, PRE_GroupViaPrefs) {
+  // The synthetic group should not be registered yet since we didn't go through
+  // the FRE.
+  EXPECT_FALSE(variations::HasSyntheticTrial("ForYouFreSynthetic"));
+
+  // Setting this should make the next run finally register the synthetic trial.
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kFirstRunFinished, true);
+}
+IN_PROC_BROWSER_TEST_F(FirstRunServiceCohortBrowserTest, GroupViaPrefs) {
+  // The registered group is read from the prefs, not from the feature param.
+  EXPECT_TRUE(variations::IsInSyntheticTrialGroup("ForYouFreSynthetic",
+                                                  kStudyTestGroupName2));
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 struct PolicyTestParam {
   const std::string test_suffix;
