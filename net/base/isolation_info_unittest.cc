@@ -138,7 +138,10 @@ TEST_P(IsolationInfoTest, DebugString) {
   EXPECT_EQ(isolation_info.DebugString(), base::StrCat(parts));
 }
 
-TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
+// TODO(crbug.com/1419563): Disabled as it was causing consistent failures
+// across multiple builders
+TEST_P(IsolationInfoTest,
+       DISABLED_CreateNetworkAnonymizationKeyForIsolationInfo) {
   IsolationInfo isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin2,
       SiteForCookies::FromOrigin(kOrigin1), kPartyContextEmpty, &kNonce1);
