@@ -4069,6 +4069,84 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, PropagateFullscreenOptions) {
   EXPECT_TRUE(test_delegate.fullscreen_options().prefers_navigation_bar);
 }
 
+// Tests that when toggling EnterFullscreen/ExitFullscreen that each state
+// properly synchronizes with the Renderer, fulfilling the Promises. Even when
+// there has been no layout changes, such as when the Renderer is already
+// embedded in a fullscreen context, with no OS nor Browser control insets.
+//
+// Also confirms that each state change does not block the subsequent one.
+// Finally on Android, which supports full browser ScreenOrientation locks, that
+// we can successfully apply the lock.
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, ToggleFullscreen) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  TestWCDelegateForDialogsAndFullscreen test_delegate(web_contents);
+
+  GURL url = embedded_test_server()->GetURL("a.com", "/page_with_iframe.html");
+  EXPECT_TRUE(NavigateToURL(web_contents, url));
+  RenderFrameHostImpl* main_frame = web_contents->GetPrimaryMainFrame();
+
+  EXPECT_FALSE(IsInFullscreen());
+
+  // Make the top page fullscreen with system navigation ui.
+  {
+    test_delegate.WillWaitForFullscreenEnter();
+    TitleWatcher title_watcher(web_contents, u"main_fullscreen_fulfilled");
+    EXPECT_TRUE(ExecJs(
+        main_frame,
+        "document.body.requestFullscreen({ navigationUI: 'show' }).then(() => "
+        "{document.title = 'main_fullscreen_fulfilled'});"));
+    test_delegate.Wait();
+
+    std::u16string title = title_watcher.WaitAndGetTitle();
+    ASSERT_EQ(title, u"main_fullscreen_fulfilled");
+  }
+  EXPECT_TRUE(IsInFullscreen());
+
+  // Full document orientation lock is only available on Android.
+#if BUILDFLAG(IS_ANDROID)
+  {
+    TitleWatcher title_watcher(web_contents, u"portrait_lock_fulfilled");
+    EXPECT_TRUE(ExecJs(main_frame,
+                       "screen.orientation.lock('portrait').then(() => "
+                       "{document.title = 'portrait_lock_fulfilled'});"));
+    std::u16string title = title_watcher.WaitAndGetTitle();
+    ASSERT_EQ(title, u"portrait_lock_fulfilled");
+  }
+#endif
+
+  // Exiting fullscreen should update the title. This should not block
+  // subsequent request to re-enter fullscreen.
+  {
+    test_delegate.WillWaitForFullscreenExit();
+    TitleWatcher title_watcher(web_contents, u"main_exit_fullscreen_fulfilled");
+    EXPECT_TRUE(
+        ExecJs(main_frame,
+               "document.exitFullscreen().then(() => "
+               "{document.title = 'main_exit_fullscreen_fulfilled'});"));
+    test_delegate.Wait();
+
+    std::u16string title = title_watcher.WaitAndGetTitle();
+    ASSERT_EQ(title, u"main_exit_fullscreen_fulfilled");
+  }
+
+  // Make the top page fullscreen with system navigation ui.
+  {
+    test_delegate.WillWaitForFullscreenEnter();
+    TitleWatcher title_watcher(web_contents, u"main_fullscreen_fulfilled");
+    EXPECT_TRUE(ExecJs(
+        main_frame,
+        "document.body.requestFullscreen({ navigationUI: 'show' }).then(() => "
+        "{document.title = 'main_fullscreen_fulfilled'});"));
+    test_delegate.Wait();
+
+    std::u16string title = title_watcher.WaitAndGetTitle();
+    ASSERT_EQ(title, u"main_fullscreen_fulfilled");
+  }
+}
+
 class MockDidOpenRequestedURLObserver : public WebContentsObserver {
  public:
   explicit MockDidOpenRequestedURLObserver(Shell* shell)

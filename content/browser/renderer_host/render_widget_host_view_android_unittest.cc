@@ -433,6 +433,8 @@ class RenderWidgetHostViewAndroidRotationTest
 
   // Fires the rotation throttle timeout.
   void FireRotationTimeout();
+  // Firet the fullscreen throttle timeout.
+  void FireFullscreenTimeout();
 
   // RenderWidgetHostViewAndroid:
   void EnterFullscreenMode();
@@ -549,6 +551,11 @@ RenderWidgetHostViewAndroidRotationTest::PortraitToFullscreenLanscape() {
 
 void RenderWidgetHostViewAndroidRotationTest::FireRotationTimeout() {
   render_widget_host_view_android()->rotation_timeout_.FireNow();
+}
+
+void RenderWidgetHostViewAndroidRotationTest::FireFullscreenTimeout() {
+  render_widget_host_view_android()
+      ->screen_state_change_handler_.throttle_timeout_.FireNow();
 }
 
 void RenderWidgetHostViewAndroidRotationTest::EnterFullscreenMode() {
@@ -1003,6 +1010,37 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, FakeVisibilityScreenRotation) {
   auto post_show_local_surface_id = rwhva->GetLocalSurfaceId();
   EXPECT_EQ(post_show_local_surface_id, post_hidden_rotation_local_surface_id);
   EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+}
+
+// Tests that when toggling FullscreenMode, where no layout changes occur, that
+// we unthrottle and advance the viz::LocalSurfaceId after each step.
+TEST_F(RenderWidgetHostViewAndroidRotationTest, ToggleFullscreenWithoutResize) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  auto local_surface_id = rwhva->GetLocalSurfaceId();
+  EnterFullscreenMode();
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // When there has been no resize triggered the timeout can fire. It should
+  // clear throttling and advance the viz::LocalSurfaceId;
+  FireFullscreenTimeout();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  auto post_timeout_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(local_surface_id);
+
+  ExitFullscreenMode();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  auto post_fullscreen_local_surface_id =
+      GetLocalSurfaceIdAndConfirmNewerThan(post_timeout_local_surface_id);
+
+  // When we re-enter fullscreen we should throttle again.
+  EnterFullscreenMode();
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // The timeout should once again unthrottle and advance the
+  // viz::LocalSurfaceId.
+  FireFullscreenTimeout();
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+  GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
 }
 
 // Tests rotation and fullscreen cases that are supported by both the visual

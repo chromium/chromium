@@ -451,6 +451,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     void WasShownAfterEviction();
 
    private:
+    friend class RenderWidgetHostViewAndroidRotationTest;
+
     // Sets the `current_screen_state_` to be the current values. Clears
     // `pending_screen_state_` to begin tracking subsequent updates.
     void BeginScreenStateChange();
