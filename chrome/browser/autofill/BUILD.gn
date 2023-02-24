@@ -175,6 +175,7 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/test:test_support",
       "//components/autofill/content/browser:test_support",
+      "//components/password_manager/content/browser:test_support",
       "//components/ukm:test_support",
       "//testing/data_driven_testing",
     ]

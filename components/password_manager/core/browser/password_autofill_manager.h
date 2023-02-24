@@ -115,11 +115,9 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username);
 
-#if defined(UNIT_TEST)
-  void set_autofill_client(autofill::AutofillClient* autofill_client) {
+  void set_autofill_client_for_test(autofill::AutofillClient* autofill_client) {
     autofill_client_ = autofill_client;
   }
-#endif  // defined(UNIT_TEST)
 
  private:
   using ForPasswordField = base::StrongAlias<class ForPasswordFieldTag, bool>;

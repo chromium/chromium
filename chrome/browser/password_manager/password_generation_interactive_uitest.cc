@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(
       ObservingAutofillClient::FromWebContents(WebContents());
   password_manager::ContentPasswordManagerDriver* driver =
       driver_factory->GetDriverForFrame(WebContents()->GetPrimaryMainFrame());
-  driver->GetPasswordAutofillManager()->set_autofill_client(
+  driver->GetPasswordAutofillManager()->set_autofill_client_for_test(
       observing_autofill_client);
 
   // Click on the password field to display the autofill popup.

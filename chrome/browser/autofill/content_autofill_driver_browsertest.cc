@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -20,6 +21,8 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
+#include "components/password_manager/content/browser/content_password_manager_driver_factory_test_api.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -101,6 +104,11 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
         web_contents, &autofill_client(),
         base::BindRepeating(&autofill::BrowserDriverInitHook,
                             &autofill_client(), "en-US"));
+
+    password_manager::ContentPasswordManagerDriverFactoryTestApi(
+        password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
+            web_contents))
+        .SetAutofillClient(autofill_client_.get());
 
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");

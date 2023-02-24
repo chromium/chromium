@@ -17,6 +17,14 @@ class ContentPasswordManagerDriverFactoryTestApi {
       content::WebContents* web_contents,
       PasswordManagerClient* password_manager_client,
       autofill::AutofillClient* autofill_client);
+
+  explicit ContentPasswordManagerDriverFactoryTestApi(
+      ContentPasswordManagerDriverFactory* factory);
+
+  void SetAutofillClient(autofill::AutofillClient* autofill_client);
+
+ private:
+  raw_ptr<ContentPasswordManagerDriverFactory> factory_;
 };
 
 }  // namespace password_manager
