@@ -119,31 +119,6 @@ constexpr char kTypeIntFieldNumber[] = "4";
 // The field number for the string value in ExperimentStatsV2.
 constexpr char kStringValueFieldNumber[] = "2";
 
-constexpr auto kPolarisGroupIdsMap =
-    base::MakeFixedFlatMap<int, omnibox::GroupId>(
-        {{0, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
-         {1, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS},
-         {2, omnibox::GROUP_TRENDS},
-         {3, omnibox::GROUP_TRENDS_ENTITY_CHIPS},
-         {4, omnibox::GROUP_RELATED_QUERIES},
-         {5, omnibox::GROUP_VISITED_DOC_RELATED}});
-
-// Dynamically assigns a group ID known to Chrome for the given |group_id| based
-// on its 0-based |group_index| in the server response.
-// omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST is an exception and retains its
-// server provided ID.
-omnibox::GroupId ChromeGroupIdForRemoteGroupIdAndIndex(const int group_id,
-                                                       const int group_index) {
-  if (group_id == omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST) {
-    return omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST;
-  } else if (base::Contains(kPolarisGroupIdsMap, group_index)) {
-    return kPolarisGroupIdsMap.at(group_index);
-  } else {
-    // Return an invalid group ID if we don't have any reserved IDs left.
-    return omnibox::GROUP_INVALID;
-  }
-}
-
 constexpr auto kReservedReservedGroupSectionsMap =
     base::MakeFixedFlatMap<int, omnibox::GroupSection>(
         {{0, omnibox::SECTION_REMOTE_ZPS_1},
@@ -582,7 +557,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
   int prefetch_index = -1;
   int prerender_index = -1;
   omnibox::GroupsInfo groups_info;
-  bool groups_info_parsed_from_proto = false;
 
   if (root_list.size() > 4u && root_list[4].is_dict()) {
     const base::Value& extras = root_list[4];
@@ -637,35 +611,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
     }
 
     const auto* groups_info_string = extras.FindStringKey("google:groupsinfo");
-    groups_info_parsed_from_proto = DecodeProtoFromBase64<omnibox::GroupsInfo>(
-        groups_info_string, groups_info);
-
-    const base::Value* header_texts = extras.FindDictKey("google:headertexts");
-    if (!groups_info_parsed_from_proto && header_texts) {
-      const base::Value* headers = header_texts->FindDictKey("a");
-      if (headers) {
-        for (auto it : headers->DictItems()) {
-          int suggestion_group_id;
-          if (base::StringToInt(it.first, &suggestion_group_id) &&
-              it.second.is_string()) {
-            (*groups_info.mutable_group_configs())[suggestion_group_id]
-                .set_header_text(it.second.GetString());
-          }
-        }
-      }
-
-      const base::Value* hidden_group_ids = header_texts->FindListKey("h");
-      if (hidden_group_ids) {
-        for (const auto& value : hidden_group_ids->GetList()) {
-          if (value.is_int()) {
-            auto it = groups_info.mutable_group_configs()->find(value.GetInt());
-            if (it != groups_info.mutable_group_configs()->end()) {
-              it->second.set_visibility(omnibox::GroupConfig_Visibility_HIDDEN);
-            }
-          }
-        }
-      }
-    }
+    DecodeProtoFromBase64<omnibox::GroupsInfo>(groups_info_string, groups_info);
 
     const base::Value* client_data = extras.FindDictKey("google:clientdata");
     if (client_data) {
@@ -869,66 +815,40 @@ bool SearchSuggestionParser::ParseSuggestResults(
       }
 
       if (suggestion_group_id) {
-        // Do not use omnibox::GroupIdForNumber() because |suggestion_group_id|
-        // may not be present in omnibox::GroupId. However, casting int values
-        // into omnibox::GroupId enum without testing membership is expected to
-        // be safe as omnibox::GroupId enum has a fixed int underlying type.
-        // TODO(crbug.com/1343512): Use omnibox::GroupIdForNumber() once the
-        //  server response migrates to a serialized omnibox::GroupsInfo proto.
         results->suggest_results.back().set_suggestion_group_id(
-            static_cast<omnibox::GroupId>(*suggestion_group_id));
+            omnibox::GroupIdForNumber(*suggestion_group_id));
       }
     }
   }
 
   results->relevances_from_server = relevances != nullptr;
 
-  // Keeps the mapping from server-provided group IDs to those known to Chrome.
-  std::unordered_map<omnibox::GroupId, omnibox::GroupId> chrome_group_ids_map;
+  // Keeps track of the position of the server-provided group IDs.
+  size_t group_index = 0;
 
   // Adds the given group config to the results for the given group ID. Returns
   // true if the entry was added to or was already present in the results.
   auto add_group_config = [&](const omnibox::GroupId suggestion_group_id,
                               const omnibox::GroupConfig& group_config) {
-    // The group config is already added if the group ID was seen before.
-    if (base::Contains(chrome_group_ids_map, suggestion_group_id)) {
-      return true;
-    }
-
-    // Assign a 0-based index to the group based on the number of groups so far.
-    const int group_index = chrome_group_ids_map.size();
-
-    // Convert the server-provided group ID to one known to Chrome; unless
-    // |groups_info| is parsed from a serialized proto in "google:groupsinfo",
-    // in which case server-provided group IDs are present in omnibox::GroupId.
-    // TODO(crbug.com/1343512): Simplify this logic once the server response has
-    // migrated to a serialized omnibox::GroupsInfo in "google:groupsinfo".
-    const auto chrome_group_id = groups_info_parsed_from_proto
-                                     ? suggestion_group_id
-                                     : ChromeGroupIdForRemoteGroupIdAndIndex(
-                                           suggestion_group_id, group_index);
-
-    // Do not add the group config if Chrome ran out of group IDs to assign or
-    // if the group ID was invalid to begin with.
-    if (chrome_group_id == omnibox::GROUP_INVALID) {
+    // Do not add the group config if the group ID is invalid or unknown to
+    // Chrome.
+    if (suggestion_group_id == omnibox::GROUP_INVALID) {
       return false;
     }
 
-    // Remember the conversion.
-    chrome_group_ids_map[suggestion_group_id] = chrome_group_id;
-
     // There is nothing to do if the group config has been added before.
-    if (base::Contains(results->suggestion_groups_map, chrome_group_id)) {
+    if (base::Contains(results->suggestion_groups_map, suggestion_group_id)) {
       return true;
     }
 
     // Store the group config with the appropriate section in the results.
-    results->suggestion_groups_map[chrome_group_id].MergeFrom(group_config);
-    results->suggestion_groups_map[chrome_group_id].set_section(
-        ChromeGroupSectionForRemoteGroupIndex(group_index));
+    results->suggestion_groups_map[suggestion_group_id].MergeFrom(group_config);
+    results->suggestion_groups_map[suggestion_group_id].set_section(
+        ChromeGroupSectionForRemoteGroupIndex(group_index++));
     return true;
   };
 
+  // Add the group configs associated with the suggestions.
   for (auto& suggest_result : results->suggest_results) {
     if (!suggest_result.suggestion_group_id().has_value()) {
       continue;
@@ -939,17 +859,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
     // Add the group config associated with the suggestion, if the suggestion
     // has a valid group ID and a corresponding group config is found in the
-    // response. Note that a group ID is deemed invalid if Chrome runs out of
-    // group IDs to assign or if the group ID was invalid to begin with.
+    // response.
     if (!base::Contains(groups_info.group_configs(), suggestion_group_id) ||
         !add_group_config(suggestion_group_id, groups_info.group_configs().at(
                                                    suggestion_group_id))) {
       continue;
     }
-
-    // Update the group ID in the suggestion.
-    suggest_result.set_suggestion_group_id(
-        chrome_group_ids_map[suggestion_group_id]);
   }
 
   // Add the remaining group configs without any suggestions in the response.
@@ -957,13 +872,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
   // produced by Chrome and relies on the server-provided group config to show
   // with the appropriate header text, where a header text is applicable.
   for (const auto& entry : groups_info.group_configs()) {
-    // Do not use omnibox::GroupIdForNumber() because |groups_info| keys may not
-    // be present in omnibox::GroupId. However, casting int values into
-    // omnibox::GroupId enum without testing membership is expected to be safe
-    // as omnibox::GroupId enum has a fixed int underlying type.
-    // TODO(crbug.com/1343512): Use omnibox::GroupIdForNumber() once the server
-    //  response migrates to a serialized omnibox::GroupsInfo proto.
-    add_group_config(static_cast<omnibox::GroupId>(entry.first), entry.second);
+    add_group_config(omnibox::GroupIdForNumber(entry.first), entry.second);
   }
 
   return true;
