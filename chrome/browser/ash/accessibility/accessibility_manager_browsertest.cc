@@ -968,6 +968,16 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
     AccessibilityManager::Get()->OnPumpkinError("Error");
   }
 
+  void OnPumpkinInstalled(bool success) {
+    AccessibilityManager::Get()->OnPumpkinInstalled(success);
+  }
+
+  void OnPumpkinDataCreated(
+      std::unique_ptr<extensions::api::accessibility_private::PumpkinData>
+          data) {
+    AccessibilityManager::Get()->OnPumpkinDataCreated(std::move(data));
+  }
+
   speech::SodaInstaller* soda_installer() {
     return speech::SodaInstaller::GetInstance();
   }
@@ -1321,6 +1331,26 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest, SodaFailPumpkinFail) {
   AssertDictationNoDlcsNotifcation(en_us_display_name());
   OnPumpkinError();
   AssertDictationNoDlcsNotifcation(en_us_display_name());
+}
+
+// Ensures that AccessibilityManager can handle when OnPumpkinInstalled is
+// called multiple times, which can happen in production.
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       OnPumpkinInstalledMultiple) {
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  InstallPumpkinAndWait();
+  OnPumpkinInstalled(true);
+}
+
+// Ensures that AccessibilityManager can handle when OnPumpkinDataCreated is
+// called multiple times, which can happen in production.
+IN_PROC_BROWSER_TEST_F(AccessibilityManagerDlcTest,
+                       OnPumpkinDataCreatedMultiple) {
+  SetDictationLocale("en-US");
+  SetDictationEnabled(true);
+  InstallPumpkinAndWait();
+  OnPumpkinDataCreated(nullptr);
 }
 
 enum DictationDialogTestVariant {
