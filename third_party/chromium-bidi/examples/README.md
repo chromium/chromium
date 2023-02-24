@@ -23,7 +23,7 @@ The server (CDP-BiDi Mapper) can be run from the project root:
 npm run server
 ```
 
-Chromedriver and Edgedriver can be run by:
+ChromeDriver and EdgeDriver can be run by:
 
 ```sh
 $DRIVER_BINARY_PATH [--port=8080]
@@ -40,4 +40,12 @@ After running the BiDi server, examples can be simply executed, for example:
 ```sh
 python3 console_log_example.py
 python3 script_example.py
+```
+
+### Classic-BiDi examples
+
+CDP-BiDi Mapper does not support WebDriver classic by itself, so you need to use ChromeDriver, EdgeDriver or GeckoDriver to run the following example:
+
+```sh
+python3 classic_to_bidi_example.py
 ```
