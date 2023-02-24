@@ -38,7 +38,7 @@ suite('PerDevicePointingStickSubsection', function() {
     subsection =
         document.createElement('settings-per-device-pointing-stick-subsection');
     assertTrue(subsection != null);
-    subsection.pointingStick = fakePointingSticks[0];
+    subsection.pointingStick = {...fakePointingSticks[0]};
     document.body.appendChild(subsection);
     return flushTasks();
   }

@@ -38,7 +38,7 @@ suite('PerDeviceMouseSubsection', function() {
     setInputDeviceSettingsProviderForTesting(provider);
     subsection = document.createElement('settings-per-device-mouse-subsection');
     assertTrue(subsection != null);
-    subsection.mouse = fakeMice[0];
+    subsection.mouse = {...fakeMice[0]};
     subsection.allowScrollSettings_ = true;
     document.body.appendChild(subsection);
     return flushTasks();

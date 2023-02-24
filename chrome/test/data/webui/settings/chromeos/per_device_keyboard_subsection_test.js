@@ -40,7 +40,7 @@ suite('PerDeviceKeyboardSubsection', function() {
     subsection =
         document.createElement('settings-per-device-keyboard-subsection');
     assertTrue(subsection != null);
-    subsection.keyboard = fakeKeyboards[0];
+    subsection.keyboard = {...fakeKeyboards[0]};
     document.body.appendChild(subsection);
     return flushTasks();
   }
