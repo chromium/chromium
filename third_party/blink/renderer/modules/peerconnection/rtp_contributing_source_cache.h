@@ -43,6 +43,10 @@ class RtpContributingSourceCache {
       RTCPeerConnection* pc,
       scoped_refptr<base::SingleThreadTaskRunner> worker_thread_runner);
 
+  // When the owner of this object is Disposed(), this method must be called to
+  // cancel any in-flight tasks.
+  void Shutdown();
+
   HeapVector<Member<RTCRtpSynchronizationSource>> getSynchronizationSources(
       ScriptState* script_state,
       ExceptionState& exception_state,
