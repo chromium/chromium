@@ -1088,9 +1088,10 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
       context_provider_wrapper_->ContextProvider()->SharedImageInterface();
   DCHECK(sii);
   gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
-      sii->CreateSwapChain(GetResourceFormat(), Size(), GetColorSpace(),
-                           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                           usage);
+      sii->CreateSwapChain(
+          viz::SharedImageFormat::SinglePlane(GetResourceFormat()), Size(),
+          GetColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+          usage);
   back_buffer_mailbox_ = mailboxes.back_buffer;
   front_buffer_mailbox_ = mailboxes.front_buffer;
   sync_token_ = sii->GenVerifiedSyncToken();

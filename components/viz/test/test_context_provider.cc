@@ -211,7 +211,7 @@ void TestSharedImageInterface::DestroySharedImage(
 }
 
 gpu::SharedImageInterface::SwapChainMailboxes
-TestSharedImageInterface::CreateSwapChain(ResourceFormat format,
+TestSharedImageInterface::CreateSwapChain(SharedImageFormat format,
                                           const gfx::Size& size,
                                           const gfx::ColorSpace& color_space,
                                           GrSurfaceOrigin surface_origin,

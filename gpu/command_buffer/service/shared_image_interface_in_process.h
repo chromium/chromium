@@ -136,7 +136,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                           const Mailbox& mailbox) override;
 
   // Creates a swap chain. Not reached in this implementation.
-  SwapChainMailboxes CreateSwapChain(viz::ResourceFormat format,
+  SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
                                      const gfx::Size& size,
                                      const gfx::ColorSpace& color_space,
                                      GrSurfaceOrigin surface_origin,
