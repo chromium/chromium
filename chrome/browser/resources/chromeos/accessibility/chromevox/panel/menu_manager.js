@@ -6,6 +6,7 @@
  * @fileoverview Class to manage the ChromeVox menus.
  */
 import {Command, CommandStore} from '../common/command_store.js';
+import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
 import {PanelInterface} from './panel_interface.js';
@@ -149,6 +150,50 @@ export class MenuManager {
     this.activateMenu(menu, true /* activateFirstItem */);
     mouseUpEvent.preventDefault();
     mouseUpEvent.stopPropagation();
+  }
+
+  /**
+   * Listens to changes in the menu search bar. Populates the search menu
+   * with items that match the search bar's contents.
+   * Note: we ignore PanelNodeMenu items and items without shortcuts.
+   * @param {Event} event The input event.
+   */
+  onSearchBarQuery(event) {
+    if (!this.searchMenu_) {
+      throw Error('MenuManager.searchMenu_ must be defined');
+    }
+    const query = event.target.value.toLowerCase();
+    this.searchMenu_.clear();
+    // Show the search results menu.
+    this.activateMenu(this.searchMenu_, false /* activateFirstItem */);
+    // Populate.
+    if (query) {
+      for (const menu of this.menus_) {
+        if (menu === this.searchMenu_ || menu instanceof PanelNodeMenu) {
+          continue;
+        }
+        for (const item of menu.items) {
+          if (!item.menuItemShortcut) {
+            // Only add menu items that have shortcuts.
+            continue;
+          }
+          const itemText = item.text.toLowerCase();
+          const match = itemText.includes(query) &&
+              (itemText !==
+               Msgs.getMsg('panel_menu_item_none').toLowerCase()) &&
+              item.enabled;
+          if (match) {
+            this.searchMenu_.copyAndAddMenuItem(item);
+          }
+        }
+      }
+    }
+
+    if (this.searchMenu_.items.length === 0) {
+      this.searchMenu_.addMenuItem(
+          Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
+    }
+    this.searchMenu_.activateItem(0);
   }
 
   // The following getters and setters are temporary during the migration from

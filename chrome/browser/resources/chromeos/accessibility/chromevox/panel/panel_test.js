@@ -76,7 +76,7 @@ ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
       const evt = {};
       evt.target = {};
       evt.target.value = query;
-      this.getPanel().instance.onSearchBarQuery_(evt);
+      this.getPanel().instance.menuManager_.onSearchBarQuery(evt);
     }.bind(this);
   }
 

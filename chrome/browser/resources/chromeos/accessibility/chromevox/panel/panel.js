@@ -691,7 +691,7 @@ export class Panel extends PanelInterface {
     this.menuManager_.searchMenu = new PanelSearchMenu(menuMsg);
     // Add event listeners to search bar.
     this.menuManager_.searchMenu.searchBar.addEventListener(
-        'input', event => this.onSearchBarQuery_(event), false);
+        'input', event => this.menuManager_.onSearchBarQuery(event), false);
     this.menuManager_.searchMenu.searchBar.addEventListener(
         'mouseup', event => {
           // Clicking in the panel causes us to either activate an item or close
@@ -1100,56 +1100,6 @@ export class Panel extends PanelInterface {
    */
   onCloseTutorial_() {
     this.setMode_(PanelMode.COLLAPSED);
-  }
-
-  /**
-   * Listens to changes in the menu search bar. Populates the search menu
-   * with items that match the search bar's contents.
-   * Note: we ignore PanelNodeMenu items and items without shortcuts.
-   * @param {Event} event The input event.
-   * @private
-   */
-  onSearchBarQuery_(event) {
-    if (!this.menuManager_.searchMenu) {
-      throw Error('MenuManager.searchMenu_ must be defined');
-    }
-    const query = event.target.value.toLowerCase();
-    this.menuManager_.searchMenu.clear();
-    // Show the search results menu.
-    this.menuManager_.activateMenu(
-        this.menuManager_.searchMenu, false /* activateFirstItem */);
-    // Populate.
-    if (query) {
-      for (let i = 0; i < this.menuManager_.menus.length; ++i) {
-        const menu = this.menuManager_.menus[i];
-        if (menu === this.menuManager_.searchMenu ||
-            menu instanceof PanelNodeMenu) {
-          continue;
-        }
-        const items = menu.items;
-        for (let j = 0; j < items.length; ++j) {
-          const item = items[j];
-          if (!item.menuItemShortcut) {
-            // Only add menu items that have shortcuts.
-            continue;
-          }
-          const itemText = item.text.toLowerCase();
-          const match = itemText.includes(query) &&
-              (itemText !==
-               Msgs.getMsg('panel_menu_item_none').toLowerCase()) &&
-              item.enabled;
-          if (match) {
-            this.menuManager_.searchMenu.copyAndAddMenuItem(item);
-          }
-        }
-      }
-    }
-
-    if (this.menuManager_.searchMenu.items.length === 0) {
-      this.menuManager_.searchMenu.addMenuItem(
-          Msgs.getMsg('panel_menu_item_none'), '', '', '', function() {});
-    }
-    this.menuManager_.searchMenu.activateItem(0);
   }
 
   /** @private */
