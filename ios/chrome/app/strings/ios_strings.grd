@@ -2614,7 +2614,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           other {Some required fields are empty. Fill them before saving.}}
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON" desc="Confirmation button title shown to the user when the address is deleted. [iOS only]">
-          Delete Address
+          {count, plural,
+          =1 {Delete Address}
+          other {Delete Addresses}}
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE" desc="Title of the confirmation shown to the user when an account address is deleted. [iOS only]">
           {count, plural,
