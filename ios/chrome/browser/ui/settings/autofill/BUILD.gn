@@ -95,7 +95,7 @@ source_set("unit_tests") {
     "autofill_add_credit_card_mediator_unittest.mm",
     "autofill_credit_card_table_view_controller_unittest.mm",
     "autofill_credit_card_util_unittest.mm",
-    "autofill_profile_edit_table_view_controller_unittest.mm",
+    "autofill_profile_edit_mediator_unittest.mm",
     "autofill_profile_table_view_controller_unittest.mm",
   ]
   deps = [
@@ -112,8 +112,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings:test_support",
+    "//ios/chrome/browser/ui/settings/autofill/cells",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/browser/webdata_services",
