@@ -25,25 +25,25 @@ RequestPriority ConvertQuicPriorityToRequestPriority(
                          : static_cast<RequestPriority>(HIGHEST - priority);
 }
 
-base::Value QuicRequestNetLogParams(quic::QuicStreamId stream_id,
-                                    const spdy::Http2HeaderBlock* headers,
-                                    quic::QuicStreamPriority priority,
-                                    NetLogCaptureMode capture_mode) {
-  base::Value dict = Http2HeaderBlockNetLogParams(headers, capture_mode);
-  DCHECK(dict.is_dict());
-  dict.GetDict().Set("quic_priority_urgency", priority.urgency);
-  dict.GetDict().Set("quic_priority_incremental", priority.incremental);
-  dict.GetDict().Set("quic_stream_id", static_cast<int>(stream_id));
+base::Value::Dict QuicRequestNetLogParams(quic::QuicStreamId stream_id,
+                                          const spdy::Http2HeaderBlock* headers,
+                                          quic::QuicStreamPriority priority,
+                                          NetLogCaptureMode capture_mode) {
+  base::Value::Dict dict = Http2HeaderBlockNetLogParams(headers, capture_mode);
+  dict.Set("quic_priority_urgency", priority.urgency);
+  dict.Set("quic_priority_incremental", priority.incremental);
+  dict.Set("quic_stream_id", static_cast<int>(stream_id));
   return dict;
 }
 
-base::Value QuicResponseNetLogParams(quic::QuicStreamId stream_id,
-                                     bool fin_received,
-                                     const spdy::Http2HeaderBlock* headers,
-                                     NetLogCaptureMode capture_mode) {
-  base::Value dict = Http2HeaderBlockNetLogParams(headers, capture_mode);
-  dict.GetDict().Set("quic_stream_id", static_cast<int>(stream_id));
-  dict.GetDict().Set("fin", fin_received);
+base::Value::Dict QuicResponseNetLogParams(
+    quic::QuicStreamId stream_id,
+    bool fin_received,
+    const spdy::Http2HeaderBlock* headers,
+    NetLogCaptureMode capture_mode) {
+  base::Value::Dict dict = Http2HeaderBlockNetLogParams(headers, capture_mode);
+  dict.Set("quic_stream_id", static_cast<int>(stream_id));
+  dict.Set("fin", fin_received);
   return dict;
 }
 

@@ -375,13 +375,14 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
   return true;
 }
 
-base::Value CertVerifyParams(X509Certificate* cert,
-                             const std::string& hostname,
-                             const std::string& ocsp_response,
-                             const std::string& sct_list,
-                             int flags,
-                             CRLSet* crl_set,
-                             const CertificateList& additional_trust_anchors) {
+base::Value::Dict CertVerifyParams(
+    X509Certificate* cert,
+    const std::string& hostname,
+    const std::string& ocsp_response,
+    const std::string& sct_list,
+    int flags,
+    CRLSet* crl_set,
+    const CertificateList& additional_trust_anchors) {
   base::Value::Dict dict;
   dict.Set("certificates", NetLogX509CertificateList(cert));
   if (!ocsp_response.empty()) {
@@ -409,7 +410,7 @@ base::Value CertVerifyParams(X509Certificate* cert,
     dict.Set("additional_trust_anchors", std::move(certs));
   }
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace

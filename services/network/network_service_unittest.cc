@@ -615,8 +615,6 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
       /*insecure_dns_client_enabled=*/false, net::SecureDnsMode::kAutomatic,
       kConfig1,
       /*additional_dns_types_enabled=*/true);
-  EXPECT_TRUE(
-      service()->host_resolver_manager()->GetDnsConfigAsValue().is_dict());
   EXPECT_EQ(kConfig1, dns_client_ptr->GetEffectiveConfig()->doh_config);
 
   // Enable DNS over HTTPS for two servers.
@@ -625,8 +623,6 @@ TEST_F(NetworkServiceTest, DnsOverHttpsEnableDisable) {
       /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kSecure,
       kConfig2,
       /*additional_dns_types_enabled=*/true);
-  EXPECT_TRUE(
-      service()->host_resolver_manager()->GetDnsConfigAsValue().is_dict());
   EXPECT_EQ(kConfig2, dns_client_ptr->GetEffectiveConfig()->doh_config);
 }
 

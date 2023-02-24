@@ -27,9 +27,9 @@ namespace network {
 
 namespace {
 
-base::Value CreateLogValue(base::StringPiece outcome) {
-  base::Value ret(base::Value::Type::DICT);
-  ret.SetStringKey("outcome", outcome);
+base::Value::Dict CreateLogValue(base::StringPiece outcome) {
+  base::Value::Dict ret;
+  ret.Set("outcome", outcome);
   return ret;
 }
 

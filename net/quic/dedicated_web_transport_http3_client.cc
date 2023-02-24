@@ -109,7 +109,7 @@ void RecordNetLogQuicSessionClientStateChanged(
           error_dict.Set("details", error->details);
           dict.Set("error", std::move(error_dict));
         }
-        return base::Value(std::move(dict));
+        return dict;
       });
 }
 
@@ -288,7 +288,7 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
         dict.Set("url", url.possibly_invalid_spec());
         dict.Set("network_anonymization_key",
                  anonymization_key.ToDebugString());
-        return base::Value(std::move(dict));
+        return dict;
       });
 }
 

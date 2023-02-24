@@ -70,7 +70,8 @@ namespace net {
 
 namespace {
 
-base::Value CertVerifierParams(const CertVerifier::RequestParams& params) {
+base::Value::Dict CertVerifierParams(
+    const CertVerifier::RequestParams& params) {
   base::Value::Dict dict;
   dict.Set("certificates",
            NetLogX509CertificateList(params.certificate().get()));
@@ -84,7 +85,7 @@ base::Value CertVerifierParams(const CertVerifier::RequestParams& params) {
   dict.Set("host", NetLogStringValue(params.hostname()));
   dict.Set("verifier_flags", params.flags());
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace

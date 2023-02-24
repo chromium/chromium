@@ -281,7 +281,7 @@ LoadStateWithParam URLRequest::GetLoadState() const {
                             std::u16string());
 }
 
-base::Value URLRequest::GetStateAsValue() const {
+base::Value::Dict URLRequest::GetStateAsValue() const {
   base::Value::Dict dict;
   dict.Set("url", original_url().possibly_invalid_spec());
 
@@ -314,7 +314,7 @@ base::Value URLRequest::GetStateAsValue() const {
 
   if (status_ != OK)
     dict.Set("net_error", status_);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void URLRequest::LogBlockedBy(base::StringPiece blocked_by) {

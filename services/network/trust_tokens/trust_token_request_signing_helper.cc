@@ -42,8 +42,8 @@ const char kRedemptionRecordHeaderRedemptionRecordKey[] = "redemption-record";
 void LogOutcome(const net::NetLogWithSource& log, base::StringPiece outcome) {
   log.EndEvent(net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_SIGNING,
                [outcome]() {
-                 base::Value ret(base::Value::Type::DICT);
-                 ret.SetStringKey("outcome", outcome);
+                 base::Value::Dict ret;
+                 ret.Set("outcome", outcome);
                  return ret;
                });
 }

@@ -49,7 +49,7 @@ void NetLog::ThreadSafeCaptureModeObserver::
                                          const NetLogSource& source,
                                          NetLogEventPhase phase,
                                          base::TimeTicks time,
-                                         base::Value&& params) {
+                                         base::Value::Dict params) {
   DCHECK(net_log_);
   net_log_->AddEntryAtTimeWithMaterializedParams(type, source, phase, time,
                                                  std::move(params));
@@ -67,7 +67,7 @@ NetLog::NetLog(base::PassKey<NetLogWithSource>) {}
 void NetLog::AddEntry(NetLogEventType type,
                       const NetLogSource& source,
                       NetLogEventPhase phase) {
-  AddEntry(type, source, phase, [] { return base::Value(); });
+  AddEntry(type, source, phase, [] { return base::Value::Dict(); });
 }
 
 void NetLog::AddGlobalEntry(NetLogEventType type) {
@@ -258,7 +258,7 @@ void NetLog::AddEntryInternal(NetLogEventType type,
 void NetLog::AddEntryWithMaterializedParams(NetLogEventType type,
                                             const NetLogSource& source,
                                             NetLogEventPhase phase,
-                                            base::Value&& params) {
+                                            base::Value::Dict params) {
   AddEntryAtTimeWithMaterializedParams(
       type, source, phase, base::TimeTicks::Now(), std::move(params));
 }
@@ -267,7 +267,7 @@ void NetLog::AddEntryAtTimeWithMaterializedParams(NetLogEventType type,
                                                   const NetLogSource& source,
                                                   NetLogEventPhase phase,
                                                   base::TimeTicks time,
-                                                  base::Value&& params) {
+                                                  base::Value::Dict params) {
   NetLogEntry entry(type, source, phase, time, std::move(params));
 
   // Notify all of the log observers, regardless of capture mode.

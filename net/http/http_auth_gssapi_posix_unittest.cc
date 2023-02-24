@@ -311,7 +311,7 @@ TEST(HttpAuthGSSAPITest, ParseChallenge_TwoRounds) {
       NetLogEventPhase::END);
   ASSERT_LT(offset, entries.size());
   const std::string* source =
-      entries[offset].params.FindStringPath("context.source.name");
+      entries[offset].params.FindStringByDottedPath("context.source.name");
   ASSERT_TRUE(source);
   EXPECT_EQ("localhost", *source);
 }

@@ -84,19 +84,19 @@ const int kCertVerifyPending = 1;
 // Default size of the internal BoringSSL buffers.
 const int kDefaultOpenSSLBufferSize = 17 * 1024;
 
-base::Value NetLogPrivateKeyOperationParams(uint16_t algorithm,
-                                            SSLPrivateKey* key) {
+base::Value::Dict NetLogPrivateKeyOperationParams(uint16_t algorithm,
+                                                  SSLPrivateKey* key) {
   base::Value::Dict dict;
   dict.Set("algorithm",
            SSL_get_signature_algorithm_name(algorithm, 0 /* exclude curve */));
   dict.Set("provider", key->GetProviderName());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
+base::Value::Dict NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
   SSLInfo ssl_info;
   if (!socket->GetSSLInfo(&ssl_info))
-    return base::Value();
+    return base::Value::Dict();
 
   base::Value::Dict dict;
   const char* version_str;
@@ -112,22 +112,22 @@ base::Value NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
 
   dict.Set("next_proto", NextProtoToString(socket->GetNegotiatedProtocol()));
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogSSLAlertParams(const void* bytes, size_t len) {
+base::Value::Dict NetLogSSLAlertParams(const void* bytes, size_t len) {
   base::Value::Dict dict;
   dict.Set("bytes", NetLogBinaryValue(bytes, len));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogSSLMessageParams(bool is_write,
-                                   const void* bytes,
-                                   size_t len,
-                                   NetLogCaptureMode capture_mode) {
+base::Value::Dict NetLogSSLMessageParams(bool is_write,
+                                         const void* bytes,
+                                         size_t len,
+                                         NetLogCaptureMode capture_mode) {
   if (len == 0) {
     NOTREACHED();
-    return base::Value();
+    return base::Value::Dict();
   }
 
   base::Value::Dict dict;
@@ -145,7 +145,7 @@ base::Value NetLogSSLMessageParams(bool is_write,
     dict.Set("bytes", NetLogBinaryValue(bytes, len));
   }
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // This enum is used in histograms, so values may not be reused.
@@ -924,7 +924,7 @@ int SSLClientSocketImpl::Init() {
     net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
       base::Value::Dict dict;
       dict.Set("bytes", NetLogBinaryValue(ssl_config_.ech_config_list));
-      return base::Value(std::move(dict));
+      return dict;
     });
     if (!SSL_set1_ech_config_list(ssl_.get(),
                                   ssl_config_.ech_config_list.data(),
@@ -1156,7 +1156,7 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   net_log_.AddEvent(NetLogEventType::SSL_CERTIFICATES_RECEIVED, [&] {
     base::Value::Dict dict;
     dict.Set("certificates", NetLogX509CertificateList(server_cert_.get()));
-    return base::Value(std::move(dict));
+    return dict;
   });
 
   // If the certificate is bad and has been previously accepted, use

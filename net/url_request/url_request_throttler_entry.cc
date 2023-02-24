@@ -51,15 +51,16 @@ const int URLRequestThrottlerEntry::kDefaultMaximumBackoffMs = 15 * 60 * 1000;
 const int URLRequestThrottlerEntry::kDefaultEntryLifetimeMs = 2 * 60 * 1000;
 
 // Returns NetLog parameters when a request is rejected by throttling.
-base::Value NetLogRejectedRequestParams(const std::string* url_id,
-                                        int num_failures,
-                                        const base::TimeDelta& release_after) {
+base::Value::Dict NetLogRejectedRequestParams(
+    const std::string* url_id,
+    int num_failures,
+    const base::TimeDelta& release_after) {
   base::Value::Dict dict;
   dict.Set("url", *url_id);
   dict.Set("num_failures", num_failures);
   dict.Set("release_after_ms",
            static_cast<int>(release_after.InMilliseconds()));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 URLRequestThrottlerEntry::URLRequestThrottlerEntry(

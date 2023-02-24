@@ -566,7 +566,7 @@ void NetworkService::StartNetLog(base::File file,
 
   file_net_log_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
       std::move(file), capture_mode,
-      std::make_unique<base::Value>(std::move(constants)));
+      std::make_unique<base::Value::Dict>(std::move(constants)));
   file_net_log_observer_->StartObserving(net_log_);
 }
 

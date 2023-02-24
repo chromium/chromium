@@ -19,7 +19,7 @@ namespace net::nqe::internal {
 
 namespace {
 
-base::Value NetworkQualityChangedNetLogParams(
+base::Value::Dict NetworkQualityChangedNetLogParams(
     base::TimeDelta http_rtt,
     base::TimeDelta transport_rtt,
     int32_t downstream_throughput_kbps,
@@ -31,7 +31,7 @@ base::Value NetworkQualityChangedNetLogParams(
   value.Set("downstream_throughput_kbps", downstream_throughput_kbps);
   value.Set("effective_connection_type",
             GetNameForEffectiveConnectionType(effective_connection_type));
-  return base::Value(std::move(value));
+  return value;
 }
 
 bool MetricChangedMeaningfully(int32_t past_value, int32_t current_value) {

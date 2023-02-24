@@ -115,7 +115,7 @@ void AddressList::AppendDnsAliases(std::vector<std::string> aliases) {
                       std::move_iterator<iter_t>(aliases.end()));
 }
 
-base::Value AddressList::NetLogParams() const {
+base::Value::Dict AddressList::NetLogParams() const {
   base::Value::Dict dict;
 
   base::Value::List address_list;
@@ -128,7 +128,7 @@ base::Value AddressList::NetLogParams() const {
     alias_list.Append(alias);
   dict.Set("aliases", std::move(alias_list));
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void AddressList::Deduplicate() {

@@ -1946,16 +1946,14 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
 
   ASSERT_THAT(entries, SizeIs(1));
 
-  const base::Value& params = entries[0].params;
-  ASSERT_EQ(params.type(), base::Value::Type::DICT);
+  const base::Value::Dict& params = entries[0].params;
 
-  EXPECT_THAT(params.GetDict().FindString("client_address_space"),
+  EXPECT_THAT(params.FindString("client_address_space"), Pointee(Eq("local")));
+
+  EXPECT_THAT(params.FindString("resource_address_space"),
               Pointee(Eq("local")));
 
-  EXPECT_THAT(params.GetDict().FindString("resource_address_space"),
-              Pointee(Eq("local")));
-
-  EXPECT_THAT(params.GetDict().FindString("result"),
+  EXPECT_THAT(params.FindString("result"),
               Pointee(Eq("allowed-no-less-public")));
 }
 
@@ -1975,16 +1973,14 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
 
   ASSERT_THAT(entries, SizeIs(1));
 
-  const base::Value& params = entries[0].params;
-  ASSERT_EQ(params.type(), base::Value::Type::DICT);
+  const base::Value::Dict params = std::move(entries[0].params);
 
-  EXPECT_THAT(params.GetDict().FindString("client_address_space"),
-              Pointee(Eq("public")));
+  EXPECT_THAT(params.FindString("client_address_space"), Pointee(Eq("public")));
 
-  EXPECT_THAT(params.GetDict().FindString("resource_address_space"),
+  EXPECT_THAT(params.FindString("resource_address_space"),
               Pointee(Eq("local")));
 
-  EXPECT_THAT(params.GetDict().FindString("result"),
+  EXPECT_THAT(params.FindString("result"),
               Pointee(Eq("blocked-by-policy-preflight-block")));
 }
 

@@ -917,8 +917,7 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
                                   &NetLogEntry::type);
   ASSERT_NE(event, events.end());
   EXPECT_EQ(net::NetLogEventPhase::BEGIN, event->phase);
-  ASSERT_TRUE(event->params.is_dict());
-  const std::string* host = event->params.FindStringKey("host");
+  const std::string* host = event->params.FindString("host");
   ASSERT_TRUE(host);
   EXPECT_EQ("127.0.0.1", *host);
 
@@ -928,8 +927,7 @@ TEST_P(CertVerifyProcInternalTest, UnnecessaryInvalidIntermediate) {
                            &NetLogEntry::type);
     ASSERT_NE(event, events.end());
     EXPECT_EQ(net::NetLogEventPhase::NONE, event->phase);
-    ASSERT_TRUE(event->params.is_dict());
-    const std::string* errors = event->params.FindStringKey("errors");
+    const std::string* errors = event->params.FindString("errors");
     ASSERT_TRUE(errors);
     EXPECT_EQ(
         "ERROR: Failed parsing Certificate SEQUENCE\nERROR: Failed parsing "

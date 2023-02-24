@@ -49,13 +49,14 @@ using base::Time;
 
 namespace {
 
-base::Value CookieKeyedLoadNetLogParams(const std::string& key,
-                                        net::NetLogCaptureMode capture_mode) {
+base::Value::Dict CookieKeyedLoadNetLogParams(
+    const std::string& key,
+    net::NetLogCaptureMode capture_mode) {
   if (!net::NetLogCaptureIncludesSensitive(capture_mode))
-    return base::Value();
+    return base::Value::Dict();
   base::Value::Dict dict;
   dict.Set("key", key);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // Used to populate a histogram for problems when loading cookies.

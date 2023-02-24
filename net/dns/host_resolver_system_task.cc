@@ -116,9 +116,10 @@ int ResolveOnWorkerThread(scoped_refptr<HostResolverProc> resolver_proc,
 }
 
 // Creates NetLog parameters when the resolve failed.
-base::Value NetLogHostResolverSystemTaskFailedParams(uint32_t attempt_number,
-                                                     int net_error,
-                                                     int os_error) {
+base::Value::Dict NetLogHostResolverSystemTaskFailedParams(
+    uint32_t attempt_number,
+    int net_error,
+    int os_error) {
   base::Value::Dict dict;
   if (attempt_number)
     dict.Set("attempt_number", base::saturated_cast<int>(attempt_number));
@@ -144,7 +145,7 @@ base::Value NetLogHostResolverSystemTaskFailedParams(uint32_t attempt_number,
 #endif
   }
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 using SystemDnsResolverOverrideCallback =

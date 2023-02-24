@@ -40,10 +40,10 @@ namespace net {
 namespace {
 
 // Callback for TYPE_URL_REQUEST_FILTERS_SET net-internals event.
-base::Value SourceStreamSetParams(SourceStream* source_stream) {
+base::Value::Dict SourceStreamSetParams(SourceStream* source_stream) {
   base::Value::Dict event_params;
   event_params.Set("filters", source_stream->Description());
-  return base::Value(std::move(event_params));
+  return event_params;
 }
 
 }  // namespace

@@ -44,14 +44,14 @@ namespace net {
 namespace {
 
 // Returns parameters associated with the proxy resolution.
-base::Value NetLogHttpStreamJobProxyServerResolved(
+base::Value::Dict NetLogHttpStreamJobProxyServerResolved(
     const ProxyServer& proxy_server) {
   base::Value::Dict dict;
 
   dict.Set("proxy_server", proxy_server.is_valid()
                                ? ProxyServerToPacResultElement(proxy_server)
                                : std::string());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 GURL CreateAltSvcUrl(const GURL& origin_url,
@@ -108,22 +108,22 @@ AlternativeService GetAlternativeServiceForDnsJob(const GURL& url) {
 // the main job.
 const int kMaxDelayTimeForMainJobSecs = 3;
 
-base::Value NetLogJobControllerParams(const HttpRequestInfo& request_info,
-                                      bool is_preconnect) {
+base::Value::Dict NetLogJobControllerParams(const HttpRequestInfo& request_info,
+                                            bool is_preconnect) {
   base::Value::Dict dict;
   dict.Set("url", request_info.url.possibly_invalid_spec());
   dict.Set("is_preconnect", is_preconnect);
   dict.Set("privacy_mode", PrivacyModeToDebugString(request_info.privacy_mode));
 
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogAltSvcParams(const AlternativeServiceInfo* alt_svc_info,
-                               bool is_broken) {
+base::Value::Dict NetLogAltSvcParams(const AlternativeServiceInfo* alt_svc_info,
+                                     bool is_broken) {
   base::Value::Dict dict;
   dict.Set("alt_svc", alt_svc_info->ToString());
   dict.Set("is_broken", is_broken);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 HttpStreamFactory::JobController::JobController(

@@ -54,14 +54,14 @@ std::string GetResponseHeaderLines(const HttpResponseHeaders& headers) {
   return cr_separated_headers;
 }
 
-base::Value NetLogSendRequestBodyParams(uint64_t length,
-                                        bool is_chunked,
-                                        bool did_merge) {
+base::Value::Dict NetLogSendRequestBodyParams(uint64_t length,
+                                              bool is_chunked,
+                                              bool did_merge) {
   base::Value::Dict dict;
   dict.Set("length", static_cast<int>(length));
   dict.Set("is_chunked", is_chunked);
   dict.Set("did_merge", did_merge);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void NetLogSendRequestBody(const NetLogWithSource& net_log,

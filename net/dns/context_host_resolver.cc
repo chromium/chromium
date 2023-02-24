@@ -119,7 +119,7 @@ HostCache* ContextHostResolver::GetHostCache() {
   return resolve_context_->host_cache();
 }
 
-base::Value ContextHostResolver::GetDnsConfigAsValue() const {
+base::Value::Dict ContextHostResolver::GetDnsConfigAsValue() const {
   return manager_->GetDnsConfigAsValue();
 }
 

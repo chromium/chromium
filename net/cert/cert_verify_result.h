@@ -7,16 +7,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
+#include "base/values.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/ocsp_verify_result.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-
-namespace base {
-class Value;
-}
 
 namespace ct {
 enum class CTPolicyCompliance;
@@ -47,7 +44,7 @@ class NET_EXPORT CertVerifyResult : public base::SupportsUserData {
   // Creates NetLog parameter to describe the CertVerifyResult. |net_error| is
   // a net error code to include in the params, if non-zero. It must not be
   // ERR_IO_PENDING, as that is not a true error.
-  base::Value NetLogParams(int net_error) const;
+  base::Value::Dict NetLogParams(int net_error) const;
 
   // The certificate chain that was constructed during verification.
   //

@@ -95,8 +95,9 @@ class NetLogCountingObserver : public net::NetLog::ThreadSafeObserver {
 
   void OnAddEntry(const NetLogEntry& entry) override {
     ++count_;
-    if (!entry.params.is_none() && entry.params.is_dict())
+    if (!entry.params.empty()) {
       dict_count_++;
+    }
   }
 
   int count() const { return count_; }

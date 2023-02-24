@@ -39,7 +39,7 @@ int HumanReadableNetworkHandle(handles::NetworkHandle network) {
 // Return a dictionary of values that provide information about a
 // network-specific change. This also includes relevant current state
 // like the default network, and the types of active networks.
-base::Value NetworkSpecificNetLogParams(handles::NetworkHandle network) {
+base::Value::Dict NetworkSpecificNetLogParams(handles::NetworkHandle network) {
   base::Value::Dict dict;
   dict.Set("changed_network_handle", HumanReadableNetworkHandle(network));
   dict.Set("changed_network_type",
@@ -57,7 +57,7 @@ base::Value NetworkSpecificNetLogParams(handles::NetworkHandle network) {
         NetworkChangeNotifier::ConnectionTypeToString(
             NetworkChangeNotifier::GetNetworkConnectionType(active_network)));
   }
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void NetLogNetworkSpecific(NetLog* net_log,

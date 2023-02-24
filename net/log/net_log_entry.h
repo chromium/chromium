@@ -21,7 +21,7 @@ struct NET_EXPORT NetLogEntry {
               NetLogSource source,
               NetLogEventPhase phase,
               base::TimeTicks time,
-              base::Value params);
+              base::Value::Dict params);
 
   ~NetLogEntry();
 
@@ -29,8 +29,8 @@ struct NET_EXPORT NetLogEntry {
   NetLogEntry(NetLogEntry&& entry);
   NetLogEntry& operator=(NetLogEntry&& entry);
 
-  // Serializes the specified event to a Value.
-  base::Value ToValue() const;
+  // Serializes the specified event to a Dict.
+  base::Value::Dict ToDict() const;
 
   // NetLogEntry is not copy constructible, however copying is useful for
   // unittests.
@@ -43,7 +43,7 @@ struct NET_EXPORT NetLogEntry {
   NetLogSource source;
   NetLogEventPhase phase;
   base::TimeTicks time;
-  base::Value params;
+  base::Value::Dict params;
 };
 
 }  // namespace net

@@ -287,10 +287,10 @@ bool PreflightResult::HasAuthorizationCoveredByWildcard(
          !headers_.contains(kAuthorization);
 }
 
-base::Value PreflightResult::NetLogParams() const {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetStringKey("access-control-allow-methods", JoinSet(methods_));
-  dict.SetStringKey("access-control-allow-headers", JoinSet(headers_));
+base::Value::Dict PreflightResult::NetLogParams() const {
+  base::Value::Dict dict;
+  dict.Set("access-control-allow-methods", JoinSet(methods_));
+  dict.Set("access-control-allow-headers", JoinSet(headers_));
   return dict;
 }
 

@@ -27,7 +27,7 @@ NET_EXPORT_PRIVATE base::Value::List ElideHttp2HeaderBlockForNetLog(
     NetLogCaptureMode capture_mode);
 
 // Converts a spdy::Http2HeaderBlock into NetLog event parameters.
-NET_EXPORT_PRIVATE base::Value Http2HeaderBlockNetLogParams(
+NET_EXPORT_PRIVATE base::Value::Dict Http2HeaderBlockNetLogParams(
     const spdy::Http2HeaderBlock* headers,
     NetLogCaptureMode capture_mode);
 

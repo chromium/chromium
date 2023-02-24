@@ -38,12 +38,12 @@ namespace net {
 
 namespace {
 
-base::Value NetLogQuicPushStreamParams(quic::QuicStreamId stream_id,
-                                       const GURL& url) {
+base::Value::Dict NetLogQuicPushStreamParams(quic::QuicStreamId stream_id,
+                                             const GURL& url) {
   base::Value::Dict dict;
   dict.Set("stream_id", static_cast<int>(stream_id));
   dict.Set("url", url.spec());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 void NetLogQuicPushStream(const NetLogWithSource& net_log1,

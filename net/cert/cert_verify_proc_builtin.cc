@@ -57,8 +57,8 @@ DEFINE_CERT_ERROR_ID(kPathLacksEVPolicy, "Path does not have an EV policy");
 
 const void* const kResultDebugDataKey = &kResultDebugDataKey;
 
-base::Value NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
-                             const CertErrors& errors) {
+base::Value::Dict NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
+                                   const CertErrors& errors) {
   base::Value::Dict results;
 
   std::string pem_encoded;
@@ -71,14 +71,15 @@ base::Value NetLogCertParams(const CRYPTO_BUFFER* cert_handle,
   if (!errors_string.empty())
     results.Set("errors", errors_string);
 
-  return base::Value(std::move(results));
+  return results;
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-base::Value NetLogChromeRootStoreVersion(int64_t chrome_root_store_version) {
+base::Value::Dict NetLogChromeRootStoreVersion(
+    int64_t chrome_root_store_version) {
   base::Value::Dict results;
   results.Set("version_major", NetLogNumberValue(chrome_root_store_version));
-  return base::Value(std::move(results));
+  return results;
 }
 #endif
 
@@ -93,7 +94,7 @@ base::Value::List PEMCertValueList(const ParsedCertificateList& certs) {
   return value;
 }
 
-base::Value NetLogPathBuilderResultPath(
+base::Value::Dict NetLogPathBuilderResultPath(
     const CertPathBuilderResultPath& result_path) {
   base::Value::Dict dict;
   dict.Set("is_valid", result_path.IsValid());
@@ -104,10 +105,11 @@ base::Value NetLogPathBuilderResultPath(
       result_path.errors.ToDebugString(result_path.certs);
   if (!errors_string.empty())
     dict.Set("errors", errors_string);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogPathBuilderResult(const CertPathBuilder::Result& result) {
+base::Value::Dict NetLogPathBuilderResult(
+    const CertPathBuilder::Result& result) {
   base::Value::Dict dict;
   // TODO(crbug.com/634484): include debug data (or just have things netlog it
   // directly).
@@ -117,7 +119,7 @@ base::Value NetLogPathBuilderResult(const CertPathBuilder::Result& result) {
     dict.Set("exceeded_iteration_limit", true);
   if (result.exceeded_deadline)
     dict.Set("exceeded_deadline", true);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 RevocationPolicy NoRevocationChecking() {
@@ -815,7 +817,7 @@ int CertVerifyProcBuiltin::VerifyInternal(
             results.Set("is_ev_attempt", true);
           results.Set("digest_policy",
                       static_cast<int>(cur_attempt.digest_policy));
-          return base::Value(std::move(results));
+          return results;
         });
 
     // If a previous attempt used up most/all of the deadline, extend the

@@ -200,7 +200,8 @@ class TaskRunnerWithCap : public base::TaskRunner {
   base::queue<LocationAndTask> pending_tasks_;
 };
 
-base::Value NetLogGetAdaptersDoneParams(DhcpAdapterNamesLoggingInfo* info) {
+base::Value::Dict NetLogGetAdaptersDoneParams(
+    DhcpAdapterNamesLoggingInfo* info) {
   base::Value::Dict result;
 
   // Add information on each of the adapters enumerated (including those that
@@ -240,16 +241,16 @@ base::Value NetLogGetAdaptersDoneParams(DhcpAdapterNamesLoggingInfo* info) {
   if (info->error != ERROR_SUCCESS)
     result.Set("error", static_cast<int>(info->error));
 
-  return base::Value(std::move(result));
+  return result;
 }
 
-base::Value NetLogFetcherDoneParams(int fetcher_index, int net_error) {
+base::Value::Dict NetLogFetcherDoneParams(int fetcher_index, int net_error) {
   base::Value::Dict result;
 
   result.Set("fetcher_index", fetcher_index);
   result.Set("net_error", net_error);
 
-  return base::Value(std::move(result));
+  return result;
 }
 
 }  // namespace

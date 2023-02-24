@@ -1241,7 +1241,7 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
     } else {
       params.Set("net_error", result);
     }
-    return base::Value(std::move(params));
+    return params;
   });
 
   cache_pending_ = false;

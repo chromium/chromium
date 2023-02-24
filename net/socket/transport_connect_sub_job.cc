@@ -227,7 +227,7 @@ int TransportConnectSubJob::DoEndpointLockComplete() {
     base::Value::Dict dict;
     dict.Set("address", CurrentAddress().ToString());
     transport_socket_->NetLog().source().AddToEventParameters(dict);
-    return base::Value(std::move(dict));
+    return dict;
   });
 
   // If `websocket_endpoint_lock_manager_` is non-null, this class now owns an

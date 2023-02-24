@@ -101,7 +101,7 @@
 
 namespace {
 
-base::Value CookieInclusionStatusNetLogParams(
+base::Value::Dict CookieInclusionStatusNetLogParams(
     const std::string& operation,
     const std::string& cookie_name,
     const std::string& cookie_domain,
@@ -119,7 +119,7 @@ base::Value CookieInclusionStatusNetLogParams(
     if (!cookie_path.empty())
       dict.Set("path", cookie_path);
   }
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // Records details about the most-specific trust anchor in |spki_hashes|,

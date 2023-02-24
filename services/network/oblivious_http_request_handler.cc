@@ -292,7 +292,7 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
           dict.Set("bytes", net::NetLogBinaryValue(bhttp_payload.data(),
                                                    bhttp_payload.size()));
         }
-        return base::Value(std::move(dict));
+        return dict;
       });
 
   // Padding
@@ -408,7 +408,7 @@ void ObliviousHttpRequestHandler::OnRequestComplete(
           dict.Set("bytes", net::NetLogBinaryValue(maybe_payload->data(),
                                                    maybe_payload->size()));
         }
-        return base::Value(std::move(dict));
+        return dict;
       });
 
   auto bhttp_response = quiche::BinaryHttpResponse::Create(*maybe_payload);

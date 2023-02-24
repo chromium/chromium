@@ -1177,15 +1177,14 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
 
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
-        base::Value dict(base::Value::Type::DICT);
-        dict.SetStringKey(
-            "client_address_space",
-            IPAddressSpaceToStringPiece(
-                private_network_access_checker_.ClientAddressSpace()));
-        dict.SetStringKey("resource_address_space",
-                          IPAddressSpaceToStringPiece(response_address_space));
-        dict.SetStringKey("result",
-                          PrivateNetworkAccessCheckResultToStringPiece(result));
+        base::Value::Dict dict;
+        dict.Set("client_address_space",
+                 IPAddressSpaceToStringPiece(
+                     private_network_access_checker_.ClientAddressSpace()));
+        dict.Set("resource_address_space",
+                 IPAddressSpaceToStringPiece(response_address_space));
+        dict.Set("result",
+                 PrivateNetworkAccessCheckResultToStringPiece(result));
         return dict;
       });
 

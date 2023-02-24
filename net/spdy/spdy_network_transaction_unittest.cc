@@ -4949,7 +4949,7 @@ TEST_F(SpdyNetworkTransactionTest, NetLog) {
                                    NetLogEventPhase::NONE);
 
   ASSERT_TRUE(entries[pos].HasParams());
-  auto* header_list = entries[pos].params.GetDict().FindList("headers");
+  auto* header_list = entries[pos].params.FindList("headers");
   ASSERT_TRUE(header_list);
   ASSERT_EQ(5u, header_list->size());
 
@@ -10588,9 +10588,8 @@ TEST_F(SpdyNetworkTransactionTest, GreaseSettings) {
       NetLogEventPhase::NONE);
   ASSERT_LT(pos, entries.size());
 
-  const base::Value& params = entries[pos].params;
-  const base::Value::List* const settings =
-      params.GetDict().FindList("settings");
+  const base::Value::Dict& params = entries[pos].params;
+  const base::Value::List* const settings = params.FindList("settings");
   ASSERT_TRUE(settings);
 
   ASSERT_FALSE(settings->empty());

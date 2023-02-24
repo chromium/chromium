@@ -41,8 +41,8 @@ base::Value::Dict CreateCommandMetadata(const WebAppCommand& command) {
   return dict;
 }
 
-base::Value CreateLogValue(const WebAppCommand& command,
-                           absl::optional<CommandResult> result) {
+base::Value::Dict CreateLogValue(const WebAppCommand& command,
+                                 absl::optional<CommandResult> result) {
   base::Value::Dict dict = CreateCommandMetadata(command);
   base::Value debug_value = command.ToDebugValue();
   bool is_empty_dict = debug_value.is_dict() && debug_value.DictEmpty();
@@ -62,7 +62,7 @@ base::Value CreateLogValue(const WebAppCommand& command,
         break;
     }
   }
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace
@@ -100,7 +100,8 @@ void WebAppCommandManager::ScheduleCommand(
     return;
   }
   if (is_in_shutdown_) {
-    AddValueToLog(CreateLogValue(*command, CommandResult::kShutdown));
+    AddValueToLog(
+        base::Value(CreateLogValue(*command, CommandResult::kShutdown)));
     return;
   }
   DCHECK(!base::Contains(commands_, command->id()));
@@ -294,7 +295,7 @@ void WebAppCommandManager::OnCommandComplete(
     CommandResult result,
     base::OnceClosure completion_callback) {
   DCHECK(running_command);
-  AddValueToLog(CreateLogValue(*running_command, result));
+  AddValueToLog(base::Value(CreateLogValue(*running_command, result)));
 
   auto command_it = commands_.find(running_command->id());
   DCHECK(command_it != commands_.end());

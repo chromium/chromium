@@ -2253,7 +2253,7 @@ TEST_F(SpdySessionTest, ChangeStreamRequestPriority) {
 // Attempts to extract a NetLogSource from a set of event parameters.  Returns
 // true and writes the result to |source| on success.  Returns false and
 // makes |source| an invalid source on failure.
-bool NetLogSourceFromEventParameters(const base::Value* event_params,
+bool NetLogSourceFromEventParameters(const base::Value::Dict* event_params,
                                      NetLogSource* source) {
   const base::Value::Dict* source_dict = nullptr;
   int source_id = -1;
@@ -2262,7 +2262,7 @@ bool NetLogSourceFromEventParameters(const base::Value* event_params,
     *source = NetLogSource();
     return false;
   }
-  source_dict = event_params->GetDict().FindDict("source_dependency");
+  source_dict = event_params->FindDict("source_dependency");
   if (!source_dict) {
     *source = NetLogSource();
     return false;

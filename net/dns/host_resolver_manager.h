@@ -24,6 +24,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
@@ -178,7 +179,7 @@ class NET_EXPORT HostResolverManager
   virtual void SetInsecureDnsClientEnabled(bool enabled,
                                            bool additional_dns_types_enabled);
 
-  base::Value GetDnsConfigAsValue() const;
+  base::Value::Dict GetDnsConfigAsValue() const;
 
   // Sets overriding configuration that will replace or add to configuration
   // read from the system for DnsClient resolution.

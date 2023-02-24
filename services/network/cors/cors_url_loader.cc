@@ -85,12 +85,13 @@ absl::optional<PreflightRequiredReason> NeedsPreflight(
   return absl::nullopt;
 }
 
-base::Value NetLogCorsURLLoaderStartParams(const ResourceRequest& request) {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetStringKey("url", request.url.possibly_invalid_spec());
-  dict.SetStringKey("method", request.method);
-  dict.SetStringKey("headers", request.headers.ToString());
-  dict.SetBoolKey("is_revalidating", request.is_revalidating);
+base::Value::Dict NetLogCorsURLLoaderStartParams(
+    const ResourceRequest& request) {
+  base::Value::Dict dict;
+  dict.Set("url", request.url.possibly_invalid_spec());
+  dict.Set("method", request.method);
+  dict.Set("headers", request.headers.ToString());
+  dict.Set("is_revalidating", request.is_revalidating);
   std::string cors_preflight_policy;
   switch (request.cors_preflight_policy) {
     case mojom::CorsPreflightPolicy::kConsiderPreflight:
@@ -100,14 +101,14 @@ base::Value NetLogCorsURLLoaderStartParams(const ResourceRequest& request) {
       cors_preflight_policy = "prevent_preflight";
       break;
   }
-  dict.SetStringKey("cors_preflight_policy", cors_preflight_policy);
+  dict.Set("cors_preflight_policy", cors_preflight_policy);
   return dict;
 }
 
-base::Value NetLogPreflightRequiredParams(
+base::Value::Dict NetLogPreflightRequiredParams(
     absl::optional<PreflightRequiredReason> preflight_required_reason) {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetBoolKey("preflight_required", preflight_required_reason.has_value());
+  base::Value::Dict dict;
+  dict.Set("preflight_required", preflight_required_reason.has_value());
   if (preflight_required_reason) {
     std::string preflight_required_reason_param;
     switch (preflight_required_reason.value()) {
@@ -124,8 +125,7 @@ base::Value NetLogPreflightRequiredParams(
         preflight_required_reason_param = "disallowed_header";
         break;
     }
-    dict.SetStringKey("preflight_required_reason",
-                      preflight_required_reason_param);
+    dict.Set("preflight_required_reason", preflight_required_reason_param);
   }
   return dict;
 }
@@ -814,7 +814,7 @@ absl::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
   }
 
   net_log_.AddEvent(net::NetLogEventType::CORS_PREFLIGHT_ERROR, [&] {
-    return base::Value(NetLogPreflightErrorParams(net_error, status));
+    return NetLogPreflightErrorParams(net_error, status);
   });
 
   // `kInvalidResponse` is never returned by the preflight controller, so we use

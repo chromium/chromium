@@ -88,13 +88,13 @@ const char* NetLogHttpStreamJobType(HttpStreamFactory::JobType job_type) {
 }
 
 // Returns parameters associated with the start of a HTTP stream job.
-base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
-                                      const GURL& original_url,
-                                      const GURL& url,
-                                      bool expect_spdy,
-                                      bool using_quic,
-                                      HttpStreamFactory::JobType job_type,
-                                      RequestPriority priority) {
+base::Value::Dict NetLogHttpStreamJobParams(const NetLogSource& source,
+                                            const GURL& original_url,
+                                            const GURL& url,
+                                            bool expect_spdy,
+                                            bool using_quic,
+                                            HttpStreamFactory::JobType job_type,
+                                            RequestPriority priority) {
   base::Value::Dict dict;
   if (source.IsValid())
     source.AddToEventParameters(dict);
@@ -104,15 +104,15 @@ base::Value NetLogHttpStreamJobParams(const NetLogSource& source,
   dict.Set("using_quic", using_quic);
   dict.Set("priority", RequestPriorityToString(priority));
   dict.Set("type", NetLogHttpStreamJobType(job_type));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // Returns parameters associated with the ALPN protocol of a HTTP stream.
-base::Value NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
+base::Value::Dict NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
   base::Value::Dict dict;
 
   dict.Set("proto", NextProtoToString(negotiated_protocol));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 HttpStreamFactory::Job::Job(Delegate* delegate,

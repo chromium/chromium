@@ -26,14 +26,14 @@ ConvertQuicPriorityToRequestPriority(spdy::SpdyPriority priority);
 
 // Converts a spdy::Http2HeaderBlock, stream_id and priority into NetLog event
 // parameters.
-NET_EXPORT base::Value QuicRequestNetLogParams(
+NET_EXPORT base::Value::Dict QuicRequestNetLogParams(
     quic::QuicStreamId stream_id,
     const spdy::Http2HeaderBlock* headers,
     quic::QuicStreamPriority priority,
     NetLogCaptureMode capture_mode);
 
 // Converts a spdy::Http2HeaderBlock and stream into NetLog event parameters.
-NET_EXPORT base::Value QuicResponseNetLogParams(
+NET_EXPORT base::Value::Dict QuicResponseNetLogParams(
     quic::QuicStreamId stream_id,
     bool fin_received,
     const spdy::Http2HeaderBlock* headers,

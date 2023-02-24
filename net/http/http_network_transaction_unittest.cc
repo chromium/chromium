@@ -190,10 +190,8 @@ bool IsTransportSocketPoolStalled(HttpNetworkSession* session) {
 // Takes in a Value created from a NetLogHttpResponseParameter, and returns
 // a JSONified list of headers as a single string.  Uses single quotes instead
 // of double quotes for easier comparison.
-std::string GetHeaders(const base::Value& params) {
-  if (!params.is_dict())
-    return "";
-  const base::Value::List* header_list = params.GetDict().FindList("headers");
+std::string GetHeaders(const base::Value::Dict& params) {
+  const base::Value::List* header_list = params.FindList("headers");
   if (!header_list)
     return "";
   std::string headers;

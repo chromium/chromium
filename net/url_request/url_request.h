@@ -19,6 +19,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "base/values.h"
 #include "net/base/auth.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/idempotency.h"
@@ -56,10 +57,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace net {
 
@@ -472,7 +469,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Returns a partial representation of the request's state as a value, for
   // debugging.
-  base::Value GetStateAsValue() const;
+  base::Value::Dict GetStateAsValue() const;
 
   // Logs information about the what external object currently blocking the
   // request.  LogUnblocked must be called before resuming the request.  This

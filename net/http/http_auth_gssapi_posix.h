@@ -283,7 +283,7 @@ NET_EXPORT_PRIVATE base::Value::Dict GetGssStatusCodeValue(
 // encapsulating the codes as well as their meanings as expanded via
 // gss_display_status().
 //
-// The base::Value has the following structure:
+// The base::Value::Dict has the following structure:
 //   {
 //     "function": <name of GSSAPI function that returned the error>
 //     "major_status": {
@@ -341,8 +341,8 @@ NET_EXPORT_PRIVATE base::Value::Dict GetDisplayNameValue(
     GSSAPILibrary* gssapi_lib,
     const gss_name_t gss_name);
 
-// GetContextStateAsValue returns a base::Value that describes the state of a
-// GSSAPI context. The structure of the value is:
+// GetContextStateAsValue returns a base::Value::Dict that describes the state
+// of a GSSAPI context. The structure of the value is:
 //
 //   {
 //     "source": {
@@ -364,7 +364,7 @@ NET_EXPORT_PRIVATE base::Value::Dict GetDisplayNameValue(
 //   {
 //     "error": <error. See GetGssStatusValue() for structure.>
 //   }
-NET_EXPORT_PRIVATE base::Value GetContextStateAsValue(
+NET_EXPORT_PRIVATE base::Value::Dict GetContextStateAsValue(
     GSSAPILibrary* gssapi_lib,
     const gss_ctx_id_t context_handle);
 }  // namespace net

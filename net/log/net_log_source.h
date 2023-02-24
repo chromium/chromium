@@ -34,7 +34,7 @@ struct NET_EXPORT NetLogSource {
 
   // Returns a dictionary with a single entry named "source_dependency" that
   // describes |this|.
-  base::Value ToEventParameters() const;
+  base::Value::Dict ToEventParameters() const;
 
   NetLogSourceType type;
   uint32_t id;

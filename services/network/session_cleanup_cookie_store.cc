@@ -25,14 +25,15 @@ namespace network {
 
 namespace {
 
-base::Value CookieStoreOriginFiltered(const std::string& origin,
-                                      bool is_https,
-                                      net::NetLogCaptureMode capture_mode) {
+base::Value::Dict CookieStoreOriginFiltered(
+    const std::string& origin,
+    bool is_https,
+    net::NetLogCaptureMode capture_mode) {
   if (!net::NetLogCaptureIncludesSensitive(capture_mode))
-    return base::Value();
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetStringKey("origin", origin);
-  dict.SetBoolKey("is_https", is_https);
+    return base::Value::Dict();
+  base::Value::Dict dict;
+  dict.Set("origin", origin);
+  dict.Set("is_https", is_https);
   return dict;
 }
 

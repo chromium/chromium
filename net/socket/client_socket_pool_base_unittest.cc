@@ -680,9 +680,7 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
         NetLogEventPhase::NONE);
     ASSERT_EQ(1u, entries.size());
     ASSERT_TRUE(entries[0].HasParams());
-    ASSERT_TRUE(entries[0].params.is_dict());
-    const std::string* reason =
-        entries[0].params.GetDict().FindString("reason");
+    const std::string* reason = entries[0].params.FindString("reason");
     ASSERT_TRUE(reason);
     EXPECT_EQ(expected_reason, *reason);
   }

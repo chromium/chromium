@@ -16,7 +16,7 @@
 
 namespace net {
 
-base::Value NetLogURLRequestConstructorParams(
+base::Value::Dict NetLogURLRequestConstructorParams(
     const GURL& url,
     RequestPriority priority,
     NetworkTrafficAnnotationTag traffic_annotation) {
@@ -24,10 +24,10 @@ base::Value NetLogURLRequestConstructorParams(
   dict.Set("url", url.possibly_invalid_spec());
   dict.Set("priority", RequestPriorityToString(priority));
   dict.Set("traffic_annotation", traffic_annotation.unique_id_hash_code);
-  return base::Value(std::move(dict));
+  return dict;
 }
 
-base::Value NetLogURLRequestStartParams(
+base::Value::Dict NetLogURLRequestStartParams(
     const GURL& url,
     const std::string& method,
     int load_flags,
@@ -59,7 +59,7 @@ base::Value NetLogURLRequestStartParams(
            initiator.has_value() ? initiator->Serialize() : "not an origin");
   if (upload_id > -1)
     dict.Set("upload_id", base::NumberToString(upload_id));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 }  // namespace net

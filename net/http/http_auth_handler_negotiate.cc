@@ -37,16 +37,16 @@ using DelegationType = HttpAuth::DelegationType;
 
 namespace {
 
-base::Value NetLogParameterChannelBindings(
+base::Value::Dict NetLogParameterChannelBindings(
     const std::string& channel_binding_token,
     NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   if (!NetLogCaptureIncludesSocketBytes(capture_mode))
-    return base::Value(std::move(dict));
+    return dict;
 
   dict.Set("token", base::HexEncode(channel_binding_token.data(),
                                     channel_binding_token.size()));
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 // Uses |negotiate_auth_system_factory| to create the auth system, otherwise

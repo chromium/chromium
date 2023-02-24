@@ -215,17 +215,15 @@ class DnsClientImpl : public DnsClient {
     insecure_fallback_failures_ = 0;
   }
 
-  base::Value GetDnsConfigAsValueForNetLog() const override {
+  base::Value::Dict GetDnsConfigAsValueForNetLog() const override {
     const DnsConfig* config = GetEffectiveConfig();
     if (config == nullptr)
-      return base::Value(base::Value::Dict());
-    base::Value value = config->ToValue();
-    DCHECK(value.is_dict());
-    base::Value::Dict& dict = value.GetDict();
+      return base::Value::Dict();
+    base::Value::Dict dict = config->ToDict();
     dict.Set("can_use_secure_dns_transactions", CanUseSecureDnsTransactions());
     dict.Set("can_use_insecure_dns_transactions",
              CanUseInsecureDnsTransactions());
-    return value;
+    return dict;
   }
 
   absl::optional<DnsConfig> GetSystemConfigForTesting() const override {

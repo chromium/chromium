@@ -271,12 +271,12 @@ base::Value::Dict ContextFlagsToValue(OM_uint32 flags) {
   return rv;
 }
 
-base::Value GetContextStateAsValue(GSSAPILibrary* gssapi_lib,
-                                   const gss_ctx_id_t context_handle) {
+base::Value::Dict GetContextStateAsValue(GSSAPILibrary* gssapi_lib,
+                                         const gss_ctx_id_t context_handle) {
   base::Value::Dict rv;
   if (context_handle == GSS_C_NO_CONTEXT) {
     rv.Set("error", GetGssStatusValue(nullptr, "<none>", GSS_S_NO_CONTEXT, 0));
-    return base::Value(std::move(rv));
+    return rv;
   }
 
   OM_uint32 major_status = 0;
@@ -300,7 +300,7 @@ base::Value GetContextStateAsValue(GSSAPILibrary* gssapi_lib,
   if (major_status != GSS_S_COMPLETE) {
     rv.Set("error", GetGssStatusValue(gssapi_lib, "gss_inquire_context",
                                       major_status, minor_status));
-    return base::Value(std::move(rv));
+    return rv;
   }
   ScopedName scoped_src_name(src_name, gssapi_lib);
   ScopedName scoped_targ_name(targ_name, gssapi_lib);
@@ -313,19 +313,19 @@ base::Value GetContextStateAsValue(GSSAPILibrary* gssapi_lib,
   rv.Set("mechanism", OidToValue(mech_type));
   rv.Set("flags", ContextFlagsToValue(ctx_flags));
   rv.Set("open", !!open);
-  return base::Value(std::move(rv));
+  return rv;
 }
 
 namespace {
 
 // Return a NetLog value for the result of loading a library.
-base::Value LibraryLoadResultParams(base::StringPiece library_name,
-                                    base::StringPiece load_result) {
+base::Value::Dict LibraryLoadResultParams(base::StringPiece library_name,
+                                          base::StringPiece load_result) {
   base::Value::Dict params;
   params.Set("library_name", library_name);
   if (!load_result.empty())
     params.Set("load_result", load_result);
-  return base::Value(std::move(params));
+  return params;
 }
 
 }  // namespace
@@ -421,12 +421,12 @@ base::NativeLibrary GSSAPISharedLibrary::LoadSharedLibrary(
 
 namespace {
 
-base::Value BindFailureParams(base::StringPiece library_name,
-                              base::StringPiece method) {
+base::Value::Dict BindFailureParams(base::StringPiece library_name,
+                                    base::StringPiece method) {
   base::Value::Dict params;
   params.Set("library_name", library_name);
   params.Set("method", method);
-  return base::Value(std::move(params));
+  return params;
 }
 
 void* BindUntypedMethod(base::NativeLibrary lib,
@@ -800,29 +800,29 @@ int MapInitSecContextStatusToError(OM_uint32 major_status) {
   return ERR_UNDOCUMENTED_SECURITY_LIBRARY_STATUS;
 }
 
-base::Value ImportNameErrorParams(GSSAPILibrary* library,
-                                  base::StringPiece spn,
-                                  OM_uint32 major_status,
-                                  OM_uint32 minor_status) {
+base::Value::Dict ImportNameErrorParams(GSSAPILibrary* library,
+                                        base::StringPiece spn,
+                                        OM_uint32 major_status,
+                                        OM_uint32 minor_status) {
   base::Value::Dict params;
   params.Set("spn", spn);
   if (major_status != GSS_S_COMPLETE)
     params.Set("status", GetGssStatusValue(library, "import_name", major_status,
                                            minor_status));
-  return base::Value(std::move(params));
+  return params;
 }
 
-base::Value InitSecContextErrorParams(GSSAPILibrary* library,
-                                      gss_ctx_id_t context,
-                                      OM_uint32 major_status,
-                                      OM_uint32 minor_status) {
+base::Value::Dict InitSecContextErrorParams(GSSAPILibrary* library,
+                                            gss_ctx_id_t context,
+                                            OM_uint32 major_status,
+                                            OM_uint32 minor_status) {
   base::Value::Dict params;
   if (major_status != GSS_S_COMPLETE)
     params.Set("status", GetGssStatusValue(library, "gss_init_sec_context",
                                            major_status, minor_status));
   if (context != GSS_C_NO_CONTEXT)
     params.Set("context", GetContextStateAsValue(library, context));
-  return base::Value(std::move(params));
+  return params;
 }
 
 }  // anonymous namespace

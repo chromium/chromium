@@ -40,7 +40,7 @@ bool HttpAuthHandler::InitFromChallenge(
     base::Value::Dict params;
     params.Set("succeeded", ok);
     params.Set("allows_default_credentials", AllowsDefaultCredentials());
-    return base::Value(std::move(params));
+    return params;
   });
 
   // Init() is expected to set the scheme, realm, score, and properties.  The

@@ -29,10 +29,10 @@ namespace net {
 
 namespace {
 
-base::Value JobResultParams(bool trial_success) {
+base::Value::Dict JobResultParams(bool trial_success) {
   base::Value::Dict results;
   results.Set("trial_success", trial_success);
-  return base::Value(std::move(results));
+  return results;
 }
 
 }  // namespace

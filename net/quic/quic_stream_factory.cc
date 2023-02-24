@@ -109,7 +109,7 @@ enum class JobProtocolErrorLocation {
   kMaxValue = kCryptoConnectFailedAsync,
 };
 
-base::Value NetLogQuicStreamFactoryJobParams(
+base::Value::Dict NetLogQuicStreamFactoryJobParams(
     const QuicStreamFactory::QuicSessionAliasKey* key) {
   base::Value::Dict dict;
   dict.Set("host", key->server_id().host());
@@ -118,7 +118,7 @@ base::Value NetLogQuicStreamFactoryJobParams(
            PrivacyModeToDebugString(key->session_key().privacy_mode()));
   dict.Set("network_anonymization_key",
            key->session_key().network_anonymization_key().ToDebugString());
-  return base::Value(std::move(dict));
+  return dict;
 }
 
 std::string QuicPlatformNotificationToString(

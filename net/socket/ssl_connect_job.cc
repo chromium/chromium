@@ -466,7 +466,7 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
         NetLogEventType::SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST, [&] {
           base::Value::Dict dict;
           dict.Set("bytes", NetLogBinaryValue(*ech_retry_configs_));
-          return base::Value(std::move(dict));
+          return dict;
         });
 
     // TODO(https://crbug.com/1091403): Add histograms for how often this
