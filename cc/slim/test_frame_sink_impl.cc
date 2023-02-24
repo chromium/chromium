@@ -31,6 +31,7 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
       absl::optional<::viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override {
     last_frame_ = std::move(frame);
+    hit_test_region_list_ = std::move(hit_test_region_list);
   }
   void SubmitCompositorFrameSync(
       const viz::LocalSurfaceId& local_surface_id,
@@ -49,9 +50,13 @@ class TestFrameSinkImpl::TestMojoCompositorFrameSink
 #endif
 
   viz::CompositorFrame TakeLastFrame() { return std::move(last_frame_); }
+  const absl::optional<::viz::HitTestRegionList>& hit_test_region_list() const {
+    return hit_test_region_list_;
+  }
 
  private:
   viz::CompositorFrame last_frame_;
+  absl::optional<::viz::HitTestRegionList> hit_test_region_list_;
 };
 
 // static
@@ -88,6 +93,11 @@ TestFrameSinkImpl::~TestFrameSinkImpl() = default;
 
 viz::CompositorFrame TestFrameSinkImpl::TakeLastFrame() {
   return mojo_sink_->TakeLastFrame();
+}
+
+const absl::optional<::viz::HitTestRegionList>&
+TestFrameSinkImpl::GetLastHitTestRegionList() const {
+  return mojo_sink_->hit_test_region_list();
 }
 
 bool TestFrameSinkImpl::BindToClient(FrameSinkImplClient* client) {

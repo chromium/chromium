@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "cc/slim/filter.h"
+#include "cc/slim/frame_data.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -193,6 +194,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   gfx::Transform ComputeTransformToParent();
   virtual bool HasDrawableContent() const;
   virtual void AppendQuads(viz::CompositorRenderPass& render_pass,
+                           FrameData& data,
                            const gfx::Transform& transform,
                            const gfx::Rect* clip);
 

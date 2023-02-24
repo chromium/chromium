@@ -25,6 +25,8 @@ class TestFrameSinkImpl : public FrameSinkImpl {
     bind_to_client_result_ = result;
   }
   viz::CompositorFrame TakeLastFrame();
+  const absl::optional<::viz::HitTestRegionList>& GetLastHitTestRegionList()
+      const;
   bool bind_to_client_called() const { return bind_to_client_called_; }
   bool needs_begin_frames() const { return needs_begin_frames_; }
 

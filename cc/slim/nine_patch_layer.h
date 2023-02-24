@@ -44,6 +44,7 @@ class COMPONENT_EXPORT(CC_SLIM) NinePatchLayer : public UIResourceLayer {
   void SetNearestNeighbor(bool nearest_neighbor);
 
   void AppendQuads(viz::CompositorRenderPass& render_pass,
+                   FrameData& data,
                    const gfx::Transform& transform,
                    const gfx::Rect* clip) override;
 

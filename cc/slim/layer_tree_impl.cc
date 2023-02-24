@@ -365,8 +365,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
   // * Damage tracking
   // * Occlusion culling
   // * Visible rect (ie clip) on quads
-  // * Surface embedding fields (referenced surfaces, activation dependency,
-  //   deadline)
+  // * Ensure entire viewport is covered by quads.
   TRACE_EVENT0("cc", "slim::LayerTreeImpl::ProduceFrame");
 
   for (auto& resource_request :
@@ -381,6 +380,11 @@ void LayerTreeImpl::GenerateCompositorFrame(
         break;
     }
   }
+
+  out_hit_test_region_list.flags = viz::HitTestRegionFlags::kHitTestMine |
+                                   viz::HitTestRegionFlags::kHitTestMouse |
+                                   viz::HitTestRegionFlags::kHitTestTouch;
+  out_hit_test_region_list.bounds = device_viewport_rect_;
 
   auto render_pass = viz::CompositorRenderPass::Create();
   render_pass->SetNew(viz::CompositorRenderPassId(root_->id()),
@@ -399,12 +403,20 @@ void LayerTreeImpl::GenerateCompositorFrame(
   top_controls_visible_height_.reset();
   out_frame.metadata.display_transform_hint = display_transform_hint_;
 
-  Draw(*root_, *render_pass, /*transform_to_target=*/gfx::Transform(),
+  FrameData frame_data(out_hit_test_region_list.regions);
+  Draw(*root_, *render_pass, frame_data,
+       /*transform_to_target=*/gfx::Transform(),
        /*clip_from_parent=*/nullptr);
 
   render_pass->copy_requests = std::move(copy_requests_for_next_frame_);
   copy_requests_for_next_frame_.clear();
   out_frame.render_pass_list.push_back(std::move(render_pass));
+  out_frame.metadata.activation_dependencies =
+      std::vector<viz::SurfaceId>(frame_data.activation_dependencies.begin(),
+                                  frame_data.activation_dependencies.end());
+  out_frame.metadata.deadline = viz::FrameDeadline(
+      args.frame_time, frame_data.deadline_in_frames.value_or(0u),
+      args.interval, frame_data.use_default_lower_bound_deadline);
 
   for (const auto& pass : out_frame.render_pass_list) {
     for (const auto* quad : pass->quad_list) {
@@ -425,6 +437,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
 
 void LayerTreeImpl::Draw(Layer& layer,
                          viz::CompositorRenderPass& parent_pass,
+                         FrameData& data,
                          const gfx::Transform& transform_to_target,
                          const gfx::Rect* clip_from_parent) {
   if (layer.hide_layer_and_subtree()) {
@@ -454,11 +467,11 @@ void LayerTreeImpl::Draw(Layer& layer,
   const gfx::Rect* clip = use_new_clip ? &new_clip : clip_from_parent;
 
   for (auto& child : base::Reversed(layer.children())) {
-    Draw(*child, parent_pass, new_transform_to_target, clip);
+    Draw(*child, parent_pass, data, new_transform_to_target, clip);
   }
 
   if (!layer.bounds().IsEmpty() && layer.HasDrawableContent()) {
-    layer.AppendQuads(parent_pass, new_transform_to_target, clip);
+    layer.AppendQuads(parent_pass, data, new_transform_to_target, clip);
   }
 }
 

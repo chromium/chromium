@@ -84,6 +84,7 @@ void NinePatchLayer::SetNearestNeighbor(bool nearest_neighbor) {
 }
 
 void NinePatchLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
+                                 FrameData& data,
                                  const gfx::Transform& transform,
                                  const gfx::Rect* clip) {
   LayerTreeImpl* layer_tree_impl = static_cast<LayerTreeImpl*>(layer_tree());

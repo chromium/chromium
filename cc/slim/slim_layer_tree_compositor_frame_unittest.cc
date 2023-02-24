@@ -15,6 +15,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/nine_patch_layer.h"
 #include "cc/slim/solid_color_layer.h"
+#include "cc/slim/surface_layer.h"
 #include "cc/slim/test_frame_sink_impl.h"
 #include "cc/slim/test_layer_tree_client.h"
 #include "cc/slim/test_layer_tree_impl.h"
@@ -23,6 +24,7 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -30,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace cc::slim {
@@ -67,7 +70,8 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
     DCHECK(local_surface_id_.is_valid());
   }
 
-  viz::CompositorFrame ProduceFrame() {
+  viz::CompositorFrame ProduceFrame(
+      absl::optional<viz::HitTestRegionList>* out_list = nullptr) {
     layer_tree_->SetNeedsRedraw();
     EXPECT_TRUE(layer_tree_->NeedsBeginFrames());
     base::TimeTicks frame_time = base::TimeTicks::Now();
@@ -80,6 +84,9 @@ class SlimLayerTreeCompositorFrameTest : public testing::Test {
                               /*frame_ack=*/false, {});
     next_timing_details_.clear();
     viz::CompositorFrame frame = frame_sink_->TakeLastFrame();
+    if (out_list) {
+      *out_list = frame_sink_->GetLastHitTestRegionList();
+    }
     frame_sink_->DidReceiveCompositorFrameAck({});
     return frame;
   }
@@ -124,10 +131,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, CompositorFrameMetadataBasics) {
       CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
   layer_tree_->SetRoot(solid_color_layer);
 
-  // TODO(crbug.com/1408128): Add tests for features once implemented:
-  // * reference_surfaces
-  // * activation_dependencies
-  // * deadline
   uint32_t first_frame_token = 0u;
   {
     viz::CompositorFrame frame = ProduceFrame();
@@ -723,6 +726,156 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
     EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,
               texture_quad->resource_id());
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, SurfaceLayerAppendQuads) {
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  surface_layer->SetIsDrawable(true);
+  layer_tree_->SetRoot(surface_layer);
+
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(
+        pass->quad_list,
+        ElementsAre(AllOf(viz::IsSolidColorQuad(), viz::HasRect(viewport_),
+                          viz::HasVisibleRect(viewport_))));
+  }
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId start(viz::FrameSinkId(1u, 2u),
+                       viz::LocalSurfaceId(3u, 4u, token));
+  {
+    viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
+                       viz::LocalSurfaceId(5u, 6u, token));
+    cc::DeadlinePolicy deadline_policy =
+        cc::DeadlinePolicy::UseDefaultDeadline();
+    surface_layer->SetOldestAcceptableFallback(start);
+    surface_layer->SetSurfaceId(end, deadline_policy);
+
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsSurfaceQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_))));
+
+    auto* quad = viz::SurfaceDrawQuad::MaterialCast(pass->quad_list.back());
+    EXPECT_EQ(quad->surface_range, viz::SurfaceRange(start, end));
+    EXPECT_FALSE(quad->stretch_content_to_fill_bounds);
+    EXPECT_FALSE(quad->is_reflection);
+    EXPECT_TRUE(quad->allow_merge);
+
+    viz::CompositorFrameMetadata& metadata = frame.metadata;
+    EXPECT_EQ(metadata.referenced_surfaces,
+              std::vector<viz::SurfaceRange>{viz::SurfaceRange(start, end)});
+    EXPECT_EQ(metadata.activation_dependencies,
+              std::vector<viz::SurfaceId>{end});
+    EXPECT_FALSE(metadata.deadline.deadline_in_frames());
+    EXPECT_TRUE(metadata.deadline.use_default_lower_bound_deadline());
+  }
+
+  {
+    viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
+                       viz::LocalSurfaceId(5u, 7u, token));
+    cc::DeadlinePolicy deadline_policy =
+        cc::DeadlinePolicy::UseSpecifiedDeadline(2u);
+    surface_layer->SetSurfaceId(end, deadline_policy);
+    surface_layer->SetStretchContentToFillBounds(true);
+
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsSurfaceQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_))));
+
+    auto* quad = viz::SurfaceDrawQuad::MaterialCast(pass->quad_list.back());
+    EXPECT_EQ(quad->surface_range, viz::SurfaceRange(start, end));
+    EXPECT_TRUE(quad->stretch_content_to_fill_bounds);
+
+    viz::CompositorFrameMetadata& metadata = frame.metadata;
+    EXPECT_EQ(metadata.referenced_surfaces,
+              std::vector<viz::SurfaceRange>{viz::SurfaceRange(start, end)});
+    EXPECT_EQ(metadata.activation_dependencies,
+              std::vector<viz::SurfaceId>{end});
+    EXPECT_EQ(metadata.deadline.deadline_in_frames(), 2u);
+    EXPECT_FALSE(metadata.deadline.use_default_lower_bound_deadline());
+  }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, SimpleHitTestRegionList) {
+  auto surface_layer = SurfaceLayer::Create();
+  surface_layer->SetBounds(viewport_.size());
+  surface_layer->SetIsDrawable(true);
+  layer_tree_->SetRoot(surface_layer);
+
+  {
+    base::UnguessableToken token = base::UnguessableToken::Create();
+    viz::SurfaceId surface_id(viz::FrameSinkId(1u, 2u),
+                              viz::LocalSurfaceId(3u, 4u, token));
+    cc::DeadlinePolicy deadline_policy =
+        cc::DeadlinePolicy::UseDefaultDeadline();
+    surface_layer->SetSurfaceId(surface_id, deadline_policy);
+
+    absl::optional<viz::HitTestRegionList> hit_test_region_list;
+    viz::CompositorFrame frame = ProduceFrame(&hit_test_region_list);
+    ASSERT_TRUE(hit_test_region_list);
+    EXPECT_EQ(hit_test_region_list->bounds, viewport_);
+
+    ASSERT_EQ(hit_test_region_list->regions.size(), 1u);
+    auto& hit_test_region = hit_test_region_list->regions.front();
+    EXPECT_EQ(hit_test_region.frame_sink_id, viz::FrameSinkId(1u, 2u));
+    EXPECT_EQ(hit_test_region.rect, viewport_);
+    EXPECT_EQ(hit_test_region.transform, gfx::Transform());
+  }
+
+  auto child_surface_layer = SurfaceLayer::Create();
+  surface_layer->AddChild(child_surface_layer);
+  child_surface_layer->SetBounds(gfx::Size(10, 10));
+  child_surface_layer->SetIsDrawable(true);
+  child_surface_layer->SetPosition(gfx::PointF(10.0f, 10.0f));
+  child_surface_layer->SetTransformOrigin(gfx::Point3F(5.0f, 5.0f, 0.0f));
+  gfx::Transform transform;
+  transform.Rotate(45.0);
+  child_surface_layer->SetTransform(transform);
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId surface_id(viz::FrameSinkId(2u, 3u),
+                            viz::LocalSurfaceId(4u, 5u, token));
+  cc::DeadlinePolicy deadline_policy = cc::DeadlinePolicy::UseDefaultDeadline();
+  child_surface_layer->SetSurfaceId(surface_id, deadline_policy);
+
+  {
+    absl::optional<viz::HitTestRegionList> hit_test_region_list;
+    viz::CompositorFrame frame = ProduceFrame(&hit_test_region_list);
+
+    ASSERT_TRUE(hit_test_region_list);
+    EXPECT_EQ(hit_test_region_list->bounds, viewport_);
+
+    ASSERT_EQ(hit_test_region_list->regions.size(), 2u);
+    auto& root_region = hit_test_region_list->regions.back();
+    EXPECT_EQ(root_region.frame_sink_id, viz::FrameSinkId(1u, 2u));
+    EXPECT_EQ(root_region.rect, viewport_);
+    EXPECT_EQ(root_region.transform, gfx::Transform());
+
+    auto& child_region = hit_test_region_list->regions.front();
+    EXPECT_EQ(child_region.frame_sink_id, viz::FrameSinkId(2u, 3u));
+    EXPECT_EQ(child_region.rect, gfx::Rect(10, 10));
+
+    gfx::Transform expected_transform =
+        gfx::Transform::MakeTranslation(5.0f, 5.0f);
+    expected_transform.Rotate(-45.0);
+    expected_transform.Translate(-5.0f, -5.0f);
+    expected_transform.Translate(-10.0f, -10.0f);
+
+    EXPECT_TRANSFORM_NEAR(child_region.transform, expected_transform, 1e-15);
+    EXPECT_TRUE(child_region.flags | viz::HitTestRegionFlags::kHitTestAsk);
+    EXPECT_TRUE(child_region.async_hit_test_reasons |
+                viz::AsyncHitTestReasons::kIrregularClip);
   }
 }
 

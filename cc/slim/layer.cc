@@ -387,6 +387,7 @@ gfx::Transform Layer::ComputeTransformToParent() {
 }
 
 void Layer::AppendQuads(viz::CompositorRenderPass& render_pass,
+                        FrameData& data,
                         const gfx::Transform& transform,
                         const gfx::Rect* clip) {}
 

@@ -42,6 +42,7 @@ namespace cc::slim {
 
 class FrameSinkImpl;
 class TestLayerTreeImpl;
+struct FrameData;
 
 // Slim implementation of LayerTree.
 class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
@@ -139,11 +140,11 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
       viz::HitTestRegionList& out_hit_test_region_list);
   void Draw(Layer& layer,
             viz::CompositorRenderPass& render_pass,
+            FrameData& data,
             const gfx::Transform& transform_to_target,
             const gfx::Rect* clip_from_parent);
 
   const raw_ptr<LayerTreeClient> client_;
-  scoped_refptr<Layer> root_;
   std::unique_ptr<FrameSinkImpl> frame_sink_;
 
   cc::UIResourceManager ui_resource_manager_;
@@ -180,6 +181,9 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
 
   base::circular_deque<PresentationCallbackInfo>
       pending_presentation_callbacks_;
+
+  // Destroy Layers before other fields that might be accessed by Layers.
+  scoped_refptr<Layer> root_;
 
   base::WeakPtrFactory<LayerTreeImpl> weak_factory_{this};
 };
