@@ -1739,10 +1739,8 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterThreeMonths) {
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
       EXPECT_FALSE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
-    }
-
-    else if (use_case->GetPsmUseCase() ==
-             psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
+    } else if (use_case->GetPsmUseCase() ==
+               psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
       // Before observation import request.
       EXPECT_FALSE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
@@ -1761,9 +1759,7 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterThreeMonths) {
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
       EXPECT_TRUE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
-    }
-
-    else {
+    } else {
       // Successfully import for all remaining use cases.
       SimulateImportResponse(std::string(), net::HTTP_OK);
       task_environment_.RunUntilIdle();
@@ -1836,10 +1832,8 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterTwoMonths) {
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
       EXPECT_TRUE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
-    }
-
-    else if (use_case->GetPsmUseCase() ==
-             psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
+    } else if (use_case->GetPsmUseCase() ==
+               psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
       // Before observation import request.
       EXPECT_FALSE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
@@ -1858,9 +1852,7 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterTwoMonths) {
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
       EXPECT_TRUE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
-    }
-
-    else {
+    } else {
       // Successfully import for all remaining use cases.
       SimulateImportResponse(std::string(), net::HTTP_OK);
       task_environment_.RunUntilIdle();
@@ -1933,10 +1925,8 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterOneMonth) {
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
       EXPECT_TRUE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
-    }
-
-    else if (use_case->GetPsmUseCase() ==
-             psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
+    } else if (use_case->GetPsmUseCase() ==
+               psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
       // Before observation import request.
       EXPECT_FALSE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
@@ -1955,9 +1945,191 @@ TEST_F(DeviceActivityClientTest, ReportAgainAfterOneMonth) {
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
       EXPECT_TRUE(GetLocalState()->GetBoolean(
           prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+    } else {
+      // Successfully import for all remaining use cases.
+      SimulateImportResponse(std::string(), net::HTTP_OK);
+      task_environment_.RunUntilIdle();
     }
 
-    else {
+    EXPECT_GE(use_case->GetLastKnownPingTimestamp(), new_daily_ts);
+  }
+
+  // Check the new churn active status after ping.
+  int updated_active_status_value = churn_active_status_->GetValueAsInt();
+  EXPECT_EQ(updated_active_status_value, kFakeAfterChurnActiveStatus);
+}
+
+TEST_F(DeviceActivityClientTest,
+       ObservationPeriodGeneratedAfterNewCohortMonth) {
+  int kFakeBeforeChurnActiveStatus = 72089613;
+  int kFakeAfterChurnActiveStatus = 72351771;
+
+  // Set the past ping month to 2022-12.
+  base::Time new_daily_ts = base::Time::Now() - base::Days(10);
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    use_case->SetLastKnownPingTimestamp(new_daily_ts);
+  }
+
+  // Set the relative observation local state booleans to all be true.
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, true);
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, true);
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, true);
+
+  // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
+  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+
+  // Last Churn Cohort month is: 2022-12, months is 275
+  // Current Churn Cohort month is: 2023-01, months is 276
+  // 275->276:   0100010011->0100010100
+  // 2022-12 active value: 72089613 -> 0100010011 000000000000001101
+  // 2023-01 active value: 72351771 -> 0100010100 000000000000011011
+
+  SetWifiNetworkState(shill::kStateOnline);
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    EXPECT_TRUE(use_case->IsLastKnownPingTimestampSet());
+
+    EXPECT_EQ(device_activity_client_->GetState(),
+              DeviceActivityClient::State::kCheckingIn);
+
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_COHORT) {
+      // Before cohort import request.
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+
+      SimulateImportResponse(std::string(), net::HTTP_OK);
+      task_environment_.RunUntilIdle();
+
+      // After cohort import request.
+      EXPECT_FALSE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+    } else if (use_case->GetPsmUseCase() ==
+               psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
+      // Before observation import request.
+      EXPECT_FALSE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+      EXPECT_EQ(use_case->GetObservationPeriod(0), "202301-202303");
+      EXPECT_EQ(use_case->GetObservationPeriod(1), std::string());
+      EXPECT_EQ(use_case->GetObservationPeriod(2), std::string());
+
+      SimulateImportResponse(std::string(), net::HTTP_OK);
+      task_environment_.RunUntilIdle();
+
+      // After observation import request.
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+    } else {
+      // Successfully import for all remaining use cases.
+      SimulateImportResponse(std::string(), net::HTTP_OK);
+      task_environment_.RunUntilIdle();
+    }
+
+    EXPECT_GE(use_case->GetLastKnownPingTimestamp(), new_daily_ts);
+  }
+
+  // Check the new churn active status after ping.
+  int updated_active_status_value = churn_active_status_->GetValueAsInt();
+  EXPECT_EQ(updated_active_status_value, kFakeAfterChurnActiveStatus);
+}
+
+TEST_F(DeviceActivityClientTest, ValidateObservationPeriodForUnsetLocalState) {
+  int kFakeBeforeChurnActiveStatus = 72089613;
+  int kFakeAfterChurnActiveStatus = 72351771;
+
+  // Set the past ping month to 2022-12.
+  base::Time new_daily_ts = base::Time::Now() - base::Days(10);
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    use_case->SetLastKnownPingTimestamp(new_daily_ts);
+  }
+
+  // Set the relative observation local state booleans.
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0, false);
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, true);
+  GetLocalState()->SetBoolean(
+      prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, false);
+
+  // Initialize the churn_active_value to kFakeBeforeChurnActiveStatus.
+  churn_active_status_->InitializeValue(kFakeBeforeChurnActiveStatus);
+
+  // Last Churn Cohort month is: 2022-12, months is 275
+  // Current Churn Cohort month is: 2023-01, months is 276
+  // 275->276:   0100010011->0100010100
+  // 2022-12 active value: 72089613 -> 0100010011 000000000000001101
+  // 2023-01 active value: 72351771 -> 0100010100 000000000000011011
+
+  SetWifiNetworkState(shill::kStateOnline);
+
+  for (auto* use_case : device_activity_client_->GetUseCases()) {
+    SCOPED_TRACE(testing::Message()
+                 << "PSM use case: "
+                 << psm_rlwe::RlweUseCase_Name(use_case->GetPsmUseCase()));
+
+    if (use_case->GetPsmUseCase() ==
+        psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_COHORT) {
+      // Before cohort import request.
+      EXPECT_FALSE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
+      EXPECT_FALSE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+
+      SimulateImportResponse(std::string(), net::HTTP_OK);
+      task_environment_.RunUntilIdle();
+
+      // After cohort import request.
+      EXPECT_FALSE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+      EXPECT_FALSE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+    } else if (use_case->GetPsmUseCase() ==
+               psm_rlwe::RlweUseCase::CROS_FRESNEL_CHURN_MONTHLY_OBSERVATION) {
+      // Before observation import request.
+      EXPECT_FALSE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+      EXPECT_FALSE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+      EXPECT_EQ(use_case->GetObservationPeriod(0), "202301-202303");
+      EXPECT_EQ(use_case->GetObservationPeriod(1), "202212-202302");
+      EXPECT_EQ(use_case->GetObservationPeriod(2), std::string());
+
+      SimulateImportResponse(std::string(), net::HTTP_OK);
+      task_environment_.RunUntilIdle();
+
+      // After observation import request.
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
+      EXPECT_TRUE(GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
+    } else {
       // Successfully import for all remaining use cases.
       SimulateImportResponse(std::string(), net::HTTP_OK);
       task_environment_.RunUntilIdle();
