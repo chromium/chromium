@@ -76,6 +76,11 @@ class IbanBubbleControllerImpl
     observer_for_testing_ = observer;
   }
 
+  // For testing, to mock OfferLocal save bubble.
+  void SetBubbleTypeToLocalSaveForTesting(IbanBubbleType type) {
+    current_bubble_type_ = type;
+  }
+
  protected:
   explicit IbanBubbleControllerImpl(content::WebContents* web_contents);
 
