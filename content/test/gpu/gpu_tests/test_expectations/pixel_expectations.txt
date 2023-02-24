@@ -383,9 +383,9 @@ crbug.com/1382332 [ linux nvidia-0x2184 passthrough debug angle-vulkan ] Pixel_M
 crbug.com/1382332 [ linux release renderer-skia-vulkan intel-0x9bc5 ] Pixel_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/1382332 [ display-server-wayland intel-0x9bc5 linux no-clang-coverage release renderer-skia-gl ] Pixel_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
-# Flakes on Pixel 4, Nexus 5X, and Samsung A13 due to video stream being offset vertically by 1 pixel.
-crbug.com/1410332 [ android android-chromium renderer-skia-gl ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
-crbug.com/1410332 [ android android-chromium android-pixel-4 renderer-skia-gl ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ RetryOnFailure ]
+# Flakes on Pixel 4, Pixel 6, Nexus 5X, and Samsung A13 due to video stream being offset vertically by 1 pixel.
+crbug.com/1410332 [ android ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
+crbug.com/1410332 [ android ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ RetryOnFailure ]
 
 # Fails on Linux AMD RX 5500 XT with RADV 20.0.8
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
