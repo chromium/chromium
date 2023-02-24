@@ -84,10 +84,7 @@ class BluetoothAdapterMacTest : public testing::Test {
     void SimulatePropertyListFileChanged(
         const base::FilePath& path,
         const std::string& changed_file_content) {
-      auto expected_file_size = changed_file_content.length();
-      ASSERT_EQ(static_cast<int>(expected_file_size),
-                base::WriteFile(path, changed_file_content.data(),
-                                expected_file_size));
+      ASSERT_TRUE(base::WriteFile(path, changed_file_content));
       OnPropertyListFileChangedOnFileThread(path, false /* error */);
     }
 
