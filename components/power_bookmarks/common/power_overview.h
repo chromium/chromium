@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_OVERVIEW_H_
 #define COMPONENTS_POWER_BOOKMARKS_COMMON_POWER_OVERVIEW_H_
 
+#include <cstddef>
 #include <memory>
 
 namespace power_bookmarks {
