@@ -117,6 +117,10 @@ export class TabDiscardExceptionDialogElement extends
     }
     // add dialog
     this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, this.rule_);
+    this.dispatchEvent(new CustomEvent('add-exception', {
+      bubbles: true,
+      composed: true,
+    }));
     this.metricsProxy_.recordExceptionListAction(
         HighEfficiencyModeExceptionListAction.ADD);
   }

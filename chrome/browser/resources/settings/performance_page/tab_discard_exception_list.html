@@ -7,8 +7,14 @@
     padding-inline-start: var(--cr-section-indent-width);
   }
 
-  #outer {
-    max-height: 250px;
+  #outer > tab-discard-exception-entry:not(:first-of-type) {
+    border-top: var(--cr-separator-line);
+  }
+
+  #expandButton {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+    --cr-icon-button-margin-end: 0;
   }
 </style>
 <div class="cr-row first">
@@ -21,20 +27,31 @@
 <div id="noSitesAdded" class="list-frame" hidden$="[[hasSites_(siteList_.*)]]">
   <div class="list-item secondary">$i18n{noSitesAdded}</div>
 </div>
-<div id="outer" class="layout vertical list-frame">
-  <div id="container" class="scroll-container" scrollable>
-    <iron-list id="list" items="[[siteList_]]" scroll-target="container"
-        preserve-focus risk-selection class="cr-separators">
-      <template>
+<div id="outer" class="layout vertical list-frame" role="list"
+    hidden$="[[!hasSites_(siteList_.*)]]">
+  <template is="dom-repeat" id="list" items="[[getSiteList_(siteList_.*)]]">
+    <tab-discard-exception-entry prefs="[[prefs]]" entry="[[item]]"
+        role="listitem"
+        on-menu-click="onMenuClick_" on-show-tooltip="onShowTooltip_">
+    </tab-discard-exception-entry>
+  </template>
+  <cr-expand-button id="expandButton" no-hover class="hr"
+      hidden$="[[!hasOverflowSites_(siteList_.*)]]"
+      expanded="{{overflowSiteListExpanded}}">
+    <div>$i18n{tabDiscardingExceptionsAdditionalSites}</div>
+  </cr-expand-button>
+  <iron-collapse id="collapse" hidden$="[[!hasOverflowSites_(siteList_.*)]]"
+      opened="[[overflowSiteListExpanded]]">
+    <template is="dom-repeat" id="overflowList"
+        items="[[getOverflowSiteList_(siteList_.*)]]">
+      <div class="hr">
         <tab-discard-exception-entry prefs="[[prefs]]" entry="[[item]]"
-            first$="[[!index]]" focus-row-index="[[index]]"
-            tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
-            last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
+            role="listitem"
             on-menu-click="onMenuClick_" on-show-tooltip="onShowTooltip_">
         </tab-discard-exception-entry>
-      </template>
-    </iron-list>
-  </div>
+      </div>
+    </template>
+  </iron-collapse>
 </div>
 <paper-tooltip id="tooltip"
     fit-to-visible-bounds manual-mode position="top">
@@ -55,7 +72,8 @@
   </template>
 </cr-lazy-render>
 <template is="dom-if" if="[[showDialog_]]" restamp>
-  <tab-discard-exception-dialog rule-to-edit="[[selectedRule_]]"
-      prefs="{{prefs}}" on-close="onDialogClose_">
+  <tab-discard-exception-dialog prefs="{{prefs}}"
+      rule-to-edit="[[selectedRule_]]"
+      on-close="onDialogClose_" on-add-exception="onAddException_">
   </tab-discard-exception-dialog>
 </template>

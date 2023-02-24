@@ -63,7 +63,7 @@ export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, Performanc
 export {HIGH_EFFICIENCY_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
 export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement} from './performance_page/tab_discard_exception_dialog.js';
 export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';
-export {TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';
+export {TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';
 export {prefToString, stringToPrefValue} from './prefs/pref_util.js';
 export {SettingsPrefsElement} from './prefs/prefs.js';
 export {PrefsMixin, PrefsMixinInterface} from './prefs/prefs_mixin.js';
