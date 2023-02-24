@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/service/shared_image/external_vk_image_skia_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/vma_wrapper.h"
@@ -726,12 +727,23 @@ std::unique_ptr<SkiaImageRepresentation> ExternalVkImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  // This backing type is only used when vulkan is enabled, so SkiaRenderer
-  // should also be using Vulkan.
-  DCHECK_EQ(context_state_, context_state);
-  DCHECK(context_state->GrContextIsVulkan());
-  return std::make_unique<ExternalVkImageSkiaImageRepresentation>(manager, this,
-                                                                  tracker);
+  if (context_state->GrContextIsVulkan()) {
+    // If this backing type is used when vulkan is enabled, then SkiaRenderer
+    // should also be using Vulkan.
+    DCHECK_EQ(context_state_, context_state);
+    return std::make_unique<ExternalVkImageSkiaImageRepresentation>(
+        manager, this, tracker);
+  }
+  // If it is not vulkan context, it must be GL context being used with Skia
+  // over passthrough command decoder.
+  DCHECK(context_state->GrContextIsGL());
+  auto gl_representation = ProduceGLTexturePassthrough(manager, tracker);
+  if (!gl_representation) {
+    return nullptr;
+  }
+  return SkiaGLImageRepresentation::Create(std::move(gl_representation),
+                                           std::move(context_state), manager,
+                                           this, tracker);
 }
 
 std::unique_ptr<OverlayImageRepresentation>

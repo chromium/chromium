@@ -13,6 +13,7 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing_helper.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
@@ -328,9 +329,21 @@ std::unique_ptr<SkiaImageRepresentation> AngleVulkanImageBacking::ProduceSkia(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
-  DCHECK_EQ(context_state_, context_state.get());
-  return std::make_unique<SkiaAngleVulkanImageRepresentation>(manager, this,
-                                                              tracker);
+  if (context_state->GrContextIsVulkan()) {
+    DCHECK_EQ(context_state_, context_state.get());
+    return std::make_unique<SkiaAngleVulkanImageRepresentation>(manager, this,
+                                                                tracker);
+  }
+  // If it is not vulkan context, it must be GL context being used with Skia
+  // over passthrough command decoder.
+  DCHECK(context_state->GrContextIsGL());
+  auto gl_representation = ProduceGLTexturePassthrough(manager, tracker);
+  if (!gl_representation) {
+    return nullptr;
+  }
+  return SkiaGLImageRepresentation::Create(std::move(gl_representation),
+                                           std::move(context_state), manager,
+                                           this, tracker);
 }
 
 bool AngleVulkanImageBacking::GLTextureImageRepresentationBeginAccess(
