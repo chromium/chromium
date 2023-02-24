@@ -83,7 +83,7 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
       glGenTextures(1, &texture_id_);
     }
 
-    auto image = gpu::GLImageNativePixmap::Create(
+    auto image = gpu::GLImageNativePixmap::CreateForTesting(
         size, format, std::move(pixmap), GetTextureTarget(), texture_id_);
     EXPECT_TRUE(image);
     return image;
