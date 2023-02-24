@@ -327,8 +327,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
     ASSERT_FALSE(upload_data_stream_);
     base::FilePath file_path;
     CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
-    CHECK_EQ(static_cast<int>(kUploadDataSize),
-             base::WriteFile(file_path, kUploadData, kUploadDataSize));
+    CHECK(base::WriteFile(file_path, kUploadData));
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
@@ -347,8 +346,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
     ASSERT_FALSE(upload_data_stream_);
     base::FilePath file_path;
     CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
-    CHECK_EQ(static_cast<int>(kUploadDataSize),
-             base::WriteFile(file_path, kUploadData, kUploadDataSize));
+    CHECK(base::WriteFile(file_path, kUploadData));
     CHECK(base::MakeFileUnreadable(file_path));
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
@@ -370,8 +368,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
 
     base::FilePath file_path;
     CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
-    CHECK_EQ(static_cast<int>(kUploadDataSize),
-             base::WriteFile(file_path, kUploadData, kUploadDataSize));
+    CHECK(base::WriteFile(file_path, kUploadData));
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
