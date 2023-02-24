@@ -1306,6 +1306,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
     if (identifier_value &&
         identifier_value->GetValueID() == CSSValueID::kSubgrid) {
       computed_grid_track_list.axis_type = GridAxisType::kSubgriddedAxis;
+      track_sizes.NGTrackList().SetAxisType(GridAxisType::kSubgriddedAxis);
       ++curr_value;
     }
   }
@@ -1337,8 +1338,11 @@ void StyleBuilderConverter::ConvertGridTrackList(
             ConvertGridTrackSize(state, *auto_repeat_value));
       }
       track_sizes.NGTrackList().AddRepeater(
-          repeated_track_sizes, static_cast<NGGridTrackRepeater::RepeatType>(
-                                    computed_grid_track_list.auto_repeat_type));
+          repeated_track_sizes,
+          static_cast<NGGridTrackRepeater::RepeatType>(
+              computed_grid_track_list.auto_repeat_type),
+          /* repeat_count */ 1,
+          /* repeat_number_of_lines */ auto_repeat_index);
       DCHECK(auto_repeat_track_sizes.empty());
       auto_repeat_track_sizes = std::move(repeated_track_sizes);
       computed_grid_track_list.auto_repeat_insertion_point =

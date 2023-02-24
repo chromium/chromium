@@ -29,8 +29,12 @@ static inline String ImplicitNamedGridLineForSide(const String& line_name,
 NGGridLineResolver::NGGridLineResolver(
     const ComputedStyle& grid_style,
     const NGGridLineResolver& parent_line_resolver,
-    GridArea subgrid_area)
+    GridArea subgrid_area,
+    wtf_size_t column_auto_repetitions,
+    wtf_size_t row_auto_repetitions)
     : style_(&grid_style),
+      column_auto_repetitions_(column_auto_repetitions),
+      row_auto_repetitions_(row_auto_repetitions),
       subgridded_columns_merged_explicit_grid_line_names_(
           grid_style.GridTemplateColumns().named_grid_lines),
       subgridded_rows_merged_explicit_grid_line_names_(

@@ -456,8 +456,11 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
 
 namespace {
 
-GridArea SubgriddedAreaInParent(const GridItemData& subgrid_data) {
-  DCHECK(subgrid_data.IsSubgrid());
+absl::optional<GridArea> SubgriddedAreaInParent(
+    const GridItemData& subgrid_data) {
+  if (!subgrid_data.IsSubgrid()) {
+    return absl::nullopt;
+  }
 
   auto subgridded_area_in_parent = subgrid_data.resolved_position;
 
@@ -488,22 +491,22 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
 
   const auto& node = Node();
   const auto& style = node.Style();
-  wtf_size_t column_auto_repetitions = kNotFound;
-  wtf_size_t row_auto_repetitions = kNotFound;
+  absl::optional<GridArea> subgrid_area =
+      subgrid_data ? SubgriddedAreaInParent(*subgrid_data) : absl::nullopt;
+  wtf_size_t column_auto_repetitions =
+      ComputeAutomaticRepetitions(kForColumns, subgrid_area);
+  wtf_size_t row_auto_repetitions =
+      ComputeAutomaticRepetitions(kForRows, subgrid_area);
 
-  // TODO(ethavar): Compute automatic repetitions for subgridded axes as
-  // described in https://drafts.csswg.org/css-grid-2/#auto-repeat.
-  if (!parent_sizing_data) {
-    column_auto_repetitions = ComputeAutomaticRepetitions(kForColumns);
-    row_auto_repetitions = ComputeAutomaticRepetitions(kForRows);
-  }
-
-  // Initialize this grid's placement data.
+  // Initialize this grid's placement data. Standalone grids will have no
+  // `parent_line_resolver` and subgrids should have both `parent_line_resolver`
+  // and `subgrid_area`.
   // TODO(kschmi): Remove placement data from `NGGridPlacement`.
+  DCHECK(!parent_line_resolver || subgrid_area);
   auto placement_data =
       parent_line_resolver
-          ? NGGridPlacementData(style, *parent_line_resolver,
-                                SubgriddedAreaInParent(*subgrid_data))
+          ? NGGridPlacementData(style, *parent_line_resolver, *subgrid_area,
+                                column_auto_repetitions, row_auto_repetitions)
           : NGGridPlacementData(style, column_auto_repetitions,
                                 row_auto_repetitions);
   bool has_nested_subgrid = false;
@@ -1313,7 +1316,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
 // https://drafts.csswg.org/css-grid-2/#auto-repeat
 wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
-    GridTrackSizingDirection track_direction) const {
+    GridTrackSizingDirection track_direction,
+    absl::optional<GridArea> subgrid_area) const {
   const bool is_for_columns = track_direction == kForColumns;
   const auto& track_list = is_for_columns
                                ? Style().GridTemplateColumns().TrackList()
@@ -1321,6 +1325,15 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
 
   if (!track_list.HasAutoRepeater())
     return 0;
+
+  // Subgrids compute auto repetitions differently than standalone grids. See
+  // https://drafts.csswg.org/css-grid-2/#auto-repeat.
+  const auto subgrid_span = subgrid_area ? subgrid_area->Span(track_direction)
+                                         : GridSpan::IndefiniteGridSpan();
+  if (subgrid_area && subgrid_span.IsTranslatedDefinite()) {
+    return ComputeAutomaticRepetitionsForSubgrid(track_direction,
+                                                 subgrid_span.IntegerSpan());
+  }
 
   LayoutUnit available_size = is_for_columns ? grid_available_size_.inline_size
                                              : grid_available_size_.block_size;
@@ -1425,6 +1438,42 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
   const int count = CeilToInt((available_size - non_auto_specified_size) /
                               auto_repeater_size);
   return (count <= 0) ? 1u : count;
+}
+
+wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t subgrid_span_size) const {
+  // "On a subgridded axis, the auto-fill keyword is only valid once per
+  // <line-name-list>, and repeats enough times for the name list to match the
+  // subgrid’s specified grid span (falling back to 0 if the span is already
+  // fulfilled).
+  // https://drafts.csswg.org/css-grid-2/#auto-repeat
+  const auto& computed_track_list = (track_direction == kForColumns)
+                                        ? Style().GridTemplateColumns()
+                                        : Style().GridTemplateRows();
+  const auto& track_list = computed_track_list.TrackList();
+  DCHECK(track_list.HasAutoRepeater());
+
+  const wtf_size_t non_auto_repeat_named_grid_line_count =
+      computed_track_list.ordered_named_grid_lines.size();
+  if (non_auto_repeat_named_grid_line_count > subgrid_span_size) {
+    // No more room left for auto repetitions due to the number of non-auto
+    // repeat named grid lines (the span is already fulfilled).
+    return 0;
+  }
+
+  const wtf_size_t tracks_per_repeat =
+      track_list.RepeaterCount() * track_list.AutoRepeatTrackCount();
+  if (tracks_per_repeat > subgrid_span_size) {
+    // No room left for auto repetitions because each repetition is too large.
+    return 0;
+  }
+
+  const wtf_size_t tracks_left_over_for_auto_repeat =
+      subgrid_span_size - non_auto_repeat_named_grid_line_count + 1;
+  DCHECK_GT(tracks_per_repeat, 0u);
+  return static_cast<wtf_size_t>(
+      std::floor(tracks_left_over_for_auto_repeat / tracks_per_repeat));
 }
 
 void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(

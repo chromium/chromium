@@ -83,7 +83,11 @@ bool NGGridNamedLineCollection::Contains(wtf_size_t line) {
   if (auto_repeat_track_list_length_ == 0 || line < insertion_point_)
     return find(named_lines_indexes_, line);
 
-  DCHECK(auto_repeat_total_tracks_);
+  // Subgrids are allowed to have an auto repeat count of zero.
+  if (auto_repeat_total_tracks_ == 0) {
+    DCHECK(!is_standalone_grid_);
+    return false;
+  }
 
   if (line > insertion_point_ + auto_repeat_total_tracks_)
     return find(named_lines_indexes_, line - (auto_repeat_total_tracks_ - 1));

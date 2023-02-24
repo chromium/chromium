@@ -15,9 +15,6 @@
 
 namespace blink {
 
-enum class AutoRepeatType : uint8_t { kNoAutoRepeat, kAutoFill, kAutoFit };
-enum class GridAxisType : uint8_t { kStandaloneAxis, kSubgriddedAxis };
-
 struct CORE_EXPORT ComputedGridTrackList {
   ComputedGridTrackList() = default;
 

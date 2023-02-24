@@ -105,7 +105,13 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridItemData* grid_item) const;
 
   wtf_size_t ComputeAutomaticRepetitions(
-      GridTrackSizingDirection track_direction) const;
+      GridTrackSizingDirection track_direction,
+      absl::optional<GridArea> subgrid_area) const;
+
+  // Subgrids compute auto repetitions differently than standalone grids.
+  wtf_size_t ComputeAutomaticRepetitionsForSubgrid(
+      GridTrackSizingDirection track_direction,
+      wtf_size_t subgrid_span_size) const;
 
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |track_collection|.
