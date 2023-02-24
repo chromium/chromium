@@ -4,10 +4,8 @@
 
 #include "components/sync/driver/sync_auth_util.h"
 
-#include "base/feature_list.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 
 namespace syncer {
 
@@ -26,8 +24,7 @@ SyncAccountInfo DetermineAccountToUse(
   // ensures that Sync metadata gets properly cleared during signout.
   if (identity_manager->AreRefreshTokensLoaded() &&
       !identity_manager->HasPrimaryAccountWithRefreshToken(
-          signin::ConsentLevel::kSignin) &&
-      base::FeatureList::IsEnabled(kSyncIgnoreAccountWithoutRefreshToken)) {
+          signin::ConsentLevel::kSignin)) {
     return SyncAccountInfo();
   }
 

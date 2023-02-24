@@ -141,10 +141,6 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 // If enabled, issues error and disables bookmarks sync when limit is crossed.
 BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
 
-// If enabled, Sync will not use a primary account that doesn't have a refresh
-// token. (This state should only ever occur temporarily during signout.)
-BASE_DECLARE_FEATURE(kSyncIgnoreAccountWithoutRefreshToken);
-
 // Enabled by default, it acts as a kill switch for a newly-introduced logic,
 // which implies that DataTypeManager (and hence individual datatypes) won't be
 // notified about browser shutdown.

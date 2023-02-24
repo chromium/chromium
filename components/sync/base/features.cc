@@ -110,10 +110,6 @@ BASE_FEATURE(kSyncEnforceBookmarksCountLimit,
              "SyncEnforceBookmarksCountLimit",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncIgnoreAccountWithoutRefreshToken,
-             "SyncIgnoreAccountWithoutRefreshToken",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSyncDoNotPropagateBrowserShutdownToDataTypes,
              "SyncDoNotPropagateBrowserShutdownToDataTypes",
              base::FEATURE_ENABLED_BY_DEFAULT);
