@@ -23,6 +23,8 @@ PASS sender.setParameters() with added encodings should reject with InvalidModif
 PASS sender.setParameters() with removed encodings should reject with InvalidModificationError
 PASS sender.setParameters() with reordered encodings should reject with InvalidModificationError
 PASS sender.setParameters() with encodings unset should reject with TypeError
+PASS sender.setParameters() with empty encodings should reject with InvalidModificationError (video)
+PASS sender.setParameters() with empty encodings should reject with InvalidModificationError (audio)
 PASS setParameters() with modified encoding.rid field should reject with InvalidModificationError
 FAIL setParameters() with encoding.scaleResolutionDownBy field set to less than 1.0 should reject with RangeError promise_rejects_js: function "function() { throw e }" threw object "InvalidStateError: getParameters() needs to be called before setParameters()." ("InvalidStateError") expected instance of function "function RangeError() { [native code] }" ("RangeError")
 FAIL setParameters() with missing encoding.scaleResolutionDownBy field should succeed, and set the value back to 1 assert_equals: expected (number) 1 but got (undefined) undefined
