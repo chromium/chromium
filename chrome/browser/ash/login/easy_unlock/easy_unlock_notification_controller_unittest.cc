@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -35,7 +34,6 @@ class TestableNotificationController : public EasyUnlockNotificationController {
   ~TestableNotificationController() override {}
 
   // EasyUnlockNotificationController:
-  MOCK_METHOD0(LaunchEasyUnlockSettings, void());
   MOCK_METHOD0(LaunchMultiDeviceSettings, void());
   MOCK_METHOD0(LockScreen, void());
 };
@@ -67,71 +65,6 @@ class EasyUnlockNotificationControllerTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(EasyUnlockNotificationControllerTest,
-       TestShouldShowSignInRemovedNotification) {
-  TestingProfile* test_profile = profile();
-  PrefService* pref_service = test_profile->GetPrefs();
-
-  ASSERT_FALSE(
-      EasyUnlockNotificationController::ShouldShowSignInRemovedNotification(
-          test_profile));
-
-  // Check returns false when kSmartLockSignInRemoved isn't enabled.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSmartLockSignInRemoved);
-  pref_service->SetBoolean(
-      proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled, true);
-  pref_service->SetBoolean(prefs::kHasSeenSmartLockSignInRemovedNotification,
-                           false);
-  ASSERT_FALSE(
-      EasyUnlockNotificationController::ShouldShowSignInRemovedNotification(
-          test_profile));
-
-  // Check returns false when kHasSeenSmartLockSignInRemovedNotification is
-  // true.
-  feature_list.Reset();
-  feature_list.InitAndEnableFeature(features::kSmartLockSignInRemoved);
-  pref_service->SetBoolean(prefs::kHasSeenSmartLockSignInRemovedNotification,
-                           true);
-  ASSERT_FALSE(
-      EasyUnlockNotificationController::ShouldShowSignInRemovedNotification(
-          test_profile));
-
-  // Check returns false when kProximityAuthIsChromeOSLoginEnabled is false.
-  pref_service->SetBoolean(
-      proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled, false);
-  pref_service->SetBoolean(prefs::kHasSeenSmartLockSignInRemovedNotification,
-                           false);
-  ASSERT_FALSE(
-      EasyUnlockNotificationController::ShouldShowSignInRemovedNotification(
-          test_profile));
-
-  pref_service->SetBoolean(
-      proximity_auth::prefs::kProximityAuthIsChromeOSLoginEnabled, true);
-  ASSERT_TRUE(
-      EasyUnlockNotificationController::ShouldShowSignInRemovedNotification(
-          test_profile));
-}
-
-TEST_F(EasyUnlockNotificationControllerTest,
-       TestShowSignInRemovedNotification) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockSignInRemoved);
-  const char kNotificationId[] = "easyunlock_notification_ids.sign_in_removed";
-
-  notification_controller_->ShowSignInRemovedNotification();
-  absl::optional<message_center::Notification> notification =
-      display_service_->GetNotification(kNotificationId);
-  ASSERT_TRUE(notification);
-
-  // Clicking notification button should launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(0, absl::nullopt);
-
-  // Clicking the notification itself should also launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
-}
-
-TEST_F(EasyUnlockNotificationControllerTest,
        TestShowChromebookAddedNotification) {
   const char kNotificationId[] = "easyunlock_notification_ids.chromebook_added";
 
@@ -148,17 +81,6 @@ TEST_F(EasyUnlockNotificationControllerTest,
 
   // Clicking the notification itself should also launch settings.
   EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
-
-  // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
-  // be called instead.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSmartLockSignInRemoved);
-  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
-  notification->delegate()->Click(0, absl::nullopt);
-
-  // Clicking the notification itself should also launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
   notification->delegate()->Click(absl::nullopt, absl::nullopt);
 }
 
@@ -183,13 +105,6 @@ TEST_F(EasyUnlockNotificationControllerTest,
   // Clicking 2nd notification button should launch settings.
   EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
   notification->delegate()->Click(1, absl::nullopt);
-
-  // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
-  // be called instead.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSmartLockSignInRemoved);
-  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
-  notification->delegate()->Click(1, absl::nullopt);
 }
 
 TEST_F(EasyUnlockNotificationControllerTest,
@@ -213,18 +128,6 @@ TEST_F(EasyUnlockNotificationControllerTest,
 
   // Clicking the notification itself should also launch settings.
   EXPECT_CALL(*notification_controller_, LaunchMultiDeviceSettings());
-  notification->delegate()->Click(absl::nullopt, absl::nullopt);
-
-  // When kSmartLockSignInRemoved is disabled, LaunchEasyUnlockSettings() should
-  // be called instead.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kSmartLockSignInRemoved);
-  // Clicking notification button should launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
-  notification->delegate()->Click(0, absl::nullopt);
-
-  // Clicking the notification itself should also launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchEasyUnlockSettings());
   notification->delegate()->Click(absl::nullopt, absl::nullopt);
 }
 

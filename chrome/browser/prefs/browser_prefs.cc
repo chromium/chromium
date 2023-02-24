@@ -794,6 +794,12 @@ const char kPluginsShowDetails[] = "plugins.show_details";
 const char kWebAppsUrlHandlerInfo[] = "web_apps.url_handler_info";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+// Deprecated 02/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kHasSeenSmartLockSignInRemovedNotification[] =
+    "easy_unlock.has_seen_smart_lock_sign_in_removed_notification";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1061,6 +1067,12 @@ void RegisterProfilePrefsForMigration(
                                  base::FilePath());
   registry->RegisterListPref(kPluginsPluginsList);
   registry->RegisterBooleanPref(kPluginsShowDetails, false);
+
+// Deprecated 02/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kHasSeenSmartLockSignInRemovedNotification,
+                                false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2088,6 +2100,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kPluginsLastInternalDirectory);
   profile_prefs->ClearPref(kPluginsPluginsList);
   profile_prefs->ClearPref(kPluginsShowDetails);
+
+// Added 02/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kHasSeenSmartLockSignInRemovedNotification);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

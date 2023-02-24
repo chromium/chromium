@@ -413,11 +413,6 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kLanguageImeMenuActivated, false);
 
-  // TODO(b/227674947): Eventually delete this after Sign in with Smart Lock has
-  // been removed and enough time has elapsed for users to be notified.
-  registry->RegisterBooleanPref(
-      ::prefs::kHasSeenSmartLockSignInRemovedNotification, false);
-
   registry->RegisterInt64Pref(::prefs::kHatsLastInteractionTimestamp, 0);
 
   registry->RegisterInt64Pref(::prefs::kHatsSurveyCycleEndTimestamp, 0);

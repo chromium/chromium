@@ -28,18 +28,6 @@ class EasyUnlockNotificationController {
 
   virtual ~EasyUnlockNotificationController();
 
-  // TODO(b/227674947): Eventually remove this method after Sign in with Smart
-  // Lock has been removed and enough time has elapsed for users to be notified.
-  // Returns whether the kSignInRemovedNotification should be shown for the
-  // provided profile.
-  static bool ShouldShowSignInRemovedNotification(Profile* profile);
-
-  // TODO(b/227674947): Eventually remove this method after Sign in with Smart
-  // Lock has been removed and enough time has elapsed for users to be notified.
-  // Shows the notification explaining that Sign in with Smart Lock has been
-  // removed.
-  virtual void ShowSignInRemovedNotification();
-
   // Shows the notification when EasyUnlock is synced to a new Chromebook.
   virtual void ShowChromebookAddedNotification();
 
@@ -54,9 +42,6 @@ class EasyUnlockNotificationController {
 
  protected:
   // Exposed for testing.
-  // TODO(b/227674947): Delete LaunchEasyUnlockSettings after Sign in with Smart
-  // Lock is removed.
-  virtual void LaunchEasyUnlockSettings();
   virtual void LaunchMultiDeviceSettings();
   virtual void LockScreen();
 

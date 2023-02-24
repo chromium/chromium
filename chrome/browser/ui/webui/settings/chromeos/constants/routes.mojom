@@ -196,7 +196,6 @@ const string kBluetoothSavedDevicesSubpagePath = "bluetoothSavedDevices";
 // MultiDevice section.
 const string kMultiDeviceSectionPath = "multidevice";
 const string kMultiDeviceFeaturesSubpagePath = "multidevice/features";
-const string kSmartLockSubpagePath = "multidevice/features/smartLock";
 const string kNearbyShareSubpagePath = "multidevice/nearbyshare";
 
 // People section.
