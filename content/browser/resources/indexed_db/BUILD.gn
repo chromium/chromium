@@ -15,7 +15,7 @@ build_webui("build") {
 
   ts_deps = [
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   indexeddb_internal_folder = "content/browser/indexed_db"

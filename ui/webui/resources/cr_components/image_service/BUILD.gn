@@ -18,6 +18,6 @@ build_cr_component("build") {
   ]
 
   tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/image_service"
-  ts_deps = [ "//ui/webui/resources/mojo:library" ]
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
   ts_use_local_config = false
 }

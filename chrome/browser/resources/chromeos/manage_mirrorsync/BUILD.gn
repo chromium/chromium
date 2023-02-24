@@ -56,7 +56,7 @@ ts_library("build_ts") {
   ]
   composite = true
   enable_source_maps = true
-  deps = [ "//ui/webui/resources/mojo:library" ]
+  deps = [ "//ui/webui/resources/mojo:build_ts" ]
 }
 
 resources_grd_file = "$target_gen_dir/resources.grd"

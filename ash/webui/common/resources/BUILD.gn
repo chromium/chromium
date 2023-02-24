@@ -357,7 +357,7 @@ ts_definitions("generate_definitions") {
   deps = [
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   extra_deps = [
     ":copy_checked_in_dts_files",

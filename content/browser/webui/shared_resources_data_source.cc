@@ -77,7 +77,7 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
 
   // Note: Don't put generated Mojo bindings here. Mojo bindings should be
   // included in the either the ts_library() target for the UI using them (if
-  // they are only used by one UI) or in //ui/webui/resources/mojo:library
+  // they are only used by one UI) or in //ui/webui/resources/mojo:build_ts
   // (if used by multiple UIs).
   source->AddResourcePaths(
       base::make_span(kWebuiResources, kWebuiResourcesSize));

@@ -66,7 +66,7 @@ ts_library("build_ts") {
     "//ash/webui/personalization_app/resources:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:library",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }
 

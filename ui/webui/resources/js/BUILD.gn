@@ -74,7 +74,7 @@ build_cr_component("build") {
 
   tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/js"
   tsc_allow_js = true
-  ts_deps = [ "../mojo:library" ]
+  ts_deps = [ "../mojo:build_ts" ]
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/chrome_timeticks.d.ts",

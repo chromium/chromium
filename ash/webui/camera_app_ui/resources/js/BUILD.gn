@@ -105,11 +105,11 @@ ts_definitions("build_mojo_dts") {
     js_files += rebase_path(get_target_outputs(dep), root_dir, root_build_dir)
   }
 
-  extra_deps += [ "//ui/webui/resources/mojo:library" ]
+  extra_deps += [ "//ui/webui/resources/mojo:build_ts" ]
 }
 
 ts_library("build_ts") {
-  deps = [ "//ui/webui/resources/mojo:library" ]
+  deps = [ "//ui/webui/resources/mojo:build_ts" ]
 
   tsconfig_base = "../tsconfig_base.json"
 

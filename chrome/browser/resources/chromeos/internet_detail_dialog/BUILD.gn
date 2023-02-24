@@ -37,7 +37,7 @@ if (optimize_webui) {
       "//ash/webui/common/resources:preprocess",
       "//ui/webui/resources/cr_components/localized_link:build_ts",
       "//ui/webui/resources/cr_elements:build_ts",
-      "//ui/webui/resources/mojo:library",
+      "//ui/webui/resources/mojo:build_ts",
     ]
   }
 }

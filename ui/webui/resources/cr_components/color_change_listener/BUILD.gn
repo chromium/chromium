@@ -28,5 +28,5 @@ build_cr_component("build") {
   ts_use_local_config = false
   tsc_dir =
       "$root_gen_dir/ui/webui/resources/tsc/cr_components/color_change_listener"
-  ts_deps = [ "//ui/webui/resources/mojo:library" ]
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
 }

@@ -60,7 +60,7 @@ if (is_chromeos_ash) {
 
 # Move all the files out of mojom-webui to the expected location.
 preprocess_if_expr("copy_mojo") {
-  visibility = [ ":library" ]
+  visibility = [ ":build_ts" ]
 
   in_folder = "$root_gen_dir/mojom-webui"
   out_folder = "$target_gen_dir/preprocessed"
@@ -99,7 +99,7 @@ preprocess_if_expr("copy_mojo") {
   }
 }
 
-ts_library("library") {
+ts_library("build_ts") {
   root_dir = "$target_gen_dir/preprocessed"
   out_dir = tsc_folder
   composite = true
@@ -132,11 +132,11 @@ generate_grd("build_grdp") {
   input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
   input_files = [ "mojo/public/js/bindings.js" ]
   deps = [
-    ":library",
+    ":build_ts",
     "//mojo/public/js:bindings_module",
   ]
   manifest_files =
-      filter_include(get_target_outputs(":library"), [ "*.manifest" ])
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
   out_grd = "$target_gen_dir/resources.grdp"
   resource_path_prefix = "mojo"
 }
