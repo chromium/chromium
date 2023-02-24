@@ -148,7 +148,12 @@ CaptureLabelView::CaptureLabelView(
     CaptureModeSession* capture_mode_session,
     views::Button::PressedCallback on_capture_button_pressed,
     views::Button::PressedCallback on_drop_down_button_pressed)
-    : capture_mode_session_(capture_mode_session) {
+    : capture_mode_session_(capture_mode_session),
+      // Since this view has fully circular rounded corners, we can't use a nine
+      // patch layer for the shadow. We have to use the `ShadowOnTextureLayer`.
+      // For more info, see https://crbug.com/1308800.
+      shadow_(SystemShadow::CreateShadowOnTextureLayer(
+          SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
@@ -176,6 +181,8 @@ CaptureLabelView::CaptureLabelView(
         kCaptureLabelRadius, views::HighlightBorder::Type::kHighlightBorder2,
         /*use_light_colors=*/false));
   }
+
+  shadow_->SetRoundedCornerRadius(kCaptureLabelRadius);
 }
 
 CaptureLabelView::~CaptureLabelView() = default;
@@ -296,6 +303,14 @@ bool CaptureLabelView::IsInCountDownAnimation() const {
   return !!countdown_finished_callback_;
 }
 
+void CaptureLabelView::AddedToWidget() {
+  // Since the layer of the shadow has to be added as a sibling to this view's
+  // layer, we need to wait until the view is added to the widget.
+  auto* parent = layer()->parent();
+  parent->Add(shadow_->GetLayer());
+  parent->StackAtBottom(shadow_->GetLayer());
+}
+
 void CaptureLabelView::Layout() {
   gfx::Rect label_bounds = GetLocalBounds();
   capture_button_container_->SetBoundsRect(label_bounds);
@@ -304,8 +319,12 @@ void CaptureLabelView::Layout() {
   label_->SetBoundsRect(label_bounds);
 
   // This is necessary to update the focus ring, which is a child view of
-  // |this|.
+  // `this`.
   views::View::Layout();
+
+  // The shadow layer is a sibling of this view's layer, and should have the
+  // same bounds.
+  shadow_->SetContentBounds(layer()->bounds());
 }
 
 gfx::Size CaptureLabelView::CalculatePreferredSize() const {
