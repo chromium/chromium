@@ -2617,8 +2617,10 @@ void SplitViewController::OnWindowSnapped(
        ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()) &&
       (state_ == State::kPrimarySnapped ||
        state_ == State::kSecondarySnapped)) {
-    overview_controller->StartOverview(OverviewStartAction::kSplitView,
-                                       OverviewEnterExitType::kNormal);
+    if (!DesksController::Get()->animation()) {
+      overview_controller->StartOverview(OverviewStartAction::kSplitView,
+                                         OverviewEnterExitType::kNormal);
+    }
     return;
   }
 
