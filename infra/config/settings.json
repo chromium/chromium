@@ -5,10 +5,6 @@
     "chrome_project": "chrome-m109",
     "is_main": false,
     "platforms": {
-        "android": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
         "cros": {
             "description": "beta/stable",
             "sheriff_rotation": "chrome_browser_release"
