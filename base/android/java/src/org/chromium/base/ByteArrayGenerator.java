@@ -27,7 +27,7 @@ public class ByteArrayGenerator {
             }
             return bytes;
         } finally {
-            if (fis != null) {
+            if (fis) {
                 fis.close();
             }
         }
