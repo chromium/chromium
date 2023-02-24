@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <tuple>
 #include <unordered_set>
 #include <vector>
 
