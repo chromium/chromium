@@ -743,6 +743,24 @@ TEST_F(RollbackNetworkConfigTest, EnrollmentToDifferentDeletesPolicyNetworks) {
   EXPECT_FALSE(NetworkExists(guid));
 }
 
+// Currently, Chrome may send the signal that an empty device policy was
+// applied before enrollment took place. Make sure we do not delete networks too
+// early. See b/270355500.
+TEST_F(RollbackNetworkConfigTest,
+       PolicyApplicationWithoutOwnershipDoesNotDeleteNetworks) {
+  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  SetUpDevicePolicyNetworkConfig(network);
+  const std::string& guid =
+      GetStringValue(network.GetDict(), onc::network_config::kGUID);
+
+  EXPECT_TRUE(NetworkExists(guid));
+  SimulateRollback();
+  EXPECT_TRUE(NetworkExists(guid));
+  SetEmptyDevicePolicy();
+
+  EXPECT_TRUE(NetworkExists(guid));
+}
+
 TEST_F(RollbackNetworkConfigTest, ExactlyRecommendedValuesPreserved) {
   base::Value policy_config =
       *base::JSONReader::Read(kPeapWiFiRecommendedPolicyPart);

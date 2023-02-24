@@ -7,11 +7,7 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/values.h"
-#include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -53,6 +49,7 @@ class RollbackNetworkConfig
  private:
   class Importer;
   class Exporter;
+
   std::unique_ptr<Importer> importer_;
   std::unique_ptr<Exporter> exporter_;
 
