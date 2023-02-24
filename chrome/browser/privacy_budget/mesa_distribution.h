@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PRIVACY_BUDGET_MESA_DISTRIBUTION_H_
 #define CHROME_BROWSER_PRIVACY_BUDGET_MESA_DISTRIBUTION_H_
 
+#include <cmath>
 #include <random>
 #include <set>
 #include <type_traits>
