@@ -12337,11 +12337,6 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Force CSD-P ping request"/>
 </enum>
 
-<enum name="BooleanForeground">
-  <int value="0" label="Background"/>
-  <int value="1" label="Foreground"/>
-</enum>
-
 <enum name="BooleanForegroundNotification">
   <int value="0" label="Background Notification"/>
   <int value="1" label="Foreground Notification"/>

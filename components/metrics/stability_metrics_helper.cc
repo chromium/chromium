@@ -255,21 +255,6 @@ void StabilityMetricsHelper::IncrementPrefValue(const char* path) {
   local_state_->SetInteger(path, value + 1);
 }
 
-void StabilityMetricsHelper::LogRendererHang() {
-#if BUILDFLAG(IS_ANDROID)
-  base::android::ApplicationState app_state =
-      base::android::ApplicationStatusListener::GetState();
-  bool is_foreground =
-      app_state == base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES ||
-      app_state == base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES;
-  base::UmaHistogramBoolean("ChildProcess.HungRendererInForeground",
-                            is_foreground);
-#endif
-  base::UmaHistogramMemoryMB(
-      "ChildProcess.HungRendererAvailableMemoryMB",
-      base::SysInfo::AmountOfAvailablePhysicalMemory() / 1024 / 1024);
-}
-
 // static
 void StabilityMetricsHelper::RecordStabilityEvent(
     StabilityEventType stability_event_type) {

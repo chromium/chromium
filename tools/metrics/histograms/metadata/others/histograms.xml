@@ -2249,26 +2249,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ChildProcess.HungRendererAvailableMemoryMB" units="MB"
-    expires_after="2020-05-31">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    The amount of avaiable memory when a renderer hangs. Recorded for every
-    renderer hang.
-  </summary>
-</histogram>
-
-<histogram name="ChildProcess.HungRendererInForeground"
-    enum="BooleanForeground" expires_after="2020-12-13">
-  <owner>cduvall@chromium.org</owner>
-  <owner>cmumford@chromium.org</owner>
-  <summary>
-    Whether a renderer hang happened in the foreground or background. Recorded
-    for every renderer hang on Android.
-  </summary>
-</histogram>
-
 <histogram name="ChildProcess.Killed2" enum="ProcessType2"
     expires_after="never">
 <!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
