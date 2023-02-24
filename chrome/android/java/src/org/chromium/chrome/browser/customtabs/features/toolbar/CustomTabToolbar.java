@@ -289,10 +289,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private void setMaximizeButtonDrawable(boolean maximized) {
         @DrawableRes
         int drawableId = maximized ? R.drawable.ic_fullscreen_exit : R.drawable.ic_fullscreen_enter;
+        int buttonDescId = maximized ? R.string.custom_tab_side_sheet_minimize
+                                     : R.string.custom_tab_side_sheet_maximize;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         var d = UiUtils.getTintedDrawable(getContext(), drawableId, mTint);
         updateCustomActionButtonVisuals(maximizeButton, d, null);
         maximizeButton.setImageDrawable(d);
+        maximizeButton.setContentDescription(getResources().getString(buttonDescId));
     }
 
     /**
