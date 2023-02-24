@@ -78,6 +78,10 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_MAC)
@@ -669,12 +673,24 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupSize) {
   EXPECT_EQ(client_view_size.width(), kExpectedWidth);
   EXPECT_EQ(EvalJs(popup_web_contents, "window.innerHeight").ExtractInt(),
             kExpectedHeight);
-  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerHeight").ExtractInt(),
-            kExpectedHeight);
   EXPECT_EQ(EvalJs(popup_web_contents, "window.innerWidth").ExtractInt(),
             kExpectedWidth);
+
+// For ChromeOS the resizable borders are "outside of the window" where as for
+// Linux they are "inside of the window".
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerHeight").ExtractInt(),
+            kExpectedHeight);
   EXPECT_EQ(EvalJs(popup_web_contents, "window.outerWidth").ExtractInt(),
             kExpectedWidth);
+#elif BUILDFLAG(IS_LINUX)
+  constexpr int kFrameInsets =
+      2 * OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerHeight").ExtractInt(),
+            kExpectedHeight + kFrameInsets);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerWidth").ExtractInt(),
+            kExpectedWidth + kFrameInsets);
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupResize) {
@@ -713,8 +729,16 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupResize) {
   constexpr int kExpectedWidth = 600, kExpectedHeight = 500;
   const auto& client_view_size =
       popup_browser_view->frame()->client_view()->size();
+
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(client_view_size.height(), kExpectedHeight);
   EXPECT_EQ(client_view_size.width(), kExpectedWidth);
+#elif BUILDFLAG(IS_LINUX)
+  constexpr int kFrameInsets =
+      2 * OpaqueBrowserFrameViewLayout::kFrameBorderThickness;
+  EXPECT_EQ(client_view_size.height(), kExpectedHeight - kFrameInsets);
+  EXPECT_EQ(client_view_size.width(), kExpectedWidth - kFrameInsets);
+#endif
 
 #if !BUILDFLAG(IS_LINUX)  // TODO(crbug.com/1412331): Flaky on Linux.
   EXPECT_EQ(EvalJs(popup_web_contents, "window.innerHeight").ExtractInt(),

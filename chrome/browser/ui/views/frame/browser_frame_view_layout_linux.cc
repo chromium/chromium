@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_paint_utils_linux.h"
+#include "chrome/browser/ui/views/frame/opaque_browser_frame_view_layout.h"
 
 namespace {
 
@@ -44,6 +45,13 @@ int BrowserFrameViewLayoutLinux::CaptionButtonY(views::FrameButton button_id,
 }
 
 gfx::Insets BrowserFrameViewLayoutLinux::RestoredFrameBorderInsets() const {
+  // Borderless mode only has a minimal frame to be able to resize it from the
+  // borders.
+  if (delegate_->GetBorderlessModeEnabled()) {
+    return gfx::Insets(
+        OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets());
+  }
+
   return GetRestoredFrameBorderInsetsLinux(
       delegate_->ShouldDrawRestoredFrameShadow(),
       OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets(),

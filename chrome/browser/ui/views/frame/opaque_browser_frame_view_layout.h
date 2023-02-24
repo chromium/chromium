@@ -30,9 +30,14 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // Constants used by OpaqueBrowserFrameView as well.
   static const int kContentEdgeShadowThickness;
 
+  // The frame border is only visible in restored mode and is hardcoded to 4 px
+  // on each side regardless of the system window border size.  This is
+  // overridable by subclasses, so RestoredFrameBorderInsets() should be used
+  // instead of using this constant directly.
+  static constexpr int kFrameBorderThickness = 4;
+
   // Constants public for testing only.
   static constexpr int kNonClientExtraTopThickness = 1;
-  static const int kFrameBorderThickness;
   static const int kTopFrameEdgeThickness;
   static const int kSideFrameEdgeThickness;
   static const int kIconLeftSpacing;
