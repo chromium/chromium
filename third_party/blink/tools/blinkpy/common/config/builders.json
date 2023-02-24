@@ -91,6 +91,17 @@
             }
         }
     },
+    "mac12-wpt-content-shell-fyi-rel": {
+        "main": "chromium.fyi",
+        "port_name": "mac-mac12",
+        "specifiers": ["Mac12", "Release"],
+        "is_try_builder": true,
+        "steps": {
+            "wpt_tests_suite (with patch, experimental)": {
+                "uses_wptrunner": true
+            }
+        }
+    },
     "win10-wpt-content-shell-fyi-rel": {
         "main": "chromium.fyi",
         "port_name": "win-win10.20h2",
