@@ -30,6 +30,7 @@ generate_grd("build_grd") {
     "css:build_grdp",
     "images:build_grdp",
     "js:build_grdp",
+    "mojo:build_grdp",
     "//third_party/jstemplate:build_grdp",
   ]
   grdp_files = [
@@ -38,6 +39,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
+    "$target_gen_dir/mojo/resources.grdp",
   ]
 
   if (include_polymer) {

@@ -5,19 +5,4 @@
       resource_path="mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-lite.js"
       use_base_dir="false"
       type="BINDATA" />
-  <include name="IDR_NETWORK_DIAGNOSTICS_MOJOM_WEBUI_JS"
-      file="${mojom_root}/mojom-webui/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js"
-      resource_path="mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js"
-      use_base_dir="false"
-      type="BINDATA" />
-  <include name="IDR_NETWORK_HEALTH_MOJOM_WEBUI_JS"
-      file="${mojom_root}/mojom-webui/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js"
-      resource_path="mojo/chromeos/services/network_health/public/mojom/network_health.mojom-webui.js"
-      use_base_dir="false"
-      type="BINDATA" />
-  <include name="IDR_NETWORK_HEALTH_TYPES_MOJOM_WEBUI_JS"
-      file="${mojom_root}/mojom-webui/chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js"
-      resource_path="mojo/chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js"
-      use_base_dir="false"
-      type="BINDATA" />
 </grit-part>

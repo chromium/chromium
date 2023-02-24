@@ -43,50 +43,11 @@
             use_base_dir="false"
             resource_path="mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js"
             type="BINDATA" />
-      </if>
-      <include name="IDR_MOJO_BIG_BUFFER_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/big_buffer.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js"
-          type="BINDATA" />
-      <include name="IDR_MOJO_FILE_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/file.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/file.mojom-webui.js"
-          type="BINDATA" />
-      <include name="IDR_MOJO_FILE_PATH_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/file_path.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/file_path.mojom-webui.js"
-          type="BINDATA" />
-      <include name="IDR_MOJO_INT128_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/int128.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/int128.mojom-webui.js"
-          type="BINDATA" />
-      <include name="IDR_MOJO_READ_ONLY_BUFFER_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/read_only_buffer.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/read_only_buffer.mojom-webui.js"
-          type="BINDATA" />
-      <include name="IDR_MOJO_SAFE_BASE_NAME_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/safe_base_name.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/safe_base_name.mojom-webui.js"
-          type="BINDATA" />
-      <if expr="chromeos_ash">
         <include name="IDR_MOJO_STRING16_MOJOM_LITE_JS"
             file="${root_gen_dir}/mojo/public/mojom/base/string16.mojom-lite.js"
             use_base_dir="false"
             resource_path="mojo/mojo/public/mojom/base/string16.mojom-lite.js"
             type="BINDATA" />
-        </if>
-      <include name="IDR_MOJO_STRING16_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/string16.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/string16.mojom-webui.js"
-          type="BINDATA" />
-      <if expr="chromeos_ash">
         <include name="IDR_MOJO_TEXT_DIRECTION_MOJOM_LITE_JS"
             file="${root_gen_dir}/mojo/public/mojom/base/text_direction.mojom-lite.js"
             use_base_dir="false"
@@ -98,33 +59,6 @@
             use_base_dir="false"
             type="BINDATA" />
       </if>
-      <include name="IDR_MOJO_TEXT_DIRECTION_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/text_direction.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/text_direction.mojom-webui.js"
-          type="BINDATA" />
-      <include name="IDR_MOJO_TOKEN_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/token.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/token.mojom-webui.js"
-          type="BINDATA" />
-      <include name="IDR_MOJO_UNGUESSABLE_TOKEN_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/unguessable_token.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js"
-          type="BINDATA" />
-      <if expr="not is_ios">
-        <include name="IDR_MOJO_PROCESS_ID_MOJOM_WEBUI_JS"
-            file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/process_id.mojom-webui.js"
-            use_base_dir="false"
-            resource_path="mojo/mojo/public/mojom/base/process_id.mojom-webui.js"
-            type="BINDATA" />
-      </if>
-      <include name="IDR_MOJO_TIME_MOJOM_WEBUI_JS"
-          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/time.mojom-webui.js"
-          use_base_dir="false"
-          resource_path="mojo/mojo/public/mojom/base/time.mojom-webui.js"
-          type="BINDATA" />
     </includes>
   </release>
 </grit>

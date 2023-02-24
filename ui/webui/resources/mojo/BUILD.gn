@@ -5,6 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 tsc_folder = "$root_gen_dir/ui/webui/resources/tsc/mojo"
 
@@ -27,19 +28,24 @@ mojo_js_files = [
   "ui/base/mojom/window_open_disposition.mojom-webui.js",
   "ui/gfx/geometry/mojom/geometry.mojom-webui.js",
   "ui/gfx/image/mojom/image.mojom-webui.js",
+  "ui/gfx/range/mojom/range.mojom-webui.js",
   "url/mojom/url.mojom-webui.js",
   "url/mojom/origin.mojom-webui.js",
 ]
 
 if (is_chromeos_ash) {
   mojo_js_files += [
+    "chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-webui.js",
     "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.js",
     "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
     "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js",
     "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js",
+    "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js",
     "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js",
+    "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js",
     "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js",
     "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js",
+    "chromeos/services/network_config/public/mojom/constants.mojom-webui.js",
     "chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",
     "chromeos/services/network_config/public/mojom/network_types.mojom-webui.js",
     "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js",
@@ -47,7 +53,8 @@ if (is_chromeos_ash) {
     "chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js",
     "services/network/public/mojom/ip_address.mojom-webui.js",
     "ui/base/accelerators/mojom/accelerator.mojom-webui.js",
-    "ui/gfx/range/mojom/range.mojom-webui.js",
+    "ui/events/mojom/event.mojom-webui.js",
+    "ui/latency/mojom/latency_info.mojom-webui.js",
   ]
 }
 
@@ -65,16 +72,20 @@ preprocess_if_expr("copy_mojo") {
     "//ui/base/mojom:mojom_js__generator",
     "//ui/gfx/geometry/mojom:mojom_js__generator",
     "//ui/gfx/image/mojom:mojom_js__generator",
+    "//ui/gfx/range/mojom:mojom_js__generator",
     "//url/mojom:url_mojom_gurl_js__generator",
     "//url/mojom:url_mojom_origin_js__generator",
   ]
 
   if (is_chromeos_ash) {
     deps += [
+      "//chromeos/ash/components/multidevice/mojom:mojom_js__generator",
       "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/cellular_setup/public/mojom:mojom_js__generator",
+      "//chromeos/ash/services/device_sync/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/hotspot_config/public/mojom:mojom_js__generator",
+      "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js__generator",
       "//chromeos/services/network_config/public/mojom:mojom_js__generator",
       "//chromeos/services/network_config/public/mojom:network_types_js__generator",
@@ -82,7 +93,8 @@ preprocess_if_expr("copy_mojo") {
       "//chromeos/services/network_health/public/mojom:types_js__generator",
       "//services/network/public/mojom:mojom_ip_address_js__generator",
       "//ui/base/accelerators/mojom:mojom_js__generator",
-      "//ui/gfx/range/mojom:mojom_js__generator",
+      "//ui/events/mojom:mojom_js__generator",
+      "//ui/latency/mojom:mojom_js__generator",
     ]
   }
 }
@@ -113,4 +125,18 @@ ts_library("library") {
 copy("copy_bindings_dts") {
   sources = [ "bindings.d.ts" ]
   outputs = [ "$tsc_folder/mojo/public/js/{{source_file_part}}" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_mojo"
+  input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
+  input_files = [ "mojo/public/js/bindings.js" ]
+  deps = [
+    ":library",
+    "//mojo/public/js:bindings_module",
+  ]
+  manifest_files =
+      filter_include(get_target_outputs(":library"), [ "*.manifest" ])
+  out_grd = "$target_gen_dir/resources.grdp"
+  resource_path_prefix = "mojo"
 }
