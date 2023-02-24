@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 151 tests; 148 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 152 tests; 149 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Element.animate() creates an Animation object
 PASS Element.animate() creates an Animation object in the relevant realm of the target element
 PASS Element.animate() creates an Animation object with a KeyframeEffect
@@ -157,5 +157,6 @@ FAIL animate() with a non-null invalid pseudoElement '::abc' throws a SyntaxErro
 FAIL animate() with a non-null invalid pseudoElement '::placeholder' throws a SyntaxError assert_throws_dom: function "() => {
       div.animate(null, {pseudoElement: pseudo});
     }" did not throw
+PASS Finished fill animation doesn't replace animation on a different pseudoElement
 Harness: the test ran to completion.
 
