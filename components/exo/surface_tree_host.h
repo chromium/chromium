@@ -81,6 +81,11 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   using PresentationCallbacks = std::list<Surface::PresentationCallback>;
 
+  base::queue<std::list<Surface::FrameCallback>>&
+  GetFrameCallbacksForTesting() {
+    return frame_callbacks_;
+  }
+
   base::flat_map<uint32_t, PresentationCallbacks>&
   GetActivePresentationCallbacksForTesting() {
     return active_presentation_callbacks_;

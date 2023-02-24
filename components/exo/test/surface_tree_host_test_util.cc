@@ -10,6 +10,17 @@
 
 namespace exo::test {
 
+void WaitForLastFrameAck(SurfaceTreeHost* surface_tree_host) {
+  CHECK(!surface_tree_host->GetFrameCallbacksForTesting().empty());
+
+  auto& list = surface_tree_host->GetFrameCallbacksForTesting().back();
+  base::RunLoop runloop;
+  list.push_back(base::BindRepeating(
+      [](base::RepeatingClosure callback, base::TimeTicks) { callback.Run(); },
+      runloop.QuitClosure()));
+  runloop.Run();
+}
+
 void WaitForLastFramePresentation(SurfaceTreeHost* surface_tree_host) {
   CHECK(!surface_tree_host->GetActivePresentationCallbacksForTesting().empty());
 

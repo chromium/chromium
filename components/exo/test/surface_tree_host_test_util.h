@@ -10,6 +10,10 @@
 namespace exo::test {
 
 // Waits for the last compositor frame submitted by `surface_tree_host` to be
+// acked.
+void WaitForLastFrameAck(SurfaceTreeHost* surface_tree_host);
+
+// Waits for the last compositor frame submitted by `surface_tree_host` to be
 // presented.
 void WaitForLastFramePresentation(SurfaceTreeHost* surface_tree_host);
 

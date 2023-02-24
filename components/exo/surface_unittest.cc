@@ -4,9 +4,13 @@
 
 #include "components/exo/surface.h"
 
+#include <tuple>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/exo/buffer.h"
 #include "components/exo/shell_surface.h"
@@ -14,13 +18,12 @@
 #include "components/exo/surface_test_util.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/surface_tree_host_test_util.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
-#include "components/viz/test/begin_frame_args_test.h"
-#include "components/viz/test/fake_external_begin_frame_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/compositor/layer.h"
@@ -86,10 +89,17 @@ std::string TransformToString(Transform transform) {
   return prefix + name;
 }
 
-class SurfaceTest : public test::ExoTestBase,
-                    public ::testing::WithParamInterface<float> {
+class SurfaceTest
+    : public test::ExoTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, float>> {
  public:
-  SurfaceTest() = default;
+  SurfaceTest() {
+    if (reactive_frame_submission_enabled()) {
+      feature_list_.InitAndEnableFeature(kExoReactiveFrameSubmission);
+    } else {
+      feature_list_.InitAndDisableFeature(kExoReactiveFrameSubmission);
+    }
+  }
 
   SurfaceTest(const SurfaceTest&) = delete;
   SurfaceTest& operator=(const SurfaceTest&) = delete;
@@ -109,7 +119,10 @@ class SurfaceTest : public test::ExoTestBase,
     display::Display::ResetForceDeviceScaleFactorForTesting();
   }
 
-  float device_scale_factor() const { return GetParam(); }
+  bool reactive_frame_submission_enabled() const {
+    return std::get<0>(GetParam());
+  }
+  float device_scale_factor() const { return std::get<1>(GetParam()); }
 
   gfx::Rect ToPixel(const gfx::Rect rect) {
     return gfx::ToEnclosingRect(
@@ -155,10 +168,23 @@ class SurfaceTest : public test::ExoTestBase,
       Transform transform,
       const gfx::RectF& expected_rect,
       bool has_viewport);
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 void ReleaseBuffer(int* release_buffer_call_count) {
   (*release_buffer_call_count)++;
+}
+
+base::RepeatingClosure CreateReleaseBufferClosure(
+    int* release_buffer_call_count,
+    base::RepeatingClosure closure) {
+  return base::BindLambdaForTesting(
+      [release_buffer_call_count, closure = std::move(closure)]() {
+        (*release_buffer_call_count)++;
+        closure.Run();
+      });
 }
 
 void ExplicitReleaseBuffer(int* release_buffer_call_count,
@@ -167,7 +193,10 @@ void ExplicitReleaseBuffer(int* release_buffer_call_count,
 }
 
 // Instantiate the values of device scale factor in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(All, SurfaceTest, testing::Values(1.0f, 1.25f, 2.0f));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SurfaceTest,
+                         testing::Combine(testing::Values(false, true),
+                                          testing::Values(1.0f, 1.25f, 2.0f)));
 
 TEST_P(SurfaceTest, Damage) {
   gfx::Size buffer_size(256, 256);
@@ -191,7 +220,7 @@ TEST_P(SurfaceTest, Damage) {
   // Check that damage larger than contents is handled correctly at commit.
   surface->Damage(gfx::Rect(gfx::ScaleToCeiledSize(buffer_size, 2.0f)));
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     const viz::CompositorFrame& frame =
@@ -205,7 +234,7 @@ TEST_P(SurfaceTest, Damage) {
   // Check that damage is correct for a non-square rectangle not at the origin.
   surface->Damage(surface_damage);
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   // Adjust damage for DSF filtering and verify it below.
   if (device_scale_factor() > 1.f)
@@ -236,7 +265,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageAggregation) {
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // Initial frame has full damage.
@@ -254,7 +283,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageAggregation) {
   child_surface->Damage(gfx::ToNearestRect(subsurface_damage));
   child_surface->Commit();
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // Subsurface damage should be propagated.
@@ -268,7 +297,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageAggregation) {
 
   surface->Damage(gfx::ToNearestRect(surface_damage));
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // When commit is called on the root with no call on the child, the damage
@@ -300,7 +329,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageSynchronizedCommitBehavior) {
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // Initial frame has full damage.
@@ -322,7 +351,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageSynchronizedCommitBehavior) {
   child_surface->Commit();
   EXPECT_FALSE(child_surface->HasPendingDamageForTesting(
       gfx::ToNearestRect(subsurface_damage)));
-  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(shell_surface->GetFrameCallbacksForTesting().empty());
 
   {
     // Subsurface damage should not be propagated at all.
@@ -339,7 +368,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageSynchronizedCommitBehavior) {
       gfx::ToNearestRect(subsurface_damage2)));
   // Apply subsurface damage from cached state, not pending state.
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // Subsurface damage in cached state should be propagated.
@@ -370,7 +399,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageDesynchronizedCommitBehavior) {
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // Initial frame has full damage.
@@ -391,7 +420,7 @@ TEST_P(SurfaceTest, SubsurfaceDamageDesynchronizedCommitBehavior) {
   child_surface->Commit();
   EXPECT_FALSE(child_surface->HasPendingDamageForTesting(
       gfx::ToNearestRect(subsurface_damage)));
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // Subsurface damage should be propagated.
@@ -443,7 +472,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
   // draw with blending.
   surface->SetOpaqueRegion(gfx::Rect(256, 256));
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     const viz::CompositorFrame& frame =
@@ -461,7 +490,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
   // Setting an empty opaque region requires draw with blending.
   surface->SetOpaqueRegion(gfx::Rect());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     const viz::CompositorFrame& frame =
@@ -483,7 +512,7 @@ TEST_P(SurfaceTest, MAYBE_SetOpaqueRegion) {
   // blending.
   surface->Attach(buffer_without_alpha.get());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     const viz::CompositorFrame& frame =
@@ -608,7 +637,7 @@ TEST_P(SurfaceTest, SetBufferScale) {
   buffer_size_float.Scale(1.0f / kBufferScale);
   EXPECT_EQ(buffer_size_float.ToString(), surface->content_size().ToString());
 
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface.get());
   ASSERT_EQ(1u, frame.render_pass_list.size());
@@ -632,7 +661,7 @@ void SurfaceTest::SetBufferTransformHelperTransformAndTest(
   EXPECT_EQ(gfx::SizeF(expected_size.width(), expected_size.height()),
             surface->content_size());
 
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface);
 
   {
     const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface);
@@ -700,7 +729,7 @@ TEST_P(SurfaceTest, MAYBE_SetBufferTransform) {
       gfx::ScaleToRoundedSize(child_buffer_size, 1.0f / kChildBufferScale),
       gfx::ToRoundedSize(child_surface->content_size()));
 
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     const viz::CompositorFrame& frame =
@@ -728,7 +757,7 @@ TEST_P(SurfaceTest, MirrorLayers) {
   surface->Attach(buffer.get());
   surface->Commit();
 
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   EXPECT_EQ(buffer_size, surface->window()->bounds().size());
   EXPECT_EQ(buffer_size, surface->window()->layer()->bounds().size());
@@ -765,7 +794,7 @@ TEST_P(SurfaceTest, SetViewport) {
             gfx::SizeF(surface->window()->bounds().size()).ToString());
   EXPECT_EQ(viewport2.ToString(), surface->content_size().ToString());
 
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface.get());
   ASSERT_EQ(1u, frame.render_pass_list.size());
@@ -826,7 +855,7 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
       }
       child_surface->Commit();
       surface->Commit();
-      base::RunLoop().RunUntilIdle();
+      test::WaitForLastFrameAck(shell_surface.get());
 
       const viz::CompositorFrame& frame =
           GetFrameFromSurface(shell_surface.get());
@@ -878,7 +907,7 @@ TEST_P(SurfaceTest, SetCrop) {
   EXPECT_EQ(gfx::SizeF(crop_size).ToString(),
             surface->content_size().ToString());
 
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface.get());
   ASSERT_EQ(1u, frame.render_pass_list.size());
@@ -909,7 +938,7 @@ void SurfaceTest::SetCropAndBufferTransformHelperTransformAndTest(
   surface->SetBufferTransform(transform);
   surface->Commit();
 
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface);
 
   {
     const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface);
@@ -1011,7 +1040,7 @@ TEST_P(SurfaceTest, SetBlendMode) {
   surface->Attach(buffer.get());
   surface->SetBlendMode(SkBlendMode::kSrc);
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface.get());
   ASSERT_EQ(1u, frame.render_pass_list.size());
@@ -1031,7 +1060,7 @@ TEST_P(SurfaceTest, OverlayCandidate) {
 
   surface->Attach(buffer.get());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   const viz::CompositorFrame& frame = GetFrameFromSurface(shell_surface.get());
   ASSERT_EQ(1u, frame.render_pass_list.size());
@@ -1056,7 +1085,7 @@ TEST_P(SurfaceTest, SetAlpha) {
     surface->Attach(buffer.get());
     surface->SetAlpha(0.5f);
     surface->Commit();
-    base::RunLoop().RunUntilIdle();
+    test::WaitForLastFrameAck(shell_surface.get());
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1070,7 +1099,7 @@ TEST_P(SurfaceTest, SetAlpha) {
   {
     surface->SetAlpha(0.f);
     surface->Commit();
-    base::RunLoop().RunUntilIdle();
+    test::WaitForLastFrameAck(shell_surface.get());
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1084,7 +1113,7 @@ TEST_P(SurfaceTest, SetAlpha) {
   {
     surface->SetAlpha(1.f);
     surface->Commit();
-    base::RunLoop().RunUntilIdle();
+    test::WaitForLastFrameAck(shell_surface.get());
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1116,7 +1145,7 @@ TEST_P(SurfaceTest, SurfaceQuad) {
 
   {
     surface->Commit();
-    base::RunLoop().RunUntilIdle();
+    test::WaitForLastFrameAck(shell_surface.get());
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1150,7 +1179,7 @@ TEST_P(SurfaceTest, EmptySurfaceQuad) {
 
   {
     surface->Commit();
-    base::RunLoop().RunUntilIdle();
+    test::WaitForLastFrameAck(shell_surface.get());
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1188,7 +1217,7 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
 
   {
     surface->Commit();
-    base::RunLoop().RunUntilIdle();
+    test::WaitForLastFrameAck(shell_surface.get());
 
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1255,7 +1284,7 @@ TEST_P(SurfaceTest, ColorBufferAlpha) {
 
     {
       surface->Commit();
-      base::RunLoop().RunUntilIdle();
+      test::WaitForLastFrameAck(shell_surface.get());
 
       const viz::CompositorFrame& frame =
           GetFrameFromSurface(shell_surface.get());
@@ -1298,7 +1327,7 @@ TEST_P(SurfaceTest, RemoveSubSurface) {
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   // Remove the subsurface by destroying it. This should not damage |surface|.
   // TODO(penghuang): Make the damage more precise for sub surface changes.
@@ -1316,7 +1345,7 @@ TEST_P(SurfaceTest, DestroyAttachedBuffer) {
 
   surface->Attach(buffer.get());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   // Make sure surface size is still valid after buffer is destroyed.
   buffer.reset();
@@ -1340,12 +1369,14 @@ TEST_P(SurfaceTest, DestroyWithAttachedBufferReleasesBuffer) {
   auto shell_surface = std::make_unique<ShellSurface>(surface.get());
 
   int release_buffer_call_count = 0;
-  buffer->set_release_callback(base::BindRepeating(
-      &ReleaseBuffer, base::Unretained(&release_buffer_call_count)));
+  base::RunLoop run_loop;
+  buffer->set_release_callback(CreateReleaseBufferClosure(
+      &release_buffer_call_count, run_loop.QuitClosure()));
 
   surface->Attach(buffer.get());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
+
   // Buffer is still attached at this point.
   EXPECT_EQ(0, release_buffer_call_count);
 
@@ -1353,7 +1384,7 @@ TEST_P(SurfaceTest, DestroyWithAttachedBufferReleasesBuffer) {
   // attached buffer.
   shell_surface.reset();
   surface.reset();
-  base::RunLoop().RunUntilIdle();
+  run_loop.Run();
   ASSERT_EQ(1, release_buffer_call_count);
 }
 
@@ -1417,7 +1448,6 @@ TEST_P(SurfaceTest, HasPendingPerCommitBufferReleaseCallback) {
       base::BindOnce([](gfx::GpuFenceHandle) {}));
   EXPECT_TRUE(surface->HasPendingPerCommitBufferReleaseCallback());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(surface->HasPendingPerCommitBufferReleaseCallback());
 }
 
@@ -1441,7 +1471,7 @@ TEST_P(SurfaceTest, DISABLED_PerCommitBufferReleaseCallbackForSameSurface) {
       &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count)));
   surface->Attach(buffer1.get());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   EXPECT_EQ(per_commit_release_count, 0);
   EXPECT_EQ(buffer_release_count, 0);
 
@@ -1450,14 +1480,14 @@ TEST_P(SurfaceTest, DISABLED_PerCommitBufferReleaseCallbackForSameSurface) {
       &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count)));
   surface->Attach(buffer1.get());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   EXPECT_EQ(per_commit_release_count, 1);
   EXPECT_EQ(buffer_release_count, 0);
 
   // Attaching a different buffer causes the per-commit callback to be emitted.
   surface->Attach(buffer2.get());
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   EXPECT_EQ(per_commit_release_count, 2);
   // The buffer should now be completely released.
   EXPECT_EQ(buffer_release_count, 1);
@@ -1492,7 +1522,7 @@ TEST_P(SurfaceTest,
       &ExplicitReleaseBuffer, base::Unretained(&per_commit_release_count2)));
   surface2->Attach(buffer1.get());
   surface2->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface2.get());
   EXPECT_EQ(per_commit_release_count1, 0);
   EXPECT_EQ(per_commit_release_count2, 0);
   EXPECT_EQ(buffer_release_count, 0);
@@ -1500,7 +1530,7 @@ TEST_P(SurfaceTest,
   // Attach buffer2 to surface1, only the surface1 callback should be emitted.
   surface1->Attach(buffer2.get());
   surface1->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface1.get());
   EXPECT_EQ(per_commit_release_count1, 1);
   EXPECT_EQ(per_commit_release_count2, 0);
   EXPECT_EQ(buffer_release_count, 0);
@@ -1508,7 +1538,7 @@ TEST_P(SurfaceTest,
   // Attach buffer2 to surface2, only the surface2 callback should be emitted.
   surface2->Attach(buffer2.get());
   surface2->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface2.get());
   EXPECT_EQ(per_commit_release_count1, 1);
   EXPECT_EQ(per_commit_release_count2, 1);
   // The buffer should now be completely released.
@@ -1532,7 +1562,7 @@ TEST_P(SurfaceTest, SubsurfaceClipRect) {
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // Subsurface initially has no clip.
@@ -1552,7 +1582,7 @@ TEST_P(SurfaceTest, SubsurfaceClipRect) {
   child_surface->Attach(child_buffer.get());
   child_surface->Commit();
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
 
   {
     // Subsurface has a clip applied, and it is converted to px in the
@@ -1617,7 +1647,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   child_surface_b->Commit();
 
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1637,7 +1667,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   child_surface_b->Commit();
 
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1657,7 +1687,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   child_surface_b->Commit();
 
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1677,7 +1707,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   child_surface_b->Commit();
 
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1695,7 +1725,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   child_surface_b->Commit();
 
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
@@ -1724,7 +1754,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
   child_surface_c->Commit();
 
   surface->Commit();
-  base::RunLoop().RunUntilIdle();
+  test::WaitForLastFrameAck(shell_surface.get());
   {
     const viz::CompositorFrame& frame =
         GetFrameFromSurface(shell_surface.get());
