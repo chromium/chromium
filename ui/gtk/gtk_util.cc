@@ -39,7 +39,6 @@ const char kAuraTransientParent[] = "aura-transient-parent";
 
 GtkCssContext AppendCssNodeToStyleContextImpl(
     GtkCssContext context,
-    GType gtype,
     const std::string& name,
     const std::string& object_name,
     const std::vector<std::string>& classes,
@@ -81,7 +80,7 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
     GtkWidgetPath* path =
         context ? gtk_widget_path_copy(gtk_style_context_get_path(context))
                 : gtk_widget_path_new();
-    gtk_widget_path_append_type(path, gtype);
+    gtk_widget_path_append_type(path, G_TYPE_NONE);
 
     if (!object_name.empty()) {
       gtk_widget_path_iter_set_object_name(path, -1, object_name.c_str());
@@ -117,17 +116,15 @@ GtkWidget* CreateDummyWindow() {
 }  // namespace
 
 const char* GtkCssMenu() {
-  return GtkCheckVersion(4) ? "#popover.background.menu #contents"
-                            : "GtkMenu#menu";
+  return GtkCheckVersion(4) ? "popover.background.menu contents" : "menu";
 }
 
 const char* GtkCssMenuItem() {
-  return GtkCheckVersion(4) ? "#modelbutton.flat" : "GtkMenuItem#menuitem";
+  return GtkCheckVersion(4) ? "modelbutton.flat" : "menuitem";
 }
 
 const char* GtkCssMenuScrollbar() {
-  return GtkCheckVersion(4) ? "#scrollbar #range"
-                            : "GtkScrollbar#scrollbar #trough";
+  return GtkCheckVersion(4) ? "scrollbar range" : "scrollbar trough";
 }
 
 bool GtkInitFromCommandLine(int* argc, char** argv) {
@@ -314,13 +311,12 @@ NO_SANITIZE("cfi-icall")
 GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
                                           const std::string& css_node) {
   enum {
-    CSS_TYPE,
     CSS_NAME,
     CSS_OBJECT_NAME,
     CSS_CLASS,
     CSS_PSEUDOCLASS,
     CSS_NONE,
-  } part_type = CSS_TYPE;
+  } part_type = CSS_OBJECT_NAME;
 
   static const struct {
     const char* name;
@@ -338,13 +334,12 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
       {"checked", GTK_STATE_FLAG_CHECKED},
   };
 
-  GType gtype = G_TYPE_NONE;
   std::string name;
   std::string object_name;
   std::vector<std::string> classes;
   GtkStateFlags state = GTK_STATE_FLAG_NORMAL;
 
-  base::StringTokenizer t(css_node, ".:#()");
+  base::StringTokenizer t(css_node, ".:()");
   t.set_options(base::StringTokenizer::RETURN_DELIMS);
   while (t.GetNext()) {
     if (t.token_is_delim()) {
@@ -354,9 +349,6 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
           break;
         case ')':
           part_type = CSS_NONE;
-          break;
-        case '#':
-          part_type = CSS_OBJECT_NAME;
           break;
         case '.':
           part_type = CSS_CLASS;
@@ -375,13 +367,6 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
         case CSS_OBJECT_NAME:
           object_name = t.token();
           break;
-        case CSS_TYPE: {
-          if (!GtkCheckVersion(4)) {
-            gtype = g_type_from_name(t.token().c_str());
-            DCHECK(gtype);
-          }
-          break;
-        }
         case CSS_CLASS:
           classes.push_back(t.token());
           break;
@@ -408,14 +393,14 @@ GtkCssContext AppendCssNodeToStyleContext(GtkCssContext context,
 
   float scale = std::round(GetDeviceScaleFactor());
 
-  return AppendCssNodeToStyleContextImpl(context, gtype, name, object_name,
-                                         classes, state, scale);
+  return AppendCssNodeToStyleContextImpl(context, name, object_name, classes,
+                                         state, scale);
 }
 
 GtkCssContext GetStyleContextFromCss(const std::string& css_selector) {
   // Prepend a window node to the selector since all widgets must live
   // in a window, but we don't want to specify that every time.
-  auto context = AppendCssNodeToStyleContext({}, "GtkWindow#window.background");
+  auto context = AppendCssNodeToStyleContext({}, "window.background");
 
   for (const auto& widget_type :
        base::SplitString(css_selector, base::kWhitespaceASCII,

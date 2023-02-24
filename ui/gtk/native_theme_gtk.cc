@@ -84,40 +84,6 @@ NativeThemeGtk* NativeThemeGtk::instance() {
 NativeThemeGtk::NativeThemeGtk()
     : NativeThemeBase(/*should_only_use_dark_colors=*/false,
                       ui::SystemTheme::kGtk) {
-  // g_type_from_name() is only used in GTK3.
-  if (!GtkCheckVersion(4)) {
-    // These types are needed by g_type_from_name(), but may not be registered
-    // at this point.  We need the g_type_class magic to make sure the compiler
-    // doesn't optimize away this code.
-    g_type_class_unref(g_type_class_ref(gtk_button_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_entry_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_frame_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_header_bar_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_image_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_info_bar_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_label_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_menu_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_menu_bar_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_menu_item_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_range_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_scrollbar_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_scrolled_window_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_separator_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_spinner_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_text_view_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_toggle_button_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_tree_view_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_window_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_combo_box_text_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_cell_view_get_type()));
-    g_type_class_unref(g_type_class_ref(gtk_scale_get_type()));
-
-    // Initialize the GtkTreeMenu type.  _gtk_tree_menu_get_type() is private,
-    // so we need to initialize it indirectly.
-    auto model = TakeGObject(GTK_TREE_MODEL(GtkTreeStoreNew(G_TYPE_STRING)));
-    auto combo = TakeGObject(gtk_combo_box_new_with_model(model));
-  }
-
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
       base::BindRepeating(AddGtkNativeColorMixer));
 
@@ -255,8 +221,8 @@ void NativeThemeGtk::PaintMenuSeparator(
         return (rect.height() - separator_thickness) / 2;
     }
   };
-  auto context = GetStyleContextFromCss(
-      StrCat({GtkCssMenu(), " GtkSeparator#separator.horizontal"}));
+  auto context =
+      GetStyleContextFromCss(StrCat({GtkCssMenu(), " separator.horizontal"}));
   int min_height = 1;
   auto margin = GtkStyleContextGetMargin(context);
   auto border = GtkStyleContextGetBorder(context);
@@ -282,8 +248,8 @@ void NativeThemeGtk::PaintFrameTopArea(
     const FrameTopAreaExtraParams& frame_top_area,
     ColorScheme color_scheme) const {
   auto context = GetStyleContextFromCss(frame_top_area.use_custom_frame
-                                            ? "#headerbar.header-bar.titlebar"
-                                            : "GtkMenuBar#menubar");
+                                            ? "headerbar.header-bar.titlebar"
+                                            : "menubar");
   ApplyCssToContext(context, "* { border-radius: 0px; border-style: none; }");
   gtk_style_context_set_state(context, frame_top_area.is_active
                                            ? GTK_STATE_FLAG_NORMAL

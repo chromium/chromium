@@ -675,19 +675,19 @@ void GtkUi::UpdateColors() {
            // with frame type.
            ui::ColorProviderManager::FrameType::kChromium});
 
-  SkColor location_bar_border = GetBorderColor("GtkEntry#entry");
+  SkColor location_bar_border = GetBorderColor("entry");
   if (SkColorGetA(location_bar_border)) {
     colors_[ThemeProperties::COLOR_LOCATION_BAR_BORDER] = location_bar_border;
   }
 
   inactive_selection_bg_color_ = GetSelectionBgColor(
-      "GtkTextView#textview.view:backdrop "
-      "#text:backdrop #selection:backdrop");
+      "textview.view:backdrop "
+      "text:backdrop selection:backdrop");
   inactive_selection_fg_color_ = GetFgColor(
-      "GtkTextView#textview.view:backdrop "
-      "#text:backdrop #selection:backdrop");
+      "textview.view:backdrop "
+      "text:backdrop selection:backdrop");
 
-  SkColor tab_border = GetBorderColor("GtkButton#button");
+  SkColor tab_border = GetBorderColor("button");
   // Separates the toolbar from the bookmark bar or butter bars.
   colors_[ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR] = tab_border;
   // Separates entries in the downloads bar.
@@ -697,10 +697,9 @@ void GtkUi::UpdateColors() {
       color_provider->GetColor(ui::kColorTextfieldBackground);
   colors_[ThemeProperties::COLOR_NTP_TEXT] =
       color_provider->GetColor(ui::kColorTextfieldForeground);
-  colors_[ThemeProperties::COLOR_NTP_HEADER] =
-      GetBorderColor("GtkButton#button");
+  colors_[ThemeProperties::COLOR_NTP_HEADER] = GetBorderColor("button");
 
-  SkColor tab_text_color = GetFgColor("GtkLabel#label");
+  SkColor tab_text_color = GetFgColor("label");
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON] = tab_text_color;
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED] = tab_text_color;
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED] = tab_text_color;
@@ -726,7 +725,7 @@ void GtkUi::UpdateColors() {
     ColorMap& color_map =
         custom_frame ? custom_frame_colors_ : native_frame_colors_;
     const std::string header_selector =
-        custom_frame ? "#headerbar.header-bar.titlebar" : "GtkMenuBar#menubar";
+        custom_frame ? "headerbar.header-bar.titlebar" : "menubar";
     const std::string header_selector_inactive = header_selector + ":backdrop";
     const SkColor frame_color =
         SkColorSetA(GetBgColor(header_selector), SK_AlphaOPAQUE);
@@ -751,9 +750,9 @@ void GtkUi::UpdateColors() {
         tab_color;
 
     const SkColor background_tab_text_color =
-        GetFgColor(header_selector + " GtkLabel#label.title");
+        GetFgColor(header_selector + " label.title");
     const SkColor background_tab_text_color_inactive =
-        GetFgColor(header_selector_inactive + " GtkLabel#label.title");
+        GetFgColor(header_selector_inactive + " label.title");
 
     color_map[ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE] =
         background_tab_text_color;
@@ -768,11 +767,10 @@ void GtkUi::UpdateColors() {
 
     // These colors represent the border drawn around tabs and between
     // the tabstrip and toolbar.
-    SkColor toolbar_top_separator = GetBorderColor(
-        header_selector + " GtkSeparator#separator.vertical.titlebutton");
-    SkColor toolbar_top_separator_inactive =
-        GetBorderColor(header_selector +
-                       ":backdrop GtkSeparator#separator.vertical.titlebutton");
+    SkColor toolbar_top_separator =
+        GetBorderColor(header_selector + " separator.vertical.titlebutton");
+    SkColor toolbar_top_separator_inactive = GetBorderColor(
+        header_selector + ":backdrop separator.vertical.titlebutton");
 
     auto toolbar_top_separator_has_good_contrast = [&]() {
       // This constant is copied from chrome/browser/themes/theme_service.cc.
@@ -789,10 +787,9 @@ void GtkUi::UpdateColors() {
     };
 
     if (!toolbar_top_separator_has_good_contrast()) {
-      toolbar_top_separator =
-          GetBorderColor(header_selector + " GtkButton#button");
+      toolbar_top_separator = GetBorderColor(header_selector + " button");
       toolbar_top_separator_inactive =
-          GetBorderColor(header_selector + ":backdrop GtkButton#button");
+          GetBorderColor(header_selector + ":backdrop button");
     }
 
     // If we can't get a contrasting stroke from the theme, have ThemeService

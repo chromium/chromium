@@ -40,7 +40,7 @@ std::string GetThemeName() {
 }
 
 GtkCssContext WindowContext(bool solid_frame, bool focused) {
-  std::string selector = "#window.background.";
+  std::string selector = "window.background.";
   selector += solid_frame ? "solid-csd" : "csd";
   if (!focused)
     selector += ":inactive";
@@ -51,7 +51,7 @@ GtkCssContext DecorationContext(bool solid_frame, bool focused) {
   auto context = WindowContext(solid_frame, focused);
   // GTK4 renders the decoration directly on the window.
   if (!GtkCheckVersion(4))
-    context = AppendCssNodeToStyleContext(context, "#decoration");
+    context = AppendCssNodeToStyleContext(context, "decoration");
   if (!focused)
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
 
@@ -68,7 +68,7 @@ GtkCssContext DecorationContext(bool solid_frame, bool focused) {
 GtkCssContext HeaderContext(bool solid_frame, bool focused) {
   auto context = WindowContext(solid_frame, focused);
   context =
-      AppendCssNodeToStyleContext(context, "#headerbar.header-bar.titlebar");
+      AppendCssNodeToStyleContext(context, "headerbar.header-bar.titlebar");
   if (!focused)
     gtk_style_context_set_state(context, GTK_STATE_FLAG_BACKDROP);
   return context;
