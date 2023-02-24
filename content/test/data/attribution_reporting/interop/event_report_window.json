@@ -15,19 +15,61 @@
             "Attribution-Reporting-Register-Source": {
               "destination": "https://destination.test",
               "source_event_id": "123",
-              "event_report_window": "86400",
+              // Clamped to one day (86400 seconds).
+              "event_report_window": "86390",
               "aggregation_keys": {
-                "a": "0x159"
+                "a": "0x1"
               }
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "1643235574000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter2.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "456",
+              // Not rounded.
+              "event_report_window": "88400"
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "1643235575000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination2.test",
+              "source_event_id": "789",
+              // Rounded to one day (86400 seconds).
+              "expiry": "87400",
+              // Default to expiry after rounding (86400 seconds).
+              "event_report_window": "88400"
             }
           }
         }]
       }
     ],
     "triggers": [
-      // Should result in an event-level report and an aggregatable report.
+      // Should result in an event-level report and an aggregatable report
+      // as the event report window was clamped to one day.
       {
-        "timestamp": "1643235574000",
+        "timestamp": "1643321973000",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -44,7 +86,7 @@
               "aggregatable_trigger_data": [
                 {
                   "source_keys": ["a"],
-                  "key_piece": "0x400"
+                  "key_piece": "0x10"
                 }
               ],
               "aggregatable_values": {
@@ -54,39 +96,10 @@
           }
         }]
       },
-      // Should result in an event-level report and an aggregatable report.
-      {
-        "timestamp": "1643321973000",
-        "registration_request": {
-          "attribution_src_url": "https://reporter.test/register-trigger",
-          "destination_origin": "https://destination.test"
-        },
-        "responses": [{
-          "url": "https://reporter.test/register-trigger",
-          "response": {
-            "Attribution-Reporting-Register-Trigger": {
-              "event_trigger_data": [
-                {
-                  "trigger_data": "2"
-                }
-              ],
-              "aggregatable_trigger_data": [
-                {
-                  "source_keys": ["a"],
-                  "key_piece": "0x400"
-                }
-              ],
-              "aggregatable_values": {
-                "a": 456
-              }
-            }
-          }
-        }]
-      },
       // Should result in an aggregatable report, but not event-level report as
       // event report window has passed.
       {
-        "timestamp": "1643321974000",
+        "timestamp": "1643321973001",
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-trigger",
           "destination_origin": "https://destination.test"
@@ -99,18 +112,60 @@
               "debug_reporting": true,
               "event_trigger_data": [
                 {
-                  "trigger_data": "3"
+                  "trigger_data": "2"
                 }
               ],
               "aggregatable_trigger_data": [
                 {
                   "source_keys": ["a"],
-                  "key_piece": "0x400"
+                  "key_piece": "0x20"
                 }
               ],
               "aggregatable_values": {
-                "a": 789
+                "a": 456
               }
+            }
+          }
+        }]
+      },
+      // Should result in an event-level report as the event report window was
+      // not rounded.
+      {
+        "timestamp": "1643323974000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter2.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter2.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "3"
+                }
+              ]
+            }
+          }
+        }]
+      },
+      // Should result in an event-level report and report time was based one
+      // event report window.
+      {
+        "timestamp": "1643321974500",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination2.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "4"
+                }
+              ]
             }
           }
         }]
@@ -134,14 +189,26 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
-          "randomized_trigger_rate": 0.0024,
-          "scheduled_report_time": "1643325573",
-          "source_event_id": "123",
-          "source_type": "navigation",
-          "trigger_data": "2"
-        },
-        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
-        "report_time": "1643325573000"
+          "randomized_trigger_rate": 0.0000025,
+          "scheduled_report_time": "1643327574",
+          "source_event_id": "456",
+          "source_type": "event",
+          "trigger_data": "1"
+       },
+       "report_time": "1643327574000",
+       "report_url": "https://reporter2.test/.well-known/attribution-reporting/report-event-attribution"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination2.test",
+          "randomized_trigger_rate": 0.0000025,
+          "scheduled_report_time": "1643325575",
+          "source_event_id": "789",
+          "source_type": "event",
+          "trigger_data": "0"
+       },
+       "report_time": "1643325575000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution"
       }
     ],
     "aggregatable_results": [
@@ -150,35 +217,24 @@
           "attribution_destination": "https://destination.test",
           "histograms": [
             {
-              "key": "0x559",
+              "key": "0x11",
               "value": 123
             }
           ]
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
-        "report_time": "1643239174000"
+        "report_time": "1643325573000"
       },
       {
         "payload": {
            "attribution_destination": "https://destination.test",
            "histograms": [ {
-              "key": "0x559",
+              "key": "0x21",
               "value": 456
            } ]
         },
-        "report_time": "1643325573000",
+        "report_time": "1643325573001",
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
-      },
-      {
-       "payload": {
-         "attribution_destination": "https://destination.test",
-         "histograms": [ {
-            "key": "0x559",
-            "value": 789
-         } ]
-       },
-       "report_time": "1643325574000",
-       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ],
     "verbose_debug_reports": [
@@ -191,7 +247,7 @@
           },
           "type": "trigger-event-report-window-passed"
        } ],
-       "report_time": "1643321974000",
+       "report_time": "1643321973001",
        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
