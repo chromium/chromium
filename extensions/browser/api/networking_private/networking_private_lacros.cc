@@ -305,7 +305,7 @@ void NetworkingPrivateLacros::SetProperties(const std::string& guid,
 }
 
 void NetworkingPrivateLacros::CreateNetwork(bool shared,
-                                            base::Value properties,
+                                            base::Value::Dict properties,
                                             StringCallback success_callback,
                                             FailureCallback failure_callback) {
   auto* networking_private =
@@ -314,7 +314,7 @@ void NetworkingPrivateLacros::CreateNetwork(bool shared,
     return;
 
   (*networking_private)
-      ->CreateNetwork(shared, std::move(properties),
+      ->CreateNetwork(shared, base::Value(std::move(properties)),
                       StringAdapterCallback(std::move(success_callback),
                                             std::move(failure_callback)));
 }

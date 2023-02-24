@@ -89,7 +89,7 @@ class NetworkingPrivateDelegate : public KeyedService {
                              VoidCallback success_callback,
                              FailureCallback failure_callback) = 0;
   virtual void CreateNetwork(bool shared,
-                             base::Value properties,
+                             base::Value::Dict properties,
                              StringCallback success_callback,
                              FailureCallback failure_callback) = 0;
   virtual void ForgetNetwork(const std::string& guid,

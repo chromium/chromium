@@ -191,12 +191,12 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     device_test()->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                              "stub_cellular_device1");
 
-    base::Value home_provider(base::Value::Type::DICT);
-    home_provider.SetStringKey("name", "Cellular1_Provider");
-    home_provider.SetStringKey("code", "000000");
-    home_provider.SetStringKey("country", "us");
+    base::Value::Dict home_provider;
+    home_provider.Set("name", "Cellular1_Provider");
+    home_provider.Set("code", "000000");
+    home_provider.Set("country", "us");
     SetDeviceProperty(kCellularDevicePath, shill::kHomeProviderProperty,
-                      home_provider);
+                      base::Value(std::move(home_provider)));
     SetDeviceProperty(kCellularDevicePath, shill::kTechnologyFamilyProperty,
                       base::Value(shill::kNetworkTechnologyGsm));
     SetDeviceProperty(kCellularDevicePath, shill::kMeidProperty,
@@ -307,15 +307,20 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     std::move(callback).Run();
   }
 
-  std::unique_ptr<base::Value> GetNetworkUiData(
+  absl::optional<base::Value::Dict> GetNetworkUiData(
       absl::optional<base::Value::Dict>& properties) {
     const std::string* ui_data_json = properties->FindString("UIData");
     if (!ui_data_json) {
-      return nullptr;
+      return absl::nullopt;
     }
 
     JSONStringValueDeserializer deserializer(*ui_data_json);
-    return deserializer.Deserialize(nullptr, nullptr);
+    auto deserialized = deserializer.Deserialize(nullptr, nullptr);
+
+    if (!deserialized || !deserialized->is_dict()) {
+      return absl::nullopt;
+    }
+    return std::move(*deserialized).TakeDict();
   }
 
   bool GetUserSettingStringData(const std::string& guid,
@@ -331,13 +336,13 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
       return false;
     }
 
-    std::unique_ptr<base::Value> ui_data = GetNetworkUiData(properties);
+    absl::optional<base::Value::Dict> ui_data = GetNetworkUiData(properties);
     if (!ui_data) {
       return false;
     }
 
     const std::string* user_setting =
-        ui_data->FindStringPath("user_settings." + key);
+        ui_data->FindStringByDottedPath("user_settings." + key);
     if (!user_setting) {
       return false;
     }
@@ -904,11 +909,11 @@ TEST_F(NetworkingPrivateApiTest,
       GetNetworkProperties(network->path());
   ASSERT_TRUE(properties.has_value());
 
-  std::unique_ptr<base::Value> ui_data = GetNetworkUiData(properties);
-  ASSERT_TRUE(ui_data && ui_data->is_dict());
+  absl::optional<base::Value::Dict> ui_data = GetNetworkUiData(properties);
+  ASSERT_TRUE(ui_data.has_value());
 
-  EXPECT_TRUE(ui_data->FindPath("user_settings.ProxySettings"));
-  EXPECT_TRUE(ui_data->FindPath("user_settings.StaticIPConfig"));
+  EXPECT_TRUE(ui_data->FindByDottedPath("user_settings.ProxySettings"));
+  EXPECT_TRUE(ui_data->FindByDottedPath("user_settings.StaticIPConfig"));
 }
 
 TEST_F(NetworkingPrivateApiTest, CreatePrivateNetwork_NonMatchingSsids) {

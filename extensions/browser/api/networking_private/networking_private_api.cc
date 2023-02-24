@@ -305,7 +305,7 @@ NetworkingPrivateCreateNetworkFunction::Run() {
 
   GetDelegate(browser_context())
       ->CreateNetwork(
-          params->shared, base::Value(std::move(properties_dict)),
+          params->shared, std::move(properties_dict),
           base::BindOnce(&NetworkingPrivateCreateNetworkFunction::Success,
                          this),
           base::BindOnce(&NetworkingPrivateCreateNetworkFunction::Failure,

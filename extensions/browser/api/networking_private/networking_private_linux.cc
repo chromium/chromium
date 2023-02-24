@@ -290,7 +290,7 @@ void NetworkingPrivateLinux::SetProperties(const std::string& guid,
 }
 
 void NetworkingPrivateLinux::CreateNetwork(bool shared,
-                                           base::Value properties,
+                                           base::Value::Dict properties,
                                            StringCallback success_callback,
                                            FailureCallback failure_callback) {
   ReportNotSupported("CreateNetwork", std::move(failure_callback));
