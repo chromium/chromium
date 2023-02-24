@@ -62,7 +62,7 @@ blink::AuctionConfig* LookupAuction(
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -75,11 +75,11 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
-      auction_worklet_manager, interest_group_manager,
-      attribution_data_host_manager, private_aggregation_manager,
-      log_private_aggregation_requests_callback, DetermineKAnonMode(),
-      std::move(auction_config), main_frame_origin, frame_origin,
-      std::move(client_security_state), std::move(url_loader_factory),
+      auction_worklet_manager, interest_group_manager, attribution_manager,
+      private_aggregation_manager, log_private_aggregation_requests_callback,
+      DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
+      frame_origin, std::move(client_security_state),
+      std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
       std::move(abort_receiver), std::move(callback)));
   instance->StartAuction();
@@ -280,7 +280,7 @@ void AuctionRunner::FailAuction(
 AuctionRunner::AuctionRunner(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -294,7 +294,7 @@ AuctionRunner::AuctionRunner(
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback)
     : interest_group_manager_(interest_group_manager),
-      attribution_data_host_manager_(attribution_data_host_manager),
+      attribution_manager_(attribution_manager),
       private_aggregation_manager_(private_aggregation_manager),
       log_private_aggregation_requests_callback_(
           log_private_aggregation_requests_callback),
@@ -360,7 +360,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
 
   std::unique_ptr<InterestGroupAuctionReporter> reporter =
       auction_.CreateReporter(
-          attribution_data_host_manager_, private_aggregation_manager_,
+          attribution_manager_, private_aggregation_manager_,
           log_private_aggregation_requests_callback_, url_loader_factory_,
           std::move(owned_auction_config_), main_frame_origin_, frame_origin_,
           client_security_state_.Clone(), std::move(interest_groups_that_bid));

@@ -13,6 +13,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/os_support.mojom.h"
@@ -23,6 +25,8 @@
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -47,6 +51,10 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
+#endif
 
 namespace content {
 
@@ -1313,9 +1321,9 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebEnabledBrowserTest,
             "web");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    AttributionSrcCrossAppWebEnabledBrowserTest,
-    OsLevelEnabledPriorToRendererInitialization_SetsSupportHeader) {
+#if BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebEnabledBrowserTest,
+                       OsLevelEnabled_SetsSupportHeader) {
   // Create a separate server as we cannot register a `ControllableHttpResponse`
   // after the server starts.
   auto https_server = std::make_unique<net::EmbeddedTestServer>(
@@ -1334,8 +1342,15 @@ IN_PROC_BROWSER_TEST_F(
           https_server.get(), "/register_source2");
   ASSERT_TRUE(https_server->Start());
 
-  AttributionManagerImpl::ScopedOsSupportForTesting scoped_os_support_setting(
-      attribution_reporting::mojom::OsSupport::kEnabled);
+  auto* os_level_manager =
+      static_cast<AttributionManagerImpl*>(
+          static_cast<StoragePartitionImpl*>(
+              web_contents()->GetBrowserContext()->GetDefaultStoragePartition())
+              ->GetAttributionManager())
+          ->GetOsLevelManager();
+  static_cast<AttributionOsLevelManagerAndroid*>(os_level_manager)
+      ->SetOsSupportForTesting(
+          attribution_reporting::mojom::OsSupport::kEnabled);
 
   GURL page_url =
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
@@ -1362,55 +1377,6 @@ IN_PROC_BROWSER_TEST_F(
                 "Attribution-Reporting-Support"),
             "web, os");
 }
-
-IN_PROC_BROWSER_TEST_F(
-    AttributionSrcCrossAppWebEnabledBrowserTest,
-    OsLevelEnabledPostRendererInitialization_SetsSupportHeader) {
-  // Create a separate server as we cannot register a `ControllableHttpResponse`
-  // after the server starts.
-  auto https_server = std::make_unique<net::EmbeddedTestServer>(
-      net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-  net::test_server::RegisterDefaultHandlers(https_server.get());
-  https_server->ServeFilesFromSourceDirectory(
-      "content/test/data/attribution_reporting");
-  https_server->ServeFilesFromSourceDirectory("content/test/data");
-
-  auto register_response1 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/register_source1");
-  auto register_response2 =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/register_source2");
-  ASSERT_TRUE(https_server->Start());
-
-  GURL page_url =
-      https_server->GetURL("b.test", "/page_with_impression_creator.html");
-  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
-
-  AttributionManagerImpl::ScopedOsSupportForTesting scoped_os_support_setting(
-      attribution_reporting::mojom::OsSupport::kEnabled);
-
-  GURL register_url = https_server->GetURL("d.test", "/register_source1");
-  ASSERT_TRUE(ExecJs(web_contents(),
-                     JsReplace("createAttributionSrcImg($1);", register_url)));
-
-  register_response1->WaitForRequest();
-  ASSERT_EQ(register_response1->http_request()->headers.at(
-                "Attribution-Reporting-Support"),
-            "web, os");
-
-  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
-  http_response->AddCustomHeader("Location", "/register_source2");
-  register_response1->Send(http_response->ToResponseString());
-  register_response1->Done();
-
-  // Ensure that redirect requests also contain the header.
-  register_response2->WaitForRequest();
-  ASSERT_EQ(register_response2->http_request()->headers.at(
-                "Attribution-Reporting-Support"),
-            "web, os");
-}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

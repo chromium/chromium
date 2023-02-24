@@ -1730,6 +1730,13 @@ bool RenderProcessHostImpl::Init() {
   CreateMessageFilters();
   RegisterMojoInterfaces();
 
+  auto attribution_os_support =
+      attribution_reporting::mojom::OsSupport::kDisabled;
+  if (auto* attribution_manager =
+          AttributionManager::FromBrowserContext(browser_context_)) {
+    attribution_os_support = attribution_manager->GetOsSupport();
+  }
+
   // Call this now and not in OnProcessLaunched in case any mojo calls get
   // dispatched before this.
   GetRendererInterface()->InitializeRenderer(
@@ -1739,7 +1746,7 @@ bool RenderProcessHostImpl::Init() {
       GetContentClient()->browser()->GetReducedUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
-      AttributionManager::GetOsSupport());
+      attribution_os_support);
 
   if (run_renderer_in_process()) {
     DCHECK(g_renderer_main_thread_factory);
@@ -5403,11 +5410,6 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
               allocator->ProvideTemporaryFile(std::move(file));
           },
           std::move(allocator)));
-}
-
-void RenderProcessHostImpl::SetOsSupportForAttributionReporting(
-    attribution_reporting::mojom::OsSupport os_support) {
-  GetRendererInterface()->SetOsSupportForAttributionReporting(os_support);
 }
 
 #if BUILDFLAG(IS_ANDROID)

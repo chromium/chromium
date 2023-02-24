@@ -43,7 +43,7 @@ struct AuctionConfig;
 
 namespace content {
 
-class AttributionDataHostManager;
+class AttributionManager;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
 
@@ -439,7 +439,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // Takes ownership of the `auction_config`, so that the reporter can outlive
   // other auction-related classes.
   std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
-      AttributionDataHostManager* attribution_data_host_manager,
+      AttributionManager* attribution_manager,
       PrivateAggregationManager* private_aggregation_manager,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,

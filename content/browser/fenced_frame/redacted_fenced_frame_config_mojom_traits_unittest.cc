@@ -513,7 +513,7 @@ TEST(FencedFrameConfigMojomTraitsTest, PropertiesHasFencedFrameReportingTest) {
   // Create a reporting service with a dummy SharedURLLoaderFactory.
   properties.fenced_frame_reporter_ = FencedFrameReporter::CreateForFledge(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(nullptr),
-      /*attribution_data_host_manager=*/nullptr,
+      /*attribution_manager=*/nullptr,
       /*direct_seller_is_seller=*/false,
       /*private_aggregation_manager=*/nullptr,
       /*main_frame_origin=*/url::Origin(),

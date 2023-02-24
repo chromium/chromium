@@ -19,7 +19,6 @@
 #include "base/supports_user_data.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
-#include "components/attribution_reporting/os_support.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -684,12 +683,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void ReinitializeLogging(uint32_t logging_dest,
                                    base::ScopedFD log_file_descriptor) = 0;
 #endif
-
-  // Sets whether OS-level support is enabled for Attribution Reporting API.
-  // See
-  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual void SetOsSupportForAttributionReporting(
-      attribution_reporting::mojom::OsSupport os_support) = 0;
 
   // Static management functions -----------------------------------------------
 

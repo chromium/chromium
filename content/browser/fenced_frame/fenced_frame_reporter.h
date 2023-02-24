@@ -28,7 +28,7 @@
 
 namespace content {
 
-class AttributionDataHostManager;
+class AttributionManager;
 class PrivateAggregationManager;
 class RenderFrameHostImpl;
 
@@ -65,11 +65,11 @@ class CONTENT_EXPORT FencedFrameReporter
   // destinations, using the passed in map.
   //
   // `url_loader_factory` is used to send all reports, and must not be null.
-  // `attribution_data_host_manager` is used to notify Attribution Reporting API
+  // `attribution_manager` is used to notify Attribution Reporting API
   // for the beacons.
   static scoped_refptr<FencedFrameReporter> CreateForSharedStorage(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AttributionDataHostManager* attribution_data_host_manager,
+      AttributionManager* attribution_manager,
       ReportingUrlMap reporting_url_map);
 
   // Creates a FencedFrameReporter that maps FLEDGE ReportingDestination types
@@ -79,7 +79,7 @@ class CONTENT_EXPORT FencedFrameReporter
   //
   // `url_loader_factory` is used to send all reports, and must not be null.
   //
-  // `attribution_data_host_manager` is used to notify Attribution Reporting API
+  // `attribution_manager` is used to notify Attribution Reporting API
   // for the beacons.
   //
   // `private_aggregation_manager` is used to send private aggregation requests
@@ -94,7 +94,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // test iff the test does not have for event private aggregation requests.
   static scoped_refptr<FencedFrameReporter> CreateForFledge(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AttributionDataHostManager* attribution_data_host_manager,
+      AttributionManager* attribution_manager,
       bool direct_seller_is_seller,
       PrivateAggregationManager* private_aggregation_manager,
       const url::Origin& main_frame_origin,
@@ -105,7 +105,7 @@ class CONTENT_EXPORT FencedFrameReporter
   FencedFrameReporter(
       base::PassKey<FencedFrameReporter> pass_key,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AttributionDataHostManager* attribution_data_host_manager,
+      AttributionManager* attribution_manager,
       PrivateAggregationManager* private_aggregation_manager = nullptr,
       const absl::optional<url::Origin>& main_frame_origin = absl::nullopt,
       const absl::optional<url::Origin>& winner_origin = absl::nullopt);
@@ -290,7 +290,7 @@ class CONTENT_EXPORT FencedFrameReporter
 
   // Bound to the lifetime of the browser context. Could be null in Incognito
   // mode or in test.
-  const raw_ptr<AttributionDataHostManager> attribution_data_host_manager_;
+  const raw_ptr<AttributionManager> attribution_manager_;
 
   base::flat_map<blink::FencedFrame::ReportingDestination,
                  ReportingDestinationInfo>

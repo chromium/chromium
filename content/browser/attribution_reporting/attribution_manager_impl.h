@@ -96,22 +96,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
     const bool previous_;
   };
 
-  class CONTENT_EXPORT ScopedOsSupportForTesting {
-   public:
-    explicit ScopedOsSupportForTesting(attribution_reporting::mojom::OsSupport);
-    ~ScopedOsSupportForTesting();
-
-    ScopedOsSupportForTesting(const ScopedOsSupportForTesting&) = delete;
-    ScopedOsSupportForTesting& operator=(const ScopedOsSupportForTesting&) =
-        delete;
-
-    ScopedOsSupportForTesting(ScopedOsSupportForTesting&&) = delete;
-    ScopedOsSupportForTesting& operator=(ScopedOsSupportForTesting&&) = delete;
-
-   private:
-    const attribution_reporting::mojom::OsSupport previous_;
-  };
-
   static std::unique_ptr<AttributionManagerImpl> CreateForTesting(
       const base::FilePath& user_data_directory,
       size_t max_pending_events,
@@ -126,10 +110,6 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
-
-  // Returns whether OS-level attribution is enabled. `kDisabled` is returned
-  // before the result is returned from the underlying platform (e.g. Android).
-  static attribution_reporting::mojom::OsSupport GetOsSupport();
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
@@ -176,6 +156,14 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void RemoveAttributionDataByDataKey(const DataKey& data_key,
                                       base::OnceClosure callback) override;
+
+  attribution_reporting::mojom::OsSupport GetOsSupport() override;
+
+#if BUILDFLAG(IS_ANDROID)
+  AttributionOsLevelManager* GetOsLevelManager() {
+    return attribution_os_level_manager_.get();
+  }
+#endif
 
  private:
   friend class AttributionManagerImplTest;

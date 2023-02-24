@@ -33,7 +33,7 @@ struct AuctionConfig;
 
 namespace content {
 
-class AttributionDataHostManager;
+class AttributionManager;
 class InterestGroupAuctionReporter;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
@@ -98,10 +98,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   //
   // Arguments:
   // `auction_worklet_manager`, `interest_group_manager`,
-  //  `attribution_data_host_manager`, and `private_aggregation_manager` must
+  //  `attribution_manager`, and `private_aggregation_manager` must
   //  remain valid, and `log_private_aggregation_requests_callback` must be safe
   //  to call until the AuctionRunner and any InterestGroupAuctionReporter it
-  //  returns are destroyed. `attribution_data_host_manager` could be null in
+  //  returns are destroyed. `attribution_manager` could be null in
   //  Incognito mode or in test.
   //
   // `log_private_aggregation_requests_callback` will be invoked with private
@@ -137,7 +137,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      AttributionDataHostManager* attribution_data_host_manager,
+      AttributionManager* attribution_manager,
       PrivateAggregationManager* private_aggregation_manager,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
@@ -196,7 +196,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   AuctionRunner(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      AttributionDataHostManager* attribution_data_host_manager,
+      AttributionManager* attribution_manager,
       PrivateAggregationManager* private_aggregation_manager,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
@@ -247,7 +247,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   // Needed to create `FencedFrameReporter`. Bound to the life time of the
   // browser context. Could be null in Incognito mode or in test.
-  const raw_ptr<AttributionDataHostManager> attribution_data_host_manager_;
+  const raw_ptr<AttributionManager> attribution_manager_;
 
   const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
 

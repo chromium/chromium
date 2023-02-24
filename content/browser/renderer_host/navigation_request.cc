@@ -456,9 +456,12 @@ void AddAdditionalRequestHeaders(
 
     if (base::FeatureList::IsEnabled(
             blink::features::kAttributionReportingCrossAppWeb)) {
-      headers->SetHeader("Attribution-Reporting-Support",
-                         attribution_reporting::GetSupportHeader(
-                             AttributionManager::GetOsSupport()));
+      if (auto* attribution_manager =
+              AttributionManager::FromBrowserContext(browser_context)) {
+        headers->SetHeader("Attribution-Reporting-Support",
+                           attribution_reporting::GetSupportHeader(
+                               attribution_manager->GetOsSupport()));
+      }
     }
   }
 }

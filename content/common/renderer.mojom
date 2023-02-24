@@ -162,11 +162,6 @@ interface Renderer {
   // TODO(crbug.com/1206150): We need a specification for this restriction.
   SetIsIsolatedContext(bool value);
 
-  // Set the OS-level support for Attribution Reporting indicating whether
-  // OS-level attribution is enabled.
-  SetOsSupportForAttributionReporting(
-      attribution_reporting.mojom.OsSupport os_support);
-
   // Initialize renderer user agent string, user agent metadata and CORS exempt
   // header list on renderer startup.
   //

@@ -1464,7 +1464,7 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 
 std::unique_ptr<InterestGroupAuctionReporter>
 InterestGroupAuction::CreateReporter(
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
@@ -1577,12 +1577,11 @@ InterestGroupAuction::CreateReporter(
       debug_win_report_urls, debug_loss_report_urls);
 
   return std::make_unique<InterestGroupAuctionReporter>(
-      interest_group_manager_, auction_worklet_manager_,
-      attribution_data_host_manager, private_aggregation_manager,
-      log_private_aggregation_requests_callback, std::move(auction_config),
-      main_frame_origin, frame_origin, std::move(client_security_state),
-      std::move(url_loader_factory), std::move(winning_bid_info),
-      std::move(top_level_seller_winning_bid_info),
+      interest_group_manager_, auction_worklet_manager_, attribution_manager,
+      private_aggregation_manager, log_private_aggregation_requests_callback,
+      std::move(auction_config), main_frame_origin, frame_origin,
+      std::move(client_security_state), std::move(url_loader_factory),
+      std::move(winning_bid_info), std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
       std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),

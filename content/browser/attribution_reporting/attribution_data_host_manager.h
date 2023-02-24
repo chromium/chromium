@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/registration_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -33,20 +32,15 @@ class Origin;
 
 namespace content {
 
-class BrowserContext;
-
 struct AttributionInputEvent;
 struct GlobalRenderFrameHostId;
 
 // Interface responsible for coordinating `AttributionDataHost`s received from
 // the renderer.
-class CONTENT_EXPORT AttributionDataHostManager
+class AttributionDataHostManager
     : public base::SupportsWeakPtr<AttributionDataHostManager> {
  public:
-  static AttributionDataHostManager* FromBrowserContext(BrowserContext*);
-
-  AttributionDataHostManager();
-  virtual ~AttributionDataHostManager();
+  virtual ~AttributionDataHostManager() = default;
 
   // Registers a new data host with the browser process for the given context
   // origin. This is only called for events which are not associated with a

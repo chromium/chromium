@@ -41,7 +41,7 @@ struct AuctionConfig;
 
 namespace content {
 
-class AttributionDataHostManager;
+class AttributionManager;
 class AuctionWorkletManager;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
@@ -156,7 +156,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // All passed in raw pointers, including those in *BidInfo fields must outlive
   // the created InterestGroupAuctionReporter.
   //
-  // `attribution_data_host_manager` is needed to create `FencedFrameReporter`
+  // `attribution_manager` is needed to create `FencedFrameReporter`
   // and could be null in Incognito mode or in test.
   //
   // `log_private_aggregation_requests_callback` will be passed all private
@@ -185,7 +185,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   InterestGroupAuctionReporter(
       InterestGroupManagerImpl* interest_group_manager,
       AuctionWorkletManager* auction_worklet_manager,
-      AttributionDataHostManager* attribution_data_host_manager,
+      AttributionManager* attribution_manager,
       PrivateAggregationManager* private_aggregation_manager,
       LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,

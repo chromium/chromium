@@ -21,6 +21,7 @@
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -147,9 +148,12 @@ attribution_reporting::mojom::OsSupport
 AttributionOsLevelManagerAndroid::GetOsSupport() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return ConvertToOsSupport(
-      Java_AttributionOsLevelManager_getMeasurementApiStatus(
-          base::android::AttachCurrentThread(), jobj_));
+  if (!os_support_) {
+    os_support_ = ConvertToOsSupport(
+        Java_AttributionOsLevelManager_getMeasurementApiStatus(
+            base::android::AttachCurrentThread(), jobj_));
+  }
+  return *os_support_;
 }
 
 void AttributionOsLevelManagerAndroid::OnDataDeletionCompleted(
@@ -164,6 +168,12 @@ void AttributionOsLevelManagerAndroid::OnDataDeletionCompleted(
 
   std::move(it->second).Run();
   pending_data_deletion_callbacks_.erase(it);
+}
+
+void AttributionOsLevelManagerAndroid::SetOsSupportForTesting(
+    attribution_reporting::mojom::OsSupport os_support) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  os_support_ = os_support;
 }
 
 }  // namespace content

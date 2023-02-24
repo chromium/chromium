@@ -322,6 +322,11 @@ class MockAttributionManager : public AttributionManager {
                base::OnceClosure callback),
               (override));
 
+  MOCK_METHOD(attribution_reporting::mojom::OsSupport,
+              GetOsSupport,
+              (),
+              (override));
+
   void AddObserver(AttributionObserver* observer) override;
   void RemoveObserver(AttributionObserver* observer) override;
   AttributionDataHostManager* GetDataHostManager() override;

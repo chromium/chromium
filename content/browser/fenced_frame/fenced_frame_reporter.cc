@@ -170,14 +170,14 @@ FencedFrameReporter::ReportingDestinationInfo::operator=(
 
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     ReportingUrlMap reporting_url_map) {
   // `private_aggregation_manager_`, `main_frame_origin_`, and `winner_origin_`
   // are only needed by FLEDGE.
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
           base::PassKey<FencedFrameReporter>(), std::move(url_loader_factory),
-          attribution_data_host_manager);
+          attribution_manager);
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
       ReportingDestinationInfo(std::move(reporting_url_map)));
@@ -186,7 +186,7 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
 
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     bool direct_seller_is_seller,
     PrivateAggregationManager* private_aggregation_manager,
     const url::Origin& main_frame_origin,
@@ -194,8 +194,8 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
           base::PassKey<FencedFrameReporter>(), std::move(url_loader_factory),
-          attribution_data_host_manager, private_aggregation_manager,
-          main_frame_origin, winner_origin);
+          attribution_manager, private_aggregation_manager, main_frame_origin,
+          winner_origin);
   reporter->direct_seller_is_seller_ = direct_seller_is_seller;
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kBuyer,
@@ -212,12 +212,12 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
 FencedFrameReporter::FencedFrameReporter(
     base::PassKey<FencedFrameReporter> pass_key,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AttributionDataHostManager* attribution_data_host_manager,
+    AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
     const absl::optional<url::Origin>& main_frame_origin,
     const absl::optional<url::Origin>& winner_origin)
     : url_loader_factory_(std::move(url_loader_factory)),
-      attribution_data_host_manager_(attribution_data_host_manager),
+      attribution_manager_(attribution_manager),
       private_aggregation_manager_(private_aggregation_manager),
       main_frame_origin_(main_frame_origin),
       winner_origin_(winner_origin) {
@@ -361,15 +361,19 @@ bool FencedFrameReporter::SendReportInternal(
   request->trusted_params = network::ResourceRequest::TrustedParams();
   request->trusted_params->isolation_info =
       net::IsolationInfo::CreateTransient();
-  request->headers.SetHeader("Attribution-Reporting-Eligible",
-                             absl::holds_alternative<EventBeaconId>(beacon_id)
-                                 ? "event-source"
-                                 : "navigation-source");
-  if (base::FeatureList::IsEnabled(
-          blink::features::kAttributionReportingCrossAppWeb)) {
-    request->headers.SetHeader("Attribution-Reporting-Support",
-                               attribution_reporting::GetSupportHeader(
-                                   AttributionManager::GetOsSupport()));
+
+  if (attribution_manager_) {
+    request->headers.SetHeader("Attribution-Reporting-Eligible",
+                               absl::holds_alternative<EventBeaconId>(beacon_id)
+                                   ? "event-source"
+                                   : "navigation-source");
+
+    if (base::FeatureList::IsEnabled(
+            blink::features::kAttributionReportingCrossAppWeb)) {
+      request->headers.SetHeader("Attribution-Reporting-Support",
+                                 attribution_reporting::GetSupportHeader(
+                                     attribution_manager_->GetOsSupport()));
+    }
   }
 
   // Create and configure `SimpleURLLoader` instance.
@@ -381,7 +385,11 @@ bool FencedFrameReporter::SendReportInternal(
 
   network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
 
-  if (attribution_data_host_manager_) {
+  AttributionDataHostManager* attribution_data_host_manager =
+      attribution_manager_ ? attribution_manager_->GetDataHostManager()
+                           : nullptr;
+
+  if (attribution_data_host_manager) {
     // Notify Attribution Reporting API for the beacons.
     simple_url_loader_ptr->SetOnRedirectCallback(base::BindRepeating(
         [](base::WeakPtr<AttributionDataHostManager>
@@ -397,7 +405,7 @@ bool FencedFrameReporter::SendReportInternal(
                 /*is_final_response=*/false);
           }
         },
-        attribution_data_host_manager_->AsWeakPtr(), beacon_id));
+        attribution_data_host_manager->AsWeakPtr(), beacon_id));
 
     // Send out the reporting beacon.
     simple_url_loader_ptr->DownloadHeadersOnly(
@@ -416,10 +424,10 @@ bool FencedFrameReporter::SendReportInternal(
                         /*is_final_response=*/true);
               }
             },
-            attribution_data_host_manager_->AsWeakPtr(), beacon_id,
+            attribution_data_host_manager->AsWeakPtr(), beacon_id,
             std::move(simple_url_loader)));
 
-    attribution_data_host_manager_->NotifyFencedFrameReportingBeaconSent(
+    attribution_data_host_manager->NotifyFencedFrameReportingBeaconSent(
         beacon_id);
   } else {
     // Send out the reporting beacon.
