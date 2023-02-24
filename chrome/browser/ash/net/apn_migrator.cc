@@ -97,8 +97,7 @@ void ApnMigrator::SetShillUserApnListForNetwork(
     const base::Value::List* apn_list) {
   network_configuration_handler_->SetProperties(
       network.path(),
-      base::Value(
-          chromeos::network_config::UserApnListToOnc(network.guid(), apn_list)),
+      chromeos::network_config::UserApnListToOnc(network.guid(), apn_list),
       base::BindOnce(&OnSetShillUserApnListSuccess),
       base::BindOnce(&OnSetShillUserApnListFailure, network.guid()));
 }

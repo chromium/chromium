@@ -190,12 +190,13 @@ TEST_F(ApnMigratorTest, ApnRevampFlagDisabled) {
       .Times(0);
   base::Value::Dict expected_onc1 = chromeos::network_config::UserApnListToOnc(
       kTestCellularGuid1, /*user_apn_list=*/nullptr);
-  EXPECT_CALL(*managed_network_configuration_handler(),
-              SetProperties(cellular_service_path_1,
-                            Truly([&expected_onc1](const base::Value& value) {
-                              return expected_onc1 == value.GetDict();
-                            }),
-                            _, _))
+  EXPECT_CALL(
+      *managed_network_configuration_handler(),
+      SetProperties(cellular_service_path_1,
+                    Truly([&expected_onc1](const base::Value::Dict& value) {
+                      return expected_onc1 == value;
+                    }),
+                    _, _))
       .Times(1);
 
   // Ensure that the function does not modify the non-migrated network.
@@ -270,32 +271,35 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_AlreadyMigratedNetworks) {
   // empty user APN lists.
   base::Value::Dict expected_onc_1 = chromeos::network_config::UserApnListToOnc(
       kTestCellularGuid1, &empty_apn_list);
-  EXPECT_CALL(*managed_network_configuration_handler(),
-              SetProperties(cellular_service_path_1,
-                            Truly([&expected_onc_1](const base::Value& value) {
-                              return expected_onc_1 == value.GetDict();
-                            }),
-                            _, _))
+  EXPECT_CALL(
+      *managed_network_configuration_handler(),
+      SetProperties(cellular_service_path_1,
+                    Truly([&expected_onc_1](const base::Value::Dict& value) {
+                      return expected_onc_1 == value;
+                    }),
+                    _, _))
       .Times(1);
   base::Value::Dict expected_onc_2 = chromeos::network_config::UserApnListToOnc(
       kTestCellularGuid2, &empty_apn_list);
-  EXPECT_CALL(*managed_network_configuration_handler(),
-              SetProperties(cellular_service_path_2,
-                            Truly([&expected_onc_2](const base::Value& value) {
-                              return expected_onc_2 == value.GetDict();
-                            }),
-                            _, _))
+  EXPECT_CALL(
+      *managed_network_configuration_handler(),
+      SetProperties(cellular_service_path_2,
+                    Truly([&expected_onc_2](const base::Value::Dict& value) {
+                      return expected_onc_2 == value;
+                    }),
+                    _, _))
       .Times(1);
 
   // Verify that Shill receives the user APNs for the third list.
   base::Value::Dict expected_onc_3 = chromeos::network_config::UserApnListToOnc(
       kTestCellularGuid3, &populated_apn_list);
-  EXPECT_CALL(*managed_network_configuration_handler(),
-              SetProperties(cellular_service_path_3,
-                            Truly([&expected_onc_3](const base::Value& value) {
-                              return expected_onc_3 == value.GetDict();
-                            }),
-                            _, _))
+  EXPECT_CALL(
+      *managed_network_configuration_handler(),
+      SetProperties(cellular_service_path_3,
+                    Truly([&expected_onc_3](const base::Value::Dict& value) {
+                      return expected_onc_3 == value;
+                    }),
+                    _, _))
       .Times(1);
 
   // Function under test.
@@ -335,21 +339,23 @@ TEST_F(ApnMigratorTest, ApnRevampFlagEnabled_MigrateNetworksWithoutCustomApns) {
   // The function should only update Shill with empty user APN lists.
   base::Value::Dict expected_onc_1 = chromeos::network_config::UserApnListToOnc(
       kTestCellularGuid1, &empty_apn_list);
-  EXPECT_CALL(*managed_network_configuration_handler(),
-              SetProperties(cellular_service_path_1,
-                            Truly([&expected_onc_1](const base::Value& value) {
-                              return expected_onc_1 == value.GetDict();
-                            }),
-                            _, _))
+  EXPECT_CALL(
+      *managed_network_configuration_handler(),
+      SetProperties(cellular_service_path_1,
+                    Truly([&expected_onc_1](const base::Value::Dict& value) {
+                      return expected_onc_1 == value;
+                    }),
+                    _, _))
       .Times(1);
   base::Value::Dict expected_onc_2 = chromeos::network_config::UserApnListToOnc(
       kTestCellularGuid2, &empty_apn_list);
-  EXPECT_CALL(*managed_network_configuration_handler(),
-              SetProperties(cellular_service_path_2,
-                            Truly([&expected_onc_2](const base::Value& value) {
-                              return expected_onc_2 == value.GetDict();
-                            }),
-                            _, _))
+  EXPECT_CALL(
+      *managed_network_configuration_handler(),
+      SetProperties(cellular_service_path_2,
+                    Truly([&expected_onc_2](const base::Value::Dict& value) {
+                      return expected_onc_2 == value;
+                    }),
+                    _, _))
       .Times(1);
 
   // All network should be marked as migrated

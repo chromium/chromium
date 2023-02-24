@@ -2724,7 +2724,7 @@ void CrosNetworkConfig::SetPropertiesInternal(const std::string& guid,
     std::string user_id_hash = LoginState::Get()->primary_user_hash();
 
     network_configuration_handler_->CreateConfiguration(
-        user_id_hash, base::Value(std::move(onc)),
+        user_id_hash, onc,
         base::BindOnce(&CrosNetworkConfig::SetPropertiesConfigureSuccess,
                        weak_factory_.GetWeakPtr(), callback_id),
         base::BindOnce(&CrosNetworkConfig::SetPropertiesFailure,
@@ -2733,7 +2733,7 @@ void CrosNetworkConfig::SetPropertiesInternal(const std::string& guid,
   }
 
   network_configuration_handler_->SetProperties(
-      network.path(), base::Value(std::move(onc)),
+      network.path(), onc,
       base::BindOnce(&CrosNetworkConfig::SetPropertiesSuccess,
                      weak_factory_.GetWeakPtr(), callback_id),
       base::BindOnce(&CrosNetworkConfig::SetPropertiesFailure,
@@ -2800,7 +2800,7 @@ void CrosNetworkConfig::ConfigureNetwork(mojom::ConfigPropertiesPtr properties,
   configure_network_callbacks_[callback_id] = std::move(callback);
 
   network_configuration_handler_->CreateConfiguration(
-      user_id_hash, base::Value(std::move(*onc)),
+      user_id_hash, onc.value(),
       base::BindOnce(&CrosNetworkConfig::ConfigureNetworkSuccess,
                      weak_factory_.GetWeakPtr(), callback_id),
       base::BindOnce(&CrosNetworkConfig::ConfigureNetworkFailure,

@@ -42,12 +42,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) MockManagedNetworkConfigurationHandler
                     network_handler::PropertiesCallback callback));
   MOCK_METHOD4(SetProperties,
                void(const std::string& service_path,
-                    const base::Value& user_settings,
+                    const base::Value::Dict& user_settings,
                     base::OnceClosure callback,
                     network_handler::ErrorCallback error_callback));
   MOCK_CONST_METHOD4(CreateConfiguration,
                      void(const std::string& userhash,
-                          const base::Value& properties,
+                          const base::Value::Dict& properties,
                           network_handler::ServiceResultCallback callback,
                           network_handler::ErrorCallback error_callback));
   MOCK_CONST_METHOD2(ConfigurePolicyNetwork,

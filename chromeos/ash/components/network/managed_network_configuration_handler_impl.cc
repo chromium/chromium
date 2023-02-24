@@ -236,7 +236,7 @@ void ManagedNetworkConfigurationHandlerImpl::GetProperties(
 
 void ManagedNetworkConfigurationHandlerImpl::SetProperties(
     const std::string& service_path,
-    const base::Value& user_settings,
+    const base::Value::Dict& user_settings,
     base::OnceClosure callback,
     network_handler::ErrorCallback error_callback) {
   const NetworkState* state =
@@ -276,7 +276,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
   // We need to ensure that required configuration properties (e.g. Type) are
   // included for ONC validation and translation to Shill properties.
-  base::Value::Dict user_settings_copy = user_settings.GetDict().Clone();
+  base::Value::Dict user_settings_copy = user_settings.Clone();
   if (!user_settings_copy.contains(::onc::network_config::kType)) {
     user_settings_copy.Set(
         ::onc::network_config::kType,
@@ -360,19 +360,19 @@ void ManagedNetworkConfigurationHandlerImpl::SetShillProperties(
 
 void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     const std::string& userhash,
-    const base::Value& properties,
+    const base::Value::Dict& properties,
     network_handler::ServiceResultCallback callback,
     network_handler::ErrorCallback error_callback) const {
-  std::string guid = GetStringFromDictionary(properties.GetDict(),
-                                             ::onc::network_config::kGUID);
+  std::string guid =
+      GetStringFromDictionary(properties, ::onc::network_config::kGUID);
   const NetworkState* network_state = nullptr;
   if (!guid.empty())
     network_state = network_state_handler_->GetNetworkStateFromGuid(guid);
   if (network_state) {
     NET_LOG(USER) << "CreateConfiguration for: " << NetworkId(network_state);
   } else {
-    std::string type = GetStringFromDictionary(properties.GetDict(),
-                                               ::onc::network_config::kType);
+    std::string type =
+        GetStringFromDictionary(properties, ::onc::network_config::kType);
     NET_LOG(USER) << "Create new network configuration, Type: " << type;
   }
 
@@ -388,7 +388,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
   chromeos::onc::Validator::Result validation_result;
   absl::optional<base::Value::Dict> validated_properties =
       validator.ValidateAndRepairObject(
-          &chromeos::onc::kNetworkConfigurationSignature, properties.GetDict(),
+          &chromeos::onc::kNetworkConfigurationSignature, properties,
           &validation_result);
   if (validation_result == chromeos::onc::Validator::INVALID) {
     InvokeErrorCallback("", std::move(error_callback), kInvalidUserSettings);

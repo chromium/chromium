@@ -966,8 +966,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const NetworkState* network_state =
       network_state_handler_->GetNetworkStateFromGuid(kTestGuidVpn);
   ASSERT_TRUE(network_state);
-  base::Value ui_config =
-      test_utils::ReadTestDictionaryValue("policy/policy_vpn_ui.json");
+  base::Value::Dict ui_config =
+      test_utils::ReadTestDictionary("policy/policy_vpn_ui.json");
   managed_network_configuration_handler_->SetProperties(
       network_state->path(), ui_config, base::DoNothing(),
       base::BindOnce(&ErrorCallback));
@@ -999,8 +999,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   const NetworkState* network_state =
       network_state_handler_->GetNetworkStateFromGuid(kTestGuidVpn);
   ASSERT_TRUE(network_state);
-  base::Value ui_config =
-      test_utils::ReadTestDictionaryValue("policy/policy_vpn_ipsec_ui.json");
+  base::Value::Dict ui_config =
+      test_utils::ReadTestDictionary("policy/policy_vpn_ipsec_ui.json");
   managed_network_configuration_handler_->SetProperties(
       network_state->path(), ui_config, base::DoNothing(),
       base::BindOnce(&ErrorCallback));

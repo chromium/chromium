@@ -492,7 +492,7 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->CreateConfiguration(
-      user_id_hash, base::Value(std::move(properties)),
+      user_id_hash, properties,
       base::BindOnce(&ArcNetHostImpl::CreateNetworkSuccessCallback,
                      weak_factory_.GetWeakPtr(),
                      std::move(split_callback.first)),
@@ -563,7 +563,7 @@ void ArcNetHostImpl::UpdateWifiNetwork(const std::string& guid,
   // the callee interface.
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   GetManagedConfigurationHandler()->SetProperties(
-      path, base::Value(std::move(properties)),
+      path, properties,
       base::BindOnce(&UpdateWifiNetworkSuccessCallback,
                      std::move(split_callback.first)),
       base::BindOnce(&UpdateWifiNetworkFailureCallback,
@@ -761,7 +761,7 @@ void ArcNetHostImpl::AndroidVpnConnected(
   std::string service_path = LookupArcVpnServicePath();
   if (!service_path.empty()) {
     GetManagedConfigurationHandler()->SetProperties(
-        service_path, base::Value(TranslateVpnConfigurationToOnc(*cfg)),
+        service_path, TranslateVpnConfigurationToOnc(*cfg),
         base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,
                        weak_factory_.GetWeakPtr(), service_path, std::string()),
         base::BindOnce(&ArcVpnErrorCallback,
@@ -771,7 +771,7 @@ void ArcNetHostImpl::AndroidVpnConnected(
 
   std::string user_id_hash = ash::LoginState::Get()->primary_user_hash();
   GetManagedConfigurationHandler()->CreateConfiguration(
-      user_id_hash, base::Value(TranslateVpnConfigurationToOnc(*cfg)),
+      user_id_hash, TranslateVpnConfigurationToOnc(*cfg),
       base::BindOnce(&ArcNetHostImpl::ConnectArcVpn,
                      weak_factory_.GetWeakPtr()),
       base::BindOnce(&ArcVpnErrorCallback, "connecting new ARC VPN"));

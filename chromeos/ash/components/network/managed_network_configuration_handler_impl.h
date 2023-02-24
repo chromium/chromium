@@ -61,13 +61,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       network_handler::PropertiesCallback callback) override;
 
   void SetProperties(const std::string& service_path,
-                     const base::Value& user_settings,
+                     const base::Value::Dict& user_settings,
                      base::OnceClosure callback,
                      network_handler::ErrorCallback error_callback) override;
 
   void CreateConfiguration(
       const std::string& userhash,
-      const base::Value& properties,
+      const base::Value::Dict& properties,
       network_handler::ServiceResultCallback callback,
       network_handler::ErrorCallback error_callback) const override;
 
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
                               const std::string& profile_path) const override;
 
   // This method should be called when the policy has been fully applied and is
-  // reflected in NetworkStateHandler, so it is safe to notify obserers.
+  // reflected in NetworkStateHandler, so it is safe to notify observers.
   // Notifying observers is the last step of policy application to
   // |service_path|.
   void NotifyPolicyAppliedToNetwork(

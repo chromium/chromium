@@ -90,13 +90,13 @@ void ManagedOncConfigureActivePartAsDeviceWide(
                        onc::network_config::kSourceDevice);
   if (!network_state || !network_state->IsInProfile()) {
     managed_network_configuration_handler()->CreateConfiguration(
-        kDeviceUserHash, network,
+        kDeviceUserHash, network.GetDict(),
         base::BindOnce([](const std::string&, const std::string&) {
         }).Then(std::move(success_callback)),
         base::BindOnce(&PrintError).Then(std::move(failure_callback)));
   } else if (network_state) {
     managed_network_configuration_handler()->SetProperties(
-        network_state->path(), network, std::move(success_callback),
+        network_state->path(), network.GetDict(), std::move(success_callback),
         base::BindOnce(&PrintError).Then(std::move(failure_callback)));
   }
 }
@@ -130,7 +130,7 @@ void ReconfigureUiData(const base::Value& network_config,
   rollback_network_config::ManagedOncCollapseToUiData(&ui_data);
 
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), ui_data, base::DoNothing(),
+      network_state->path(), ui_data.GetDict(), base::DoNothing(),
       base::BindOnce(&PrintError));
 }
 

@@ -193,7 +193,7 @@ bool NetworkExists(const std::string& guid) {
 void SetUpDeviceWideNetworkConfig(const base::Value& config) {
   base::test::TestFuture<const std::string&, const std::string&> result;
   managed_network_configuration_handler()->CreateConfiguration(
-      kDeviceUserHash, config, result.GetCallback(),
+      kDeviceUserHash, config.GetDict(), result.GetCallback(),
       base::BindOnce(&PrintErrorAndFail));
   ASSERT_TRUE(result.Wait()) << "Failed to configure " << config;
 }
@@ -207,7 +207,7 @@ void SetPropertiesForExistingNetwork(const std::string& guid,
 
   base::test::TestFuture<void> signal;
   managed_network_configuration_handler()->SetProperties(
-      network_state->path(), config, signal.GetCallback(),
+      network_state->path(), config.GetDict(), signal.GetCallback(),
       base::BindOnce(&PrintErrorAndFail));
   ASSERT_TRUE(signal.Wait()) << "Failed to set " << config << " for " << guid;
 }

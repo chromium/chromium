@@ -447,16 +447,15 @@ class NetworkStateHandlerTest : public testing::Test {
               kShillManagerClientStubDefaultWifi);
   }
 
-  void SetProperties(NetworkState* network, const base::Value& properties) {
+  void SetProperties(NetworkState* network,
+                     const base::Value::Dict& properties) {
     // UpdateNetworkStateProperties expects 'Type' and 'WiFi.HexSSID' to always
     // be set.
-    base::Value properties_to_set(properties.Clone());
-    properties_to_set.SetKey(shill::kTypeProperty,
-                             base::Value(network->type()));
-    properties_to_set.SetKey(shill::kWifiHexSsid,
-                             base::Value(network->GetHexSsid()));
-    network_state_handler_->UpdateNetworkStateProperties(
-        network, properties_to_set.GetDict());
+    base::Value::Dict properties_to_set = properties.Clone();
+    properties_to_set.Set(shill::kTypeProperty, network->type());
+    properties_to_set.Set(shill::kWifiHexSsid, network->GetHexSsid());
+    network_state_handler_->UpdateNetworkStateProperties(network,
+                                                         properties_to_set);
   }
 
   void GetTetherNetworkList(int limit,
@@ -2510,9 +2509,9 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value properties(base::Value::Type::DICT);
-  properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
-  properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  base::Value::Dict properties;
+  properties.Set(shill::kProfileProperty, kProfilePath);
+  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
 
   EXPECT_FALSE(network_state_handler_->OnlyManagedWifiNetworksAllowed());
@@ -2544,9 +2543,9 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManaged) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value properties(base::Value::Type::DICT);
-  properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
-  properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  base::Value::Dict properties;
+  properties.Set(shill::kProfileProperty, kProfilePath);
+  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
 
   EXPECT_TRUE(network_state_handler_->OnlyManagedWifiNetworksAllowed());
@@ -2582,9 +2581,9 @@ TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
   // Emulate 'cellular1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  base::Value properties(base::Value::Type::DICT);
-  properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
-  properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  base::Value::Dict properties;
+  properties.Set(shill::kProfileProperty, kProfilePath);
+  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(cellular1, properties);
 
   EXPECT_TRUE(cellular1->IsManagedByPolicy());
@@ -2623,9 +2622,9 @@ TEST_F(NetworkStateHandlerTest,
   // Emulate 'cellular1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  base::Value properties(base::Value::Type::DICT);
-  properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
-  properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  base::Value::Dict properties;
+  properties.Set(shill::kProfileProperty, kProfilePath);
+  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(cellular1, properties);
 
   EXPECT_TRUE(cellular1->IsManagedByPolicy());
@@ -2656,9 +2655,9 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManagedIfAvailable) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value properties(base::Value::Type::DICT);
-  properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
-  properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
+  base::Value::Dict properties;
+  properties.Set(shill::kProfileProperty, kProfilePath);
+  properties.Set(shill::kUIDataProperty, ui_data->GetAsJson());
   SetProperties(wifi1, properties);
   network_state_handler_->UpdateManagedWifiNetworkAvailable();
 
