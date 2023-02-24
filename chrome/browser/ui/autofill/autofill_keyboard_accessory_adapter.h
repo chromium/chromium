@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_ADAPTER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_ADAPTER_H_
 
-#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,11 +13,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/core/common/aliases.h"
-#include "content/public/browser/native_web_keyboard_event.h"
+
+namespace content {
+struct NativeWebKeyboardEvent;
+class WebContents;
+}  // namespace content
 
 namespace autofill {
 
@@ -109,7 +111,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
 
   // Indices might be offset because a special item is moved to the front. This
   // method returns the index used by the keyboard accessory (may be offset).
-  // |element_index| is the position of an element as returned by |controller_|.
+  // `element_index` is the position of an element as returned by `controller_`.
   int OffsetIndexFor(int element_index) const;
 
   base::WeakPtr<AutofillPopupController> controller_;

@@ -5,33 +5,31 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_IMPL_H_
 
-#include <stddef.h>
-
 #include <string>
 #include <type_traits>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/functional/invoke.h"
 #include "base/gtest_prod_util.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/aliases.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 
 namespace content {
 struct NativeWebKeyboardEvent;
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+class RectF;
+}  // namespace gfx
 
 namespace password_manager {
 class ContentPasswordManagerDriver;
@@ -56,10 +54,10 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   AutofillPopupControllerImpl& operator=(const AutofillPopupControllerImpl&) =
       delete;
 
-  // Creates a new |AutofillPopupControllerImpl|, or reuses |previous| if the
-  // construction arguments are the same. |previous| may be invalidated by this
+  // Creates a new `AutofillPopupControllerImpl`, or reuses `previous` if the
+  // construction arguments are the same. `previous` may be invalidated by this
   // call. The controller will listen for keyboard input routed to
-  // |web_contents| while the popup is showing, unless |web_contents| is NULL.
+  // `web_contents` while the popup is showing, unless `web_contents` is NULL.
   static base::WeakPtr<AutofillPopupControllerImpl> GetOrCreate(
       base::WeakPtr<AutofillPopupControllerImpl> previous,
       base::WeakPtr<AutofillPopupDelegate> delegate,
@@ -84,7 +82,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   void KeepPopupOpenForTesting() { keep_popup_open_for_testing_ = true; }
 
   // Hides the popup and destroys the controller. This also invalidates
-  // |delegate_|.
+  // `delegate_`.
   void Hide(PopupHidingReason reason) override;
 
   // Invoked when the view was destroyed by by someone other than this class.
@@ -149,7 +147,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // to find the AXPlatformNode specifically for the autofill text field.
   virtual ui::AXPlatformNode* GetRootAXPlatformNodeForWebContents();
 
-  // Hides |view_| unless it is null and then deletes |this|.
+  // Hides `view_` unless it is null and then deletes `this`.
   virtual void HideViewAndDie();
 
  private:

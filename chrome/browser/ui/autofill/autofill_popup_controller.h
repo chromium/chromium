@@ -5,18 +5,13 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_H_
 
-#include <stddef.h>
-
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace autofill {
 
@@ -45,21 +40,21 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // Returns the full set of autofill suggestions, if applicable.
   virtual std::vector<Suggestion> GetSuggestions() const = 0;
 
-  // Returns the suggestion at the given |row| index. The |Suggestion| is the
+  // Returns the suggestion at the given `row` index. The `Suggestion` is the
   // data model including information that is to be shown in the UI.
   virtual const Suggestion& GetSuggestionAt(int row) const = 0;
 
-  // Returns the suggestion main text string at the given |row| index. The main
+  // Returns the suggestion main text string at the given `row` index. The main
   // text is shown in primary or secondary text style, serving as the title of
   // the suggestion.
   virtual std::u16string GetSuggestionMainTextAt(int row) const = 0;
 
-  // Returns the suggestion minor text string at the given |row| index. The
+  // Returns the suggestion minor text string at the given `row` index. The
   // minor text is shown in secondary text style, serving as the sub-title of
   // the suggestion item.
   virtual std::u16string GetSuggestionMinorTextAt(int row) const = 0;
 
-  // Returns all the labels of the suggestion at the given |row| index. The
+  // Returns all the labels of the suggestion at the given `row` index. The
   // labels are presented as a N*M matrix, and the position of the text in the
   // matrix decides where the text will be shown on the UI. (e.g. The text
   // labels[1][2] will be shown on the second line, third column in the grid
@@ -67,8 +62,8 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   virtual std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
       int row) const = 0;
 
-  // Returns whether the item at |list_index| can be removed. If so, fills
-  // out |title| and |body| (when non-null) with relevant user-facing text.
+  // Returns whether the item at `list_index` can be removed. If so, fills
+  // out `title` and `body` (when non-null) with relevant user-facing text.
   virtual bool GetRemovalConfirmationText(int index,
                                           std::u16string* title,
                                           std::u16string* body) = 0;

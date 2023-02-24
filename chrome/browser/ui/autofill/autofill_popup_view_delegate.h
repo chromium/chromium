@@ -5,20 +5,17 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_DELEGATE_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_POPUP_VIEW_DELEGATE_H_
 
-#include <stddef.h>
-
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "ui/gfx/native_widget_types.h"
-
-namespace gfx {
-class Point;
-class Rect;
-class RectF;
-}  // namespace gfx
 
 namespace content {
 class WebContents;
 }  // namespace content
+
+namespace gfx {
+class RectF;
+}  // namespace gfx
+
 namespace autofill {
 
 // Base class for Controllers of Autofill-style popups. This interface is
