@@ -31,6 +31,24 @@
       "use_goma": true
     }
   },
+  "lacros-amd64-generic-pgo": {
+    "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
+      "is_cfi": true,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_debug": false,
+      "is_official_build": true,
+      "is_on_release_branch": true,
+      "symbol_level": 0,
+      "target_os": "chromeos",
+      "use_remoteexec": true,
+      "use_thin_lto": true
+    }
+  },
   "linux-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,
