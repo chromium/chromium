@@ -10,6 +10,8 @@ static_library("browser") {
     "autofill_log_router_factory.h",
     "bad_message.cc",
     "bad_message.h",
+    "content_autofill_client.cc",
+    "content_autofill_client.h",
     "content_autofill_driver.cc",
     "content_autofill_driver.h",
     "content_autofill_driver_factory.cc",
@@ -84,10 +86,13 @@ source_set("test_support") {
     "test_autofill_client_injector.h",
     "test_autofill_manager_injector.cc",
     "test_autofill_manager_injector.h",
+    "test_content_autofill_client.cc",
+    "test_content_autofill_client.h",
   ]
 
   public_deps = [
     ":browser",
+    "//components/autofill/core/browser:test_support",
     "//content/public/browser",
     "//content/test:test_support",
   ]

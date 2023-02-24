@@ -27,6 +27,8 @@ class IBANSaveManagerTest : public testing::Test {
  public:
   IBANSaveManagerTest() {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
+    autofill_client_.set_personal_data_manager(
+        std::make_unique<TestPersonalDataManager>());
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
         std::make_unique<TestStrikeDatabase>();
     strike_database_ = test_strike_database.get();
@@ -54,8 +56,7 @@ class IBANSaveManagerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   test::AutofillEnvironment autofill_environment_;
-  TestAutofillClient autofill_client_{
-      std::make_unique<TestPersonalDataManager>()};
+  TestAutofillClient autofill_client_;
 
   std::unique_ptr<IBANSaveManager> iban_save_manager_;
   raw_ptr<TestStrikeDatabase> strike_database_;
