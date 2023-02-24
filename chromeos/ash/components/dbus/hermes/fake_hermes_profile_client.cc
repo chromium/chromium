@@ -198,8 +198,8 @@ void FakeHermesProfileClient::UpdateCellularServices(const std::string& iccid,
   ShillServiceClient::TestInterface* service_test =
       ShillServiceClient::Get()->GetTestInterface();
 
-  base::Value service_list = manager_test->GetEnabledServiceList();
-  for (const base::Value& service_path : service_list.GetList()) {
+  base::Value::List service_list = manager_test->GetEnabledServiceList();
+  for (const base::Value& service_path : service_list) {
     const base::Value::Dict* properties =
         service_test->GetServiceProperties(service_path.GetString());
     const std::string* type = properties->FindString(shill::kTypeProperty);

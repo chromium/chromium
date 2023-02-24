@@ -402,13 +402,15 @@ void ShillPropertyHandler::ManagerPropertyChanged(const std::string& key,
   NET_LOG(DEBUG) << "ManagerPropertyChanged: " << key << " = " << value;
   if (key == shill::kServiceCompleteListProperty) {
     if (CheckListValue(key, value)) {
-      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_NETWORK, value);
+      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_NETWORK,
+                                   value.GetList());
       UpdateProperties(ManagedState::MANAGED_TYPE_NETWORK, value);
       UpdateObserved(ManagedState::MANAGED_TYPE_NETWORK, value);
     }
   } else if (key == shill::kDevicesProperty) {
     if (CheckListValue(key, value)) {
-      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_DEVICE, value);
+      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_DEVICE,
+                                   value.GetList());
       UpdateProperties(ManagedState::MANAGED_TYPE_DEVICE, value);
       UpdateObserved(ManagedState::MANAGED_TYPE_DEVICE, value);
     }

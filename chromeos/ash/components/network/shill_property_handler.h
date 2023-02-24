@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ShillPropertyHandler
    public:
     // Called when the entries in a managed list have changed.
     virtual void UpdateManagedList(ManagedState::ManagedType type,
-                                   const base::Value& entries) = 0;
+                                   const base::Value::List& entries) = 0;
 
     // Called when the properties for a managed state have changed.
     virtual void UpdateManagedStateProperties(

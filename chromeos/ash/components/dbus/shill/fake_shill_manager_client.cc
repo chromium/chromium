@@ -1203,9 +1203,10 @@ void FakeShillManagerClient::NotifyObserversPropertyChanged(
     return;
   }
   if (property == shill::kServiceCompleteListProperty) {
-    base::Value services = GetEnabledServiceList();
-    for (auto& observer : observer_list_)
+    base::Value services(GetEnabledServiceList());
+    for (auto& observer : observer_list_) {
       observer.OnPropertyChanged(property, services);
+    }
     return;
   }
   for (auto& observer : observer_list_)
@@ -1230,7 +1231,7 @@ bool FakeShillManagerClient::TechnologyEnabled(const std::string& type) const {
   return false;
 }
 
-base::Value FakeShillManagerClient::GetEnabledServiceList() const {
+base::Value::List FakeShillManagerClient::GetEnabledServiceList() const {
   base::Value::List new_service_list;
   const base::Value::List* service_list =
       stub_properties_.FindList(shill::kServiceCompleteListProperty);
@@ -1246,11 +1247,12 @@ base::Value FakeShillManagerClient::GetEnabledServiceList() const {
         continue;
       }
       const std::string* type = properties->FindString(shill::kTypeProperty);
-      if (type && TechnologyEnabled(*type))
+      if (type && TechnologyEnabled(*type)) {
         new_service_list.Append(v.Clone());
+      }
     }
   }
-  return base::Value(std::move(new_service_list));
+  return new_service_list;
 }
 
 void FakeShillManagerClient::ClearProfiles() {
