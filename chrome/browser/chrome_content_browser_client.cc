@@ -7502,8 +7502,12 @@ bool ChromeContentBrowserClient::IsFileSystemURLNavigationAllowed(
   // host() is the extension-id
   const url::Origin origin = url::Origin::Create(url);
   if (origin.scheme() == extensions::kExtensionScheme) {
-    const std::string& extension_id = origin.host();
-    return extensions::util::IsChromeApp(extension_id, browser_context);
+    const Extension* extension =
+        extensions::ExtensionRegistry::Get(browser_context)
+            ->enabled_extensions()
+            .GetByID(origin.host());
+    DCHECK(extension);
+    return extension->is_platform_app();
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return false;
