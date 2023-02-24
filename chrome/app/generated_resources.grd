@@ -7551,6 +7551,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ALL_NOTES" desc="The text label of a button in the side panel user notes UI, when clicked, takes the user to the notes overviews UI.">
         All Notes
       </message>
+      <message name="IDS_USER_NOTES_CURRENT_TAB_HEADER" desc="A header label in the list of all pages with notes for the current tab if it has notes.">
+        Current Tab
+      </message>
       <message name="IDS_NOTES_COUNT" desc="Text description for the number of notes for a note overview item showing the number of notes on a page">
         {NUM_NOTES, plural, =1 {1 Note} other {# Notes}}
       </message>

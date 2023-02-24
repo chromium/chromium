@@ -34,6 +34,7 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
       {"addANote", IDS_ADD_NEW_USER_NOTE_PLACEHOLDER_TEXT},
       {"allNotes", IDS_ALL_NOTES},
       {"cancel", IDS_CANCEL},
+      {"currentTab", IDS_USER_NOTES_CURRENT_TAB_HEADER},
       {"delete", IDS_DELETE},
       {"edit", IDS_EDIT},
       {"sortByType", IDS_BOOKMARKS_SORT_BY_TYPE},

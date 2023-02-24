@@ -5,6 +5,8 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://user-notes-side-panel.top-chrome/user_note_overviews_list.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {UserNoteOverviewRowElement} from 'chrome://user-notes-side-panel.top-chrome/user_note_overview_row.js';
 import {UserNoteOverviewsListElement} from 'chrome://user-notes-side-panel.top-chrome/user_note_overviews_list.js';
 import {NoteOverview} from 'chrome://user-notes-side-panel.top-chrome/user_notes.mojom-webui.js';
 import {UserNotesApiProxyImpl} from 'chrome://user-notes-side-panel.top-chrome/user_notes_api_proxy.js';
@@ -36,7 +38,7 @@ suite('UserNoteOverviewsListTest', () => {
     },
   ];
 
-  function queryNoteOverviews() {
+  function queryNoteOverviews(): NodeListOf<UserNoteOverviewRowElement> {
     return userNoteOverviewsList.shadowRoot!.querySelectorAll(
         'user-note-overview-row');
   }
@@ -47,6 +49,10 @@ suite('UserNoteOverviewsListTest', () => {
     testProxy = new TestUserNotesApiProxy();
     UserNotesApiProxyImpl.setInstance(testProxy);
     testProxy.setNoteOverviews(noteOverviews);
+    loadTimeData.resetForTesting({
+      currentTab: 'Current Tab',
+      allNotes: 'All Notes',
+    });
 
     userNoteOverviewsList = document.createElement('user-note-overviews-list');
     userNoteOverviewsList.overviews = noteOverviews;
@@ -63,5 +69,15 @@ suite('UserNoteOverviewsListTest', () => {
               .textContent!.trim(),
           noteOverviews[i]!.title);
     }
+  });
+
+  test('headers and separator shown', () => {
+    const noteOverviewElements = queryNoteOverviews();
+    assertEquals(noteOverviewElements.length, 2);
+    const headers =
+        userNoteOverviewsList.shadowRoot!.querySelectorAll('sp-heading');
+    assertEquals(headers.length, 2);
+    const separator = userNoteOverviewsList.shadowRoot!.querySelectorAll('.hr');
+    assertEquals(separator.length, 1);
   });
 });
