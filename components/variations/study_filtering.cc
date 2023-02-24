@@ -230,14 +230,23 @@ bool CheckStudyEnterprise(const Study::Filter& filter,
 }
 
 bool CheckStudyGoogleGroup(const Study::Filter& filter,
-                           const std::set<uint64_t>& client_groups) {
-  if (filter.google_group().size() > 0 &&
-      filter.exclude_google_group().size() > 0) {
+                           const ClientFilterableState& client_state) {
+  if (filter.google_group_size() == 0 &&
+      filter.exclude_google_group_size() == 0) {
+    // This study doesn't have any google group configuration, so break early.
+    return true;
+  }
+
+  // Fetch the groups this client is a member of.
+  base::flat_set<uint64_t> client_groups = client_state.GoogleGroups();
+
+  if (filter.google_group_size() > 0 &&
+      filter.exclude_google_group_size() > 0) {
     // This is an invalid configuration; reject the study.
     return false;
   }
 
-  if (filter.google_group().size() > 0) {
+  if (filter.google_group_size() > 0) {
     for (int64_t filter_group : filter.google_group()) {
       if (base::Contains(client_groups, filter_group)) {
         return true;
@@ -246,7 +255,7 @@ bool CheckStudyGoogleGroup(const Study::Filter& filter,
     return false;
   }
 
-  if (filter.exclude_google_group().size() > 0) {
+  if (filter.exclude_google_group_size() > 0) {
     for (int64_t filter_exclude_group : filter.exclude_google_group()) {
       if (base::Contains(client_groups, filter_exclude_group)) {
         return false;
@@ -255,7 +264,6 @@ bool CheckStudyGoogleGroup(const Study::Filter& filter,
     return true;
   }
 
-  // No group filters specified.
   return true;
 }
 
@@ -393,7 +401,7 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
       return false;
     }
 
-    if (!CheckStudyGoogleGroup(study.filter(), client_state.google_groups)) {
+    if (!CheckStudyGoogleGroup(study.filter(), client_state)) {
       DVLOG(1) << "Filtered out study " << study.name()
                << " due to Google groups membership checks.";
       return false;

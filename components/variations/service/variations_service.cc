@@ -515,26 +515,28 @@ void VariationsService::RegisterPrefs(PrefRegistrySimple* registry) {
   SafeSeedManager::RegisterPrefs(registry);
   VariationsSeedStore::RegisterPrefs(registry);
 
-  // This preference will only be written by the policy service, which will fill
-  // it according to a value stored in the User Policy.
-  registry->RegisterStringPref(prefs::kVariationsRestrictParameter,
-                               std::string());
+  registry->RegisterIntegerPref(
+      prefs::kDeviceVariationsRestrictionsByPolicy,
+      static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
+  registry->RegisterDictionaryPref(
+      prefs::kVariationsGoogleGroups,
+      static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
+  // This preference keeps track of the country code used to filter
+  // permanent-consistency studies.
+  registry->RegisterListPref(prefs::kVariationsPermanentConsistencyCountry);
   // This preference is used to override the variations country code which is
   // consistent across different chrome version.
   registry->RegisterStringPref(prefs::kVariationsPermanentOverriddenCountry,
                                std::string());
-  // This preference keeps track of the country code used to filter
-  // permanent-consistency studies.
-  registry->RegisterListPref(prefs::kVariationsPermanentConsistencyCountry);
   // This preference keeps track of ChromeVariations enum policy which
   // allows the admin to restrict the set of variations applied.
   registry->RegisterIntegerPref(
       prefs::kVariationsRestrictionsByPolicy,
       static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
-
-  registry->RegisterIntegerPref(
-      prefs::kDeviceVariationsRestrictionsByPolicy,
-      static_cast<int>(RestrictionPolicy::NO_RESTRICTIONS));
+  // This preference will only be written by the policy service, which will fill
+  // it according to a value stored in the User Policy.
+  registry->RegisterStringPref(prefs::kVariationsRestrictParameter,
+                               std::string());
 }
 
 // static

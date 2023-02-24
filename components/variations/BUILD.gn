@@ -298,6 +298,7 @@ if (use_libfuzzer) {
   fuzzer_test("create_trials_from_seed_fuzzer") {
     sources = [ "fuzzers/create_trials_from_seed_fuzzer.cc" ]
     deps = [
+      ":test_support",
       ":variations",
       "proto",
       "//base/test:test_support",

@@ -30,6 +30,23 @@ const char kVariationsCrashStreak[] = "variations_crash_streak";
 const char kVariationsFailedToFetchSeedStreak[] =
     "variations_failed_to_fetch_seed_streak";
 
+// Local-state preference containing a dictionary of profile names to a list of
+// gaia IDs.  For example:
+//
+// "variations_google_groups": {
+//   "Profile 1": [ "123456", "2345678" ],
+//   "Profile 4": [ ]
+// }
+//
+// This pref used as follows.
+// * Written to by a pref observer based on per-profile sync data. This pref is
+//   a profile-keyed dictionary so it can be updated based only on the new value
+//   of a single profile's groups.
+//   TODO:b/264838828: implement the write path.
+// * Read by variations code when processing the finch seed at startup. This
+//   code cares only about the union of the groups across all profiles.
+const char kVariationsGoogleGroups[] = "variations_google_groups";
+
 // The serialized base::Time from the last successful seed fetch (i.e. when the
 // Variations server responds with 200 or 304). This is a client timestamp.
 const char kVariationsLastFetchTime[] = "variations_last_fetch_time";

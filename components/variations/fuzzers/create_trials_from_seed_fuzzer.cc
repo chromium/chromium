@@ -11,6 +11,7 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/variations_test_utils.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 
 namespace variations {
@@ -51,8 +52,7 @@ struct Environment {
 };
 
 std::unique_ptr<ClientFilterableState> MockChromeClientFilterableState() {
-  auto client_state = std::make_unique<ClientFilterableState>(
-      base::BindOnce([] { return false; }));
+  auto client_state = CreateDummyClientFilterableState();
   client_state->locale = "en-CA";
   client_state->reference_date = base::Time::Now();
   client_state->version = base::Version("20.0.0.0");

@@ -92,7 +92,7 @@ bool CheckStudyEnterprise(const Study::Filter& filter,
 // per |filter|.
 COMPONENT_EXPORT(VARIATIONS)
 bool CheckStudyGoogleGroup(const Study::Filter& filter,
-                           const std::set<uint64_t>& client_groups);
+                           const ClientFilterableState& client_state);
 
 // Returns the country that should be used for filtering this study, depending
 // on whether the study has session or permanent consistency.

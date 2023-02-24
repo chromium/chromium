@@ -17,6 +17,7 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_switches.h"
+#include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -92,8 +93,7 @@ class FakeSeedStore : public VariationsSeedStore {
 void SetDefaultActiveState(SafeSeedManager* safe_seed_manager,
                            PrefService* local_state) {
   std::unique_ptr<ClientFilterableState> client_state =
-      std::make_unique<ClientFilterableState>(
-          base::BindOnce([] { return false; }));
+      CreateDummyClientFilterableState();
   client_state->locale = kTestLocale;
   client_state->permanent_consistency_country =
       kTestPermanentConsistencyCountry;
@@ -123,7 +123,7 @@ void ExpectDefaultActiveState(const FakeSeedStore& seed_store) {
 
 }  // namespace
 
-class SafeSeedManagerTest : public testing::Test {
+class SafeSeedManagerTest : public ::testing::Test {
  public:
   SafeSeedManagerTest() {
     metrics::CleanExitBeacon::RegisterPrefs(prefs_.registry());
