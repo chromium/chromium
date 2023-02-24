@@ -1576,7 +1576,7 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccess) {
   ASSERT_FALSE(base::PathExists(old_store_path));
 
   // Now write an empty file at |old_store_path|.
-  base::WriteFile(old_store_path, "", 0);
+  base::WriteFile(old_store_path, "");
   ASSERT_TRUE(base::PathExists(old_store_path));
 
   WaitForTasksOnTaskRunner();
@@ -1637,7 +1637,7 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreFile_RenameSuccessMultiple) {
     ASSERT_FALSE(base::PathExists(new_store_path));
 
     // Now write an empty file at |old_store_path|.
-    base::WriteFile(old_store_path, "", 0);
+    base::WriteFile(old_store_path, "");
     ASSERT_TRUE(base::PathExists(old_store_path));
   }
 
@@ -1734,7 +1734,7 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreNewFileExists_DoesNotRename) {
   ASSERT_FALSE(base::PathExists(old_store_path));
 
   // Now write an empty old file.
-  base::WriteFile(old_store_path, "", 0);
+  base::WriteFile(old_store_path, "");
   ASSERT_TRUE(base::PathExists(old_store_path));
 
   auto new_store_path =
@@ -1742,7 +1742,7 @@ TEST_F(V4LocalDatabaseManagerTest, RenameStoreNewFileExists_DoesNotRename) {
   ASSERT_FALSE(base::PathExists(new_store_path));
 
   // Now write an empty new file.
-  base::WriteFile(new_store_path, "", 0);
+  base::WriteFile(new_store_path, "");
   ASSERT_TRUE(base::PathExists(new_store_path));
 
   WaitForTasksOnTaskRunner();
