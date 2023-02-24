@@ -114,7 +114,8 @@ function onBulkPinningProgress(progress) {
   $('bulk-pinning-pinned-files').innerText = progress.pinned_files;
   $('bulk-pinning-failed-files').innerText = progress.failed_files;
   $('bulk-pinning-syncing-files').innerText = progress.syncing_files;
-  $('bulk-pinning-skipped-files').innerText = progress.skipped_files;
+  $('bulk-pinning-skipped-items').innerText = progress.skipped_items;
+  $('bulk-pinning-listed-items').innerText = progress.listed_items;
 }
 
 function updateStartupArguments(args) {

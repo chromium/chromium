@@ -647,7 +647,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     d.Set("pinned_files", ToString(progress.pinned_files));
     d.Set("failed_files", ToString(progress.failed_files));
     d.Set("syncing_files", ToString(progress.syncing_files));
-    d.Set("skipped_files", ToString(progress.skipped_files));
+    d.Set("skipped_items", ToString(progress.skipped_items));
+    d.Set("listed_items", ToString(progress.listed_items));
     MaybeCallJavascript("onBulkPinningProgress", base::Value(std::move(d)));
   }
 

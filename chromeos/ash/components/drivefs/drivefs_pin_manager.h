@@ -95,8 +95,12 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Number of files being synced right now.
   int syncing_files = 0;
 
-  // Number of skipped files, directories and shortcuts.
-  int skipped_files = 0;
+  // Number of skipped items (files, directories and shortcuts).
+  int skipped_items = 0;
+
+  // Number of all listed items (files, directories and shortcuts) seen during
+  // the kListingFiles stage.
+  int listed_items = 0;
 
   // Number of "useful" (ie non-duplicated) events received from DriveFS so far.
   int useful_events = 0;

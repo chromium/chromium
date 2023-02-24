@@ -355,7 +355,7 @@ bool PinManager::Add(const mojom::FileMetadata& md, const Path& path) {
   VLOG(3) << "Considering " << id << " " << Quote(path) << " " << Quote(md);
 
   if (!CanPin(md, path)) {
-    progress_.skipped_files++;
+    progress_.skipped_items++;
     return false;
   }
 
@@ -656,7 +656,10 @@ void PinManager::OnSearchResultForSizeCalculation(
     Add(*item->metadata, item->path);
   }
 
-  VLOG(1) << "Skipped " << progress_.skipped_files << " files, Tracking "
+  progress_.listed_items += items->size();
+  VLOG(1) << "Listed " << progress_.listed_items << " items in "
+          << timer_.Elapsed().InMilliseconds() << " ms, Skipped "
+          << progress_.skipped_items << " items, Tracking "
           << files_to_track_.size() << " files";
   NotifyProgress();
   DCHECK(search_query_);
@@ -697,13 +700,9 @@ void PinManager::Complete(const Stage stage) {
 void PinManager::StartPinning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  VLOG(1) << "Listed files in " << timer_.Elapsed().InMilliseconds() << " ms";
-  VLOG(1) << "Free space: " << HumanReadableSize(progress_.free_space);
-  VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
-  VLOG(1) << "Skipped: " << progress_.skipped_files << " files";
   VLOG(1) << "To pin: " << files_to_pin_.size() << " files, "
           << HumanReadableSize(progress_.bytes_to_pin);
-  VLOG(1) << "To track: " << files_to_track_.size() << " files";
+  VLOG(1) << "Required space: " << HumanReadableSize(progress_.required_space);
 
   if (!progress_.HasEnoughFreeSpace()) {
     return Complete(Stage::kNotEnoughSpace);
