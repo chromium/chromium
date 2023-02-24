@@ -30,7 +30,6 @@ using assist_ranker::RankerModelLoaderImpl;
 using assist_ranker::RankerModelStatus;
 
 const char kInvalidModelData[] = "not a valid model";
-const int kInvalidModelSize = sizeof(kInvalidModelData) - 1;
 
 class RankerModelLoaderImplTest : public ::testing::Test {
  public:
@@ -197,9 +196,7 @@ void RankerModelLoaderImplTest::InitLocalModels() {
             base::Days(30), &expired_model_);
   SaveModel(local_model_, local_model_path_);
   SaveModel(expired_model_, expired_model_path_);
-  ASSERT_EQ(base::WriteFile(invalid_model_path_, kInvalidModelData,
-                            kInvalidModelSize),
-            kInvalidModelSize);
+  ASSERT_TRUE(base::WriteFile(invalid_model_path_, kInvalidModelData));
 }
 
 void RankerModelLoaderImplTest::InitModel(const GURL& model_url,
@@ -232,8 +229,7 @@ void RankerModelLoaderImplTest::InitModel(const GURL& model_url,
 void RankerModelLoaderImplTest::SaveModel(const RankerModel& model,
                                           const base::FilePath& model_path) {
   std::string model_str = model.SerializeAsString();
-  ASSERT_EQ(base::WriteFile(model_path, model_str.data(), model_str.size()),
-            static_cast<int>(model_str.size()));
+  ASSERT_TRUE(base::WriteFile(model_path, model_str));
 }
 
 RankerModelStatus RankerModelLoaderImplTest::ValidateModel(
