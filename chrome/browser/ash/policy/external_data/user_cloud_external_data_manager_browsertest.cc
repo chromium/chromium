@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -68,7 +68,7 @@ class UserCloudExternalDataManagerTest : public LoginPolicyTestBase {
   }
 
   std::string external_data_;
-  base::Value metadata_;
+  base::Value::Dict metadata_;
 };
 
 IN_PROC_BROWSER_TEST_F(UserCloudExternalDataManagerTest, FetchExternalData) {
@@ -94,10 +94,11 @@ IN_PROC_BROWSER_TEST_F(UserCloudExternalDataManagerTest, FetchExternalData) {
   ASSERT_TRUE(policy_connector);
 
   {
-    base::RunLoop refresh_loop;
+    base::test::TestFuture<void> refresh_policy_future;
     policy_connector->policy_service()->RefreshPolicies(
-        refresh_loop.QuitWhenIdleClosure());
-    refresh_loop.Run();
+        refresh_policy_future.GetCallback());
+    ASSERT_TRUE(refresh_policy_future.Wait())
+        << "RefreshPolicies did not invoke the finished callback.";
   }
 
   const PolicyMap& policies = policy_connector->policy_service()->GetPolicies(
@@ -107,16 +108,12 @@ IN_PROC_BROWSER_TEST_F(UserCloudExternalDataManagerTest, FetchExternalData) {
   EXPECT_EQ(metadata_, *policy_entry->value(base::Value::Type::DICT));
   ASSERT_TRUE(policy_entry->external_data_fetcher);
 
-  base::RunLoop run_loop;
-  std::unique_ptr<std::string> fetched_external_data;
-  base::FilePath file_path;
-  policy_entry->external_data_fetcher->Fetch(
-      base::BindOnce(&test::ExternalDataFetchCallback, &fetched_external_data,
-                     &file_path, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ASSERT_TRUE(fetched_external_data);
-  EXPECT_EQ(external_data_, *fetched_external_data);
+  base::test::TestFuture<std::unique_ptr<std::string>, const base::FilePath&>
+      fetch_data_future;
+  policy_entry->external_data_fetcher->Fetch(fetch_data_future.GetCallback());
+  ASSERT_TRUE(fetch_data_future.Get<std::unique_ptr<std::string>>());
+  EXPECT_EQ(external_data_,
+            *fetch_data_future.Get<std::unique_ptr<std::string>>());
 }
 
 }  // namespace policy

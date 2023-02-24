@@ -10,10 +10,12 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -78,12 +80,7 @@ class DevicePolicyCloudExternalDataManagerTest
     policy_change_registrar_ = std::make_unique<PolicyChangeRegistrar>(
         policy_service_, PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
     policy_change_registrar_->Observe(
-        kPolicyName,
-        base::BindRepeating(
-            &DevicePolicyCloudExternalDataManagerTest::PolicyChangedCallback,
-            base::Unretained(this)));
-
-    policy_change_waiting_run_loop_ = std::make_unique<base::RunLoop>();
+        kPolicyName, policy_changed_repeating_future_.GetCallback());
   }
 
   void TearDownOnMainThread() override {
@@ -91,23 +88,21 @@ class DevicePolicyCloudExternalDataManagerTest
     DevicePolicyCrosBrowserTest::TearDownOnMainThread();
   }
 
-  std::string GetExternalData() {
+  std::unique_ptr<std::string> GetExternalData() {
     const PolicyMap& policies = policy_service_->GetPolicies(
         PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
     const PolicyMap::Entry* policy_entry = policies.Get(kPolicyName);
     EXPECT_TRUE(policy_entry);
     EXPECT_TRUE(policy_entry->external_data_fetcher);
 
-    base::RunLoop run_loop;
-    std::unique_ptr<std::string> fetched_external_data;
-    base::FilePath file_path;
-    policy_entry->external_data_fetcher->Fetch(
-        base::BindOnce(&test::ExternalDataFetchCallback, &fetched_external_data,
-                       &file_path, run_loop.QuitClosure()));
-    run_loop.Run();
+    base::test::TestFuture<std::unique_ptr<std::string>, const base::FilePath&>
+        fetch_data_future;
+    policy_entry->external_data_fetcher->Fetch(fetch_data_future.GetCallback());
 
-    EXPECT_TRUE(fetched_external_data);
-    return *fetched_external_data;
+    std::unique_ptr<std::string> actual_external_data =
+        std::move(std::get<0>(fetch_data_future.Take()));
+    EXPECT_TRUE(actual_external_data);
+    return actual_external_data;
   }
 
   int64_t ComputeExternalDataCacheDirectorySize() {
@@ -117,17 +112,26 @@ class DevicePolicyCloudExternalDataManagerTest
     return base::ComputeDirectorySize(device_policy_external_data_path);
   }
 
-  void SetDevicePrintersExternalData(const std::string& policy) {
+  void SetDevicePrintersExternalData(const base::Value::Dict& policy_dict) {
+    std::string policy;
+    EXPECT_TRUE(base::JSONWriter::Write(policy_dict, &policy));
     device_policy()->payload().mutable_device_printers()->set_external_policy(
         policy);
     RefreshDevicePolicy();
-    WaitUntilPolicyChanged();
+
+    std::tuple<const base::Value*, const base::Value*> prev_curr_policy =
+        policy_changed_repeating_future_.Take();
+    ASSERT_TRUE(std::get<1>(prev_curr_policy));
+    EXPECT_EQ(policy_dict, *std::get<1>(prev_curr_policy));
   }
 
   void ClearDevicePrintersExternalData() {
     device_policy()->payload().clear_device_printers();
     RefreshDevicePolicy();
-    WaitUntilPolicyChanged();
+
+    std::tuple<const base::Value*, const base::Value*> prev_curr_policy =
+        policy_changed_repeating_future_.Take();
+    ASSERT_FALSE(std::get<1>(prev_curr_policy));
   }
 
   std::string ReadExternalDataFile(const std::string& file_path) {
@@ -143,26 +147,17 @@ class DevicePolicyCloudExternalDataManagerTest
   }
 
  private:
-  void PolicyChangedCallback(const base::Value* old_value,
-                             const base::Value* new_value) {
-    policy_change_waiting_run_loop_->Quit();
-  }
-
-  void WaitUntilPolicyChanged() {
-    policy_change_waiting_run_loop_->Run();
-    policy_change_waiting_run_loop_ = std::make_unique<base::RunLoop>();
-  }
-
   PolicyService* policy_service_ = nullptr;
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
-  std::unique_ptr<base::RunLoop> policy_change_waiting_run_loop_;
+  base::test::RepeatingTestFuture<const base::Value*, const base::Value*>
+      policy_changed_repeating_future_;
 };
 
 IN_PROC_BROWSER_TEST_F(DevicePolicyCloudExternalDataManagerTest,
                        FetchExternalData) {
   SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
-  EXPECT_EQ(ReadExternalDataFile(kExternalDataPath), GetExternalData());
+  EXPECT_EQ(ReadExternalDataFile(kExternalDataPath), *GetExternalData());
 }
 
 IN_PROC_BROWSER_TEST_F(DevicePolicyCloudExternalDataManagerTest,
@@ -176,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(DevicePolicyCloudExternalDataManagerTest,
             kTestCacheMaxSize);
   SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPathOverSizeLimit));
-  EXPECT_EQ(external_data, GetExternalData());
+  EXPECT_EQ(external_data, *GetExternalData());
 
   // Check that nothing is cached because file was too big.
   EXPECT_EQ(0, ComputeExternalDataCacheDirectorySize());
@@ -189,14 +184,14 @@ IN_PROC_BROWSER_TEST_F(DevicePolicyCloudExternalDataManagerTest,
   std::string external_data = ReadExternalDataFile(kExternalDataPath);
   SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPath));
-  EXPECT_EQ(external_data, GetExternalData());
+  EXPECT_EQ(external_data, *GetExternalData());
   EXPECT_EQ(base::checked_cast<int64_t>(external_data.size()),
             ComputeExternalDataCacheDirectorySize());
 
   external_data = ReadExternalDataFile(kExternalDataPathUpdated);
   SetDevicePrintersExternalData(test::ConstructExternalDataPolicy(
       *embedded_test_server(), kExternalDataPathUpdated));
-  EXPECT_EQ(external_data, GetExternalData());
+  EXPECT_EQ(external_data, *GetExternalData());
   // Check that previous policy data was cleared and replaced by new one.
   EXPECT_EQ(base::checked_cast<int64_t>(external_data.size()),
             ComputeExternalDataCacheDirectorySize());

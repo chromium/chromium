@@ -1315,7 +1315,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
   embedded_test_server()->StartAcceptingConnections();
 
   // Specify an external data reference for the key::kUserAvatarImage policy.
-  base::Value metadata = test::ConstructExternalDataReference(
+  base::Value::Dict metadata = test::ConstructExternalDataReference(
       embedded_test_server()->GetURL(kExternalDataPath).spec(), kExternalData);
   std::string policy;
   base::JSONWriter::Write(metadata, &policy);
@@ -1341,16 +1341,14 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
 
   // Retrieve the external data. Although the data is no longer being served,
   // the retrieval should succeed because the data has been cached.
-  run_loop = std::make_unique<base::RunLoop>();
-  std::unique_ptr<std::string> fetched_external_data;
-  base::FilePath file_path;
-  policy_entry->external_data_fetcher->Fetch(
-      base::BindOnce(&test::ExternalDataFetchCallback, &fetched_external_data,
-                     &file_path, run_loop->QuitClosure()));
-  run_loop->Run();
-
-  ASSERT_TRUE(fetched_external_data);
-  EXPECT_EQ(kExternalData, *fetched_external_data);
+  {
+    base::test::TestFuture<std::unique_ptr<std::string>, const base::FilePath&>
+        fetch_data_future;
+    policy_entry->external_data_fetcher->Fetch(fetch_data_future.GetCallback());
+    ASSERT_TRUE(fetch_data_future.Get<std::unique_ptr<std::string>>());
+    EXPECT_EQ(kExternalData,
+              *fetch_data_future.Get<std::unique_ptr<std::string>>());
+  }
 
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
   WaitForSessionStart();
@@ -1364,20 +1362,20 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExternalData) {
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
   policy_entry = policies.Get(key::kUserAvatarImage);
   ASSERT_TRUE(policy_entry);
-  EXPECT_EQ(metadata, *policy_entry->value(base::Value::Type::DICT));
+  ASSERT_TRUE(policy_entry->value(base::Value::Type::DICT));
+  EXPECT_EQ(metadata, policy_entry->value(base::Value::Type::DICT)->GetDict());
   ASSERT_TRUE(policy_entry->external_data_fetcher);
 
   // Retrieve the external data via the ProfilePolicyConnector. The retrieval
   // should succeed because the data has been cached.
-  run_loop = std::make_unique<base::RunLoop>();
-  fetched_external_data.reset();
-  policy_entry->external_data_fetcher->Fetch(
-      base::BindOnce(&test::ExternalDataFetchCallback, &fetched_external_data,
-                     &file_path, run_loop->QuitClosure()));
-  run_loop->Run();
-
-  ASSERT_TRUE(fetched_external_data);
-  EXPECT_EQ(kExternalData, *fetched_external_data);
+  {
+    base::test::TestFuture<std::unique_ptr<std::string>, const base::FilePath&>
+        fetch_data_future;
+    policy_entry->external_data_fetcher->Fetch(fetch_data_future.GetCallback());
+    ASSERT_TRUE(fetch_data_future.Get<std::unique_ptr<std::string>>());
+    EXPECT_EQ(kExternalData,
+              *fetch_data_future.Get<std::unique_ptr<std::string>>());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
