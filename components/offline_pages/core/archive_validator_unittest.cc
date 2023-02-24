@@ -100,7 +100,7 @@ base::FilePath ArchiveValidatorTest::CreateFileWithContent(
     return base::FilePath();
   base::FilePath temp_file_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.txt"));
-  base::WriteFile(temp_file_path, content.c_str(), content.length());
+  base::WriteFile(temp_file_path, content);
   return temp_file_path;
 }
 
