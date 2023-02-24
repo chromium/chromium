@@ -1641,15 +1641,21 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     return storage_group;
   }
 
-  void StartStandardAuction() {
+  void StartStandardAuction(bool request_trusted_bidding_signals = true) {
     std::vector<StorageInterestGroup> bidders;
+    absl::optional<GURL> bidder1_signals_url;
+    absl::optional<GURL> bidder2_signals_url;
+    if (request_trusted_bidding_signals) {
+      bidder1_signals_url = kBidder1TrustedSignalsUrl;
+      bidder2_signals_url = kBidder2TrustedSignalsUrl;
+    }
     bidders.emplace_back(MakeInterestGroup(
-        kBidder1, kBidder1Name, kBidder1Url, kBidder1TrustedSignalsUrl,
+        kBidder1, kBidder1Name, kBidder1Url, std::move(bidder1_signals_url),
         {"k1", "k2"}, GURL("https://ad1.com"),
         std::vector<GURL>{GURL("https://ad1.com-component1.com"),
                           GURL("https://ad1.com-component2.com")}));
     bidders.emplace_back(MakeInterestGroup(
-        kBidder2, kBidder2Name, kBidder2Url, kBidder2TrustedSignalsUrl,
+        kBidder2, kBidder2Name, kBidder2Url, std::move(bidder2_signals_url),
         {"l1", "l2"}, GURL("https://ad2.com"),
         std::vector<GURL>{GURL("https://ad2.com-component1.com"),
                           GURL("https://ad2.com-component2.com")}));
@@ -1657,8 +1663,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     StartAuction(kSellerUrl, std::move(bidders));
   }
 
-  const Result& RunStandardAuction() {
-    StartStandardAuction();
+  const Result& RunStandardAuction(
+      bool request_trusted_bidding_signals = true) {
+    StartStandardAuction(request_trusted_bidding_signals);
     auction_run_loop_->Run();
     return result_;
   }
@@ -7155,13 +7162,15 @@ TEST_F(AuctionRunnerTest, ForDebuggingOnlyReporting) {
                         kSellerDebugLossReportBaseUrl,
                         kSellerDebugWinReportBaseUrl));
 
-  const Result& res = RunStandardAuction();
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
   // Bidder 2 won the auction.
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
 
-  EXPECT_EQ(0u, res.debug_loss_report_urls.size());
-  EXPECT_EQ(0u, res.debug_win_report_urls.size());
+  EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
+  EXPECT_EQ(0u, result_.debug_win_report_urls.size());
 }
 
 // If the seller crashes before all bids are scored, the auction fails. Seller
@@ -9419,10 +9428,11 @@ TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventContributionEvents) {
                                          kSellerScript);
 
   // Bidder 2 won the auction.
-  const Result& res = RunStandardAuction();
-  EXPECT_FALSE(res.manually_aborted);
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
 
   EXPECT_THAT(
       private_aggregation_manager_.TakePrivateAggregationRequests(),
@@ -9466,7 +9476,7 @@ TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventContributionEvents) {
                   BuildPrivateAggregationRequest(/*bucket=*/71,
                                                  /*value=*/81)))));
   EXPECT_THAT(
-      res.private_aggregation_event_map,
+      result_.private_aggregation_event_map,
       testing::UnorderedElementsAre(
           testing::Pair("arbitrary", ElementsAreRequests(
                                          BuildPrivateAggregationRequest(
@@ -9562,10 +9572,11 @@ TEST_F(AuctionRunnerTest,
                                          kSellerScript);
 
   // kBidder2 was rejected by seller, so kBidder1 won the auction.
-  const Result& res = RunStandardAuction();
-  EXPECT_FALSE(res.manually_aborted);
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
 
   // Post auction signals of this auction:
   // winningBid is 1, highestScoringOtherBid is 0, bidRejectReason for kBidder1
@@ -9609,7 +9620,7 @@ TEST_F(AuctionRunnerTest,
                   BuildPrivateAggregationRequest(/*bucket=*/1, /*value=*/131),
                   BuildPrivateAggregationRequest(/*bucket=*/0,
                                                  /*value=*/132)))));
-  EXPECT_TRUE(res.private_aggregation_event_map.empty());
+  EXPECT_TRUE(result_.private_aggregation_event_map.empty());
 }
 
 // Similar to `PrivateAggregationRequestForEventContributionBucketBaseValue()`
@@ -9694,10 +9705,11 @@ TEST_F(AuctionRunnerTest,
                                          kSellerScript);
 
   // kBidder2 won the auction.
-  const Result& res = RunStandardAuction();
-  EXPECT_FALSE(res.manually_aborted);
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
 
   // Post auction signals of this auction:
   // winningBid is 2, highestScoringOtherBid is 1, bidRejectReason for both
@@ -9829,10 +9841,11 @@ TEST_F(AuctionRunnerTest,
                                          kSellerScript);
 
   // kBidder2 was rejected by seller, so kBidder1 won the auction.
-  const Result& res = RunStandardAuction();
-  EXPECT_FALSE(res.manually_aborted);
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
 
   // Post auction signals of this auction:
   // winningBid is 1, highestScoringOtherBid is 0, bidRejectReason for kBidder1
@@ -9876,6 +9889,8 @@ TEST_F(AuctionRunnerTest,
 
 TEST_F(AuctionRunnerTest,
        PrivateAggregationRequestForEventContributionScaleAndOffset) {
+  interest_group_buyers_ = {{kBidder1}};
+
   const char kBidScript[] = R"(
     const bid = %d;
     function reportContributionForEvent() {
@@ -9908,7 +9923,6 @@ TEST_F(AuctionRunnerTest,
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
       reportContributionForEvent();
-      send();
     }
   )";
 
@@ -9949,10 +9963,11 @@ TEST_F(AuctionRunnerTest,
                                          kSellerScript);
 
   // Only one bidder, to keep things simple.
-  const Result& res = RunStandardAuction();
-  EXPECT_FALSE(res.manually_aborted);
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_FALSE(result_.manually_aborted);
   EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
 
   // winningBid is 1.
   EXPECT_THAT(
@@ -10762,14 +10777,16 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                         kSellerDebugLossReportBaseUrl,
                         kSellerDebugWinReportBaseUrl));
 
-  const Result& res = RunStandardAuction();
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
   // Bidder 2 won the auction.
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
 
-  EXPECT_EQ(2u, res.debug_loss_report_urls.size());
+  EXPECT_EQ(2u, result_.debug_loss_report_urls.size());
   // Sellers can get highest scoring other bid, but losing bidders can not.
-  EXPECT_THAT(res.debug_loss_report_urls,
+  EXPECT_THAT(result_.debug_loss_report_urls,
               testing::UnorderedElementsAre(
                   DebugReportUrl(kBidder1DebugLossReportUrl,
                                  PostAuctionSignals(
@@ -10785,9 +10802,9 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                                      /*made_highest_scoring_other_bid=*/true),
                                  /*bid=*/1)));
 
-  EXPECT_EQ(2u, res.debug_win_report_urls.size());
+  EXPECT_EQ(2u, result_.debug_win_report_urls.size());
   // Winning bidders can get highest scoring other bid.
-  EXPECT_THAT(res.debug_win_report_urls,
+  EXPECT_THAT(result_.debug_win_report_urls,
               testing::UnorderedElementsAre(
                   DebugReportUrl(kBidder2DebugWinReportUrl,
                                  PostAuctionSignals(
@@ -10835,16 +10852,18 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           "https://seller-debug-loss-reporting.com/winningBid=${winningBid}",
           "https://seller-debug-win-reporting.com/winningBid=${winningBid}"));
 
-  const Result& res = RunStandardAuction();
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
   // Bidder 2 won the auction.
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
 
   // Placeholder ${winningBid} in a debugging report URL's path will not be
   // replaced with actual signal. Only those in a debugging report URL's query
   // param would be replaced.
-  EXPECT_EQ(2u, res.debug_loss_report_urls.size());
-  EXPECT_THAT(res.debug_loss_report_urls,
+  EXPECT_EQ(2u, result_.debug_loss_report_urls.size());
+  EXPECT_THAT(result_.debug_loss_report_urls,
               testing::UnorderedElementsAre(
                   DebugReportUrl("https://bidder1-debug-loss-reporting.com/"
                                  "winningBid=${winningBid}",
@@ -10862,9 +10881,9 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
                                      /*made_highest_scoring_other_bid=*/true),
                                  /*bid=*/1)));
 
-  EXPECT_EQ(2u, res.debug_win_report_urls.size());
+  EXPECT_EQ(2u, result_.debug_win_report_urls.size());
   EXPECT_THAT(
-      res.debug_win_report_urls,
+      result_.debug_win_report_urls,
       testing::UnorderedElementsAre(
           DebugReportUrl("https://bidder2-debug-win-reporting.com/"
                          "winningBid=${winningBid}",
@@ -11429,14 +11448,16 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           base::StrCat(
               {kSellerDebugWinReportBaseUrl, kPostAuctionSignalsPlaceholder})));
 
-  const Result& res = RunStandardAuction();
-  // No winner since both bidders are rejected by seller.
-  EXPECT_FALSE(res.winning_group_id);
-  EXPECT_FALSE(res.ad_url);
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
 
-  EXPECT_EQ(4u, res.debug_loss_report_urls.size());
+  // No winner since both bidders are rejected by seller.
+  EXPECT_FALSE(result_.winning_group_id);
+  EXPECT_FALSE(result_.ad_url);
+
+  EXPECT_EQ(4u, result_.debug_loss_report_urls.size());
   EXPECT_THAT(
-      res.debug_loss_report_urls,
+      result_.debug_loss_report_urls,
       testing::UnorderedElementsAre(
           DebugReportUrl(kBidder1DebugLossReportUrl, PostAuctionSignals(),
                          /*bid=*/absl::nullopt, "invalid-bid"),
@@ -11447,7 +11468,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           DebugReportUrl(kSellerDebugLossReportBaseUrl, PostAuctionSignals(),
                          /*bid=*/2)));
 
-  EXPECT_EQ(0u, res.debug_win_report_urls.size());
+  EXPECT_EQ(0u, result_.debug_win_report_urls.size());
 }
 
 // Test win/loss reporting in a component auction with two components with one
@@ -12242,22 +12263,24 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
         &url_loader_factory_, kSellerUrl,
         MakeAuctionScriptReject2(reject_reason));
 
-    const Result& res = RunStandardAuction();
+    RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+    EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
     // Bidder 1 won the auction.
     EXPECT_EQ(kBidder1Key, result_.winning_group_id);
-    EXPECT_EQ(GURL("https://ad1.com/"), res.ad_url);
+    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
 
-    EXPECT_EQ(1u, res.debug_loss_report_urls.size());
+    EXPECT_EQ(1u, result_.debug_loss_report_urls.size());
     // Seller rejected bidder 2 and returned the reject reason which were then
     // reported to bidder 2 through its loss report URL.
-    EXPECT_THAT(res.debug_loss_report_urls,
+    EXPECT_THAT(result_.debug_loss_report_urls,
                 testing::UnorderedElementsAre(base::StringPrintf(
                     "https://bidder2-debug-loss-reporting.com/"
                     "?rejectReason=%s",
                     reject_reason.c_str())));
 
-    EXPECT_EQ(1u, res.debug_win_report_urls.size());
-    EXPECT_THAT(res.debug_win_report_urls,
+    EXPECT_EQ(1u, result_.debug_win_report_urls.size());
+    EXPECT_THAT(result_.debug_win_report_urls,
                 testing::UnorderedElementsAre(kBidder1DebugWinReportUrl));
   }
 }
@@ -12265,7 +12288,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 // Reject reason returned by scoreAd() for a bid whose score is positive is
 // ignored and will not be reported to the bidder.
 TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
-       rejectReasonIgnoredForPositiveBid) {
+       RejectReasonIgnoredForPositiveBid) {
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
@@ -12286,22 +12309,24 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          MakeAuctionScriptReject2());
 
-  const Result& res = RunStandardAuction();
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
   // Bidder 2 won the auction.
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
 
-  EXPECT_EQ(1u, res.debug_loss_report_urls.size());
+  EXPECT_EQ(1u, result_.debug_loss_report_urls.size());
   // Reject reason returned by scoreAd() for bidder 1 should be ignored and
   // reported as "not-available" in debug loss report URL, because the bid gets
   // a positive score thus not rejected by seller.
   EXPECT_THAT(
-      res.debug_loss_report_urls,
+      result_.debug_loss_report_urls,
       testing::UnorderedElementsAre("https://bidder1-debug-loss-reporting.com/"
                                     "?rejectReason=not-available"));
 
-  EXPECT_EQ(1u, res.debug_win_report_urls.size());
-  EXPECT_THAT(res.debug_win_report_urls,
+  EXPECT_EQ(1u, result_.debug_win_report_urls.size());
+  EXPECT_THAT(result_.debug_win_report_urls,
               testing::UnorderedElementsAre(kBidder2DebugWinReportUrl));
 }
 
@@ -12309,7 +12334,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 // Bidders' debug win report URLs and sellers' debug loss/win report URLs does
 // not.
 TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
-       rejectReasonInBidderDebugLossReportOnly) {
+       RejectReasonInBidderDebugLossReportOnly) {
   const char kBidder1Script[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
@@ -12370,22 +12395,24 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
-  const Result& res = RunStandardAuction();
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+
   // Bidder 2 won the auction.
   EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), res.ad_url);
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
 
   // Only bidder's debug loss report supports macro ${rejectReason}.
-  EXPECT_EQ(2u, res.debug_loss_report_urls.size());
+  EXPECT_EQ(2u, result_.debug_loss_report_urls.size());
   EXPECT_THAT(
-      res.debug_loss_report_urls,
+      result_.debug_loss_report_urls,
       testing::UnorderedElementsAre(
           "https://bidder1-debug-loss-reporting.com/?reason=invalid-bid",
           "https://seller-debug-loss-reporting.com/"
           "?reason=${rejectReason}"));
-  EXPECT_EQ(2u, res.debug_win_report_urls.size());
+  EXPECT_EQ(2u, result_.debug_win_report_urls.size());
   EXPECT_THAT(
-      res.debug_win_report_urls,
+      result_.debug_win_report_urls,
       testing::UnorderedElementsAre("https://bidder2-debug-win-reporting.com/"
                                     "?reason=${rejectReason}",
                                     "https://seller-debug-win-reporting.com/"
@@ -12396,6 +12423,8 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
 // in bidder's loss report URL as default.
 TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
        SellerNotReturningRejectReason) {
+  interest_group_buyers_ = {{kBidder1}};
+
   const char kBidderScript[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
@@ -12426,14 +12455,15 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
 
-  const Result& res = RunStandardAuction();
+  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
 
-  EXPECT_EQ(1u, res.debug_loss_report_urls.size());
+  EXPECT_EQ(1u, result_.debug_loss_report_urls.size());
   EXPECT_THAT(
-      res.debug_loss_report_urls,
+      result_.debug_loss_report_urls,
       testing::UnorderedElementsAre("https://bidder-debug-loss-reporting.com/"
                                     "?reason=not-available"));
-  EXPECT_EQ(0u, res.debug_win_report_urls.size());
+  EXPECT_EQ(0u, result_.debug_win_report_urls.size());
 }
 
 // Disable private aggregation API.
