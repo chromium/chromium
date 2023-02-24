@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -28,7 +29,7 @@ using testing::Lt;
 namespace {
 
 const int64_t kTestFileSize = 1 << 15;  // 32 kB
-const int kTestPattern = 0x55555555;
+const uint8_t kTestPattern = 0x55;
 
 class ImageWriterUtilityTest : public testing::Test {
  protected:
@@ -42,12 +43,9 @@ class ImageWriterUtilityTest : public testing::Test {
 
   void TearDown() override {}
 
-  void FillFile(const base::FilePath& path, int pattern) {
-    std::unique_ptr<char[]> buffer(new char[kTestFileSize]);
-    memset(buffer.get(), pattern, kTestFileSize);
-
-    ASSERT_EQ(static_cast<int>(kTestFileSize),
-              base::WriteFile(path, buffer.get(), kTestFileSize));
+  void FillFile(const base::FilePath& path, uint8_t pattern) {
+    std::vector<uint8_t> buffer(kTestFileSize, pattern);
+    ASSERT_TRUE(base::WriteFile(path, buffer));
   }
 
   void FillDefault(const base::FilePath& path) { FillFile(path, kTestPattern); }
