@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_COMMON_FEATURES_FEATURE_H_
 #define EXTENSIONS_COMMON_FEATURES_FEATURE_H_
 
+#include <map>
 #include <set>
 #include <string>
 
@@ -77,7 +78,23 @@ class Feature {
     REQUIRES_DEVELOPER_MODE,
   };
 
-  // Container for AvailabiltyResult that also exposes a user-visible error
+  // Shorthand for delegated availability check handler function signature. The
+  // function signature's arguments should contain all of the arguments passed
+  // into IsAvailableToContextImpl().
+  using DelegatedAvailabilityCheckHandler =
+      base::RepeatingCallback<bool(const std::string& api_full_name,
+                                   const Extension* extension,
+                                   Context context,
+                                   const GURL& url,
+                                   Platform platform,
+                                   int context_id,
+                                   bool check_developer_mode)>;
+
+  // Mapping Feature::name() to override function.
+  using FeatureDelegatedAvailabilityCheckMap =
+      std::map<std::string, DelegatedAvailabilityCheckHandler>;
+
+  // Container for AvailabilityResult that also exposes a user-visible error
   // message in cases where the feature is not available.
   class Availability {
    public:
@@ -183,6 +200,9 @@ class Feature {
  protected:
   friend class SimpleFeature;
   friend class ComplexFeature;
+
+  // These parameters should be kept in sync with
+  // DelegatedAvailabilityCheckHandler.
   virtual Availability IsAvailableToContextImpl(
       const Extension* extension,
       Context context,

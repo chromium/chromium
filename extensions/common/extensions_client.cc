@@ -38,6 +38,16 @@ void ExtensionsClient::Set(ExtensionsClient* client) {
 ExtensionsClient::ExtensionsClient() = default;
 ExtensionsClient::~ExtensionsClient() = default;
 
+const Feature::FeatureDelegatedAvailabilityCheckMap&
+ExtensionsClient::GetFeatureDelegatedAvailabilityCheckMap() {
+  return availability_check_map_;
+}
+
+void ExtensionsClient::SetFeatureDelegatedAvailabilityCheckMap(
+    Feature::FeatureDelegatedAvailabilityCheckMap map) {
+  availability_check_map_ = std::move(map);
+}
+
 std::unique_ptr<FeatureProvider> ExtensionsClient::CreateFeatureProvider(
     const std::string& name) const {
   auto feature_provider = std::make_unique<FeatureProvider>();

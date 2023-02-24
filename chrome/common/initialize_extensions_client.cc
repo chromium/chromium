@@ -16,7 +16,23 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_api_provider.h"
 #endif
 
+base::span<const char* const> GetControlledFrameFeatureList() {
+  constexpr const char* feature_list[] = {
+      "chromeWebViewInternal", "declarativeWebRequest",
+      "guestViewInternal",     "webRequest",
+      "webViewInternal",       "webViewRequest",
+  };
+  return base::make_span(feature_list);
+}
+
 void EnsureExtensionsClientInitialized() {
+  extensions::Feature::FeatureDelegatedAvailabilityCheckMap map;
+  EnsureExtensionsClientInitialized(std::move(map));
+}
+
+void EnsureExtensionsClientInitialized(
+    extensions::Feature::FeatureDelegatedAvailabilityCheckMap
+        delegated_availability_map) {
   static bool initialized = false;
 
   static base::NoDestructor<extensions::ChromeExtensionsClient>
@@ -24,6 +40,8 @@ void EnsureExtensionsClientInitialized() {
 
   if (!initialized) {
     initialized = true;
+    extensions_client->SetFeatureDelegatedAvailabilityCheckMap(
+        std::move(delegated_availability_map));
     extensions_client->AddAPIProvider(
         std::make_unique<chrome_apps::ChromeAppsAPIProvider>());
 #if BUILDFLAG(IS_CHROMEOS)

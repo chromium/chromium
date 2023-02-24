@@ -241,6 +241,33 @@ static const int kUpdateCheckIntervalHours = 6;
 static constexpr base::TimeDelta kEndSessionTimeout = base::Seconds(10);
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace {
+
+bool ControlledFrameBrowserAvailabilityCheck(
+    const std::string& api_full_name,
+    const extensions::Extension* extension,
+    extensions::Feature::Context context,
+    const GURL& url,
+    extensions::Feature::Platform platform,
+    int context_id,
+    bool check_developer_mode) {
+  return false;
+}
+
+extensions::Feature::FeatureDelegatedAvailabilityCheckMap
+CreateBrowserAvailabilityCheckMap() {
+  extensions::Feature::FeatureDelegatedAvailabilityCheckMap map;
+  for (const auto* item : GetControlledFrameFeatureList()) {
+    map.emplace(item,
+                base::BindRepeating(&ControlledFrameBrowserAvailabilityCheck));
+  }
+  return map;
+}
+
+}  // namespace
+#endif
+
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
 
@@ -300,7 +327,7 @@ void BrowserProcessImpl::Init() {
   extension_event_router_forwarder_ =
       base::MakeRefCounted<extensions::EventRouterForwarder>();
 
-  EnsureExtensionsClientInitialized();
+  EnsureExtensionsClientInitialized(CreateBrowserAvailabilityCheckMap());
 
   extensions_browser_client_ =
       std::make_unique<extensions::ChromeExtensionsBrowserClient>();
