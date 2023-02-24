@@ -56,23 +56,30 @@ static void ReplayNotifyAfterEvent(const String& eventName,
 void ReplayNotifyBeforeEvent(const String& eventName,
                              EventTarget* eventTarget,
                              bool isCallback) {
-  String replayEventType =
-    MakeReplayEventType(eventName, eventTarget, isCallback);
-
-  Assert("[RUN-1271] ReplayNotifyBeforeEvent %d %s",
-                        gIsEventInFlight, replayEventType.Ascii().c_str());
-  OnEvent(replayEventType.Ascii().c_str(), true);
-  ++gIsEventInFlight;
+  if (IsRecordingOrReplaying() && !AreEventsDisallowed() && eventName &&
+      // Disabled by default (RUN-1251)
+      !FeatureEnabled("disable-collect-events") &&
+      // Main-thread only (RUN-1392)
+      IsMainThread()) {
+    String replayEventType =
+        MakeReplayEventType(eventName, eventTarget, isCallback);
+    Assert("[RUN-1271] ReplayNotifyBeforeEvent %d %s", gIsEventInFlight,
+           replayEventType.Ascii().c_str());
+    OnEvent(replayEventType.Ascii().c_str(), true);
+    ++gIsEventInFlight;
+  }
 }
 
 void ReplayNotifyAfterEvent(const String& eventName,
                             EventTarget* eventTarget,
                             bool isCallback) {
-  if (gIsEventInFlight) {
+  if (gIsEventInFlight &&
+      // Main-thread only (RUN-1392)
+      IsMainThread()) {
     String replayEventType =
-      MakeReplayEventType(eventName, eventTarget, isCallback);
-    Assert("[RUN-1271] ReplayNotifyAfterEvent %d %s",
-                         gIsEventInFlight, replayEventType.Ascii().c_str());
+        MakeReplayEventType(eventName, eventTarget, isCallback);
+    Assert("[RUN-1271] ReplayNotifyAfterEvent %d %s", gIsEventInFlight,
+           replayEventType.Ascii().c_str());
     OnEvent(replayEventType.Ascii().c_str(), false);
     --gIsEventInFlight;
   }
@@ -85,33 +92,23 @@ UserEventProbe::UserEventProbe(const char* name,
     : name_(name ? String(name) : atomic_name),
       event_target_(event_target),
       is_callback_(is_callback) {
-  // Disabled by default, see https://linear.app/replay/issue/RUN-1251
-  if (IsRecordingOrReplaying() &&
-      !FeatureEnabled("disable-collect-events") &&
-      !AreEventsDisallowed()) {
-    ReplayNotifyBeforeEvent(name_, event_target_, is_callback);
-  }
+  ReplayNotifyBeforeEvent(name_, event_target_, is_callback);
 }
 
 UserEventProbe::UserEventProbe(const char* name,
                                const AtomicString& atomic_name,
-                               EventTarget* event_target) : 
-                               UserEventProbe(name, atomic_name, event_target, !event_target)
-{ }
+                               EventTarget* event_target)
+    : UserEventProbe(name, atomic_name, event_target, !event_target) {}
 
+// NOTE: This is used for capturing script run events (`scriptFirstStatement`)
+// but it does not work, possibly because it runs too early or otherwise
+// interferes with our own script runners. Not sure yet.
+// TODO: debug this - https://linear.app/replay/issue/RUN-1271#comment-293243fc
 UserEventProbe::UserEventProbe()
-    // NOTE: This is used for capturing script run events but it does not work.
-    // TODO: uncomment - https://linear.app/replay/issue/RUN-1271
-    // UserEventProbe("scriptFirstStatement", AtomicString(), nullptr, false) 
-    {}
+{}
 
 UserEventProbe::~UserEventProbe() {
-  // Disabled by default, see https://linear.app/replay/issue/RUN-1251
-  if (name_ &&
-      IsRecordingOrReplaying() &&
-      !FeatureEnabled("disable-collect-events")) {
-    ReplayNotifyAfterEvent(name_, event_target_, is_callback_);
-  }
+  ReplayNotifyAfterEvent(name_, event_target_, is_callback_);
 }
 
 }  // namespace recordreplay
