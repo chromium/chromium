@@ -96,7 +96,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       BeaconId beacon_id,
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
-      absl::optional<AttributionInputEvent> input_event,
+      AttributionInputEvent input_event,
       GlobalRenderFrameHostId render_frame_id) override;
   void NotifyFencedFrameReportingBeaconSent(BeaconId beacon_id) override;
   void NotifyFencedFrameReportingBeaconData(

@@ -126,7 +126,7 @@ class MockDataHostManager : public AttributionDataHostManager {
               (BeaconId beacon_id,
                SuitableOrigin source_origin,
                bool is_within_fenced_frame,
-               absl::optional<AttributionInputEvent> input_event,
+               AttributionInputEvent input_event,
                GlobalRenderFrameHostId),
               (override));
 

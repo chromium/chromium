@@ -479,7 +479,7 @@ void AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     return;
   }
 
-  absl::optional<AttributionInputEvent> input_event;
+  AttributionInputEvent input_event;
   if (absl::holds_alternative<NavigationBeaconId>(beacon_id)) {
     input_event = AttributionHost::FromWebContents(
                       WebContents::FromRenderFrameHost(initiator_frame_host))

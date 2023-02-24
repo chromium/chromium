@@ -111,7 +111,7 @@ class AttributionDataHostManagerImpl::ReceiverContext {
                   RegistrationType registration_type,
                   base::TimeTicks register_time,
                   bool is_within_fenced_frame,
-                  absl::optional<AttributionInputEvent> input_event,
+                  AttributionInputEvent input_event,
                   absl::optional<AttributionNavigationType> nav_type,
                   GlobalRenderFrameHostId render_frame_id)
       : context_origin_(std::move(context_origin)),
@@ -172,9 +172,9 @@ class AttributionDataHostManagerImpl::ReceiverContext {
   bool is_within_fenced_frame_;
 
   // Input event associated with the navigation for navigation source data
-  // hosts, `absl::nullopt` otherwise.
+  // hosts. The underlying Java object will be null for event sources.
   // Logically const.
-  absl::optional<AttributionInputEvent> input_event_;
+  AttributionInputEvent input_event_;
 
   // Logically const.
   absl::optional<AttributionNavigationType> nav_type_;
@@ -267,7 +267,8 @@ struct AttributionDataHostManagerImpl::BeaconSourceRegistrations {
   bool is_within_fenced_frame;
 
   // Input event associated with the navigation.
-  absl::optional<AttributionInputEvent> input_event;
+  // The underlying Java object will be null for event beacons.
+  AttributionInputEvent input_event;
 
   GlobalRenderFrameHostId render_frame_id;
 };
@@ -294,7 +295,7 @@ void AttributionDataHostManagerImpl::RegisterDataHost(
                  ReceiverContext(std::move(context_origin), registration_type,
                                  /*register_time=*/base::TimeTicks::Now(),
                                  is_within_fenced_frame,
-                                 /*input_event=*/absl::nullopt,
+                                 /*input_event=*/AttributionInputEvent(),
                                  /*nav_type=*/absl::nullopt, render_frame_id));
 
   switch (registration_type) {
@@ -714,10 +715,9 @@ void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
     SuitableOrigin source_origin,
     bool is_within_fenced_frame,
-    absl::optional<AttributionInputEvent> input_event,
+    AttributionInputEvent input_event,
     GlobalRenderFrameHostId render_frame_id) {
   bool is_navigation = absl::holds_alternative<NavigationBeaconId>(beacon_id);
-  DCHECK_EQ(is_navigation, input_event.has_value());
 
   auto [it, inserted] = beacon_registrations_.try_emplace(
       beacon_id, BeaconSourceRegistrations{

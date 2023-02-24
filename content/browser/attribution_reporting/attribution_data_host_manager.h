@@ -115,7 +115,7 @@ class CONTENT_EXPORT AttributionDataHostManager
       BeaconId beacon_id,
       attribution_reporting::SuitableOrigin source_origin,
       bool is_within_fenced_frame,
-      absl::optional<AttributionInputEvent> input_event,
+      AttributionInputEvent input_event,
       GlobalRenderFrameHostId render_frame_id) = 0;
 
   // Notifies the manager that a beacon has been sent.
