@@ -116,6 +116,9 @@ const char kCertDualVerificationEnabledDescription[] =
     "any differences to Chrome if Safe Browsing Extended Reporting is "
     "enabled.";
 
+const char kClickToCallName[] = "Click-To-Call";
+const char kClickToCallDescription[] = "Enable the click-to-call feature.";
+
 const char kClipboardUnsanitizedContentName[] =
     "Clipboard unsanitized read and write";
 const char kClipboardUnsanitizedContentDescription[] =

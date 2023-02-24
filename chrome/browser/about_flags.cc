@@ -8972,6 +8972,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kSeamlessRefreshRateSwitching)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"click-to-call", flag_descriptions::kClickToCallName,
+     flag_descriptions::kClickToCallDescription, kOsAll,
+     FEATURE_VALUE_TYPE(kClickToCall)},
+
     {"clipboard-unsanitized-content",
      flag_descriptions::kClipboardUnsanitizedContentName,
      flag_descriptions::kClipboardUnsanitizedContentDescription, kOsAll,

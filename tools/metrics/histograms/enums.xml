@@ -60549,6 +60549,7 @@ from previous Chrome versions.
   <int value="-746328467" label="ExpensiveBackgroundTimerThrottling:disabled"/>
   <int value="-746042208" label="QuickCommands:enabled"/>
   <int value="-745969829" label="BackGestureRefactorAndroid:enabled"/>
+  <int value="-745616196" label="ClickToCall:disabled"/>
   <int value="-745082968" label="SyncDeviceInfoInTransportMode:disabled"/>
   <int value="-745005043"
       label="enable-experimental-accessibility-switch-access-setup-guide"/>
@@ -64437,6 +64438,7 @@ from previous Chrome versions.
   <int value="1471169381" label="kWebSQLAccess:enabled"/>
   <int value="1471491886"
       label="AutofillOfferToSaveCardWithSameLastFour:enabled"/>
+  <int value="1472042346" label="ClickToCall:enabled"/>
   <int value="1472798894" label="UseIDNA2008NonTransitional:enabled"/>
   <int value="1472938299" label="WellKnownChangePassword:disabled"/>
   <int value="1473379096" label="NearbySharingReceiveWifiCredentials:disabled"/>

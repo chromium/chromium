@@ -1058,6 +1058,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "click-to-call",
+    "owners": [ "ellyjones" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "client-storage-access-context-auditing",
     "owners": [
       "sauski",
