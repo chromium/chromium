@@ -175,12 +175,14 @@ if (include_js_tests) {
         "settings/chromeos/os_settings_v3_browsertest.js",
       ]
     } else {
-      sources += [ "signin/signin_browsertest.js" ]
+      sources += [
+        "intro/intro_browsertest.js",
+        "signin/signin_browsertest.js",
+      ]
     }
 
     if (enable_dice_support) {
       sources += [
-        "intro/sign_in_promo_browsertest.js",
         "welcome/a11y_tests.js",
         "welcome/welcome_browsertest.js",
       ]
@@ -512,10 +514,12 @@ generate_grd("build_grd") {
 
   if (!is_chromeos_ash && !is_android) {
     deps += [
+      "intro:build_grdp",
       "signin:build_grdp",
       "welcome:build_grdp",
     ]
     grdp_files += [
+      "$target_gen_dir/intro/resources.grdp",
       "$target_gen_dir/welcome/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
     ]
@@ -573,11 +577,6 @@ generate_grd("build_grd") {
   if (is_chromeos_ash || is_win || is_mac) {
     deps += [ "inline_login:build_grdp" ]
     grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
-  }
-
-  if (enable_dice_support) {
-    deps += [ "intro:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/intro/resources.grdp" ]
   }
 
   manifest_files =

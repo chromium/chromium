@@ -5,17 +5,10 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_avatar_icon_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
@@ -27,69 +20,8 @@
 #include "chrome/grit/intro_resources.h"
 #include "chrome/grit/intro_resources_map.h"
 #include "chrome/grit/signin_resources.h"
-#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "google_apis/gaia/gaia_auth_util.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/l10n/l10n_util.h"
-
-namespace {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::string GetPictureUrl(content::WebUI& web_ui,
-                          const ProfileAttributesEntry& profile_entry) {
-  const int avatar_size = 100;
-  const int avatar_icon_size = avatar_size * web_ui.GetDeviceScaleFactor();
-  return webui::GetBitmapDataUrl(
-      profiles::GetSizedAvatarIcon(
-          profile_entry.GetAvatarIcon(avatar_icon_size), avatar_icon_size,
-          avatar_icon_size)
-          .AsBitmap());
-}
-
-std::string GetLacrosIntroWelcomeTitle(
-    const ProfileAttributesEntry& profile_entry) {
-  auto given_name = profile_entry.GetGAIAGivenName();
-  base::UmaHistogramBoolean("Profile.LacrosFre.WelcomeHasGivenName",
-                            given_name.empty());
-  return !given_name.empty()
-             ? l10n_util::GetStringFUTF8(IDS_PRIMARY_PROFILE_FIRST_RUN_TITLE,
-                                         given_name)
-             : l10n_util::GetStringUTF8(
-                   IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE);
-}
-
-std::string GetLacrosIntroManagementDisclaimer(
-    Profile& profile,
-    const ProfileAttributesEntry& profile_entry) {
-  // TODO(crbug.com/1416511): Fix logic mismatch in device/account management
-  // between Lacros and DICE.
-  const bool is_managed_account =
-      profile.GetProfilePolicyConnector()->IsManaged();
-  std::string hosted_domain = profile_entry.GetHostedDomain();
-  if (!is_managed_account || hosted_domain == kNoHostedDomainFound) {
-    return std::string();
-  }
-
-  if (hosted_domain.empty()) {
-    const auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(&profile);
-    const CoreAccountInfo core_account_info =
-        identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    AccountInfo account_info =
-        identity_manager->FindExtendedAccountInfoByAccountId(
-            core_account_info.account_id);
-    hosted_domain = gaia::ExtractDomainName(account_info.email);
-  }
-  return l10n_util::GetStringFUTF8(
-      IDS_PRIMARY_PROFILE_FIRST_RUN_SESSION_MANAGED_BY_DESCRIPTION,
-      base::UTF8ToUTF16(hosted_domain));
-}
-#endif
-}  // namespace
 
 IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   DCHECK(base::FeatureList::IsEnabled(kForYouFre));
@@ -169,19 +101,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const auto profile_path = profile->GetPath();
-  const auto* profile_entry = g_browser_process->profile_manager()
-                                  ->GetProfileAttributesStorage()
-                                  .GetProfileAttributesWithPath(profile_path);
-  DCHECK(profile_entry);
-
-  source->AddString("pictureUrl", GetPictureUrl(*web_ui, *profile_entry));
-  source->AddString("subtitle", l10n_util::GetStringFUTF8(
-                                    IDS_PRIMARY_PROFILE_FIRST_RUN_SUBTITLE,
-                                    profile_entry->GetUserName()));
-  source->AddString("title", GetLacrosIntroWelcomeTitle(*profile_entry));
-  source->AddString("enterpriseInfo", GetLacrosIntroManagementDisclaimer(
-                                          *profile, *profile_entry));
   source->AddResourcePath(
       "images/lacros_intro_banner.svg",
       IDR_SIGNIN_ENTERPRISE_PROFILE_WELCOME_IMAGES_LACROS_ENTERPRISE_PROFILE_WELCOME_ILLUSTRATION_SVG);

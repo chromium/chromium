@@ -7,6 +7,16 @@
  * interact with the browser.
  */
 
+// <if expr="chromeos_lacros">
+// Profile info sent from C++.
+export interface LacrosIntroProfileInfo {
+  pictureUrl: string;
+  title: string;
+  subtitle: string;
+  managementDisclaimer: string;
+}
+// </if>
+
 export interface IntroBrowserProxy {
   // Called when the user clicks the "sign in" button.
   continueWithAccount(): void;
