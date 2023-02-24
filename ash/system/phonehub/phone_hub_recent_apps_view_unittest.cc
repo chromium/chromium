@@ -40,7 +40,8 @@ class RecentAppButtonsViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA},
+        /*enabled_features=*/{features::kEcheLauncher, features::kEcheSWA,
+                              features::kEcheLauncherIconsInMoreAppsButton},
         /*disabled_features=*/{});
 
     phone_hub_recent_apps_view_ = std::make_unique<PhoneHubRecentAppsView>(
@@ -58,13 +59,16 @@ class RecentAppButtonsViewTest : public AshTestBase {
   }
 
   void NotifyRecentAppAddedOrUpdated() {
+    auto app_metadata = phonehub::Notification::AppMetadata(
+        kAppName, kPackageName,
+        /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
+        /*icon_is_monochrome =*/true, kUserId,
+        phonehub::proto::AppStreamabilityStatus::STREAMABLE);
+
     fake_recent_apps_interaction_handler_.NotifyRecentAppAddedOrUpdated(
-        phonehub::Notification::AppMetadata(
-            kAppName, kPackageName,
-            /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
-            /*icon_is_monochrome =*/true, kUserId,
-            phonehub::proto::AppStreamabilityStatus::STREAMABLE),
-        base::Time::Now());
+        app_metadata, base::Time::Now());
+    fake_phone_hub_manager_.fake_app_stream_launcher_data_model()->AddAppToList(
+        app_metadata);
   }
 
   size_t PackageNameToClickCount(const std::string& package_name) {
