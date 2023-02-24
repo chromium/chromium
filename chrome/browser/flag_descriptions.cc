@@ -1246,12 +1246,6 @@ const char kExperimentalAccessibilityLanguageDetectionDynamicDescription[] =
     "Enable language detection for dynamic content which is then exposed to "
     "assistive technologies such as screen readers.";
 
-const char kCompositorThreadedScrollbarScrollingName[] =
-    "Compositor threaded scrollbar scrolling";
-const char kCompositorThreadedScrollbarScrollingDescription[] =
-    "Enables pointer-based scrollbar scrolling on the compositor thread "
-    "instead of the main thread";
-
 const char kMemlogName[] = "Chrome heap profiler start mode.";
 const char kMemlogDescription[] =
     "Starts heap profiling service that records sampled memory allocation "

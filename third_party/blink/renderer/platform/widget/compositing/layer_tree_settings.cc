@@ -203,9 +203,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   Platform* platform = Platform::Current();
   settings.percent_based_scrolling =
       ::features::IsPercentBasedScrollingEnabled();
-  settings.compositor_threaded_scrollbar_scrolling =
-      base::FeatureList::IsEnabled(
-          ::features::kCompositorThreadedScrollbarScrolling);
 
   settings.resource_settings.use_r16_texture =
       base::FeatureList::IsEnabled(media::kUseR16Texture);

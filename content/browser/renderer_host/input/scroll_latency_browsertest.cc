@@ -282,6 +282,8 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
       0, "EventLatency.GestureScrollUpdate.TotalLatency"));
 }
 
+// TODO(crbug.com/1207466): Combine ScrollLatencyCompositedScrollbarBrowserTest
+// with this class now that there is no main thread path.
 class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
  public:
   ScrollLatencyScrollbarBrowserTest() = default;
@@ -293,13 +295,8 @@ class ScrollLatencyScrollbarBrowserTest : public ScrollLatencyBrowserTest {
     // The following features need to be disabled:
     // - kOverlayScrollbar since overlay scrollbars are not hit-testable (thus
     // input is not routed to scrollbars).
-    // - kCompositorThreadedScrollbarScrolling since this feature is already
-    // tested by ScrollLatencyCompositedScrollbarBrowserTest. Hence, this
-    // current test can be used exclusively to test the main thread scrollbar
-    // path.
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {}, {features::kOverlayScrollbar,
-             features::kCompositorThreadedScrollbarScrolling});
+        {}, {features::kOverlayScrollbar});
   }
 
   ~ScrollLatencyScrollbarBrowserTest() override = default;
@@ -381,16 +378,12 @@ class ScrollLatencyCompositedScrollbarBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ScrollLatencyScrollbarBrowserTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCompositorThreadedScrollbarScrolling);
   }
 
   ~ScrollLatencyCompositedScrollbarBrowserTest() override {}
 
  protected:
   bool DoesScrollbarScrollOnMainThread() const override { return false; }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Crashes on Mac ASAN.  https://crbug.com/1188553

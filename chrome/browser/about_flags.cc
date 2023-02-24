@@ -6352,12 +6352,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kFilteringPredictionFeatureVariations,
                                     "FilteringScrollPrediction")},
 
-    {"compositor-threaded-scrollbar-scrolling",
-     flag_descriptions::kCompositorThreadedScrollbarScrollingName,
-     flag_descriptions::kCompositorThreadedScrollbarScrollingDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(features::kCompositorThreadedScrollbarScrolling)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-vaapi-jpeg-image-decode-acceleration",
      flag_descriptions::kVaapiJpegImageDecodeAccelerationName,

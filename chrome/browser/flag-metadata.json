@@ -1107,11 +1107,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "compositor-threaded-scrollbar-scrolling",
-    "owners": [ "arakeri@microsoft.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "confirmation-chip",
     "owners": [
       "fjacky",
