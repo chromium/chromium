@@ -1173,7 +1173,7 @@ void FormStructure::LogQualityMetrics(
       if ((field->is_autofilled || field->previously_autofilled()) &&
           field_has_non_empty_server_prediction &&
           !base::FeatureList::IsEnabled(
-              features::kAutofillGivePrecedenceToNumericQuantitites)) {
+              features::kAutofillGivePrecedenceToNumericQuantities)) {
         AutofillMetrics::
             LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
                 !field->previously_autofilled());

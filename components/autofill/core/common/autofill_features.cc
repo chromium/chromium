@@ -22,10 +22,10 @@ BASE_FEATURE(kAutofillAddressProfileSavePromptAddressVerificationSupport,
              "AutofillAddressProfileSavePromptAddressVerificationSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use the heuristic parser to detected unfillable numeric types in field labels
+// Use the heuristic parser to detect unfillable numeric types in field labels
 // and grant the heuristic precedence over non-override server predictions.
-BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantitites,
-             "AutofillGivePrecedenceToNumericQuantitites",
+BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
+             "AutofillGivePrecedenceToNumericQuantities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if `kAccount` profiles are loaded from AutofillTable and
@@ -137,7 +137,7 @@ BASE_FEATURE(kAutofillFillAndImportFromMoreFields,
 const base::FeatureParam<bool> kAutofillFillAutocompleteUnrecognized{
     &kAutofillFillAndImportFromMoreFields, "fill_unrecognized_autocomplete",
     false};
-const base::FeatureParam<bool> kAutofillImportFromAutoccompleteUnrecognized{
+const base::FeatureParam<bool> kAutofillImportFromAutocompleteUnrecognized{
     &kAutofillFillAndImportFromMoreFields,
     "import_from_unrecognized_autocomplete", false};
 

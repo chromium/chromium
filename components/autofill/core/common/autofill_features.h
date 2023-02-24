@@ -19,7 +19,7 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillAddressProfileSavePromptAddressVerificationSupport);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillGivePrecedenceToNumericQuantitites);
+BASE_DECLARE_FEATURE(kAutofillGivePrecedenceToNumericQuantities);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAccountProfilesUnionView);
 COMPONENT_EXPORT(AUTOFILL)
@@ -54,7 +54,7 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillFillAutocompleteUnrecognized;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>
-    kAutofillImportFromAutoccompleteUnrecognized;
+    kAutofillImportFromAutocompleteUnrecognized;
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillDisableFilling);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillDisableAddressImport);
 COMPONENT_EXPORT(AUTOFILL)

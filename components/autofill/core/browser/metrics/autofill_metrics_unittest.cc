@@ -552,9 +552,9 @@ TEST_P(AutofillPerfectFillingMetricsTest,
 TEST_F(AutofillMetricsTest, NumericQuantityCollision) {
   // Those metrics are only collected when the numeric quantities are not
   // getting precedence over server predictions.
-  base::test::ScopedFeatureList numeric_quanity_feature_list;
-  numeric_quanity_feature_list.InitAndDisableFeature(
-      features::kAutofillGivePrecedenceToNumericQuantitites);
+  base::test::ScopedFeatureList numeric_quantity_feature_list;
+  numeric_quantity_feature_list.InitAndDisableFeature(
+      features::kAutofillGivePrecedenceToNumericQuantities);
 
   // Set up our form data.
   test::FormDescription form_description = {

@@ -332,7 +332,7 @@ AutofillType AutofillField::ComputedType() const {
         !(heuristic_type() == NUMERIC_QUANTITY &&
           server_type() != UNKNOWN_TYPE &&
           base::FeatureList::IsEnabled(
-              features::kAutofillGivePrecedenceToNumericQuantitites));
+              features::kAutofillGivePrecedenceToNumericQuantities));
 
     if (believe_server)
       return AutofillType(server_type());
