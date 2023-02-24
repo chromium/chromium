@@ -86,7 +86,10 @@
     exchangeIceCandidates(caller, callee);
     exchangeIceCandidates(callee, caller);
     await exchangeOfferAnswer(caller, callee);
-    await waitForIceStateChange(caller, ['checking']);
+    // Pairing should be possible as soon as we are 'checking', but to allow the
+    // pairing to happen asynchronously, we wait until 'connected' or
+    // 'completed' instead as it is not possible to reach these without a pair.
+    await waitForIceStateChange(caller, ['connected', 'completed']);
     const statsReport = await sender.getStats();
     assert_stats_report_has_stats(statsReport, ['candidate-pair', 'local-candidate', 'remote-candidate']);
   }, 'sender.getStats() should return stats report containing ICE candidate stats');
