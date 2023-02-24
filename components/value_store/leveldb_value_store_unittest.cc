@@ -175,7 +175,7 @@ TEST_F(LeveldbValueStoreUnitTest, RestoreFullDatabase) {
   for (base::FilePath file = enumerator.Next(); !file.empty();
        file = enumerator.Next()) {
     // WriteFile() failure is a result of -1.
-    ASSERT_NE(base::WriteFile(file, kLolCats.c_str(), kLolCats.length()), -1);
+    ASSERT_TRUE(base::WriteFile(file, kLolCats));
   }
   CreateStore();
 
