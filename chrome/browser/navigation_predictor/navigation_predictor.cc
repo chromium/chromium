@@ -283,6 +283,9 @@ void NavigationPredictor::ReportAnchorElementPointerOut(
       user_interaction.max_hover_dwell_time.value_or(base::TimeDelta()));
 }
 
+void NavigationPredictor::ReportAnchorElementPointerDown(
+    blink::mojom::AnchorElementPointerDownPtr pointer_down_event) {}
+
 void NavigationPredictor::ReportAnchorElementsEnteredViewport(
     std::vector<blink::mojom::AnchorElementEnteredViewportPtr> elements) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

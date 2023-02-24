@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -215,6 +216,7 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
     if (!element_timing->pointer_over_timer_.has_value()) {
       return;
     }
+
     auto msg = mojom::blink::AnchorElementPointerOut::New();
     msg->anchor_id = anchor_id;
     base::TimeDelta hover_dwell_time =
@@ -222,6 +224,22 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementPointerEvent(
     element_timing->pointer_over_timer_.reset();
     msg->hover_dwell_time = hover_dwell_time;
     metrics_host_->ReportAnchorElementPointerOut(std::move(msg));
+  } else if (event_type == event_type_names::kPointerdown) {
+    // TODO(crbug.com/1297312): Check if user changed the default mouse
+    // settings
+    if (pointer_event.button() !=
+            static_cast<int>(WebPointerProperties::Button::kLeft) &&
+        pointer_event.button() !=
+            static_cast<int>(WebPointerProperties::Button::kMiddle)) {
+      return;
+    }
+
+    auto msg = mojom::blink::AnchorElementPointerDown::New();
+    msg->anchor_id = anchor_id;
+    base::TimeDelta navigation_start_to_pointer_down =
+        clock_->NowTicks() - NavigationStart(element);
+    msg->navigation_start_to_pointer_down = navigation_start_to_pointer_down;
+    metrics_host_->ReportAnchorElementPointerDown(std::move(msg));
   }
 }
 

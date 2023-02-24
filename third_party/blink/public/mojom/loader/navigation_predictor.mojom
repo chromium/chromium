@@ -124,6 +124,15 @@ struct AnchorElementPointerOut {
   mojo_base.mojom.TimeDelta hover_dwell_time;
 };
 
+struct AnchorElementPointerDown {
+  // The ID of the anchor that pointer down event happened over it.
+  uint32 anchor_id;
+
+  // The time between navigation start of the anchor element's root document and
+  // the time the pointer down event happened over the anchor element event.
+  mojo_base.mojom.TimeDelta navigation_start_to_pointer_down;
+};
+
 // An interface to pass descriptive information about anchor elements from
 // the renderer process to the implementation of this interface living in the
 // browser process.
@@ -162,4 +171,7 @@ interface AnchorElementMetricsHost {
 
   // This is called whenever pointer stops hovering over the anchor element.
   ReportAnchorElementPointerOut(AnchorElementPointerOut hover_event);
+
+  // This is called whenever pointer down event happens over the anchor element.
+  ReportAnchorElementPointerDown(AnchorElementPointerDown pointer_down_event);
 };
