@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus"
-    units="PrefetchStreamingURLLoaderStatus" expires_after="2023-07-23">
+    enum="PrefetchStreamingURLLoaderStatus" expires_after="2023-07-23">
   <owner>curranmax@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
