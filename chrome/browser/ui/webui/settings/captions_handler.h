@@ -31,6 +31,13 @@ class CaptionsHandler : public SettingsPageUIHandler,
  private:
   void HandleLiveCaptionSectionReady(const base::Value::List& args);
   void HandleOpenSystemCaptionsDialog(const base::Value::List& args);
+  void HandleGetAvailableLanguagePacks(const base::Value::List& args);
+  void HandleGetInstalledLanguagePacks(const base::Value::List& args);
+  void HandleRemoveLanguagePacks(const base::Value::List& args);
+  void HandleInstallLanguagePacks(const base::Value::List& args);
+
+  base::Value::List GetAvailableLanguagePacks();
+  base::Value::List GetInstalledLanguagePacks();
 
   // SodaInstaller::Observer overrides:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
