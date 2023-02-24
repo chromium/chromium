@@ -169,7 +169,7 @@ TEST_F(IOSurfaceImageBackingFactoryTest, GL_SkiaGL) {
   EXPECT_TRUE(backing);
   backing->SetCleared();
 
-  GLenum expected_target = GL_TEXTURE_RECTANGLE;
+  GLenum expected_target = gpu::GetPlatformSpecificTextureTarget();
   std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
       shared_image_manager_.Register(std::move(backing),
                                      memory_type_tracker_.get());
@@ -779,7 +779,7 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
       shared_image_manager_->Register(std::move(backing),
                                       memory_type_tracker_.get());
   EXPECT_TRUE(shared_image);
-  GLenum expected_target = GL_TEXTURE_RECTANGLE;
+  GLenum expected_target = gpu::GetPlatformSpecificTextureTarget();
 
   {
     auto gl_representation =
