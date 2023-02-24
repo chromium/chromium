@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
@@ -28,6 +29,13 @@
 namespace blink {
 
 namespace {
+
+class MockEventListener final : public NativeEventListener {
+ public:
+  bool invoked = false;
+  void Invoke(ExecutionContext*, Event*) override { invoked = true; }
+  void ClearInvoked() { invoked = false; }
+};
 
 class WebKitDirectoryChromeClient : public EmptyChromeClient {
  public:
@@ -236,6 +244,197 @@ TEST(FileInputTypeTest, ChangeTypeDuringOpeningFileChooser) {
   // for another type.
   EXPECT_TRUE(IsA<HTMLElement>(
       input.UserAgentShadowRoot()->firstChild()->firstChild()));
+}
+
+// Tests selecting same file twice should fire cancel event second time.
+TEST(FileInputTypeTest, SetFilesFireCorrectEventsForSameFile) {
+  ScopedNullExecutionContext execution_context;
+
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  auto* input =
+      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
+  auto* listener_change = MakeGarbageCollected<MockEventListener>();
+  auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
+  input->addEventListener(event_type_names::kChange, listener_change);
+  input->addEventListener(event_type_names::kCancel, listener_cancel);
+  auto reset = [&] {
+    listener_change->ClearInvoked();
+    listener_cancel->ClearInvoked();
+  };
+
+  auto* const selection_1 = MakeGarbageCollected<FileList>();
+  selection_1->Append(MakeGarbageCollected<File>("/path/to/A.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_1);
+  EXPECT_TRUE(listener_change->invoked);
+  EXPECT_FALSE(listener_cancel->invoked);
+
+  reset();
+  auto* const selection_2 = MakeGarbageCollected<FileList>();
+  selection_2->Append(MakeGarbageCollected<File>("/path/to/A.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_2);
+  EXPECT_FALSE(listener_change->invoked);
+  EXPECT_TRUE(listener_cancel->invoked);
+}
+
+// Tests selecting same files twice should fire cancel event second time.
+TEST(FileInputTypeTest, SetFilesFireCorrectEventsForSameFiles) {
+  ScopedNullExecutionContext execution_context;
+
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  auto* input =
+      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
+  auto* listener_change = MakeGarbageCollected<MockEventListener>();
+  auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
+  input->addEventListener(event_type_names::kChange, listener_change);
+  input->addEventListener(event_type_names::kCancel, listener_cancel);
+  input->SetBooleanAttribute(html_names::kMultipleAttr, true);
+  auto reset = [&] {
+    listener_change->ClearInvoked();
+    listener_cancel->ClearInvoked();
+  };
+
+  auto* const selection_1 = MakeGarbageCollected<FileList>();
+  selection_1->Append(MakeGarbageCollected<File>("/path/to/A.txt"));
+  selection_1->Append(MakeGarbageCollected<File>("/path/to/B.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_1);
+  EXPECT_TRUE(listener_change->invoked);
+  EXPECT_FALSE(listener_cancel->invoked);
+
+  reset();
+  auto* const selection_2 = MakeGarbageCollected<FileList>();
+  selection_2->Append(MakeGarbageCollected<File>("/path/to/A.txt"));
+  selection_2->Append(MakeGarbageCollected<File>("/path/to/B.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_2);
+  EXPECT_FALSE(listener_change->invoked);
+  EXPECT_TRUE(listener_cancel->invoked);
+}
+
+// Tests selecting different file after first selection should fire change
+// event.
+TEST(FileInputTypeTest, SetFilesFireCorrectEventsForDifferentFile) {
+  ScopedNullExecutionContext execution_context;
+
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  auto* input =
+      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
+  auto* listener_change = MakeGarbageCollected<MockEventListener>();
+  auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
+  input->addEventListener(event_type_names::kChange, listener_change);
+  input->addEventListener(event_type_names::kCancel, listener_cancel);
+  auto reset = [&] {
+    listener_change->ClearInvoked();
+    listener_cancel->ClearInvoked();
+  };
+
+  auto* const selection_1 = MakeGarbageCollected<FileList>();
+  selection_1->Append(MakeGarbageCollected<File>("/path/to/A.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_1);
+  EXPECT_TRUE(listener_change->invoked);
+  EXPECT_FALSE(listener_cancel->invoked);
+
+  reset();
+  auto* const selection_2 = MakeGarbageCollected<FileList>();
+  selection_2->Append(MakeGarbageCollected<File>("/path/to/B.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_2);
+  EXPECT_TRUE(listener_change->invoked);
+  EXPECT_FALSE(listener_cancel->invoked);
+}
+
+// Tests selecting different files after first selection should fire change
+// event.
+TEST(FileInputTypeTest, SetFilesFireCorrectEventsForDifferentFiles) {
+  ScopedNullExecutionContext execution_context;
+
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  auto* input =
+      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
+  auto* listener_change = MakeGarbageCollected<MockEventListener>();
+  auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
+  input->addEventListener(event_type_names::kChange, listener_change);
+  input->addEventListener(event_type_names::kCancel, listener_cancel);
+  input->SetBooleanAttribute(html_names::kMultipleAttr, true);
+  auto reset = [&] {
+    listener_change->ClearInvoked();
+    listener_cancel->ClearInvoked();
+  };
+
+  auto* const selection_1 = MakeGarbageCollected<FileList>();
+  selection_1->Append(MakeGarbageCollected<File>("/path/to/A.txt"));
+  selection_1->Append(MakeGarbageCollected<File>("/path/to/B.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_1);
+  EXPECT_TRUE(listener_change->invoked);
+  EXPECT_FALSE(listener_cancel->invoked);
+
+  reset();
+  auto* const selection_2 = MakeGarbageCollected<FileList>();
+  selection_2->Append(MakeGarbageCollected<File>("/path/to/A.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_2);
+  EXPECT_TRUE(listener_change->invoked);
+  EXPECT_FALSE(listener_cancel->invoked);
+}
+
+// Tests clearing selection (click cancel in file chooser) after selection
+// should fire change event.
+TEST(FileInputTypeTest, SetFilesFireCorrectEventsCancelWithSelection) {
+  ScopedNullExecutionContext execution_context;
+
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  auto* input =
+      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
+  auto* listener_change = MakeGarbageCollected<MockEventListener>();
+  auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
+  input->addEventListener(event_type_names::kChange, listener_change);
+  input->addEventListener(event_type_names::kCancel, listener_cancel);
+  input->SetBooleanAttribute(html_names::kMultipleAttr, true);
+  auto reset = [&] {
+    listener_change->ClearInvoked();
+    listener_cancel->ClearInvoked();
+  };
+
+  auto* const selection_1 = MakeGarbageCollected<FileList>();
+  selection_1->Append(MakeGarbageCollected<File>("/path/to/A.txt"));
+  selection_1->Append(MakeGarbageCollected<File>("/path/to/B.txt"));
+  file_input->SetFilesAndDispatchEvents(selection_1);
+  EXPECT_TRUE(listener_change->invoked);
+  EXPECT_FALSE(listener_cancel->invoked);
+
+  reset();
+  auto* const selection_2 = MakeGarbageCollected<FileList>();
+  file_input->SetFilesAndDispatchEvents(selection_2);
+  EXPECT_TRUE(listener_change->invoked);
+  EXPECT_FALSE(listener_cancel->invoked);
+}
+
+// Tests clearing selection (click cancel in file chooser) without selection
+// should fire cancel event.
+TEST(FileInputTypeTest, SetFilesFireCorrectEventsCancelWithoutSelection) {
+  ScopedNullExecutionContext execution_context;
+
+  auto* document =
+      Document::CreateForTest(execution_context.GetExecutionContext());
+  auto* input =
+      MakeGarbageCollected<HTMLInputElement>(*document, CreateElementFlags());
+  InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
+  auto* listener_change = MakeGarbageCollected<MockEventListener>();
+  auto* listener_cancel = MakeGarbageCollected<MockEventListener>();
+  input->addEventListener(event_type_names::kChange, listener_change);
+  input->addEventListener(event_type_names::kCancel, listener_cancel);
+  input->SetBooleanAttribute(html_names::kMultipleAttr, true);
+
+  auto* const selection = MakeGarbageCollected<FileList>();
+  file_input->SetFilesAndDispatchEvents(selection);
+  EXPECT_FALSE(listener_change->invoked);
+  EXPECT_TRUE(listener_cancel->invoked);
 }
 
 }  // namespace blink

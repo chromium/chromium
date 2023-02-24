@@ -334,6 +334,10 @@ void HTMLFormControlElementWithState::DispatchChangeEvent() {
   DispatchScopedEvent(*Event::CreateBubble(event_type_names::kChange));
 }
 
+void HTMLFormControlElementWithState::DispatchCancelEvent() {
+  DispatchScopedEvent(*Event::CreateBubble(event_type_names::kCancel));
+}
+
 void HTMLFormControlElementWithState::FinishParsingChildren() {
   HTMLFormControlElement::FinishParsingChildren();
   ListedElement::TakeStateAndRestore();
