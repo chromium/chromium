@@ -220,7 +220,10 @@ bool PerFrameTranslateAgent::ExecuteScriptAndGetBoolResult(
   v8::Local<v8::Value> result =
       local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
-  DCHECK(result->IsBoolean());
+
+  if (result.IsEmpty() || !result->IsBoolean()) {
+    return fallback;
+  }
 
   return result.As<v8::Boolean>()->Value();
 }
@@ -238,7 +241,10 @@ std::string PerFrameTranslateAgent::ExecuteScriptAndGetStringResult(
   v8::Local<v8::Value> result =
       local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
-  DCHECK(result->IsString());
+
+  if (result.IsEmpty() || !result->IsString()) {
+    return std::string();
+  }
 
   v8::Local<v8::String> v8_str = result.As<v8::String>();
   int length = v8_str->Utf8Length(isolate);
@@ -263,7 +269,10 @@ double PerFrameTranslateAgent::ExecuteScriptAndGetDoubleResult(
   v8::Local<v8::Value> result =
       local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
-  DCHECK(result->IsNumber());
+
+  if (result.IsEmpty() || !result->IsNumber()) {
+    return 0.0;
+  }
 
   return result.As<v8::Number>()->Value();
 }
@@ -281,7 +290,10 @@ int64_t PerFrameTranslateAgent::ExecuteScriptAndGetIntegerResult(
   v8::Local<v8::Value> result =
       local_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
-  DCHECK(result->IsNumber());
+
+  if (result.IsEmpty() || !result->IsNumber()) {
+    return 0;
+  }
 
   return result.As<v8::Integer>()->Value();
 }
