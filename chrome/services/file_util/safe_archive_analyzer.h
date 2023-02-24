@@ -5,7 +5,9 @@
 #ifndef CHROME_SERVICES_FILE_UTIL_SAFE_ARCHIVE_ANALYZER_H_
 #define CHROME_SERVICES_FILE_UTIL_SAFE_ARCHIVE_ANALYZER_H_
 
+#include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class File;
@@ -22,9 +24,10 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
 
  private:
   // chrome::mojom::SafeArchiveAnalyzer:
-  void AnalyzeZipFile(base::File zip_file,
-                      base::File temporary_file,
-                      AnalyzeZipFileCallback callback) override;
+  void AnalyzeZipFile(
+      base::File zip_file,
+      mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
+      AnalyzeZipFileCallback callback) override;
   void AnalyzeDmgFile(base::File dmg_file,
                       AnalyzeDmgFileCallback callback) override;
   void AnalyzeRarFile(base::File rar_file,
@@ -34,6 +37,8 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
                            base::File temporary_file,
                            base::File temporary_file2,
                            AnalyzeSevenZipFileCallback callback) override;
+
+  mojo::Remote<chrome::mojom::TemporaryFileGetter> temp_file_getter_;
 };
 
 #endif  // CHROME_SERVICES_FILE_UTIL_SAFE_ARCHIVE_ANALYZER_H_

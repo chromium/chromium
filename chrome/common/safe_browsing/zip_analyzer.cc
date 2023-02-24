@@ -33,13 +33,21 @@ const int kZipAnalysisTimeoutMs = 10000;
 }  // namespace
 
 void AnalyzeZipFile(base::File zip_file,
-                    base::File temp_file,
-                    ArchiveAnalyzerResults* results) {
+                    AnalyzerCallback callback,
+                    base::File temp_file) {
+  safe_browsing::ArchiveAnalyzerResults results;
   base::Time start_time = base::Time::Now();
   zip::ZipReader reader;
+  if (!temp_file.IsValid()) {
+    DLOG(ERROR) << "Could not open temp file";
+    results.analysis_result = ArchiveAnalysisResult::kUnknown;
+    std::move(callback).Run(results);
+    return;
+  }
   if (!reader.OpenFromPlatformFile(zip_file.GetPlatformFile())) {
     DVLOG(1) << "Failed to open zip file";
-    results->analysis_result = ArchiveAnalysisResult::kUnknown;
+    results.analysis_result = ArchiveAnalysisResult::kUnknown;
+    std::move(callback).Run(results);
     return;
   }
 
@@ -47,14 +55,15 @@ void AnalyzeZipFile(base::File zip_file,
       base::checked_cast<uint64_t>(zip_file.GetLength()) >
       FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze("zip");
   if (too_big_to_unpack) {
-    results->success = false;
-    results->analysis_result = ArchiveAnalysisResult::kTooLarge;
+    results.success = false;
+    results.analysis_result = ArchiveAnalysisResult::kTooLarge;
+    std::move(callback).Run(results);
     return;
   }
 
   bool timeout = false;
-  results->file_count = 0;
-  results->directory_count = 0;
+  results.file_count = 0;
+  results.directory_count = 0;
 
   bool has_encrypted = false;
   bool has_aes_encrypted = false;
@@ -79,12 +88,12 @@ void AnalyzeZipFile(base::File zip_file,
     reader.ExtractCurrentEntry(&writer, std::numeric_limits<uint64_t>::max());
     UpdateArchiveAnalyzerResultsWithFile(entry->path, &temp_file,
                                          writer.file_length(),
-                                         entry->is_encrypted, results);
+                                         entry->is_encrypted, &results);
 
     if (entry->is_directory)
-      results->directory_count++;
+      results.directory_count++;
     else
-      results->file_count++;
+      results.file_count++;
 
     has_encrypted |= entry->is_encrypted;
     has_aes_encrypted |= entry->uses_aes_encryption;
@@ -96,14 +105,15 @@ void AnalyzeZipFile(base::File zip_file,
   }
 
   if (timeout) {
-    results->analysis_result = ArchiveAnalysisResult::kTimeout;
+    results.analysis_result = ArchiveAnalysisResult::kTimeout;
   } else if (reader.ok()) {
-    results->analysis_result = ArchiveAnalysisResult::kValid;
+    results.analysis_result = ArchiveAnalysisResult::kValid;
   } else {
-    results->analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
+    results.analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
   }
 
-  results->success = reader.ok() && !timeout;
+  results.success = reader.ok() && !timeout;
+  std::move(callback).Run(results);
 }
 
 }  // namespace zip_analyzer

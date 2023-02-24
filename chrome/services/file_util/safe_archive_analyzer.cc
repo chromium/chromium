@@ -4,6 +4,7 @@
 
 #include "chrome/services/file_util/safe_archive_analyzer.h"
 
+#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/rar_analyzer.h"
@@ -18,16 +19,16 @@ SafeArchiveAnalyzer::SafeArchiveAnalyzer() = default;
 
 SafeArchiveAnalyzer::~SafeArchiveAnalyzer() = default;
 
-void SafeArchiveAnalyzer::AnalyzeZipFile(base::File zip_file,
-                                         base::File temporary_file,
-                                         AnalyzeZipFileCallback callback) {
-  DCHECK(temporary_file.IsValid());
+void SafeArchiveAnalyzer::AnalyzeZipFile(
+    base::File zip_file,
+    mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
+    AnalyzeZipFileCallback callback) {
   DCHECK(zip_file.IsValid());
-
-  safe_browsing::ArchiveAnalyzerResults results;
-  safe_browsing::zip_analyzer::AnalyzeZipFile(
-      std::move(zip_file), std::move(temporary_file), &results);
-  std::move(callback).Run(results);
+  temp_file_getter_.Bind(std::move(temp_file_getter));
+  base::OnceCallback<void(base::File)> analyze_zip_file_callback =
+      base::BindOnce(&safe_browsing::zip_analyzer::AnalyzeZipFile,
+                     std::move(zip_file), std::move(callback));
+  temp_file_getter_->RequestTemporaryFile(std::move(analyze_zip_file_callback));
 }
 
 void SafeArchiveAnalyzer::AnalyzeDmgFile(base::File dmg_file,

@@ -16,7 +16,7 @@ interface SafeArchiveAnalyzer {
   // download protection, given a |temporary_file| used to extract files
   // from the |zip_file| archive.
   AnalyzeZipFile(mojo_base.mojom.ReadOnlyFile zip_file,
-                 mojo_base.mojom.File temporary_file)
+                 pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
 
   // Build flag FULL_SAFE_BROWSING, on OS_MAC: Analyze the |dmg_file|
@@ -43,6 +43,17 @@ interface SafeArchiveAnalyzer {
                       mojo_base.mojom.File temporary_file,
                       mojo_base.mojom.File temporary_file2)
       => (SafeArchiveAnalyzerResults results);
+};
+
+// TemporaryFileGetter is provided by the browser process and exposed
+// by mojo policy control to the utility process when build flag
+// FULL_SAFE_BROWSING is enabled. It is used to create temporary files for
+// the purpose of analyzing nested archives.
+interface TemporaryFileGetter {
+  // Requests a temporary file. If the request is accepted, `temp_file`
+  // will be returned with a valid file descriptor. If the request is
+  // rejected, `temp_file` will be invalid.
+  RequestTemporaryFile() => (mojo_base.mojom.File temp_file);
 };
 
 [Native]
