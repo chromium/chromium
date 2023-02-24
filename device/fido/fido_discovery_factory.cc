@@ -99,12 +99,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       return {};
     case FidoTransportProtocol::kInternal: {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-      std::unique_ptr<FidoDiscoveryBase> discovery =
-          MaybeCreatePlatformDiscovery();
-      if (discovery) {
-        return SingleDiscovery(std::move(discovery));
-      }
-      return {};
+      return MaybeCreatePlatformDiscovery();
 #else
       return {};
 #endif
@@ -213,17 +208,18 @@ FidoDiscoveryFactory::MaybeCreateWinWebAuthnApiDiscovery() {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
-std::unique_ptr<FidoDiscoveryBase>
+std::vector<std::unique_ptr<FidoDiscoveryBase>>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
-  return mac_touch_id_config_
-             ? std::make_unique<fido::mac::FidoTouchIdDiscovery>(
-                   *mac_touch_id_config_)
-             : nullptr;
+  if (mac_touch_id_config_) {
+    return SingleDiscovery(std::make_unique<fido::mac::FidoTouchIdDiscovery>(
+        *mac_touch_id_config_));
+  }
+  return {};
 }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-std::unique_ptr<FidoDiscoveryBase>
+std::vector<std::unique_ptr<FidoDiscoveryBase>>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
   if (base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)) {
     auto discovery = std::make_unique<FidoChromeOSDiscovery>(
@@ -231,9 +227,9 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
         std::move(get_assertion_request_for_legacy_credential_check_));
     discovery->set_require_power_button_mode(
         require_legacy_cros_authenticator_);
-    return discovery;
+    return SingleDiscovery(std::move(discovery));
   }
-  return nullptr;
+  return {};
 }
 
 void FidoDiscoveryFactory::set_generate_request_id_callback(
