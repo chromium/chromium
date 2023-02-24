@@ -649,6 +649,8 @@ public final class Fido2Api {
                 return "ble";
             case AuthenticatorTransport.INTERNAL:
                 return "internal";
+            case AuthenticatorTransport.HYBRID:
+                return "cable";
         }
     }
 
