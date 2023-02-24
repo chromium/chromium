@@ -24,8 +24,8 @@ js_type_check("closure_compile") {
                     "js_module_root=" + rebase_path(
                             "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/",
                             root_build_dir),
-                    "browser_resolver_prefix_replacements=\"chrome://nearby/mojo/=./\"",
-                    "browser_resolver_prefix_replacements=\"/mojo/=./\"",
+                    "browser_resolver_prefix_replacements=\"chrome://nearby/shared/mojo/=./\"",
+                    "browser_resolver_prefix_replacements=\"./shared/mojo/=./\"",
                   ]
   deps = [
     ":fake_nearby_contact_manager",

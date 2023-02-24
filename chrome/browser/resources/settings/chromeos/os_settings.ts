@@ -121,6 +121,7 @@ import './os_toolbar/os_toolbar.js';
 import './parental_controls_page/parental_controls_page.js';
 import './settings_scheduler_slider/settings_scheduler_slider.js';
 
+import * as nearbyShareMojom from '/shared/mojo/nearby_share.mojom-webui.js';
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -218,6 +219,7 @@ export {
   appNotificationHandlerMojom,
   crosAudioConfigMojom,
   fakeCrosAudioConfig,
+  nearbyShareMojom,
   personalizationSearchMojom,
   routesMojomWebui,
   searchMojomWebui,

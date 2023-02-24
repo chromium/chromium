@@ -13,12 +13,12 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './nearby_shared_icons.html.js';
 import './nearby_shared_share_type_icons.html.js';
 
-import {PayloadPreview} from '/mojo/nearby_share.mojom-webui.js';
-import {ShareType} from '/mojo/nearby_share_share_type.mojom-webui.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PayloadPreview} from './mojo/nearby_share.mojom-webui.js';
+import {ShareType} from './mojo/nearby_share_share_type.mojom-webui.js';
 import {getTemplate} from './nearby_preview.html.js';
 
 const NearbyPreviewElementBase = I18nMixin(PolymerElement);

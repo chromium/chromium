@@ -7,14 +7,12 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_definitions.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash, "Nearby Share is CrOS only")
 
 preprocess_src_manifest = "preprocessed_src_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 preprocess_folder = "preprocessed"
 
 grit("resources") {
@@ -37,22 +35,15 @@ generate_grd("build_grd") {
   grd_prefix = "nearby_share_dialog"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   deps = [
-    ":build_mojo_grdp",
     ":preprocess_gen",
     ":preprocess_src",
+    "shared:build_json_grdp",
     "shared:build_v3_grdp",
   ]
   grdp_files = [
-    "$target_gen_dir/nearby_share_mojo_resources.grdp",
+    "$target_gen_dir/shared/nearby_share_json_resources.grdp",
     "$target_gen_dir/shared/nearby_share_resources_v3.grdp",
   ]
-  input_files = [
-    "nearby_share_progress_bar_dark.json",
-    "nearby_share_progress_bar_light.json",
-    "nearby_share_pulse_animation_dark.json",
-    "nearby_share_pulse_animation_light.json",
-  ]
-  input_files_base_dir = rebase_path("shared", "//")
   manifest_files = [
     "$target_gen_dir/$preprocess_src_manifest",
     "$target_gen_dir/$preprocess_gen_manifest",
@@ -99,45 +90,6 @@ preprocess_if_expr("preprocess_gen") {
   in_files = html_wrapper_files
 }
 
-generate_grd("build_mojo_grdp") {
-  grd_prefix = "nearby_share"
-  out_grd = "$target_gen_dir/${grd_prefix}_mojo_resources.grdp"
-  deps = [ ":preprocess_mojo" ]
-  manifest_files = [ "$target_gen_dir/$preprocess_mojo_manifest" ]
-  resource_path_rewrites = [
-    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js|mojo/nearby_share.mojom-webui.js",
-    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js|mojo/nearby_share_share_type.mojom-webui.js",
-  ]
-}
-
-# Mojo files, for generating grdp
-preprocess_if_expr("preprocess_mojo") {
-  deps = [
-    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
-    "//chrome/browser/ui/webui/nearby_share:share_type_webui_js",
-    "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_webui_js",
-  ]
-  in_folder = root_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
-  in_files = [
-    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js",
-    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js",
-  ]
-}
-
-ts_definitions("generate_definitions") {
-  deps = [ "//ui/webui/resources/mojo:library" ]
-  extra_deps = [ ":preprocess_mojo" ]
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/$preprocess_folder"
-
-  js_files = [
-    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js",
-    "mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js",
-  ]
-}
-
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + mojom_js_args + [
@@ -152,7 +104,7 @@ js_type_check("closure_compile") {
                     "js_module_root=" + rebase_path(
                             "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/",
                             root_build_dir),
-                    "browser_resolver_prefix_replacements=\"/mojo/=./\"",
+                    "browser_resolver_prefix_replacements=\"./shared/mojo/=./\"",
                   ]
   deps = [
     ":app",

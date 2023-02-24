@@ -9,12 +9,13 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos, "Nearby Share is CrOS only")
 
+grd_prefix = "nearby_share"
 preprocessed_dir = "$target_gen_dir/preprocessed"
 tsc_dir = "$target_gen_dir/tsc"
 
 # Grdp of JSON files for OS Settings.
 generate_grd("build_json_grdp") {
-  grd_prefix = "nearby_share"
+  grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/nearby_share_json_resources.grdp"
   input_files_base_dir = rebase_path(".", "//")
   input_files = [
@@ -28,7 +29,7 @@ generate_grd("build_json_grdp") {
 # TODO(b/207087930) Consider moving these shared files to chrome://resources.
 # b/207087942 provides context why chrome://resources did not work previously.
 generate_grd("build_v3_grdp") {
-  grd_prefix = "nearby_share"
+  grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/${grd_prefix}_resources_v3.grdp"
   deps = [ ":build_ts" ]
   manifest_files = [ "$target_gen_dir/build_ts.manifest" ]
@@ -86,8 +87,24 @@ html_to_wrapper("html_wrapper_files") {
   out_folder = preprocessed_dir
 }
 
+# TODO(b/270653607) Update this to generate TS sources instead and remove
+# allow_js argument from :build_ts. Also remove listing in
+# tools/typescript/validate_tsconfig.py.
+copy("copy_mojo") {
+  deps = [
+    "//chrome/browser/ui/webui/nearby_share:mojom_webui_js",
+    "//chrome/browser/ui/webui/nearby_share:share_type_webui_js",
+  ]
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom-webui.js",
+  ]
+  outputs = [ "$preprocessed_dir/mojo/{{source_file_part}}" ]
+}
+
 ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
+  allow_js = true
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
@@ -95,19 +112,18 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
+    ":copy_mojo",
     ":html_wrapper_files",
     ":preprocess",
   ]
   root_dir = preprocessed_dir
-  in_files = web_component_files + non_web_component_files + html_wrapper_files
+  in_files =
+      web_component_files + non_web_component_files + html_wrapper_files + [
+        "mojo/nearby_share.mojom-webui.js",
+        "mojo/nearby_share_share_type.mojom-webui.js",
+      ]
   out_dir = tsc_dir
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  path_mappings = [
-    # Additional path mappings for Nearby share Mojo files
-    "/mojo/nearby_share*|" + rebase_path(
-            "$root_gen_dir/chrome/browser/resources/nearby_share/preprocessed/mojom-webui/chrome/browser/ui/webui/nearby_share/nearby_share*",
-            target_gen_dir),
-  ]
 
   composite = true
 }

@@ -4,7 +4,7 @@
 
 import 'chrome://nearby/shared/nearby_preview.js';
 
-import {ShareType} from 'chrome://nearby/mojo/nearby_share_share_type.mojom-webui.js';
+import {ShareType} from 'chrome://nearby/shared/mojo/nearby_share_share_type.mojom-webui.js';
 
 import {assertEquals} from '../../chromeos/chai_assert.js';
 
