@@ -188,7 +188,7 @@ class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
         storage_key, name, type, base::SequencedTaskRunner::GetCurrentDefault(),
         bucket_future.GetCallback());
     auto bucket = bucket_future.Take();
-    EXPECT_TRUE(bucket.ok());
+    EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();
   }
 

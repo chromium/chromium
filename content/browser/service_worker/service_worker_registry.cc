@@ -223,7 +223,7 @@ void ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo(
     NewRegistrationCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   // Return nullptr if `UpdateOrCreateBucket` fails.
-  if (!result.ok()) {
+  if (!result.has_value()) {
     std::move(callback).Run(nullptr);
     return;
   }

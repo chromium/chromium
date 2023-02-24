@@ -150,7 +150,7 @@ class SandboxFileSystemBackendTest
         params, base::SequencedTaskRunner::GetCurrentDefault(),
         custom_future.GetCallback());
     QuotaErrorOr<BucketInfo> custom_bucket = custom_future.Take();
-    CHECK(custom_bucket.ok());
+    CHECK(custom_bucket.has_value());
     return custom_bucket.value().ToBucketLocator();
   }
 

@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBSchemaVersion) {
           ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
               blink::StorageKey::CreateFirstParty(
                   url::Origin::Create(database_open_url))));
-  ASSERT_TRUE(maybe_bucket_info.ok());
+  ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
   auto control_test = GetControlTest();
@@ -440,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NegativeDBDataVersion) {
           ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
               blink::StorageKey::CreateFirstParty(
                   url::Origin::Create(database_open_url))));
-  ASSERT_TRUE(maybe_bucket_info.ok());
+  ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
   auto control_test = GetControlTest();
@@ -774,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
           ->proxy()
           ->GetOrCreateBucketSync(
               storage::BucketInitParams::ForDefaultBucket(kTestStorageKey));
-  ASSERT_TRUE(maybe_bucket_info.ok());
+  ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
   EXPECT_EQ(0,
             RequestBlobFileCount(bucket_locator));  // Start with no blob files.
@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithCorruption,
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindLambdaForTesting(
               [&](storage::QuotaErrorOr<storage::BucketInfo> result) {
-                ASSERT_TRUE(result.ok());
+                ASSERT_TRUE(result.has_value());
                 bucket_locator = result->ToBucketLocator();
                 loop.Quit();
               }));
@@ -1239,7 +1239,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestV2SchemaCorruption, LifecycleTest) {
           ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
               blink::StorageKey::CreateFirstParty(
                   url::Origin::Create(embedded_test_server()->base_url()))));
-  ASSERT_TRUE(maybe_bucket_info.ok());
+  ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
 
   // Verify the backing store does not have corruption.
@@ -1335,7 +1335,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
           ->GetOrCreateBucketSync(storage::BucketInitParams::ForDefaultBucket(
               blink::StorageKey::CreateFirstParty(
                   url::Origin::Create(embedded_test_server()->base_url()))));
-  ASSERT_TRUE(maybe_bucket_info.ok());
+  ASSERT_TRUE(maybe_bucket_info.has_value());
   const auto bucket_locator = maybe_bucket_info->ToBucketLocator();
   int64_t next_blob_number = GetNextBlobNumber(bucket_locator, 1);
 

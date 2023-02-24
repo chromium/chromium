@@ -445,7 +445,7 @@ void FileSystemContext::OpenFileSystem(
     if (!bucket->id) {
       // This branch can be hit if the bucket has been deleted but `BucketHost`
       // is still alive.
-      std::move(got_bucket).Run(QuotaError::kUnknownError);
+      std::move(got_bucket).Run(base::unexpected(QuotaError::kUnknownError));
     } else {
       quota_manager_proxy()->GetBucketById(bucket->id, io_task_runner_.get(),
                                            std::move(got_bucket));
@@ -466,7 +466,7 @@ void FileSystemContext::OnGetOrCreateBucket(
     OpenFileSystemMode mode,
     OpenFileSystemCallback callback,
     QuotaErrorOr<BucketInfo> result) {
-  if (!result.ok()) {
+  if (!result.has_value()) {
     std::move(callback).Run(FileSystemURL(), std::string(),
                             base::File::FILE_ERROR_FAILED);
     return;

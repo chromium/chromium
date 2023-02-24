@@ -134,7 +134,7 @@ void BucketManagerHost::DidGetBucket(
     return;
   }
 
-  if (!result.ok()) {
+  if (!result.has_value()) {
     auto error = [](storage::QuotaError code) {
       switch (code) {
         case storage::QuotaError::kQuotaExceeded:
@@ -172,7 +172,7 @@ void BucketManagerHost::DidGetBucket(
 void BucketManagerHost::DidGetBuckets(
     KeysCallback callback,
     storage::QuotaErrorOr<std::set<storage::BucketInfo>> buckets) {
-  if (!buckets.ok()) {
+  if (!buckets.has_value()) {
     std::move(callback).Run({}, false);
     return;
   }

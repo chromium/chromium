@@ -215,7 +215,7 @@ class FileSystemQuotaClientTest : public testing::Test {
         {blink::StorageKey::CreateFromStringForTesting(origin), name}, type,
         future.GetCallback());
     auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
+    EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();
   }
 
@@ -227,7 +227,7 @@ class FileSystemQuotaClientTest : public testing::Test {
         blink::StorageKey::CreateFromStringForTesting(origin), name, type,
         future.GetCallback());
     auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
+    EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();
   }
 

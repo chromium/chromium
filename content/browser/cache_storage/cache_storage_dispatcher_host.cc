@@ -1022,7 +1022,7 @@ class CacheStorageDispatcherHost::CacheStorageImpl final
   void UpdateOrCreateBucketCallback(
       base::OnceCallback<void(content::CacheStorage*)> callback,
       storage::QuotaErrorOr<storage::BucketInfo> result) {
-    if (result.ok()) {
+    if (result.has_value()) {
       bucket_ = result->ToBucketLocator();
     } else {
       bucket_ = absl::nullopt;

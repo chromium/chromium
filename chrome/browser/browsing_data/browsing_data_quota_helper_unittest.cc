@@ -113,7 +113,7 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
               blink::StorageKey::CreateFromStringForTesting(data.origin)),
           data.type, future.GetCallback());
       auto bucket = future.Take();
-      EXPECT_TRUE(bucket.ok());
+      EXPECT_TRUE(bucket.has_value());
       buckets_data.insert(std::pair<storage::BucketLocator, int64_t>(
           bucket->ToBucketLocator(), data.usage));
     }

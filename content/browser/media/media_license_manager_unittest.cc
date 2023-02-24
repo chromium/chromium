@@ -76,7 +76,7 @@ class MediaLicenseManagerTest : public testing::Test {
         storage::BucketInitParams::ForDefaultBucket(storage_key),
         future.GetCallback());
     auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
+    EXPECT_TRUE(bucket.has_value());
     return bucket->ToBucketLocator();
   }
 

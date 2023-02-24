@@ -221,7 +221,7 @@ TEST_F(FileSystemContextTest, ResolveURLOnOpenFileSystem_CustomBucket) {
       base::SequencedTaskRunner::GetCurrentDefault(),
       bucket_future.GetCallback());
   auto bucket = bucket_future.Take();
-  EXPECT_TRUE(bucket.ok());
+  EXPECT_TRUE(bucket.has_value());
   ASSERT_FALSE(last_resolved_url_.has_value());
 
   file_system_context->ResolveURLOnOpenFileSystemForTesting(

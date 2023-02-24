@@ -36,7 +36,7 @@ QuotaErrorOr<BucketInfo> MockQuotaManagerProxy::GetOrCreateBucketSync(
     const BucketInitParams& params) {
   return (mock_quota_manager_)
              ? mock_quota_manager_->GetOrCreateBucketSync(params)
-             : QuotaError::kUnknownError;
+             : base::unexpected(QuotaError::kUnknownError);
 }
 
 void MockQuotaManagerProxy::CreateBucketForTesting(

@@ -137,7 +137,7 @@ void MediaLicenseManager::DidGetBucket(
   DCHECK_GT(receivers_list.size(), 0u);
 
   storage::BucketLocator bucket_locator;
-  if (result.ok()) {
+  if (result.has_value()) {
     bucket_locator = result->ToBucketLocator();
   } else {
     // Use the null locator, but update the `storage_key` field so

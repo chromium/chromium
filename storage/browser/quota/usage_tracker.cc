@@ -181,7 +181,7 @@ void UsageTracker::DidGetBucketsForType(
     QuotaErrorOr<std::set<BucketInfo>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto info = std::make_unique<AccumulateInfo>();
-  if (!result.ok()) {
+  if (!result.has_value()) {
     // Return with invalid values on error.
     info->usage = -1;
     info->unlimited_usage = -1;
@@ -224,7 +224,7 @@ void UsageTracker::DidGetBucketsForStorageKey(
     QuotaErrorOr<std::set<BucketInfo>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto info = std::make_unique<AccumulateInfo>();
-  if (!result.ok()) {
+  if (!result.has_value()) {
     // Return with invalid values on error.
     info->usage = -1;
     info->unlimited_usage = -1;

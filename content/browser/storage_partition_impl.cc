@@ -2668,7 +2668,7 @@ void StoragePartitionImpl::RetrieveBucketsForClearingDone(
   DCHECK(initialized_);
   DCHECK(callback);
 
-  if (!buckets.ok() || buckets->empty()) {
+  if (!buckets.has_value() || buckets->empty()) {
     std::move(callback).Run();
     return;
   }

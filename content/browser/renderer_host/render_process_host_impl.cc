@@ -2078,7 +2078,8 @@ void RenderProcessHostImpl::CreateLockManagerWithBucketInfo(
     mojo::PendingReceiver<blink::mojom::LockManager> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket) {
   storage_partition_impl_->GetLockManager()->BindReceiver(
-      bucket.ok() ? bucket->id : storage::BucketId(), std::move(receiver));
+      bucket.has_value() ? bucket->id : storage::BucketId(),
+      std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreatePermissionService(
