@@ -118,7 +118,7 @@ class IbanBubbleViewFullFormBrowserTest
                              ->GetFormDataImporter()
                              ->iban_save_manager_for_testing();
     iban_save_manager_->SetEventObserverForTesting(this);
-    AddEventObserverAndResetBubbleTypeToController();
+    AddEventObserverToController();
   }
 
   // The primary main frame's AutofillManager.
@@ -313,14 +313,12 @@ class IbanBubbleViewFullFormBrowserTest
     return GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
   }
 
-  void AddEventObserverAndResetBubbleTypeToController() {
+  void AddEventObserverToController() {
     IbanBubbleControllerImpl* save_iban_bubble_controller_impl =
         static_cast<IbanBubbleControllerImpl*>(
             IbanBubbleController::GetOrCreate(GetActiveWebContents()));
     CHECK(save_iban_bubble_controller_impl);
     save_iban_bubble_controller_impl->SetEventObserverForTesting(this);
-    save_iban_bubble_controller_impl->SetBubbleTypeToLocalSaveForTesting(
-        IbanBubbleType::kLocalSave);
   }
 
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence) {
