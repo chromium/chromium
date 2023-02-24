@@ -95,7 +95,7 @@ suite('PerDeviceMouseSubsection', function() {
     updatedMice = await provider.getConnectedMouseSettings();
     assertEquals(
         updatedMice[0].settings.reverseScrolling,
-        subsection.reverseScrollValue);
+        mouseReverseScrollToggleButton.checked);
 
     const mouseScrollAccelerationToggleButton =
         subsection.shadowRoot.querySelector('#mouseScrollAcceleration');
