@@ -37,9 +37,7 @@ class HintsComponentUtilTest : public testing::Test {
                          const proto::Configuration& config) {
     std::string serialized_config;
     ASSERT_TRUE(config.SerializeToString(&serialized_config));
-    ASSERT_EQ(static_cast<int32_t>(serialized_config.length()),
-              base::WriteFile(filePath, serialized_config.data(),
-                              serialized_config.length()));
+    ASSERT_TRUE(base::WriteFile(filePath, serialized_config));
   }
 
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
@@ -86,7 +84,7 @@ TEST_F(HintsComponentUtilTest, ProcessHintsComponentInvalidFile) {
 
 TEST_F(HintsComponentUtilTest, ProcessHintsComponentNotAConfigInFile) {
   const base::FilePath filePath = temp_dir().Append(kFileName);
-  ASSERT_EQ(static_cast<int32_t>(3), base::WriteFile(filePath, "boo", 3));
+  ASSERT_TRUE(base::WriteFile(filePath, "boo"));
 
   ProcessHintsComponentResult result;
   std::unique_ptr<proto::Configuration> config = ProcessHintsComponent(

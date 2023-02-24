@@ -231,7 +231,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
     ASSERT_TRUE(base::CreateDirectory(zip_dir));
     if (status ==
         PredictionModelDownloadFileStatus::kVerifiedCrxWithBadModelInfoFile) {
-      base::WriteFile(zip_dir.AppendASCII("model-info.pb"), "boo", 3);
+      base::WriteFile(zip_dir.AppendASCII("model-info.pb"), "boo");
     } else {
       proto::ModelInfo model_info;
       model_info.set_optimization_target(
@@ -244,13 +244,11 @@ class PredictionModelDownloadManagerTest : public testing::Test {
 
       std::string serialized_model_info;
       ASSERT_TRUE(model_info.SerializeToString(&serialized_model_info));
-      ASSERT_EQ(static_cast<int32_t>(serialized_model_info.length()),
-                base::WriteFile(zip_dir.AppendASCII("model-info.pb"),
-                                serialized_model_info.data(),
-                                serialized_model_info.length()));
+      ASSERT_TRUE(base::WriteFile(zip_dir.AppendASCII("model-info.pb"),
+                                  serialized_model_info));
       if (status ==
           PredictionModelDownloadFileStatus::kVerifiedCrxWithGoodModelFiles) {
-        base::WriteFile(zip_dir.AppendASCII("model.tflite"), "model", 5);
+        base::WriteFile(zip_dir.AppendASCII("model.tflite"), "model");
       }
     }
     ASSERT_TRUE(
