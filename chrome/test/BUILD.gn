@@ -6228,7 +6228,7 @@ test("unit_tests") {
       "../browser/chrome_browser_main_win_unittest.cc",
       "../browser/chrome_process_singleton_win_unittest.cc",
       "../browser/component_updater/sw_reporter_installer_win_unittest.cc",
-      "../browser/device_reauth/win/biometric_authenticator_win_unittest.cc",
+      "../browser/device_reauth/win/device_authenticator_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_provider_win_unittest.cc",
       "../browser/enterprise/platform_auth/cloud_ap_utils_win_unittest.cc",
       "../browser/enterprise/platform_auth/platform_auth_navigation_throttle_unittest.cc",
@@ -6351,7 +6351,7 @@ test("unit_tests") {
       "../../testing/gtest_mac_unittest.mm",
       "../browser/app_controller_mac_unittest.mm",
       "../browser/apps/app_shim/mach_bootstrap_acceptor_unittest.mm",
-      "../browser/device_reauth/mac/biometric_authenticator_mac_unittest.mm",
+      "../browser/device_reauth/mac/device_authenticator_mac_unittest.mm",
       "../browser/global_keyboard_shortcuts_mac_unittest.mm",
       "../browser/mac/auth_session_request_unittest.mm",
       "../browser/mac/exception_processor_unittest.mm",
@@ -6443,7 +6443,9 @@ test("unit_tests") {
   }
 
   if (is_win || is_mac || is_android) {
-    sources += [ "../browser/device_reauth/chrome_biometric_authenticator_common_unittest.cc" ]
+    sources += [
+      "../browser/device_reauth/chrome_device_authenticator_common_unittest.cc",
+    ]
   }
 
   if (enable_dice_support) {
@@ -6561,7 +6563,7 @@ test("unit_tests") {
       "../browser/autofill/credit_card_accessory_controller_impl_unittest.cc",
       "../browser/autofill/manual_filling_controller_impl_unittest.cc",
       "../browser/commerce/merchant_viewer/merchant_viewer_data_manager_unittest.cc",
-      "../browser/device_reauth/android/biometric_authenticator_android_unittest.cc",
+      "../browser/device_reauth/android/device_authenticator_android_unittest.cc",
       "../browser/download/android/available_offline_content_provider_unittest.cc",
       "../browser/download/android/download_manager_service_unittest.cc",
       "../browser/enterprise/util/android_enterprise_info_unittest.cc",

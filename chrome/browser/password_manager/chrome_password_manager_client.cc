@@ -23,7 +23,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -480,7 +480,7 @@ void ChromePasswordManagerClient::ShowTouchToFill(
           .GetCredentials(),
       passkeys,
       std::make_unique<TouchToFillControllerAutofillDelegate>(
-          this, GetBiometricAuthenticator(), driver->AsWeakPtr(),
+          this, GetDeviceAuthenticator(), driver->AsWeakPtr(),
           submission_readiness));
 }
 
@@ -490,10 +490,10 @@ void ChromePasswordManagerClient::OnPasswordSelected(
 }
 #endif
 
-scoped_refptr<device_reauth::BiometricAuthenticator>
-ChromePasswordManagerClient::GetBiometricAuthenticator() {
+scoped_refptr<device_reauth::DeviceAuthenticator>
+ChromePasswordManagerClient::GetDeviceAuthenticator() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  return ChromeBiometricAuthenticatorFactory::GetBiometricAuthenticator();
+  return ChromeDeviceAuthenticatorFactory::GetDeviceAuthenticator();
 #else
   return nullptr;
 #endif

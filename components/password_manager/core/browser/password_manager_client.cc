@@ -6,7 +6,7 @@
 
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -44,8 +44,8 @@ void PasswordManagerClient::ShowTouchToFill(
 void PasswordManagerClient::OnPasswordSelected(const std::u16string& text) {}
 #endif
 
-scoped_refptr<device_reauth::BiometricAuthenticator>
-PasswordManagerClient::GetBiometricAuthenticator() {
+scoped_refptr<device_reauth::DeviceAuthenticator>
+PasswordManagerClient::GetDeviceAuthenticator() {
   return nullptr;
 }
 

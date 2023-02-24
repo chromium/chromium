@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/device_reauth/mac/biometric_authenticator_mac.h"
+#include "chrome/browser/device_reauth/mac/device_authenticator_mac.h"
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "device/fido/mac/touch_id_context.h"
 
-BiometricAuthenticatorMac::BiometricAuthenticatorMac() = default;
+DeviceAuthenticatorMac::DeviceAuthenticatorMac() = default;
 
-BiometricAuthenticatorMac::~BiometricAuthenticatorMac() = default;
+DeviceAuthenticatorMac::~DeviceAuthenticatorMac() = default;
 
-bool BiometricAuthenticatorMac::CanAuthenticate(
-    device_reauth::BiometricAuthRequester requester) {
+bool DeviceAuthenticatorMac::CanAuthenticate(
+    device_reauth::DeviceAuthRequester requester) {
   base::scoped_nsobject<LAContext> context([[LAContext alloc] init]);
   bool is_available =
       [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
@@ -32,14 +32,14 @@ bool BiometricAuthenticatorMac::CanAuthenticate(
   return is_available;
 }
 
-void BiometricAuthenticatorMac::Authenticate(
-    device_reauth::BiometricAuthRequester requester,
+void DeviceAuthenticatorMac::Authenticate(
+    device_reauth::DeviceAuthRequester requester,
     AuthenticateCallback callback,
     bool use_last_valid_auth) {
   NOTIMPLEMENTED();
 }
 
-void BiometricAuthenticatorMac::Cancel(device_reauth::BiometricAuthRequester) {
+void DeviceAuthenticatorMac::Cancel(device_reauth::DeviceAuthRequester) {
   touch_id_auth_context_ = nullptr;
   if (callback_) {
     // No code should be run after the callback as the callback could already be
@@ -48,8 +48,8 @@ void BiometricAuthenticatorMac::Cancel(device_reauth::BiometricAuthRequester) {
   }
 }
 
-void BiometricAuthenticatorMac::AuthenticateWithMessage(
-    device_reauth::BiometricAuthRequester requester,
+void DeviceAuthenticatorMac::AuthenticateWithMessage(
+    device_reauth::DeviceAuthRequester requester,
     const std::u16string& message,
     AuthenticateCallback callback) {
   // Callers must ensure that previous authentication is canceled.
@@ -66,11 +66,11 @@ void BiometricAuthenticatorMac::AuthenticateWithMessage(
 
   touch_id_auth_context_->PromptTouchId(
       message,
-      base::BindOnce(&BiometricAuthenticatorMac::OnAuthenticationCompleted,
+      base::BindOnce(&DeviceAuthenticatorMac::OnAuthenticationCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BiometricAuthenticatorMac::OnAuthenticationCompleted(bool success) {
+void DeviceAuthenticatorMac::OnAuthenticationCompleted(bool success) {
   touch_id_auth_context_ = nullptr;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!callback_) {

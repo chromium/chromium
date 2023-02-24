@@ -10984,29 +10984,6 @@ Called by update_bad_message_reasons.py.-->
       label="A biometric verifier device is not configured for this user."/>
 </enum>
 
-<enum name="BiometricAuthRequester">
-  <int value="0" label="Touch-to-Fill"/>
-  <int value="1" label="Autofill suggestion(dropdown or accessory)"/>
-  <int value="2" label="Manual fallback sheet"/>
-  <int value="3" label="List of all passwords"/>
-  <int value="4" label="Account chooser dialog"/>
-  <int value="5" label="Password check - Automated password change"/>
-  <int value="6" label="Incognito reauthentication flow"/>
-  <int value="7" label="Passwords in settings"/>
-</enum>
-
-<enum name="BiometricAuthResult">
-  <int value="0" label="Success with unknown method"/>
-  <int value="1" label="Success with biometrics"/>
-  <int value="2" label="Success with device lock"/>
-  <int value="3" label="Cancelled by user"/>
-  <int value="4" label="Failed"/>
-  <int value="5" label="Success, but cancelled by Chrome. Deprecated in M97."/>
-  <int value="6" label="Failed and cancelled by Chrome. Deprecated in M97."/>
-  <int value="7" label="Auth still valid"/>
-  <int value="8" label="Cancelled by Chrome"/>
-</enum>
-
 <enum name="BiometricsAvailability">
   <int value="0" label="Other error"/>
   <int value="1" label="Available"/>
@@ -25924,6 +25901,29 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
       label="DeviceActivityClientOnSaveLastPingDatesStatusComplete"/>
   <int value="26" label="DeviceActivityClientGetLastPingDatesStatus"/>
   <int value="27" label="DeviceActivityClientOnGetLastPingDatesStatusFetched"/>
+</enum>
+
+<enum name="DeviceAuthFinalResult">
+  <int value="0" label="Success with unknown method"/>
+  <int value="1" label="Success with biometrics"/>
+  <int value="2" label="Success with device lock"/>
+  <int value="3" label="Cancelled by user"/>
+  <int value="4" label="Failed"/>
+  <int value="5" label="Success, but cancelled by Chrome. Deprecated in M97."/>
+  <int value="6" label="Failed and cancelled by Chrome. Deprecated in M97."/>
+  <int value="7" label="Auth still valid"/>
+  <int value="8" label="Cancelled by Chrome"/>
+</enum>
+
+<enum name="DeviceAuthRequester">
+  <int value="0" label="Touch-to-Fill"/>
+  <int value="1" label="Autofill suggestion(dropdown or accessory)"/>
+  <int value="2" label="Manual fallback sheet"/>
+  <int value="3" label="List of all passwords"/>
+  <int value="4" label="Account chooser dialog"/>
+  <int value="5" label="Password check - Automated password change"/>
+  <int value="6" label="Incognito reauthentication flow"/>
+  <int value="7" label="Passwords in settings"/>
 </enum>
 
 <enum name="DeviceEnumerationResult">

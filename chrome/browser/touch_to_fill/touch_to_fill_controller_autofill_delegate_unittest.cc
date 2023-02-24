@@ -19,8 +19,8 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
-#include "components/device_reauth/biometric_authenticator.h"
-#include "components/device_reauth/mock_biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
@@ -40,8 +40,8 @@ using ShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ShowVirtualKeyboard;
 using autofill::mojom::SubmissionReadinessState;
 using base::test::RunOnceCallback;
-using device_reauth::BiometricAuthRequester;
-using device_reauth::MockBiometricAuthenticator;
+using device_reauth::DeviceAuthRequester;
+using device_reauth::MockDeviceAuthenticator;
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 using ::testing::_;
@@ -130,7 +130,7 @@ class TouchToFillControllerAutofillTest : public testing::Test {
         .WillByDefault(ReturnRefOfCopy(GURL(kExampleCom)));
     // By default, disable biometric authentication.
     ON_CALL(*authenticator(),
-            CanAuthenticate(BiometricAuthRequester::kTouchToFill))
+            CanAuthenticate(DeviceAuthRequester::kTouchToFill))
         .WillByDefault(Return(false));
 
     // By default, don't trigger a form submission.
@@ -151,7 +151,7 @@ class TouchToFillControllerAutofillTest : public testing::Test {
 
   MockTouchToFillView& view() { return *mock_view_; }
 
-  MockBiometricAuthenticator* authenticator() { return authenticator_.get(); }
+  MockDeviceAuthenticator* authenticator() { return authenticator_.get(); }
 
   ukm::TestAutoSetUkmRecorder& test_recorder() { return test_recorder_; }
 
@@ -182,8 +182,8 @@ class TouchToFillControllerAutofillTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<MockTouchToFillView> mock_view_ = nullptr;
-  scoped_refptr<MockBiometricAuthenticator> authenticator_ =
-      base::MakeRefCounted<MockBiometricAuthenticator>();
+  scoped_refptr<MockDeviceAuthenticator> authenticator_ =
+      base::MakeRefCounted<MockDeviceAuthenticator>();
   MockPasswordManagerDriver driver_;
   MockPasswordManagerClient client_;
   std::unique_ptr<password_manager::MockWebAuthnCredentialsDelegate>
@@ -374,7 +374,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_No_Auth_Available) {
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
 
   EXPECT_CALL(*authenticator(),
-              CanAuthenticate(BiometricAuthRequester::kTouchToFill))
+              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
       .WillOnce(Return(false));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
@@ -410,10 +410,10 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
 
   EXPECT_CALL(*authenticator(),
-              CanAuthenticate(BiometricAuthRequester::kTouchToFill))
+              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
-              Authenticate(BiometricAuthRequester::kTouchToFill, _,
+              Authenticate(DeviceAuthRequester::kTouchToFill, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(true));
   EXPECT_CALL(driver(), TriggerFormSubmission());
@@ -440,10 +440,10 @@ TEST_F(TouchToFillControllerAutofillTest,
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(true)));
 
   EXPECT_CALL(*authenticator(),
-              CanAuthenticate(BiometricAuthRequester::kTouchToFill))
+              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
-              Authenticate(BiometricAuthRequester::kTouchToFill, _,
+              Authenticate(DeviceAuthRequester::kTouchToFill, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
@@ -513,7 +513,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_And_Fill_Android_Credential) {
                                        std::u16string(u"s3cr3t")));
   EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
   EXPECT_CALL(*authenticator(),
-              CanAuthenticate(BiometricAuthRequester::kTouchToFill))
+              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
       .WillOnce(Return(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[1]);
   histogram_tester().ExpectUniqueSample(
@@ -648,14 +648,14 @@ TEST_F(TouchToFillControllerAutofillTest, DestroyedWhileAuthRunning) {
           autofill::mojom::SubmissionReadinessState::kNoInformation));
 
   EXPECT_CALL(*authenticator(),
-              CanAuthenticate(BiometricAuthRequester::kTouchToFill))
+              CanAuthenticate(DeviceAuthRequester::kTouchToFill))
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator(),
-              Authenticate(BiometricAuthRequester::kTouchToFill, _,
+              Authenticate(DeviceAuthRequester::kTouchToFill, _,
                            /*use_last_valid_auth=*/true));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
 
-  EXPECT_CALL(*authenticator(), Cancel(BiometricAuthRequester::kTouchToFill));
+  EXPECT_CALL(*authenticator(), Cancel(DeviceAuthRequester::kTouchToFill));
 }
 
 TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {

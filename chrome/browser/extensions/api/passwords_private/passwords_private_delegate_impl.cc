@@ -59,7 +59,7 @@
 #include "url/scheme_host_port.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif
 
@@ -199,11 +199,11 @@ extensions::api::passwords_private::ImportResults ConvertImportResults(
 
 using password_manager::prefs::kBiometricAuthenticationBeforeFilling;
 
-scoped_refptr<device_reauth::BiometricAuthenticator> GetBiometricAuthenticator(
+scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
     content::WebContents* web_contents) {
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   DCHECK(client);
-  return client->GetBiometricAuthenticator();
+  return client->GetDeviceAuthenticator();
 }
 
 void ChangeBiometricAuthenticationBeforeFillingSetting(PrefService* prefs,
@@ -489,9 +489,9 @@ void PasswordsPrivateDelegateImpl::OsReauthCall(
       std::move(callback));
 #elif BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1358442): Remove this check.
-  if (GetBiometricAuthenticator(web_contents_)
+  if (GetDeviceAuthenticator(web_contents_)
           ->CanAuthenticate(
-              device_reauth::BiometricAuthRequester::kPasswordsInSettings) &&
+              device_reauth::DeviceAuthRequester::kPasswordsInSettings) &&
       base::FeatureList::IsEnabled(
           password_manager::features::kBiometricAuthenticationInSettings)) {
     AuthenticateWithBiometrics(
@@ -937,16 +937,16 @@ void PasswordsPrivateDelegateImpl::AuthenticateWithBiometrics(
     // TODO(crbug.com/1371026): Remove Cancel and instead simply destroy
     // |biometric_authenticator_|.
     biometric_authenticator_->Cancel(
-        device_reauth::BiometricAuthRequester::kPasswordsInSettings);
+        device_reauth::DeviceAuthRequester::kPasswordsInSettings);
   }
-  biometric_authenticator_ = GetBiometricAuthenticator(web_contents_);
+  biometric_authenticator_ = GetDeviceAuthenticator(web_contents_);
 
   base::OnceClosure on_reauth_completed =
       base::BindOnce(&PasswordsPrivateDelegateImpl::OnReauthCompleted,
                      weak_ptr_factory_.GetWeakPtr());
 
   biometric_authenticator_->AuthenticateWithMessage(
-      device_reauth::BiometricAuthRequester::kPasswordsInSettings, message,
+      device_reauth::DeviceAuthRequester::kPasswordsInSettings, message,
       std::move(callback).Then(std::move(on_reauth_completed)));
 #endif
 }

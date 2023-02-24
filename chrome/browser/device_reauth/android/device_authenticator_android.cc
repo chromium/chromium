@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/device_reauth/android/biometric_authenticator_android.h"
+#include "chrome/browser/device_reauth/android/device_authenticator_android.h"
 
 #include <memory>
 #include <utility>
@@ -16,9 +16,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "chrome/browser/device_reauth/android/biometric_authenticator_bridge_impl.h"
+#include "chrome/browser/device_reauth/android/device_authenticator_bridge_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -28,69 +28,69 @@
 #include "ui/android/view_android.h"
 
 using content::WebContents;
-using device_reauth::BiometricAuthUIResult;
 using device_reauth::BiometricsAvailability;
+using device_reauth::DeviceAuthUIResult;
 using password_manager::UiCredential;
 
 namespace {
 
-bool IsSuccessfulResult(BiometricAuthUIResult result) {
-  return result == BiometricAuthUIResult::kSuccessWithUnknownMethod ||
-         result == BiometricAuthUIResult::kSuccessWithBiometrics ||
-         result == BiometricAuthUIResult::kSuccessWithDeviceLock;
+bool IsSuccessfulResult(DeviceAuthUIResult result) {
+  return result == DeviceAuthUIResult::kSuccessWithUnknownMethod ||
+         result == DeviceAuthUIResult::kSuccessWithBiometrics ||
+         result == DeviceAuthUIResult::kSuccessWithDeviceLock;
 }
 
-BiometricAuthFinalResult MapUIResultToFinal(BiometricAuthUIResult result) {
+DeviceAuthFinalResult MapUIResultToFinal(DeviceAuthUIResult result) {
   switch (result) {
-    case BiometricAuthUIResult::kSuccessWithUnknownMethod:
-      return BiometricAuthFinalResult::kSuccessWithUnknownMethod;
-    case BiometricAuthUIResult::kSuccessWithBiometrics:
-      return BiometricAuthFinalResult::kSuccessWithBiometrics;
-    case BiometricAuthUIResult::kSuccessWithDeviceLock:
-      return BiometricAuthFinalResult::kSuccessWithDeviceLock;
-    case BiometricAuthUIResult::kCanceledByUser:
-      return BiometricAuthFinalResult::kCanceledByUser;
-    case BiometricAuthUIResult::kFailed:
-      return BiometricAuthFinalResult::kFailed;
+    case DeviceAuthUIResult::kSuccessWithUnknownMethod:
+      return DeviceAuthFinalResult::kSuccessWithUnknownMethod;
+    case DeviceAuthUIResult::kSuccessWithBiometrics:
+      return DeviceAuthFinalResult::kSuccessWithBiometrics;
+    case DeviceAuthUIResult::kSuccessWithDeviceLock:
+      return DeviceAuthFinalResult::kSuccessWithDeviceLock;
+    case DeviceAuthUIResult::kCanceledByUser:
+      return DeviceAuthFinalResult::kCanceledByUser;
+    case DeviceAuthUIResult::kFailed:
+      return DeviceAuthFinalResult::kFailed;
   }
 }
 
 // Checks whether authentication request was made by the password manager on
 // Android.
 bool isAndroidPasswordManagerRequester(
-    const device_reauth::BiometricAuthRequester& requester) {
+    const device_reauth::DeviceAuthRequester& requester) {
   switch (requester) {
-    case device_reauth::BiometricAuthRequester::kTouchToFill:
-    case device_reauth::BiometricAuthRequester::kAutofillSuggestion:
-    case device_reauth::BiometricAuthRequester::kFallbackSheet:
-    case device_reauth::BiometricAuthRequester::kAllPasswordsList:
-    case device_reauth::BiometricAuthRequester::kAccountChooserDialog:
-    case device_reauth::BiometricAuthRequester::kPasswordCheckAutoPwdChange:
+    case device_reauth::DeviceAuthRequester::kTouchToFill:
+    case device_reauth::DeviceAuthRequester::kAutofillSuggestion:
+    case device_reauth::DeviceAuthRequester::kFallbackSheet:
+    case device_reauth::DeviceAuthRequester::kAllPasswordsList:
+    case device_reauth::DeviceAuthRequester::kAccountChooserDialog:
+    case device_reauth::DeviceAuthRequester::kPasswordCheckAutoPwdChange:
       return true;
-    case device_reauth::BiometricAuthRequester::kIncognitoReauthPage:
+    case device_reauth::DeviceAuthRequester::kIncognitoReauthPage:
     // kPasswordsInSettings flag is used only for desktop.
-    case device_reauth::BiometricAuthRequester::kPasswordsInSettings:
+    case device_reauth::DeviceAuthRequester::kPasswordsInSettings:
       return false;
   }
 }
 
-void LogAuthResult(const device_reauth::BiometricAuthRequester& requester,
-                   const BiometricAuthFinalResult& result) {
+void LogAuthResult(const device_reauth::DeviceAuthRequester& requester,
+                   const DeviceAuthFinalResult& result) {
   if (isAndroidPasswordManagerRequester(requester)) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BiometricAuthPwdFill.AuthResult", result);
-  } else if (device_reauth::BiometricAuthRequester::kIncognitoReauthPage ==
+  } else if (device_reauth::DeviceAuthRequester::kIncognitoReauthPage ==
              requester) {
     base::UmaHistogramEnumeration("Android.IncognitoReauth.AuthResult", result);
   }
 }
 
-void LogAuthRequester(const device_reauth::BiometricAuthRequester& requester) {
+void LogAuthRequester(const device_reauth::DeviceAuthRequester& requester) {
   base::UmaHistogramEnumeration("Android.BiometricAuth.AuthRequester",
                                 requester);
 }
 
-void LogCanAuthenticate(const device_reauth::BiometricAuthRequester& requester,
+void LogCanAuthenticate(const device_reauth::DeviceAuthRequester& requester,
                         const BiometricsAvailability& availability) {
   if (isAndroidPasswordManagerRequester(requester)) {
     base::UmaHistogramEnumeration(
@@ -100,16 +100,15 @@ void LogCanAuthenticate(const device_reauth::BiometricAuthRequester& requester,
 
 }  // namespace
 
-BiometricAuthenticatorAndroid::BiometricAuthenticatorAndroid(
-    std::unique_ptr<BiometricAuthenticatorBridge> bridge)
+DeviceAuthenticatorAndroid::DeviceAuthenticatorAndroid(
+    std::unique_ptr<DeviceAuthenticatorBridge> bridge)
     : bridge_(std::move(bridge)) {}
 
-BiometricAuthenticatorAndroid::~BiometricAuthenticatorAndroid() {}
+DeviceAuthenticatorAndroid::~DeviceAuthenticatorAndroid() = default;
 
-bool BiometricAuthenticatorAndroid::CanAuthenticate(
-    device_reauth::BiometricAuthRequester requester) {
-  if (requester ==
-      device_reauth::BiometricAuthRequester::kIncognitoReauthPage) {
+bool DeviceAuthenticatorAndroid::CanAuthenticate(
+    device_reauth::DeviceAuthRequester requester) {
+  if (requester == device_reauth::DeviceAuthRequester::kIncognitoReauthPage) {
     return bridge_->CanAuthenticateWithBiometricOrScreenLock();
   }
 
@@ -118,13 +117,14 @@ bool BiometricAuthenticatorAndroid::CanAuthenticate(
   return availability == BiometricsAvailability::kAvailable;
 }
 
-void BiometricAuthenticatorAndroid::Authenticate(
-    device_reauth::BiometricAuthRequester requester,
+void DeviceAuthenticatorAndroid::Authenticate(
+    device_reauth::DeviceAuthRequester requester,
     AuthenticateCallback callback,
     bool use_last_valid_auth) {
   // Previous authentication is not yet completed, so return.
-  if (callback_ || requester_.has_value())
+  if (callback_ || requester_.has_value()) {
     return;
+  }
 
   callback_ = std::move(callback);
   requester_ = requester;
@@ -132,32 +132,33 @@ void BiometricAuthenticatorAndroid::Authenticate(
   LogAuthRequester(requester);
 
   if (use_last_valid_auth && !NeedsToAuthenticate()) {
-    LogAuthResult(requester, BiometricAuthFinalResult::kAuthStillValid);
+    LogAuthResult(requester, DeviceAuthFinalResult::kAuthStillValid);
     std::move(callback_).Run(/*success=*/true);
     requester_ = absl::nullopt;
     return;
   }
   // `this` owns the bridge so it's safe to use base::Unretained.
   bridge_->Authenticate(
-      base::BindOnce(&BiometricAuthenticatorAndroid::OnAuthenticationCompleted,
+      base::BindOnce(&DeviceAuthenticatorAndroid::OnAuthenticationCompleted,
                      base::Unretained(this)));
 }
 
-void BiometricAuthenticatorAndroid::AuthenticateWithMessage(
-    device_reauth::BiometricAuthRequester requester,
+void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
+    device_reauth::DeviceAuthRequester requester,
     const std::u16string& message,
     AuthenticateCallback callback) {
   NOTIMPLEMENTED();
 }
 
-void BiometricAuthenticatorAndroid::Cancel(
-    device_reauth::BiometricAuthRequester requester) {
+void DeviceAuthenticatorAndroid::Cancel(
+    device_reauth::DeviceAuthRequester requester) {
   // The object cancelling the auth is not the same as the one to which
   // the ongoing auth corresponds.
-  if (!requester_.has_value() || requester != requester_.value())
+  if (!requester_.has_value() || requester != requester_.value()) {
     return;
+  }
 
-  LogAuthResult(requester, BiometricAuthFinalResult::kCanceledByChrome);
+  LogAuthResult(requester, DeviceAuthFinalResult::kCanceledByChrome);
 
   callback_.Reset();
   requester_ = absl::nullopt;
@@ -165,18 +166,18 @@ void BiometricAuthenticatorAndroid::Cancel(
 }
 
 // static
-scoped_refptr<BiometricAuthenticatorAndroid>
-BiometricAuthenticatorAndroid::CreateForTesting(
-    std::unique_ptr<BiometricAuthenticatorBridge> bridge) {
+scoped_refptr<DeviceAuthenticatorAndroid>
+DeviceAuthenticatorAndroid::CreateForTesting(
+    std::unique_ptr<DeviceAuthenticatorBridge> bridge) {
   return base::WrapRefCounted(
-      new BiometricAuthenticatorAndroid(std::move(bridge)));
+      new DeviceAuthenticatorAndroid(std::move(bridge)));
 }
 
-void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(
-    BiometricAuthUIResult ui_result) {
+void DeviceAuthenticatorAndroid::OnAuthenticationCompleted(
+    DeviceAuthUIResult ui_result) {
   // OnAuthenticationCompleted is called aysnchronously and by the time it's
   // invoked Chrome can cancel the authentication via
-  // BiometricAuthenticatorAndroid::Cancel which resets the callback_.
+  // DeviceAuthenticatorAndroid::Cancel which resets the callback_.
   if (callback_.is_null()) {
     return;
   }

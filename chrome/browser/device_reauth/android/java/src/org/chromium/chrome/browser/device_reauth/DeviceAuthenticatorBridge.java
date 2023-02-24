@@ -28,16 +28,16 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.concurrent.Executor;
 
-class BiometricAuthenticatorBridge {
+class DeviceAuthenticatorBridge {
     private CancellationSignal mCancellationSignal;
     private final Context mContext;
-    private long mNativeBiometricAuthenticator;
+    private long mNativeDeviceAuthenticator;
     private BiometricPrompt mBiometricPrompt;
 
-    private BiometricAuthenticatorBridge(long nativeBiometricAuthenticator) {
-        mNativeBiometricAuthenticator = nativeBiometricAuthenticator;
+    private DeviceAuthenticatorBridge(long nativeDeviceAuthenticator) {
+        mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
         mContext = ContextUtils.getApplicationContext();
-        mNativeBiometricAuthenticator = nativeBiometricAuthenticator;
+        mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             BiometricPrompt.Builder promptBuilder = new BiometricPrompt.Builder(mContext).setTitle(
                     mContext.getResources().getString(
@@ -49,8 +49,8 @@ class BiometricAuthenticatorBridge {
     }
 
     @CalledByNative
-    private static BiometricAuthenticatorBridge create(long nativeBiometricAuthenticator) {
-        return new BiometricAuthenticatorBridge(nativeBiometricAuthenticator);
+    private static DeviceAuthenticatorBridge create(long nativeDeviceAuthenticator) {
+        return new DeviceAuthenticatorBridge(nativeDeviceAuthenticator);
     }
 
     @CalledByNative
@@ -109,10 +109,10 @@ class BiometricAuthenticatorBridge {
                             int errorCode, @NonNull CharSequence errString) {
                         super.onAuthenticationError(errorCode, errString);
                         if (errorCode == BiometricPrompt.BIOMETRIC_ERROR_USER_CANCELED) {
-                            onAuthenticationCompleted(BiometricAuthUIResult.CANCELED_BY_USER);
+                            onAuthenticationCompleted(DeviceAuthUIResult.CANCELED_BY_USER);
                             return;
                         }
-                        onAuthenticationCompleted(BiometricAuthUIResult.FAILED);
+                        onAuthenticationCompleted(DeviceAuthUIResult.FAILED);
                     }
 
                     @Override
@@ -121,32 +121,31 @@ class BiometricAuthenticatorBridge {
                         super.onAuthenticationSucceeded(result);
                         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
                             onAuthenticationCompleted(
-                                    BiometricAuthUIResult.SUCCESS_WITH_UNKNOWN_METHOD);
+                                    DeviceAuthUIResult.SUCCESS_WITH_UNKNOWN_METHOD);
                             return;
                         }
 
                         if (result.getAuthenticationType()
                                 == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_BIOMETRIC) {
-                            onAuthenticationCompleted(
-                                    BiometricAuthUIResult.SUCCESS_WITH_BIOMETRICS);
+                            onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_BIOMETRICS);
                             return;
                         }
-                        onAuthenticationCompleted(BiometricAuthUIResult.SUCCESS_WITH_DEVICE_LOCK);
+                        onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_DEVICE_LOCK);
                     }
                 });
     }
 
-    void onAuthenticationCompleted(@BiometricAuthUIResult int result) {
+    void onAuthenticationCompleted(@DeviceAuthUIResult int result) {
         mCancellationSignal = null;
-        if (mNativeBiometricAuthenticator != 0) {
-            BiometricAuthenticatorBridgeJni.get().onAuthenticationCompleted(
-                    mNativeBiometricAuthenticator, result);
+        if (mNativeDeviceAuthenticator != 0) {
+            DeviceAuthenticatorBridgeJni.get().onAuthenticationCompleted(
+                    mNativeDeviceAuthenticator, result);
         }
     }
 
     @CalledByNative
     void destroy() {
-        mNativeBiometricAuthenticator = 0;
+        mNativeDeviceAuthenticator = 0;
         cancel();
     }
 
@@ -164,6 +163,6 @@ class BiometricAuthenticatorBridge {
 
     @NativeMethods
     interface Natives {
-        void onAuthenticationCompleted(long nativeBiometricAuthenticatorBridgeImpl, int result);
+        void onAuthenticationCompleted(long nativeDeviceAuthenticatorBridgeImpl, int result);
     }
 }

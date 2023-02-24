@@ -21,7 +21,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_porter.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
@@ -255,7 +255,7 @@ class PasswordsPrivateDelegateImpl
   raw_ptr<content::WebContents> web_contents_;
 
   // Biometric authenticator used to authenticate user on Mac in settings.
-  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator_;
+  scoped_refptr<device_reauth::DeviceAuthenticator> biometric_authenticator_;
 
   base::WeakPtrFactory<PasswordsPrivateDelegateImpl> weak_ptr_factory_{this};
 };

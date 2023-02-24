@@ -30,7 +30,7 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -501,13 +501,13 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsIncognito());
 
       CancelBiometricReauthIfOngoing();
-      scoped_refptr<device_reauth::BiometricAuthenticator> authenticator =
-          password_client_->GetBiometricAuthenticator();
+      scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
+          password_client_->GetDeviceAuthenticator();
       // Note: this is currently only implemented on Android, Mac and Windows.
       // For other platforms, the `authenticator` will be null.
       if (!password_manager_util::CanUseBiometricAuth(
               authenticator.get(),
-              device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+              device_reauth::DeviceAuthRequester::kAutofillSuggestion,
               password_client_)) {
         bool success = FillSuggestion(
             GetUsernameFromSuggestion(suggestion.main_text.value),
@@ -517,7 +517,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
         authenticator_ = std::move(authenticator);
 #if BUILDFLAG(IS_ANDROID)
         authenticator_->Authenticate(
-            device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+            device_reauth::DeviceAuthRequester::kAutofillSuggestion,
             base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
                            weak_ptr_factory_.GetWeakPtr(),
                            suggestion.main_text.value, suggestion.frontend_id),
@@ -533,7 +533,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                            suggestion.main_text.value, suggestion.frontend_id);
 
         authenticator_->AuthenticateWithMessage(
-            device_reauth::BiometricAuthRequester::kAutofillSuggestion,
+            device_reauth::DeviceAuthRequester::kAutofillSuggestion,
             l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH,
                                        origin),
             metrics_util::TimeCallback(
@@ -968,7 +968,7 @@ void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
   if (!authenticator_)
     return;
   authenticator_->Cancel(
-      device_reauth::BiometricAuthRequester::kAutofillSuggestion);
+      device_reauth::DeviceAuthRequester::kAutofillSuggestion);
   authenticator_.reset();
 }
 

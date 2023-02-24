@@ -2928,11 +2928,11 @@ static_library("browser") {
       "crash_upload_list/crash_upload_list_android.cc",
       "crash_upload_list/crash_upload_list_android.h",
       "creator/android/creator_api_bridge.cc",
-      "device_reauth/android/biometric_authenticator_android.cc",
-      "device_reauth/android/biometric_authenticator_android.h",
-      "device_reauth/android/biometric_authenticator_bridge.h",
-      "device_reauth/android/biometric_authenticator_bridge_impl.cc",
-      "device_reauth/android/biometric_authenticator_bridge_impl.h",
+      "device_reauth/android/device_authenticator_android.cc",
+      "device_reauth/android/device_authenticator_android.h",
+      "device_reauth/android/device_authenticator_bridge.h",
+      "device_reauth/android/device_authenticator_bridge_impl.cc",
+      "device_reauth/android/device_authenticator_bridge_impl.h",
       "device_reauth/android/reauthenticator_bridge.cc",
       "device_reauth/android/reauthenticator_bridge.h",
       "dom_distiller/dom_distiller_service_factory_android.cc",
@@ -5620,8 +5620,8 @@ static_library("browser") {
       "component_updater/sw_reporter_installer_win.h",
       "device_reauth/win/authenticator_win.cc",
       "device_reauth/win/authenticator_win.h",
-      "device_reauth/win/biometric_authenticator_win.cc",
-      "device_reauth/win/biometric_authenticator_win.h",
+      "device_reauth/win/device_authenticator_win.cc",
+      "device_reauth/win/device_authenticator_win.h",
       "download/download_status_updater_win.cc",
       "download/trusted_sources_manager_win.cc",
       "enterprise/platform_auth/cloud_ap_provider_win.cc",
@@ -5896,8 +5896,8 @@ static_library("browser") {
       "chrome_browser_main_mac.h",
       "chrome_browser_main_mac.mm",
       "component_updater/recovery_improved_component_installer_mac.cc",
-      "device_reauth/mac/biometric_authenticator_mac.h",
-      "device_reauth/mac/biometric_authenticator_mac.mm",
+      "device_reauth/mac/device_authenticator_mac.h",
+      "device_reauth/mac/device_authenticator_mac.mm",
       "download/download_status_updater_mac.mm",
       "download/drag_download_item_mac.mm",
       "enterprise/signals/device_info_fetcher_mac.h",
@@ -6020,10 +6020,10 @@ static_library("browser") {
 
   if (is_android || is_mac || is_win) {
     sources += [
-      "device_reauth/chrome_biometric_authenticator_common.cc",
-      "device_reauth/chrome_biometric_authenticator_common.h",
-      "device_reauth/chrome_biometric_authenticator_factory.cc",
-      "device_reauth/chrome_biometric_authenticator_factory.h",
+      "device_reauth/chrome_device_authenticator_common.cc",
+      "device_reauth/chrome_device_authenticator_common.h",
+      "device_reauth/chrome_device_authenticator_factory.cc",
+      "device_reauth/chrome_device_authenticator_factory.h",
     ]
   }
 

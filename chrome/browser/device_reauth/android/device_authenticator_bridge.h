@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_H_
-#define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_H_
+#ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_BRIDGE_H_
+#define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_BRIDGE_H_
 
 #include "base/functional/callback_forward.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 
 namespace device_reauth {
 
 // The biometric authentication result as returned by the biometric prompt.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
-enum class BiometricAuthUIResult {
+enum class DeviceAuthUIResult {
   kSuccessWithUnknownMethod = 0,
   kSuccessWithBiometrics = 1,
   kSuccessWithDeviceLock = 2,
@@ -46,9 +46,9 @@ enum class BiometricsAvailability {
 
 // Interface for the biometric authenticator bridge connecting the C++ side
 // of the implementation to the Java one.
-class BiometricAuthenticatorBridge {
+class DeviceAuthenticatorBridge {
  public:
-  virtual ~BiometricAuthenticatorBridge() = default;
+  virtual ~DeviceAuthenticatorBridge() = default;
 
   // Checks whether biometrics are available.
   virtual device_reauth::BiometricsAvailability
@@ -61,7 +61,7 @@ class BiometricAuthenticatorBridge {
   // screen lock as fallback. Note: this only supports one authentication
   // request at a time.
   virtual void Authenticate(
-      base::OnceCallback<void(device_reauth::BiometricAuthUIResult)>
+      base::OnceCallback<void(device_reauth::DeviceAuthUIResult)>
           response_callback) = 0;
 
   // Called when the authentication flow becomes obsolete (e.g. the original
@@ -69,4 +69,4 @@ class BiometricAuthenticatorBridge {
   virtual void Cancel() = 0;
 };
 
-#endif  // CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_BRIDGE_H_
+#endif  // CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_BRIDGE_H_

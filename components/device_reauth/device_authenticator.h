@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DEVICE_REAUTH_BIOMETRIC_AUTHENTICATOR_H_
-#define COMPONENTS_DEVICE_REAUTH_BIOMETRIC_AUTHENTICATOR_H_
+#ifndef COMPONENTS_DEVICE_REAUTH_DEVICE_AUTHENTICATOR_H_
+#define COMPONENTS_DEVICE_REAUTH_DEVICE_AUTHENTICATOR_H_
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -16,7 +16,7 @@ namespace device_reauth {
 // numeric values should never be reused.
 //
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
-enum class BiometricAuthRequester {
+enum class DeviceAuthRequester {
   // The filling surface shown on the first tap on the field after page load.
   // This surface has replaced autofilling on Android.
   kTouchToFill = 0,
@@ -52,16 +52,16 @@ enum class BiometricAuthRequester {
 // This interface encapsulates operations related to biometric authentication.
 // It's intended to be used prior to sharing the user's credentials with a
 // website, either via form filling or the Credential Management API.
-class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
+class DeviceAuthenticator : public base::RefCounted<DeviceAuthenticator> {
  public:
   using AuthenticateCallback = base::OnceCallback<void(bool)>;
 
-  BiometricAuthenticator();
-  BiometricAuthenticator(const BiometricAuthenticator&) = delete;
-  BiometricAuthenticator& operator=(const BiometricAuthenticator&) = delete;
+  DeviceAuthenticator();
+  DeviceAuthenticator(const DeviceAuthenticator&) = delete;
+  DeviceAuthenticator& operator=(const DeviceAuthenticator&) = delete;
 
   // Returns whether biometrics are available for a given device.
-  virtual bool CanAuthenticate(BiometricAuthRequester requester) = 0;
+  virtual bool CanAuthenticate(DeviceAuthRequester requester) = 0;
 
   // Asks the user to authenticate. Invokes |callback| asynchronously when
   // the auth flow returns with the result.
@@ -69,7 +69,7 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
   // period between the last valid authentication and the current
   // authentication, and re-invokes system authentication.
-  virtual void Authenticate(BiometricAuthRequester requester,
+  virtual void Authenticate(DeviceAuthRequester requester,
                             AuthenticateCallback callback,
                             bool use_last_valid_auth) = 0;
 
@@ -78,22 +78,22 @@ class BiometricAuthenticator : public base::RefCounted<BiometricAuthenticator> {
   // |requester| is the filling surface that is asking for authentication.
   // |message| contains text that will be displayed to the end user on
   // authentication request
-  virtual void AuthenticateWithMessage(BiometricAuthRequester requester,
+  virtual void AuthenticateWithMessage(DeviceAuthRequester requester,
                                        const std::u16string& message,
                                        AuthenticateCallback callback) = 0;
 
   // Cancels an in-progress authentication if the filling surface requesting
   // the cancelation corresponds to the one for which the ongoing auth was
   // triggered.
-  virtual void Cancel(BiometricAuthRequester requester) = 0;
+  virtual void Cancel(DeviceAuthRequester requester) = 0;
 
  protected:
-  virtual ~BiometricAuthenticator() = default;
+  virtual ~DeviceAuthenticator() = default;
 
  private:
-  friend class base::RefCounted<BiometricAuthenticator>;
+  friend class base::RefCounted<DeviceAuthenticator>;
 };
 
 }  // namespace device_reauth
 
-#endif  // COMPONENTS_DEVICE_REAUTH_BIOMETRIC_AUTHENTICATOR_H_
+#endif  // COMPONENTS_DEVICE_REAUTH_DEVICE_AUTHENTICATOR_H_

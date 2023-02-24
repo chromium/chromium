@@ -33,8 +33,8 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
-#include "components/device_reauth/biometric_authenticator.h"
-#include "components/device_reauth/mock_biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
@@ -81,7 +81,7 @@ using autofill::SuggestionVectorLabelsAre;
 using autofill::SuggestionVectorMainTextsAre;
 using autofill::password_generation::PasswordGenerationType;
 using base::test::RunOnceCallback;
-using device_reauth::BiometricAuthRequester;
+using device_reauth::DeviceAuthRequester;
 using favicon_base::FaviconImageCallback;
 using gfx::test::AreImagesEqual;
 using testing::_;
@@ -166,14 +166,14 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
         .WillByDefault(Return(needs_signin));
   }
 
-  void SetBiometricAuthenticator(
-      scoped_refptr<device_reauth::MockBiometricAuthenticator>
+  void SetDeviceAuthenticator(
+      scoped_refptr<device_reauth::MockDeviceAuthenticator>
           biometric_authenticator) {
     biometric_authenticator_ = std::move(biometric_authenticator);
   }
 
-  scoped_refptr<device_reauth::BiometricAuthenticator>
-  GetBiometricAuthenticator() override {
+  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      override {
     return biometric_authenticator_;
   }
 
@@ -198,7 +198,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   MockPasswordManagerDriver driver_;
-  scoped_refptr<device_reauth::MockBiometricAuthenticator>
+  scoped_refptr<device_reauth::MockDeviceAuthenticator>
       biometric_authenticator_ = nullptr;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<MockPasswordFeatureManager> feature_manager_{
@@ -361,14 +361,14 @@ class PasswordAutofillManagerTest : public testing::Test {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     EXPECT_CALL(
         *authenticator_.get(),
-        AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+        AuthenticateWithMessage(DeviceAuthRequester::kAutofillSuggestion,
                                 /*message=*/_, _));
 #else
     EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
+                CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
-                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
                              /*use_last_valid_auth= */ true));
 #endif
   }
@@ -378,8 +378,8 @@ class PasswordAutofillManagerTest : public testing::Test {
 
   std::unique_ptr<PasswordAutofillManager> password_autofill_manager_;
 
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> authenticator_ =
-      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> authenticator_ =
+      base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
 
   std::unique_ptr<MockWebAuthnCredentialsDelegate>
       webauthn_credentials_delegate_;
@@ -1651,7 +1651,7 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
 TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
-  client.SetBiometricAuthenticator(authenticator_);
+  client.SetDeviceAuthenticator(authenticator_);
 
   InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -1687,7 +1687,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthNotAvailable) {
 #if BUILDFLAG(IS_ANDROID)
     // The authenticator exists, but cannot be used for authentication.
     EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
+                CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(false));
 #endif
 
@@ -1713,7 +1713,7 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
       password_manager::features::kBiometricTouchToFill);
 #endif
   NiceMock<MockAutofillClient> autofill_client;
-  client.SetBiometricAuthenticator(authenticator_);
+  client.SetDeviceAuthenticator(authenticator_);
 
   InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -1753,16 +1753,16 @@ TEST_F(PasswordAutofillManagerTest, FillsSuggestionIfAuthSuccessful) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     EXPECT_CALL(
         *authenticator_.get(),
-        AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+        AuthenticateWithMessage(DeviceAuthRequester::kAutofillSuggestion,
                                 /*message=*/_, _))
         .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/true));
     // The authenticator exists and is available.
 #else
     EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
+                CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
-                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
                              /*use_last_valid_auth= */ true))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
 #endif
@@ -1789,7 +1789,7 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 #endif
   for (bool is_suggestion_on_password_field : {false, true}) {
     NiceMock<MockAutofillClient> autofill_client;
-    client.SetBiometricAuthenticator(authenticator_);
+    client.SetDeviceAuthenticator(authenticator_);
 
     InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -1829,15 +1829,15 @@ TEST_F(PasswordAutofillManagerTest, DoesntFillSuggestionIfAuthFailed) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     EXPECT_CALL(
         *authenticator_.get(),
-        AuthenticateWithMessage(BiometricAuthRequester::kAutofillSuggestion,
+        AuthenticateWithMessage(DeviceAuthRequester::kAutofillSuggestion,
                                 /*message=*/_, _))
         .WillOnce(RunOnceCallback<2>(/*auth_succeeded=*/false));
 #else
     EXPECT_CALL(*authenticator_.get(),
-                CanAuthenticate(BiometricAuthRequester::kAutofillSuggestion))
+                CanAuthenticate(DeviceAuthRequester::kAutofillSuggestion))
         .WillOnce(Return(true));
     EXPECT_CALL(*authenticator_.get(),
-                Authenticate(BiometricAuthRequester::kAutofillSuggestion, _,
+                Authenticate(DeviceAuthRequester::kAutofillSuggestion, _,
                              /*use_last_valid_auth= */ true))
         .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
 #endif
@@ -1863,7 +1863,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
       password_manager::features::kBiometricTouchToFill);
 #endif
   NiceMock<MockAutofillClient> autofill_client;
-  client.SetBiometricAuthenticator(authenticator_);
+  client.SetDeviceAuthenticator(authenticator_);
 
   InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -1898,7 +1898,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnDestroy) {
       1);
 
   EXPECT_CALL(*authenticator_.get(),
-              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+              Cancel(DeviceAuthRequester::kAutofillSuggestion));
 }
 
 TEST_F(PasswordAutofillManagerTest,
@@ -1914,7 +1914,7 @@ TEST_F(PasswordAutofillManagerTest,
       password_manager::features::kBiometricTouchToFill);
 #endif
   NiceMock<MockAutofillClient> autofill_client;
-  client.SetBiometricAuthenticator(authenticator_);
+  client.SetDeviceAuthenticator(authenticator_);
 
   InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -1949,7 +1949,7 @@ TEST_F(PasswordAutofillManagerTest,
       1);
 
   EXPECT_CALL(*authenticator_.get(),
-              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+              Cancel(DeviceAuthRequester::kAutofillSuggestion));
   password_autofill_manager_->DeleteFillData();
 }
 
@@ -1966,7 +1966,7 @@ TEST_F(PasswordAutofillManagerTest,
       password_manager::features::kBiometricTouchToFill);
 #endif
   NiceMock<MockAutofillClient> autofill_client;
-  client.SetBiometricAuthenticator(authenticator_);
+  client.SetDeviceAuthenticator(authenticator_);
 
   InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -2001,7 +2001,7 @@ TEST_F(PasswordAutofillManagerTest,
       1);
 
   EXPECT_CALL(*authenticator_.get(),
-              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+              Cancel(DeviceAuthRequester::kAutofillSuggestion));
   password_autofill_manager_->OnAddPasswordFillData(CreateTestFormFillData());
 }
 
@@ -2017,7 +2017,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
       password_manager::features::kBiometricTouchToFill);
 #endif
   NiceMock<MockAutofillClient> autofill_client;
-  client.SetBiometricAuthenticator(authenticator_);
+  client.SetDeviceAuthenticator(authenticator_);
 
   InitializePasswordAutofillManager(&client, &autofill_client);
 
@@ -2032,7 +2032,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
 
   // Triggering new authentication should cancel ongoing authentication.
   EXPECT_CALL(*authenticator_.get(),
-              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+              Cancel(DeviceAuthRequester::kAutofillSuggestion));
   ExpectAndAllowAuthentication();
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
@@ -2041,7 +2041,7 @@ TEST_F(PasswordAutofillManagerTest, CancelsOngoingBiometricAuthOnNewRequest) {
 
   // Destroying the manager should cancel ongoing authentication.
   EXPECT_CALL(*authenticator_.get(),
-              Cancel(BiometricAuthRequester::kAutofillSuggestion));
+              Cancel(DeviceAuthRequester::kAutofillSuggestion));
 }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
@@ -2055,7 +2055,7 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
           IsBiometricAuthenticationBeforeFillingEnabled)
       .WillByDefault(Return(true));
   NiceMock<MockAutofillClient> autofill_client;
-  client.SetBiometricAuthenticator(authenticator_);
+  client.SetDeviceAuthenticator(authenticator_);
 
   InitializePasswordAutofillManager(&client, &autofill_client);
 

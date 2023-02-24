@@ -351,7 +351,7 @@ class ManagePasswordsUIController
   std::list<std::unique_ptr<password_manager::MovePasswordToAccountStoreHelper>>
       move_to_account_store_helpers_;
 
-  scoped_refptr<device_reauth::BiometricAuthenticator> biometric_authenticator_;
+  scoped_refptr<device_reauth::DeviceAuthenticator> biometric_authenticator_;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   bool was_biometric_authentication_for_filling_promo_shown_ = false;

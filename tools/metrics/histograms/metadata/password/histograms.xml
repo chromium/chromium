@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BiometricAuthPwdFill.AuthResult"
-    enum="BiometricAuthResult" expires_after="M118">
+    enum="DeviceAuthFinalResult" expires_after="M118">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>
@@ -1121,7 +1121,7 @@ chromium-metrics-reviews@google.com.
   <owner>sygiet@google.com</owner>
   <summary>
     If user have enabled biometric authentication on their device. It is
-    recorded whenever BiometricAuthenticatorMac::CanAuthenticate is called.
+    recorded whenever DeviceAuthenticatorMac::CanAuthenticate is called.
   </summary>
 </histogram>
 

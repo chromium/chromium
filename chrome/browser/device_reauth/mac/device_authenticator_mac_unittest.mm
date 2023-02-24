@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/device_reauth/mac/biometric_authenticator_mac.h"
+#include "chrome/browser/device_reauth/mac/device_authenticator_mac.h"
 
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -18,16 +18,16 @@
 namespace {
 
 using MockAuthResultCallback =
-    base::MockCallback<BiometricAuthenticatorMac::AuthenticateCallback>;
+    base::MockCallback<DeviceAuthenticatorMac::AuthenticateCallback>;
 
-using device_reauth::BiometricAuthRequester;
+using device_reauth::DeviceAuthRequester;
 using password_manager::PasswordAccessAuthenticator;
 
 }  // namespace
 
-class BiometricAuthenticatorMacTest : public testing::Test {
+class DeviceAuthenticatorMacTest : public testing::Test {
  public:
-  device_reauth::BiometricAuthenticator* authenticator() {
+  device_reauth::DeviceAuthenticator* authenticator() {
     return authenticator_.get();
   }
 
@@ -44,9 +44,9 @@ class BiometricAuthenticatorMacTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_ =
-      ChromeBiometricAuthenticatorFactory::GetInstance()
-          ->GetOrCreateBiometricAuthenticator();
+  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_ =
+      ChromeDeviceAuthenticatorFactory::GetInstance()
+          ->GetOrCreateDeviceAuthenticator();
   device::fido::mac::AuthenticatorConfig config_{
       .keychain_access_group = "test-keychain-access-group",
       .metadata_secret = "TestMetadataSecret"};
@@ -57,12 +57,12 @@ class BiometricAuthenticatorMacTest : public testing::Test {
 
 // If time that passed since the last successful authentication is smaller than
 // kAuthValidityPeriod, no reauthentication is needed.
-TEST_F(BiometricAuthenticatorMacTest, NoReauthenticationIfLessThan60Seconds) {
+TEST_F(DeviceAuthenticatorMacTest, NoReauthenticationIfLessThan60Seconds) {
   touch_id_enviroment()->SimulateTouchIdPromptSuccess();
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
 
   authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
+      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
@@ -75,19 +75,19 @@ TEST_F(BiometricAuthenticatorMacTest, NoReauthenticationIfLessThan60Seconds) {
 
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
   authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
+      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 }
 
 // If the time since the last reauthentication is greater than
 // kAuthValidityPeriod or the authentication failed, reauthentication is needed.
-TEST_F(BiometricAuthenticatorMacTest, ReauthenticationIfMoreThan60Seconds) {
+TEST_F(DeviceAuthenticatorMacTest, ReauthenticationIfMoreThan60Seconds) {
   touch_id_enviroment()->SimulateTouchIdPromptSuccess();
   EXPECT_CALL(result_callback(), Run(/*success=*/true));
 
   authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
+      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
@@ -101,21 +101,21 @@ TEST_F(BiometricAuthenticatorMacTest, ReauthenticationIfMoreThan60Seconds) {
 
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
+      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 }
 
 // If prevoius authentication failed kAuthValidityPeriod isn't started and
 // reauthentication will be needed.
-TEST_F(BiometricAuthenticatorMacTest, ReauthenticationIfPreviousFailed) {
+TEST_F(DeviceAuthenticatorMacTest, ReauthenticationIfPreviousFailed) {
   touch_id_enviroment()->SimulateTouchIdPromptFailure();
 
   // First authetication fails, no last_good_auth_timestamp_ should be
   // recorded, which fill force reauthentication.
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
+      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
@@ -127,23 +127,23 @@ TEST_F(BiometricAuthenticatorMacTest, ReauthenticationIfPreviousFailed) {
 
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
+      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 }
 
 // If pending authentication can be canceled.
-TEST_F(BiometricAuthenticatorMacTest, CancelPendngAuthentication) {
+TEST_F(DeviceAuthenticatorMacTest, CancelPendngAuthentication) {
   touch_id_enviroment()->SimulateTouchIdPromptSuccess();
   touch_id_enviroment()->DoNotResolveNextPrompt();
 
   authenticator()->AuthenticateWithMessage(
-      BiometricAuthRequester::kPasswordsInSettings,
+      DeviceAuthRequester::kPasswordsInSettings,
       /*message=*/u"Chrome is trying to show passwords.",
       result_callback().Get());
 
   // Authentication should fail as it will take 10 seconds to authenticate, and
   // there will be a cancelation in the meantime.
   EXPECT_CALL(result_callback(), Run(/*success=*/false));
-  authenticator()->Cancel(BiometricAuthRequester::kPasswordsInSettings);
+  authenticator()->Cancel(DeviceAuthRequester::kPasswordsInSettings);
 }

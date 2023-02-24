@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -49,7 +49,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "components/device_reauth/mock_biometric_authenticator.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #endif
 
 using password_manager::MockPasswordFormManagerForUI;
@@ -127,12 +127,12 @@ class TestPasswordManagerClient
               (override));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  scoped_refptr<device_reauth::BiometricAuthenticator>
-  GetBiometricAuthenticator() override {
+  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      override {
     return mock_authenticator_.get();
   }
 
-  void SetAuthenticator(scoped_refptr<device_reauth::MockBiometricAuthenticator>
+  void SetAuthenticator(scoped_refptr<device_reauth::MockDeviceAuthenticator>
                             mock_authenticator) {
     mock_authenticator_ = mock_authenticator;
   }
@@ -145,7 +145,7 @@ class TestPasswordManagerClient
  private:
   scoped_refptr<MockPasswordStoreInterface> mock_profile_store_;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator_;
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator_;
 #endif
 };
 
@@ -1748,13 +1748,13 @@ TEST_F(ManagePasswordsUIControllerTest, ReauthenticateFailsBeforeMove) {
       password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE);
 }
 
-TEST_F(ManagePasswordsUIControllerTest, IsBiometricAuthenticatorObtained) {
+TEST_F(ManagePasswordsUIControllerTest, IsDeviceAuthenticatorObtained) {
   base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
   EXPECT_CALL(result_callback, Run(/*success=*/true));
 #else
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
-      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   client().SetAuthenticator(mock_authenticator);
   EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
 #endif
@@ -1901,8 +1901,8 @@ TEST_F(ManagePasswordsUIControllerTest, BiometricActivationConfirmation) {
 
 TEST_F(ManagePasswordsUIControllerTest,
        AuthenticateWithMessageTwiceCancelsFirstCall) {
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
-      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   client().SetAuthenticator(mock_authenticator);
   EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
   controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());
@@ -1914,8 +1914,8 @@ TEST_F(ManagePasswordsUIControllerTest,
 
 TEST_F(ManagePasswordsUIControllerTest, AuthenticationCancledOnPageChange) {
   base::MockCallback<base::OnceCallback<void(bool)>> result_callback;
-  scoped_refptr<device_reauth::MockBiometricAuthenticator> mock_authenticator =
-      base::MakeRefCounted<device_reauth::MockBiometricAuthenticator>();
+  scoped_refptr<device_reauth::MockDeviceAuthenticator> mock_authenticator =
+      base::MakeRefCounted<device_reauth::MockDeviceAuthenticator>();
   client().SetAuthenticator(mock_authenticator);
   EXPECT_CALL(*mock_authenticator.get(), AuthenticateWithMessage);
   controller()->AuthenticateUserWithMessage(/*message=*/u"", base::DoNothing());

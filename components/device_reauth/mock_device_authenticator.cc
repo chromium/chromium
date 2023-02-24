@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 
 namespace device_reauth {
 
-BiometricAuthenticator::BiometricAuthenticator() = default;
+MockDeviceAuthenticator::MockDeviceAuthenticator() = default;
+MockDeviceAuthenticator::~MockDeviceAuthenticator() = default;
 
 }  // namespace device_reauth

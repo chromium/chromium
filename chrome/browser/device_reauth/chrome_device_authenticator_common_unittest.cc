@@ -2,73 +2,72 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_common.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_access_authenticator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-using device_reauth::BiometricAuthRequester;
+using device_reauth::DeviceAuthRequester;
 using password_manager::PasswordAccessAuthenticator;
 
-// Implementation of ChromeBiometricAuthenticatorCommon for testing.
-class FakeChromeBiometricAuthenticatorCommon
-    : public ChromeBiometricAuthenticatorCommon {
+// Implementation of ChromeDeviceAuthenticatorCommon for testing.
+class FakeChromeDeviceAuthenticatorCommon
+    : public ChromeDeviceAuthenticatorCommon {
  public:
-  using ChromeBiometricAuthenticatorCommon::NeedsToAuthenticate;
-  using ChromeBiometricAuthenticatorCommon::
-      RecordAuthenticationTimeIfSuccessful;
+  using ChromeDeviceAuthenticatorCommon::NeedsToAuthenticate;
+  using ChromeDeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful;
 
-  FakeChromeBiometricAuthenticatorCommon();
+  FakeChromeDeviceAuthenticatorCommon();
 
-  bool CanAuthenticate(BiometricAuthRequester requester) override;
+  bool CanAuthenticate(DeviceAuthRequester requester) override;
 
-  void Authenticate(BiometricAuthRequester requester,
+  void Authenticate(DeviceAuthRequester requester,
                     AuthenticateCallback callback,
                     bool use_last_valid) override;
 
-  void AuthenticateWithMessage(BiometricAuthRequester requester,
+  void AuthenticateWithMessage(DeviceAuthRequester requester,
                                const std::u16string& message,
                                AuthenticateCallback callback) override;
 
-  void Cancel(BiometricAuthRequester requester) override;
+  void Cancel(DeviceAuthRequester requester) override;
 
  protected:
-  ~FakeChromeBiometricAuthenticatorCommon() override;
+  ~FakeChromeDeviceAuthenticatorCommon() override;
 };
 
-FakeChromeBiometricAuthenticatorCommon::
-    FakeChromeBiometricAuthenticatorCommon() = default;
-FakeChromeBiometricAuthenticatorCommon::
-    ~FakeChromeBiometricAuthenticatorCommon() = default;
+FakeChromeDeviceAuthenticatorCommon::FakeChromeDeviceAuthenticatorCommon() =
+    default;
+FakeChromeDeviceAuthenticatorCommon::~FakeChromeDeviceAuthenticatorCommon() =
+    default;
 
-bool FakeChromeBiometricAuthenticatorCommon::CanAuthenticate(
-    BiometricAuthRequester requester) {
+bool FakeChromeDeviceAuthenticatorCommon::CanAuthenticate(
+    DeviceAuthRequester requester) {
   NOTIMPLEMENTED();
   return false;
 }
 
-void FakeChromeBiometricAuthenticatorCommon::Authenticate(
-    BiometricAuthRequester requester,
+void FakeChromeDeviceAuthenticatorCommon::Authenticate(
+    DeviceAuthRequester requester,
     AuthenticateCallback callback,
     bool use_last_valid) {
   NOTIMPLEMENTED();
 }
 
-void FakeChromeBiometricAuthenticatorCommon::Cancel(
-    device_reauth::BiometricAuthRequester requester) {
+void FakeChromeDeviceAuthenticatorCommon::Cancel(
+    device_reauth::DeviceAuthRequester requester) {
   NOTIMPLEMENTED();
 }
 
-void FakeChromeBiometricAuthenticatorCommon::AuthenticateWithMessage(
-    device_reauth::BiometricAuthRequester requester,
+void FakeChromeDeviceAuthenticatorCommon::AuthenticateWithMessage(
+    device_reauth::DeviceAuthRequester requester,
     const std::u16string& message,
     AuthenticateCallback callback) {
   NOTIMPLEMENTED();
@@ -76,17 +75,16 @@ void FakeChromeBiometricAuthenticatorCommon::AuthenticateWithMessage(
 
 }  // namespace
 
-class ChromeBiometricAuthenticatorCommonTest : public testing::Test {
+class ChromeDeviceAuthenticatorCommonTest : public testing::Test {
  public:
   void SetUp() override {
-    // Simulates platform specific BiometricAuthenticator received from the
+    // Simulates platform specific DeviceAuthenticator received from the
     // factory.
     authenticator_pointer_ =
-        base::MakeRefCounted<FakeChromeBiometricAuthenticatorCommon>();
+        base::MakeRefCounted<FakeChromeDeviceAuthenticatorCommon>();
   }
 
-  scoped_refptr<FakeChromeBiometricAuthenticatorCommon>
-  authenticator_pointer() {
+  scoped_refptr<FakeChromeDeviceAuthenticatorCommon> authenticator_pointer() {
     return authenticator_pointer_;
   }
 
@@ -99,14 +97,14 @@ class ChromeBiometricAuthenticatorCommonTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
-  scoped_refptr<FakeChromeBiometricAuthenticatorCommon> authenticator_pointer_;
+  scoped_refptr<FakeChromeDeviceAuthenticatorCommon> authenticator_pointer_;
 };
 
 // Checks whether authenticator objects does not exists, after timeout if there
 // are no other references.
-TEST_F(ChromeBiometricAuthenticatorCommonTest, IsObjectReleased) {
+TEST_F(ChromeDeviceAuthenticatorCommonTest, IsObjectReleased) {
   // Simulates ChromeBiometricFactory member.
-  base::WeakPtr<ChromeBiometricAuthenticatorCommon> factory_pointer =
+  base::WeakPtr<ChromeDeviceAuthenticatorCommon> factory_pointer =
       authenticator_pointer()->GetWeakPtr();
 
   authenticator_pointer()->RecordAuthenticationTimeIfSuccessful(
@@ -129,7 +127,7 @@ TEST_F(ChromeBiometricAuthenticatorCommonTest, IsObjectReleased) {
 // Checks if user can perform an operation without reauthenticating during
 // `kAuthValidityPeriod` since previous authentication. And if needs to
 // authenticate after that time.
-TEST_F(ChromeBiometricAuthenticatorCommonTest, NeedAuthentication) {
+TEST_F(ChromeDeviceAuthenticatorCommonTest, NeedAuthentication) {
   authenticator_pointer()->RecordAuthenticationTimeIfSuccessful(
       /*success=*/true);
 

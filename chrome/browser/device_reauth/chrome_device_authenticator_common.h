@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_COMMON_H_
-#define CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_COMMON_H_
+#ifndef CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_COMMON_H_
+#define CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_COMMON_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Used to care of the auth validity period for biometric authenticators in
 // chrome.
-class ChromeBiometricAuthenticatorCommon
-    : public device_reauth::BiometricAuthenticator {
+class ChromeDeviceAuthenticatorCommon
+    : public device_reauth::DeviceAuthenticator {
  public:
-  ChromeBiometricAuthenticatorCommon();
+  ChromeDeviceAuthenticatorCommon();
 
   // Returns a weak pointer to this authenticator.
-  base::WeakPtr<ChromeBiometricAuthenticatorCommon> GetWeakPtr();
+  base::WeakPtr<ChromeDeviceAuthenticatorCommon> GetWeakPtr();
 
  protected:
-  ~ChromeBiometricAuthenticatorCommon() override;
+  ~ChromeDeviceAuthenticatorCommon() override;
 
   // Checks whether user needs to reauthenticate.
   bool NeedsToAuthenticate() const;
@@ -34,8 +34,7 @@ class ChromeBiometricAuthenticatorCommon
   absl::optional<base::TimeTicks> last_good_auth_timestamp_;
 
   // Factory for weak pointers to this class.
-  base::WeakPtrFactory<ChromeBiometricAuthenticatorCommon> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<ChromeDeviceAuthenticatorCommon> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_COMMON_H_
+#endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROME_DEVICE_AUTHENTICATOR_COMMON_H_

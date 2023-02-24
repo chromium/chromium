@@ -745,10 +745,9 @@ void ManagePasswordsUIController::AuthenticateUserWithMessage(
                      weak_ptr_factory_.GetWeakPtr());
 
   CancelAnyOngoingBiometricAuth();
-  biometric_authenticator_ =
-      passwords_data_.client()->GetBiometricAuthenticator();
+  biometric_authenticator_ = passwords_data_.client()->GetDeviceAuthenticator();
   biometric_authenticator_->AuthenticateWithMessage(
-      device_reauth::BiometricAuthRequester::kTouchToFill, message,
+      device_reauth::DeviceAuthRequester::kTouchToFill, message,
       std::move(callback).Then(std::move(on_reauth_completed)));
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 }
@@ -1030,7 +1029,7 @@ void ManagePasswordsUIController::CancelAnyOngoingBiometricAuth() {
   if (!biometric_authenticator_)
     return;
   biometric_authenticator_->Cancel(
-      device_reauth::BiometricAuthRequester::kTouchToFill);
+      device_reauth::DeviceAuthRequester::kTouchToFill);
   biometric_authenticator_.reset();
 }
 

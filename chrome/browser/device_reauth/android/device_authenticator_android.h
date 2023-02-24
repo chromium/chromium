@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
-#define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
+#ifndef CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_ANDROID_H_
+#define CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_ANDROID_H_
 
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "chrome/browser/device_reauth/android/biometric_authenticator_bridge.h"
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_common.h"
-#include "chrome/browser/device_reauth/chrome_biometric_authenticator_factory.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "chrome/browser/device_reauth/android/device_authenticator_bridge.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-// The result of the biometric authentication.
+// The result of the device authentication.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class BiometricAuthFinalResult {
+enum class DeviceAuthFinalResult {
   // This value is used for when we don't know the exact auth method used. This
   // can be the case on Android versions under 11.
   kSuccessWithUnknownMethod = 0,
@@ -45,15 +45,13 @@ enum class BiometricAuthFinalResult {
   kMaxValue = kCanceledByChrome,
 };
 
-// Android implementation of the BiometricAuthenticator interface.
-class BiometricAuthenticatorAndroid
-    : public ChromeBiometricAuthenticatorCommon {
+// Android implementation of the DeviceAuthenticator interface.
+class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
  public:
   // Returns true, when biometrics are available and also the device screen lock
   // is set up, false otherwise. When the |requester| is kIncognitoReauthPage,
   // it also returns true if just a screen lock is set up.
-  bool CanAuthenticate(
-      device_reauth::BiometricAuthRequester requester) override;
+  bool CanAuthenticate(device_reauth::DeviceAuthRequester requester) override;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication
@@ -61,47 +59,46 @@ class BiometricAuthenticatorAndroid
   // |use_last_valid_auth| if set to false, ignores the grace 60 seconds
   // period between the last valid authentication and the current
   // authentication, and re-invokes system authentication.
-  void Authenticate(device_reauth::BiometricAuthRequester requester,
+  void Authenticate(device_reauth::DeviceAuthRequester requester,
                     AuthenticateCallback callback,
                     bool use_last_valid_auth) override;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Displays `message` in the authentication UI.
   // Note: this only supports one authentication request at a time.
-  void AuthenticateWithMessage(device_reauth::BiometricAuthRequester requester,
+  void AuthenticateWithMessage(device_reauth::DeviceAuthRequester requester,
                                const std::u16string& message,
                                AuthenticateCallback callback) override;
 
   // Should be called by the object using the authenticator if the purpose
   // for which the auth was requested becomes obsolete or the object is
   // destroyed.
-  void Cancel(device_reauth::BiometricAuthRequester requester) override;
+  void Cancel(device_reauth::DeviceAuthRequester requester) override;
 
-  // Creates an instance of BiometricAuthenticatorAndroid for testing purposes
+  // Creates an instance of DeviceAuthenticatorAndroid for testing purposes
   // only.
-  static scoped_refptr<BiometricAuthenticatorAndroid> CreateForTesting(
-      std::unique_ptr<BiometricAuthenticatorBridge> bridge);
+  static scoped_refptr<DeviceAuthenticatorAndroid> CreateForTesting(
+      std::unique_ptr<DeviceAuthenticatorBridge> bridge);
 
  private:
-  friend class ChromeBiometricAuthenticatorFactory;
+  friend class ChromeDeviceAuthenticatorFactory;
 
-  explicit BiometricAuthenticatorAndroid(
-      std::unique_ptr<BiometricAuthenticatorBridge> bridge);
-  ~BiometricAuthenticatorAndroid() override;
+  explicit DeviceAuthenticatorAndroid(
+      std::unique_ptr<DeviceAuthenticatorBridge> bridge);
+  ~DeviceAuthenticatorAndroid() override;
 
   // Called when the authentication compeletes with the result
-  void OnAuthenticationCompleted(
-      device_reauth::BiometricAuthUIResult ui_result);
+  void OnAuthenticationCompleted(device_reauth::DeviceAuthUIResult ui_result);
 
   // Callback to be executed after the authentication completes.
   AuthenticateCallback callback_;
 
   // Enum value representing the filling surface that has requested the current
   // authentication.
-  absl::optional<device_reauth::BiometricAuthRequester> requester_;
+  absl::optional<device_reauth::DeviceAuthRequester> requester_;
 
   // Bridge used to call into the Java side.
-  std::unique_ptr<BiometricAuthenticatorBridge> bridge_;
+  std::unique_ptr<DeviceAuthenticatorBridge> bridge_;
 };
 
-#endif  // CHROME_BROWSER_DEVICE_REAUTH_ANDROID_BIOMETRIC_AUTHENTICATOR_ANDROID_H_
+#endif  // CHROME_BROWSER_DEVICE_REAUTH_ANDROID_DEVICE_AUTHENTICATOR_ANDROID_H_

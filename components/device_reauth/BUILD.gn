@@ -9,8 +9,8 @@ if (is_android) {
 
 static_library("device_reauth") {
   sources = [
-    "biometric_authenticator.cc",
-    "biometric_authenticator.h",
+    "device_authenticator.cc",
+    "device_authenticator.h",
   ]
 
   deps = [ "//base" ]
@@ -19,8 +19,8 @@ static_library("device_reauth") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "mock_biometric_authenticator.cc",
-    "mock_biometric_authenticator.h",
+    "mock_device_authenticator.cc",
+    "mock_device_authenticator.h",
   ]
 
   deps = [
@@ -38,6 +38,6 @@ if (is_android) {
   }
 
   java_cpp_enum("device_reauth_java_enums_srcjar") {
-    sources = [ "biometric_authenticator.h" ]
+    sources = [ "device_authenticator.h" ]
   }
 }

@@ -8,7 +8,7 @@
 #include <jni.h>
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/device_reauth/biometric_authenticator.h"
+#include "components/device_reauth/device_authenticator.h"
 
 // C++ counterpart of |ReauthenticatorBridge.java|. Used to mediate the
 // biometric authentication requests.
@@ -36,10 +36,10 @@ class ReauthenticatorBridge {
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
 
   // The authentication requester.
-  device_reauth::BiometricAuthRequester requester_;
+  device_reauth::DeviceAuthRequester requester_;
 
   // The authenticator used to trigger a biometric re-auth.
-  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
+  scoped_refptr<device_reauth::DeviceAuthenticator> authenticator_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_REAUTH_ANDROID_REAUTHENTICATOR_BRIDGE_H_

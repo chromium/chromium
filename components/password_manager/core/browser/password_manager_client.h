@@ -68,7 +68,7 @@ class PasswordProtectionService;
 }
 
 namespace device_reauth {
-class BiometricAuthenticator;
+class DeviceAuthenticator;
 }
 
 namespace version_info {
@@ -209,10 +209,10 @@ class PasswordManagerClient {
   virtual void OnPasswordSelected(const std::u16string& text);
 #endif
 
-  // Returns a pointer to a BiometricAuthenticator. Might be null if
+  // Returns a pointer to a DeviceAuthenticator. Might be null if
   // BiometricAuthentication is not available for a given platform.
-  virtual scoped_refptr<device_reauth::BiometricAuthenticator>
-  GetBiometricAuthenticator();
+  virtual scoped_refptr<device_reauth::DeviceAuthenticator>
+  GetDeviceAuthenticator();
 
   // Informs the embedder that the user has requested to generate a
   // password in the focused password field.
