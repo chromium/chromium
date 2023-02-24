@@ -2477,6 +2477,58 @@ TEST_P(FakeMLGraphTest, BuildTest) {
     EXPECT_EQ(exception->message(), "The input name \"a\" is duplicated.");
   }
   {
+    // Test building a graph with an elementwise add operator that uses the same
+    // input for both lhs and rhs:
+    //   [a]
+    //   / \
+    //   \ /
+    //   add
+    //    |
+    //   [b]
+    auto* a =
+        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* output = builder->add(a, a, scope.GetExceptionState());
+    ASSERT_NE(output, nullptr);
+    auto [graph, exception] = BuildGraph(scope, builder, {{"b", output}});
+    EXPECT_NE(graph, nullptr);
+    const auto& inputs = graph->GetInputResourcesInfo();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(inputs.at("a").type, a->Type());
+    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(outputs.at("b").type, output->Type());
+    EXPECT_EQ(outputs.at("b").byte_length, output->ByteLength());
+  }
+  {
+    // Test building a graph with two operators sharing a same input:
+    //      [a]
+    //     /   \
+    //  relu   sigmoid
+    //    |      |
+    //   [b]    [c]
+    auto* a =
+        BuildInput(builder, "a", {3, 4, 5}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* b = builder->relu(a, scope.GetExceptionState());
+    ASSERT_NE(b, nullptr);
+    auto* c = builder->sigmoid(a, scope.GetExceptionState());
+    ASSERT_NE(c, nullptr);
+    auto [graph, exception] = BuildGraph(scope, builder, {{"b", b}, {"c", c}});
+    EXPECT_NE(graph, nullptr);
+    const auto& inputs = graph->GetInputResourcesInfo();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(inputs.at("a").type, a->Type());
+    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
+    EXPECT_EQ(outputs.at("b").type, b->Type());
+    EXPECT_EQ(outputs.at("b").byte_length, b->ByteLength());
+    EXPECT_EQ(outputs.at("c").type, b->Type());
+    EXPECT_EQ(outputs.at("c").byte_length, b->ByteLength());
+  }
+  {
     // Test building a fake graph with two inputs, one gemm operation and one
     // output.
     auto* a = BuildInput(builder, "a", {3, 4}, V8MLOperandType::Enum::kFloat32,

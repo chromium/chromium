@@ -316,6 +316,9 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
     operators_queue.push_back(operand->Operator());
   }
 
+  // An input MLOperand may be used by more than one MLOperators. This set
+  // ensures an input MLOperand won't be validated multiple times.
+  HeapHashSet<Member<const MLOperand>> visited_input_operands;
   while (operators_queue.size() > 0) {
     // If the queue is not empty, dequeue an operator from the queue.
     const auto current_operator = operators_queue.TakeFirst();
@@ -333,6 +336,12 @@ bool MLGraph::ValidateAndInitializeResourcesInfo(
           }
           break;
         case MLOperand::OperandKind::kInput:
+          // If the operand has been validated, it doesn't need to be verified
+          // multiple times.
+          if (visited_input_operands.Contains(operand)) {
+            continue;
+          }
+          visited_input_operands.insert(operand);
           // If the operand is an input operand, validate whether its name is
           // unique.
           if (input_resources_info_.Contains(operand->Name())) {
