@@ -732,6 +732,7 @@ export const ENTRIES = {
     nameText: 'test-encrypted.txt',
     sizeText: '--',
     typeText: 'Plain text',
+    availableOffline: true,
   }),
 
   testDocument: new TestEntryInfo({

@@ -253,7 +253,7 @@ FileType.isHosted = (entry, opt_mimeType) => {
 };
 
 /**
- * @param {Entry} entry Reference to the file.
+ * @param {Entry|FilesAppEntry} entry Reference to the file.
  * @param {string=} opt_mimeType Optional mime type for the file.
  * @return {boolean} Returns true if the file is encrypted with CSE.
  */

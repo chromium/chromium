@@ -1017,7 +1017,7 @@ export class FileTable extends Table {
       // The cell name does not matter as the entire list item is needed.
       forEachCell('.table-row-cell > .date', function(item, entry, listItem) {
         filelist.updateListItemExternalProps(
-            listItem,
+            listItem, entry,
             this.metadataModel_.getCache(
                 [entry],
                 [
