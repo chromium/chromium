@@ -8,14 +8,12 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/view_class_properties.h"
 
 namespace autofill {
 
@@ -39,6 +37,10 @@ ManageSavedIbanBubbleView::ManageSavedIbanBubbleView(
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+}
+
+std::u16string ManageSavedIbanBubbleView::GetIBANIdentifierString() {
+  return controller_->GetIBAN().GetIdentifierStringForAutofillDisplay();
 }
 
 void ManageSavedIbanBubbleView::Show(DisplayReason reason) {
@@ -86,11 +88,6 @@ void ManageSavedIbanBubbleView::AssignIdsToDialogButtons() {
   if (nickname_label_) {
     nickname_label_->SetID(DialogViewId::NICKNAME_LABEL);
   }
-
-  DCHECK(iban_value_and_toggle_);
-  iban_value_and_toggle_->value()->SetID(DialogViewId::IBAN_VALUE_LABEL);
-  iban_value_and_toggle_->toggle_obscured()->SetID(
-      DialogViewId::TOGGLE_IBAN_VALUE_MASKING_BUTTON);
 }
 
 void ManageSavedIbanBubbleView::Init() {
@@ -116,15 +113,13 @@ void ManageSavedIbanBubbleView::Init() {
   AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_LABEL),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
-
-  iban_value_and_toggle_ =
-      AddChildView(std::make_unique<ObscurableLabelWithToggleButton>(
-          controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
-              /*is_value_masked=*/true),
-          controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
-              /*is_value_masked=*/false),
-          l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_SHOW_VALUE),
-          l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_HIDE_VALUE)));
+  // TODO(crbug.com/1349109): Revisit how the IBAN value will be shown if it's
+  // too long, same for nickname row.
+  AddChildView(
+      std::make_unique<views::Label>(GetIBANIdentifierString(),
+                                     views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                     views::style::STYLE_PRIMARY))
+      ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Nickname label row will be added if a nickname was saved in the IBAN save
   // bubble, which is displayed previously in the flow.
@@ -138,8 +133,6 @@ void ManageSavedIbanBubbleView::Init() {
     AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
-    // TODO(crbug.com/1349109): Revisit how the nickname will be shown if it's
-    // too long.
     nickname_label_ = AddChildView(std::make_unique<views::Label>(
         controller_->GetIBAN().nickname(),
         views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));

@@ -4506,8 +4506,6 @@ static_library("ui") {
       "views/controls/hover_button.h",
       "views/controls/md_text_button_with_down_arrow.cc",
       "views/controls/md_text_button_with_down_arrow.h",
-      "views/controls/obscurable_label_with_toggle_button.cc",
-      "views/controls/obscurable_label_with_toggle_button.h",
       "views/controls/page_switcher_view.cc",
       "views/controls/page_switcher_view.h",
       "views/controls/rich_hover_button.cc",

@@ -255,7 +255,9 @@ class IbanBubbleViewFullFormBrowserTest
     CHECK(!GetSaveIbanBubbleView());
   }
 
-  void ClickOnIbanValueToggleButton() {
+  void ClickOnIbanValueTogglelButton() {
+    SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
+    CHECK(save_iban_bubble_views);
     ClickOnDialogView(
         FindViewInBubbleById(DialogViewId::TOGGLE_IBAN_VALUE_MASKING_BUTTON));
   }
@@ -351,12 +353,12 @@ class IbanBubbleViewFullFormBrowserTest
   }
 
   void ClickOnDialogViewAndWaitForWidgetDestruction(views::View* view) {
-    EXPECT_TRUE(GetIbanBubbleView());
+    EXPECT_TRUE(GetSaveIbanBubbleView());
     views::test::WidgetDestroyedWaiter destroyed_waiter(
         GetSaveIbanBubbleView()->GetWidget());
     ClickOnDialogView(view);
     destroyed_waiter.Wait();
-    EXPECT_FALSE(GetIbanBubbleView());
+    EXPECT_FALSE(GetSaveIbanBubbleView());
   }
 
   views::Textfield* nickname_input() {
@@ -540,16 +542,16 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
   ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
 
-  ClickOnIbanValueToggleButton();
+  ClickOnIbanValueTogglelButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
 
-  ClickOnIbanValueToggleButton();
+  ClickOnIbanValueTogglelButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
 
-  ClickOnIbanValueToggleButton();
+  ClickOnIbanValueTogglelButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
 
-  ClickOnIbanValueToggleButton();
+  ClickOnIbanValueTogglelButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
 }
 
@@ -576,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   EXPECT_TRUE(nickname_label);
   EXPECT_EQ(nickname_label->GetText(), kNickname);
   // Verify the bubble type is manage saved IBAN.
-  ASSERT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
+  EXPECT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
 }
 
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
@@ -597,38 +599,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
   EXPECT_FALSE(FindViewInBubbleById(DialogViewId::NICKNAME_LABEL));
   // Verify the bubble type is manage saved IBAN.
-  ASSERT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
-}
-
-// Tests the manage saved bubble. Ensures that clicking the eye icon button
-// successfully causes the IBAN value to be masked or unmasked.
-IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
-                       Local_ClickingHideOrShowIbanValueManageView) {
-  FillForm(kIbanValue);
-  SubmitFormAndWaitForIbanLocalSaveBubble();
-
-  ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
-  ClickOnSaveButton();
-  WaitForObservedEvent();
-
-  // Open up manage IBANs bubble.
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveIbanIconView());
-  WaitForObservedEvent();
-
-  // Verify the bubble type is manage saved IBAN.
-  ASSERT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
-
-  ClickOnIbanValueToggleButton();
-  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
+  EXPECT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
 }
 
 }  // namespace autofill
