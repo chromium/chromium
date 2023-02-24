@@ -676,11 +676,14 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   }
 
 #if !defined(NACL_WIN64)
-  if (process_type == switches::kRendererProcess ||
-      process_type == switches::kPpapiPluginProcess ||
-      sandbox_type == Sandbox::kPrintCompositor) {
-    AddDirectory(base::DIR_WINDOWS_FONTS, NULL, true,
-                 Semantics::kFilesAllowReadonly, config);
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kWinSboxAllowSystemFonts)) {
+    if (process_type == switches::kRendererProcess ||
+        process_type == switches::kPpapiPluginProcess ||
+        sandbox_type == Sandbox::kPrintCompositor) {
+      AddDirectory(base::DIR_WINDOWS_FONTS, NULL, true,
+                   Semantics::kFilesAllowReadonly, config);
+    }
   }
 #endif
 

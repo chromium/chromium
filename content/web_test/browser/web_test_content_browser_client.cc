@@ -89,6 +89,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
@@ -664,17 +665,20 @@ bool WebTestContentBrowserClient::PreSpawnChild(
   if (sandbox_type == sandbox::mojom::Sandbox::kRenderer) {
     if (policy->GetConfig()->IsConfigured())
       return true;
-
-    // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
-    // addition in |StartSandboxedProcess|.
-    std::vector<std::string> font_files = switches::GetSideloadFontFiles();
-    for (std::vector<std::string>::const_iterator i(font_files.begin());
-         i != font_files.end(); ++i) {
-      sandbox::ResultCode result = policy->GetConfig()->AddRule(
-          sandbox::SubSystem::kFiles, sandbox::Semantics::kFilesAllowReadonly,
-          base::UTF8ToWide(*i).c_str());
-      if (result != sandbox::SBOX_ALL_OK)
-        return false;
+    if (base::FeatureList::IsEnabled(
+            sandbox::policy::features::kWinSboxAllowSystemFonts)) {
+      // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
+      // addition in |StartSandboxedProcess|.
+      std::vector<std::string> font_files = switches::GetSideloadFontFiles();
+      for (std::vector<std::string>::const_iterator i(font_files.begin());
+           i != font_files.end(); ++i) {
+        sandbox::ResultCode result = policy->GetConfig()->AddRule(
+            sandbox::SubSystem::kFiles, sandbox::Semantics::kFilesAllowReadonly,
+            base::UTF8ToWide(*i).c_str());
+        if (result != sandbox::SBOX_ALL_OK) {
+          return false;
+        }
+      }
     }
   }
   return true;
