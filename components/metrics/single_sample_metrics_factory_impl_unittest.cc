@@ -42,6 +42,7 @@ class SingleSampleMetricsFactoryImplTest : public testing::Test {
 
   ~SingleSampleMetricsFactoryImplTest() override {
     factory_->DestroyProviderForTesting();
+    factory_ = nullptr;
     if (thread_.IsRunning())
       ShutdownThread();
     base::SingleSampleMetricsFactory::DeleteFactoryForTesting();
