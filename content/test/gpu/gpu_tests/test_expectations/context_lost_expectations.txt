@@ -160,6 +160,14 @@ crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
+# Fails on Linux AMD RX 5500 XT with RADV 20.0.8
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextLostFromGPUProcessExit [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_NewWebGLNotBlocked [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_OriginalWebGLNotBlocked [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

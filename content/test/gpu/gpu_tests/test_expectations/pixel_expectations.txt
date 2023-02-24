@@ -387,6 +387,11 @@ crbug.com/1382332 [ display-server-wayland intel-0x9bc5 linux no-clang-coverage 
 crbug.com/1410332 [ android android-chromium renderer-skia-gl ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
 crbug.com/1410332 [ android android-chromium android-pixel-4 renderer-skia-gl ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ RetryOnFailure ]
 
+# Fails on Linux AMD RX 5500 XT with RADV 20.0.8
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
+crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
