@@ -90,8 +90,9 @@ ScriptPromise ShapeDetector::detect(ScriptState* script_state,
       canvas_image_source->ElementSize(gfx::SizeF(), kRespectImageOrientation);
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-  scoped_refptr<Image> image =
-      canvas_image_source->GetSourceImageForCanvas(&source_image_status, size);
+  scoped_refptr<Image> image = canvas_image_source->GetSourceImageForCanvas(
+      CanvasResourceProvider::FlushReason::kShapeDetector, &source_image_status,
+      size);
   if (!image || source_image_status != kNormalSourceImageStatus) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid element or state.");

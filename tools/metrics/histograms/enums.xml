@@ -14195,6 +14195,39 @@ Called by update_bad_message_reasons.py.-->
   <int value="4" label="webgpu"/>
 </enum>
 
+<enum name="CanvasResourceProviderFlushReason">
+  <int value="0" label="None (should never happen)"/>
+  <int value="1" label="Testing (should never happen in prod)"/>
+  <int value="2" label="Non 2D Canvas"/>
+  <int value="3" label="Clear"/>
+  <int value="4" label="Hibernating"/>
+  <int value="5" label="OffscreenCanvas commit"/>
+  <int value="6" label="OffscreenCanvas push frame"/>
+  <int value="7" label="CreateImageBitmap"/>
+  <int value="8" label="GetImageData"/>
+  <int value="9" label="Volatile source image"/>
+  <int value="10" label="Canvas push frame"/>
+  <int value="11" label="Canvas push frame while printing"/>
+  <int value="12" label="Write pixels"/>
+  <int value="13" label="ToBlob"/>
+  <int value="14" label="CreateVideoFrame"/>
+  <int value="15" label="DrawImage"/>
+  <int value="16" label="DrawListener"/>
+  <int value="17" label="Paint"/>
+  <int value="18" label="Transfer"/>
+  <int value="19" label="Printing"/>
+  <int value="20" label="WebGPU external image"/>
+  <int value="21" label="Shape detector"/>
+  <int value="22" label="WebGL texture upload"/>
+  <int value="23" label="CreatePattern"/>
+  <int value="24" label="Copy to clipboard"/>
+  <int value="25" label="Source image will change"/>
+  <int value="26" label="WebGPU texture upload"/>
+  <int value="27" label="ToDataURL"/>
+  <int value="28" label="GPU/CPU switch"/>
+  <int value="29" label="RecordingLimitExceeded"/>
+</enum>
+
 <enum name="CanvasResourceProviderType">
   <int value="0" label="Texture"/>
   <int value="1" label="Bitmap"/>

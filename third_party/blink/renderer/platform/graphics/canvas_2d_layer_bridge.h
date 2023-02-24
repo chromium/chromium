@@ -42,6 +42,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -169,7 +170,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
       viz::TransferableResource* out_resource,
       viz::ReleaseCallback* out_release_callback) override;
 
-  void FinalizeFrame(bool printing = false);
+  void FinalizeFrame(CanvasResourceProvider::FlushReason);
   void SetIsInHiddenPage(bool);
   void SetIsBeingDisplayed(bool);
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
@@ -205,7 +206,8 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
 
   bool HasRecordedDrawCommands() { return have_recorded_draw_commands_; }
 
-  scoped_refptr<StaticBitmapImage> NewImageSnapshot();
+  scoped_refptr<StaticBitmapImage> NewImageSnapshot(
+      CanvasResourceProvider::FlushReason);
 
   cc::TextureLayer* layer_for_testing() { return layer_.get(); }
 
@@ -240,7 +242,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {
   }
   CanvasResourceProvider* GetOrCreateResourceProvider();
   CanvasResourceProvider* ResourceProvider() const;
-  void FlushRecording(bool printing = false);
+  void FlushRecording(CanvasResourceProvider::FlushReason);
 
   cc::PaintRecord* getLastRecord() {
     return last_record_tainted_by_write_pixels_

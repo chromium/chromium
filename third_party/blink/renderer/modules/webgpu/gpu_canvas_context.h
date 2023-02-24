@@ -63,7 +63,8 @@ class GPUCanvasContext : public CanvasRenderingContext,
   // If that texture has already been sent to the compositor, will produce a
   // snapshot of the just released texture associated to this gpu context.
   // todo(crbug/1267243) Make snapshot always return the current frame.
-  scoped_refptr<StaticBitmapImage> GetImage() final;
+  scoped_refptr<StaticBitmapImage> GetImage(
+      CanvasResourceProvider::FlushReason) final;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) final;
   // Copies the back buffer to given shared image resource provider which must
   // be webgpu compatible. Returns true on success.
@@ -116,7 +117,7 @@ class GPUCanvasContext : public CanvasRenderingContext,
   void ReplaceDrawingBuffer(bool destroy_swap_buffers);
   void InitializeAlphaModePipeline(WGPUTextureFormat format);
 
-  void FinalizeFrame(bool) override;
+  void FinalizeFrame(CanvasResourceProvider::FlushReason) override;
 
   scoped_refptr<StaticBitmapImage> SnapshotInternal(
       const WGPUTexture& texture,

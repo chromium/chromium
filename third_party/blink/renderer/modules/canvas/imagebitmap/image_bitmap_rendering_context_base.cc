@@ -76,7 +76,8 @@ void ImageBitmapRenderingContextBase::SetImage(ImageBitmap* image_bitmap) {
     image_bitmap->close();
 }
 
-scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContextBase::GetImage() {
+scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContextBase::GetImage(
+    CanvasResourceProvider::FlushReason) {
   return image_layer_bridge_->GetImage();
 }
 
@@ -137,7 +138,8 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
       image->PaintImageForCurrentFrame(), 0, 0, SkSamplingOptions(),
       &paint_flags);
   scoped_refptr<CanvasResource> resource =
-      Host()->ResourceProvider()->ProduceCanvasResource();
+      Host()->ResourceProvider()->ProduceCanvasResource(
+          CanvasResourceProvider::FlushReason::kNon2DCanvas);
   Host()->PushFrame(
       std::move(resource),
       SkIRect::MakeWH(image_layer_bridge_->GetImage()->Size().width(),

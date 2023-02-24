@@ -260,7 +260,8 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
                           TextRunPaintInfo(text_run), gfx::PointF(text_pos),
                           Font::kDoNotPaintIfFontNotReady, text_paint);
 
-  scoped_refptr<StaticBitmapImage> image = resource_provider->Snapshot();
+  scoped_refptr<StaticBitmapImage> image = resource_provider->Snapshot(
+      CanvasResourceProvider::FlushReason::kNon2DCanvas);
   return DragImage::Create(image.get(), kRespectImageOrientation);
 }
 

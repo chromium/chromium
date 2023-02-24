@@ -125,7 +125,8 @@ void GPUCanvasContext::Reshape(int width, int height) {
   Host()->SetNeedsCompositingUpdate();
 }
 
-scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage() {
+scoped_refptr<StaticBitmapImage> GPUCanvasContext::GetImage(
+    CanvasResourceProvider::FlushReason) {
   if (!swap_buffers_)
     return nullptr;
 
@@ -537,7 +538,7 @@ void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {
   }
 }
 
-void GPUCanvasContext::FinalizeFrame(bool /*printing*/) {
+void GPUCanvasContext::FinalizeFrame(CanvasResourceProvider::FlushReason) {
   // In some cases, such as when a canvas is hidden of offscreen, compositing
   // will never happen and thus OnTextureTransferred will never be called. In
   // those cases, getCurrentTexture is still required to return a new texture
@@ -697,7 +698,8 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   if (!CopyTextureToResourceProvider(texture, size, resource_provider.get()))
     return nullptr;
 
-  return resource_provider->Snapshot();
+  return resource_provider->Snapshot(
+      CanvasResourceProvider::FlushReason::kNone);
 }
 
 // DawnObjectBase substitute methods

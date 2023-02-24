@@ -709,14 +709,16 @@ void WebGLRenderingContextBase::commit() {
 
   if (PaintRenderingResultsToCanvas(kBackBuffer)) {
     if (Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
-      Host()->Commit(Host()->ResourceProvider()->ProduceCanvasResource(),
+      Host()->Commit(Host()->ResourceProvider()->ProduceCanvasResource(
+                         CanvasResourceProvider::FlushReason::kNone),
                      SkIRect::MakeWH(width, height));
     }
   }
   MarkLayerComposited();
 }
 
-scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
+scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
+    CanvasResourceProvider::FlushReason reason) {
   if (!GetDrawingBuffer())
     return nullptr;
 
@@ -760,7 +762,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     NOTREACHED();
     return nullptr;
   }
-  return resource_provider->Snapshot();
+  return resource_provider->Snapshot(reason);
 }
 
 ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
@@ -1535,16 +1537,18 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
     if (Host()->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
       const int width = GetDrawingBuffer()->Size().width();
       const int height = GetDrawingBuffer()->Size().height();
-      submitted_frame =
-          Host()->PushFrame(Host()->ResourceProvider()->ProduceCanvasResource(),
-                            SkIRect::MakeWH(width, height));
+      submitted_frame = Host()->PushFrame(
+          Host()->ResourceProvider()->ProduceCanvasResource(
+              CanvasResourceProvider::FlushReason::kNon2DCanvas),
+          SkIRect::MakeWH(width, height));
     }
   }
   MarkLayerComposited();
   return submitted_frame;
 }
 
-void WebGLRenderingContextBase::FinalizeFrame(bool /*printing*/) {
+void WebGLRenderingContextBase::FinalizeFrame(
+    CanvasResourceProvider::FlushReason) {
   if (Host()->LowLatencyEnabled()) {
     // PaintRenderingResultsToCanvas will export drawing buffer if the resource
     // provider is single buffered.  Otherwise it will copy the drawing buffer.
@@ -5465,7 +5469,8 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
   image->Draw(resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
               gfx::RectF(src_rect), draw_options);
-  return resource_provider->Snapshot();
+  return resource_provider->Snapshot(
+      CanvasResourceProvider::FlushReason::kWebGLTexImage);
 }
 
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(
@@ -5957,7 +5962,8 @@ void WebGLRenderingContextBase::TexImageHelperCanvasRenderingContextHost(
 
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   scoped_refptr<Image> image = context_host->GetSourceImageForCanvas(
-      &source_image_status, gfx::SizeF(*params.width, *params.height));
+      CanvasResourceProvider::FlushReason::kWebGLTexImage, &source_image_status,
+      gfx::SizeF(*params.width, *params.height));
   if (source_image_status != kNormalSourceImageStatus)
     return;
 

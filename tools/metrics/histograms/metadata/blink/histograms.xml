@@ -505,6 +505,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Blink.Canvas.VectorPrintFallbackReason"
+    enum="CanvasResourceProviderFlushReason" expires_after="2024-04-01">
+  <owner>junov@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <owner>aaronhk@chromium.org</owner>
+  <summary>
+    The reason why printing a 2D canvas failed to use vector printing.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesCount"
     units="Recyclable resources" expires_after="2023-06-25">
   <owner>magchen@chromium.org</owner>

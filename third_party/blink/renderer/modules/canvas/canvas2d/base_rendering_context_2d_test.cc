@@ -108,7 +108,7 @@ class TestRenderingContext2D final
   void WillOverwriteCanvas() override {}
 
  private:
-  void FlushCanvas() override {}
+  void FlushCanvas(CanvasResourceProvider::FlushReason) override {}
 
   Member<NullExecutionContext> execution_context_;
   cc::PaintRecorder recorder_;

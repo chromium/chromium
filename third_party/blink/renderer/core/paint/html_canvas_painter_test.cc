@@ -80,8 +80,8 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
 
   // Force the page to paint.
   element->PreFinalizeFrame();
-  context->FinalizeFrame();
-  element->PostFinalizeFrame();
+  context->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+  element->PostFinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
   UpdateAllLifecyclePhasesForTest();
 
   // Fetch the layer associated with the <canvas>, and check that it was

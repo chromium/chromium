@@ -200,8 +200,9 @@ GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
                                                              kBackBuffer)) {
     // Fallback to static bitmap image.
     SourceImageStatus source_image_status = kInvalidSourceImageStatus;
-    auto image = canvas->GetSourceImageForCanvas(&source_image_status,
-                                                 gfx::SizeF(canvas->Size()));
+    auto image = canvas->GetSourceImageForCanvas(
+        CanvasResourceProvider::FlushReason::kWebGPUTexture,
+        &source_image_status, gfx::SizeF(canvas->Size()));
     if (source_image_status != kNormalSourceImageStatus) {
       exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                         "Failed to get image from canvas");

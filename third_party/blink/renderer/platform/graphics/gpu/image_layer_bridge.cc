@@ -62,7 +62,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
   cc::PaintFlags paint;
   paint.setBlendMode(SkBlendMode::kSrc);
   provider->Canvas()->drawImage(paint_image, 0, 0, SkSamplingOptions(), &paint);
-  return provider->Snapshot();
+  return provider->Snapshot(CanvasResourceProvider::FlushReason::kNon2DCanvas);
 }
 
 }  // namespace

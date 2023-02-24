@@ -1642,8 +1642,9 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
   gfx::SizeF default_object_size(Width(), Height());
   SourceImageStatus source_image_status = kInvalidSourceImageStatus;
   if (!image_source->IsVideoElement()) {
-    image = image_source->GetSourceImageForCanvas(&source_image_status,
-                                                  default_object_size);
+    image = image_source->GetSourceImageForCanvas(
+        CanvasResourceProvider::FlushReason::kDrawImage, &source_image_status,
+        default_object_size);
     if (source_image_status == kUndecodableSourceImageStatus) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidStateError,
@@ -1838,7 +1839,9 @@ CanvasPattern* BaseRenderingContext2D::createPattern(
 
   gfx::SizeF default_object_size(Width(), Height());
   scoped_refptr<Image> image_for_rendering =
-      image_source->GetSourceImageForCanvas(&status, default_object_size);
+      image_source->GetSourceImageForCanvas(
+          CanvasResourceProvider::FlushReason::kCreatePattern, &status,
+          default_object_size);
 
   switch (status) {
     case kNormalSourceImageStatus:
@@ -2011,7 +2014,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
 
   // Deferred offscreen canvases might have recorded commands, make sure
   // that those get drawn here
-  FinalizeFrame();
+  FinalizeFrame(CanvasResourceProvider::FlushReason::kGetImageData);
 
   num_readbacks_performed_++;
   CanvasContextCreationAttributesCore::WillReadFrequently
@@ -2054,7 +2057,8 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
     }
   }
 
-  scoped_refptr<StaticBitmapImage> snapshot = GetImage();
+  scoped_refptr<StaticBitmapImage> snapshot =
+      GetImage(CanvasResourceProvider::FlushReason::kGetImageData);
 
   // Determine if the array should be zero initialized, or if it will be
   // completely overwritten.
