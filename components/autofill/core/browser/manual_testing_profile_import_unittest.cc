@@ -62,10 +62,12 @@ TEST(ManualTestingProfileImportTest, AutofillProfilesFromJSON_Valid) {
   expected_profile2.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER, u"123", VerificationStatus::kUserVerified);
 
-  EXPECT_THAT(
-      AutofillProfilesFromJSON(*json),
-      testing::Optional(testing::Pointwise(
-          ProfilesCompareEqual(), {expected_profile1, expected_profile2})));
+  base::expected<std::vector<AutofillProfile>, std::string> profiles =
+      AutofillProfilesFromJSON(*json);
+  ASSERT_TRUE(profiles.has_value()) << profiles.error();
+  EXPECT_THAT(*profiles,
+              testing::Pointwise(ProfilesCompareEqual(),
+                                 {expected_profile1, expected_profile2}));
 }
 
 // Tests that the conversion fails when an unrecognized field type is present.
@@ -79,7 +81,7 @@ TEST(ManualTestingProfileImportTest,
     ]
   })");
   ASSERT_TRUE(json);
-  EXPECT_FALSE(AutofillProfilesFromJSON(*json));
+  EXPECT_FALSE(AutofillProfilesFromJSON(*json).has_value());
 }
 
 // Tests that the conversion fails when the "source" has an unrecognized value.
@@ -93,7 +95,7 @@ TEST(ManualTestingProfileImportTest,
     ]
   })");
   ASSERT_TRUE(json);
-  EXPECT_FALSE(AutofillProfilesFromJSON(*json));
+  EXPECT_FALSE(AutofillProfilesFromJSON(*json).has_value());
 }
 
 // Tests that the conversion fails for non-fully structured profiles.
@@ -108,7 +110,7 @@ TEST(ManualTestingProfileImportTest,
     ]
   })");
   ASSERT_TRUE(json);
-  EXPECT_FALSE(AutofillProfilesFromJSON(*json));
+  EXPECT_FALSE(AutofillProfilesFromJSON(*json).has_value());
 }
 
 }  // namespace autofill
