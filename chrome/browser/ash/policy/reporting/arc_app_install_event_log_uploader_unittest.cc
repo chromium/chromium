@@ -110,7 +110,7 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   }
 
   void CompleteSerialize() {
-    EXPECT_CALL(delegate_, SerializeForUpload_(_))
+    EXPECT_CALL(delegate_, SerializeForUpload_)
         .WillOnce(WithArgs<0>(Invoke(
             [=](ArcAppInstallEventLogUploader::Delegate::SerializationCallback&
                     callback) { std::move(callback).Run(&log_); })));
@@ -119,8 +119,7 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
   void CaptureSerialize(
       ArcAppInstallEventLogUploader::Delegate::SerializationCallback*
           callback) {
-    EXPECT_CALL(delegate_, SerializeForUpload_(_))
-        .WillOnce(MoveArg<0>(callback));
+    EXPECT_CALL(delegate_, SerializeForUpload_).WillOnce(MoveArg<0>(callback));
   }
 
   void CompleteUpload(bool success) {
@@ -130,9 +129,9 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
     value_report_ = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
 
-    EXPECT_CALL(client_, UploadAppInstallReport_(MatchValue(&value_report_), _))
-        .WillOnce(WithArgs<1>(
-            Invoke([=](CloudPolicyClient::ResultCallback& callback) {
+    EXPECT_CALL(client_, UploadAppInstallReport(MatchValue(&value_report_), _))
+        .WillOnce(
+            WithArgs<1>(Invoke([=](CloudPolicyClient::ResultCallback callback) {
               std::move(callback).Run(CloudPolicyClient::Result(
                   success ? DM_STATUS_SUCCESS
                           : DM_STATUS_TEMPORARY_UNAVAILABLE));
@@ -147,7 +146,7 @@ class ArcAppInstallEventLogUploaderTest : public testing::Test {
         std::move(events), std::move(context));
 
     CloudPolicyClient::StatusCallback status_callback;
-    EXPECT_CALL(client_, UploadAppInstallReport_(MatchValue(&value_report_), _))
+    EXPECT_CALL(client_, UploadAppInstallReport(MatchValue(&value_report_), _))
         .WillOnce(MoveArg<1>(callback));
   }
 
@@ -198,12 +197,12 @@ TEST_F(ArcAppInstallEventLogUploaderTest, RequestSerializeRequestAndUpload) {
   uploader_->RequestUpload();
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  EXPECT_CALL(delegate_, SerializeForUpload_(_)).Times(0);
+  EXPECT_CALL(delegate_, SerializeForUpload_).Times(0);
   uploader_->RequestUpload();
   Mock::VerifyAndClearExpectations(&delegate_);
 
   EXPECT_CALL(delegate_, OnUploadSuccess());
-  EXPECT_CALL(delegate_, SerializeForUpload_(_)).Times(0);
+  EXPECT_CALL(delegate_, SerializeForUpload_).Times(0);
   std::move(status_callback).Run(CloudPolicyClient::Result(DM_STATUS_SUCCESS));
 }
 
@@ -221,7 +220,7 @@ TEST_F(ArcAppInstallEventLogUploaderTest, RequestRequestSerializeAndUpload) {
   uploader_->RequestUpload();
   Mock::VerifyAndClearExpectations(&delegate_);
 
-  EXPECT_CALL(delegate_, SerializeForUpload_(_)).Times(0);
+  EXPECT_CALL(delegate_, SerializeForUpload_).Times(0);
   uploader_->RequestUpload();
   Mock::VerifyAndClearExpectations(&delegate_);
 
@@ -247,7 +246,7 @@ TEST_F(ArcAppInstallEventLogUploaderTest, RequestCancelAndSerialize) {
   uploader_->CancelUpload();
   Mock::VerifyAndClearExpectations(&client_);
 
-  EXPECT_CALL(client_, UploadAppInstallReport_(_, _)).Times(0);
+  EXPECT_CALL(client_, UploadAppInstallReport).Times(0);
   EXPECT_CALL(delegate_, OnUploadSuccess()).Times(0);
   std::move(serialization_callback).Run(&log_);
 }
@@ -342,7 +341,7 @@ TEST_F(ArcAppInstallEventLogUploaderTest, RegisterRequestSerializeAndUpload) {
 TEST_F(ArcAppInstallEventLogUploaderTest, RequestRegisterSerializeAndUpload) {
   CreateUploader();
 
-  EXPECT_CALL(delegate_, SerializeForUpload_(_)).Times(0);
+  EXPECT_CALL(delegate_, SerializeForUpload_).Times(0);
   uploader_->RequestUpload();
   Mock::VerifyAndClearExpectations(&delegate_);
 
@@ -397,7 +396,7 @@ TEST_F(ArcAppInstallEventLogUploaderTest,
   UnregisterClient();
   Mock::VerifyAndClearExpectations(&client_);
 
-  EXPECT_CALL(client_, UploadAppInstallReport_(_, _)).Times(0);
+  EXPECT_CALL(client_, UploadAppInstallReport).Times(0);
   EXPECT_CALL(delegate_, OnUploadSuccess()).Times(0);
   std::move(serialization_callback).Run(&log_);
   Mock::VerifyAndClearExpectations(&delegate_);
@@ -436,7 +435,7 @@ TEST_F(ArcAppInstallEventLogUploaderTest,
   CaptureSerialize(&serialization_callback_2);
   RegisterClient();
 
-  EXPECT_CALL(client_, UploadAppInstallReport_(_, _)).Times(0);
+  EXPECT_CALL(client_, UploadAppInstallReport).Times(0);
   EXPECT_CALL(delegate_, OnUploadSuccess()).Times(0);
   std::move(serialization_callback_1).Run(&log_);
   Mock::VerifyAndClearExpectations(&delegate_);

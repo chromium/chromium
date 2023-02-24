@@ -234,7 +234,7 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
     BuildReport();
 
     EXPECT_CALL(cloud_policy_client_,
-                UploadAppInstallReport_(MatchEvents(&events_value_), _))
+                UploadAppInstallReport(MatchEvents(&events_value_), _))
         .WillOnce(MoveArg<1>(callback));
   }
 
@@ -248,9 +248,9 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
     BuildReport();
 
     EXPECT_CALL(cloud_policy_client_,
-                UploadAppInstallReport_(MatchEvents(&events_value_), _))
-        .WillOnce(Invoke([](base::Value::Dict&,
-                            CloudPolicyClient::ResultCallback& callback) {
+                UploadAppInstallReport(MatchEvents(&events_value_), _))
+        .WillOnce(Invoke([](base::Value::Dict,
+                            CloudPolicyClient::ResultCallback callback) {
           std::move(callback).Run(CloudPolicyClient::Result(DM_STATUS_SUCCESS));
         }));
   }

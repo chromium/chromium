@@ -1680,7 +1680,7 @@ TEST_F(CloudPolicyClientTest, UploadChromeOsUserReportNotRegistered) {
             CloudPolicyClient::Result(CloudPolicyClient::NotRegistered()));
 }
 
-TEST_F(CloudPolicyClientTest, UploadChromeProfileReport) {
+TEST_F(CloudPolicyClientTest, UploadChromeProfile) {
   RegisterClient();
 
   em::DeviceManagementRequest device_managment_request;
@@ -1710,7 +1710,7 @@ TEST_F(CloudPolicyClientTest, UploadChromeProfileReport) {
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 }
 
-TEST_F(CloudPolicyClientTest, UploadChromeProfileReportNotRegistered) {
+TEST_F(CloudPolicyClientTest, UploadChromeProfileNotRegistered) {
   base::test::TestFuture<CloudPolicyClient::Result> result_future;
   auto chrome_profile_report =
       std::make_unique<em::ChromeProfileReportRequest>();
