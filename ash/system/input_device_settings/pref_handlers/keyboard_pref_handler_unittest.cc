@@ -16,7 +16,9 @@
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/chromeos/events/mojom/modifier_key.mojom.h"
+#include "ui/chromeos/events/pref_names.h"
 
 namespace ash {
 
@@ -108,6 +110,35 @@ class KeyboardPrefHandlerTest : public AshTestBase {
                                                    kGlobalAutoRepeatEnabled);
     pref_service_->registry()->RegisterBooleanPref(prefs::kSendFunctionKeys,
                                                    kGlobalSendFunctionKeys);
+
+    // Register Integer prefs which determine how we remap modifiers.
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapAltKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kAlt));
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapControlKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kControl));
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapEscapeKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kEscape));
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapBackspaceKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kBackspace));
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapAssistantKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kAssistant));
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapCapsLockKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kCapsLock));
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapExternalMetaKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kMeta));
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapSearchKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kMeta));
+    pref_service_->registry()->RegisterIntegerPref(
+        ::prefs::kLanguageRemapExternalCommandKeyTo,
+        static_cast<int>(ui::mojom::ModifierKey::kMeta));
   }
 
   void CheckKeyboardSettingsAndDictAreEqual(
@@ -170,6 +201,14 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     pref_handler_->InitializeKeyboardSettings(pref_service_.get(),
                                               keyboard.get());
     return std::move(keyboard->settings);
+  }
+
+  mojom::KeyboardSettingsPtr CallInitializeKeyboardSettings(
+      const mojom::Keyboard& keyboard) {
+    const auto keyboard_ptr = keyboard.Clone();
+    pref_handler_->InitializeKeyboardSettings(pref_service_.get(),
+                                              keyboard_ptr.get());
+    return std::move(keyboard_ptr->settings);
   }
 
  protected:
@@ -403,6 +442,32 @@ TEST_F(KeyboardPrefHandlerTest, KeyboardObserveredInTransitionPeriod) {
   ASSERT_EQ(settings->top_row_are_fkeys, kGlobalSendFunctionKeys);
   ASSERT_EQ(settings->suppress_meta_fkey_rewrites,
             kDefaultSuppressMetaFKeyRewrites);
+}
+
+TEST_F(KeyboardPrefHandlerTest, ModifierRemappingsFromGlobalPrefs) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kKeyboardKey1;
+  keyboard.modifier_keys = {
+      ui::mojom::ModifierKey::kAlt,       ui::mojom::ModifierKey::kControl,
+      ui::mojom::ModifierKey::kAssistant, ui::mojom::ModifierKey::kBackspace,
+      ui::mojom::ModifierKey::kMeta,      ui::mojom::ModifierKey::kEscape};
+  keyboard.meta_key = mojom::MetaKey::kSearch;
+  // Remap Alt + Meta keys.
+  pref_service_->SetInteger(
+      ::prefs::kLanguageRemapAltKeyTo,
+      static_cast<int>(ui::mojom::ModifierKey::kCapsLock));
+  pref_service_->SetInteger(::prefs::kLanguageRemapSearchKeyTo,
+                            static_cast<int>(ui::mojom::ModifierKey::kEscape));
+
+  Shell::Get()->input_device_tracker()->OnKeyboardConnected(keyboard);
+  mojom::KeyboardSettingsPtr settings =
+      CallInitializeKeyboardSettings(keyboard);
+
+  ASSERT_EQ(settings->modifier_remappings.size(), 2u);
+  ASSERT_EQ(settings->modifier_remappings.at(ui::mojom::ModifierKey::kAlt),
+            ui::mojom::ModifierKey::kCapsLock);
+  ASSERT_EQ(settings->modifier_remappings.at(ui::mojom::ModifierKey::kMeta),
+            ui::mojom::ModifierKey::kEscape);
 }
 
 class KeyboardSettingsPrefConversionTest
