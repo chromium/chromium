@@ -20,7 +20,7 @@ namespace autofill::autofill_metrics {
 // -- bool include_full_server_credit_card;
 // -- bool is_user_opted_in_to_fido;
 // -- bool is_unmask_details_request_in_progress;
-class BetterAuthMetricsTest : public metrics::AutofillMetricsBaseTest,
+class BetterAuthMetricsTest : public AutofillMetricsBaseTest,
                               public testing::Test,
                               public testing::WithParamInterface<
                                   std::tuple<bool, bool, bool, bool, bool>> {

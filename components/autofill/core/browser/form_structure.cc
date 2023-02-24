@@ -1100,7 +1100,7 @@ void FormStructure::LogQualityMetrics(
         form_interactions_ukm_logger, *this, *field, metric_type);
     AutofillMetrics::LogOverallPredictionQualityMetrics(
         form_interactions_ukm_logger, *this, *field, metric_type);
-    autofill::metrics::LogShadowPredictionComparison(*field);
+    autofill_metrics::LogShadowPredictionComparison(*field);
     // We count fields that were autofilled but later modified, regardless of
     // whether the data now in the field is recognized.
     if (field->previously_autofilled())

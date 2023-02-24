@@ -16,7 +16,7 @@
 
 namespace autofill::autofill_metrics {
 
-class AddressFormEventLoggerTest : public metrics::AutofillMetricsBaseTest,
+class AddressFormEventLoggerTest : public AutofillMetricsBaseTest,
                                    public testing::Test {
  public:
   void SetUp() override { SetUpHelper(); }
@@ -57,8 +57,9 @@ TEST_F(AddressFormEventLoggerTest, SyncState) {
   }
 }
 
-class CategoryResolvedKeyMetricsTest : public metrics::AutofillMetricsBaseTest,
-                                       public testing::Test {
+class CategoryResolvedKeyMetricsTest
+    : public autofill_metrics::AutofillMetricsBaseTest,
+      public testing::Test {
  public:
   CategoryResolvedKeyMetricsTest() {
     // Category-resolved metrics are only emitted when the union view is

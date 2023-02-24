@@ -53,9 +53,8 @@ void TestAddressProfileImportCountrySpecificFieldRequirements(
 
 }  // namespace
 
-class AutofillProfileImportMetricsTest
-    : public metrics::AutofillMetricsBaseTest,
-      public testing::Test {
+class AutofillProfileImportMetricsTest : public AutofillMetricsBaseTest,
+                                         public testing::Test {
  public:
   void SetUp() override { SetUpHelper(); }
   void TearDown() override { TearDownHelper(); }

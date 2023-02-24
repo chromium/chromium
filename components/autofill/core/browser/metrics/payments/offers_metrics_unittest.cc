@@ -16,8 +16,7 @@ using ::base::BucketsAre;
 
 namespace autofill::autofill_metrics {
 
-class OffersMetricsTest : public metrics::AutofillMetricsBaseTest,
-                          public testing::Test {
+class OffersMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
  public:
   OffersMetricsTest() = default;
   ~OffersMetricsTest() override = default;

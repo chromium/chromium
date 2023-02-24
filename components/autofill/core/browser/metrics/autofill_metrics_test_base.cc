@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
 #endif
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 namespace {
 void SetProfileTestData(AutofillProfile* profile) {
@@ -333,4 +333,4 @@ void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {
   personal_data().AddProfile(profile2);
 }
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics

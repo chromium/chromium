@@ -12,8 +12,7 @@
 
 namespace autofill::autofill_metrics {
 
-class IbanMetricsTest : public metrics::AutofillMetricsBaseTest,
-                        public testing::Test {
+class IbanMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
  public:
   IbanMetricsTest() = default;
   ~IbanMetricsTest() override = default;

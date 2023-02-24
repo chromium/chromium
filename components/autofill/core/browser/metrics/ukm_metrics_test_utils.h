@@ -14,7 +14,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 struct ExpectedUkmMetricsPair : public std::pair<const char*, int64_t> {
   using std::pair<const char*, int64_t>::pair;
@@ -57,6 +57,6 @@ void AppendFieldTypeUkm(
     const std::vector<ServerFieldType>& actual_types,
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics);
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_UKM_METRICS_TEST_UTILS_H_

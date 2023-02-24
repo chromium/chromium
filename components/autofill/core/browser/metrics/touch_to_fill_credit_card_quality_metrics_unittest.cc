@@ -18,7 +18,7 @@ using ::base::Bucket;
 using ::base::BucketsAre;
 using ::testing::TestWithParam;
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 struct TouchToFillForCreditCardsTestCase {
   std::vector<ServerFieldType> field_types;
@@ -28,7 +28,7 @@ struct TouchToFillForCreditCardsTestCase {
 };
 
 class TouchToFillForCreditCardsTest
-    : public autofill::metrics::AutofillMetricsBaseTest,
+    : public AutofillMetricsBaseTest,
       public TestWithParam<TouchToFillForCreditCardsTestCase> {
  public:
   void SetUp() override {
@@ -165,4 +165,4 @@ INSTANTIATE_TEST_SUITE_P(
             /*is_all_autofilled=*/false,
             /*is_all_accepted=*/false}));
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics

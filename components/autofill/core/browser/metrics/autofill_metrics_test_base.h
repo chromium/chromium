@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 constexpr char kTestProfileId[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kTestLocalCardId[] = "10000000-0000-0000-0000-000000000001";
@@ -230,6 +230,6 @@ class AutofillMetricsBaseTest {
   CreditCard credit_card_ = test::GetMaskedServerCard();
 };
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_TEST_BASE_H_

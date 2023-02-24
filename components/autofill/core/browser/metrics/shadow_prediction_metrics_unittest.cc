@@ -19,7 +19,7 @@ using ::base::Bucket;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 // These constants mirror the similarly named values in
 // `AutofillPredictionsComparisonResult` in
@@ -63,8 +63,6 @@ FormData GetFormWith2Fields(const GURL& form_origin) {
 // correct value in the metric enum.
 TEST(AutofillShadowPredictionComparisonTest,
      PredictionsMapToPredictionComparison) {
-  using ::autofill::metrics::GetShadowPrediction;
-
   EXPECT_EQ(kNoPrediction, GetShadowPrediction(NO_SERVER_DATA, NO_SERVER_DATA,
                                                {NO_SERVER_DATA}));
 
@@ -109,9 +107,8 @@ TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
   }
 }
 
-class AutofillShadowPredictionMetricsTest
-    : public autofill::metrics::AutofillMetricsBaseTest,
-      public testing::Test {
+class AutofillShadowPredictionMetricsTest : public AutofillMetricsBaseTest,
+                                            public testing::Test {
  public:
   AutofillShadowPredictionMetricsTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -254,4 +251,4 @@ TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
 
 }  // namespace
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics

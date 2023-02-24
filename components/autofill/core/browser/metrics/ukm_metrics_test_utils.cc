@@ -9,7 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 namespace {
 
@@ -182,4 +182,4 @@ void AppendFieldTypeUkm(
   }
 }
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics

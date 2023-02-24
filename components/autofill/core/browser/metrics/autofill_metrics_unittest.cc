@@ -107,7 +107,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
 
 }  // namespace autofill
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 using mojom::SubmissionSource;
 using SyncSigninState = AutofillSyncSigninState;
@@ -9851,4 +9851,4 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_buckets = {},
         }));
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics

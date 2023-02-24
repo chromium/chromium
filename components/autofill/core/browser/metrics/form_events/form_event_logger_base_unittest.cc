@@ -16,7 +16,7 @@
 
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
 
-namespace autofill::metrics {
+namespace autofill::autofill_metrics {
 
 // Parameterized test where the parameter indicates how far we went through
 // the funnel:
@@ -447,4 +447,4 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
-}  // namespace autofill::metrics
+}  // namespace autofill::autofill_metrics
