@@ -6,6 +6,7 @@
 
 #include <wayland-server-core.h>
 
+#include <memory>
 #include <string>
 
 #include "base/logging.h"
@@ -56,8 +57,6 @@ struct WlDataSourceImpl : public TestSelectionSource::Delegate {
     wl_client_flush(wl_resource_get_client(source_->resource()));
   }
 
-  void OnDestroying() override { delete this; }
-
  private:
   const raw_ptr<TestDataSource> source_;
 };
@@ -68,7 +67,7 @@ const struct wl_data_source_interface kTestDataSourceImpl = {
     TestSelectionSource::Offer, DataSourceDestroy, DataSourceSetActions};
 
 TestDataSource::TestDataSource(wl_resource* resource)
-    : TestSelectionSource(resource, new WlDataSourceImpl(this)) {}
+    : TestSelectionSource(resource, std::make_unique<WlDataSourceImpl>(this)) {}
 
 TestDataSource::~TestDataSource() = default;
 

@@ -7,6 +7,7 @@
 #include <wayland-server-core.h>
 
 #include <cstdint>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -66,8 +67,6 @@ struct WlDataDeviceImpl : public TestSelectionDevice::Delegate {
                                   selection_offer->resource());
   }
 
-  void OnDestroying() override { delete this; }
-
  private:
   const raw_ptr<TestDataDevice> device_;
 };
@@ -80,7 +79,7 @@ const struct wl_data_device_interface kTestDataDeviceImpl = {
 
 TestDataDevice::TestDataDevice(wl_resource* resource,
                                TestDataDeviceManager* manager)
-    : TestSelectionDevice(resource, new WlDataDeviceImpl(this)),
+    : TestSelectionDevice(resource, std::make_unique<WlDataDeviceImpl>(this)),
       manager_(manager) {}
 
 TestDataDevice::~TestDataDevice() = default;

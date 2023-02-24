@@ -7,6 +7,7 @@
 #include <wayland-server-core.h>
 
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -54,15 +55,13 @@ void WriteDataOnWorkerThread(base::ScopedFD fd,
 
 // TestSelectionOffer implementation.
 TestSelectionOffer::TestSelectionOffer(wl_resource* resource,
-                                       Delegate* delegate)
+                                       std::unique_ptr<Delegate> delegate)
     : ServerObject(resource),
-      delegate_(delegate),
+      delegate_(std::move(delegate)),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
-TestSelectionOffer::~TestSelectionOffer() {
-  delegate_->OnDestroying();
-}
+TestSelectionOffer::~TestSelectionOffer() = default;
 
 void TestSelectionOffer::OnOffer(const std::string& mime_type,
                                  ui::PlatformClipboard::Data data) {
@@ -83,15 +82,13 @@ void TestSelectionOffer::Receive(wl_client* client,
 
 // TestSelectionSource implementation.
 TestSelectionSource::TestSelectionSource(wl_resource* resource,
-                                         Delegate* delegate)
+                                         std::unique_ptr<Delegate> delegate)
     : ServerObject(resource),
-      delegate_(delegate),
+      delegate_(std::move(delegate)),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {}
 
-TestSelectionSource::~TestSelectionSource() {
-  delegate_->OnDestroying();
-}
+TestSelectionSource::~TestSelectionSource() = default;
 
 void TestSelectionSource::ReadData(const std::string& mime_type,
                                    ReadDataCallback callback) {
@@ -134,12 +131,10 @@ void TestSelectionSource::Offer(struct wl_client* client,
 
 // TestSelectionDevice implementation.
 TestSelectionDevice::TestSelectionDevice(wl_resource* resource,
-                                         Delegate* delegate)
-    : ServerObject(resource), delegate_(delegate) {}
+                                         std::unique_ptr<Delegate> delegate)
+    : ServerObject(resource), delegate_(std::move(delegate)) {}
 
-TestSelectionDevice::~TestSelectionDevice() {
-  delegate_->OnDestroying();
-}
+TestSelectionDevice::~TestSelectionDevice() = default;
 
 TestSelectionOffer* TestSelectionDevice::OnDataOffer() {
   return delegate_->CreateAndSendOffer();
@@ -164,13 +159,11 @@ void TestSelectionDevice::SetSelection(struct wl_client* client,
 
 TestSelectionDeviceManager::TestSelectionDeviceManager(
     const InterfaceInfo& info,
-    Delegate* delegate)
+    std::unique_ptr<Delegate> delegate)
     : GlobalObject(info.interface, info.implementation, info.version),
-      delegate_(delegate) {}
+      delegate_(std::move(delegate)) {}
 
-TestSelectionDeviceManager::~TestSelectionDeviceManager() {
-  delegate_->OnDestroying();
-}
+TestSelectionDeviceManager::~TestSelectionDeviceManager() = default;
 
 void TestSelectionDeviceManager::CreateSource(wl_client* client,
                                               wl_resource* manager_resource,
