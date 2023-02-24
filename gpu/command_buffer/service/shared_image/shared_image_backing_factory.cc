@@ -38,21 +38,13 @@ bool SharedImageBackingFactory::CanCreateSharedImage(
     gfx::GpuMemoryBufferType gmb_type,
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
-  // TODO(kylechar): Once existing usages are worked out just return false if
-  // !usage_supported.
-  bool usage_supported = (invalid_usages_ & usage) == 0;
-
-  bool is_supported = IsSupported(usage, format, size, thread_safe, gmb_type,
-                                  gr_context_type, pixel_data);
-
-  if (!usage_supported) {
-    // The factory should never report supported with an unsupported usage.
-    CHECK(!is_supported) << " usage=" << CreateLabelForSharedImageUsage(usage)
-                         << ", invalid_usages="
-                         << CreateLabelForSharedImageUsage(invalid_usages_);
+  if (invalid_usages_ & usage) {
+    // This factory doesn't support all the usages.
+    return false;
   }
 
-  return is_supported;
+  return IsSupported(usage, format, size, thread_safe, gmb_type,
+                     gr_context_type, pixel_data);
 }
 
 void SharedImageBackingFactory::InvalidateWeakPtrsForTesting() {
