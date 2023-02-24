@@ -1,6 +1,6 @@
 {
   "Comparison Android (reclient)": {
-    "goma": {
+    "build1": {
       "gn_args": {
         "debuggable_apks": false,
         "ffmpeg_branding": "Chrome",
@@ -11,10 +11,10 @@
         "system_webview_package_name": "com.google.android.webview",
         "target_cpu": "arm64",
         "target_os": "android",
-        "use_goma": true
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "gn_args": {
         "debuggable_apks": false,
         "ffmpeg_branding": "Chrome",
@@ -30,17 +30,17 @@
     }
   },
   "Comparison Linux (reclient)": {
-    "goma": {
+    "build1": {
       "gn_args": {
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
-        "use_goma": true
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "gn_args": {
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
@@ -52,7 +52,7 @@
     }
   },
   "Comparison Mac (reclient)": {
-    "goma": {
+    "build1": {
       "gn_args": {
         "dcheck_always_on": false,
         "enable_nacl": false,
@@ -61,10 +61,10 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 1,
-        "use_goma": true
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "gn_args": {
         "dcheck_always_on": false,
         "enable_nacl": false,
@@ -78,7 +78,7 @@
     }
   },
   "Comparison Mac arm64 (reclient)": {
-    "goma": {
+    "build1": {
       "gn_args": {
         "dcheck_always_on": false,
         "enable_nacl": false,
@@ -88,10 +88,10 @@
         "proprietary_codecs": true,
         "symbol_level": 1,
         "target_cpu": "arm64",
-        "use_goma": true
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "gn_args": {
         "dcheck_always_on": false,
         "enable_nacl": false,
@@ -106,7 +106,7 @@
     }
   },
   "Comparison Mac arm64 on arm64 (reclient)": {
-    "goma": {
+    "build1": {
       "gn_args": {
         "dcheck_always_on": false,
         "enable_nacl": false,
@@ -116,10 +116,10 @@
         "proprietary_codecs": true,
         "symbol_level": 1,
         "target_cpu": "arm64",
-        "use_goma": true
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "gn_args": {
         "dcheck_always_on": false,
         "enable_nacl": false,
@@ -134,18 +134,18 @@
     }
   },
   "Comparison Simple Chrome (reclient)": {
-    "goma": {
+    "build1": {
       "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
       "gn_args": {
         "also_build_lacros_chrome_for_architecture": "amd64",
         "dcheck_always_on": false,
         "is_chromeos_device": true,
         "ozone_platform_headless": true,
-        "use_goma": true,
-        "use_real_dbus_clients": false
+        "use_real_dbus_clients": false,
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
       "gn_args": {
         "also_build_lacros_chrome_for_architecture": "amd64",
@@ -158,7 +158,7 @@
     }
   },
   "Comparison Windows (8 cores) (reclient)": {
-    "goma": {
+    "build1": {
       "gn_args": {
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
@@ -166,10 +166,10 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 1,
-        "use_goma": true
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "gn_args": {
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
@@ -182,7 +182,7 @@
     }
   },
   "Comparison Windows (reclient)": {
-    "goma": {
+    "build1": {
       "gn_args": {
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
@@ -190,10 +190,10 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 1,
-        "use_goma": true
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "gn_args": {
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
@@ -206,7 +206,7 @@
     }
   },
   "Comparison ios (reclient)": {
-    "goma": {
+    "build1": {
       "gn_args": {
         "enable_run_ios_unittests_with_xctest": true,
         "is_component_build": false,
@@ -215,10 +215,10 @@
         "target_cpu": "x64",
         "target_environment": "simulator",
         "target_os": "ios",
-        "use_goma": true
+        "use_remoteexec": true
       }
     },
-    "reclient": {
+    "build2": {
       "gn_args": {
         "enable_run_ios_unittests_with_xctest": true,
         "is_component_build": false,

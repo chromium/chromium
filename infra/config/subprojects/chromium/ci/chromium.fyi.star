@@ -1106,10 +1106,10 @@ ci.builder(
 ci.builder(
     name = "Comparison Android (reclient)",
     description_html = """\
-This builder measures Android build performance with goma vs reclient.<br/>\
+This builder measures Android build performance with reclient prod vs test.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/ci/Deterministic%20Android%20(dbg)">Deterministic Android (dbg)</a>.\
 """,
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     cores = 16,
     os = os.LINUX_DEFAULT,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
@@ -1132,10 +1132,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 ci.builder(
     name = "Comparison Android (reclient) (reproxy cache)",
     description_html = """\
-This builder measures Android build performance with goma vs reclient using reproxy's deps cache.<br/>\
+This builder measures Android build performance with reclient prod vs test using reproxy's deps cache.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/ci/Comparison%20Android%20(reclient)">Comparison Android (reclient)</a>.\
 """,
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     cores = 16,
     os = os.LINUX_DEFAULT,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
@@ -1157,7 +1157,7 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 
 ci.builder(
     name = "Comparison Linux (reclient)",
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -1176,7 +1176,7 @@ ci.builder(
 
 fyi_mac_builder(
     name = "Comparison Mac (reclient)",
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1198,7 +1198,7 @@ fyi_mac_builder(
 
 fyi_mac_builder(
     name = "Comparison Mac arm64 (reclient)",
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1220,7 +1220,7 @@ fyi_mac_builder(
 
 fyi_mac_builder(
     name = "Comparison Mac arm64 on arm64 (reclient)",
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     cpu = cpu.ARM64,
@@ -1243,7 +1243,7 @@ fyi_mac_builder(
 
 ci.builder(
     name = "Comparison Windows (8 cores) (reclient)",
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = 8,
     os = os.WINDOWS_DEFAULT,
@@ -1265,7 +1265,7 @@ ci.builder(
 
 ci.builder(
     name = "Comparison Windows (reclient)",
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1287,7 +1287,7 @@ ci.builder(
 
 ci.builder(
     name = "Comparison Simple Chrome (reclient)",
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
@@ -1307,7 +1307,7 @@ ci.builder(
 
 fyi_mac_builder(
     name = "Comparison ios (reclient)",
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     console_view_entry = consoles.console_view_entry(
@@ -1330,10 +1330,10 @@ fyi_mac_builder(
 ci.builder(
     name = "Comparison Android (reclient)(CQ)",
     description_html = """\
-This builder measures Android build performance with goma vs reclient in cq configuration.<br/>\
+This builder measures Android build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel-compilator">android-pie-arm64-rel-compilator</a>.\
 """,
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     cores = 32,
     os = os.LINUX_DEFAULT,
     ssd = True,
@@ -1357,10 +1357,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 ci.builder(
     name = "Comparison Linux (reclient)(CQ)",
     description_html = """\
-This builder measures Linux build performance with goma vs reclient in cq configuration.<br/>\
+This builder measures Linux build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-rel-compilator">linux-rel-compilator</a>.\
 """,
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     cores = 16,
     os = os.LINUX_DEFAULT,
     ssd = True,
@@ -1384,10 +1384,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 fyi_mac_builder(
     name = "Comparison Mac (reclient)(CQ)",
     description_html = """\
-This builder measures Mac build performance with goma vs reclient in cq configuration.<br/>\
+This builder measures Mac build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/mac-rel-compilator">mac-rel-compilator</a>.\
 """,
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     ssd = True,
@@ -1412,10 +1412,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 ci.builder(
     name = "Comparison Windows (reclient)(CQ)",
     description_html = """\
-This builder measures Windows build performance with goma vs reclient in cq configuration.<br/>\
+This builder measures Windows build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/win10_chromium_x64_rel_ng-compilator">win10_chromium_x64_rel_ng-compilator</a>.\
 """,
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
@@ -1441,10 +1441,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 ci.builder(
     name = "Comparison Simple Chrome (reclient)(CQ)",
     description_html = """\
-This builder measures Simple Chrome build performance with goma vs reclient in cq configuration.<br/>\
+This builder measures Simple Chrome build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel-compilator">linux-chromeos-rel-compilator</a>.\
 """,
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
@@ -1469,10 +1469,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 fyi_mac_builder(
     name = "Comparison ios (reclient)(CQ)",
     description_html = """\
-This builder measures iOS build performance with goma vs reclient in cq configuration.<br/>\
+This builder measures iOS build performance with reclient prod vs test in cq configuration.<br/>\
 The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium/builders/try/ios-simulator">ios-simulator</a>.\
 """,
-    executable = "recipe:reclient_goma_comparison",
+    executable = "recipe:reclient_reclient_comparison",
     builderless = True,
     cores = None,
     ssd = True,
