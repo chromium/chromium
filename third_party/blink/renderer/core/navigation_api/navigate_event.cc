@@ -43,18 +43,31 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
   DCHECK(IsA<LocalDOMWindow>(context));
 }
 
-void NavigateEvent::intercept(NavigationInterceptOptions* options,
-                              ExceptionState& exception_state) {
+bool NavigateEvent::PerformSharedChecks(const String& function_name,
+                                        ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "intercept() may not be called in a detached window.");
-    return;
+        function_name + "() may not be called in a detached window.");
+    return false;
   }
-
   if (!isTrusted()) {
     exception_state.ThrowSecurityError(
-        "intercept() may only be called on a trusted event.");
+        function_name + "() may only be called on a trusted event.");
+    return false;
+  }
+  if (defaultPrevented()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        function_name + "() may not be called if the event has been canceled.");
+    return false;
+  }
+  return true;
+}
+
+void NavigateEvent::intercept(NavigationInterceptOptions* options,
+                              ExceptionState& exception_state) {
+  if (!PerformSharedChecks("intercept", exception_state)) {
     return;
   }
 
@@ -72,13 +85,6 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
         DOMExceptionCode::kInvalidStateError,
         "intercept() may only be called while the navigate event is being "
         "dispatched.");
-    return;
-  }
-
-  if (defaultPrevented()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "intercept() may not be called if the event has been canceled.");
     return;
   }
 
@@ -116,14 +122,20 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
     scroll_behavior_ = options->scroll();
   }
 
-  has_navigation_actions_ = true;
+  DCHECK(intercept_state_ == InterceptState::kNone ||
+         intercept_state_ == InterceptState::kIntercepted);
+  intercept_state_ = InterceptState::kIntercepted;
   if (options->hasHandler())
     navigation_action_handlers_list_.push_back(options->handler());
 }
 
 void NavigateEvent::DoCommit() {
+  DCHECK_EQ(intercept_state_, InterceptState::kIntercepted);
   DCHECK(!dispatch_params_->destination_item ||
          !dispatch_params_->state_object);
+
+  intercept_state_ = InterceptState::kCommitted;
+
   auto* state_object = dispatch_params_->destination_item
                            ? dispatch_params_->destination_item->StateObject()
                            : dispatch_params_->state_object.get();
@@ -149,11 +161,9 @@ void NavigateEvent::FinalizeNavigationActionPromisesList() {
   navigation_action_handlers_list_.clear();
 }
 
-void NavigateEvent::ResetFocusIfNeeded() {
-  // We only do focus reset if intercept() was called, opting us into the
-  // new default behavior which the navigation API provides.
-  if (!HasNavigationActions())
-    return;
+void NavigateEvent::PotentiallyResetTheFocus() {
+  DCHECK(intercept_state_ == InterceptState::kCommitted ||
+         intercept_state_ == InterceptState::kScrolled);
   auto* document = DomWindow()->document();
   document->RemoveFocusedElementChangeObserver(this);
 
@@ -189,40 +199,61 @@ bool NavigateEvent::ShouldSendAxEvents() const {
 }
 
 void NavigateEvent::scroll(ExceptionState& exception_state) {
-  if (did_finish_) {
+  if (!PerformSharedChecks("scroll", exception_state)) {
+    return;
+  }
+
+  if (intercept_state_ == InterceptState::kFinished) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "scroll() may not be called after transition completes");
     return;
   }
-  if (did_process_scroll_behavior_) {
+  if (intercept_state_ == InterceptState::kScrolled) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "scroll() already called");
     return;
   }
-  if (!DomWindow()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "scroll() may not be called in a detached window.");
-  }
-  if (!has_navigation_actions_) {
+  if (intercept_state_ == InterceptState::kNone) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "intercept() must be called before scroll()");
+    return;
   }
-  DefinitelyProcessScrollBehavior();
+  if (intercept_state_ == InterceptState::kIntercepted) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "scroll() may not be called before commit.");
+    return;
+  }
+
+  ProcessScrollBehavior();
+}
+
+void NavigateEvent::Finish(bool did_fulfill) {
+  DCHECK_NE(intercept_state_, InterceptState::kIntercepted);
+  DCHECK_NE(intercept_state_, InterceptState::kFinished);
+  if (intercept_state_ == InterceptState::kNone) {
+    return;
+  }
+  PotentiallyResetTheFocus();
+  if (did_fulfill) {
+    PotentiallyProcessScrollBehavior();
+  }
+  intercept_state_ = InterceptState::kFinished;
 }
 
 void NavigateEvent::PotentiallyProcessScrollBehavior() {
-  DCHECK(!did_finish_);
-  did_finish_ = true;
-  if (!has_navigation_actions_ || did_process_scroll_behavior_)
+  DCHECK(intercept_state_ == InterceptState::kCommitted ||
+         intercept_state_ == InterceptState::kScrolled);
+  if (intercept_state_ == InterceptState::kScrolled) {
     return;
+  }
   if (scroll_behavior_ &&
       scroll_behavior_->AsEnum() == V8NavigationScrollBehavior::Enum::kManual) {
     return;
   }
-  DefinitelyProcessScrollBehavior();
+  ProcessScrollBehavior();
 }
 
 WebFrameLoadType LoadTypeFromNavigation(const String& navigation_type) {
@@ -238,15 +269,14 @@ WebFrameLoadType LoadTypeFromNavigation(const String& navigation_type) {
   return WebFrameLoadType::kStandard;
 }
 
-void NavigateEvent::DefinitelyProcessScrollBehavior() {
-  DCHECK(!did_process_scroll_behavior_);
-  did_process_scroll_behavior_ = true;
+void NavigateEvent::ProcessScrollBehavior() {
+  DCHECK_EQ(intercept_state_, InterceptState::kCommitted);
+  intercept_state_ = InterceptState::kScrolled;
 
   absl::optional<HistoryItem::ViewState> view_state =
       dispatch_params_->destination_item
           ? dispatch_params_->destination_item->GetViewState()
           : absl::nullopt;
-
   // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
   // because we are certain that we want to actually scroll if we reach this
   // point. Using mojom::blink::ScrollRestorationType::kManual would block the

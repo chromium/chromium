@@ -66,15 +66,17 @@ class NavigateEvent final : public Event,
   void DoCommit();
 
   void scroll(ExceptionState&);
-  void PotentiallyProcessScrollBehavior();
+
+  void Finish(bool did_fulfill);
 
   const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
     return navigation_action_promises_list_;
   }
-  bool HasNavigationActions() const { return has_navigation_actions_; }
+  bool HasNavigationActions() const {
+    return intercept_state_ != InterceptState::kNone;
+  }
   void FinalizeNavigationActionPromisesList();
 
-  void ResetFocusIfNeeded();
   bool ShouldSendAxEvents() const;
 
   // FocusedElementChangeObserver implementation:
@@ -84,7 +86,11 @@ class NavigateEvent final : public Event,
   void Trace(Visitor*) const final;
 
  private:
-  void DefinitelyProcessScrollBehavior();
+  bool PerformSharedChecks(const String& function_name, ExceptionState&);
+
+  void PotentiallyResetTheFocus();
+  void PotentiallyProcessScrollBehavior();
+  void ProcessScrollBehavior();
 
   String navigation_type_;
   Member<NavigationDestination> destination_;
@@ -100,13 +106,18 @@ class NavigateEvent final : public Event,
 
   Member<NavigateEventDispatchParams> dispatch_params_;
 
-  bool has_navigation_actions_ = false;
+  enum class InterceptState {
+    kNone,
+    kIntercepted,
+    kCommitted,
+    kScrolled,
+    kFinished
+  };
+  InterceptState intercept_state_ = InterceptState::kNone;
+
   HeapVector<ScriptPromise> navigation_action_promises_list_;
   HeapVector<Member<V8NavigationInterceptHandler>>
       navigation_action_handlers_list_;
-
-  bool did_process_scroll_behavior_ = false;
-  bool did_finish_ = false;
   bool did_change_focus_during_intercept_ = false;
 };
 

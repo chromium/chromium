@@ -98,16 +98,14 @@ class NavigateReaction final : public ScriptFunction::Callable {
     NavigationApi* navigation_api = window->navigation();
     navigation_api->ongoing_navigate_event_ = nullptr;
 
+    navigate_event_->Finish(resolve_type_ == ResolveType::kFulfill);
+
     if (resolve_type_ == ResolveType::kFulfill) {
-      if (react_type_ == ReactType::kIntercept)
-        navigate_event_->PotentiallyProcessScrollBehavior();
       navigation_api->ResolvePromisesAndFireNavigateSuccessEvent(navigation_);
     } else {
       navigation_api->RejectPromisesAndFireNavigateErrorEvent(navigation_,
                                                               value);
     }
-
-    navigate_event_->ResetFocusIfNeeded();
 
     if (react_type_ == ReactType::kIntercept && window->GetFrame()) {
       window->GetFrame()->Loader().DidFinishNavigation(
