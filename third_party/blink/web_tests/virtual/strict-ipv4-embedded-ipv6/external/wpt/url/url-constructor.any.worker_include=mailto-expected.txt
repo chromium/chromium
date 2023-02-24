@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Loading data…
+PASS Parsing: <mailto:/example.com/> against <http://example.org/foo/bar>
+PASS Parsing: <mailto:example.com/> against <http://example.org/foo/bar>
+PASS Parsing: <mailto:/example.com/> against <about:blank>
+PASS Parsing: <mailto:example.com/> against <about:blank>
+PASS Parsing: <#x> against <mailto:x@x.com>
+FAIL Parsing: <mailto:/../> against <about:blank> assert_equals: href expected "mailto:/" but got "mailto:/../"
+Harness: the test ran to completion.
+

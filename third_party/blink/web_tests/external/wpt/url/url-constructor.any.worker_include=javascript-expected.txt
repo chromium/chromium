@@ -5,5 +5,6 @@ PASS Parsing: <javascript:example.com/> against <http://example.org/foo/bar>
 PASS Parsing: <javascript:/example.com/> against <about:blank>
 PASS Parsing: <javascript:example.com/> against <about:blank>
 FAIL Parsing: <javascript:/../> against <about:blank> assert_equals: href expected "javascript:/" but got "javascript:/../"
+PASS Parsing: <> against <about:blank>
 Harness: the test ran to completion.
 

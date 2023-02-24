@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 205 tests; 117 PASS, 88 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 208 tests; 119 PASS, 89 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 FAIL URL: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged. assert_equals: expected "a://example.net" but got "file:///A://example.net"
 FAIL URL: Setting <a://example.net>.protocol = 'b' assert_equals: expected "b://example.net" but got "file:///B:///A://example.net"
@@ -152,6 +152,9 @@ FAIL URL: Setting <non-special://example.net:8080/path>.port = '65536' Port numb
 PASS URL: Setting <non-base:value>.port = '12'
 PASS URL: Setting <sc:///>.port = '12'
 FAIL URL: Setting <sc://x/>.port = '12' assert_equals: expected "sc://x:12/" but got "sc://x/"
+PASS URL: Setting <https://domain.com:443>.port = '	8080' Leading u0009 on special scheme
+FAIL URL: Setting <wpt++://domain.com:443>.port = '	8080' Leading u0009 on non-special scheme assert_equals: expected "8080" but got ""
+PASS URL: Setting <https://www.google.com:4343>.port = '4wpt' Should use all ascii prefixed characters as port
 PASS URL: Setting <data:original>.pathname = 'new value'
 PASS URL: Setting <sc:original>.pathname = 'new value'
 FAIL URL: Setting <foo://somehost/some/path>.pathname = '' Non-special URLs can have their paths erased assert_equals: expected "foo://somehost" but got "foo://somehost/some/path"

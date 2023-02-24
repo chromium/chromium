@@ -20,5 +20,6 @@ PASS URL: Setting <file:///some/path>.pathname = '' Special URLs cannot have the
 PASS URL: Setting <file://monkey/>.pathname = '\\' File URLs and (back)slashes
 PASS URL: Setting <file:///unicorn>.pathname = '//\/' File URLs and (back)slashes
 PASS URL: Setting <file:///unicorn>.pathname = '//monkey/..//' File URLs and (back)slashes
+PASS URL: Setting <file:///var/log/system.log>.href = 'http://0300.168.0xF0'
 Harness: the test ran to completion.
 

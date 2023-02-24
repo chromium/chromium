@@ -1661,6 +1661,30 @@
                 "href": "javascript://x:12/",
                 "port": "12"
             }
+        },
+        {
+            "comment": "Leading u0009 on special scheme",
+            "href": "https://domain.com:443",
+            "new_value": "\u00098080",
+            "expected": {
+                "port": "8080"
+            }
+        },
+        {
+            "comment": "Leading u0009 on non-special scheme",
+            "href": "wpt++://domain.com:443",
+            "new_value": "\u00098080",
+            "expected": {
+                "port": "8080"
+            }
+        },
+        {
+            "comment": "Should use all ascii prefixed characters as port",
+            "href": "https://www.google.com:4343",
+            "new_value": "4wpt",
+            "expected": {
+                "port": "4"
+            }
         }
     ],
     "pathname": [
@@ -2214,6 +2238,16 @@
             "expected": {
                 "href": "sc:space  ?query",
                 "hash": ""
+            }
+        }
+    ],
+    "href": [
+        {
+            "href": "file:///var/log/system.log",
+            "new_value": "http://0300.168.0xF0",
+            "expected": {
+                "href": "http://192.168.0.240/",
+                "protocol": "http:"
             }
         }
     ]

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 409 tests; 259 PASS, 150 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 415 tests; 263 PASS, 152 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS <a>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
 PASS <area>: Setting <a://example.net>.protocol = '' The empty string is not a valid scheme. Setter leaves the URL unchanged.
@@ -303,6 +303,12 @@ PASS <a>: Setting <sc:///>.port = '12'
 PASS <area>: Setting <sc:///>.port = '12'
 FAIL <a>: Setting <sc://x/>.port = '12' assert_equals: expected "sc://x:12/" but got "sc://x/"
 FAIL <area>: Setting <sc://x/>.port = '12' assert_equals: expected "sc://x:12/" but got "sc://x/"
+PASS <a>: Setting <https://domain.com:443>.port = '	8080' Leading u0009 on special scheme
+PASS <area>: Setting <https://domain.com:443>.port = '	8080' Leading u0009 on special scheme
+FAIL <a>: Setting <wpt++://domain.com:443>.port = '	8080' Leading u0009 on non-special scheme assert_equals: expected "8080" but got ""
+FAIL <area>: Setting <wpt++://domain.com:443>.port = '	8080' Leading u0009 on non-special scheme assert_equals: expected "8080" but got ""
+PASS <a>: Setting <https://www.google.com:4343>.port = '4wpt' Should use all ascii prefixed characters as port
+PASS <area>: Setting <https://www.google.com:4343>.port = '4wpt' Should use all ascii prefixed characters as port
 PASS <a>: Setting <data:original>.pathname = 'new value'
 PASS <area>: Setting <data:original>.pathname = 'new value'
 PASS <a>: Setting <sc:original>.pathname = 'new value'
