@@ -389,10 +389,7 @@ fuzzer_test("hash_fuzzer") {
 action("gen_javascript_parser_proto") {
   # Only targets in this file and the top-level visibility target can
   # depend on this.
-  visibility = [
-    ":*",
-    "//:gn_visibility",
-  ]
+  visibility = [ ":*" ]
 
   script = "generate_javascript_parser_proto.py"
 

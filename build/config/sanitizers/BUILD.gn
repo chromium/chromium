@@ -113,7 +113,7 @@ static_library("options_sources") {
   # unconditionally linked into targets.
   visibility = [
     ":deps",
-    "//:gn_visibility",
+    "//:gn_all",
   ]
   sources = [ "//build/sanitizers/sanitizer_options.cc" ]
 

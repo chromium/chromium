@@ -66,25 +66,20 @@ if (is_official_build) {
   assert(!is_component_build)
 }
 
-# This file defines the following two main targets:
+# The `gn_all` target is used to list all of the main targets in the build, so
+# that we can figure out which BUILD.gn files to process, following the process
+# described at the top of this file.
 #
-# "gn_all" is used to create explicit dependencies from the root BUILD.gn to
-# each top-level component that we wish to include when building everything via
-# "all". This is required since the set of targets built by "all" is determined
-# automatically based on reachability from the root BUILD.gn (for details, see
-# crbug.com/503241). Builders should typically use "all", or list targets
-# explicitly, rather than relying on "gn_all".
-#
-# "gn_visibility": targets that are normally not visible to top-level targets,
-# but are built anyway by "all". Since we don't want any such targets, we have
-# this placeholder to make sure hidden targets that aren't otherwise depended
-# on yet are accounted for.
+# Because of the way GN works (again, as described above), there may be targets
+# built by `all` that aren't built by `gn_all`. We always want `all` to build,
+# so there's really never a reason you'd want to build `gn_all` instead of
+# `all`, and no tooling should depend directly on this target. Tools should
+# should depend on either an explicit list of targets, or `all`.
 
 group("gn_all") {
   testonly = true
 
   deps = [
-    ":gn_visibility",
     "//base:base_perftests",
     "//base:base_unittests",
     "//codelabs",
@@ -255,6 +250,9 @@ group("gn_all") {
       foreach(_target_suffix, telemetry_android_browser_target_suffixes) {
         deps += [ "//chrome/test:telemetry_perf_unittests${_target_suffix}" ]
       }
+    }
+    if (!v8_use_external_startup_data) {
+      deps += [ "//v8:v8_snapshot" ]
     }
   } else {
     deps += [
@@ -1030,18 +1028,9 @@ if (is_chromeos_ash) {
   }
 }
 
+# TODO(crbug.com/1311306) - Remove this target once all references to
+# it have been removed from this and other repos.
 group("gn_visibility") {
-  deps = [
-    "//build/config/sanitizers:options_sources",
-    # "//third_party/pdfium:pdfium_embeddertests",  # TODO(GYP): visibility?
-    # "//third_party/pdfium:pdfium_unittests",  # TODO(GYP): visibility?
-  ]
-
-  if (!is_ios) {
-    if (!v8_use_external_startup_data) {
-      deps += [ "//v8:v8_snapshot" ]
-    }
-  }
 }
 
 if (!is_ios) {
