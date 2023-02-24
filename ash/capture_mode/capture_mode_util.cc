@@ -496,12 +496,6 @@ views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view) {
   return box_layout;
 }
 
-std::string GetScreenCaptureNotificationIdForPath(const base::FilePath& path) {
-  DCHECK(!path.empty());
-  return base::StringPrintf("%s-%s", kScreenCaptureNotificationId,
-                            path.BaseName().value().c_str());
-}
-
 void MaybeUpdateCameraPrivacyIndicator(bool camera_on) {
   if (features::IsPrivacyIndicatorsEnabled()) {
     UpdatePrivacyIndicators(

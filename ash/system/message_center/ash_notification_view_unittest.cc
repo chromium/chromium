@@ -61,6 +61,8 @@ namespace ash {
 
 namespace {
 
+constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
+
 const gfx::Image CreateTestImage(int width,
                                  int height,
                                  SkColor color = SK_ColorGREEN) {
@@ -1584,9 +1586,6 @@ TEST_P(ScreenCaptureNotificationViewDragTest, Basics) {
   const base::FilePath image_file_path = WaitForCaptureFileToBeSaved();
 
   // Get the notification view.
-  const std::string notification_id =
-      capture_mode_util::GetScreenCaptureNotificationIdForPath(image_file_path);
-
   if (IsPopupNotification()) {
     // Wait until the notification popup shows.
     MessagePopupAnimationWaiter(
@@ -1602,7 +1601,8 @@ TEST_P(ScreenCaptureNotificationViewDragTest, Basics) {
   // Drag to the center of `widget` then release. Verify that the screenshot
   // image carried by the drag data is handled.
   EXPECT_CALL(drag_drop_delegate(), HandleFilePathData(image_file_path));
-  DragNotificationToWidget(*GetViewForNotificationId(notification_id));
+  DragNotificationToWidget(
+      *GetViewForNotificationId(kScreenCaptureNotificationId));
 }
 
 }  // namespace ash

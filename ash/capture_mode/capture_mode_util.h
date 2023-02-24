@@ -186,10 +186,6 @@ void ConfigLabelView(views::Label* label_view);
 // Initializes the box layout for the `view` in the settings menu.
 views::BoxLayout* CreateAndInitBoxLayoutForView(views::View* view);
 
-// Gets the notification ID of a screen capture given its filepath.
-ASH_EXPORT std::string GetScreenCaptureNotificationIdForPath(
-    const base::FilePath& path);
-
 // If the privacy indicators feature is enabled, the below functions update the
 // camera and microphone capture mode indicators according to the given values.
 void MaybeUpdateCameraPrivacyIndicator(bool camera_on);

@@ -24,6 +24,8 @@ namespace ash {
 
 namespace {
 
+constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
+
 constexpr char kShortTitleString[] = "Short Title";
 constexpr char kMediumTitleString[] = "Test Notification's Multiline Title";
 constexpr char kLongTitleString[] =
@@ -219,13 +221,11 @@ TEST_P(ScreenCaptureNotificationPixelTest, VerifyPopup) {
       .Wait();
 
   // Get the notification view.
-  const std::string notification_id =
-      capture_mode_util::GetScreenCaptureNotificationIdForPath(image_file_path);
-
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::StrCat({"screen_capture_popup_notification_",
                     GetDisplayTypeName(GetParam())}),
-      /*revision_number=*/0, test_api()->GetPopupViewForId(notification_id)));
+      /*revision_number=*/0,
+      test_api()->GetPopupViewForId(kScreenCaptureNotificationId)));
 }
 
 }  // namespace ash

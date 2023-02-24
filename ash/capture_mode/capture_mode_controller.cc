@@ -74,6 +74,7 @@ CaptureModeController* g_instance = nullptr;
 // consecutive.
 constexpr base::TimeDelta kConsecutiveScreenshotThreshold = base::Seconds(5);
 
+constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 constexpr char kScreenCaptureStoppedNotificationId[] =
     "capture_mode_stopped_notification";
 constexpr char kScreenCaptureNotifierId[] = "ash.capture_mode_controller";
@@ -308,7 +309,7 @@ int GetDisabledNotificationMessageId(CaptureAllowance allowance,
 void ShowDisabledNotification(CaptureAllowance allowance) {
   DCHECK(allowance != CaptureAllowance::kAllowed);
   ShowNotification(
-      capture_mode_util::kScreenCaptureNotificationId,
+      kScreenCaptureNotificationId,
       GetDisabledNotificationMessageId(allowance, /*for_title=*/true),
       GetDisabledNotificationMessageId(allowance, /*for_title=*/false),
       /*optional_fields=*/{}, /*delegate=*/nullptr,
@@ -850,9 +851,8 @@ void CaptureModeController::OnActiveUserSessionChanged(
 
   // Remove the previous notification when switching to another user.
   auto* message_center = message_center::MessageCenter::Get();
-  message_center->RemoveNotificationsForNotifierId(message_center::NotifierId(
-      message_center::NotifierType::SYSTEM_COMPONENT, kScreenCaptureNotifierId,
-      NotificationCatalogName::kScreenCapture));
+  message_center->RemoveNotification(kScreenCaptureNotificationId,
+                                     /*by_user=*/false);
 }
 
 void CaptureModeController::OnSessionStateChanged(
@@ -1343,9 +1343,7 @@ void CaptureModeController::ShowPreviewNotification(
   optional_fields.image_path = screen_capture_path;
 
   ShowNotification(
-      capture_mode_util::GetScreenCaptureNotificationIdForPath(
-          screen_capture_path),
-      title_id, message_id, optional_fields,
+      kScreenCaptureNotificationId, title_id, message_id, optional_fields,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&CaptureModeController::HandleNotificationClicked,
                               weak_ptr_factory_.GetWeakPtr(),
@@ -1394,9 +1392,7 @@ void CaptureModeController::HandleNotificationClicked(
   // to this function. The callback's state owns any passed-by-ref arguments,
   // such as |screen_capture_path| which we use in this function.
   message_center::MessageCenter::Get()->RemoveNotification(
-      capture_mode_util::GetScreenCaptureNotificationIdForPath(
-          screen_capture_path),
-      /*by_user=*/false);
+      kScreenCaptureNotificationId, /*by_user=*/false);
 }
 
 base::FilePath CaptureModeController::BuildImagePath() const {
