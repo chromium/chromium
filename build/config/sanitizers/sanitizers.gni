@@ -153,6 +153,11 @@ use_prebuilt_instrumented_libraries = is_msan
 # check for "use_afl".
 use_fuzzing_engine = use_libfuzzer || use_afl || use_external_fuzzing_engine
 
+# Whether the current fuzzing engine supports libprotobuf_mutator. Right now
+# this is just libfuzzer, but others are likely to support this in future,
+# so it's preferable to check this.
+use_fuzzing_engine_with_lpm = use_libfuzzer
+
 # Args that are in turn dependent on other args must be in a separate
 # declare_args block. User overrides are only applied at the end of a
 # declare_args block.
