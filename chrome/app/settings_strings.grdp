@@ -944,7 +944,9 @@
     A password for this account is already saved on this device
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY" desc="Message is shown on the dialog for importing passwords if some passwords weren't imported.">
-    Passwords not imported (<ph name="COUNT"><ex>42</ex>$1</ph>)
+    {NUM_PASSWORDS, plural,
+     =1 {1 password not imported}
+     other {{NUM_PASSWORDS} passwords not imported}}
   </message>
   <message name="IDS_SETTINGS_PASSWORDS_IMPORT_ALREADY_ACTIVE" desc="Message is shown on the dialog for importing passwords if there is the import process is already running in another tab.">
     You're already importing passwords in another tab

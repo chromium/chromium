@@ -35,7 +35,6 @@ export interface PasswordsImportDialogElement {
     storePicker: HTMLSelectElement,
     chooseFile: CrButtonElement,
     close: CrButtonElement,
-    expandButton: HTMLElement,
   };
 }
 
@@ -110,6 +109,7 @@ export class PasswordsImportDialogElement extends
 
       results_: Object,
       failedImportsWithKnownErrors_: Array,
+      failedImportsSummary_: String,
 
       rowsWithUnknownErrorsSummary_: String,
 
@@ -126,6 +126,7 @@ export class PasswordsImportDialogElement extends
   accountEmail: string;
   private results_: chrome.passwordsPrivate.ImportResults|null;
   private failedImportsWithKnownErrors_: chrome.passwordsPrivate.ImportEntry[];
+  private failedImportsSummary_: string;
   private rowsWithUnknownErrorsSummary_: string;
   private showRowsWithUnknownErrorsSummary_: boolean;
   // Refers both to syncing users with sync enabled for passwords and account
@@ -260,6 +261,10 @@ export class PasswordsImportDialogElement extends
       this.failedImportsWithKnownErrors_ = this.results_.failedImports.filter(
           (entry) => entry.status !==
               chrome.passwordsPrivate.ImportEntryStatus.UNKNOWN_ERROR);
+      this.failedImportsSummary_ =
+          await PluralStringProxyImpl.getInstance().getPluralString(
+              'importPasswordsFailuresSummary',
+              this.results_.failedImports.length);
       if (rowsWithUnknownErrorCount) {
         this.rowsWithUnknownErrorsSummary_ =
             await PluralStringProxyImpl.getInstance().getPluralString(
@@ -282,11 +287,7 @@ export class PasswordsImportDialogElement extends
     }
     this.dialogState = ImportDialogState.SUCCESS;
 
-    if (this.isFailuresSummaryHidden_()) {
-      this.$.close.focus();
-    } else {
-      this.$.expandButton.focus();
-    }
+    this.$.close.focus();
   }
 
   private getStoreOptionAccountText_(): string {
@@ -297,19 +298,6 @@ export class PasswordsImportDialogElement extends
     this.$.successTip.innerHTML =
         this.i18nAdvanced('importPasswordsSuccessTip');
     this.$.successTip.querySelector('b')!.textContent = this.results_!.fileName;
-  }
-
-  private getFailedImportsSummary_(): string {
-    return this.i18n(
-        'importPasswordsFailuresSummary', this.results_!.failedImports.length);
-  }
-
-  private getFailedEntryTextDelimiter_(
-      entry: chrome.passwordsPrivate.ImportEntry): string {
-    if (entry.url && entry.username) {
-      return ' • ';
-    }
-    return '';
   }
 
   private getFailedEntryError_(

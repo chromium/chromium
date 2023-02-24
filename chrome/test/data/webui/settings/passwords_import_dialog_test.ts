@@ -299,6 +299,7 @@ suite('PasswordsImportDialog', function() {
 
     await triggerImportHelper(importDialog, passwordManager);
     await pluralString.whenCalled('getPluralString');
+    await pluralString.whenCalled('getPluralString');
     flush();
     // After the import, the dialog should switch to SUCCESS state.
     assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
@@ -308,9 +309,6 @@ suite('PasswordsImportDialog', function() {
         importDialog.shadowRoot!.querySelector<HTMLElement>('#tipBox')));
 
     assertTrue(isVisible(importDialog.$.failuresSummary));
-    assertEquals(
-        importDialog.i18n('importPasswordsFailuresSummary', 10),
-        importDialog.$.failuresSummary.textContent!.trim());
 
     assertEquals(
         importDialog.i18n('done'), importDialog.$.close.textContent!.trim());
