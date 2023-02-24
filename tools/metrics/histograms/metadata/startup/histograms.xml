@@ -324,20 +324,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.NewInstance.LaunchedFromDraggedLinkViewIntent"
-    enum="Boolean" expires_after="2023-07-09">
-  <owner>twellington@chromium.org</owner>
-  <owner>aishwaryarj@google.com</owner>
-  <summary>
-    Recorded when a VIEW intent to launch ChromeTabbedActivity contained the
-    FLAG_ACTIVITY_MULTIPLE_TASK flag. Records 'true' if the intent came from
-    dragging a link out of Chrome, and false otherwise. Note that some OEMs
-    currently do not use the full ClipData.Item intent when propagating a drag
-    event, in which case 'false' will be recorded regardless of whether the drag
-    event / VIEW intent originated from Chrome.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.ShowChromeStartSegmentationResult"
     enum="ShowChromeStartSegmentationResult" expires_after="2023-04-09">
   <owner>hanxi@chromium.org</owner>

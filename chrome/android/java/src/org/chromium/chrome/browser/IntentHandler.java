@@ -204,12 +204,6 @@ public class IntentHandler {
     public static final String EXTRA_WINDOW_ID = "org.chromium.chrome.browser.window_id";
 
     /**
-     * A boolean to indicate whether the source of the Intent was a dragged link.
-     */
-    public static final String EXTRA_SOURCE_DRAG_DROP =
-            "org.chromium.chrome.browser.source_drag_drop";
-
-    /**
      * Extra to indicate the launch type of the tab to be created.
      */
     private static final String EXTRA_TAB_LAUNCH_TYPE =

@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -80,7 +79,6 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
             intent = MultiWindowUtils.createNewWindowIntent(mContext.getApplicationContext(),
                     MultiWindowUtils.getInstanceIdForViewIntent(), true, false);
             intent.setData(Uri.parse(urlString));
-            intent.putExtra(IntentHandler.EXTRA_SOURCE_DRAG_DROP, true);
             // Remove the trusted application intent extra as the intent could pose a security risk
             // once it leaves Chrome's boundaries.
             intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
