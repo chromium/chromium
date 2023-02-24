@@ -234,13 +234,11 @@ class LocalFileSyncServiceTest
 TEST_F(LocalFileSyncServiceTest, RemoteSyncStepsSimple) {
   const FileSystemURL kFile(file_system_->URL("file"));
   const FileSystemURL kDir(file_system_->URL("dir"));
-  const char kTestFileData[] = "0123456789";
-  const int kTestFileDataSize = static_cast<int>(std::size(kTestFileData) - 1);
+  const std::string kTestFileData = "0123456789";
 
   base::FilePath local_path;
   ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &local_path));
-  ASSERT_EQ(kTestFileDataSize,
-            base::WriteFile(local_path, kTestFileData, kTestFileDataSize));
+  ASSERT_TRUE(base::WriteFile(local_path, kTestFileData));
 
   // Run PrepareForProcessRemoteChange for kFile.
   SyncFileMetadata expected_metadata;

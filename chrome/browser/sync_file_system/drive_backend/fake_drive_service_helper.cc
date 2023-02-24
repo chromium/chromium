@@ -328,8 +328,7 @@ base::FilePath FakeDriveServiceHelper::WriteToTempFile(
     const std::string& content) {
   base::FilePath temp_file;
   EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_, &temp_file));
-  EXPECT_EQ(static_cast<int>(content.size()),
-            base::WriteFile(temp_file, content.data(), content.size()));
+  EXPECT_TRUE(base::WriteFile(temp_file, content));
   return temp_file;
 }
 
