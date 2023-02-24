@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_COUNTER_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_COUNTER_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -36,6 +38,9 @@ class VIZ_SERVICE_EXPORT FrameCounter {
   // Sets a frame sink's type.
   void SetFrameSinkType(const FrameSinkId& frame_sink_id,
                         mojom::CompositorFrameSinkType type);
+
+  void SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
+                              std::string debug_label);
 
  private:
   // Time when the frame counting is stated.

@@ -664,6 +664,8 @@ namespace autotestPrivate {
     DOMString sinkType;
     // Whether the frame sink is the root.
     boolean isRoot;
+    // Debug label of the frame sink.
+    DOMString debugLabel;
 
     // Number of presented frames grouped using `bucketSizeInSeconds` arg in
     // startFrameCounting call. It would be fps if the `bucketSizeInSeconds` is

@@ -6436,6 +6436,7 @@ void AutotestPrivateStopFrameCountingFunction::OnDataReceived(
     result_per_sink_data.sink_type =
         CompositorFrameSinkTypeToString(per_sink_data->type);
     result_per_sink_data.is_root = per_sink_data->is_root;
+    result_per_sink_data.debug_label = per_sink_data->debug_label;
 
     if (per_sink_data->start_bucket != 0) {
       result_per_sink_data.presented_frames.resize(per_sink_data->start_bucket,

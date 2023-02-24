@@ -5,6 +5,7 @@
 #include "components/viz/service/frame_sinks/frame_counter.h"
 
 #include <limits>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -34,7 +35,7 @@ void FrameCounter::AddFrameSink(const FrameSinkId& frame_sink_id,
   DCHECK(!base::Contains(frame_sink_data_, frame_sink_id));
 
   auto per_sink_data = mojom::FrameCountingPerSinkData::New(
-      type, is_root, 0, std::vector<uint16_t>());
+      type, is_root, std::string(), 0, std::vector<uint16_t>());
   per_sink_data->presented_frames.reserve(kMaxFrameRecords);
 
   frame_sink_data_[frame_sink_id] = std::move(per_sink_data);
@@ -81,6 +82,11 @@ mojom::FrameCountingDataPtr FrameCounter::TakeData() {
 void FrameCounter::SetFrameSinkType(const FrameSinkId& frame_sink_id,
                                     mojom::CompositorFrameSinkType type) {
   frame_sink_data_[frame_sink_id]->type = type;
+}
+
+void FrameCounter::SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
+                                          std::string debug_label) {
+  frame_sink_data_[frame_sink_id]->debug_label = std::move(debug_label);
 }
 
 }  // namespace viz

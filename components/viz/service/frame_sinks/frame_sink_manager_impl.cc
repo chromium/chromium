@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -178,8 +179,12 @@ void FrameSinkManagerImpl::SetFrameSinkDebugLabel(
     const FrameSinkId& frame_sink_id,
     const std::string& debug_label) {
   auto it = frame_sink_data_.find(frame_sink_id);
-  if (it != frame_sink_data_.end())
+  if (it != frame_sink_data_.end()) {
     it->second.debug_label = debug_label;
+    if (frame_counter_) {
+      frame_counter_->SetFrameSinkDebugLabel(frame_sink_id, debug_label);
+    }
+  }
 }
 
 void FrameSinkManagerImpl::CreateRootCompositorFrameSink(
@@ -839,6 +844,8 @@ void FrameSinkManagerImpl::StartFrameCountingForTest(
     DCHECK_EQ(sink_id, support->frame_sink_id());
     frame_counter_->AddFrameSink(sink_id, support->frame_sink_type(),
                                  support->is_root());
+    frame_counter_->SetFrameSinkDebugLabel(
+        sink_id, static_cast<std::string>(GetFrameSinkDebugLabel(sink_id)));
   }
 }
 
