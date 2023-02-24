@@ -2803,6 +2803,21 @@
             ]
         }
     ],
+    "ChromeStartRefactor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "StartSurfaceRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeStartReturnTime": [
         {
             "platforms": [
