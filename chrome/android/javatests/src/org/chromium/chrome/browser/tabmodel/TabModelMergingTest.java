@@ -399,6 +399,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
+    @DisabledTest(message = "https://crbug.com/1417018")
     public void testMergeOnColdStartIntoChromeTabbedActivity2() throws TimeoutException {
         String CTA2ClassName = mActivity2.getClass().getName();
         String CTA2PackageName = mActivity2.getPackageName();
