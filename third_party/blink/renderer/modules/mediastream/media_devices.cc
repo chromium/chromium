@@ -448,6 +448,13 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
         UserMediaRequestResult::kInsecureContext);
     return ScriptPromise();
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (media_type == UserMediaRequestType::kDisplayMedia) {
+    window->ConsumeDisplayCaptureRequestToken();
+  }
+#endif
+
   request->Start();
   return promise;
 }
@@ -513,7 +520,13 @@ ScriptPromise MediaDevices::getDisplayMedia(
     return ScriptPromise();
   }
 
-  if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
+  const bool has_transient_user_activation =
+      LocalFrame::HasTransientUserActivation(window->GetFrame()) ||
+      (RuntimeEnabledFeatures::
+           CapabilityDelegationDisplayCaptureRequestEnabled() &&
+       window->IsDisplayCaptureRequestTokenActive());
+
+  if (!has_transient_user_activation) {
     UseCounter::Count(window,
                       WebFeature::kGetDisplayMediaWithoutUserActivation);
     if (RuntimeEnabledFeatures::

@@ -526,6 +526,10 @@
       base_feature: "none",
     },
     {
+      name: "CapabilityDelegationDisplayCaptureRequest",
+      status: "experimental",
+    },
+    {
       name: "CapabilityDelegationFullscreenRequest",
       status: "stable",
       base_feature: "none",

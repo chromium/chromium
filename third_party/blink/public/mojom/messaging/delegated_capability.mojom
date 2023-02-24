@@ -5,4 +5,9 @@
 module blink.mojom;
 
 // Capabilities that can be delegated to another frame via TransferableMessage.
-enum DelegatedCapability { kNone, kPaymentRequest, kFullscreenRequest };
+enum DelegatedCapability {
+    kNone,
+    kPaymentRequest,
+    kFullscreenRequest,
+    kDisplayCaptureRequest,
+};
