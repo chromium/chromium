@@ -19,6 +19,10 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace history_clusters {
 class HistoryClustersServiceTask;
 }  // namespace history_clusters
@@ -29,7 +33,7 @@ class HistoryClustersPageHandler
   HistoryClustersPageHandler(
       mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>
           pending_receiver,
-      Profile* profile);
+      content::WebContents* web_contents);
   HistoryClustersPageHandler(const HistoryClustersPageHandler&) = delete;
   HistoryClustersPageHandler& operator=(const HistoryClustersPageHandler&) =
       delete;
@@ -37,6 +41,7 @@ class HistoryClustersPageHandler
 
   // mojom::PageHandler:
   void GetCluster(GetClusterCallback callback) override;
+  void ShowJourneysSidePanel(const std::string& query) override;
 
  private:
   // Forward the most relevant history cluster to the callback if any.
@@ -47,6 +52,7 @@ class HistoryClustersPageHandler
 
   mojo::Receiver<ntp::history_clusters::mojom::PageHandler> receiver_;
   raw_ptr<Profile> profile_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The filtering parameters to use for all calls to fetch clusters.
   history_clusters::QueryClustersFilterParams filter_params_;

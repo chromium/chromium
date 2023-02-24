@@ -764,7 +764,7 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>
         pending_page_handler) {
   history_clusters_handler_ = std::make_unique<HistoryClustersPageHandler>(
-      std::move(pending_page_handler), profile_);
+      std::move(pending_page_handler), web_contents());
 }
 
 void NewTabPageUI::BindInterface(

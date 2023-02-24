@@ -13,6 +13,7 @@
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_task.h"
@@ -72,9 +73,10 @@ base::Time GetBeginTime() {
 HistoryClustersPageHandler::HistoryClustersPageHandler(
     mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>
         pending_receiver,
-    Profile* profile)
+    content::WebContents* web_contents)
     : receiver_(this, std::move(pending_receiver)),
-      profile_(profile),
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+      web_contents_(web_contents),
       filter_params_(GetFilterParamsFromFeatureFlags()) {}
 
 HistoryClustersPageHandler::~HistoryClustersPageHandler() = default;
@@ -111,4 +113,11 @@ void HistoryClustersPageHandler::GetCluster(GetClusterCallback callback) {
       /*recluster=*/false,
       base::BindOnce(&HistoryClustersPageHandler::CallbackWithClusterData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void HistoryClustersPageHandler::ShowJourneysSidePanel(
+    const std::string& query) {
+  auto* history_clusters_tab_helper =
+      side_panel::HistoryClustersTabHelper::FromWebContents(web_contents_);
+  history_clusters_tab_helper->ShowJourneysSidePanel(query);
 }

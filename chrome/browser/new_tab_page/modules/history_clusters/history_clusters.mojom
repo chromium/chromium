@@ -10,4 +10,7 @@ import "components/history_clusters/public/mojom/history_cluster_types.mojom";
 interface PageHandler {
   // Get the most relevant history cluster.
   GetCluster() => (history_clusters.mojom.Cluster? cluster);
+
+  // Open or make visible the Journeys UI on the Side Panel.
+  ShowJourneysSidePanel(string query);
 };
