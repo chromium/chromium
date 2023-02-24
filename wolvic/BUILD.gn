@@ -152,9 +152,15 @@ generate_build_config_srcjar("build_config_gen") {
   enable_multidex = true
 }
 
+jinja_template("content_manifest") {
+  input = "AndroidManifest.xml.jinja2"
+  output = "$root_gen_dir/wolvic/AndroidManifest.xml"
+}
+
 dist_aar("content_aar") {
   testonly = true
   deps = [
+    ":content_manifest",
     ":libcontent_native",
     "//base",
     "//base:base_java",
@@ -210,7 +216,7 @@ dist_aar("content_aar") {
   srcjar_deps = [ ":build_config_gen" ]
 
   generate_final_jni = true
-  android_manifest = "AndroidManifest.xml"
+  android_manifest = "$root_gen_dir/wolvic/AndroidManifest.xml"
   output = "$root_build_dir/Content.aar"
 }
 
