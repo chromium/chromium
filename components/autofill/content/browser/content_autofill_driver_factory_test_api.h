@@ -11,18 +11,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 
 namespace autofill {
 
 class ContentAutofillDriverFactoryTestApi {
  public:
-  // Creates a factory of ContentAutofillDrivers whose managers are
-  // TestBrowserAutofillManager.
-  static std::unique_ptr<ContentAutofillDriverFactory> Create(
-      content::WebContents* web_contents,
-      TestAutofillClient* client);
-
   static std::unique_ptr<ContentAutofillDriverFactory> Create(
       content::WebContents* web_contents,
       AutofillClient* client,

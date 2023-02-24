@@ -62,9 +62,6 @@ ContentAutofillDriver::~ContentAutofillDriver() {
   if (autofill_router_)  // Can be nullptr only in tests.
     autofill_router_->UnregisterDriver(this);
 
-  // DONOTSUBMIT: Need to check whether RWH can be nullptr. I can't find the
-  // test right now where this happened, so I want to run the bots again. I had
-  // a hypothesis why that happened in that test.
   if (render_frame_host_) {  // Can be nullptr only in tests.
     render_frame_host_->GetRenderWidgetHost()->RemoveSuppressShowingImeCallback(
         suppress_showing_ime_callback_);

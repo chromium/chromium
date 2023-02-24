@@ -692,6 +692,7 @@ static_library("test_support") {
     "test_address_normalizer.h",
     "test_autofill_async_observer.cc",
     "test_autofill_async_observer.h",
+    "test_autofill_client.cc",
     "test_autofill_client.h",
     "test_autofill_clock.cc",
     "test_autofill_clock.h",

@@ -445,6 +445,9 @@ TabImpl::~TabImpl() {
     // Some user-data on WebContents directly or indirectly references this.
     // Remove that linkage to avoid use-after-free.
     web_contents_->RemoveUserData(&kWebContentsUserDataKey);
+    web_contents_->RemoveUserData(
+        autofill::ContentAutofillDriverFactory::
+            kContentAutofillDriverFactoryWebContentsUserDataKey);
     // Have Profile handle the task posting to ensure the WebContents is
     // deleted before Profile. To do otherwise means it would be possible for
     // the Profile to outlive the WebContents, which is problematic (crash).
@@ -1216,6 +1219,11 @@ void TabImpl::InitializeAutofillDriver() {
   DCHECK(autofill::AutofillProvider::FromWebContents(web_contents));
 
   AutofillClientImpl::CreateForWebContents(web_contents);
+
+  autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
+      web_contents, AutofillClientImpl::FromWebContents(web_contents),
+      base::BindRepeating(&autofill::AndroidDriverInitHook,
+                          AutofillClientImpl::FromWebContents(web_contents)));
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

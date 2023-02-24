@@ -36,13 +36,25 @@ void BrowserDriverInitHook(AutofillClient* client,
                            const std::string& app_locale,
                            ContentAutofillDriver* driver);
 
-// Manages lifetime of ContentAutofillDriver. Owned by ContentAutofillClient,
-// therefore one Factory per WebContents. Creates one Driver per
-// RenderFrameHost.
-class ContentAutofillDriverFactory : public content::WebContentsObserver {
+// Manages lifetime of ContentAutofillDriver. One Factory per WebContents
+// creates one Driver per RenderFrame.
+class ContentAutofillDriverFactory : public content::WebContentsObserver,
+                                     public base::SupportsUserData::Data {
  public:
   using DriverInitCallback =
       base::RepeatingCallback<void(ContentAutofillDriver*)>;
+
+  static const char kContentAutofillDriverFactoryWebContentsUserDataKey[];
+
+  // Creates a factory for a WebContents object.
+  //
+  // The `driver_init_hook` is called whenever a driver is constructed, so it
+  // may configure the driver. In particular, it must create and set the
+  // driver's AutofillManager.
+  static void CreateForWebContentsAndDelegate(
+      content::WebContents* contents,
+      AutofillClient* client,
+      DriverInitCallback driver_init_hook);
 
   static ContentAutofillDriverFactory* FromWebContents(
       content::WebContents* contents);
@@ -51,12 +63,6 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
       mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver,
       content::RenderFrameHost* render_frame_host);
 
-  ContentAutofillDriverFactory(content::WebContents* web_contents,
-                               AutofillClient* client,
-                               DriverInitCallback driver_init_hook);
-  ContentAutofillDriverFactory(ContentAutofillDriverFactory&) = delete;
-  ContentAutofillDriverFactory& operator=(ContentAutofillDriverFactory&) =
-      delete;
   ~ContentAutofillDriverFactory() override;
 
   // Gets the |ContentAutofillDriver| associated with |render_frame_host|.
@@ -78,10 +84,14 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
  private:
   friend class ContentAutofillDriverFactoryTestApi;
 
+  ContentAutofillDriverFactory(content::WebContents* web_contents,
+                               AutofillClient* client,
+                               DriverInitCallback driver_init_hook);
+
   std::unique_ptr<ContentAutofillDriver> CreateDriver(
       content::RenderFrameHost* rfh);
 
-  raw_ptr<AutofillClient> client_;
+  raw_ptr<AutofillClient, DanglingUntriaged> client_;
   DriverInitCallback driver_init_hook_;
 
   // Routes events between different drivers.

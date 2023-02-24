@@ -26,7 +26,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/pref_names.h"
@@ -39,9 +38,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
-#include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
@@ -1024,17 +1023,12 @@ class RenderViewContestMenuAutofillTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    auto autofill_client =
-        std::make_unique<autofill::TestContentAutofillClient>(web_contents());
-    autofill_client->set_personal_data_manager(
+    autofill_client_ = std::make_unique<autofill::TestAutofillClient>(
         std::make_unique<autofill::TestPersonalDataManager>());
-    autofill_client_ = autofill_client.get();
-    web_contents()->SetUserData(autofill_client_->UserDataKey(),
-                                std::move(autofill_client));
   }
 
   void TearDown() override {
-    web_contents()->RemoveUserData(autofill_client_->UserDataKey());
+    autofill_client_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
@@ -1045,14 +1039,18 @@ class RenderViewContestMenuAutofillTest
   void InjectAutofillDriver(
       content::RenderFrameHost* rfh,
       std::unique_ptr<autofill::TestAutofillDriver> driver) {
-    autofill::ContentAutofillDriverFactoryTestApi(
-        autofill_client_->GetAutofillDriverFactory())
-        .SetDriver(rfh, std::move(driver));
+    autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
+        web_contents(), autofill_client_.get(),
+        autofill::ContentAutofillDriverFactory::DriverInitCallback());
+    auto* cadf =
+        autofill::ContentAutofillDriverFactory::FromWebContents(web_contents());
+    autofill::ContentAutofillDriverFactoryTestApi(cadf).SetDriver(
+        rfh, std::move(driver));
   }
 
  private:
+  std::unique_ptr<autofill::TestAutofillClient> autofill_client_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<autofill::TestContentAutofillClient> autofill_client_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillContextMenuTest,

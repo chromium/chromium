@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -16,23 +16,11 @@ namespace weblayer {
 // A minimal implementation of autofill::AutofillClient to satisfy the minor
 // touchpoints between the autofill implementation and its client that get
 // exercised within the WebLayer autofill flow.
-class AutofillClientImpl : public autofill::ContentAutofillClient,
-                           public content::WebContentsObserver {
+class AutofillClientImpl
+    : public autofill::AutofillClient,
+      public content::WebContentsUserData<AutofillClientImpl>,
+      public content::WebContentsObserver {
  public:
-  static AutofillClientImpl* FromWebContents(
-      content::WebContents* web_contents) {
-    return static_cast<AutofillClientImpl*>(
-        ContentAutofillClient::FromWebContents(web_contents));
-  }
-
-  static void CreateForWebContents(content::WebContents* contents) {
-    DCHECK(contents);
-    if (!FromWebContents(contents)) {
-      contents->SetUserData(UserDataKey(),
-                            base::WrapUnique(new AutofillClientImpl(contents)));
-    }
-  }
-
   AutofillClientImpl(const AutofillClientImpl&) = delete;
   AutofillClientImpl& operator=(const AutofillClientImpl&) = delete;
 
@@ -167,8 +155,11 @@ class AutofillClientImpl : public autofill::ContentAutofillClient,
 
  private:
   explicit AutofillClientImpl(content::WebContents* web_contents);
+  friend class content::WebContentsUserData<AutofillClientImpl>;
 
   std::unique_ptr<autofill::AutofillDownloadManager> download_manager_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace weblayer

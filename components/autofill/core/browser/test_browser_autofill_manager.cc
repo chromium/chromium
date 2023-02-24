@@ -32,9 +32,11 @@ FormStructureTestApi test_api(FormStructure* form_structure) {
 }  // namespace
 
 TestBrowserAutofillManager::TestBrowserAutofillManager(
-    AutofillDriver* driver,
+    TestAutofillDriver* driver,
     TestAutofillClient* client)
-    : BrowserAutofillManager(driver, client, "en-US"), client_(client) {}
+    : BrowserAutofillManager(driver, client, "en-US"),
+      client_(client),
+      driver_(driver) {}
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 

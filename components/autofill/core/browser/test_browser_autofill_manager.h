@@ -14,19 +14,19 @@
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
-class AutofillDriver;
+class TestAutofillClient;
+class TestAutofillDriver;
 class FormStructure;
 class TestPersonalDataManager;
 
 class TestBrowserAutofillManager : public BrowserAutofillManager {
  public:
-  TestBrowserAutofillManager(AutofillDriver* driver,
+  TestBrowserAutofillManager(TestAutofillDriver* driver,
                              TestAutofillClient* client);
 
   TestBrowserAutofillManager(const TestBrowserAutofillManager&) = delete;
@@ -36,6 +36,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   ~TestBrowserAutofillManager() override;
 
   TestAutofillClient* client() { return client_; }
+  TestAutofillDriver* driver() { return driver_; }
 
   // AutofillManager overrides.
   // The overrides ensure that the thread is blocked until the form has been
@@ -139,6 +140,7 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
 
  private:
   raw_ptr<TestAutofillClient> client_;
+  raw_ptr<TestAutofillDriver> driver_;
 
   bool autofill_profile_enabled_ = true;
   bool autofill_credit_card_enabled_ = true;

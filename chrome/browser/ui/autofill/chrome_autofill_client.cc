@@ -1124,11 +1124,7 @@ void ChromeAutofillClient::OnZoomChanged(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
-    : ContentAutofillClient(
-          web_contents,
-          base::BindRepeating(&BrowserDriverInitHook,
-                              this,
-                              g_browser_process->GetApplicationLocale())),
+    : content::WebContentsUserData<ChromeAutofillClient>(*web_contents),
       content::WebContentsObserver(web_contents),
       log_manager_(
           // TODO(crbug.com/928595): Replace the closure with a callback to the
@@ -1193,5 +1189,7 @@ std::u16string ChromeAutofillClient::GetAccountHolderEmail() {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
   return base::UTF8ToUTF16(primary_account_info.email);
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillClient);
 
 }  // namespace autofill
