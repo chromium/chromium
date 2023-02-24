@@ -96,7 +96,10 @@ class PasswordsModelDelegateMock
               (override));
   MOCK_METHOD(void, EnableSync, (const AccountInfo& account), (override));
   MOCK_METHOD(void, OnDialogHidden, (), (override));
-  MOCK_METHOD(bool, AuthenticateUser, (), (override));
+  MOCK_METHOD(void,
+              AuthenticateUser,
+              (AvailabilityCallback callback),
+              (override));
   MOCK_METHOD(void,
               AuthenticateUserWithMessage,
               (const std::u16string& message, AvailabilityCallback callback),
@@ -114,10 +117,6 @@ class PasswordsModelDelegateMock
       AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword,
       (),
       (override));
-  MOCK_METHOD(bool,
-              ArePasswordsRevealedWhenBubbleIsOpened,
-              (),
-              (const override));
   MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
   MOCK_METHOD(void, OnBiometricAuthBeforeFillingDeclined, (), (override));
 };

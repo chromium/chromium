@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
@@ -131,11 +132,7 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
       interaction_stats_.dismissal_count = stats->dismissal_count;
     }
   }
-  if (are_passwords_revealed_when_bubble_is_opened_) {
-    delegate_->OnPasswordsRevealed();
-  }
   // The condition for the password reauth:
-  // If the bubble opened after reauth -> no more reauth necessary.
   // If the bubble opened after successful submission -> no reauth because it's
   // a temporary state and we should not complicate that UX flow.
   // If a password was autofilled -> require reauth to view it.
@@ -143,7 +140,6 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
   // The manual fallback is a temporary state and it's better for the sake of
   // convenience for the user not to break the UX with the reauth prompt.
   password_revealing_requires_reauth_ =
-      !are_passwords_revealed_when_bubble_is_opened_ &&
       display_reason ==
           PasswordBubbleControllerBase::DisplayReason::kUserAction &&
       (pending_password_.form_has_autofilled_value ||
@@ -248,12 +244,26 @@ bool SaveUpdateBubbleController::
   return is_update_in_account_store;
 }
 
-bool SaveUpdateBubbleController::RevealPasswords() {
-  bool reveal_immediately = !password_revealing_requires_reauth_ ||
-                            (delegate_ && delegate_->AuthenticateUser());
-  if (reveal_immediately)
+void SaveUpdateBubbleController::ShouldRevealPasswords(
+    PasswordsModelDelegate::AvailabilityCallback callback) {
+  // Password can be revealed immediately.
+  if (!delegate_ || !password_revealing_requires_reauth_) {
     delegate_->OnPasswordsRevealed();
-  return reveal_immediately;
+    std::move(callback).Run(true);
+    return;
+  }
+
+  delegate_->AuthenticateUser(
+      base::BindOnce(
+          [](base::WeakPtr<PasswordsModelDelegate> delegate,
+             bool auth_successful) {
+            if (auth_successful) {
+              delegate->OnPasswordsRevealed();
+            }
+            return auth_successful;
+          },
+          delegate_)
+          .Then(std::move(callback)));
 }
 
 bool SaveUpdateBubbleController::ShouldShowPasswordStorePicker() const {

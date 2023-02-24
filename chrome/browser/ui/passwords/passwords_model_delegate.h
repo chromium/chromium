@@ -153,13 +153,12 @@ class PasswordsModelDelegate {
   // Called from the dialog controller when the dialog is hidden.
   virtual void OnDialogHidden() = 0;
 
-  // Called from the Save/Update bubble controller when OS re-auth is needed to
-  // show passwords. Returns true immediately if user authentication is not
-  // available for the given platform. Otherwise, the method schedules a task to
-  // show an authentication dialog and reopens the bubble afterwards, then the
-  // method returns false. The password in the reopened bubble will be revealed
-  // if the authentication was successful.
-  virtual bool AuthenticateUser() = 0;
+  // Called from password bubble controller when OS re-auth is needed. Invokes
+  // `callback` immediately with true if user authentication is not available
+  // for the given platform. Otherwise, the method schedules a task to show an
+  // authentication dialog and invokes `callback` with the result of the
+  // authentication flow.
+  virtual void AuthenticateUser(AvailabilityCallback callback) = 0;
 
   // Called from the BiometricAuthenticationForFilling bubble controller when OS
   // re-auth is needed to enable feature. Runs callback with true parameter
@@ -187,10 +186,6 @@ class PasswordsModelDelegate {
   // password into the account store.
   virtual void
   AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword() = 0;
-
-  // Returns true if the password values should be revealed when the bubble is
-  // opened.
-  virtual bool ArePasswordsRevealedWhenBubbleIsOpened() const = 0;
 
   // Called from Biometric Authentication promo dialog when the feature is
   // enabled.

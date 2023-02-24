@@ -13,8 +13,6 @@ PasswordBubbleControllerBase::PasswordBubbleControllerBase(
     base::WeakPtr<PasswordsModelDelegate> delegate,
     password_manager::metrics_util::UIDisplayDisposition display_disposition)
     : metrics_recorder_(delegate->GetPasswordFormMetricsRecorder()),
-      are_passwords_revealed_when_bubble_is_opened_(
-          delegate->ArePasswordsRevealedWhenBubbleIsOpened()),
       delegate_(std::move(delegate)) {
   if (metrics_recorder_) {
     metrics_recorder_->RecordPasswordBubbleShown(

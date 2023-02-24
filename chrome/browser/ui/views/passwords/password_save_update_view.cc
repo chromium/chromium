@@ -11,6 +11,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -194,7 +195,6 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
 // `PasswordForm.password_value`.
 std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
     const password_manager::PasswordForm& form,
-    bool are_passwords_revealed,
     views::Button::PressedCallback reveal_password_callback) {
   DCHECK(!form.IsFederatedCredential());
   std::vector<std::u16string> passwords =
@@ -215,7 +215,6 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
   combobox->SetPasswordIconTooltips(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD),
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
-  combobox->RevealPasswords(are_passwords_revealed);
   combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSWORD_LABEL));
   return combobox;
@@ -339,7 +338,6 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     std::unique_ptr<views::EditablePasswordCombobox> password_dropdown =
         CreateEditablePasswordCombobox(
             password_form,
-            controller_.are_passwords_revealed_when_bubble_is_opened(),
             base::BindRepeating(&PasswordSaveUpdateView::TogglePasswordRevealed,
                                 base::Unretained(this)));
     // Set up layout:
@@ -703,7 +701,27 @@ void PasswordSaveUpdateView::UpdateFootnote() {
 void PasswordSaveUpdateView::TogglePasswordRevealed() {
   if (password_dropdown_->ArePasswordsRevealed()) {
     password_dropdown_->RevealPasswords(false);
-  } else if (controller_.RevealPasswords()) {
-    password_dropdown_->RevealPasswords(true);
+    return;
   }
+  // User authentication might be required, query the controller to determine
+  // whether the user is allowed to unmask the password.
+
+  // Prevent the bubble from closing for the duration of the lifetime of the
+  // `pin`. This is to keep it open while the user authentication is in action.
+  std::unique_ptr<CloseOnDeactivatePin> pin = PreventCloseOnDeactivate();
+
+  controller_.ShouldRevealPasswords(base::BindOnce(
+      [](PasswordSaveUpdateView* view,
+         std::unique_ptr<CloseOnDeactivatePin> pin, bool reveal) {
+        view->password_dropdown_->RevealPasswords(reveal);
+        // Delay the destruction of `pin` for 1 sec to make sure the bubble
+        // remains open till the OS closes the authentication dialog and
+        // reactivates the bubble.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce([](std::unique_ptr<CloseOnDeactivatePin> pin) {},
+                           std::move(pin)),
+            base::Seconds(1));
+      },
+      base::Unretained(this), std::move(pin)));
 }
