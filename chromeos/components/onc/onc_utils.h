@@ -32,9 +32,10 @@ absl::optional<base::Value::Dict> ReadDictionaryFromJson(
 
 // Decrypts the given EncryptedConfiguration |onc| (see the ONC specification)
 // using |passphrase|. The resulting UnencryptedConfiguration is returned. If an
-// error occurs, returns an empty Value.
+// error occurs, returns nullopt.
 COMPONENT_EXPORT(CHROMEOS_ONC)
-base::Value Decrypt(const std::string& passphrase, const base::Value& onc);
+absl::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
+                                          const base::Value::Dict& onc);
 
 // For logging only: strings not user facing.
 COMPONENT_EXPORT(CHROMEOS_ONC)
@@ -110,7 +111,7 @@ std::string DecodePEM(const std::string& pem_encoded);
 
 // Replaces all references by GUID to Server or CA certs by their PEM
 // encoding. Returns true if all references could be resolved. Otherwise returns
-// false and network configurations with unresolveable references are removed
+// false and network configurations with unresolvable references are removed
 // from |network_configs|. |network_configs| must be a list of ONC
 // NetworkConfiguration dictionaries.
 COMPONENT_EXPORT(CHROMEOS_ONC)
@@ -122,7 +123,7 @@ bool ResolveServerCertRefsInNetworks(const CertPEMsByGUIDMap& certs_by_guid,
 // must be a ONC NetworkConfiguration.
 COMPONENT_EXPORT(CHROMEOS_ONC)
 bool ResolveServerCertRefsInNetwork(const CertPEMsByGUIDMap& certs_by_guid,
-                                    base::Value* network_config);
+                                    base::Value::Dict& network_config);
 
 }  // namespace onc
 }  // namespace chromeos

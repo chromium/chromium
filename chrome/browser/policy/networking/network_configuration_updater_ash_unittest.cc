@@ -509,9 +509,8 @@ TEST_F(NetworkConfigurationUpdaterAshTest,
 
 TEST_F(NetworkConfigurationUpdaterAshTest, PolicyIsValidatedAndRepaired) {
   base::Value::Dict onc_repaired =
-      chromeos::onc::test_utils::ReadTestDictionaryValue(
-          "repaired_toplevel_partially_invalid.onc")
-          .TakeDict();
+      chromeos::onc::test_utils::ReadTestDictionary(
+          "repaired_toplevel_partially_invalid.onc");
 
   base::Value::List* network_configs_repaired =
       onc_repaired.FindList(onc::toplevel_config::kNetworkConfigurations);

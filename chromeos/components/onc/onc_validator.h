@@ -209,7 +209,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   void ValidateEthernetConfigs(base::Value::List* result);
   void OnlyKeepLast(base::Value::List* network_configurations_list,
                     const std::vector<std::string>& guids,
-                    const char* type);
+                    const char* type_for_messages);
   void RemoveNetworkConfigurationWithGuid(
       base::Value::List* network_configurations_list,
       const std::string& guid_to_remove);
@@ -277,7 +277,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   const bool managed_onc_;
   const bool log_warnings_;
 
-  ::onc::ONCSource onc_source_;
+  ::onc::ONCSource onc_source_ = ::onc::ONC_SOURCE_NONE;
 
   // The path of field names and indices to the current value. Indices
   // are stored as strings in decimal notation.

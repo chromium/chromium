@@ -1255,11 +1255,10 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
   get_properties_run_loop.Run();
 
   ASSERT_TRUE(dictionary.has_value());
-  base::Value expected_managed_onc = test_utils::ReadTestDictionaryValue(
+  base::Value::Dict expected_managed_onc = test_utils::ReadTestDictionary(
       "policy/"
       "managed_onc_disallow_autoconnect_on_unmanaged_wifi2.onc");
-  EXPECT_TRUE(
-      PropertiesMatch(expected_managed_onc.GetDict(), dictionary.value()));
+  EXPECT_TRUE(PropertiesMatch(expected_managed_onc, dictionary.value()));
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, LateProfileLoading) {

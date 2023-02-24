@@ -71,8 +71,7 @@ Validator::Validator(bool error_on_unknown_field,
       error_on_wrong_recommended_(error_on_wrong_recommended),
       error_on_missing_field_(error_on_missing_field),
       managed_onc_(managed_onc),
-      log_warnings_(log_warnings),
-      onc_source_(::onc::ONC_SOURCE_NONE) {}
+      log_warnings_(log_warnings) {}
 
 Validator::~Validator() = default;
 

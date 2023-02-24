@@ -57,6 +57,8 @@ std::string ReadTestData(const std::string& filename) {
   return result;
 }
 
+namespace {
+
 base::Value ReadTestJson(const std::string& filename) {
   base::FilePath path;
   if (!GetTestDataPath(filename, &path)) {
@@ -74,14 +76,7 @@ base::Value ReadTestJson(const std::string& filename) {
   return std::move(*result);
 }
 
-base::Value ReadTestDictionaryValue(const std::string& filename) {
-  base::Value content = ReadTestJson(filename);
-  CHECK(content.is_dict())
-      << "File '" << filename
-      << "' does not contain a dictionary as expected, but type "
-      << content.type();
-  return content;
-}
+}  // namespace
 
 base::Value::Dict ReadTestDictionary(const std::string& filename) {
   base::Value content = ReadTestJson(filename);
@@ -98,21 +93,6 @@ base::Value::List ReadTestList(const std::string& filename) {
                            << "' does not contain a list as expected, but type "
                            << content.type();
   return std::move(content.GetList());
-}
-
-::testing::AssertionResult Equals(const base::Value* expected,
-                                  const base::Value* actual) {
-  CHECK(expected != nullptr);
-  if (actual == nullptr)
-    return ::testing::AssertionFailure() << "Actual value pointer is nullptr";
-
-  if (*expected == *actual)
-    return ::testing::AssertionSuccess() << "Values are equal";
-
-  return ::testing::AssertionFailure() << "Values are unequal.\n"
-                                       << "Expected value:\n"
-                                       << *expected << "Actual value:\n"
-                                       << *actual;
 }
 
 ::testing::AssertionResult Equals(const base::Value::Dict* expected,

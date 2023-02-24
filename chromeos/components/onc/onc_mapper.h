@@ -11,8 +11,7 @@
 #include "base/component_export.h"
 #include "base/values.h"
 
-namespace chromeos {
-namespace onc {
+namespace chromeos::onc {
 
 struct OncValueSignature;
 
@@ -65,7 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
   // Adds the mapping of each field to |result| using |MapField| and drops
   // unknown fields by default. Sets |found_unknown_field| to true if this
   // dictionary contains any unknown fields. Set |nested_error| to true only if
-  // nested errors occured.
+  // nested errors occurred.
   virtual void MapFields(const OncValueSignature& object_signature,
                          const base::Value::Dict& onc_object,
                          bool* found_unknown_field,
@@ -100,7 +99,6 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Mapper {
                                bool* error);
 };
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace chromeos::onc
 
 #endif  // CHROMEOS_COMPONENTS_ONC_ONC_MAPPER_H_

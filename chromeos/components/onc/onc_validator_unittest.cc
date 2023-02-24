@@ -318,9 +318,9 @@ class ONCValidatorTestRepairable
   // Load the common test data and return the dictionary at the field with
   // name |name|.
   base::Value::Dict GetDictionaryFromTestFile(const std::string& name) {
-    base::Value dict = test_utils::ReadTestDictionaryValue(
-        "invalid_settings_with_repairs.json");
-    base::Value::Dict* result = dict.GetDict().FindDict(name);
+    base::Value::Dict dict =
+        test_utils::ReadTestDictionary("invalid_settings_with_repairs.json");
+    base::Value::Dict* result = dict.FindDict(name);
     EXPECT_TRUE(result);
     return result ? std::move(*result) : base::Value::Dict();
   }

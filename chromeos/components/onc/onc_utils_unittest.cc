@@ -27,35 +27,37 @@
 namespace chromeos::onc {
 
 TEST(ONCDecrypterTest, BrokenEncryptionIterations) {
-  base::Value encrypted_onc =
-      test_utils::ReadTestDictionaryValue("broken-encrypted-iterations.onc");
+  base::Value::Dict encrypted_onc =
+      test_utils::ReadTestDictionary("broken-encrypted-iterations.onc");
 
-  base::Value decrypted_onc = Decrypt("test0000", encrypted_onc);
+  absl::optional<base::Value::Dict> decrypted_onc =
+      Decrypt("test0000", encrypted_onc);
 
-  EXPECT_TRUE(decrypted_onc.is_none());
+  EXPECT_FALSE(decrypted_onc.has_value());
 }
 
 TEST(ONCDecrypterTest, BrokenEncryptionZeroIterations) {
-  base::Value encrypted_onc = test_utils::ReadTestDictionaryValue(
-      "broken-encrypted-zero-iterations.onc");
+  base::Value::Dict encrypted_onc =
+      test_utils::ReadTestDictionary("broken-encrypted-zero-iterations.onc");
 
-  base::Value decrypted_onc = Decrypt("test0000", encrypted_onc);
+  absl::optional<base::Value::Dict> decrypted_onc =
+      Decrypt("test0000", encrypted_onc);
 
-  EXPECT_TRUE(decrypted_onc.is_none());
+  EXPECT_FALSE(decrypted_onc.has_value());
 }
 
 TEST(ONCDecrypterTest, LoadEncryptedOnc) {
-  base::Value encrypted_onc =
-      test_utils::ReadTestDictionaryValue("encrypted.onc");
-  base::Value expected_decrypted_onc =
-      test_utils::ReadTestDictionaryValue("decrypted.onc");
+  base::Value::Dict encrypted_onc =
+      test_utils::ReadTestDictionary("encrypted.onc");
+  base::Value::Dict expected_decrypted_onc =
+      test_utils::ReadTestDictionary("decrypted.onc");
 
   std::string error;
-  base::Value actual_decrypted_onc = Decrypt("test0000", encrypted_onc);
+  absl::optional<base::Value::Dict> actual_decrypted_onc =
+      Decrypt("test0000", encrypted_onc);
 
-  base::Value emptyDict;
-  EXPECT_TRUE(
-      test_utils::Equals(&expected_decrypted_onc, &actual_decrypted_onc));
+  EXPECT_TRUE(test_utils::Equals(&expected_decrypted_onc,
+                                 &actual_decrypted_onc.value()));
 }
 
 namespace {
