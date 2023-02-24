@@ -7300,7 +7300,7 @@
   {
     "name": "web-sql-access",
     "owners": [ "arichiv"],
-    "expiry_milestone": 113
+    "expiry_milestone": 124
   },
   {
     "name": "webnotes-dynamic-templates",
