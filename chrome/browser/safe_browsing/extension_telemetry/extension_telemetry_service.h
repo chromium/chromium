@@ -39,12 +39,12 @@ namespace safe_browsing {
 enum class ExtensionSignalType;
 class ExtensionSignal;
 class ExtensionSignalProcessor;
+class ExtensionTelemetryConfigManager;
 class ExtensionTelemetryFileProcessor;
+class ExtensionTelemetryPersister;
 class ExtensionTelemetryReportRequest;
 class ExtensionTelemetryReportRequest_ExtensionInfo;
 class ExtensionTelemetryUploader;
-class ExtensionTelemetryPersister;
-class ExtensionTelemetryConfigManager;
 class SafeBrowsingTokenFetcher;
 
 // This class process extension signals and reports telemetry for a given
@@ -92,7 +92,7 @@ class ExtensionTelemetryService : public KeyedService {
   // Checks the `extension_id` and `signal_type` against the
   // configuration and reports true if the signal should be created.
   bool IsSignalEnabled(const extensions::ExtensionId& extension_id,
-                       ExtensionSignalType signal_type);
+                       ExtensionSignalType signal_type) const;
 
   base::TimeDelta current_reporting_interval() {
     return current_reporting_interval_;
@@ -112,7 +112,7 @@ class ExtensionTelemetryService : public KeyedService {
 
   // Returns a bool that represents if there is any signal processor
   // information to report.
-  bool SignalDataPresent();
+  bool SignalDataPresent() const;
 
   // Creates telemetry report protobuf for all extension store extensions
   // and currently installed extensions along with signal data retrieved from

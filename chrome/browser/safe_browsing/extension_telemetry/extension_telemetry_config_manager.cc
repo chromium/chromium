@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager.h"
-#include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_number_conversions_win.h"
+
 #include "base/values.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
 #include "components/prefs/pref_service.h"
@@ -19,15 +15,16 @@ namespace safe_browsing {
 namespace {
 // Default values for the ExtensionTelemetryConfigManager and the
 // string key values for the `configuration_` dict.
-constexpr const uint32_t kDefaultWritesPerInterval = 1u;
-constexpr const uint32_t kDefaultReportingInterval = 3600u;
-constexpr const uint32_t kDefaultConfigVersion = 0u;
-constexpr const uint64_t kDefaultSignalEnables = 0xffffffffffffffff;
-constexpr const char kConfigurationVersion[] = "version";
-constexpr const char kWritesPerInterval[] = "writes_per_interval";
-constexpr const char kReportingInterval[] = "reporting_interval";
-constexpr const char kSignalEnables0[] = "signal_enables_0";
-constexpr const char kSignalEnables1[] = "signal_enables_1";
+constexpr uint32_t kDefaultWritesPerInterval = 1u;
+constexpr uint32_t kDefaultReportingInterval = 3600u;
+constexpr uint32_t kDefaultConfigVersion = 0u;
+constexpr uint32_t kDefaultSignalEnables32 = 0xffffffff;
+constexpr uint64_t kDefaultSignalEnables = 0xffffffffffffffff;
+constexpr char kConfigurationVersion[] = "version";
+constexpr char kWritesPerInterval[] = "writes_per_interval";
+constexpr char kReportingInterval[] = "reporting_interval";
+constexpr char kSignalEnables0[] = "signal_enables_0";
+constexpr char kSignalEnables1[] = "signal_enables_1";
 }  // namespace
 
 ExtensionTelemetryConfigManager::~ExtensionTelemetryConfigManager() = default;
@@ -97,47 +94,45 @@ void ExtensionTelemetryConfigManager::SaveConfig(
 bool ExtensionTelemetryConfigManager::IsSignalEnabled(
     const extensions::ExtensionId& extension_id,
     ExtensionSignalType signal_type) const {
-  auto* extension_dict = configuration_.FindDict(extension_id);
+  const base::Value::Dict* extension_dict =
+      configuration_.FindDict(extension_id);
   if (!extension_dict) {
     return true;
   }
-  // Construct the uint64 `signal_enables` bitmask from the uint32_t
-  // `signal_enables_0` and `signal_enables_1` variables.
-  uint64_t signal_enables_bitmask =
-      (static_cast<uint64_t>(*extension_dict->FindInt(kSignalEnables1)) << 32 |
-       static_cast<uint32_t>(*extension_dict->FindInt(kSignalEnables0)));
-  return (signal_enables_bitmask & (1 << (static_cast<int>(signal_type))));
+  uint64_t signal_enables_bitmask = GetSignalEnables(extension_id);
+  return (signal_enables_bitmask &
+          (1ull << (static_cast<uint64_t>(signal_type))));
 }
 
 uint32_t ExtensionTelemetryConfigManager::GetWritesPerInterval() const {
   absl::optional<int> param = configuration_.FindInt(kWritesPerInterval);
-  int value = param.has_value() ? param.value() : kDefaultWritesPerInterval;
-  return static_cast<uint32_t>(value);
+  return static_cast<uint32_t>(param.value_or(kDefaultWritesPerInterval));
 }
 
 uint32_t ExtensionTelemetryConfigManager::GetConfigVersion() const {
   absl::optional<int> param = configuration_.FindInt(kConfigurationVersion);
-  int value = param.has_value() ? param.value() : kDefaultConfigVersion;
-  return static_cast<uint32_t>(value);
+  return static_cast<uint32_t>(param.value_or(kDefaultConfigVersion));
 }
 
 uint32_t ExtensionTelemetryConfigManager::GetReportingInterval() const {
   absl::optional<int> param = configuration_.FindInt(kReportingInterval);
-  int value = param.has_value() ? param.value() : kDefaultReportingInterval;
-  return static_cast<uint32_t>(value);
+  return static_cast<uint32_t>(param.value_or(kDefaultReportingInterval));
 }
 
 uint64_t ExtensionTelemetryConfigManager::GetSignalEnables(
     const extensions::ExtensionId& extension_id) const {
-  auto* extension_dict = configuration_.FindDict(extension_id);
+  const base::Value::Dict* extension_dict =
+      configuration_.FindDict(extension_id);
   if (!extension_dict) {
     // By default, all signals are enabled for extensions.
     return kDefaultSignalEnables;
   }
-  absl::optional<uint64_t> param =
-      (static_cast<uint64_t>(*extension_dict->FindInt(kSignalEnables1)) << 32 |
-       static_cast<uint32_t>(*extension_dict->FindInt(kSignalEnables0)));
-  uint64_t value = param.has_value() ? param.value() : kDefaultSignalEnables;
-  return value;
+  uint32_t signal_enables_0 =
+      static_cast<uint32_t>(extension_dict->FindInt(kSignalEnables0)
+                                .value_or(kDefaultSignalEnables32));
+  uint32_t signal_enables_1 =
+      static_cast<uint32_t>(extension_dict->FindInt(kSignalEnables1)
+                                .value_or(kDefaultSignalEnables32));
+  return static_cast<uint64_t>(signal_enables_1) << 32 | signal_enables_0;
 }
 }  // namespace safe_browsing

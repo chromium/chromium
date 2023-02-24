@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_config_manager.h"
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
@@ -15,37 +16,42 @@ using TelemetryReport = safe_browsing::ExtensionTelemetryReportRequest;
 
 namespace safe_browsing {
 
-static constexpr const uint32_t kMaxUintValue = 0xffffffff;
-static constexpr const uint64_t kMaxUint64Value = 0xffffffffffffffff;
-static constexpr const uint32_t kDefaultReportingInterval = 3600u;
-static constexpr const uint32_t kDefaultWritesPerInterval = 1u;
-static constexpr const uint32_t kDefaultVersion = 0;
-static constexpr const uint32_t kReportingInterval = 500u;
-static constexpr const uint32_t kWritesPerInterval = 4u;
-static constexpr const uint32_t kVersion = 3;
-static constexpr const uint64_t kExtension1SignalEnables = 0x2B;
-static constexpr const uint64_t kExtension2SignalEnables = 0xfffffffffffffff5;
-static constexpr const char kExtension1[] = "extension1";
-static constexpr const char kExtension2[] = "extension2";
+namespace {
+
+constexpr uint32_t kMaxUintValue = 0xffffffff;
+constexpr uint64_t kMaxUint64Value = 0xffffffffffffffff;
+constexpr uint32_t kDefaultReportingInterval = 3600u;
+constexpr uint32_t kDefaultWritesPerInterval = 1u;
+constexpr uint32_t kDefaultVersion = 0;
+constexpr uint32_t kReportingInterval = 500u;
+constexpr uint32_t kWritesPerInterval = 4u;
+constexpr uint32_t kVersion = 3;
+constexpr uint64_t kExtension1SignalEnables = 0x2B;
+constexpr uint64_t kExtension2SignalEnables = 0xfffffffffffffff5;
+constexpr char kExtension1[] = "extension1";
+constexpr char kExtension2[] = "extension2";
+
+}  // namespace
 
 class ExtensionTelemetryConfigManagerTest : public ::testing::Test {
  protected:
   ExtensionTelemetryConfigManagerTest();
+
   void SetUp() override { ASSERT_NE(config_manager_, nullptr); }
 
   void ReloadConfig();
   void InitConfig();
   void InitConfigWithMaxValues();
+
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<ExtensionTelemetryConfigManager> config_manager_;
 };
 
 ExtensionTelemetryConfigManagerTest::ExtensionTelemetryConfigManagerTest()
-    : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  config_manager_ =
-      std::make_unique<ExtensionTelemetryConfigManager>(profile_.GetPrefs());
-}
+    : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      config_manager_(std::make_unique<ExtensionTelemetryConfigManager>(
+          profile_.GetPrefs())) {}
 
 void ExtensionTelemetryConfigManagerTest::InitConfigWithMaxValues() {
   ExtensionTelemetryReportResponse::Configuration config;

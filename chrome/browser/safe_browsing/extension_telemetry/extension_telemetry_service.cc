@@ -370,13 +370,13 @@ void ExtensionTelemetryService::Shutdown() {
   pref_change_registrar_.RemoveAll();
 }
 
-bool ExtensionTelemetryService::SignalDataPresent() {
+bool ExtensionTelemetryService::SignalDataPresent() const {
   return (extension_store_.size() > 0);
 }
 
 bool ExtensionTelemetryService::IsSignalEnabled(
     const extensions::ExtensionId& extension_id,
-    ExtensionSignalType signal_type) {
+    ExtensionSignalType signal_type) const {
   return config_manager_->IsSignalEnabled(extension_id, signal_type);
 }
 

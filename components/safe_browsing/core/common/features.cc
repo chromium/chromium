@@ -106,6 +106,10 @@ const base::FeatureParam<int> kExtensionTelemetryWritesPerInterval{
     &kExtensionTelemetry, "NumberOfWritesInInterval",
     /*default_value=*/1};
 
+BASE_FEATURE(kExtensionTelemetryConfiguration,
+             "SafeBrowsingExtensionTelemetryConfiguration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
              "SafeBrowsingExtensionTelemetryCookiesGetAllSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -113,10 +117,6 @@ BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
 BASE_FEATURE(kExtensionTelemetryPersistence,
              "SafeBrowsingExtensionTelemetryPersistence",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExtensionTelemetryConfiguration,
-             "SafeBrowsingExtensionTelemetryConfiguration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryFileData,
              "SafeBrowsingExtensionTelemetryFileData",
