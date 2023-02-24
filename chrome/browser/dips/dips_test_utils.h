@@ -14,11 +14,34 @@
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
 namespace testing {
 class MatchResultListener;
 }
+
+class URLCookieAccessObserver : public content::WebContentsObserver {
+ public:
+  using Type = content::CookieAccessDetails::Type;
+  URLCookieAccessObserver(content::WebContents* web_contents,
+                          const GURL& url,
+                          Type access_type);
+
+  void Wait();
+
+ private:
+  // WebContentsObserver overrides
+  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
+                         const content::CookieAccessDetails& details) override;
+  void OnCookiesAccessed(content::NavigationHandle* navigation_handle,
+                         const content::CookieAccessDetails& details) override;
+
+  GURL url_;
+  Type access_type_;
+  base::RunLoop run_loop_;
+};
 
 class RedirectChainObserver : public DIPSService::Observer {
  public:

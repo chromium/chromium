@@ -99,38 +99,6 @@ class FrameCookieAccessObserver : public content::WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
-class URLCookieAccessObserver : public content::WebContentsObserver {
- public:
-  explicit URLCookieAccessObserver(WebContents* web_contents,
-                                   const GURL& url,
-                                   CookieAccessDetails::Type access_type)
-      : WebContentsObserver(web_contents),
-        url_(url),
-        access_type_(access_type) {}
-
-  // Wait until the frame accesses cookies.
-  void Wait() { run_loop_.Run(); }
-
-  // WebContentsObserver overrides
-  void OnCookiesAccessed(RenderFrameHost* render_frame_host,
-                         const CookieAccessDetails& details) override {
-    if (details.type == access_type_ && details.url == url_) {
-      run_loop_.Quit();
-    }
-  }
-  void OnCookiesAccessed(NavigationHandle* navigation_handle,
-                         const CookieAccessDetails& details) override {
-    if (details.type == access_type_ && details.url == url_) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  GURL url_;
-  CookieAccessDetails::Type access_type_;
-  base::RunLoop run_loop_;
-};
-
 using StateForURLCallback = base::OnceCallback<void(const DIPSState&)>;
 
 // Histogram names
