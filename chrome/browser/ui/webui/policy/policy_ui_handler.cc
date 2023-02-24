@@ -366,7 +366,7 @@ void PolicyUIHandler::WritePoliciesToJSONFile(const base::FilePath& path) {
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(
-          [](base::FilePath path, base::StringPiece content) {
+          [](const base::FilePath& path, base::StringPiece content) {
             base::WriteFile(path, content);
           },
           path, json_policies));
