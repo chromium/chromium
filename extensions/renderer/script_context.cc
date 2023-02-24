@@ -28,6 +28,7 @@
 #include "extensions/renderer/v8_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -51,6 +52,10 @@ class RendererContextData : public ContextData {
 
   std::unique_ptr<ContextData> Clone() const override {
     return std::make_unique<RendererContextData>(frame_);
+  }
+
+  bool IsIsolatedApplication() const override {
+    return blink::IsIsolatedContext();
   }
 
   std::unique_ptr<ContextData> GetLocalParentOrOpener() const override {

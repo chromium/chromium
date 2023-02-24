@@ -20,6 +20,7 @@ class ContextData {
  public:
   virtual ~ContextData() = default;
   virtual std::unique_ptr<ContextData> Clone() const = 0;
+  virtual bool IsIsolatedApplication() const = 0;
   virtual std::unique_ptr<ContextData> GetLocalParentOrOpener() const = 0;
   virtual GURL GetUrl() const = 0;
   virtual url::Origin GetOrigin() const = 0;

@@ -15,6 +15,12 @@ std::unique_ptr<ContextData> BrowserContextData::Clone() const {
   return std::make_unique<BrowserContextData>(frame_);
 }
 
+bool BrowserContextData::IsIsolatedApplication() const {
+  return frame_ && frame_->GetWebExposedIsolationLevel() >=
+                       content::RenderFrameHost::WebExposedIsolationLevel::
+                           kMaybeIsolatedApplication;
+}
+
 std::unique_ptr<ContextData> BrowserContextData::GetLocalParentOrOpener()
     const {
   content::RenderFrameHost* parent_or_opener = frame_->GetParent();

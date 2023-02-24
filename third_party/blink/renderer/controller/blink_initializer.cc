@@ -191,6 +191,11 @@ void SetIsIsolatedContext(bool value) {
 }
 
 // Function defined in third_party/blink/public/web/blink.h.
+bool IsIsolatedContext() {
+  return Agent::IsIsolatedContext();
+}
+
+// Function defined in third_party/blink/public/web/blink.h.
 void SetCorsExemptHeaderList(
     const WebVector<WebString>& web_cors_exempt_header_list) {
   Vector<String> cors_exempt_header_list(

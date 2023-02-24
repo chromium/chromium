@@ -25,6 +25,7 @@ class BrowserContextData : public ContextData {
   ~BrowserContextData() override = default;
 
   std::unique_ptr<ContextData> Clone() const override;
+  bool IsIsolatedApplication() const override;
   std::unique_ptr<ContextData> GetLocalParentOrOpener() const override;
 
   GURL GetUrl() const override;
