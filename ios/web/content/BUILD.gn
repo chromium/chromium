@@ -20,6 +20,7 @@ source_set("content") {
   ]
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//ios/web/public",
     "//ios/web/public/favicon",
     "//ios/web/public/js_messaging",
