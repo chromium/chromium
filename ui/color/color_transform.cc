@@ -286,39 +286,44 @@ ColorTransform SetAlpha(ColorTransform transform, SkAlpha alpha) {
 
 ColorTransform PickGoogleColor(ColorTransform foreground_transform,
                                ColorTransform background_transform,
-                               float min_contrast) {
+                               float min_contrast,
+                               float max_contrast) {
   const auto generator =
       [](ColorTransform foreground_transform,
          ColorTransform background_transform, float min_contrast,
-         SkColor input_color, const ColorMixer& mixer) {
+         float max_contrast, SkColor input_color, const ColorMixer& mixer) {
         const SkColor foreground_color =
             foreground_transform.Run(input_color, mixer);
         const SkColor background_color =
             background_transform.Run(input_color, mixer);
         const SkColor result_color = color_utils::PickGoogleColor(
-            foreground_color, background_color, min_contrast);
+            foreground_color, background_color, min_contrast, max_contrast);
         DVLOG(2) << "ColorTransform PickGoogleColor:"
                  << " Input Color: " << SkColorName(input_color)
                  << " Foreground Color: " << SkColorName(foreground_color)
                  << " Background Color: " << SkColorName(background_color)
                  << " Min Contrast: " << base::NumberToString(min_contrast)
+                 << " Max Contrast: " << base::NumberToString(max_contrast)
                  << " Result Color: " << SkColorName(result_color);
         return result_color;
       };
   return base::BindRepeating(generator, std::move(foreground_transform),
-                             std::move(background_transform), min_contrast);
+                             std::move(background_transform), min_contrast,
+                             max_contrast);
 }
 
 ColorTransform PickGoogleColorTwoBackgrounds(
     ColorTransform foreground_transform,
     ColorTransform background_a_transform,
     ColorTransform background_b_transform,
-    float min_contrast) {
+    float min_contrast,
+    float max_contrast_against_nearer) {
   const auto generator = [](ui::ColorTransform foreground_transform,
                             ui::ColorTransform background_a_transform,
                             ui::ColorTransform background_b_transform,
-                            float min_contrast, SkColor input_color,
-                            const ui::ColorMixer& mixer) {
+                            float min_contrast,
+                            float max_contrast_against_nearer,
+                            SkColor input_color, const ui::ColorMixer& mixer) {
     const SkColor foreground_color =
         foreground_transform.Run(input_color, mixer);
     const SkColor background_a_color =
@@ -326,18 +331,22 @@ ColorTransform PickGoogleColorTwoBackgrounds(
     const SkColor background_b_color =
         background_b_transform.Run(input_color, mixer);
     const SkColor result_color = color_utils::PickGoogleColorTwoBackgrounds(
-        foreground_color, background_a_color, background_b_color, min_contrast);
+        foreground_color, background_a_color, background_b_color, min_contrast,
+        max_contrast_against_nearer);
     DVLOG(2) << "ColorTransform PickGoogleColor:"
              << " Foreground Color: " << ui::SkColorName(foreground_color)
              << " Background Color A: " << ui::SkColorName(background_a_color)
              << " Background Color B: " << ui::SkColorName(background_b_color)
              << " Min Contrast: " << base::NumberToString(min_contrast)
+             << " Max Contrast Against Nearer: "
+             << base::NumberToString(max_contrast_against_nearer)
              << " Result Color: " << ui::SkColorName(result_color);
     return result_color;
   };
   return base::BindRepeating(generator, std::move(foreground_transform),
                              std::move(background_a_transform),
-                             std::move(background_b_transform), min_contrast);
+                             std::move(background_b_transform), min_contrast,
+                             max_contrast_against_nearer);
 }
 
 ColorTransform HSLShift(ColorTransform color, color_utils::HSL hsl) {

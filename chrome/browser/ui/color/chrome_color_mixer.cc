@@ -530,9 +530,10 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorToolbarTopSeparatorFrameInactive};
   mixer[kColorTabstripLoadingProgressBackground] = ui::AlphaBlend(
       kColorTabstripLoadingProgressForeground, kColorToolbar, 0x32);
-  // 4.5 matches the default light theme contrast of accent-against-toolbar.
+  // 4.5 and 6.0 approximate the default light and dark theme contrasts of
+  // accent-against-toolbar.
   mixer[kColorTabstripLoadingProgressForeground] =
-      PickGoogleColor(ui::kColorAccent, kColorToolbar, 4.5f);
+      PickGoogleColor(ui::kColorAccent, kColorToolbar, 4.5f, 6.0f);
   mixer[kColorTabstripScrollContainerShadow] =
       ui::SetAlpha(ui::kColorShadowBase, 0x4D);
   mixer[kColorTabThrobber] = {ui::kColorThrobber};
