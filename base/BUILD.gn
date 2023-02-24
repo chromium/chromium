@@ -1261,6 +1261,8 @@ component("base") {
       "os_compat_android.cc",
       "os_compat_android.h",
       "process/process_android.cc",
+      "profiler/native_unwinder_android_map_delegate.h",
+      "profiler/native_unwinder_android_memory_regions_map.h",
       "profiler/stack_sampler_android.cc",
       "system/sys_info_android.cc",
       "threading/platform_thread_android.cc",
