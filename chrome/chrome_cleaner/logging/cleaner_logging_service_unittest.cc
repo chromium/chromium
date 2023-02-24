@@ -709,9 +709,7 @@ TEST_P(CleanerLoggingServiceTest, ReadContentFromFile) {
   ASSERT_TRUE(test_dir.CreateUniqueTempDir());
   base::CreateTemporaryFileInDir(test_dir.GetPath(), &test_file);
   ASSERT_TRUE(base::PathExists(test_file));
-  ASSERT_GT(base::WriteFile(test_file, raw_report_string.c_str(),
-                            raw_report_string.size()),
-            0);
+  ASSERT_TRUE(base::WriteFile(test_file, raw_report_string));
 
   EXPECT_TRUE(logging_service_->ReadContentFromFile(test_file));
 
@@ -745,7 +743,7 @@ TEST_P(CleanerLoggingServiceTest, ReadContentFromInvalidFile) {
   ASSERT_TRUE(test_dir.CreateUniqueTempDir());
   base::CreateTemporaryFileInDir(test_dir.GetPath(), &test_file);
   ASSERT_TRUE(base::PathExists(test_file));
-  ASSERT_GT(base::WriteFile(test_file, "bla", 3), 0);
+  ASSERT_TRUE(base::WriteFile(test_file, "bla"));
 
   EXPECT_FALSE(logging_service_->ReadContentFromFile(test_file));
 }

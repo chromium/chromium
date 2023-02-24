@@ -81,9 +81,7 @@ void ZipArchiverTestFile::Initialize() {
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &src_file_path_));
 
-  ASSERT_EQ(static_cast<size_t>(base::WriteFile(src_file_path_, kTestContent,
-                                                strlen(kTestContent))),
-            strlen(kTestContent));
+  ASSERT_TRUE(base::WriteFile(src_file_path_, kTestContent));
   // Set a fixed timestamp, so the modified time will be identical in every
   // test.
   base::Time file_time;

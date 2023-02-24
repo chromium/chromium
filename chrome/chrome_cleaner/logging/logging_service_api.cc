@@ -52,7 +52,7 @@ void LoggingServiceAPI::MaybeSaveLogsToFile(const std::wstring& tag) {
                                      .InsertBeforeExtension(tag));
 
     std::string logs_proto = RawReportContent();
-    base::WriteFile(log_file_path, logs_proto.c_str(), logs_proto.length());
+    base::WriteFile(log_file_path, logs_proto);
   }
 }
 

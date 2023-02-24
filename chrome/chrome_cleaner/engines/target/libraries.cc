@@ -53,8 +53,7 @@ bool ExtractEmbeddedLibraries(Engine::Name engine,
       LOG(ERROR) << "Failed to load " << name_id.first << " from resources";
       return false;
     }
-    if (base::WriteFile(extraction_dir.Append(name_id.first),
-                        library_data.data(), library_data.size()) < 0) {
+    if (!base::WriteFile(extraction_dir.Append(name_id.first), library_data)) {
       PLOG(ERROR) << "Failed to write " << name_id.first;
       return false;
     }
