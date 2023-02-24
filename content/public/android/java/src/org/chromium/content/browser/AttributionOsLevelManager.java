@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser;
 
+import android.view.MotionEvent;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -27,7 +29,19 @@ public class AttributionOsLevelManager {
      * https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/measurement/MeasurementManager.
      */
     @CalledByNative
-    private void registerAttributionSource(
+    private void registerAttributionSource(GURL registrationUrl, GURL topLevelOrigin,
+            boolean isDebugKeyAllowed, MotionEvent event) {
+        // TODO(johnidel): Register with the Android API, see
+        // https://developer.android.com/design-for-safety/privacy-sandbox/guides/attribution.
+        // This is dependent on support for the Tiramisu Privacy Sandbox SDK.
+    }
+
+    /**
+     * Registers a web attribution trigger with native, see `registerWebTrigger()`:
+     * https://developer.android.com/design-for-safety/privacy-sandbox/reference/adservices/measurement/MeasurementManager.
+     */
+    @CalledByNative
+    private void registerAttributionTrigger(
             GURL registrationUrl, GURL topLevelOrigin, boolean isDebugKeyAllowed) {
         // TODO(johnidel): Register with the Android API, see
         // https://developer.android.com/design-for-safety/privacy-sandbox/guides/attribution.

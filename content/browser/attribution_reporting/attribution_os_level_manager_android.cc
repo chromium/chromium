@@ -18,6 +18,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/os_support.mojom-shared.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "url/android/gurl_android.h"
@@ -87,11 +88,25 @@ AttributionOsLevelManagerAndroid::~AttributionOsLevelManagerAndroid() {
 void AttributionOsLevelManagerAndroid::RegisterAttributionSource(
     const GURL& registration_url,
     const url::Origin& top_level_origin,
-    bool is_debug_key_allowed) {
+    bool is_debug_key_allowed,
+    const AttributionInputEvent& input_event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AttributionOsLevelManager_registerAttributionSource(
+      env, jobj_, url::GURLAndroid::FromNativeGURL(env, registration_url),
+      url::GURLAndroid::FromNativeGURL(env, top_level_origin.GetURL()),
+      is_debug_key_allowed, input_event.input_event);
+}
+
+void AttributionOsLevelManagerAndroid::RegisterAttributionTrigger(
+    const GURL& registration_url,
+    const url::Origin& top_level_origin,
+    bool is_debug_key_allowed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AttributionOsLevelManager_registerAttributionTrigger(
       env, jobj_, url::GURLAndroid::FromNativeGURL(env, registration_url),
       url::GURLAndroid::FromNativeGURL(env, top_level_origin.GetURL()),
       is_debug_key_allowed);

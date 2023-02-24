@@ -24,6 +24,8 @@ class Origin;
 
 namespace content {
 
+struct AttributionInputEvent;
+
 // Interface between the browser's Attribution Reporting implementation and the
 // operating system's.
 class AttributionOsLevelManager {
@@ -32,7 +34,12 @@ class AttributionOsLevelManager {
 
   virtual void RegisterAttributionSource(const GURL& registration_url,
                                          const url::Origin& top_level_origin,
-                                         bool is_debug_key_allowed) = 0;
+                                         bool is_debug_key_allowed,
+                                         const AttributionInputEvent&) = 0;
+
+  virtual void RegisterAttributionTrigger(const GURL& registration_url,
+                                          const url::Origin& top_level_origin,
+                                          bool is_debug_key_allowed) = 0;
 
   // Clears storage data with the OS.
   // Note that `done` is not run if `AttributionOsLevelManager` is destroyed

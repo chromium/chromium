@@ -34,7 +34,12 @@ class AttributionOsLevelManagerAndroid : public AttributionOsLevelManager {
 
   void RegisterAttributionSource(const GURL& registration_url,
                                  const url::Origin& top_level_origin,
-                                 bool is_debug_key_allowed) override;
+                                 bool is_debug_key_allowed,
+                                 const AttributionInputEvent&) override;
+
+  void RegisterAttributionTrigger(const GURL& registration_url,
+                                  const url::Origin& top_level_origin,
+                                  bool is_debug_key_allowed) override;
 
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,

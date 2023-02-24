@@ -212,6 +212,14 @@ class MockAttributionOsLevelManager : public AttributionOsLevelManager {
               RegisterAttributionSource,
               (const GURL& registration_url,
                const url::Origin& top_level_origin,
+               bool is_debug_key_allowed,
+               const AttributionInputEvent&),
+              (override));
+
+  MOCK_METHOD(void,
+              RegisterAttributionTrigger,
+              (const GURL& registration_url,
+               const url::Origin& top_level_origin,
                bool is_debug_key_allowed),
               (override));
 
