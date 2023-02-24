@@ -47,8 +47,8 @@ class CONTENT_EXPORT DWriteFontProxyImpl
   void GetFamilyCount(GetFamilyCountCallback callback) override;
   void GetFamilyNames(uint32_t family_index,
                       GetFamilyNamesCallback callback) override;
-  void GetFontFiles(uint32_t family_index,
-                    GetFontFilesCallback callback) override;
+  void GetFontFileHandles(uint32_t family_index,
+                          GetFontFileHandlesCallback callback) override;
   void MapCharacters(const std::u16string& text,
                      blink::mojom::DWriteFontStylePtr font_style,
                      const std::u16string& locale_name,

@@ -29,9 +29,7 @@ HRESULT FontFilePathAndTtcIndex(IDWriteFont* font,
                                 uint32_t& ttc_index);
 HRESULT AddFilesForFont(IDWriteFont* font,
                         const std::u16string& windows_fonts_path,
-                        std::set<std::wstring>* path_set,
-                        std::set<std::wstring>* custom_font_path_set,
-                        uint32_t* ttc_index);
+                        std::set<std::wstring>* path_set);
 
 std::u16string GetWindowsFontsPath();
 

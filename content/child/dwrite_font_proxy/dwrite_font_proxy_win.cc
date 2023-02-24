@@ -382,7 +382,6 @@ HRESULT DWriteFontCollectionProxy::CreateEnumeratorFromKey(
   const uint32_t* family_index =
       reinterpret_cast<const uint32_t*>(collection_key);
 
-  std::vector<base::FilePath> file_names;
   std::vector<base::File> file_handles;
   {
     // The Mojo call cannot be asynchronous because CreateEnumeratorFromKey is
@@ -391,30 +390,22 @@ HRESULT DWriteFontCollectionProxy::CreateEnumeratorFromKey(
     // (CreateEnumeratorFromKey can be invoked from the main thread or the
     // ThreadPool).
     base::ScopedAllowBaseSyncPrimitives allow_sync;
-    if (!GetFontProxy().GetFontFiles(*family_index, &file_names,
-                                     &file_handles)) {
+    if (!GetFontProxy().GetFontFileHandles(*family_index, &file_handles)) {
       LogFontProxyError(GET_FONT_FILES_SEND_FAILED);
       return E_FAIL;
     }
   }
 
   std::vector<HANDLE> handles;
-  handles.reserve(file_names.size() + file_handles.size());
-  for (const base::FilePath& file_name : file_names) {
-    // This leaks the handles, since they are used as the reference key to
-    // CreateStreamFromKey, and DirectWrite requires the reference keys to
-    // remain valid for the lifetime of the loader. The loader is the font
-    // collection proxy, which remains alive for the lifetime of the renderer.
-    HANDLE handle =
-        CreateFile(file_name.value().c_str(), GENERIC_READ, FILE_SHARE_READ,
-                   NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (handle != INVALID_HANDLE_VALUE)
-      handles.push_back(handle);
-  }
+  handles.reserve(file_handles.size());
   for (auto& file_handle : file_handles) {
     handles.push_back(file_handle.TakePlatformFile());
   }
 
+  // This leaks the handles, since they are used as the reference key to
+  // CreateStreamFromKey, and DirectWrite requires the reference keys to
+  // remain valid for the lifetime of the loader. The loader is the font
+  // collection proxy, which remains alive for the lifetime of the renderer.
   HRESULT hr = mswr::MakeAndInitialize<FontFileEnumerator>(
       font_file_enumerator, factory, this, &handles);
 

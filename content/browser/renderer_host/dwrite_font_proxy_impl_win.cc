@@ -216,29 +216,29 @@ void DWriteFontProxyImpl::GetFamilyNames(UINT32 family_index,
   std::move(callback).Run(std::move(family_names));
 }
 
-void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
-                                       GetFontFilesCallback callback) {
+void DWriteFontProxyImpl::GetFontFileHandles(
+    uint32_t family_index,
+    GetFontFileHandlesCallback callback) {
   InitializeDirectWrite();
   TRACE_EVENT0("dwrite,fonts", "FontProxyHost::OnGetFontFiles");
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback), std::vector<base::FilePath>(),
-      std::vector<base::File>());
+      std::move(callback), std::vector<base::File>());
   if (!collection_)
     return;
 
   mswr::ComPtr<IDWriteFontFamily> family;
   HRESULT hr = collection_->GetFontFamily(family_index, &family);
   if (FAILED(hr)) {
-    if (IsLastResortFallbackFont(family_index))
+    if (IsLastResortFallbackFont(family_index)) {
       LogMessageFilterError(
           MessageFilterError::LAST_RESORT_FONT_GET_FAMILY_FAILED);
+    }
     return;
   }
 
   UINT32 font_count = family->GetFontCount();
 
   std::set<std::wstring> path_set;
-  std::set<std::wstring> custom_font_path_set;
   // Iterate through all the fonts in the family, and all the files for those
   // fonts. If anything goes wrong, bail on the entire family to avoid having
   // a partially-loaded font family.
@@ -246,47 +246,39 @@ void DWriteFontProxyImpl::GetFontFiles(uint32_t family_index,
     mswr::ComPtr<IDWriteFont> font;
     hr = family->GetFont(font_index, &font);
     if (FAILED(hr)) {
-      if (IsLastResortFallbackFont(family_index))
+      if (IsLastResortFallbackFont(family_index)) {
         LogMessageFilterError(
             MessageFilterError::LAST_RESORT_FONT_GET_FONT_FAILED);
+      }
       return;
     }
 
-    uint32_t dummy_ttc_index = 0;
-    if (FAILED(AddFilesForFont(font.Get(), windows_fonts_path_, &path_set,
-                               &custom_font_path_set, &dummy_ttc_index))) {
-      if (IsLastResortFallbackFont(family_index))
+    if (FAILED(AddFilesForFont(font.Get(), windows_fonts_path_, &path_set))) {
+      if (IsLastResortFallbackFont(family_index)) {
         LogMessageFilterError(
             MessageFilterError::LAST_RESORT_FONT_ADD_FILES_FAILED);
+      }
     }
   }
 
   std::vector<base::File> file_handles;
-  // For files outside the windows fonts directory we pass them to the renderer
-  // as file handles. The renderer would be unable to open the files directly
-  // due to sandbox policy (it would get ERROR_ACCESS_DENIED instead). Passing
-  // handles allows the renderer to bypass the restriction and use the fonts.
+  // We pass handles for every path as the sandbox blocks direct access to font
+  // files in the renderer.
   // TODO(jam): if kDWriteFontProxyOnIO is removed also remove the exception
   // for this class from thread_restrictions.h
   base::ScopedAllowBlocking allow_io;
-  for (const auto& custom_font_path : custom_font_path_set) {
+  for (const auto& font_path : path_set) {
     // Specify FLAG_WIN_EXCLUSIVE_WRITE to prevent base::File from opening the
     // file with FILE_SHARE_WRITE access. FLAG_WIN_EXCLUSIVE_WRITE doesn't
     // actually open the file for write access.
-    base::File file(base::FilePath(custom_font_path),
+    base::File file(base::FilePath(font_path),
                     base::File::FLAG_OPEN | base::File::FLAG_READ |
                         base::File::FLAG_WIN_EXCLUSIVE_WRITE);
     if (file.IsValid()) {
       file_handles.push_back(std::move(file));
     }
   }
-
-  std::vector<base::FilePath> file_paths;
-  for (const auto& path : path_set) {
-    file_paths.emplace_back(base::FilePath(path));
-  }
-  LogLastResortFontFileCount(file_paths.size());
-  std::move(callback).Run(file_paths, std::move(file_handles));
+  std::move(callback).Run(std::move(file_handles));
 }
 
 void DWriteFontProxyImpl::MapCharacters(

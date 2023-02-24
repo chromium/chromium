@@ -51,12 +51,12 @@ interface DWriteFontProxy {
   GetFamilyNames(uint32 family_index)
       => (array<DWriteStringPair> out_family_names);
 
-  // Returns the list of font file paths in the system font directory that
-  // contain font data for the font family at the specified index.
+  // Returns the list of font file handles in the system font directory and
+  // other locations that contain font data for the font family at the specified
+  // index.
   [Sync]
-  GetFontFiles(uint32 family_index)
-     => (array<mojo_base.mojom.FilePath> file_paths,
-         array<mojo_base.mojom.ReadOnlyFile> file_handles);
+  GetFontFileHandles(uint32 family_index)
+     => (array<mojo_base.mojom.ReadOnlyFile> file_handles);
 
   // Matches a unique PostScript or full font name against the installed fonts
   // using DirectWrite API. Returns a pre-opened file handle and ttc_index from

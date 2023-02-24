@@ -305,7 +305,7 @@ TEST_F(DWriteFontProxyUnitTest, LoadingFontFamily) {
   UINT32 font_count = family->GetFontCount();
   EXPECT_LT(0u, font_count);
   EXPECT_EQ(3u, fake_collection_->MessageCount());
-  EXPECT_EQ(FakeFontCollection::MessageType::kGetFontFiles,
+  EXPECT_EQ(FakeFontCollection::MessageType::kGetFontFileHandles,
             fake_collection_->GetMessageType(2));
   mswr::ComPtr<IDWriteFont> font;
   hr = family->GetFirstMatchingFont(DWRITE_FONT_WEIGHT_NORMAL,
