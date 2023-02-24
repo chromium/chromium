@@ -1384,9 +1384,11 @@ class TabListMediator {
                 && (mModel.get(index).model.get(TabProperties.THUMBNAIL_FETCHER) == null
                         || forceUpdate || isUpdatingId || forceUpdateLastSelected
                         || forceUpdateColorForSelectableGroup)) {
+            boolean isSelectable = mUiType == UiType.SELECTABLE;
             ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),
-                    forceUpdate || forceUpdateLastSelected,
-                    forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
+                    (forceUpdate || forceUpdateLastSelected) && !isSelectable,
+                    forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
+                            && !isSelectable);
             mModel.get(index).model.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
     }
@@ -1706,8 +1708,11 @@ class TabListMediator {
         updateFaviconForTab(pseudoTab, null, null);
 
         if (mThumbnailProvider != null && mVisible) {
+            boolean isSelectable = mUiType == UiType.SELECTABLE;
             ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),
-                    isSelected, isSelected && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
+                    isSelected && !isSelectable,
+                    isSelected && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled()
+                            && !isSelectable);
             tabInfo.set(TabProperties.THUMBNAIL_FETCHER, callback);
         }
         if (pseudoTab.getTab() != null) pseudoTab.getTab().addObserver(mTabObserver);
