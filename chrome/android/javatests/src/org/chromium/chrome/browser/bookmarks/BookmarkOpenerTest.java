@@ -104,14 +104,14 @@ public class BookmarkOpenerTest {
         }
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.getDragStateDelegate().setA11yStateForTesting(false);
+            getBookmarkDelegate().getDragStateDelegate().setA11yStateForTesting(false);
             mBookmarkOpener = mManager.getBookmarkOpenerForTesting();
         });
     }
 
     void openRootFolder() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+                () -> getBookmarkDelegate().openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
 
@@ -127,6 +127,10 @@ public class BookmarkOpenerTest {
 
         onView(withText("Reading list")).perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+    }
+
+    private BookmarkDelegate getBookmarkDelegate() {
+        return mManager.getBookmarkDelegateForTesting();
     }
 
     @Test

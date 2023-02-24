@@ -63,13 +63,13 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
     private final Profile mProfile;
     private final SyncService mSyncService;
+    private final BookmarkPromoHeader mPromoHeaderManager;
 
     // There can only be one promo header at a time. This takes on one of the values:
     // ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.SYNC_PROMO, or ViewType.INVALID.
     @ViewType
     private int mPromoHeaderType = ViewType.INVALID;
     private BookmarkDelegate mDelegate;
-    private BookmarkPromoHeader mPromoHeaderManager;
     private ViewFactory mViewFactory;
     private String mSearchText;
     private BookmarkId mCurrentFolder;
@@ -131,6 +131,12 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         mProfile = profile;
         mSyncService = SyncService.get();
         mSyncService.addSyncStateChangedListener(this);
+
+        Runnable promoHeaderChangeAction = () -> {
+            // Notify the view of changes to the elements list as the promo might be showing.
+            updateHeader(true);
+        };
+        mPromoHeaderManager = new BookmarkPromoHeader(mContext, promoHeaderChangeAction);
     }
 
     /**
@@ -284,12 +290,6 @@ public class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkLis
         mDelegate.getModel().addObserver(mBookmarkModelObserver);
         mDelegate.getSelectionDelegate().addObserver(this);
 
-        Runnable promoHeaderChangeAction = () -> {
-            // Notify the view of changes to the elements list as the promo might be showing.
-            updateHeader(true);
-        };
-
-        mPromoHeaderManager = new BookmarkPromoHeader(mContext, promoHeaderChangeAction);
         populateTopLevelFoldersList();
 
         mViewFactory = viewFactory;

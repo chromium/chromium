@@ -163,13 +163,13 @@ public class ReadingListTest {
         }
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mManager.getDragStateDelegate().setA11yStateForTesting(false));
+                () -> getBookmarkDelegate().getDragStateDelegate().setA11yStateForTesting(false));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
 
     void openRootFolder() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mManager.openFolder(mBookmarkModel.getRootFolderId()));
+                () -> getBookmarkDelegate().openFolder(mBookmarkModel.getRootFolderId()));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
 
@@ -202,8 +202,8 @@ public class ReadingListTest {
         return getReorderAdapter().getIdByPosition(pos);
     }
 
-    private BookmarkManager getBookmarkManager() {
-        return (BookmarkManager) getReorderAdapter().getDelegateForTesting();
+    private BookmarkDelegate getBookmarkDelegate() {
+        return mManager.getBookmarkDelegateForTesting();
     }
 
     @Test
@@ -212,8 +212,8 @@ public class ReadingListTest {
     public void testOpenBookmarkManagerWhenDefaultToRootEnabled()
             throws InterruptedException, ExecutionException {
         openBookmarkManager();
-        BookmarkDelegate delegate = getBookmarkManager();
-        BookmarkActionBar toolbar = ((BookmarkManager) delegate).getToolbarForTests();
+        BookmarkDelegate delegate = getBookmarkDelegate();
+        BookmarkActionBar toolbar = mManager.getToolbarForTests();
 
         // We should default to the root bookmark.
         Assert.assertEquals(BookmarkUIState.STATE_FOLDER, delegate.getCurrentState());
@@ -306,9 +306,9 @@ public class ReadingListTest {
         openReadingList();
 
         // Enter search UI, but don't enter any search key word.
-        TestThreadUtils.runOnUiThreadBlocking(mManager::openSearchUI);
+        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUI);
         Assert.assertEquals("Wrong state, should be searching", BookmarkUIState.STATE_SEARCHING,
-                mManager.getCurrentState());
+                getBookmarkDelegate().getCurrentState());
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
 
         // Delete the reading list page in search state.
@@ -333,7 +333,7 @@ public class ReadingListTest {
 
         // Open other folders will show the default empty view text.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mManager.openFolder(mBookmarkModel.getMobileFolderId()));
+                () -> getBookmarkDelegate().openFolder(mBookmarkModel.getMobileFolderId()));
         onView(withText(R.string.bookmarks_folder_empty)).check(matches(isDisplayed()));
     }
 
@@ -497,7 +497,7 @@ public class ReadingListTest {
         openRootFolder();
         openReadingList();
 
-        TestThreadUtils.runOnUiThreadBlocking(mManager::openSearchUI);
+        TestThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUI);
 
         BookmarkActionBar toolbar = mManager.getToolbarForTests();
         Assert.assertFalse("Menu items shouldn't be visible in search.",

@@ -47,7 +47,7 @@ public class BookmarkManagerCoordinator {
      * @param delegate A {@link BookmarkDelegate} instance to handle all backend interaction.
      * @param bookmarkPromoHeader Used to show the signin promo header.
      */
-    public void onBookmarkDelegateInitialized(
+    public void initialize(
             @NonNull BookmarkDelegate delegate, @NonNull BookmarkPromoHeader bookmarkPromoHeader) {
         mDelegate = delegate;
         mPromoHeaderManager = bookmarkPromoHeader;

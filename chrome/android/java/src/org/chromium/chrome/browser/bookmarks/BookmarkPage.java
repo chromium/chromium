@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
@@ -32,8 +33,8 @@ public class BookmarkPage extends BasicNativePage {
             boolean isIncognito, NativePageHost host) {
         super(host);
 
-        mManager = new BookmarkManager(
-                host.getContext(), componentName, false, isIncognito, snackbarManager);
+        mManager = new BookmarkManager(host.getContext(), componentName, false, isIncognito,
+                snackbarManager, Profile.getLastUsedRegularProfile());
         mManager.setBasicNativePage(this);
         mTitle = host.getContext().getResources().getString(R.string.bookmarks);
 
