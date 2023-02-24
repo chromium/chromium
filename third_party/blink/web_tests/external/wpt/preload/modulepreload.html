@@ -163,18 +163,18 @@ promise_test(function(t) {
 promise_test(function(t) {
     var link = document.createElement('link');
     link.rel = 'modulepreload';
-    link.href = 'resources/module1.js';
+    link.href = 'resources/module1.js?submodule';
     return attachAndWaitForLoad(link).then(() => {
-        verifyNumberOfDownloads('resources/module1.js', 1);
+        verifyNumberOfDownloads('resources/module1.js?submodule', 1);
         // The load event fires before (optional) submodules fetch.
         verifyNumberOfDownloads('resources/module2.js', 0);
 
         var script = document.createElement('script');
         script.type = 'module';
-        script.src = 'resources/module1.js';
+        script.src = 'resources/module1.js?submodule';
         return attachAndWaitForLoad(script);
     }).then(() => {
-        verifyNumberOfDownloads('resources/module1.js', 1);
+        verifyNumberOfDownloads('resources/module1.js?submodule', 1);
         verifyNumberOfDownloads('resources/module2.js', 1);
     });
 }, 'link rel=modulepreload with submodules');

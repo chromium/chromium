@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL receiver.getStats() via addTransceiver should return stats report containing inbound-rtp stats assert_equals: Expect dictionary.codecId to be string expected "string" but got "undefined"
-FAIL receiver.getStats() via addTrack should return stats report containing inbound-rtp stats assert_equals: Expect dictionary.codecId to be string expected "string" but got "undefined"
-FAIL receiver.getStats() should work on a stopped transceiver assert_equals: Expect dictionary.codecId to be string expected "string" but got "undefined"
-FAIL receiver.getStats() should work with a closed PeerConnection assert_equals: Expect dictionary.codecId to be string expected "string" but got "undefined"
-PASS receiver.getStats() should return stats report containing ICE candidate stats
-Harness: the test ran to completion.
-

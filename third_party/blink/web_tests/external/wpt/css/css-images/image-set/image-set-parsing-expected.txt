@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 104 tests; 86 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 114 tests; 96 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['background-image'] = "image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1x)" should set the property value
 PASS e.style['background-image'] = "image-set('example.jpg' 1x)" should set the property value
@@ -10,6 +10,14 @@ PASS e.style['background-image'] = "image-set(url(example.png) 1dpcm, 'example.p
 PASS e.style['background-image'] = "-webkit-image-set(url(example.png) 1dpcm, 'example.png' 2x)" should set the property value
 PASS e.style['background-image'] = "image-set('example.jpeg' 222dpi, url(example.png) 3.5x)" should set the property value
 PASS e.style['background-image'] = "-webkit-image-set('example.jpeg' 222dpi, url(example.png) 3.5x)" should set the property value
+PASS e.style['content'] = "image-set(url(\"example.png\") 1x)" should set the property value
+PASS e.style['content'] = "-webkit-image-set(url(\"example.png\") 1x)" should set the property value
+PASS e.style['content'] = "image-set(url(\"example.png\") 1x, \"example.png\" 3x)" should set the property value
+PASS e.style['content'] = "-webkit-image-set(url(\"example.png\") 1x, \"example.png\" 3x)" should set the property value
+PASS e.style['border-image-source'] = "image-set(url(\"example.png\") 1x)" should set the property value
+PASS e.style['border-image-source'] = "-webkit-image-set(url(\"example.png\") 1x)" should set the property value
+PASS e.style['border-image-source'] = "image-set(url(\"example.png\") 1x, \"example.png\" 3x)" should set the property value
+PASS e.style['border-image-source'] = "-webkit-image-set(url(\"example.png\") 1x, \"example.png\" 3x)" should set the property value
 PASS e.style['background-image'] = "image-set(none, url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "-webkit-image-set(none, url(example.png) 1x)" should not set the property value
 PASS e.style['background-image'] = "image-set()" should not set the property value
@@ -50,6 +58,8 @@ PASS e.style['background-image'] = "image-set(url(\"example.png\") 1dpcm)" shoul
 PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 1dpcm)" should set the property value
 FAIL e.style['background-image'] = "image-set(url(\"example.png\") calc(1dpcm * 96/2.54))" should set the property value assert_not_equals: property should be set got disallowed value ""
 FAIL e.style['background-image'] = "-webkit-image-set(url(\"example.png\") calc(1dpcm * 96/2.54))" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['background-image'] = "image-set(url(\"example.png\") 1x, url(\"example.png\") 2dppx, \"example.png\" 250dpi, \"example.png\" 1dpcm)" should set the property value
+PASS e.style['background-image'] = "-webkit-image-set(url(\"example.png\") 1x, url(\"example.png\") 2dppx, \"example.png\" 250dpi, \"example.png\" 1dpcm)" should set the property value
 PASS e.style['content'] = "image-set(url(\"example.png\") 1dpi)" should set the property value
 PASS e.style['content'] = "-webkit-image-set(url(\"example.png\") 1dpi)" should set the property value
 FAIL e.style['content'] = "image-set(url(\"example.png\") calc(1 * 96dpi))" should set the property value assert_not_equals: property should be set got disallowed value ""

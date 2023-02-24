@@ -135482,12 +135482,12 @@
        ]
       ],
       "image-set-type-unsupported-rendering-2.html": [
-       "ea2dd6f9795da60c0161ac0161c9d64e3bdbee21",
+       "bebc32d87d389a0d19e061eac31f96731f2aa042",
        [
         null,
         [
          [
-          "/css/css-images/image-set/reference/image-set-rendering-ref.html",
+          "/css/reference/blank.html",
           "=="
          ]
         ],
@@ -135495,12 +135495,12 @@
        ]
       ],
       "image-set-type-unsupported-rendering.html": [
-       "ef7c4a20efba60babec0f0bd08b772e684524d7e",
+       "486fcb3a8e04e216ef074b5c63db7d9639bb740b",
        [
         null,
         [
          [
-          "/css/css-images/image-set/reference/image-set-rendering-ref.html",
+          "/css/reference/blank.html",
           "=="
          ]
         ],
@@ -265445,11 +265445,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "81741897c31d27048b1f64b2e1f1bf84a5ec79e0",
+     "52428f89bf9da0399896e975262b067012439831",
      []
     ],
     "mtime.json": [
-     "bdf05665f313461d0517c52bd41b531a2c37281f",
+     "72e6c5c0d50388b9da0ec6945e3d8cb40f89ab3a",
      []
     ]
    },
@@ -283691,6 +283691,10 @@
        []
       ]
      },
+     "hit-test-transformed-inline.html.ini": [
+      "c1620d0a9a04ea6c2c3dc6621e6fbfc91b098200",
+      []
+     ],
      "inheritance-expected.txt": [
       "738ea649f554f91280becd58a760fdd07827a9b1",
       []
@@ -300121,7 +300125,7 @@
        []
       ],
       "image-set-parsing-expected.txt": [
-       "6d416df85fbeb249587f948ec97540c14f80d24f",
+       "97514f09ce091a2ab5cfb233f403b488590cc06a",
        []
       ],
       "image-set-parsing.html.ini": [
@@ -320526,6 +320530,10 @@
       []
      ],
      "compute-kind-widget-generated": {
+      "kind-of-widget-fallback-color-input-background-attachment-001.html.ini": [
+       "af8320f8847d4948398b722cc08cff19e152181b",
+       []
+      ],
       "kind-of-widget-fallback-color-input-border-bottom-style-001.html.ini": [
        "781e3a390720e3062919d91b8b872054bbd0548f",
        []
@@ -342920,7 +342928,7 @@
         ]
        },
        "open-features-is-popup-condition.html.ini": [
-        "410b1a64465b5abfffba709f4b0fb1bfa2e2d559",
+        "526cf3d770453a60f4f3287b0c57fc5dee9b3f1b",
         []
        ],
        "open-features-negative-innerwidth-innerheight.html.ini": [
@@ -346457,6 +346465,10 @@
        ],
        "property-opener-get.https.html.ini": [
         "9f55b4b24e1ba80dd6f40992de31a40bd97bb264",
+        []
+       ],
+       "property-opener-set.https.html.ini": [
+        "0e1bb44f93b2c2021362dc2e31a288e8e24644c8",
         []
        ],
        "property-postmessage-1.https.html.ini": [
@@ -354804,7 +354816,7 @@
         []
        ],
        "select-event.html.ini": [
-        "58429c319f4cb743517e68d940ac72e96a45f912",
+        "6b0b8cd3008950f19e4e014aaa58f91e79267e69",
         []
        ]
       },
@@ -362077,7 +362089,7 @@
      []
     ],
     "cross-origin-iframe.sub.html.ini": [
-     "d78d0c90a2ba706d18fae6e62152b661a258e156",
+     "ab342f88a8b46d36df9f6a2b8ee910c10c45293e",
      []
     ],
     "idlharness.window-expected.txt": [
@@ -377592,20 +377604,12 @@
      "f0612e5ada98307caea31e123c22ad664888f97e",
      []
     ],
-    "requestStorageAccess-cross-site-iframe.sub.https.window-expected.txt": [
-     "604680550963971a44606bd6c73bbcfcaf774dd4",
-     []
-    ],
     "requestStorageAccess-cross-site-iframe.sub.https.window.js.ini": [
      "aa17501c514b2960953b0eab40a9639e9529b650",
      []
     ],
     "requestStorageAccess-nested-cross-origin-iframe.sub.https.window.js.ini": [
      "2c7ca81c4f6de2259926175d94159f88372afcfc",
-     []
-    ],
-    "requestStorageAccess-nested-cross-site-iframe.sub.https.window-expected.txt": [
-     "dd76957fe72413cfd5960a7ba42ceb0f4f6ee9e9",
      []
     ],
     "requestStorageAccess-nested-cross-site-iframe.sub.https.window.js.ini": [
@@ -438283,7 +438287,7 @@
        ]
       ],
       "image-set-parsing.html": [
-       "961684e8281c7f8b762024886c875db8fd2a00ed",
+       "477a3f81215c67daeacab8520d79250e5edfd565",
        [
         null,
         {}
@@ -568690,7 +568694,7 @@
      ]
     ],
     "modulepreload.html": [
-     "8902d67b7937e1a4e0cbea68883cc9045cae7b5f",
+     "58830fe064b5dfaa25e39d3982723a430dea6f0e",
      [
       null,
       {}
