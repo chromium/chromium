@@ -8,9 +8,7 @@
 #include <tuple>
 
 #include "base/json/json_reader.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -188,40 +186,19 @@ INSTANTIATE_TEST_SUITE_P(
 
 class EnterpriseConnectorsPolicyHandlerLocalTest
     : public EnterpriseConnectorsPolicyHandlerTestBase,
-      public testing::TestWithParam<
-          std::tuple<const char*, const char*, bool>> {
+      public testing::TestWithParam<std::tuple<const char*, const char*>> {
  public:
-  EnterpriseConnectorsPolicyHandlerLocalTest() {
-    if (enable_feature())
-      scoped_feature_list_.InitAndEnableFeature(kLocalContentAnalysisEnabled);
-  }
+  EnterpriseConnectorsPolicyHandlerLocalTest() = default;
 
   const char* policy() const override { return std::get<0>(GetParam()); }
   const char* policy_pref() const { return std::get<1>(GetParam()); }
-  bool enable_feature() const { return std::get<2>(GetParam()); }
 
   bool policy_is_valid() const {
     if (policy() == kEmptyPolicy)
       return true;
 
-    if (!enable_feature())
-      return false;
-
-    if (policy_pref() != kOnFileAttachedPref ||
-        policy_pref() != kOnFileDownloadedPref ||
-        policy_pref() != kOnBulkDataEntryPref ||
-#if BUILDFLAG(IS_CHROMEOS)
-        policy_pref() != kOnFileTransferPref ||
-#endif
-        policy_pref() != kOnPrintPref) {
-      return false;
-    }
-
-    return policy() == kValidLocalContentAnalysisPolicy;
+    return false;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(EnterpriseConnectorsPolicyHandlerLocalTest, Test) {
@@ -248,7 +225,9 @@ TEST_P(EnterpriseConnectorsPolicyHandlerLocalTest, Test) {
 INSTANTIATE_TEST_SUITE_P(
     EnterpriseConnectorsPolicyHandlerLocalTest,
     EnterpriseConnectorsPolicyHandlerLocalTest,
-    testing::Combine(testing::Values(kValidLocalContentAnalysisPolicy,
+    testing::Combine(testing::Values(kValidPolicy,
+                                     kInvalidPolicy,
+                                     kValidLocalContentAnalysisPolicy,
                                      kInvalidProviderLocalContentAnalysisPolicy,
                                      kFakeProviderLocalContentAnalysisPolicy,
                                      kEmptyPolicy),
@@ -259,7 +238,6 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(IS_CHROMEOS)
                                      kOnFileTransferPref,
 #endif
-                                     kOnSecurityEventPref),
-                     testing::Bool()));
+                                     kOnSecurityEventPref)));
 
 }  // namespace enterprise_connectors

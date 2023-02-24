@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "components/prefs/pref_service.h"
@@ -36,11 +38,21 @@ ConnectorsManager::ConnectorsManager(
 ConnectorsManager::~ConnectorsManager() = default;
 
 bool ConnectorsManager::IsConnectorEnabled(AnalysisConnector connector) const {
-  if (analysis_connector_settings_.count(connector) == 1)
-    return true;
+  if (analysis_connector_settings_.count(connector) == 0 &&
+      prefs()->HasPrefPath(ConnectorPref(connector))) {
+    CacheAnalysisConnectorPolicy(connector);
+  }
 
-  const char* pref = ConnectorPref(connector);
-  return pref && pref_change_registrar_.prefs()->HasPrefPath(pref);
+  if (analysis_connector_settings_.count(connector) != 1) {
+    return false;
+  }
+
+  // If the connector is for local content analysis, make sure it is also
+  // enabled by flags.  For now, only one connector is supported at a time.
+  const auto& settings = analysis_connector_settings_.at(connector)[0];
+
+  return settings.is_cloud_analysis() ||
+         base::FeatureList::IsEnabled(kLocalContentAnalysisEnabled);
 }
 
 bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
@@ -48,7 +60,7 @@ bool ConnectorsManager::IsConnectorEnabled(ReportingConnector connector) const {
     return true;
 
   const char* pref = ConnectorPref(connector);
-  return pref && pref_change_registrar_.prefs()->HasPrefPath(pref);
+  return pref && prefs()->HasPrefPath(pref);
 }
 
 absl::optional<ReportingSettings> ConnectorsManager::GetReportingSettings(
@@ -130,15 +142,14 @@ ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
 }
 
 void ConnectorsManager::CacheAnalysisConnectorPolicy(
-    AnalysisConnector connector) {
+    AnalysisConnector connector) const {
   analysis_connector_settings_.erase(connector);
 
   // Connectors with non-existing policies should not reach this code.
   const char* pref = ConnectorPref(connector);
   DCHECK(pref);
 
-  const base::Value::List& policy_value =
-      pref_change_registrar_.prefs()->GetList(pref);
+  const base::Value::List& policy_value = prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value)
     analysis_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);
@@ -152,8 +163,7 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
   const char* pref = ConnectorPref(connector);
   DCHECK(pref);
 
-  const base::Value::List& policy_value =
-      pref_change_registrar_.prefs()->GetList(pref);
+  const base::Value::List& policy_value = prefs()->GetList(pref);
   for (const base::Value& service_settings : policy_value)
     reporting_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);

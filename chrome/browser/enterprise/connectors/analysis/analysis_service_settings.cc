@@ -190,14 +190,14 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   settings.block_password_protected_files = block_password_protected_files_;
   settings.block_large_files = block_large_files_;
   settings.block_unsupported_file_types = block_unsupported_file_types_;
-  if (analysis_config_->url) {
+  if (is_cloud_analysis()) {
     CloudAnalysisSettings cloud_settings;
     cloud_settings.analysis_url = GURL(analysis_config_->url);
     DCHECK(cloud_settings.analysis_url.is_valid());
     settings.cloud_or_local_settings =
         CloudOrLocalAnalysisSettings(std::move(cloud_settings));
   } else {
-    DCHECK(analysis_config_->local_path);
+    DCHECK(is_local_analysis());
     LocalAnalysisSettings local_settings;
     local_settings.local_path = analysis_config_->local_path;
     local_settings.user_specific = analysis_config_->user_specific;
@@ -284,6 +284,14 @@ absl::optional<GURL> AnalysisServiceSettings::GetLearnMoreUrl(
 bool AnalysisServiceSettings::GetBypassJustificationRequired(
     const std::string& tag) {
   return tags_.find(tag) != tags_.end() && tags_.at(tag).requires_justification;
+}
+
+bool AnalysisServiceSettings::is_cloud_analysis() const {
+  return analysis_config_ && analysis_config_->url != nullptr;
+}
+
+bool AnalysisServiceSettings::is_local_analysis() const {
+  return analysis_config_ && analysis_config_->local_path != nullptr;
 }
 
 void AnalysisServiceSettings::AddUrlPatternSettings(
