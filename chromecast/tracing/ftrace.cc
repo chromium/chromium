@@ -102,7 +102,7 @@ bool WriteTracingFile(const char* tracing_dir,
                       base::StringPiece contents) {
   base::FilePath path = base::FilePath(tracing_dir).Append(trace_file);
 
-  if (!base::WriteFile(path, contents.data(), contents.size())) {
+  if (!base::WriteFile(path, contents)) {
     PLOG(ERROR) << "write: " << path;
     return false;
   }
