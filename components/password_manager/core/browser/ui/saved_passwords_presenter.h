@@ -223,7 +223,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   scoped_refptr<PasswordStoreInterface> account_store_;
 
   // The number of stores from which no updates have been received yet.
-  int pending_store_updates = 0;
+  int pending_store_updates_ = 0;
 
   std::unique_ptr<PasswordUndoHelper> undo_helper_;
 

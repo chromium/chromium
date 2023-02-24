@@ -119,18 +119,18 @@ void SavedPasswordsPresenter::Init() {
   profile_store_->AddObserver(this);
   if (account_store_)
     account_store_->AddObserver(this);
-  pending_store_updates++;
+  pending_store_updates_++;
   profile_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
       weak_ptr_factory_.GetWeakPtr());
   if (account_store_) {
-    pending_store_updates++;
+    pending_store_updates_++;
     account_store_->GetAllLoginsWithAffiliationAndBrandingInformation(
         weak_ptr_factory_.GetWeakPtr());
   }
 }
 
 bool SavedPasswordsPresenter::IsWaitingForPasswordStore() const {
-  return pending_store_updates != 0;
+  return pending_store_updates_ != 0;
 }
 
 void SavedPasswordsPresenter::RemoveObservers() {
@@ -456,6 +456,10 @@ void SavedPasswordsPresenter::NotifyEdited(
 }
 
 void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {
+  // Notify observers when there are no pending password store updates.
+  if (pending_store_updates_ > 0) {
+    return;
+  }
   for (auto& observer : observers_)
     observer.OnSavedPasswordsChanged();
 }
@@ -513,8 +517,8 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResults(
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
     PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  pending_store_updates--;
-  DCHECK_GE(pending_store_updates, 0);
+  pending_store_updates_--;
+  DCHECK_GE(pending_store_updates_, 0);
 
   std::vector<PasswordForm> forms;
   for (auto& form : results) {

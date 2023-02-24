@@ -1130,7 +1130,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest,
   base::MockCallback<SavedPasswordsPresenter::AddCredentialsCallback>
       completion_callback;
 
-  EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(2);
+  EXPECT_CALL(observer, OnSavedPasswordsChanged).Times(1);
 
   CredentialUIEntry account_store_cred_1(account_store_form_1);
   CredentialUIEntry account_store_cred_2(account_store_form_2);
