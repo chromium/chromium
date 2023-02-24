@@ -502,8 +502,7 @@ ChromePermissionsClient::MaybeCreateMessageUI(
     content::WebContents* web_contents,
     ContentSettingsType type,
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
-  if (messages::IsNotificationBlockedMessagesUiEnabled() &&
-      ShouldUseQuietUI(web_contents, type)) {
+  if (ShouldUseQuietUI(web_contents, type)) {
     auto delegate =
         std::make_unique<NotificationBlockedMessageDelegate::Delegate>(
             std::move(prompt));

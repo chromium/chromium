@@ -4803,11 +4803,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "messages-for-android-notification-blocked",
-    "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "messages-for-android-offer-notification",
     "owners": [ "vishwasuppoor", "siashah" ],
     "expiry_milestone": 120

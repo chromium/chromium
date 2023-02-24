@@ -59784,8 +59784,6 @@ from previous Chrome versions.
   <int value="-1196814719" label="TrafficCountersEnabled:disabled"/>
   <int value="-1195194959" label="XGEOVisibleNetworks:disabled"/>
   <int value="-1195034892" label="ContinuousSearch:disabled"/>
-  <int value="-1194794230"
-      label="MessagesForAndroidNotificationBlocked:disabled"/>
   <int value="-1194129602" label="ClientSideDetectionModelOnAndroid:disabled"/>
   <int value="-1193375480" label="DownloadBubble:enabled"/>
   <int value="-1192790333" label="ArcUseHighMemoryDalvikProfile:disabled"/>
@@ -63391,7 +63389,6 @@ from previous Chrome versions.
   <int value="857716462" label="FeedInteractiveRefresh:enabled"/>
   <int value="859031214"
       label="ExperimentalAccessibilityGoogleTtsLanguagePacks:enabled"/>
-  <int value="859220075" label="MessagesForAndroidNotificationBlocked:enabled"/>
   <int value="859449217" label="MagnifierPanningImprovements:enabled"/>
   <int value="859495772"
       label="UsernameFirstFlowFallbackCrowdsourcing:disabled"/>

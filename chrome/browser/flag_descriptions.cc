@@ -3779,11 +3779,6 @@ const char kMessagesForAndroidInfrastructureName[] = "Messages infrastructure";
 const char kMessagesForAndroidInfrastructureDescription[] =
     "When enabled, will initialize Messages UI infrastructure";
 
-const char kMessagesForAndroidNotificationBlockedName[] =
-    "Notification Blocked Messages UI";
-const char kMessagesForAndroidNotificationBlockedDescription[] =
-    "When enabled, notification blocked prompt will use the new Messages UI.";
-
 extern const char kMessagesForAndroidOfferNotificationName[] =
     "Offer Notification Messages UI";
 extern const char kMessagesForAndroidOfferNotificationDescription[] =
