@@ -19,12 +19,13 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
 
   // content_analysis::sdk::Client:
   const content_analysis::sdk::Client::Config& GetConfig() const override;
-  int Send(const content_analysis::sdk::ContentAnalysisRequest& request,
+  int Send(content_analysis::sdk::ContentAnalysisRequest request,
            content_analysis::sdk::ContentAnalysisResponse* response) override;
   int Acknowledge(const content_analysis::sdk::ContentAnalysisAcknowledgement&
                       ack) override;
   int CancelRequests(const content_analysis::sdk::ContentAnalysisCancelRequests&
                          cancel) override;
+  const content_analysis::sdk::AgentInfo& GetAgentInfo() const override;
 
   // Get the latest request client receives.
   const content_analysis::sdk::ContentAnalysisRequest& GetRequest();
@@ -46,6 +47,9 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
   void SetSendResponse(
       const content_analysis::sdk::ContentAnalysisResponse& response);
 
+  // Configure agent info.
+  void SetAgentInfo(const content_analysis::sdk::AgentInfo& agent_info);
+
  private:
   content_analysis::sdk::Client::Config config_;
   content_analysis::sdk::ContentAnalysisResponse response_;
@@ -54,6 +58,7 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
   int send_status_ = 0;
   int ack_status_ = 0;
   int cancel_status_ = 0;
+  content_analysis::sdk::AgentInfo agent_info_;
 };
 
 }  // namespace enterprise_connectors

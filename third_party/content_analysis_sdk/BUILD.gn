@@ -56,6 +56,8 @@ source_set("libagentsdk") {
     "src/agent/src/agent_base.h",
     "src/agent/src/event_base.cc",
     "src/agent/src/event_base.h",
+    "src/agent/src/scoped_print_handle_base.cc",
+    "src/agent/src/scoped_print_handle_base.h",
   ]
 
   if (is_win) {
@@ -66,6 +68,8 @@ source_set("libagentsdk") {
       "src/agent/src/agent_win.h",
       "src/agent/src/event_win.cc",
       "src/agent/src/event_win.h",
+      "src/agent/src/scoped_print_handle_win.cc",
+      "src/agent/src/scoped_print_handle_win.h",
       "src/common/utils_win.cc",
       "src/common/utils_win.h",
     ]
@@ -75,6 +79,8 @@ source_set("libagentsdk") {
       "src/agent/src/agent_mac.h",
       "src/agent/src/event_mac.cc",
       "src/agent/src/event_mac.h",
+      "src/agent/src/scoped_print_handle_mac.cc",
+      "src/agent/src/scoped_print_handle_mac.h",
     ]
   } else {
     sources += [
@@ -82,6 +88,8 @@ source_set("libagentsdk") {
       "src/agent/src/agent_posix.h",
       "src/agent/src/event_posix.cc",
       "src/agent/src/event_posix.h",
+      "src/agent/src/scoped_print_handle_posix.cc",
+      "src/agent/src/scoped_print_handle_posix.h",
     ]
   }
 

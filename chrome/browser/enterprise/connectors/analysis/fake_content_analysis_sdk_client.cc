@@ -18,7 +18,7 @@ FakeContentAnalysisSdkClient::GetConfig() const {
 }
 
 int FakeContentAnalysisSdkClient::Send(
-    const content_analysis::sdk::ContentAnalysisRequest& request,
+    content_analysis::sdk::ContentAnalysisRequest request,
     content_analysis::sdk::ContentAnalysisResponse* response) {
   request_ = request;
   // To correlate request and response, just like what the real agent should do.
@@ -36,6 +36,11 @@ int FakeContentAnalysisSdkClient::CancelRequests(
     const content_analysis::sdk::ContentAnalysisCancelRequests& cancel) {
   cancel_ = cancel;
   return cancel_status_;
+}
+
+const content_analysis::sdk::AgentInfo&
+FakeContentAnalysisSdkClient::GetAgentInfo() const {
+  return agent_info_;
 }
 
 const content_analysis::sdk::ContentAnalysisRequest&
@@ -63,6 +68,11 @@ void FakeContentAnalysisSdkClient::SetCancelStatus(int status) {
 void FakeContentAnalysisSdkClient::SetSendResponse(
     const content_analysis::sdk::ContentAnalysisResponse& response) {
   response_ = response;
+}
+
+void FakeContentAnalysisSdkClient::SetAgentInfo(
+    const content_analysis::sdk::AgentInfo& agent_info) {
+  agent_info_ = agent_info;
 }
 
 }  // namespace enterprise_connectors

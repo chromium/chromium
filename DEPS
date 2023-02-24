@@ -1090,7 +1090,7 @@ deps = {
     Var('chromium_git') + '/angle/angle.git' + '@' +  Var('angle_revision'),
 
   'src/third_party/content_analysis_sdk/src':
-    Var('chromium_git') + '/external/github.com/chromium/content_analysis_sdk.git' + '@' + '3d3f3d6f27288d7b0628ae5259238162c5e5ae76',
+    Var('chromium_git') + '/external/github.com/chromium/content_analysis_sdk.git' + '@' + '5e3ee30867df7020b52db51f4396873bace0e58c',
 
   'src/third_party/dav1d/libdav1d':
     Var('chromium_git') + '/external/github.com/videolan/dav1d.git' + '@' + 'ed63a7459376a21e88b871006574dc2055a2ea35',
