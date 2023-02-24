@@ -11,7 +11,12 @@
 #include "base/functional/callback_forward.h"
 
 namespace views {
+class Label;
 class StyledLabel;
+}
+
+namespace password_manager {
+struct PasswordForm;
 }
 
 // Returns a label that can be displayed as a footer for Password Manager
@@ -34,5 +39,12 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
     int text_message_id,
     int link_message_id,
     base::RepeatingClosure open_link_closure);
+
+// Returns label diaplying the username and password. It handles edge cases like
+// empty username and federated credentials.
+std::unique_ptr<views::Label> CreateUsernameLabel(
+    const password_manager::PasswordForm& form);
+std::unique_ptr<views::Label> CreatePasswordLabel(
+    const password_manager::PasswordForm& form);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_VIEWS_UTILS_H_

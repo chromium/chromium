@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/styled_label.h"
 
@@ -52,5 +54,30 @@ std::unique_ptr<views::StyledLabel> CreateGooglePasswordManagerLabel(
       gfx::Range(link_offset, link_offset + link.length()),
       views::StyledLabel::RangeStyleInfo::CreateForLink(open_link_closure));
 
+  return label;
+}
+
+std::unique_ptr<views::Label> CreateUsernameLabel(
+    const password_manager::PasswordForm& form) {
+  auto label = std::make_unique<views::Label>(
+      GetDisplayUsername(form), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  return label;
+}
+
+std::unique_ptr<views::Label> CreatePasswordLabel(
+    const password_manager::PasswordForm& form) {
+  std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
+      GetDisplayPassword(form), views::style::CONTEXT_DIALOG_BODY_TEXT);
+  if (form.federation_origin.opaque()) {
+    label->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
+    label->SetObscured(true);
+    label->SetElideBehavior(gfx::TRUNCATE);
+  } else {
+    label->SetTextStyle(views::style::STYLE_SECONDARY);
+    label->SetElideBehavior(gfx::ELIDE_HEAD);
+  }
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return label;
 }

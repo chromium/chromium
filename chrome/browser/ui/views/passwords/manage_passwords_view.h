@@ -11,10 +11,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 
 class PageSwitcherView;
-namespace views {
-class Textarea;
-class Textfield;
-}
+class ManagePasswordsListView;
+class ManagePasswordsDetailsView;
 
 // A dialog for managing stored password and federated login information for a
 // specific site. A user can see the details of the passwords, and edit the
@@ -38,10 +36,8 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   bool Cancel() override;
   bool Accept() override;
 
-  std::unique_ptr<views::View> CreatePasswordListTitleView() const;
-  std::unique_ptr<views::View> CreatePasswordListView();
-  std::unique_ptr<views::View> CreatePasswordDetailsView();
-  std::unique_ptr<views::View> CreatePasswordDetailsTitleView();
+  std::unique_ptr<ManagePasswordsListView> CreatePasswordListView();
+  std::unique_ptr<ManagePasswordsDetailsView> CreatePasswordDetailsView();
   std::unique_ptr<views::View> CreateFooterView();
 
   // Changes the contents of the page to either display the details of
@@ -49,10 +45,7 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   // `currently_selected_password_` isn't set.
   void RecreateLayout();
 
-  void SwitchToEditUsernameMode();
-  void SwitchToEditNoteMode();
-
-  void SwitchToDisplayMode();
+  void SwitchToReadingMode();
 
   // Called when the favicon is loaded. If |favicon| isn't empty, it sets
   // |favicon_| and invokes RecreateLayout().
@@ -70,13 +63,7 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   // currently selected password.
   absl::optional<password_manager::PasswordForm> currently_selected_password_;
 
-  raw_ptr<views::View> display_username_row_ = nullptr;
-  raw_ptr<views::View> edit_username_row_ = nullptr;
-  views::Textfield* username_textfield_ = nullptr;
-
-  raw_ptr<views::View> display_note_row_ = nullptr;
-  raw_ptr<views::View> edit_note_row_ = nullptr;
-  views::Textarea* note_textarea_ = nullptr;
+  ManagePasswordsDetailsView* password_details_view_ = nullptr;
 
   ItemsBubbleController controller_;
   raw_ptr<PageSwitcherView> page_container_ = nullptr;
