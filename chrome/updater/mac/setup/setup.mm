@@ -126,8 +126,8 @@ bool CopyBundle(UpdaterScope scope) {
     }
   }
 
-  if (!base::CopyDirectory(base::mac::OuterBundlePath(), *versioned_install_dir,
-                           true)) {
+  if (!CopyDir(base::mac::OuterBundlePath(), *versioned_install_dir,
+               scope == UpdaterScope::kSystem)) {
     LOG(ERROR) << "Copying app to '" << versioned_install_dir->value().c_str()
                << "' failed";
     return false;

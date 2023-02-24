@@ -26,6 +26,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/mac_util.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -54,7 +55,7 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
     return false;
   const base::FilePath dest_path = *dest_folder_path;
 
-  // CopyDirectory() does not remove files in destination.
+  // CopyDir() does not remove files in destination.
   // Uninstalls the existing Keystone bundle to avoid possible left-over
   // files that breaks bundle signature. A manual delete follows
   // in case uninstall is unsucessful.
@@ -91,9 +92,8 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
     }
   }
 
-  DCHECK(!base::DirectoryExists(dest_keystone_bundle_path));
-  if (!base::CopyDirectory(keystone_bundle_path, dest_keystone_bundle_path,
-                           true)) {
+  if (!CopyDir(keystone_bundle_path, dest_path,
+               scope == UpdaterScope::kSystem)) {
     LOG(ERROR) << "Copying keystone bundle '" << keystone_bundle_path
                << "' to '" << dest_keystone_bundle_path.value() << "' failed.";
     return false;

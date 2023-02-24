@@ -198,11 +198,20 @@ void ExpectInstalled(UpdaterScope scope) {
   Launchd::Domain launchd_domain = LaunchdDomain(scope);
   Launchd::Type launchd_type = LaunchdType(scope);
 
+  absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
+  ASSERT_TRUE(keystone_path);
+  absl::optional<base::FilePath> ksadmin_symlink =
+      keystone_path->Append(FILE_PATH_LITERAL(KEYSTONE_NAME ".bundle"))
+          .Append(FILE_PATH_LITERAL("Contents"))
+          .Append(FILE_PATH_LITERAL("MacOS"))
+          .Append(FILE_PATH_LITERAL("ksadmin"));
+
   // Files must exist on the file system.
-  absl::optional<base::FilePath> path = GetInstallDirectory(scope);
-  EXPECT_TRUE(path);
-  if (path)
-    EXPECT_TRUE(base::PathExists(*path));
+  for (const auto& path : {GetInstallDirectory(scope), keystone_path,
+                           GetKSAdminPath(scope), ksadmin_symlink}) {
+    ASSERT_TRUE(path) << path;
+    EXPECT_TRUE(base::PathExists(*path)) << path;
+  }
 
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(launchd_domain, launchd_type,
                                                   CopyWakeLaunchdName(scope)));
