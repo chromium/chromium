@@ -26946,6 +26946,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="2" label="To JSON"/>
   <int value="3" label="To @puppeteer/replay"/>
   <int value="4" label="To extension"/>
+  <int value="5" label="To Lighthouse"/>
 </enum>
 
 <enum name="DevToolsRecordingReplayFinished">
