@@ -314,16 +314,6 @@ bool RendererBlinkPlatformImpl::IsRedirectSafe(const GURL& from_url,
                                                                to_url));
 }
 
-blink::WebResourceRequestSenderDelegate*
-RendererBlinkPlatformImpl::GetResourceRequestSenderDelegate() {
-  auto* render_thread = RenderThreadImpl::current();
-
-  // RenderThreadImpl is null in some tests.
-  if (!render_thread)
-    return nullptr;
-  return render_thread->GetResourceRequestSenderDelegate();
-}
-
 void RendererBlinkPlatformImpl::AppendVariationsThrottles(
     const url::Origin& top_origin,
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>>* throttles) {

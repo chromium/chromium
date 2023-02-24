@@ -64,7 +64,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace blink {
-class WebResourceRequestSenderDelegate;
 class WebVideoCaptureImplManager;
 }
 
@@ -176,11 +175,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
-  void SetResourceRequestSenderDelegate(
-      blink::WebResourceRequestSenderDelegate* delegate) override;
-  blink::WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate() {
-    return resource_request_sender_delegate_;
-  }
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;
@@ -596,10 +590,6 @@ class CONTENT_EXPORT RenderThreadImpl
   // this member.
   mojo::Receiver<viz::mojom::CompositingModeWatcher>
       compositing_mode_watcher_receiver_{this};
-
-  // Delegate is expected to live as long as requests may be sent.
-  blink::WebResourceRequestSenderDelegate* resource_request_sender_delegate_ =
-      nullptr;
 
   // Tracks the time the run loop started for this thread.
   base::TimeTicks run_loop_start_time_;

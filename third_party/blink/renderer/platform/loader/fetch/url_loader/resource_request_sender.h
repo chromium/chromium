@@ -53,7 +53,6 @@ class ResourceLoadInfoNotifierWrapper;
 class ThrottlingURLLoader;
 class MojoURLLoaderClient;
 class WebRequestPeer;
-class WebResourceRequestSenderDelegate;
 struct SyncLoadResponse;
 
 // This class creates a PendingRequestInfo object and handles sending a resource
@@ -208,9 +207,6 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
   base::TimeTicks ToLocalURLResponseHead(
       const PendingRequestInfo& request_info,
       network::mojom::URLResponseHead& response_head) const;
-
-  // `delegate_` is expected to live longer than `this`.
-  WebResourceRequestSenderDelegate* delegate_;
 
   // The instance is created on StartAsync() or StartSync(), and it's deleted
   // when the response has finished, or when the request is canceled.

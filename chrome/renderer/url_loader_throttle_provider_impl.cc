@@ -23,6 +23,7 @@
 #include "content/public/common/web_identity.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
+#include "extensions/renderer/extension_localization_throttle.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -169,6 +170,11 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
         extension_throttle_manager_->MaybeCreateURLLoaderThrottle(request);
     if (throttle)
       throttles.emplace_back(std::move(throttle));
+  }
+  std::unique_ptr<blink::URLLoaderThrottle> localization_throttle =
+      extensions::ExtensionLocalizationThrottle::MaybeCreate(request.Url());
+  if (localization_throttle) {
+    throttles.emplace_back(std::move(localization_throttle));
   }
 #endif
 

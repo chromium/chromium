@@ -186,9 +186,6 @@ void MockRenderThread::RemoveObserver(RenderThreadObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MockRenderThread::SetResourceRequestSenderDelegate(
-    blink::WebResourceRequestSenderDelegate* delegate) {}
-
 void MockRenderThread::RecordAction(const base::UserMetricsAction& action) {
 }
 

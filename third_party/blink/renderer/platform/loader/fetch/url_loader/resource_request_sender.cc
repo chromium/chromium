@@ -41,7 +41,6 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
-#include "third_party/blink/public/platform/web_resource_request_sender_delegate.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
@@ -131,8 +130,7 @@ bool RedirectRequiresLoaderRestart(const GURL& original_url,
 
 }  // namespace
 
-ResourceRequestSender::ResourceRequestSender()
-    : delegate_(Platform::Current()->GetResourceRequestSenderDelegate()) {}
+ResourceRequestSender::ResourceRequestSender() = default;
 
 ResourceRequestSender::~ResourceRequestSender() = default;
 
@@ -421,14 +419,6 @@ void ResourceRequestSender::OnReceivedResponse(
         request_info_->local_response_start - remote_response_start);
   }
   request_info_->load_timing_info = response_head->load_timing;
-  if (delegate_) {
-    scoped_refptr<WebRequestPeer> new_peer = delegate_->OnReceivedResponse(
-        std::move(request_info_->peer),
-        WebString::FromUTF8(response_head->mime_type),
-        KURL(request_info_->url));
-    DCHECK(new_peer);
-    request_info_->peer = std::move(new_peer);
-  }
 
   request_info_->peer->OnReceivedResponse(response_head.Clone(),
                                           response_arrival);
@@ -537,10 +527,6 @@ void ResourceRequestSender::OnRequestComplete(
       ->NotifyResourceLoadCompleted(status);
 
   WebRequestPeer* peer = request_info_->peer.get();
-
-  if (delegate_) {
-    delegate_->OnRequestComplete();
-  }
 
   network::URLLoaderCompletionStatus renderer_status(status);
   if (status.completion_time.is_null()) {

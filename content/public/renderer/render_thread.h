@@ -25,7 +25,6 @@ class WaitableEvent;
 }
 
 namespace blink {
-class WebResourceRequestSenderDelegate;
 struct UserAgentMetadata;
 
 namespace scheduler {
@@ -88,12 +87,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Add/remove observers for the process.
   virtual void AddObserver(RenderThreadObserver* observer) = 0;
   virtual void RemoveObserver(RenderThreadObserver* observer) = 0;
-
-  // Set the ResourceRequestSender delegate object for this process.
-  // This does not take the ownership of the delegate. It is expected that the
-  // delegate is kept alive while a request may be dispatched.
-  virtual void SetResourceRequestSenderDelegate(
-      blink::WebResourceRequestSenderDelegate* delegate) = 0;
 
   // Post task to all worker threads. Returns number of workers.
   virtual int PostTaskToAllWebWorkers(base::RepeatingClosure closure) = 0;
