@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_service_infobar_delegate.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
@@ -81,13 +83,25 @@ bool TailoredSecurityServiceInfobarDelegate::EqualsDelegate(
 
 bool TailoredSecurityServiceInfobarDelegate::Accept() {
   if (web_state_) {
+    bool enabled =
+        message_state_ ==
+        TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled;
+    std::string consentedHistogram =
+        enabled
+            ? "SafeBrowsing.TailoredSecurityConsentedEnabledMessageOutcome"
+            : "SafeBrowsing.TailoredSecurityConsentedDisabledMessageOutcome";
     switch (message_state_) {
       case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
       case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
+        base::UmaHistogramEnumeration(consentedHistogram,
+                                      TailoredSecurityOutcome::kSettings);
         SafeBrowsingTabHelper::FromWebState(web_state_.get())
             ->OpenSafeBrowsingSettings();
         break;
       case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
+        base::UmaHistogramEnumeration(
+            "SafeBrowsing.TailoredSecurityUnconsentedInFlowMessageOutcome",
+            TailoredSecurityOutcome::kAccepted);
         ChromeBrowserState* browser_state =
             ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
         SetSafeBrowsingState(

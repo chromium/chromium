@@ -2082,7 +2082,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Enabled" summary="enabled"/>
   </token>
   <token key="PromptType">
-    <variant name="Message" summary="android message"/>
+    <variant name="Message" summary="android or iOS message"/>
     <variant name="Notification" summary="desktop notification"/>
   </token>
 </histogram>
