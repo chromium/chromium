@@ -64,8 +64,7 @@ class TestAmbientObserver
     temperature_unit_ = temperature_unit;
   }
 
-  void OnGooglePhotosAlbumsPreviewsFetched(
-      const std::vector<GURL>& previews) override {
+  void OnPreviewsFetched(const std::vector<GURL>& previews) override {
     previews_ = std::move(previews);
   }
 

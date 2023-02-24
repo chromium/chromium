@@ -104,10 +104,10 @@ class PersonalizationAppAmbientProviderImpl
   // Update topic source if needed.
   void MaybeUpdateTopicSource(ash::AmbientModeTopicSource topic_source);
 
+  void FetchArtGalleryPreviews();
   void FetchGooglePhotosAlbumsPreviews(
       const std::vector<std::string>& album_ids);
-  void OnGooglePhotosAlbumsPreviewsFetched(
-      const std::vector<GURL>& preview_urls);
+  void OnPreviewsFetched(const std::vector<GURL>& preview_urls);
 
   ash::PersonalAlbum* FindPersonalAlbumById(const std::string& album_id);
 
@@ -156,6 +156,9 @@ class PersonalizationAppAmbientProviderImpl
   // Whether there are pending updates.
   bool has_pending_updates_for_backend_ = false;
 
+  // Whether to update previews when `UpdateSettings()` returns successfully.
+  bool needs_update_previews_ = false;
+
   // A flag to record if the user has seen the ambient mode page.
   bool page_viewed_ = false;
 
@@ -167,7 +170,7 @@ class PersonalizationAppAmbientProviderImpl
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
       read_weak_factory_{this};
   base::WeakPtrFactory<PersonalizationAppAmbientProviderImpl>
-      google_photos_albums_previews_weak_factory_{this};
+      previews_weak_factory_{this};
 };
 
 }  // namespace ash::personalization_app

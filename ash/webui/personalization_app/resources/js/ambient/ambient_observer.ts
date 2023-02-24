@@ -5,13 +5,13 @@
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {AmbientModeAlbum, AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, AmbientUiVisibility, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
-import {isAmbientModeAllowed} from '../load_time_booleans.js';
+import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
 import {logGooglePhotosPreviewsLoadTime} from '../personalization_metrics_logger.js';
 import {Paths} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray, isRecentHighlightsAlbum} from '../utils.js';
 
-import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientUiVisibilityAction, setAnimationThemeAction, setGooglePhotosAlbumsPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumsAction, setAmbientModeEnabledAction, setAmbientUiVisibilityAction, setAnimationThemeAction, setPreviewsAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
 /** @fileoverview listens for updates on ambient mode changes. */
@@ -107,17 +107,19 @@ export class AmbientObserver implements AmbientObserverInterface {
     store.dispatch(setAlbumsAction(albums));
   }
 
-  onGooglePhotosAlbumsPreviewsFetched(previews: Url[]) {
+  onPreviewsFetched(previews: Url[]) {
     const store = PersonalizationStore.getInstance();
 
     // Only log performance metrics if this is the first time receiving google
     // photos previews.
+    // TODO(b/245608603): log performance metrics when Jelly is enabled.
     AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance =
+        !isPersonalizationJellyEnabled() &&
         AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance &&
-        (!store.data.ambient.googlePhotosAlbumsPreviews ||
-         store.data.ambient.googlePhotosAlbumsPreviews.length === 0);
+        (!store.data.ambient.previews ||
+         store.data.ambient.previews.length === 0);
 
-    store.dispatch(setGooglePhotosAlbumsPreviewsAction(previews));
+    store.dispatch(setPreviewsAction(previews));
 
     if (AmbientObserver.shouldLogGooglePhotosPreviewsLoadPerformance &&
         isNonEmptyArray(previews)) {

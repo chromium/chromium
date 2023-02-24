@@ -94,6 +94,8 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
  public:
   using OnScreenUpdateInfoFetchedCallback =
       base::OnceCallback<void(const ScreenUpdate&)>;
+  using OnPreviewImagesFetchedCallback =
+      base::OnceCallback<void(const std::vector<GURL>& preview_urls)>;
   using GetSettingsCallback =
       base::OnceCallback<void(const absl::optional<AmbientSettings>& settings)>;
   using UpdateSettingsCallback = base::OnceCallback<void(bool success)>;
@@ -105,9 +107,6 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
                               PersonalAlbums personal_albums)>;
   using FetchWeatherCallback =
       base::OnceCallback<void(const absl::optional<WeatherInfo>& weather_info)>;
-
-  using GetGooglePhotosAlbumsPreviewCallback =
-      base::OnceCallback<void(const std::vector<GURL>& preview_urls)>;
 
   static AmbientBackendController* Get();
 
@@ -131,6 +130,8 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
       bool show_pair_personal_portraits,
       const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) = 0;
+
+  virtual void FetchPreviewImages(OnPreviewImagesFetchedCallback callback) = 0;
 
   // Get ambient mode Settings from server.
   virtual void GetSettings(GetSettingsCallback callback) = 0;
@@ -159,7 +160,7 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
       int preview_width,
       int preview_height,
       int num_previews,
-      GetGooglePhotosAlbumsPreviewCallback callback) = 0;
+      OnPreviewImagesFetchedCallback callback) = 0;
 
   // Get stock photo urls to cache in advance in case Ambient mode is started
   // without internet access.

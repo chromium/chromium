@@ -24,6 +24,7 @@
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -42,6 +43,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -232,44 +234,40 @@ ScreenUpdate ToScreenUpdate(
     const backdrop::ScreenUpdate& backdrop_screen_update) {
   ScreenUpdate screen_update;
   // Parse |AmbientModeTopic|.
-  int topics_size = backdrop_screen_update.next_topics_size();
-  if (topics_size > 0) {
-    for (auto& backdrop_topic : backdrop_screen_update.next_topics()) {
-      DCHECK(backdrop_topic.has_url());
+  for (const auto& backdrop_topic : backdrop_screen_update.next_topics()) {
+    DCHECK(backdrop_topic.has_url());
 
-      auto topic_type = ToAmbientModeTopicType(backdrop_topic);
-      if (!ambient::util::IsAmbientModeTopicTypeAllowed(topic_type)) {
-        DVLOG(3) << "Filtering topic_type: "
-                 << backdrop::TopicSource_Name(backdrop_topic.topic_type());
-        continue;
-      }
-
-      AmbientModeTopic ambient_topic;
-      ambient_topic.topic_type = topic_type;
-
-      // If the |portrait_image_url| field is not empty, we assume the image is
-      // portrait.
-      if (backdrop_topic.has_portrait_image_url()) {
-        ambient_topic.url = backdrop_topic.portrait_image_url();
-        ambient_topic.is_portrait = true;
-      } else {
-        ambient_topic.url = backdrop_topic.url();
-      }
-
-      if (backdrop_topic.has_related_topic()) {
-        if (backdrop_topic.related_topic().has_portrait_image_url()) {
-          ambient_topic.related_image_url =
-              backdrop_topic.related_topic().portrait_image_url();
-        } else {
-          ambient_topic.related_image_url =
-              backdrop_topic.related_topic().url();
-        }
-      }
-      ambient_topic.details = BuildBackdropTopicDetails(backdrop_topic);
-      ambient_topic.related_details =
-          BuildBackdropTopicDetails(backdrop_topic.related_topic());
-      screen_update.next_topics.emplace_back(ambient_topic);
+    auto topic_type = ToAmbientModeTopicType(backdrop_topic);
+    if (!ambient::util::IsAmbientModeTopicTypeAllowed(topic_type)) {
+      DVLOG(3) << "Filtering topic_type: "
+               << backdrop::TopicSource_Name(backdrop_topic.topic_type());
+      continue;
     }
+
+    AmbientModeTopic ambient_topic;
+    ambient_topic.topic_type = topic_type;
+
+    // If the |portrait_image_url| field is not empty, we assume the image is
+    // portrait.
+    if (backdrop_topic.has_portrait_image_url()) {
+      ambient_topic.url = backdrop_topic.portrait_image_url();
+      ambient_topic.is_portrait = true;
+    } else {
+      ambient_topic.url = backdrop_topic.url();
+    }
+
+    if (backdrop_topic.has_related_topic()) {
+      if (backdrop_topic.related_topic().has_portrait_image_url()) {
+        ambient_topic.related_image_url =
+            backdrop_topic.related_topic().portrait_image_url();
+      } else {
+        ambient_topic.related_image_url = backdrop_topic.related_topic().url();
+      }
+    }
+    ambient_topic.details = BuildBackdropTopicDetails(backdrop_topic);
+    ambient_topic.related_details =
+        BuildBackdropTopicDetails(backdrop_topic.related_topic());
+    screen_update.next_topics.emplace_back(ambient_topic);
   }
 
   // Parse |WeatherInfo|.
@@ -291,6 +289,19 @@ ScreenUpdate ToScreenUpdate(
     screen_update.weather_info = weather_info;
   }
   return screen_update;
+}
+
+// Helper function to extract image URLs from screen update response for
+// screen saver preview.
+std::vector<GURL> ToPreviewUrls(const ScreenUpdate& screen_update) {
+  std::vector<GURL> preview_urls;
+  for (const auto& topic : screen_update.next_topics) {
+    preview_urls.emplace_back(topic.url);
+    if (preview_urls.size() == /*max_num_previews=*/3) {
+      break;
+    }
+  }
+  return preview_urls;
 }
 
 bool IsArtSettingVisible(const ArtSetting& art_setting) {
@@ -379,6 +390,18 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfo(
       &AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal,
       weak_factory_.GetWeakPtr(), num_topics, show_pair_personal_portraits,
       screen_size, std::move(callback)));
+}
+
+void AmbientBackendControllerImpl::FetchPreviewImages(
+    OnPreviewImagesFetchedCallback callback) {
+  constexpr int num_topics = 3;
+  const gfx::Size preview_size = gfx::Size(360, 130);
+  OnScreenUpdateInfoFetchedCallback combined_callback =
+      base::BindOnce(&ToPreviewUrls).Then(std::move(callback));
+  Shell::Get()->ambient_controller()->RequestAccessToken(base::BindOnce(
+      &AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal,
+      weak_factory_.GetWeakPtr(), num_topics, false, preview_size,
+      std::move(combined_callback)));
 }
 
 void AmbientBackendControllerImpl::GetSettings(GetSettingsCallback callback) {
@@ -475,7 +498,6 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfoInternal(
     const std::string& access_token) {
   if (gaia_id.empty() || access_token.empty()) {
     LOG(ERROR) << "Failed to fetch access token for ScreenUpdate";
-    // Returns an empty instance to indicate the failure.
     std::move(callback).Run(ash::ScreenUpdate());
     return;
   }
@@ -685,7 +707,7 @@ void AmbientBackendControllerImpl::StartToGetGooglePhotosAlbumsPreview(
     int preview_width,
     int preview_height,
     int num_previews,
-    GetGooglePhotosAlbumsPreviewCallback callback,
+    OnPreviewImagesFetchedCallback callback,
     const std::string& gaia_id,
     const std::string& access_token) {
   BackdropClientConfig::Request request =
@@ -710,7 +732,7 @@ void AmbientBackendControllerImpl::GetGooglePhotosAlbumsPreview(
     int preview_width,
     int preview_height,
     int num_previews,
-    GetGooglePhotosAlbumsPreviewCallback callback) {
+    OnPreviewImagesFetchedCallback callback) {
   Shell::Get()->ambient_controller()->RequestAccessToken(base::BindOnce(
       &AmbientBackendControllerImpl::StartToGetGooglePhotosAlbumsPreview,
       weak_factory_.GetWeakPtr(), album_ids, preview_width, preview_height,
@@ -737,7 +759,7 @@ void AmbientBackendControllerImpl::OnSettingsAndAlbumsFetched(
 }
 
 void AmbientBackendControllerImpl::OnGetGooglePhotosAlbumsPreview(
-    GetGooglePhotosAlbumsPreviewCallback callback,
+    OnPreviewImagesFetchedCallback callback,
     std::unique_ptr<BackdropURLLoader> backdrop_url_loader,
     std::unique_ptr<std::string> response) {
   DCHECK(backdrop_url_loader);

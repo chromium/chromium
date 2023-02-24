@@ -39,14 +39,14 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
 
   static override get properties() {
     return {
-      googlePhotosAlbumsPreviews_: {
+      previewImages_: {
         type: Array,
         value: null,
       },
       collageImages_: {
         type: Array,
         computed:
-            'computeCollageImages_(topicSource_, previewAlbums_, googlePhotosAlbumsPreviews_)',
+            'computeCollageImages_(topicSource_, previewAlbums_, previewImages_)',
       },
     };
   }
@@ -56,9 +56,9 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
   /**
    * Return the array of images that form the collage.
    * When topic source is Google Photos:
-   *   - if `googlePhotosAlbumsPreviews_` is non-empty but contains fewer than 4
+   *   - if `previewImages_` is non-empty but contains fewer than 4
    *     images, only return one of them; otherwise return the first 4.
-   *   - if `googlePhotosAlbumsPreviews_` is empty:
+   *   - if `previewImages_` is empty:
    *        - e.g. user selected art gallery albums
    *        - if `previewAlbums_` contains fewer than 4 albums, return one of
    *        their previews; otherwise return the first 4.
@@ -70,14 +70,18 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
     const maxLength = this.isPersonalizationJellyEnabled_ ? 3 : 4;
     switch (this.topicSource_) {
       case TopicSource.kArtGallery:
+        if (this.isPersonalizationJellyEnabled_ &&
+            isNonEmptyArray(this.previewImages_)) {
+          return this.previewImages_.slice(0, maxLength);
+        }
         return (this.previewAlbums_ || [])
             .map(album => album.url)
             .slice(0, maxLength);
       case TopicSource.kGooglePhotos:
-        if (isNonEmptyArray(this.googlePhotosAlbumsPreviews_)) {
-          return this.googlePhotosAlbumsPreviews_.length < maxLength ?
-              [this.googlePhotosAlbumsPreviews_[0]] :
-              this.googlePhotosAlbumsPreviews_.slice(0, maxLength);
+        if (isNonEmptyArray(this.previewImages_)) {
+          return this.previewImages_.length < maxLength ?
+              [this.previewImages_[0]] :
+              this.previewImages_.slice(0, maxLength);
         }
         if (isNonEmptyArray(this.previewAlbums_)) {
           return this.previewAlbums_.length < maxLength ?

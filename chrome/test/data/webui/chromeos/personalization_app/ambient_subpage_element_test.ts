@@ -55,14 +55,13 @@ suite('AmbientSubpageTest', function() {
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
       ambientModeEnabled: boolean|null,
       animationTheme = AnimationTheme.kSlideshow,
-      googlePhotosAlbumsPreviews: Url[] = []): Promise<AmbientSubpage> {
+      previews: Url[] = []): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.animationTheme = animationTheme;
     personalizationStore.data.ambient.topicSource = topicSource;
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
     personalizationStore.data.ambient.ambientModeEnabled = ambientModeEnabled;
-    personalizationStore.data.ambient.googlePhotosAlbumsPreviews =
-        googlePhotosAlbumsPreviews;
+    personalizationStore.data.ambient.previews = previews;
     const ambientSubpage =
         initElement(AmbientSubpage, {path: Paths.AMBIENT, queryParams: {}});
     personalizationStore.notifyObservers();

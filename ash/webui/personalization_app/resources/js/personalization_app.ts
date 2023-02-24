@@ -53,7 +53,7 @@ import {PersonalizationStore} from './personalization_store.js';
  */
 export {AlbumList} from './ambient/album_list_element.js';
 export {AlbumsSubpage} from './ambient/albums_subpage_element.js';
-export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAnimationThemeAction, setAnimationThemeAction, SetGooglePhotosAlbumsPreviewsAction, setGooglePhotosAlbumsPreviewsAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
+export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAnimationThemeAction, setAnimationThemeAction, SetPreviewsAction, setPreviewsAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
 export {setAmbientProviderForTesting} from './ambient/ambient_interface_provider.js';
 export {AmbientObserver} from './ambient/ambient_observer.js';
 export {AmbientPreviewLarge} from './ambient/ambient_preview_large_element.js';

@@ -13,7 +13,7 @@ export interface AmbientState {
   albums: AmbientModeAlbum[]|null;
   ambientModeEnabled: boolean|null;
   animationTheme: AnimationTheme|null;
-  googlePhotosAlbumsPreviews: Url[]|null;
+  previews: Url[]|null;
   temperatureUnit: TemperatureUnit|null;
   topicSource: TopicSource|null;
   ambientUiVisibility: AmbientUiVisibility|null;
@@ -24,7 +24,7 @@ export function emptyState(): AmbientState {
     albums: null,
     ambientModeEnabled: null,
     animationTheme: null,
-    googlePhotosAlbumsPreviews: null,
+    previews: null,
     temperatureUnit: null,
     topicSource: null,
     ambientUiVisibility: null,

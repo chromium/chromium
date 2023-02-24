@@ -31,6 +31,7 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       bool show_pair_personal_portraits,
       const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) override;
+  void FetchPreviewImages(OnPreviewImagesFetchedCallback callback) override;
   void GetSettings(GetSettingsCallback callback) override;
   void UpdateSettings(const AmbientSettings& settings,
                       UpdateSettingsCallback callback) override;
@@ -50,7 +51,7 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       int preview_width,
       int preview_height,
       int num_previews,
-      GetGooglePhotosAlbumsPreviewCallback callback) override;
+      OnPreviewImagesFetchedCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
 
   // Simulate to reply the request of FetchSettingsAndAlbums().
