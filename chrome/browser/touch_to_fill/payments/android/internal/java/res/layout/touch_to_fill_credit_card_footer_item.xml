@@ -33,7 +33,7 @@ found in the LICENSE file.
       android:text="@string/autofill_scan_credit_card"
       android:visibility="gone"
       app:drawableStartCompat="@drawable/ic_photo_camera"
-      app:drawableTint="@color/default_icon_color_tint_list"
+      app:drawableTint="@color/default_icon_color_secondary_tint_list"
       android:background="?android:attr/selectableItemBackground"
       android:textDirection="locale"
       android:textAlignment="viewStart"/>
@@ -49,7 +49,7 @@ found in the LICENSE file.
       android:textAppearance="@style/TextAppearance.TextMedium.Primary"
       android:text="@string/autofill_bottom_sheet_manage_payment_methods"
       app:drawableStartCompat="@drawable/infobar_chrome"
-      app:drawableTint="@color/default_icon_color_tint_list"
+      app:drawableTint="@color/default_icon_color_secondary_tint_list"
       android:background="?android:attr/selectableItemBackground"
       android:textDirection="locale"
       android:textAlignment="viewStart"/>

@@ -67,7 +67,7 @@ public class TouchToFillCreditCardRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(10)
+                    .setRevision(11)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
