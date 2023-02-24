@@ -348,6 +348,10 @@ MojoResult DataPipe::ReadData(void* elements,
   scoped_refptr<PortalWrapper> portal;
   {
     base::AutoLock lock(lock_);
+    if (two_phase_reader_) {
+      return MOJO_RESULT_BUSY;
+    }
+
     const size_t data_size = data_.data_size();
     if (query) {
       num_bytes = base::checked_cast<uint32_t>(data_size);

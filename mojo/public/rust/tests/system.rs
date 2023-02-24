@@ -212,7 +212,7 @@ tests! {
         assert!(output[0].signals_state.satisfied().is_readable());
     }
 
-    fn trap_signals_on_readable_unwritable() {
+    fn trap_signals_on_readable() {
         // These tests unfortunately need global state, so we have to ensure
         // exclusive access (generally Rust tests run on multiple threads).
         let _test_lock = TRAP_TEST_LOCK.lock().unwrap();
@@ -227,8 +227,8 @@ tests! {
                              1));
         assert_eq!(MojoResult::Okay,
             trap.add_trigger(prod.get_native_handle(),
-                             HandleSignals::WRITABLE,
-                             TriggerCondition::SignalsUnsatisfied,
+                             HandleSignals::PEER_CLOSED,
+                             TriggerCondition::SignalsSatisfied,
                              2));
 
         let mut blocking_events_buf = [std::mem::MaybeUninit::uninit(); 16];
@@ -281,10 +281,12 @@ tests! {
             ArmResult::Failed(e) => panic!("unexpected Mojo error {:?}", e),
         }
 
-        // Close `cons` making `prod` unwritable.
-        drop(cons);
+        // Close `prod` making `cons` permanently unreadable.
+        drop(prod);
 
-        // Now we should have two events indicating `prod` is not writable.
+        // Now we should have two events: one to indicate that cons will never
+        // be readable again, and one to indicate that `prod` has been closed
+        // and removed from the trap.
         {
             let list = wait_for_trap_events(TRAP_EVENT_LIST.lock().unwrap(), 1);
             assert_eq!(list.len(), 2);
@@ -296,15 +298,14 @@ tests! {
                 (event2, event1)
             };
 
-            // 1. `cons` was closed, yielding a `Cancelled` event.
+            // 1. `cons` can no longer be readable.
             assert_eq!(cons_event.trigger_context(), 1);
-            assert_eq!(cons_event.result(), MojoResult::Cancelled);
+            assert_eq!(cons_event.result(), MojoResult::FailedPrecondition);
+            assert!(!cons_event.signals_state().satisfiable().is_readable());
 
-            // 2. `prod`'s trigger condition (being unwritable) was met,
-            // yielding a normal event.
+            // 2. `prod` was closed, yielding a `Cancelled` event.
             assert_eq!(prod_event.trigger_context(), 2);
-            assert_eq!(prod_event.result(), MojoResult::Okay);
-            assert!(!prod_event.signals_state().satisfiable().is_writable())
+            assert_eq!(prod_event.result(), MojoResult::Cancelled);
         };
 
         drop(trap);
@@ -368,8 +369,8 @@ tests! {
             context.clone());
         let _prod_token = trap.add_trigger(
             prod.get_native_handle(),
-            HandleSignals::WRITABLE,
-            TriggerCondition::SignalsUnsatisfied,
+            HandleSignals::PEER_CLOSED,
+            TriggerCondition::SignalsSatisfied,
             context.clone());
 
         assert_eq!(trap.arm(), MojoResult::Okay);
@@ -387,7 +388,7 @@ tests! {
             events.clear();
         }
 
-        // Close `cons` to get two events: unreadable on `prod`, and Cancelled on `cons`.
+        // Close `cons` to get two events: peer closure on `prod`, and Cancelled on `cons`.
         let cons_native = cons.get_native_handle();
         drop(cons);
         {
@@ -410,7 +411,7 @@ tests! {
             let event = events[0];
             assert_eq!(event.handle(), prod.get_native_handle());
             assert_eq!(event.result(), MojoResult::Okay);
-            assert!(!event.signals_state().satisfied().is_writable(),
+            assert!(event.signals_state().satisfied().is_peer_closed(),
                     "{:?}", event.signals_state());
             events.clear();
         }
