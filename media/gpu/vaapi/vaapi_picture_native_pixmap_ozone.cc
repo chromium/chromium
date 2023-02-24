@@ -16,7 +16,6 @@
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/scoped_binders.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
@@ -81,8 +80,6 @@ VaapiStatus VaapiPictureNativePixmapOzone::Initialize(
   // Import dmabuf fds into the output gl texture through EGLImage.
   if (make_context_current_cb_ && !make_context_current_cb_.Run())
     return VaapiStatus::Codes::kBadContext;
-
-  gl::ScopedTextureBinder texture_binder(texture_target_, texture_id_);
 
   const gfx::BufferFormat format = pixmap->GetBufferFormat();
 

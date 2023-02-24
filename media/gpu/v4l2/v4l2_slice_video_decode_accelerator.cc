@@ -51,7 +51,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_surface_egl.h"
-#include "ui/gl/scoped_binders.h"
 
 #define NOTIFY_ERROR(x)                       \
   do {                                        \
@@ -1453,8 +1452,6 @@ void V4L2SliceVideoDecodeAccelerator::CreateGLImageFor(
     NOTIFY_ERROR(PLATFORM_FAILURE);
     return;
   }
-  gl::ScopedTextureBinder bind_restore(gl_device->GetTextureTarget(),
-                                       texture_id);
   bool ret = bind_image_cb_.Run(client_texture_id,
                                 gl_device->GetTextureTarget(), gl_image);
   if (!ret) {
