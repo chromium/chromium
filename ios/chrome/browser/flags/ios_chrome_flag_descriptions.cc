@@ -294,10 +294,9 @@ const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
 const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =
     "Enable using the discofeed endpoint for the discover feed.";
 
-const char kTileAblationMVTAndShortcutsForNewUsersName[] =
-    "Enable hiding the Most Visited Tiles and Shortcuts";
-const char kTileAblationMVTAndShortcutsForNewUsersDescription[] =
-    "Enable hiding the Most Visited Tiles and Shortcuts for new users";
+const char kTileAblationName[] = "Enables tile ablation";
+const char kTileAblationDescription[] =
+    "Hides the shortcuts and most visited tiles on the NTP for new users.";
 
 const char kEnableFeedAblationName[] = "Enables Feed Ablation";
 const char kEnableFeedAblationDescription[] =

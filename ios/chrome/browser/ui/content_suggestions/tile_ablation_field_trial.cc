@@ -35,7 +35,7 @@ std::map<variations::VariationID, int> GetGroupWeights() {
   std::map<variations::VariationID, int> weight_by_id = {
       {field_trial_constants::kTileAblationMVTOnlyID, 0},
       {field_trial_constants::kTileAblationMVTAndShortcutsID, 0},
-      {field_trial_constants::kShowMVTAndShortcutsControlID, 0}};
+      {field_trial_constants::kTileAblationControlID, 0}};
 
   return weight_by_id;
 }
@@ -51,24 +51,23 @@ void CreateTileAblationTrial(
     const base::FieldTrial::EntropyProvider& low_entropy_provider,
     base::FeatureList* feature_list) {
   FirstRunFieldTrialConfig config(
-      field_trial_constants::kTileAblationMVTAndShortcutsFieldTrialName);
+      field_trial_constants::kTileAblationFieldTrialName);
 
   config.AddGroup(
       field_trial_constants::kTileAblationMVTAndShortcutsControlGroup,
-      field_trial_constants::kShowMVTAndShortcutsControlID,
-      weight_by_id[field_trial_constants::kShowMVTAndShortcutsControlID]);
+      field_trial_constants::kTileAblationControlID,
+      weight_by_id[field_trial_constants::kTileAblationControlID]);
 
   config.AddGroup(field_trial_constants::kTileAblationMVTOnlyGroup,
                   field_trial_constants::kTileAblationMVTOnlyID,
                   weight_by_id[field_trial_constants::kTileAblationMVTOnlyID]);
 
-  // Explicitly set `kTileAblationMVTAndShortcutsForNewUsersParam` to false and
-  // associate it with the
-  // `kTileAblationMVTOnlyGroup`
+  // Explicitly set `kTileAblationMVTOnlyParam` to true and associate it with
+  // the `kTileAblationMVTOnlyGroup`
   base::FieldTrialParams only_mvt_params;
-  only_mvt_params[kTileAblationMVTAndShortcutsForNewUsersParam] = "false";
+  only_mvt_params[kTileAblationMVTOnlyParam] = "true";
   base::AssociateFieldTrialParams(
-      field_trial_constants::kTileAblationMVTAndShortcutsFieldTrialName,
+      field_trial_constants::kTileAblationFieldTrialName,
       field_trial_constants::kTileAblationMVTOnlyGroup, only_mvt_params);
 
   config.AddGroup(
@@ -76,14 +75,12 @@ void CreateTileAblationTrial(
       field_trial_constants::kTileAblationMVTAndShortcutsID,
       weight_by_id[field_trial_constants::kTileAblationMVTAndShortcutsID]);
 
-  // Explicitly set `kTileAblationMVTAndShortcutsForNewUsersParam` to true and
-  // associate it with the
-  // `kTileAblationMVTAndShortcutsGroup`
+  // Explicitly set `kTileAblationMVTOnlyParam` to false and associate it with
+  // the `kTileAblationMVTAndShortcutsGroup`
   base::FieldTrialParams mvt_and_shortcuts_params;
-  mvt_and_shortcuts_params[kTileAblationMVTAndShortcutsForNewUsersParam] =
-      "true";
+  mvt_and_shortcuts_params[kTileAblationMVTOnlyParam] = "false";
   base::AssociateFieldTrialParams(
-      field_trial_constants::kTileAblationMVTAndShortcutsFieldTrialName,
+      field_trial_constants::kTileAblationFieldTrialName,
       field_trial_constants::kTileAblationMVTAndShortcutsGroup,
       mvt_and_shortcuts_params);
 
@@ -100,13 +97,13 @@ void CreateTileAblationTrial(
   if (group_name == field_trial_constants::kTileAblationMVTOnlyGroup ||
       group_name == field_trial_constants::kTileAblationMVTAndShortcutsGroup) {
     feature_list->RegisterFieldTrialOverride(
-        kTileAblationMVTAndShortcutsForNewUsers.name,
-        base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
+        kTileAblation.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        trial.get());
   } else if (group_name ==
              field_trial_constants::kTileAblationMVTAndShortcutsControlGroup) {
     feature_list->RegisterFieldTrialOverride(
-        kTileAblationMVTAndShortcutsForNewUsers.name,
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
+        kTileAblation.name, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+        trial.get());
   }
 }
 
@@ -120,7 +117,7 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
   // Don't create the trial if the feature is overridden to avoid having
   // multiple registered trials for the same feature.
   if (feature_list->IsFeatureOverridden(
-          field_trial_constants::kTileAblationMVTAndShortcutsFieldTrialName)) {
+          field_trial_constants::kTileAblationFieldTrialName)) {
     return;
   }
 

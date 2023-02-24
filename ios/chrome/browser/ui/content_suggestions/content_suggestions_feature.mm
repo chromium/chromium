@@ -47,11 +47,8 @@ const char kContentSuggestionsUIModuleRefreshMinimizeSpacingParam[] =
 const char kContentSuggestionsUIModuleRefreshRemoveHeadersParam[] =
     "remove_headers";
 
-const char kTileAblationMVTAndShortcutsForNewUsersParam[] =
-    "TileAblationForNewUsersParam";
-BASE_FEATURE(kTileAblationMVTAndShortcutsForNewUsers,
-             "TileAblationForNewUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kTileAblationMVTOnlyParam[] = "TileAblationMVTOnlyParam";
+BASE_FEATURE(kTileAblation, "TileAblation", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature disabled by default.
 BASE_FEATURE(kTrendingQueriesModule,
@@ -78,20 +75,19 @@ bool IsDiscoverFeedEnabled() {
   return base::FeatureList::IsEnabled(kDiscoverFeedInNtp);
 }
 TileAblationBehavior GetTileAblationBehavior() {
-  if (base::FeatureList::IsEnabled(kTileAblationMVTAndShortcutsForNewUsers)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-               kTileAblationMVTAndShortcutsForNewUsers,
-               kTileAblationMVTAndShortcutsForNewUsersParam,
-               /*default_value=*/false)
-               ? TileAblationBehavior::kTileAblationMVTAndShortcuts
-               : TileAblationBehavior::kTileAblationMVTOnly;
+  if (IsTileAblationEnabled()) {
+    return base::GetFieldTrialParamByFeatureAsBool(kTileAblation,
+                                                   kTileAblationMVTOnlyParam,
+                                                   /*default_value=*/false)
+               ? TileAblationBehavior::kTileAblationMVTOnly
+               : TileAblationBehavior::kTileAblationMVTAndShortcuts;
   }
 
   return TileAblationBehavior::kDisabled;
 }
 
-bool IsTileAblationMVTAndShortcutsEnabled() {
-  return base::FeatureList::IsEnabled(kTileAblationMVTAndShortcutsForNewUsers);
+bool IsTileAblationEnabled() {
+  return base::FeatureList::IsEnabled(kTileAblation);
 }
 bool ShouldHideShortcuts() {
   return GetTileAblationBehavior() ==
