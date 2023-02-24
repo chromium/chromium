@@ -24,14 +24,6 @@ namespace {
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::SourceType;
 
-base::flat_set<net::SchemefulSite> DestinationSet(
-    net::SchemefulSite destination) {
-  base::flat_set<net::SchemefulSite> set;
-  set.reserve(1);
-  set.insert(std::move(destination));
-  return set;
-}
-
 base::Time ComputeReportWindowTime(
     absl::optional<base::Time> report_window_time,
     base::Time expiry_time) {
@@ -79,34 +71,6 @@ absl::optional<base::Time> CommonSourceInfo::GetReportWindowTime(
                    GetClampedTime(declared_window.value(), source_time))
              : absl::nullopt;
 }
-
-CommonSourceInfo::CommonSourceInfo(
-    uint64_t source_event_id,
-    SuitableOrigin source_origin,
-    net::SchemefulSite destination_site,
-    SuitableOrigin reporting_origin,
-    base::Time source_time,
-    base::Time expiry_time,
-    absl::optional<base::Time> event_report_window_time,
-    absl::optional<base::Time> aggregatable_report_window_time,
-    SourceType source_type,
-    int64_t priority,
-    attribution_reporting::FilterData filter_data,
-    absl::optional<uint64_t> debug_key,
-    attribution_reporting::AggregationKeys aggregation_keys)
-    : CommonSourceInfo(source_event_id,
-                       std::move(source_origin),
-                       DestinationSet(std::move(destination_site)),
-                       std::move(reporting_origin),
-                       source_time,
-                       expiry_time,
-                       event_report_window_time,
-                       aggregatable_report_window_time,
-                       source_type,
-                       priority,
-                       std::move(filter_data),
-                       debug_key,
-                       std::move(aggregation_keys)) {}
 
 CommonSourceInfo::CommonSourceInfo(
     uint64_t source_event_id,

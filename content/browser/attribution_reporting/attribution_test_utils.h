@@ -604,7 +604,7 @@ class AttributionInfoBuilder {
       // For most tests, the context origin is irrelevant.
       attribution_reporting::SuitableOrigin context_origin =
           *attribution_reporting::SuitableOrigin::Deserialize(
-              "https://context.test"));
+              "https://conversion.test"));
   ~AttributionInfoBuilder();
 
   AttributionInfoBuilder& SetTime(base::Time time);
@@ -777,7 +777,8 @@ MATCHER_P(ImpressionOriginIs, matcher, "") {
 }
 
 MATCHER_P(DestinationSiteIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info().destination_site(),
+  return ExplainMatchResult(::testing::ElementsAre(matcher),
+                            arg.common_info().destination_sites(),
                             result_listener);
 }
 

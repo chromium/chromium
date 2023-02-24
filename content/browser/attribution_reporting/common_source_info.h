@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -37,22 +36,6 @@ class CONTENT_EXPORT CommonSourceInfo {
   static absl::optional<base::Time> GetReportWindowTime(
       absl::optional<base::TimeDelta> declared_window,
       base::Time source_time);
-
-  // TODO(crbug.com/1382389): Remove this constructor once all callers pass
-  // a destination set.
-  CommonSourceInfo(uint64_t source_event_id,
-                   attribution_reporting::SuitableOrigin source_origin,
-                   net::SchemefulSite destination_site,
-                   attribution_reporting::SuitableOrigin reporting_origin,
-                   base::Time source_time,
-                   base::Time expiry_time,
-                   absl::optional<base::Time> event_report_window_time,
-                   absl::optional<base::Time> aggregatable_report_window_time,
-                   attribution_reporting::mojom::SourceType,
-                   int64_t priority,
-                   attribution_reporting::FilterData filter_data,
-                   absl::optional<uint64_t> debug_key,
-                   attribution_reporting::AggregationKeys aggregation_keys);
 
   CommonSourceInfo(uint64_t source_event_id,
                    attribution_reporting::SuitableOrigin source_origin,
@@ -84,11 +67,6 @@ class CONTENT_EXPORT CommonSourceInfo {
 
   const base::flat_set<net::SchemefulSite>& destination_sites() const {
     return destination_sites_;
-  }
-
-  const net::SchemefulSite& destination_site() const {
-    DCHECK_EQ(destination_sites_.size(), 1u);
-    return *destination_sites_.begin();
   }
 
   const attribution_reporting::SuitableOrigin& reporting_origin() const {

@@ -51,13 +51,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  // TODO: remove the active_unattributed_sources_by_site_reporting_origin index
-  // during the next DB migration.
-  static constexpr int kCurrentVersionNumber = 46;
+  static constexpr int kCurrentVersionNumber = 47;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 46;
+  static constexpr int kCompatibleVersionNumber = 47;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
