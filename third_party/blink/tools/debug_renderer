@@ -34,27 +34,25 @@ if [ -z "$TARGET" ]; then
   usage
 fi
 
-for TARGET_FLAG in "$@"; do
-  if ! [[ "$TARGET_FLAG" == "--"* ]]; then
-    URL=$TARGET_FLAG
-    break
-  fi
-done
+if [[ "$TARGET" =~ run_web_tests.py$ ]]; then
+  # Adjust flags to be passed to driver
+  WEB_TESTS_FLAGS=(--jobs=1 --timeout-ms=100000000 --driver-logging)
+  for DEFAULT_FLAG in "${DEFAULT_TARGET_FLAGS[@]}"; do
+    WEB_TESTS_FLAGS=(${WEB_TESTS_FLAGS[@]} --additional-driver-flag="$DEFAULT_FLAG")
+  done
+  TARGET_FLAGS=(${WEB_TESTS_FLAGS[@]} "$@")
+else
+  TARGET_FLAGS=(${DEFAULT_TARGET_FLAGS[@]} "$@")
+fi
 
-if [ -z "$DEBUG_URL"]; then
-  if [ -z "$URL"]; then
-    echo "Debugging first renderer"
-  else
-    echo "Debugging renderer for navigation URL: $URL"
-    DEBUG_URL=$URL
-  fi
+if [ -z "$DEBUG_URL" ]; then
+  echo "Debugging first renderer"
 fi
 
 # TODO: If you pass a URL containing characters that require URL encoding,
 # the URL will be encoded by chrome and won't be equivalent to the $DEBUG_URL.
 # We should url encode DEBUG_URL so that it matches the url chrome navigates to.
 RENDERER_PID_RE='Renderer url="([^"]+)" \(([0-9]+)\) paused waiting for debugger'
-TARGET_FLAGS=(${DEFAULT_TARGET_FLAGS[@]} "$@")
 
 if [ -z "$DEBUGGER" ]; then
   if which lldb > /dev/null; then
@@ -71,6 +69,17 @@ fi
 
 OUTPUT=$(mktemp "${TMPDIR:-/tmp}"/"$(basename $0)".XXXXX)
 
+UNBUFFER=""
+# Use unbuffer to ensure we get the output while the subprocess is paused
+# waiting for a renderer.
+if [ -z `which unbuffer` ]; then
+  echo "Warning: Couldn't find unbuffer. Buffered output can result in" \
+        "failure to read the PID of the paused renderer from the pipe. If" \
+        "you encounter a hang install unbuffer tool from your package manager."
+else
+  UNBUFFER="unbuffer "
+fi
+
 maybe_kill() {
   [ -n "$1" ] && ps -p $1 > /dev/null && kill $1
 }
@@ -82,9 +91,10 @@ cleanup() {
 }
 
 trap cleanup EXIT
-echo "$TARGET" ${TARGET_FLAGS[@]} >&2
-"$TARGET" ${TARGET_FLAGS[@]} > >(tee $OUTPUT) 2>&1 &
+echo "Running ${UNBUFFER}${TARGET} ${TARGET_FLAGS[@]}" >&2
+${UNBUFFER}"${TARGET}" "${TARGET_FLAGS[@]}" > >(tee $OUTPUT) 2>&1 &
 BROWSER_PID=$!
+echo "Process $BROWSER_PID logging to $OUTPUT"
 
 wait_renderer_pid() {
   NEXT_LINE=1
