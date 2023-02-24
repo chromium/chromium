@@ -1,0 +1,22 @@
+Verifies that a deprecation issue is created when a deprecated permission string is used.
+
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 23
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+                type : WindowPlacementPermissionDescriptorUsed
+            }
+        }
+    }
+}
+

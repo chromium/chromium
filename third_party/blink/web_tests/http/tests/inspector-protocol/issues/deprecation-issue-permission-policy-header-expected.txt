@@ -1,0 +1,21 @@
+Verifies that a deprecation issue is created when a page header includes a deprecated permission policy.
+
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : -1
+                    url : 
+                }
+                type : WindowPlacementPermissionPolicyParsed
+            }
+        }
+    }
+}
+
