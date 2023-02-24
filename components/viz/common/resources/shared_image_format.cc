@@ -43,7 +43,7 @@ const char* ResourceFormatToString(ResourceFormat format) {
     case ResourceFormat::ETC1:
       return "ETC1";
     case ResourceFormat::RED_8:
-      return "RED_8";
+      return "R_8";
     case ResourceFormat::RG_88:
       return "RG_88";
     case ResourceFormat::LUMINANCE_F16:
@@ -51,9 +51,9 @@ const char* ResourceFormatToString(ResourceFormat format) {
     case ResourceFormat::RGBA_F16:
       return "RGBA_F16";
     case ResourceFormat::R16_EXT:
-      return "R16_EXT";
+      return "R_16";
     case ResourceFormat::RG16_EXT:
-      return "RG16_EXT";
+      return "RG_1616";
     case ResourceFormat::RGBX_8888:
       return "RGBX_8888";
     case ResourceFormat::BGRX_8888:
