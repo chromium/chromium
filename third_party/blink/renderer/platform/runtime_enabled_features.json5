@@ -436,7 +436,7 @@
     },
     {
       name: "BeforeunloadEventCancelByPreventDefault",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "BidiCaretAffinity",
