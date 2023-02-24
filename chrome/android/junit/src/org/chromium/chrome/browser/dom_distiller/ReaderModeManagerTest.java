@@ -128,10 +128,10 @@ public class ReaderModeManagerTest {
         when(mWebContents.getNavigationController()).thenReturn(mNavController);
         when(mNavController.getUseDesktopUserAgent()).thenReturn(false);
 
-        when(DomDistillerUrlUtils.isDistilledPage(MOCK_DISTILLER_URL)).thenReturn(true);
-        when(DomDistillerUrlUtils.isDistilledPage(MOCK_URL)).thenReturn(false);
+        when(mDistillerUrlUtilsJniMock.isDistilledPage(MOCK_DISTILLER_URL.getSpec()))
+                .thenReturn(true);
 
-        when(DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL))
+        when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(MOCK_DISTILLER_URL.getSpec()))
                 .thenReturn(MOCK_URL);
 
         mManager = new ReaderModeManager(mTab, () -> mMessageDispatcher);

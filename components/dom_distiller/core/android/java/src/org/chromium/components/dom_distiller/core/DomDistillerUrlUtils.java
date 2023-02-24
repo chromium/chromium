@@ -17,6 +17,9 @@ import org.chromium.url.GURL;
  */
 @JNINamespace("dom_distiller::url_utils::android")
 public final class DomDistillerUrlUtils {
+    // Keep in sync with components/dom_distiller/core/url_constants.cc
+    private static final String DOM_DISTILLER_SCHEME = "chrome-distiller";
+
     private DomDistillerUrlUtils() {
     }
 
@@ -54,6 +57,7 @@ public final class DomDistillerUrlUtils {
 
     public static boolean isDistilledPage(String url) {
         if (TextUtils.isEmpty(url)) return false;
+        if (!url.startsWith(DOM_DISTILLER_SCHEME + ":")) return false;
         return DomDistillerUrlUtilsJni.get().isDistilledPage(url);
     }
 
@@ -64,6 +68,7 @@ public final class DomDistillerUrlUtils {
      * @return whether the url is for a distilled page.
      */
     public static boolean isDistilledPage(GURL url) {
+        if (!url.getScheme().equals(DOM_DISTILLER_SCHEME)) return false;
         return isDistilledPage(url.getSpec());
     }
 

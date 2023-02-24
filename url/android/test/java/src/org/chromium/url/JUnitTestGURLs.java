@@ -36,7 +36,7 @@ public class JUnitTestGURLs {
     public static final String INITIAL_URL = "https://initial.com";
     public static final String SPECULATED_URL = "https://speculated.com";
     public static final String NTP_URL = "chrome://newtab/";
-    public static final String DOM_DISILLER_URL = "distiller://url";
+    public static final String DOM_DISILLER_URL = "chrome-distiller://url";
     public static final String RED_1 = "https://www.red.com/page1";
     public static final String RED_2 = "https://www.red.com/page2";
     public static final String RED_3 = "https://www.red.com/page3";
@@ -118,8 +118,8 @@ public class JUnitTestGURLs {
                 "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,"
                         + "false,false,chrome://newtab/");
         map.put(DOM_DISILLER_URL,
-                "73,1,true,0,9,0,-1,0,-1,0,-1,0,-1,10,5,0,-1,0,-1,"
-                        + "false,false,distiller://url");
+                "82,1,true,0,16,0,-1,0,-1,19,3,0,-1,22,1,0,-1,0,-1,false,false,"
+                        + "chrome-distiller://url/");
         map.put(MAPS_URL,
                 "82,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,0,-1,false,false,https://maps.google.com/");
         map.put(AMP_URL,
