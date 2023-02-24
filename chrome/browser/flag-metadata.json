@@ -1290,11 +1290,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "cryptauth-v2-dedup-device-last-activity-time",
-    "owners": ["pushi@google.com", "chromeos-cross-device-eng@google.com"],
-    "expiry_milestone": 102
-  },
-  {
     "name": "cups-ipp-printing-backend",
     "owners": [ "awscreen", "//printing/OWNERS" ],
     "expiry_milestone": 120
