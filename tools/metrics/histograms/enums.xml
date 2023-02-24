@@ -59743,6 +59743,7 @@ from previous Chrome versions.
   <int value="-1209720026" label="AppMenuMobileSiteOption:disabled"/>
   <int value="-1208501269" label="AutofillScanThemeDialog:enabled"/>
   <int value="-1208044478" label="InheritNativeThemeFromParentWidget:enabled"/>
+  <int value="-1207393499" label="ExtensionWebFileHandlers:disabled"/>
   <int value="-1206875404" label="EnableIncognitoWindowCounter:enabled"/>
   <int value="-1206698676" label="MacV2Sandbox:disabled"/>
   <int value="-1206524306" label="EnableAuraTooltipsOnWindows:disabled"/>
@@ -59871,6 +59872,7 @@ from previous Chrome versions.
   <int value="-1142034548" label="BuiltInModuleKvStorage:enabled"/>
   <int value="-1141780291" label="DisplayChangeModal:disabled"/>
   <int value="-1140923360" label="DeprecateAssistantStylusFeatures:disabled"/>
+  <int value="-1140212005" label="ExtensionWebFileHandlers:enabled"/>
   <int value="-1138851579" label="QuerySearchBurnInPeriod:disabled"/>
   <int value="-1137745598" label="PhoneHubNudge:disabled"/>
   <int value="-1137696948" label="enable-chromeos-account-manager"/>

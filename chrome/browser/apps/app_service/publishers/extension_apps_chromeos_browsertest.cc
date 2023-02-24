@@ -35,7 +35,8 @@ class ExtensionAppsChromeOsBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   ExtensionAppsChromeOsBrowserTest() {
-    feature_list_.InitAndEnableFeature(extensions_features::kWebFileHandlers);
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionWebFileHandlers);
   }
 
  protected:

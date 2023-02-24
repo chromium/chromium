@@ -42,7 +42,7 @@ BASE_DECLARE_FEATURE(kNewWebstoreDomain);
 
 BASE_DECLARE_FEATURE(kExtensionSidePanelIntegration);
 
-BASE_DECLARE_FEATURE(kWebFileHandlers);
+BASE_DECLARE_FEATURE(kExtensionWebFileHandlers);
 
 BASE_DECLARE_FEATURE(kExtensionSourceUrlEnforcement);
 

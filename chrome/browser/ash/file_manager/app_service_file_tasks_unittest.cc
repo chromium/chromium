@@ -690,7 +690,8 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {
 class AppServiceFileHandlersTest : public AppServiceFileTasksTestEnabled {
  public:
   AppServiceFileHandlersTest() {
-    feature_list_.InitAndEnableFeature(extensions_features::kWebFileHandlers);
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionWebFileHandlers);
   }
 
  private:

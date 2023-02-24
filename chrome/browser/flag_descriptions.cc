@@ -1459,7 +1459,16 @@ const char kWebViewTagMPArchBehaviorDescription[] =
     "usage within <webview>s. For enterprise, the "
     "ChromeAppsWebViewPermissiveBehaviorAllowed policy serves as an escape "
     "hatch during the roll out of this change.";
-#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kExtensionWebFileHandlersName[] =
+    "Extensions Web File Handlers";
+extern const char kExtensionWebFileHandlersDescription[] =
+    "Enable Extension Web File Handlers, which allows extensions to operate on "
+    "the native file system. An extension can register to read and edit files, "
+    "specified in the manifest, by their file extension or mime type.";
+#endif  // IS_CHROMEOS_ASH
+#endif  // ENABLE_EXTENSIONS
 
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";
 const char kExtensionsOnChromeUrlsDescription[] =

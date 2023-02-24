@@ -801,7 +801,12 @@ extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
 extern const char kWebViewTagMPArchBehaviorName[];
 extern const char kWebViewTagMPArchBehaviorDescription[];
-#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+extern const char kExtensionWebFileHandlersName[];
+extern const char kExtensionWebFileHandlersDescription[];
+#endif  // IS_CHROMEOS_ASH
+#endif  // ENABLE_EXTENSIONS
 
 extern const char kExtensionsOnChromeUrlsName[];
 extern const char kExtensionsOnChromeUrlsDescription[];

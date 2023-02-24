@@ -3653,6 +3653,11 @@
     "expiry_milestone": 86
   },
   {
+    "name": "extension-web-file-handlers",
+    "owners": [ "solomonkinard" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "extensions-menu-access-control",
     "owners": [ "emiliapaz" ],
     "expiry_milestone": 118

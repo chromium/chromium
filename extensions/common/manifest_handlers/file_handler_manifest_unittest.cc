@@ -94,7 +94,8 @@ TEST_F(FileHandlersManifestTest, NotPlatformApp) {
 class WebFileHandlersTest : public ManifestTest {
  public:
   WebFileHandlersTest() : channel_(version_info::Channel::DEV) {
-    feature_list_.InitAndEnableFeature(extensions_features::kWebFileHandlers);
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionWebFileHandlers);
   }
 
  protected:

@@ -8264,7 +8264,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsMenuAccessControlName,
      flag_descriptions::kExtensionsMenuAccessControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kExtensionsMenuAccessControl)},
-#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"extension-web-file-handlers",
+     flag_descriptions::kExtensionWebFileHandlersName,
+     flag_descriptions::kExtensionWebFileHandlersDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(extensions_features::kExtensionWebFileHandlers)},
+#endif  // IS_CHROMEOS_ASH
+#endif  // ENABLE_EXTENSIONS
 
     {"canvas-oop-rasterization", flag_descriptions::kCanvasOopRasterizationName,
      flag_descriptions::kCanvasOopRasterizationDescription, kOsAll,
