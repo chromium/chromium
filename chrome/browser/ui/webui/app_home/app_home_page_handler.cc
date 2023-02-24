@@ -416,17 +416,17 @@ void AppHomePageHandler::FillExtensionInfoList(
       continue;
     }
 
-    bool is_deprecated_app = false;
-    auto* context = extension_system_->extension_service()->GetBrowserContext();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-    is_deprecated_app = extensions::IsExtensionUnsupportedDeprecatedApp(
-        context, extension->id());
-#endif
+    auto* context = extension_system_->extension_service()->GetBrowserContext();
+    const bool is_deprecated_app =
+        extensions::IsExtensionUnsupportedDeprecatedApp(context,
+                                                        extension->id());
     if (is_deprecated_app && !extensions::IsExtensionForceInstalled(
                                  context, extension->id(), nullptr)) {
       deprecated_app_ids_.insert(extension->id());
     }
+#endif
     result->emplace_back(CreateAppInfoPtrFromExtension(extension.get()));
   }
 }
