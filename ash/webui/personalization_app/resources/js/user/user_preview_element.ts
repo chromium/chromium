@@ -107,6 +107,11 @@ export class UserPreview extends WithPersonalizationStore {
     }
   }
 
+  private onImgError_(e: Event) {
+    const divElement = e.currentTarget as HTMLDivElement;
+    divElement.setAttribute('hidden', 'true');
+  }
+
   private shouldShowMainPageView_(path: string, isEnterpriseManaged: boolean):
       boolean {
     return path === Paths.ROOT && !isEnterpriseManaged;
@@ -153,7 +158,7 @@ export class UserPreview extends WithPersonalizationStore {
    * images . Static image loads faster and will provide a smooth experience
    * when the animated image complete loading.
    */
-  private getImgBackgroudStyle_(url: Url|null): string {
+  private getImgBackgroundStyle_(url: Url|null): string {
     // Only add background image for default user images.
     if (!this.image_ || this.image_.invalidImage || !this.image_.defaultImage) {
       return '';
