@@ -128,7 +128,7 @@ struct ZwpPrimarySelectionDeviceManager
 
 }  // namespace
 
-TestSelectionDeviceManager* CreateTestSelectionManagerZwp() {
+std::unique_ptr<TestSelectionDeviceManager> CreateTestSelectionManagerZwp() {
   constexpr uint32_t kVersion = 1;
   static const struct zwp_primary_selection_device_manager_v1_interface
       kTestSelectionManagerImpl = {&TestSelectionDeviceManager::CreateSource,
@@ -138,7 +138,7 @@ TestSelectionDeviceManager* CreateTestSelectionManagerZwp() {
       .interface = &zwp_primary_selection_device_manager_v1_interface,
       .implementation = &kTestSelectionManagerImpl,
       .version = kVersion};
-  return new TestSelectionDeviceManager(
+  return std::make_unique<TestSelectionDeviceManager>(
       interface_info,
       std::make_unique<ZwpPrimarySelectionDeviceManager>(kVersion));
 }

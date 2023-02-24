@@ -244,10 +244,10 @@ bool TestWaylandServerThread::SetupPrimarySelectionManager(
     case PrimarySelectionProtocol::kNone:
       return true;
     case PrimarySelectionProtocol::kZwp:
-      primary_selection_device_manager_.reset(CreateTestSelectionManagerZwp());
+      primary_selection_device_manager_ = CreateTestSelectionManagerZwp();
       break;
     case PrimarySelectionProtocol::kGtk:
-      primary_selection_device_manager_.reset(CreateTestSelectionManagerGtk());
+      primary_selection_device_manager_ = CreateTestSelectionManagerGtk();
       break;
   }
   return primary_selection_device_manager_->Initialize(display_.get());

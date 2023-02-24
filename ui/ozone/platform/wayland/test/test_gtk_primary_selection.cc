@@ -129,7 +129,7 @@ struct GtkPrimarySelectionDeviceManager
 
 }  // namespace
 
-TestSelectionDeviceManager* CreateTestSelectionManagerGtk() {
+std::unique_ptr<TestSelectionDeviceManager> CreateTestSelectionManagerGtk() {
   constexpr uint32_t kVersion = 1;
   static const struct gtk_primary_selection_device_manager_interface
       kTestSelectionManagerImpl = {&TestSelectionDeviceManager::CreateSource,
@@ -139,7 +139,7 @@ TestSelectionDeviceManager* CreateTestSelectionManagerGtk() {
       .interface = &gtk_primary_selection_device_manager_interface,
       .implementation = &kTestSelectionManagerImpl,
       .version = kVersion};
-  return new TestSelectionDeviceManager(
+  return std::make_unique<TestSelectionDeviceManager>(
       interface_info,
       std::make_unique<GtkPrimarySelectionDeviceManager>(kVersion));
 }
