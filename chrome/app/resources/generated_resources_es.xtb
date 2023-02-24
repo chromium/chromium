@@ -327,7 +327,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1296911687402551044">Fijar pestaña seleccionada</translation>
 <translation id="1297175357211070620">Destino</translation>
 <translation id="129770436432446029">Envía tus comentarios sobre <ph name="EXPERIMENT_NAME" /></translation>
-<translation id="130097046531636712">Esto alarga la duración de la batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento suave</translation>
+<translation id="130097046531636712">Esto alarga la duración de la batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido</translation>
 <translation id="1301135395320604080"><ph name="ORIGIN" /> puede editar los siguientes archivos</translation>
 <translation id="1302227299132585524">Permtir JavaScript desde Eventos de Apple</translation>
 <translation id="1303101771013849280">Archivo HTML de marcadores</translation>
@@ -604,7 +604,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1552752544932680961">Gestionar extensión</translation>
 <translation id="1553538517812678578">sin límite</translation>
 <translation id="1555130319947370107">Azul</translation>
-<translation id="1556127816860282890">Es posible que la actividad en segundo plano y algunos efectos visuales, como el desplazamiento suave, estén limitados</translation>
+<translation id="1556127816860282890">Es posible que la actividad en segundo plano y algunos efectos visuales, como el desplazamiento fluido, estén limitados</translation>
 <translation id="1556537182262721003">No se ha podido mover el directorio de la extensión al perfil.</translation>
 <translation id="1558391695376153246">Cerrar pestañas incógnito</translation>
 <translation id="155865706765934889">Panel táctil</translation>
@@ -4282,7 +4282,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4901154724271753917">Mostrar cerradas recientemente</translation>
 <translation id="4901309472892185668">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="49027928311173603">La política que has descargado del servidor no es válida (<ph name="VALIDATION_ERROR" />).</translation>
-<translation id="4903967893652864401">Esto alarga la duración de la batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento suave.</translation>
+<translation id="4903967893652864401">Esto alarga la duración de la batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido.</translation>
 <translation id="4906490889887219338">Configurar o gestionar sistemas de archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Elige cuándo puede esta extensión leer y cambiar tus datos del sitio</translation>
 <translation id="4907161631261076876">Este archivo no se descarga habitualmente y puede ser peligroso.</translation>
@@ -8737,7 +8737,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9048745018038487540">Seleccionar todas las fuentes</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>
 <translation id="9052404922357793350">Seguir bloqueando</translation>
-<translation id="90528604757378587">Es posible que la actividad en segundo plano y algunos efectos visuales, como el desplazamiento suave, estén limitados.</translation>
+<translation id="90528604757378587">Es posible que la actividad en segundo plano y algunos efectos visuales, como el desplazamiento fluido, estén limitados.</translation>
 <translation id="9053563360605707198">Imprimir en ambas caras</translation>
 <translation id="9055636786322918818">Fuerza el cifrado RC4. Esta opción aumenta el riesgo, ya que los algoritmos de cifrado de RC4 no son seguros.</translation>
 <translation id="9056810968620647706">No se ha encontrado ningún resultado coincidente.</translation>

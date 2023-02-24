@@ -718,7 +718,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2759825833388495838">popuniti vašu lozinku u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Stripovi</translation>
 <translation id="2765217105034171413">Malo</translation>
-<translation id="277133753123645258">Način dostave</translation>
+<translation id="277133753123645258">Način isporuke</translation>
 <translation id="277499241957683684">Nedostaje evidencija uređaja</translation>
 <translation id="2775884851269838147">Prva stranica za štampanje</translation>
 <translation id="2781692009645368755">Google Pay</translation>
@@ -1722,7 +1722,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5323105697514565458"><ph name="FRIENDLY_MATCH_TEXT" />, <ph name="MATCH_POSITION" /> od <ph name="NUM_MATCHES" /></translation>
 <translation id="5324080437450482387">Odaberi kontakt informacije</translation>
 <translation id="5329858041417644019">Vašim preglednikom se ne upravlja</translation>
-<translation id="5332219387342487447">Način dostave</translation>
+<translation id="5332219387342487447">Način isporuke</translation>
 <translation id="5333022057423422993">Chrome je u narušavanju podataka pronašao lozinku koju ste upravo koristili. Da zaštitite račune, preporučujemo da provjerite sačuvane lozinke.</translation>
 <translation id="5334013548165032829">Detaljni zapisnici sistema</translation>
 <translation id="5334145288572353250">Sačuvati adresu?</translation>
@@ -2030,7 +2030,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6151417162996330722">Period važenja certifikata servera je predugačak.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="6157754950574419155">Ukloni sve iz historije</translation>
-<translation id="6157877588268064908">Da vidite načine i uslove dostave, odaberite adresu</translation>
+<translation id="6157877588268064908">Da vidite načine i uslove isporuke, odaberite adresu</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6167577165590485365">Vrijeme pokušaja posljednjeg dohvatanja:</translation>
 <translation id="6169916984152623906">Sada može pregledati privatno, a drugi korisnici ovog uređaja neće vidjeti vašu aktivnost. Međutim, preuzimanja i oznake će se sačuvati.</translation>
@@ -2641,7 +2641,7 @@ Dodatni detalji:
 <translation id="7679367271685653708">Pregledajte historiju pregledanja i upravljajte njome u postavkama Chromea</translation>
 <translation id="7679947978757153706">Bejzbol</translation>
 <translation id="7681273392938116652">Fantasy sportovi</translation>
-<translation id="7682287625158474539">Dostava</translation>
+<translation id="7682287625158474539">Isporuka</translation>
 <translation id="7682451652090915298">Ragbi</translation>
 <translation id="7687186412095877299">Popunjava obrasce za plaćanje pomoću vaših sačuvanih načina plaćanja</translation>
 <translation id="7687305263118037187">Istek vremena ponovnih pokušaja</translation>
