@@ -54,6 +54,10 @@ BASE_FEATURE(kScrollUnification,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kMainRepaintScrollPrefersNewContent,
+             "MainRepaintScrollPrefersNewContent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSchedulerSmoothnessForAnimatedScrolls,
              "SmoothnessModeForAnimatedScrolls",
              base::FEATURE_DISABLED_BY_DEFAULT);

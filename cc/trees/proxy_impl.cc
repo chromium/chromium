@@ -558,9 +558,16 @@ void ProxyImpl::RenewTreePriority() {
 
   last_raster_priority_ = raster_tree_priority;
 
-  // New content always takes priority when ui resources have been evicted.
+  // New content takes priority in certain cases:
+  // - When ui resources have been evicted.
+  // - When the viewport is 0x0 (may be invalid/unset?)
+  // - When the active scroll gesture requires main-thread repainting for the
+  //   scroll offset change to be visible.
   if (host_impl_->active_tree()->GetDeviceViewport().size().IsEmpty() ||
-      host_impl_->EvictedUIResourcesExist()) {
+      host_impl_->EvictedUIResourcesExist() ||
+      (host_impl_->IsCurrentScrollMainRepainted() &&
+       base::FeatureList::IsEnabled(
+           features::kMainRepaintScrollPrefersNewContent))) {
     // Once we enter NEW_CONTENTS_TAKES_PRIORITY mode, visible tiles on active
     // tree might be freed. We need to set RequiresHighResToDraw to ensure that
     // high res tiles will be required to activate pending tree.
