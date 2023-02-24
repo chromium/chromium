@@ -47,10 +47,7 @@ TEST(ManifestUtil, ReadInstallCommandFromManifest) {
   const std::string dummy_file_contents("Test Executable Contents");
   const base::FilePath expected_installer_path(
       offline_app_dir.Append(executable_name));
-  ASSERT_EQ(
-      base::WriteFile(expected_installer_path, dummy_file_contents.c_str(),
-                      dummy_file_contents.length()),
-      static_cast<int>(dummy_file_contents.length()));
+  ASSERT_TRUE(base::WriteFile(expected_installer_path, dummy_file_contents));
 
   update_client::ProtocolParser::Results results;
   base::FilePath installer_path;
