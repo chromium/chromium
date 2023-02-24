@@ -177,6 +177,19 @@
       light: '$cros.ref.neutral20',
       dark:  '$cros.ref.neutral90',
     },
+    'scrollbar': {
+      light: 'rgba($cros.ref.neutralvariant60.rgb, 0.6)',
+      dark: 'rgba($cros.ref.neutralvariant50.rgb, 0.6)',
+    },
+    'scrollbar-hover': {
+      light: 'rgba($cros.ref.neutralvariant30.rgb, 0.6)',
+      dark: 'rgba($cros.ref.neutralvariant90.rgb, 0.6)',
+    },
+    'scrollbar-border': {
+      light: 'rgba($cros.ref.neutralvariant100.rgb, 0.14)',
+      dark: 'rgba($cros.ref.neutralvariant0.rgb, 0.14)',
+    },
+
     'input-field-light': {
       light: '$cros.ref.neutral99',
       dark: 'rgba($cros.ref.neutral50.rgb, 0.4)'
