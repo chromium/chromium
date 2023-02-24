@@ -296,6 +296,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "shelf_back.icon",
     "shelf_browse_as_guest_button.icon",
     "shelf_cancel_button.icon",
+    "shelf_enterprise.icon",
     "shelf_globe.icon",
     "shelf_keyboard.icon",
     "shelf_keyboard_newui.icon",

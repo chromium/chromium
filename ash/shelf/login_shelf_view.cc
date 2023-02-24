@@ -567,7 +567,7 @@ LoginShelfView::LoginShelfView(
                  &LoginScreenController::HandleAccelerator,
                  base::Unretained(Shell::Get()->login_screen_controller()),
                  ash::LoginAcceleratorAction::kStartEnrollment),
-             IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON, chromeos::kEnterpriseIcon);
+             IDS_ASH_ENTERPRISE_ENROLLMENT_BUTTON, kShelfEnterpriseIcon);
   add_button(kSignIn,
              base::BindRepeating(
                  &LoginScreenController::HandleAccelerator,
