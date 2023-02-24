@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// This proto is parsed by the crash server using code at
+// http://shortn/_Xt58wqlKTk (Google-internal link). All changes must be
+// reflected in the server-side copy there.
+
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
