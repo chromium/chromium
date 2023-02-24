@@ -943,7 +943,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SessionRestore.ForegroundTabFirstPaint4" units="ms"
-    expires_after="2022-10-23">
+    expires_after="2024-02-22">
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -953,6 +953,9 @@ chromium-metrics-reviews@google.com.
     restore until its first paint, and no non-restored tab is painted during
     that time. See SessionRestore.ForegroundTabFirstPaint4.FinishReason for when
     this is not recorded.
+
+    Warning: this histogram was expired from 2022-10-23 to 2023-02-22; data may
+    be missing.
   </summary>
 </histogram>
 

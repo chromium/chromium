@@ -2746,12 +2746,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DragWindowFromShelf.PresentationTime" units="ms"
-    expires_after="2022-10-04">
+    expires_after="2024-02-22">
   <owner>tbarzic@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
     Presentation time in ms when a window is dragged from the bottom of the
     shelf. Recorded when the drag action is in progress.
+
+    Warning: this histogram was expired from 2022-10-04 to 2023-02-22; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -6282,7 +6285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Container" units="%"
-    expires_after="2022-04-10">
+    expires_after="2024-02-22">
   <owner>yjliu@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -6290,11 +6293,14 @@ chromium-metrics-reviews@google.com.
     moves the next window into position when alt + tab is pressed. 100%
     represents ideally smooth 60 frames per second. 50% represents when only 30
     frames per second is achieved during the animations. 0% should not happen.
+
+    Warning: this histogram was expired from 2022-04-10 to 2023-02-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.WindowCycleView.AnimationSmoothness.Show" units="%"
-    expires_after="2022-04-10">
+    expires_after="2024-02-22">
   <owner>yjliu@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>
@@ -6302,6 +6308,9 @@ chromium-metrics-reviews@google.com.
     starts. 100% represents ideally smooth 60 frames per second. 50% represents
     when only 30 frames per second is achieved during the animations. 0% should
     not happen.
+
+    Warning: this histogram was expired from 2022-04-10 to 2023-02-22; data may
+    be missing.
   </summary>
 </histogram>
 
