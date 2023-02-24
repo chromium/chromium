@@ -62,7 +62,7 @@ namespace {
 BASE_FEATURE(kOptimizeLinuxFonts,
              "OptimizeLinuxFonts",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+#endif  //  BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -116,7 +116,7 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
     : typeface_(typeface),
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
       family_(family),
-#endif
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
       text_size_(text_size),
       synthetic_bold_(synthetic_bold),
       synthetic_italic_(synthetic_italic),
@@ -132,7 +132,7 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
       base::FeatureList::IsEnabled(kOptimizeLinuxFonts);
 #else
   bool override_font_name_and_size = false;
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (override_font_name_and_size) {
     system_style = QuerySystemRenderStyle(
         FontFamilyName().Utf8(), 0, typeface_->fontStyle(), text_rendering);
@@ -151,9 +151,9 @@ FontPlatformData::FontPlatformData(sk_sp<SkTypeface> typeface,
   }
 #else
   auto system_style = QuerySystemForRenderStyle();
-#endif
+#endif  // !BUILDFLAG(IS_WIN)
   style_.OverrideWith(system_style);
-#endif
+#endif  // !BUILDFLAG(IS_MAC)
 }
 
 FontPlatformData::~FontPlatformData() = default;
@@ -281,7 +281,8 @@ WebFontRenderStyle FontPlatformData::QuerySystemRenderStyle(
     // 0 means HINTING_NONE, see |ConvertHinting| in font_service_app.cc.
     result.hint_style = 0;
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) &&
+        // !BUILDFLAG(IS_IOS)
 
   return result;
 }
@@ -300,7 +301,7 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
 
   return font;
 }
-#endif
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 scoped_refptr<OpenTypeVerticalData> FontPlatformData::CreateVerticalData()
     const {
