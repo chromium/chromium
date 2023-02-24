@@ -5932,6 +5932,24 @@
             ]
         }
     ],
+    "IOSAddToHomeScreen": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AddToHomeScreenDisableIncognitoParam": "true"
+                    },
+                    "enable_features": [
+                        "AddToHomeScreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAppStoreRating": [
         {
             "platforms": [
