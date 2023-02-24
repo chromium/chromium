@@ -73,9 +73,13 @@ class PlatformCollector {
   void DidUpdateProbe(PressureSample);
 
   // Calculate PressureState based on PressureSample.
-  mojom::PressureState CalculateState(PressureSample) const;
+  mojom::PressureState CalculateState(PressureSample);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Last state stored as index instead of value.
+  size_t last_state_index_ =
+      static_cast<size_t>(mojom::PressureState::kNominal);
 
   // A sequence that can execute methods on the CpuProbe instance.
   const scoped_refptr<base::SequencedTaskRunner> probe_task_runner_;

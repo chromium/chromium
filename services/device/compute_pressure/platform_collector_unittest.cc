@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -93,7 +94,7 @@ TEST_F(PlatformCollectorTest, EnsureStarted) {
   WaitForUpdate();
 
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
-                            mojom::PressureState::kCritical)));
+                            mojom::PressureState::kSerious)));
 }
 
 namespace {
@@ -171,7 +172,29 @@ TEST_F(PlatformCollectorTest, EnsureStartedSkipsFirstSample) {
                             mojom::PressureState{mojom::PressureState::kFair}));
 }
 
-TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateState) {
+TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateWrongValue) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<PressureSample> samples = {
+      // Value right after construction.
+      PressureSample{0.6},
+      // Value after first Update(), should be discarded.
+      PressureSample{0.9},
+      // Crash expected.
+      PressureSample{1.1},
+  };
+
+  base::RunLoop run_loop;
+  collector_ = std::make_unique<PlatformCollector>(
+      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+      base::Milliseconds(1),
+      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
+                          base::Unretained(this)));
+  collector_->EnsureStarted();
+  EXPECT_DCHECK_DEATH_WITH(run_loop.Run(), "unexpected value: 1.1");
+}
+
+TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateHysteresisUp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::vector<PressureSample> samples = {
@@ -180,13 +203,153 @@ TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateState) {
       // Value after first Update(), should be discarded.
       PressureSample{0.9},
       // kNominal value after should be reported.
-      PressureSample{0.1},
+      PressureSample{0.3},
       // kFair value should be reported.
-      PressureSample{0.4},
+      PressureSample{0.6},
       // kSerious value should be reported.
-      PressureSample{0.7},
-      // kCritical value should be reported.
       PressureSample{0.9},
+      // kCritical value should be reported.
+      PressureSample{1.0},
+  };
+
+  base::RunLoop run_loop;
+  collector_ = std::make_unique<PlatformCollector>(
+      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+      base::Milliseconds(1),
+      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
+                          base::Unretained(this)));
+  collector_->EnsureStarted();
+  run_loop.Run();
+
+  EXPECT_THAT(samples_,
+              testing::ElementsAre(
+                  mojom::PressureState{mojom::PressureState::kNominal},
+                  mojom::PressureState{mojom::PressureState::kFair},
+                  mojom::PressureState{mojom::PressureState::kSerious},
+                  mojom::PressureState{mojom::PressureState::kCritical}));
+}
+
+TEST_F(PlatformCollectorTest, EnsureStartedCheckCalculateStateHysteresisDown) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<PressureSample> samples = {
+      // Value right after construction.
+      PressureSample{1.0},
+      // Value after first Update(), should be discarded.
+      PressureSample{0.85},
+      // kCritical value after should be reported.
+      PressureSample{1.0},
+      // kSerious value should be reported.
+      PressureSample{0.85},
+      // kFair value should be reported.
+      PressureSample{0.55},
+      // kNominal value should be reported.
+      PressureSample{0.25},
+  };
+
+  base::RunLoop run_loop;
+  collector_ = std::make_unique<PlatformCollector>(
+      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+      base::Milliseconds(1),
+      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
+                          base::Unretained(this)));
+  collector_->EnsureStarted();
+  run_loop.Run();
+
+  EXPECT_THAT(samples_,
+              testing::ElementsAre(
+                  mojom::PressureState{mojom::PressureState::kCritical},
+                  mojom::PressureState{mojom::PressureState::kSerious},
+                  mojom::PressureState{mojom::PressureState::kFair},
+                  mojom::PressureState{mojom::PressureState::kNominal}));
+}
+
+TEST_F(PlatformCollectorTest,
+       EnsureStartedCheckCalculateStateHysteresisDownByDelta) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<PressureSample> samples = {
+      // Value right after construction.
+      PressureSample{1.0},
+      // Value after first Update(), should be discarded.
+      PressureSample{1.0},
+      // kCritical value after should be reported.
+      PressureSample{0.95},
+      // kCritical value should be reported due to hysteresis.
+      PressureSample{0.88},
+      // kFair value should be reported.
+      PressureSample{0.58},
+      // kNominal value should be reported.
+      PressureSample{0.26},
+  };
+
+  base::RunLoop run_loop;
+  collector_ = std::make_unique<PlatformCollector>(
+      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+      base::Milliseconds(1),
+      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
+                          base::Unretained(this)));
+  collector_->EnsureStarted();
+  run_loop.Run();
+
+  EXPECT_THAT(samples_,
+              testing::ElementsAre(
+                  mojom::PressureState{mojom::PressureState::kCritical},
+                  mojom::PressureState{mojom::PressureState::kCritical},
+                  mojom::PressureState{mojom::PressureState::kFair},
+                  mojom::PressureState{mojom::PressureState::kNominal}));
+}
+
+TEST_F(PlatformCollectorTest,
+       EnsureStartedCheckCalculateStateHysteresisDownByDeltaTwoState) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<PressureSample> samples = {
+      // Value right after construction.
+      PressureSample{1.0},
+      // Value after first Update(), should be discarded.
+      PressureSample{1.0},
+      // kCritical value after should be reported.
+      PressureSample{0.95},
+      // kFair value should be reported.
+      PressureSample{0.58},
+      // kFair value should be reported due to hysteresis.
+      PressureSample{0.28},
+  };
+
+  base::RunLoop run_loop;
+  collector_ = std::make_unique<PlatformCollector>(
+      std::make_unique<StreamingCpuProbe>(samples, run_loop.QuitClosure()),
+      base::Milliseconds(1),
+      base::BindRepeating(&PlatformCollectorTest::CollectorCallback,
+                          base::Unretained(this)));
+  collector_->EnsureStarted();
+  run_loop.Run();
+
+  EXPECT_THAT(samples_,
+              testing::ElementsAre(
+                  mojom::PressureState{mojom::PressureState::kCritical},
+                  mojom::PressureState{mojom::PressureState::kFair},
+                  mojom::PressureState{mojom::PressureState::kFair}));
+}
+
+TEST_F(PlatformCollectorTest,
+       EnsureStartedCheckCalculateStateHysteresisUpByDelta) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<PressureSample> samples = {
+      // Value right after construction.
+      PressureSample{1.0},
+      // Value after first Update(), should be discarded.
+      PressureSample{1.0},
+      // kNominal value after should be reported.
+      PressureSample{0.3},
+      // kFair value should be reported due to hysteresis.
+      PressureSample{0.32},
+      // kSerious value should be reported.
+      PressureSample{0.62},
+      // kCritical value should be reported.
+      PressureSample{0.91},
   };
 
   base::RunLoop run_loop;
@@ -219,7 +382,7 @@ TEST_F(PlatformCollectorTest, StopDelayedEnsureStartedImmediate) {
   collector_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
-                            mojom::PressureState::kCritical)));
+                            mojom::PressureState::kSerious)));
 }
 
 TEST_F(PlatformCollectorTest, StopDelayedEnsureStartedDelayed) {
@@ -236,7 +399,7 @@ TEST_F(PlatformCollectorTest, StopDelayedEnsureStartedDelayed) {
   collector_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
-                            mojom::PressureState::kCritical)));
+                            mojom::PressureState::kSerious)));
 }
 
 TEST_F(PlatformCollectorTest, StopImmediateEnsureStartedImmediate) {
@@ -251,7 +414,7 @@ TEST_F(PlatformCollectorTest, StopImmediateEnsureStartedImmediate) {
   collector_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
-                            mojom::PressureState::kCritical)));
+                            mojom::PressureState::kSerious)));
 }
 
 TEST_F(PlatformCollectorTest, StopImmediateEnsureStartedDelayed) {
@@ -268,7 +431,7 @@ TEST_F(PlatformCollectorTest, StopImmediateEnsureStartedDelayed) {
   collector_->EnsureStarted();
   WaitForUpdate();
   EXPECT_THAT(samples_, testing::ElementsAre(mojom::PressureState(
-                            mojom::PressureState::kCritical)));
+                            mojom::PressureState::kSerious)));
 }
 
 }  // namespace device
