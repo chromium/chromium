@@ -13,6 +13,7 @@
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -30,20 +31,21 @@
 @property(nonatomic, strong)
     PopoverLabelViewController* learnMoreViewController;
 
-// The extension context for the credential provider.
-@property(nonatomic, weak) ASCredentialProviderExtensionContext* context;
+// The response handler for the credential configuration.
+@property(nonatomic, weak) id<CredentialResponseHandler>
+    credentialResponseHandler;
 
 @end
 
 @implementation ConsentCoordinator
 
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)baseViewController
-                       context:(ASCredentialProviderExtensionContext*)context {
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                 credentialResponseHandler:
+                     (id<CredentialResponseHandler>)credentialResponseHandler {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
-    _context = context;
+    _credentialResponseHandler = credentialResponseHandler;
   }
   return self;
 }
@@ -71,7 +73,7 @@
 
 // Invoked when the primary action button is tapped.
 - (void)didTapPrimaryActionButton {
-  [self.context completeExtensionConfigurationRequest];
+  [self.credentialResponseHandler completeExtensionConfigurationRequest];
 }
 
 // Invoked when the learn more button is tapped.

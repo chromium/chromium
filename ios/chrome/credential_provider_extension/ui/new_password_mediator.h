@@ -10,7 +10,7 @@
 #import "ios/chrome/credential_provider_extension/ui/new_password_view_controller.h"
 
 @class ASCredentialServiceIdentifier;
-@class ASCredentialProviderExtensionContext;
+@protocol CredentialResponseHandler;
 @protocol CredentialStore;
 @protocol NewPasswordUIHandler;
 
@@ -35,8 +35,9 @@
 // UI handler to allow this mediator to ask the UI for any necessary updates.
 @property(nonatomic, weak) id<NewPasswordUIHandler> uiHandler;
 
-// The extension context for the credential provider.
-@property(nonatomic, weak) ASCredentialProviderExtensionContext* context;
+// The handler to use when a credential is selected or cancelled.
+@property(nonatomic, weak) id<CredentialResponseHandler>
+    credentialResponseHandler;
 
 @end
 

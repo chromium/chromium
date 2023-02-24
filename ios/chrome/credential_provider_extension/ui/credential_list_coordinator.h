@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class ASCredentialServiceIdentifier;
-@class ASCredentialProviderExtensionContext;
+@protocol CredentialResponseHandler;
 @protocol CredentialStore;
 @class ReauthenticationHandler;
 @class UIViewController;
@@ -22,10 +22,11 @@
 - (instancetype)
     initWithBaseViewController:(UIViewController*)baseViewController
                credentialStore:(id<CredentialStore>)credentialStore
-                       context:(ASCredentialProviderExtensionContext*)context
             serviceIdentifiers:
                 (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers
        reauthenticationHandler:(ReauthenticationHandler*)reauthenticationHandler
+     credentialResponseHandler:
+         (id<CredentialResponseHandler>)credentialResponseHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
