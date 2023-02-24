@@ -53,7 +53,6 @@ class DownloadBubbleRowView : public views::View,
   // Overrides views::View:
   void AddedToWidget() override;
   void RemovedFromWidget() override;
-  void OnThemeChanged() override;
   void Layout() override;
   Views GetChildrenInZOrder() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;

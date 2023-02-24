@@ -736,7 +736,7 @@ ui::ColorId ContentAnalysisDialog::GetSideImageBackgroundColor() const {
     case State::FAILURE:
       return ui::kColorAlertHighSeverity;
     case State::WARNING:
-      return ui::kColorAlertMediumSeverity;
+      return ui::kColorAlertMediumSeverityIcon;
   }
 }
 

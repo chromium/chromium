@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/color/color_id.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
@@ -742,6 +743,11 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddIconAndColor(
   icon_model_override = &vector_icon;
   return *this;
 }
+DownloadUIModel::BubbleUIInfo&
+DownloadUIModel::BubbleUIInfo::AddSecondaryTextColor(ui::ColorId color_id) {
+  secondary_text_color = color_id;
+  return *this;
+}
 DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddPrimaryButton(
     DownloadCommands::Command command) {
   primary_button_command = command;
@@ -775,6 +781,10 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddQuickAction(
     const gfx::VectorIcon* icon) {
   quick_actions.emplace_back(command, label, icon);
   return *this;
+}
+
+ui::ColorId DownloadUIModel::BubbleUIInfo::GetColorForSecondaryText() const {
+  return secondary_text_color.value_or(secondary_color);
 }
 
 DownloadUIModel::BubbleUIInfo DownloadUIModel::GetBubbleUIInfoForInterrupted(
@@ -917,7 +927,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                  l10n_util::GetStringUTF16(
                      IDS_DOWNLOAD_BUBBLE_WARNING_SUBPAGE_SUMMARY_INSECURE))
           .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
-                           ui::kColorAlertMediumSeverity)
+                           ui::kColorAlertMediumSeverityIcon)
+          .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
               DownloadCommands::Command::DISCARD,
@@ -943,11 +954,14 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
       case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
         return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
             .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
-                             ui::kColorAlertMediumSeverity)
+                             ui::kColorAlertMediumSeverityIcon)
+            .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
             .AddPrimaryButton(DownloadCommands::Command::REVIEW);
       case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING:
         return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
-            .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
+            .AddIconAndColor(views::kInfoIcon,
+                             ui::kColorAlertMediumSeverityIcon)
+            .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
             .AddPrimaryButton(DownloadCommands::Command::REVIEW);
       default:
         break;
@@ -968,7 +982,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                        l10n_util::GetStringUTF16(
                            IDS_EXTENSION_WEB_STORE_TITLE)))
             .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
-                             ui::kColorAlertMediumSeverity)
+                             ui::kColorAlertMediumSeverityIcon)
+            .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
                 DownloadCommands::Command::DISCARD,
@@ -1022,7 +1037,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                     l10n_util::GetStringUTF16(
                         IDS_DOWNLOAD_BUBBLE_MALICIOUS_URL_BLOCKED))
                     .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
-                                     ui::kColorAlertMediumSeverity)
+                                     ui::kColorAlertMediumSeverityIcon)
+                    .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
                     .AddPrimaryButton(DownloadCommands::Command::DISCARD)
                     .AddSubpageButton(
                         l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
@@ -1073,7 +1089,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                    l10n_util::GetStringUTF16(
                        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ADVANCED_PROTECTION))
             .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
-                             ui::kColorAlertMediumSeverity)
+                             ui::kColorAlertMediumSeverityIcon)
+            .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
                 DownloadCommands::Command::DISCARD,
@@ -1087,7 +1104,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                    l10n_util::GetStringUTF16(
                        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNCOMMON_FILE))
             .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
-                             ui::kColorAlertMediumSeverity)
+                             ui::kColorAlertMediumSeverityIcon)
+            .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
             .AddPrimaryButton(DownloadCommands::Command::DISCARD)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
@@ -1103,7 +1121,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
       return DownloadUIModel::BubbleUIInfo(
                  l10n_util::GetStringUTF16(
                      IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SENSITIVE_CONTENT_WARNING))
-          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
+          .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverityIcon)
+          .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
           .AddPrimaryButton(DownloadCommands::Command::DISCARD)
           .AddSubpageButton(
               l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
@@ -1118,7 +1137,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                  l10n_util::GetStringUTF16(
                      IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT))
           .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
-                           ui::kColorAlertMediumSeverity)
+                           ui::kColorAlertMediumSeverityIcon)
+          .AddSecondaryTextColor(ui::kColorAlertMediumSeverityText)
           .AddPrimaryButton(DownloadCommands::Command::DEEP_SCAN)
           .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_SCAN),
                             DownloadCommands::Command::DEEP_SCAN,

@@ -198,7 +198,7 @@ SkColor Checkbox::GetIconImageColor(int icon_state) const {
   if (features::IsChromeRefresh2023()) {
     active_color = GetColorProvider()->GetColor(
         (icon_state & IconState::CHECKED) ? ui::kColorAlertHighSeverity
-                                          : ui::kColorAlertMediumSeverity);
+                                          : ui::kColorAlertMediumSeverityIcon);
   }
 
   // Use the overridden checked icon image color instead if set.

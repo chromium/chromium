@@ -19,6 +19,7 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -131,9 +132,13 @@ class DownloadUIModel {
     // has a progress bar and a cancel button.
     bool has_progress_bar = false;
     bool is_progress_bar_looping = false;
-    // kColorAlertHighSeverity, kColorAlertMediumSeverity, or
+    // kColorAlertHighSeverity, kColorAlertMediumSeverityIcon, or
     // kColorSecondaryForeground
     ui::ColorId secondary_color = ui::kColorSecondaryForeground;
+    // Color used for alert text, which may be different from |secondary_color|,
+    // used for icons. If this is nullopt, |secondary_color| will be used for
+    // text.
+    absl::optional<ui::ColorId> secondary_text_color = absl::nullopt;
 
     // Override icon
     raw_ptr<const gfx::VectorIcon> icon_model_override = nullptr;
@@ -164,6 +169,7 @@ class DownloadUIModel {
     BubbleUIInfo(const BubbleUIInfo&);
     BubbleUIInfo& AddIconAndColor(const gfx::VectorIcon& vector_icon,
                                   ui::ColorId color_id);
+    BubbleUIInfo& AddSecondaryTextColor(ui::ColorId color_id);
     BubbleUIInfo& AddPrimaryButton(DownloadCommands::Command command);
     BubbleUIInfo& AddCheckbox(const std::u16string& label);
     // Add button to the subpage. Only two buttons are supported.
@@ -176,6 +182,7 @@ class DownloadUIModel {
     BubbleUIInfo& AddQuickAction(DownloadCommands::Command command,
                                  const std::u16string& label,
                                  const gfx::VectorIcon* icon);
+    ui::ColorId GetColorForSecondaryText() const;
   };
 #endif
 

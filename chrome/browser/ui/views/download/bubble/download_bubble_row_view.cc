@@ -199,12 +199,6 @@ void DownloadBubbleRowView::RemovedFromWidget() {
   }
 }
 
-void DownloadBubbleRowView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  secondary_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui_info_.secondary_color));
-}
-
 void DownloadBubbleRowView::OnDeviceScaleFactorChanged(
     float old_device_scale_factor,
     float new_device_scale_factor) {
@@ -698,8 +692,7 @@ void DownloadBubbleRowView::UpdateLabels() {
   }
 
   if (GetWidget()) {
-    secondary_label_->SetEnabledColor(
-        GetColorProvider()->GetColor(ui_info_.secondary_color));
+    secondary_label_->SetEnabledColorId(ui_info_.GetColorForSecondaryText());
   }
 }
 

@@ -32,7 +32,7 @@ ui::ImageModel GlobalError::MenuItemIcon() {
           IDR_INPUT_ALERT_MENU));
 #else
   return ui::ImageModel::FromVectorIcon(kBrowserToolsErrorIcon,
-                                        ui::kColorAlertMediumSeverity);
+                                        ui::kColorAlertMediumSeverityIcon);
 #endif
 }
 

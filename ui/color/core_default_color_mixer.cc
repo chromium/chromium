@@ -35,8 +35,12 @@ void AddCoreDefaultColorMixer(ColorProvider* provider,
                                               : gfx::kGoogleRed600};
   mixer[kColorAlertLowSeverity] = {dark_mode ? gfx::kGoogleGreen300
                                              : gfx::kGoogleGreen700};
-  mixer[kColorAlertMediumSeverity] = {dark_mode ? gfx::kGoogleYellow300
-                                                : gfx::kGoogleYellow700};
+  mixer[kColorAlertMediumSeverityIcon] = {dark_mode ? gfx::kGoogleYellow300
+                                                    : gfx::kGoogleYellow700};
+  // Color used for alert text should more readable than the color above which
+  // is for icons.
+  mixer[kColorAlertMediumSeverityText] = {dark_mode ? gfx::kGoogleYellow300
+                                                    : gfx::kGoogleOrange900};
   mixer[kColorDisabledForeground] =
       PickGoogleColor(gfx::kGoogleGrey600, kColorPrimaryBackground,
                       color_utils::kMinimumReadableContrastRatio);

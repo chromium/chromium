@@ -56,9 +56,12 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       ui::kColorPrimaryBackground, gfx::kGoogleRed300, gfx::kGoogleRed600)};
   mixer[ui::kColorAlertLowSeverity] = {SelectBasedOnDarkInput(
       ui::kColorPrimaryBackground, gfx::kGoogleGreen300, gfx::kGoogleGreen700)};
-  mixer[ui::kColorAlertMediumSeverity] = {
+  mixer[ui::kColorAlertMediumSeverityIcon] = {
       SelectBasedOnDarkInput(ui::kColorPrimaryBackground, gfx::kGoogleYellow300,
                              gfx::kGoogleYellow700)};
+  mixer[ui::kColorAlertMediumSeverityText] = {
+      SelectBasedOnDarkInput(ui::kColorPrimaryBackground, gfx::kGoogleYellow300,
+                             gfx::kGoogleOrange900)};
   mixer[ui::kColorDisabledForeground] = {label_fg_disabled};
   mixer[ui::kColorItemHighlight] = {GetBorderColor("entry:focus")};
   mixer[ui::kColorItemSelectionBackground] = {ui::kColorAccent};

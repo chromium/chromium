@@ -181,7 +181,8 @@
   E_CPONLY(kColorAccentWithGuaranteedContrastAtopPrimaryBackground) \
   E_CPONLY(kColorAlertHighSeverity) \
   E_CPONLY(kColorAlertLowSeverity) \
-  E_CPONLY(kColorAlertMediumSeverity) \
+  E_CPONLY(kColorAlertMediumSeverityIcon) \
+  E_CPONLY(kColorAlertMediumSeverityText) \
   E_CPONLY(kColorDisabledForeground) \
   E_CPONLY(kColorEndpointBackground) \
   E_CPONLY(kColorEndpointForeground) \
