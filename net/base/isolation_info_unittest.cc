@@ -177,6 +177,32 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
   }
 }
 
+// A 2.5-keyed NAK created with two identical opaque origins should be
+// same-site.
+TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfoOpaque) {
+  url::Origin opaque;
+  IsolationInfo isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, opaque, opaque,
+      SiteForCookies::FromOrigin(opaque), kPartyContextEmpty, &kNonce1);
+  NetworkAnonymizationKey nak =
+      isolation_info.CreateNetworkAnonymizationKeyForIsolationInfo(
+          opaque, opaque, &kNonce1);
+
+  if (IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled()) {
+    EXPECT_FALSE(nak.GetIsCrossSite().value());
+  } else {
+    EXPECT_DEATH_IF_SUPPORTED(nak.GetIsCrossSite(), "");
+  }
+
+  url::Origin opaque2;
+  nak = isolation_info.CreateNetworkAnonymizationKeyForIsolationInfo(
+      opaque, opaque2, &kNonce1);
+
+  if (IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled()) {
+    EXPECT_TRUE(nak.GetIsCrossSite().value());
+  }
+}
+
 TEST_P(IsolationInfoTest, RequestTypeMainFrame) {
   IsolationInfo isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,

@@ -93,9 +93,13 @@ TEST_P(NetworkAnonymizationKeyTest, IsCrossSiteFlagSchemeEnabled) {
 TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
   SchemefulSite site_a = SchemefulSite(GURL("http://a.test/"));
   SchemefulSite site_b = SchemefulSite(GURL("http://b.test/"));
+  SchemefulSite opaque = SchemefulSite(url::Origin());
   base::UnguessableToken nik_nonce = base::UnguessableToken::Create();
+
   NetworkIsolationKey populated_cross_site_nik(site_a, site_b, &nik_nonce);
   NetworkIsolationKey populated_same_site_nik(site_a, site_a, &nik_nonce);
+  NetworkIsolationKey populated_same_site_opaque_nik(opaque, opaque,
+                                                     &nik_nonce);
   NetworkIsolationKey empty_nik;
 
   NetworkAnonymizationKey nak_from_cross_site_nik =
@@ -104,6 +108,9 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
   NetworkAnonymizationKey nak_from_same_site_nik =
       NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
           populated_same_site_nik);
+  NetworkAnonymizationKey nak_from_same_site_opaque_nik =
+      NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          populated_same_site_opaque_nik);
   NetworkAnonymizationKey nak_from_empty_nik =
       NetworkAnonymizationKey::CreateFromNetworkIsolationKey(empty_nik);
 
@@ -116,10 +123,12 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
     // Top site should be populated correctly.
     EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
     EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
+    EXPECT_EQ(nak_from_same_site_opaque_nik.GetTopFrameSite(), opaque);
 
     // Nonce should be populated correctly.
-    EXPECT_EQ(nak_from_same_site_nik.GetNonce(), nik_nonce);
     EXPECT_EQ(nak_from_cross_site_nik.GetNonce(), nik_nonce);
+    EXPECT_EQ(nak_from_same_site_nik.GetNonce(), nik_nonce);
+    EXPECT_EQ(nak_from_same_site_opaque_nik.GetNonce(), nik_nonce);
 
     // Double-keyed NAKs created from different third party cross site contexts
     // should be the same.
@@ -131,14 +140,17 @@ TEST_P(NetworkAnonymizationKeyTest, CreateFromNetworkIsolationKey) {
     // Top site should be populated correctly.
     EXPECT_EQ(nak_from_cross_site_nik.GetTopFrameSite(), site_a);
     EXPECT_EQ(nak_from_same_site_nik.GetTopFrameSite(), site_a);
+    EXPECT_EQ(nak_from_same_site_opaque_nik.GetTopFrameSite(), opaque);
 
     // Nonce should be populated correctly.
     EXPECT_EQ(nak_from_same_site_nik.GetNonce(), nik_nonce);
     EXPECT_EQ(nak_from_cross_site_nik.GetNonce(), nik_nonce);
+    EXPECT_EQ(nak_from_same_site_opaque_nik.GetNonce(), nik_nonce);
 
     // Is cross site boolean should be populated correctly.
     EXPECT_EQ(nak_from_same_site_nik.GetIsCrossSite(), false);
     EXPECT_EQ(nak_from_cross_site_nik.GetIsCrossSite(), true);
+    EXPECT_EQ(nak_from_same_site_opaque_nik.GetIsCrossSite(), false);
 
     // Double-keyed + cross site bit NAKs created from different third party
     // cross site contexts should be the different.
@@ -236,24 +248,44 @@ TEST_P(NetworkAnonymizationKeyTest, IsCrossSiteFlagCalculatedInConstructor) {
                                            /*is_cross_site=*/true);
     NetworkAnonymizationKey equal_cross_site_key(/*top_frame_site=*/kTestSiteA,
                                                  /*frame_site=*/kTestSiteB);
+    EXPECT_EQ(cross_site_key.GetIsCrossSite().value(), true);
+    EXPECT_EQ(equal_cross_site_key.GetIsCrossSite().value(), true);
+    EXPECT_EQ(cross_site_key, equal_cross_site_key);
 
     NetworkAnonymizationKey same_site_key(/*top_frame_site=*/kTestSiteA,
                                           /*frame_site=*/kTestSiteA,
                                           /*is_cross_site=*/false);
     NetworkAnonymizationKey equal_same_site_key(/*top_frame_site=*/kTestSiteA,
                                                 /*frame_site=*/kTestSiteA);
-
-    NetworkAnonymizationKey double_key_cross_site(/*top_frame_site=*/kTestSiteA,
-                                                  /*frame_site=*/absl::nullopt,
-                                                  true);
-    EXPECT_EQ(cross_site_key.GetIsCrossSite().value(), true);
-    EXPECT_EQ(equal_cross_site_key.GetIsCrossSite().value(), true);
-    EXPECT_EQ(cross_site_key, equal_cross_site_key);
-
     EXPECT_EQ(same_site_key.GetIsCrossSite().value(), false);
     EXPECT_EQ(equal_same_site_key.GetIsCrossSite().value(), false);
     EXPECT_EQ(same_site_key, equal_same_site_key);
 
+    SchemefulSite opaque = SchemefulSite(url::Origin());
+    NetworkAnonymizationKey same_opaque_site_key(/*top_frame_site=*/opaque,
+                                                 /*frame_site=*/opaque,
+                                                 /*is_cross_site=*/false);
+    NetworkAnonymizationKey equal_same_opaque_site_key(
+        /*top_frame_site=*/opaque,
+        /*frame_site=*/opaque);
+    EXPECT_EQ(same_opaque_site_key.GetIsCrossSite().value(), false);
+    EXPECT_EQ(equal_same_opaque_site_key.GetIsCrossSite().value(), false);
+    EXPECT_EQ(same_opaque_site_key, equal_same_opaque_site_key);
+
+    SchemefulSite opaque2 = SchemefulSite(url::Origin());
+    NetworkAnonymizationKey diff_opaque_site_key(/*top_frame_site=*/opaque,
+                                                 /*frame_site=*/opaque2,
+                                                 /*is_cross_site=*/true);
+    NetworkAnonymizationKey equal_diff_opaque_site_key(
+        /*top_frame_site=*/opaque,
+        /*frame_site=*/opaque2);
+    EXPECT_EQ(diff_opaque_site_key.GetIsCrossSite().value(), true);
+    EXPECT_EQ(equal_diff_opaque_site_key.GetIsCrossSite().value(), true);
+    EXPECT_EQ(diff_opaque_site_key, equal_diff_opaque_site_key);
+
+    NetworkAnonymizationKey double_key_cross_site(/*top_frame_site=*/kTestSiteA,
+                                                  /*frame_site=*/absl::nullopt,
+                                                  true);
     EXPECT_EQ(double_key_cross_site.GetIsCrossSite().value(), true);
   }
 }

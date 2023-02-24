@@ -28,10 +28,7 @@ NetworkAnonymizationKey::NetworkAnonymizationKey(
   // the information to calculate it, do calculate it.
   if (IsCrossSiteFlagSchemeEnabled() && !is_cross_site_.has_value() &&
       frame_site.has_value()) {
-    SiteForCookies site_for_cookies =
-        net::SiteForCookies(top_frame_site_.value());
-    is_cross_site_ =
-        !site_for_cookies.IsFirstParty(frame_site.value().GetURL());
+    is_cross_site_ = frame_site.value() != top_frame_site_.value();
   }
   if (IsCrossSiteFlagSchemeEnabled()) {
     // If `frame_site_` is populated, `is_cross_site_` must be as well.
@@ -58,10 +55,8 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
   // value will be overridden in the constructor and set to `nullopt`.
   absl::optional<bool> nak_is_cross_site = absl::nullopt;
   if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled()) {
-    SiteForCookies site_for_cookies =
-        net::SiteForCookies(network_isolation_key.GetTopFrameSite().value());
-    nak_is_cross_site = !site_for_cookies.IsFirstParty(
-        network_isolation_key.GetFrameSite()->GetURL());
+    nak_is_cross_site = network_isolation_key.GetTopFrameSite().value() !=
+                        network_isolation_key.GetFrameSite().value();
   }
 
   return NetworkAnonymizationKey(

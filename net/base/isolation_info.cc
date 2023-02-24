@@ -368,12 +368,12 @@ IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
   if (!top_frame_origin) {
     return NetworkAnonymizationKey();
   }
+  SchemefulSite top_frame_site(*top_frame_origin);
 
   bool nak_is_cross_site;
   if (frame_origin) {
-    SiteForCookies site_for_cookies =
-        net::SiteForCookies::FromOrigin(top_frame_origin.value());
-    nak_is_cross_site = !site_for_cookies.IsFirstParty(frame_origin->GetURL());
+    SchemefulSite frame_site(*frame_origin);
+    nak_is_cross_site = frame_site != top_frame_site;
   } else {
     // If we are unable to determine if the frame is cross site we should create
     // it as cross site.
@@ -381,8 +381,7 @@ IsolationInfo::CreateNetworkAnonymizationKeyForIsolationInfo(
   }
 
   return NetworkAnonymizationKey(
-      SchemefulSite(*top_frame_origin), absl::nullopt,
-      absl::make_optional(nak_is_cross_site),
+      top_frame_site, absl::nullopt, absl::make_optional(nak_is_cross_site),
       nonce ? absl::make_optional(*nonce) : absl::nullopt);
 }
 
