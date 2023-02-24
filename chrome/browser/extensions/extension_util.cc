@@ -34,8 +34,6 @@
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/grit/extensions_browser_resources.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -242,16 +240,6 @@ base::Value::Dict GetExtensionInfo(const Extension* extension) {
   dict.Set("icon", icon.spec());
 
   return dict;
-}
-
-const gfx::ImageSkia& GetDefaultAppIcon() {
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_APP_DEFAULT_ICON);
-}
-
-const gfx::ImageSkia& GetDefaultExtensionIcon() {
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      IDR_EXTENSION_DEFAULT_ICON);
 }
 
 std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(

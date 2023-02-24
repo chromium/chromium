@@ -14,7 +14,11 @@
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace content {
 class BrowserContext;
@@ -101,6 +105,11 @@ void InitializeFileSchemeAccessForExtension(
     const std::string& extension_id,
     content::BrowserContext* browser_context);
 
+// Returns the default extension/app icon (for extensions or apps that don't
+// have one).
+const gfx::ImageSkia& GetDefaultExtensionIcon();
+const gfx::ImageSkia& GetDefaultAppIcon();
+
 // Gets the ExtensionId associated with the given `site_instance`.  An empty
 // string is returned when `site_instance` is not associated with an extension.
 ExtensionId GetExtensionIdForSiteInstance(content::SiteInstance& site_instance);
@@ -115,6 +124,10 @@ std::string GetExtensionIdFromFrame(
 // *does* host this specific extension at this point in time.)
 bool CanRendererHostExtensionOrigin(int render_process_id,
                                     const ExtensionId& extension_id);
+
+// Returns true if the extension associated with `extension_id` is a Chrome App.
+bool IsChromeApp(const std::string& extension_id,
+                 content::BrowserContext* context);
 
 // Returns true if `extension_id` can be launched (possibly only after being
 // enabled).

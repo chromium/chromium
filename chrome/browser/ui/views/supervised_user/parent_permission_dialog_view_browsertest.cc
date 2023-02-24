@@ -42,6 +42,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/result_catcher.h"
 #include "google_apis/gaia/fake_gaia.h"
