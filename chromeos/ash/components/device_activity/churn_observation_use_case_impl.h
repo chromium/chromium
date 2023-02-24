@@ -53,6 +53,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
 
   bool SetObservationPeriod(const std::string& observation_period);
 
+  void Reset();
+
  private:
   // Observation window period should be between [0, 2].
   int period_ = -1;
@@ -83,8 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   bool IsEnabledCheckIn() override;
   bool IsEnabledCheckMembership() override;
   private_computing::ActiveStatus GenerateActiveStatus() override;
-
-  std::string GetObservationPeriodForTesting(int period);
+  std::string GetObservationPeriod(int period) override;
 
  private:
   // On successful churn cohort check in, the active status object is updated to

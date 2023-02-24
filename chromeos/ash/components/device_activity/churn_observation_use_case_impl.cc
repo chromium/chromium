@@ -138,7 +138,8 @@ bool ObservationWindow::SetObservationPeriod(
   // YYYYMM-YYYYMM.
   //
   // std::size method includes null terminated character, so we can subtract 1.
-  if (observation_period.length() != (std::size(kObservationPeriodFormat)-1)) {
+  if (observation_period.length() !=
+      (std::size(kObservationPeriodFormat) - 1)) {
     LOG(ERROR) << "Error - observation period is not set correctly."
                << std::endl
                << "Attempted to set observation period as = "
@@ -148,6 +149,11 @@ bool ObservationWindow::SetObservationPeriod(
 
   observation_period_ = observation_period;
   return true;
+}
+
+void ObservationWindow::Reset() {
+  period_ = -1;
+  observation_period_ = std::string();
 }
 
 ChurnObservationUseCaseImpl::ChurnObservationUseCaseImpl(
@@ -218,17 +224,20 @@ ChurnObservationUseCaseImpl::GenerateImportRequestBody() {
 
   import_request.set_use_case(GetPsmUseCase());
 
-  // TODO(hirthanan): Selectively DCHECK after adding local state checks.
-  DCHECK(observation_window_0_.IsObservationWindowSet());
-  DCHECK(observation_window_1_.IsObservationWindowSet());
-  DCHECK(observation_window_2_.IsObservationWindowSet());
+  if (observation_window_0_.IsObservationWindowSet()) {
+    *import_request.add_import_data() =
+        GenerateObservationFresnelImportData(observation_window_0_);
+  }
 
-  *import_request.add_import_data() =
-      GenerateObservationFresnelImportData(observation_window_0_);
-  *import_request.add_import_data() =
-      GenerateObservationFresnelImportData(observation_window_1_);
-  *import_request.add_import_data() =
-      GenerateObservationFresnelImportData(observation_window_2_);
+  if (observation_window_1_.IsObservationWindowSet()) {
+    *import_request.add_import_data() =
+        GenerateObservationFresnelImportData(observation_window_1_);
+  }
+
+  if (observation_window_2_.IsObservationWindowSet()) {
+    *import_request.add_import_data() =
+        GenerateObservationFresnelImportData(observation_window_2_);
+  }
 
   return import_request;
 }
@@ -243,6 +252,8 @@ bool ChurnObservationUseCaseImpl::IsEnabledCheckMembership() {
       features::kDeviceActiveClientChurnObservationCheckMembership);
 }
 
+// This method is called after all use cases have completed check in and the
+// latest values are updated to the local state.
 private_computing::ActiveStatus
 ChurnObservationUseCaseImpl::GenerateActiveStatus() {
   private_computing::ActiveStatus status;
@@ -253,12 +264,16 @@ ChurnObservationUseCaseImpl::GenerateActiveStatus() {
   private_computing::ChurnObservationStatus* period_status =
       status.mutable_period_status();
 
+  // The local state should contain the latest active period booleans.
   period_status->set_is_active_current_period_minus_0(
-      observation_window_0_.IsObservationWindowSet());
+      GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0));
   period_status->set_is_active_current_period_minus_1(
-      observation_window_1_.IsObservationWindowSet());
+      GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1));
   period_status->set_is_active_current_period_minus_2(
-      observation_window_2_.IsObservationWindowSet());
+      GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2));
 
   return status;
 }
@@ -416,8 +431,7 @@ ChurnObservationUseCaseImpl::GetFirstActiveDuringCohort(
   return ChurnObservationMetadata_FirstActiveDuringCohort_EXISTED_OR_NOT_ACTIVE_YET;
 }
 
-std::string ChurnObservationUseCaseImpl::GetObservationPeriodForTesting(
-    int period) {
+std::string ChurnObservationUseCaseImpl::GetObservationPeriod(int period) {
   if (period == 0) {
     return observation_window_0_.GetObservationPeriod();
   }
@@ -502,9 +516,28 @@ void ChurnObservationUseCaseImpl::SetObservationPeriodWindows(base::Time ts) {
   std::string observation_period_2 =
       GenerateWindowIdentifier(cur_month_minus_2) + "-" + cur_month_window_id;
 
-  observation_window_0_ = ObservationWindow(0, observation_period_0);
-  observation_window_1_ = ObservationWindow(1, observation_period_1);
-  observation_window_2_ = ObservationWindow(2, observation_period_2);
+  // Update the observation windows that need to be sent to Fresnel only
+  // if the last known active period is false.
+  if (!GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0)) {
+    observation_window_0_ = ObservationWindow(0, observation_period_0);
+  } else {
+    observation_window_0_.Reset();
+  }
+
+  if (!GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1)) {
+    observation_window_1_ = ObservationWindow(1, observation_period_1);
+  } else {
+    observation_window_1_.Reset();
+  }
+
+  if (!GetLocalState()->GetBoolean(
+          prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2)) {
+    observation_window_2_ = ObservationWindow(2, observation_period_2);
+  } else {
+    observation_window_2_.Reset();
+  }
 }
 
 }  // namespace ash::device_activity

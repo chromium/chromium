@@ -29,4 +29,14 @@ const char kDeviceActiveChurnObservationMonthlyPingTimestamp[] =
 const char kDeviceActiveLastKnownChurnActiveStatus[] =
     "device_active.last_known_churn_active_status";
 
+// The observation status for the past three periods from the current date.
+// The current date is determined based on the first 10 bits of
+// |kDeviceActiveLastKnownChurnActiveStatus|.
+const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus0[] =
+    "device_active.last_known_is_active_current_period_minus_0";
+const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1[] =
+    "device_active.last_known_is_active_current_period_minus_1";
+const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2[] =
+    "device_active.last_known_is_active_current_period_minus_2";
+
 }  // namespace ash::prefs

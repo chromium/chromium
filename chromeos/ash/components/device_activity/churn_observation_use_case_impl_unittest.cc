@@ -178,11 +178,11 @@ TEST_F(ChurnObservationUseCaseImplTest,
   churn_observation_use_case_impl_->GenerateImportRequestBody();
 
   // Validate observation windows are expected.
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(0),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(0),
             "202305-202307");
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(1),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(1),
             "202304-202306");
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(2),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(2),
             "202303-202305");
 }
 
@@ -200,11 +200,11 @@ TEST_F(ChurnObservationUseCaseImplTest, ValidateObservationWindowsEndOfYear) {
   churn_observation_use_case_impl_->GenerateImportRequestBody();
 
   // Validate observation windows are expected.
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(0),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(0),
             "202312-202402");
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(1),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(1),
             "202311-202401");
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(2),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(2),
             "202310-202312");
 }
 
@@ -222,11 +222,11 @@ TEST_F(ChurnObservationUseCaseImplTest, ValidateObservationWindowsStartOfYear) {
   churn_observation_use_case_impl_->GenerateImportRequestBody();
 
   // Validate observation windows are expected.
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(0),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(0),
             "202301-202303");
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(1),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(1),
             "202212-202302");
-  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriodForTesting(2),
+  EXPECT_EQ(churn_observation_use_case_impl_->GetObservationPeriod(2),
             "202211-202301");
 }
 
