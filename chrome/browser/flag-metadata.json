@@ -3688,31 +3688,43 @@
   },
   {
     "name": "fast-pair",
-    "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
-    "expiry_milestone": 112
+    "owners": [
+      "//ash/quick_pair/OWNERS",
+      "jackshira"
+    ],
+    "expiry_milestone": 114
   },
   {
     "name": "fast-pair-handshake-refactor",
-    "owners": [ "//ash/quick_pair/OWNERS", "akingsb@google.com" ],
-    "expiry_milestone": 112
+    "owners": [
+      "//ash/quick_pair/OWNERS",
+      "jackshira"
+    ],
+    "expiry_milestone": 114
   },
   {
     "name": "fast-pair-low-power",
     "owners": [
       "//ash/quick_pair/OWNERS",
-      "jonmann@chromium.org"
+      "jackshira"
     ],
-    "expiry_milestone": 112
+    "expiry_milestone": 114
   },
   {
     "name": "fast-pair-saved-devices",
-    "owners": [ "//ash/quick_pair/OWNERS", "julietlevesque@google.com" ],
-    "expiry_milestone": 112
+    "owners": [
+      "//ash/quick_pair/OWNERS",
+      "jackshira"
+    ],
+    "expiry_milestone": 114
   },
   {
     "name": "fast-pair-software-scanning",
-    "owners": [ "//ash/quick_pair/OWNERS", "jonmann@chromium.org" ],
-    "expiry_milestone": 112
+    "owners": [
+      "//ash/quick_pair/OWNERS",
+      "jackshira"
+    ],
+    "expiry_milestone": 114
   },
   {
     "name": "feature-notification-guide",
