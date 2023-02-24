@@ -22,8 +22,8 @@ verify_pep425_tag: [
 
 wheel: <
   name: "infra/celab/celab/windows-amd64"
-  # Source: https://ci.chromium.org/ui/p/celab/builders/ci/Windows/b8789517951701394881
-  version: "8MbshxUAzzNWYXgEI3Wj6Hz_lfKYMNngVIMcwMwoOoUC"
+  # Source: https://ci.chromium.org/ui/p/celab/builders/ci/Windows/b8788328009316362273
+  version: "kFDyngPTacjAc-DvTxVpYFhyAUf335vtc6s_0-ugtLsC"
 >
 
 # googleapiclient

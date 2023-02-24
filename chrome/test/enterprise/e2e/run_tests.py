@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import json
 import logging
 import os
 import sys
@@ -130,7 +131,12 @@ if __name__ == '__main__':
   else:
     hostProvider = SharedHostProvider(hostFiles, args.shared_provider_storage)
 
-  c = MultiTestController(tests, hostProvider, args.error_logs_dir)
+  test_env = None
+  if 'LUCI_CONTEXT' in os.environ:
+    with open(os.environ['LUCI_CONTEXT']) as f:
+      test_env = json.load(f)
+  c = MultiTestController(
+      tests, hostProvider, args.error_logs_dir, environ=test_env)
 
   success = False
   try:
