@@ -34,10 +34,11 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {

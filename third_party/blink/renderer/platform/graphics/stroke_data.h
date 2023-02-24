@@ -29,16 +29,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STROKE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_STROKE_DATA_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/dash_array.h"
-#include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/pattern.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
 

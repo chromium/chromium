@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state.h"
 
+#include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
+
 namespace blink {
 
 static inline cc::PaintFlags::FilterQuality FilterQualityForPaint(
