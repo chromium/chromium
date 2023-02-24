@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -151,7 +150,6 @@ void HeartbeatManager::OnResume() {
   // MCS was silently lost during that time, even if a heartbeat is not yet
   // due. Force a heartbeat to detect if the connection is still good.
   base::TimeDelta elapsed = base::Time::Now() - suspend_time_;
-  UMA_HISTOGRAM_LONG_TIMES("GCM.SuspendTime", elapsed);
 
   // Make sure a minimum amount of time has passed before forcing a heartbeat to
   // avoid any tight loop scenarios.
@@ -212,8 +210,6 @@ void HeartbeatManager::CheckForMissedHeartbeat() {
 
   // If the heartbeat has been missed, manually trigger it.
   if (base::Time::Now() > heartbeat_expected_time_) {
-    UMA_HISTOGRAM_LONG_TIMES("GCM.HeartbeatMissedDelta",
-                             base::Time::Now() - heartbeat_expected_time_);
     OnHeartbeatTriggered();
     return;
   }

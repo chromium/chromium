@@ -188,15 +188,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="GCM.HeartbeatMissedDelta" units="ms"
-    expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>
-    If a heartbeat was missed, the time delta by which it was missed (in system
-    time, not ticks).
-  </summary>
-</histogram>
-
 <histogram name="GCM.IncomingSendErrors" units="messages" expires_after="M98">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
@@ -386,11 +377,6 @@ chromium-metrics-reviews@google.com.
     Success indicates successfully updating the GCM persistent store on message
     update. Failure indicates a failure updating the persistence store.
   </summary>
-</histogram>
-
-<histogram name="GCM.SuspendTime" units="ms" expires_after="2018-08-30">
-  <owner>zea@chromium.org</owner>
-  <summary>Time elapsed from machine suspend until resume.</summary>
 </histogram>
 
 <histogram name="GCM.UnregistrationRequestStatus"
