@@ -289,25 +289,30 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
   if (!typeface)
     return nullptr;
 
+  bool synthetic_bold =
+      (font_description.Weight() >
+           FontSelectionValue(200) +
+               FontSelectionValue(typeface->fontStyle().weight()) ||
+       font_description.IsSyntheticBold()) &&
+      font_description.GetFontSynthesisWeight() ==
+          FontDescription::kAutoFontSynthesisWeight;
+
+  bool synthetic_italic = (((font_description.Style() == ItalicSlopeValue()) &&
+                            !typeface->isItalic()) ||
+                           font_description.IsSyntheticItalic()) &&
+                          font_description.GetFontSynthesisStyle() ==
+                              FontDescription::kAutoFontSynthesisStyle;
+
+  ResolvedFontFeatures resolved_font_features =
+      font_description.GetFontVariantAlternates()
+          ? font_description.GetFontVariantAlternates()
+                ->GetResolvedFontFeatures()
+          : ResolvedFontFeatures();
+
   std::unique_ptr<FontPlatformData> font_platform_data =
       std::make_unique<FontPlatformData>(
-          typeface, name, font_size,
-          ((font_description.Weight() >
-                FontSelectionValue(200) +
-                    FontSelectionValue(typeface->fontStyle().weight()) ||
-            font_description.IsSyntheticBold()) &&
-           font_description.GetFontSynthesisWeight() ==
-               FontDescription::kAutoFontSynthesisWeight),
-          (((font_description.Style() == ItalicSlopeValue()) &&
-            !typeface->isItalic()) ||
-           font_description.IsSyntheticItalic()) &&
-              font_description.GetFontSynthesisStyle() ==
-                  FontDescription::kAutoFontSynthesisStyle,
-          font_description.TextRendering(),
-          font_description.GetFontVariantAlternates()
-              ? font_description.GetFontVariantAlternates()
-                    ->GetResolvedFontFeatures()
-              : ResolvedFontFeatures(),
+          typeface, name, font_size, synthetic_bold, synthetic_italic,
+          font_description.TextRendering(), resolved_font_features,
           font_description.Orientation());
 
   font_platform_data->SetAvoidEmbeddedBitmaps(
