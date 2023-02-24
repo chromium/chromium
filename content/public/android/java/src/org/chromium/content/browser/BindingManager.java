@@ -14,8 +14,6 @@ import androidx.collection.ArraySet;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.process_launcher.ChildProcessConnection;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -184,17 +182,19 @@ class BindingManager implements ComponentCallbacks2 {
                 && isExclusiveVisibleBinding(connection);
     }
 
+    /**
+     * Override the default behavior which is based on Android version. This can be removed once
+     * Android P support ends.
+     */
     @VisibleForTesting
-    static void resetUseNotPerceptibleBindingForTesting() {
-        sUseNotPerceptibleBinding = null;
+    static void setUseNotPerceptibleBindingForTesting(boolean useNotPerceptibleBinding) {
+        sUseNotPerceptibleBinding = useNotPerceptibleBinding;
     }
 
     @VisibleForTesting
     static boolean useNotPerceptibleBinding() {
         if (sUseNotPerceptibleBinding == null) {
-            sUseNotPerceptibleBinding = ChildProcessConnection.supportNotPerceptibleBinding()
-                    && ContentFeatureList.isEnabled(
-                            ContentFeatures.BINDING_MANAGER_USE_NOT_PERCEPTIBLE_BINDING);
+            sUseNotPerceptibleBinding = ChildProcessConnection.supportNotPerceptibleBinding();
         }
         return sUseNotPerceptibleBinding;
     }

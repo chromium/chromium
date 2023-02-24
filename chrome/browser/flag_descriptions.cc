@@ -3548,12 +3548,6 @@ const char kBindingManagerConnectionLimitDescription[] =
     "least important background renderers, which may cause them to be "
     "reclaimed by the OS if memory is needed.";
 
-const char kBindingManagerUseNotPerceptibleBindingName[] =
-    "Reduced background renderer binding";
-const char kBindingManagerUseNotPerceptibleBindingDescription[] =
-    "When enabled, uses a not perceptible binding for background renderers "
-    "used in the current session if able.";
-
 const char kCCTBrandTransparencyName[] =
     "Chrome Custom Tabs Brand Transparency";
 const char kCCTBrandTransparencyDescription[] =

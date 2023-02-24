@@ -712,11 +712,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "binding-manager-use-not-perceptible-binding",
-    "owners": ["ckitagawa", "yfriedman"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "biometric-authentication-for-filling",
     "owners": ["vsemeniuk@google.com", "vasilii"],
     "expiry_milestone": 117
