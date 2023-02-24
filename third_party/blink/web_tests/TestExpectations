@@ -2954,6 +2954,8 @@ crbug.com/webrtc/10567 external/wpt/webrtc-extensions/RTCRtpParameters-maxFramer
 crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=open&eligible [ Failure Timeout ]
+crbug.com/626703 [ Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=open&eligible [ Failure Timeout ]
 crbug.com/626703 [ Linux ] virtual/pna-allow-secure-same-origin/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/pna-workers-enabled/external/wpt/fetch/private-network-access/iframe.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/interactive-elements/the-dialog-element/modal-dialog-backdrop-opacity.html [ Failure ]
