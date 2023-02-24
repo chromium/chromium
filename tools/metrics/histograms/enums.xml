@@ -50083,26 +50083,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Interact outside of shelf to hide hotseat"/>
 </enum>
 
-<enum name="HotspotAllowStatus">
-  <int value="0" label="kAllowed: Device can start a hotspot."/>
-  <int value="1"
-      label="kDisallowedWiFiDownstreamNotSupported: Hotspot is not allowed
-             because the downstream WiFi is not supported."/>
-  <int value="2"
-      label="kDisallowedNoWiFiSecurityModes: Hotspot is not allowed because
-             no WiFi security modes are supported"/>
-  <int value="3"
-      label="kDisallowedNoMobileData: Hotspot is not allowed because upstream
-             cellular network is not connected."/>
-  <int value="4"
-      label="kDisallowedReadinessCheckFail: Hotspot is not allowed because
-             readiness check is failed, usually means the mobile data doesn't
-             support hotspot."/>
-  <int value="5"
-      label="kDisallowedByPolicy: Hotspot is not allowed because it is
-             prohibited by the enterprise policy."/>
-</enum>
-
 <enum name="HotspotSupport">
   <int value="0" label="Unsupported"/>
   <int value="1" label="Invalid version"/>

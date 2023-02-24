@@ -71,6 +71,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   // Return the latest hotspot capabilities
   const HotspotCapabilities& GetHotspotCapabilities() const;
 
+  // Update the hotspot allow status with the given |new_allow_status|
+  // and then notify observers if it changes.
+  void SetHotspotAllowStatus(
+      hotspot_config::mojom::HotspotAllowStatus new_allow_status);
+
   // Return callback for the CheckTetheringReadiness method.
   using CheckTetheringReadinessCallback =
       base::OnceCallback<void(CheckTetheringReadinessResult result)>;
@@ -86,8 +91,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   bool HasObserver(Observer* observer) const;
 
  private:
-  friend class HotspotMetricsHelperTest;
-
   // ShillPropertyChangedObserver overrides
   void OnPropertyChanged(const std::string& key,
                          const base::Value& value) override;
@@ -98,11 +101,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
 
   // Callback to handle the manager properties with hotspot related properties.
   void OnManagerProperties(absl::optional<base::Value::Dict> properties);
-
-  // Update the hotspot allow status with the given |new_allow_status|
-  // and then notify observers if it changes.
-  void SetHotspotAllowStatus(
-      hotspot_config::mojom::HotspotAllowStatus new_allow_status);
 
   // Notify observer that hotspot capabilities was changed.
   void NotifyHotspotCapabilitiesChanged();
