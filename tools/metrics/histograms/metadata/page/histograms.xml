@@ -1640,7 +1640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageLoad.Experimental.ClickInputBurst" units="count"
-    expires_after="2021-08-09">
+    expires_after="2024-02-24">
   <owner>dougarnett@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
@@ -1649,6 +1649,8 @@ chromium-metrics-reviews@google.com.
     a sequence of user click inputs at approximately the same screen position
     where the clicks each occur soon after the previous one (e.g., within half
     second). This is intended to detect possible rage clicks by the user.
+
+    Note: stat collection stopped in August 2021, and resumes in February 2023.
   </summary>
 </histogram>
 
