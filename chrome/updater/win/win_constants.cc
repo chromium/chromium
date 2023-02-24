@@ -51,4 +51,16 @@ const wchar_t kShutdownEvent[] = L"{A0C1F415-D2CE-4ddc-9B48-14E56FD55162}";
 
 const wchar_t kLegacyExeName[] = COMPANY_SHORTNAME_STRING L"Update.exe";
 
+const wchar_t kLegacyServiceNamePrefix[] = L"" LEGACY_SERVICE_NAME_PREFIX;
+
+const wchar_t kLegacyServiceDisplayNamePrefix[] =
+    COMPANY_SHORTNAME_STRING L" Update Service";
+
+const wchar_t kLegacyRunValuePrefix[] = COMPANY_SHORTNAME_STRING L" Update";
+
+const wchar_t kLegacyTaskNamePrefixSystem[] =
+    COMPANY_SHORTNAME_STRING L"UpdateTaskMachine";
+const wchar_t kLegacyTaskNamePrefixUser[] =
+    COMPANY_SHORTNAME_STRING L"UpdateTaskUser";
+
 }  // namespace updater

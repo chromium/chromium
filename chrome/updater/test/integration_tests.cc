@@ -346,12 +346,10 @@ class IntegrationTest : public ::testing::Test {
                                       policy_same_version_update);
   }
 
-  void SetupFakeLegacyUpdaterData() {
-    test_commands_->SetupFakeLegacyUpdaterData();
-  }
+  void SetupFakeLegacyUpdater() { test_commands_->SetupFakeLegacyUpdater(); }
 
-  void ExpectLegacyUpdaterDataMigrated() {
-    test_commands_->ExpectLegacyUpdaterDataMigrated();
+  void ExpectLegacyUpdaterMigrated() {
+    test_commands_->ExpectLegacyUpdaterMigrated();
   }
 
   void RunRecoveryComponent(const std::string& app_id,
@@ -982,11 +980,11 @@ TEST_F(IntegrationTest, InstallDataIndex) {
 }
 
 TEST_F(IntegrationTest, MigrateLegacyUpdater) {
-  ASSERT_NO_FATAL_FAILURE(SetupFakeLegacyUpdaterData());
+  ASSERT_NO_FATAL_FAILURE(SetupFakeLegacyUpdater());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdaterDataMigrated());
+  ASSERT_NO_FATAL_FAILURE(ExpectLegacyUpdaterMigrated());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

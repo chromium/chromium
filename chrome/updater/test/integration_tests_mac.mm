@@ -302,7 +302,7 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   ASSERT_EQ(exit_code, 0);
 }
 
-void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+void SetupFakeLegacyUpdater(UpdaterScope scope) {
   base::FilePath test_ticket_store_path;
   ASSERT_TRUE(
       base::PathService::Get(chrome::DIR_TEST_DATA, &test_ticket_store_path));
@@ -318,7 +318,7 @@ void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
                                  FILE_PATH_LITERAL("Keystone.ticketstore"))));
 }
 
-void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   auto persisted_data = base::MakeRefCounted<PersistedData>(
       scope, global_prefs->GetPrefService());

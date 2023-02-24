@@ -57,6 +57,11 @@ void SetupCmdExe(UpdaterScope scope,
                  base::CommandLine& cmd_exe_command_line,
                  base::ScopedTempDir& temp_parent_dir);
 
+// Creates a service for test purposes.
+[[nodiscard]] bool CreateService(const std::wstring& service_name,
+                                 const std::wstring& display_name,
+                                 const std::wstring& command_line);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_UNITTEST_UTIL_WIN_H_

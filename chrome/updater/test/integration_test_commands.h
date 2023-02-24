@@ -111,8 +111,8 @@ class IntegrationTestCommands
                                  UpdateService::PolicySameVersionUpdate
                                      policy_same_version_update) const = 0;
 
-  virtual void SetupFakeLegacyUpdaterData() const = 0;
-  virtual void ExpectLegacyUpdaterDataMigrated() const = 0;
+  virtual void SetupFakeLegacyUpdater() const = 0;
+  virtual void ExpectLegacyUpdaterMigrated() const = 0;
   virtual void RunRecoveryComponent(const std::string& app_id,
                                     const base::Version& version) const = 0;
   virtual void ExpectLastChecked() const = 0;

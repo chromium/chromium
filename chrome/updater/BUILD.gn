@@ -483,6 +483,8 @@ if (is_win || is_mac || is_linux) {
       "-e",
       "LEGACY_GOOGLE_UPDATE_APPID=\"$legacy_google_update_appid\"",
       "-e",
+      "LEGACY_SERVICE_NAME_PREFIX=\"$legacy_service_name_prefix\"",
+      "-e",
       "PREFS_ACCESS_MUTEX=\"$prefs_access_mutex\"",
     ]
 

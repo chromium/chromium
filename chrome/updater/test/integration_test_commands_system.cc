@@ -306,12 +306,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                           : "false")});
   }
 
-  void SetupFakeLegacyUpdaterData() const override {
-    RunCommand("setup_fake_legacy_updater_data");
+  void SetupFakeLegacyUpdater() const override {
+    RunCommand("setup_fake_legacy_updater");
   }
 
-  void ExpectLegacyUpdaterDataMigrated() const override {
-    RunCommand("expect_legacy_updater_data_migrated");
+  void ExpectLegacyUpdaterMigrated() const override {
+    RunCommand("expect_legacy_updater_migrated");
   }
 
   void RunRecoveryComponent(const std::string& app_id,

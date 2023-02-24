@@ -1436,7 +1436,7 @@ void RunHandoff(UpdaterScope scope, const std::string& app_id) {
   ASSERT_EQ(exit_code, 0);
 }
 
-void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+void SetupFakeLegacyUpdater(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
   base::win::RegKey key;
@@ -1468,9 +1468,44 @@ void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
   ASSERT_EQ(key.WriteValue(kRegValueBrandCode, L"GGLS"), ERROR_SUCCESS);
   ASSERT_EQ(key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
   key.Close();
+
+  if (IsSystemInstall(scope)) {
+    // Install mock GoogleUpdate services "gupdate" and "gupdatem".
+    EXPECT_TRUE(CreateService(kLegacyServiceNamePrefix,
+                              kLegacyServiceDisplayNamePrefix,
+                              L"C:\\temp\\temp.exe"));
+    EXPECT_TRUE(CreateService(base::StrCat({kLegacyServiceNamePrefix, L"m"}),
+                              kLegacyServiceDisplayNamePrefix,
+                              L"C:\\temp\\temp.exe"));
+  } else {
+    // Install mock GoogleUpdate run value.
+    base::win::RegKey run_key;
+    ASSERT_EQ(
+        run_key.Open(HKEY_CURRENT_USER, REGSTR_PATH_RUN, KEY_READ | KEY_WRITE),
+        ERROR_SUCCESS);
+    ASSERT_EQ(run_key.WriteValue(kLegacyRunValuePrefix, L"C:\\temp\\temp.exe"),
+              ERROR_SUCCESS);
+  }
+
+  // Install mock GoogleUpdate tasks.
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope, /*use_task_subfolders=*/false);
+  ASSERT_TRUE(task_scheduler);
+
+  const std::wstring task_name_prefix(IsSystemInstall(scope)
+                                          ? kLegacyTaskNamePrefixSystem
+                                          : kLegacyTaskNamePrefixUser);
+  for (const std::wstring& task_name :
+       {base::StrCat({task_name_prefix, L"Core"}),
+        base::StrCat({task_name_prefix, L"UA"})}) {
+    ASSERT_TRUE(task_scheduler->RegisterTask(
+        task_name.c_str(), task_name.c_str(),
+        base::CommandLine::FromString(L"C:\\temp\\temp.exe"),
+        TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, false));
+  }
 }
 
-void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   auto persisted_data = base::MakeRefCounted<PersistedData>(
       scope, global_prefs->GetPrefService());
@@ -1496,6 +1531,42 @@ void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
   EXPECT_EQ(persisted_data->GetAP(kChromeAppId), "TestAP");
   EXPECT_EQ(persisted_data->GetBrandCode(kChromeAppId), "GGLS");
   EXPECT_TRUE(persisted_data->GetFingerprint(kChromeAppId).empty());
+
+  int count_entries = 0;
+  if (IsSystemInstall(scope)) {
+    // Expect no GoogleUpdate services.
+    ForEachServiceWithPrefix(
+        kLegacyServiceNamePrefix, kLegacyServiceDisplayNamePrefix,
+        base::BindLambdaForTesting(
+            [&count_entries](const std::wstring& /*service_name*/) {
+              ++count_entries;
+            }));
+  } else {
+    // Expect no GoogleUpdate run value.
+    ForEachRegistryRunValueWithPrefix(
+        kLegacyRunValuePrefix,
+        base::BindLambdaForTesting(
+            [&count_entries](const std::wstring& /* run_name*/) {
+              ++count_entries;
+            }));
+  }
+  EXPECT_EQ(count_entries, 0);
+
+  // Expect no GoogleUpdate tasks.
+  count_entries = 0;
+  const std::wstring task_name_prefix(IsSystemInstall(scope)
+                                          ? kLegacyTaskNamePrefixSystem
+                                          : kLegacyTaskNamePrefixUser);
+  scoped_refptr<TaskScheduler> task_scheduler =
+      TaskScheduler::CreateInstance(scope, /*use_task_subfolders=*/false);
+  task_scheduler->ForEachTaskWithPrefix(
+      task_name_prefix,
+      base::BindLambdaForTesting(
+          [&count_entries](const std::wstring& /*task_name*/) {
+            ++count_entries;
+          }));
+
+  EXPECT_EQ(count_entries, 0);
 }
 
 void InstallApp(UpdaterScope scope, const std::string& app_id) {

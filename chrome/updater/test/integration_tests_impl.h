@@ -237,8 +237,8 @@ void CallServiceUpdate(UpdaterScope updater_scope,
                        const std::string& install_data_index,
                        bool same_version_update_allowed);
 
-void SetupFakeLegacyUpdaterData(UpdaterScope scope);
-void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope);
+void SetupFakeLegacyUpdater(UpdaterScope scope);
+void ExpectLegacyUpdaterMigrated(UpdaterScope scope);
 
 void RunRecoveryComponent(UpdaterScope scope,
                           const std::string& app_id,

@@ -59,29 +59,6 @@ CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
   return sd;
 }
 
-[[nodiscard]] bool CreateService(const std::wstring& service_name,
-                                 const std::wstring& display_name,
-                                 const std::wstring& command_line) {
-  SC_HANDLE scm = ::OpenSCManager(
-      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
-  if (!scm) {
-    return false;
-  }
-
-  SC_HANDLE service = ::CreateService(
-      scm, service_name.c_str(), display_name.c_str(),
-      DELETE | SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG,
-      SERVICE_WIN32_OWN_PROCESS, SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
-      command_line.c_str(), nullptr, nullptr, nullptr, nullptr, nullptr);
-  if (!service && ::GetLastError() != ERROR_SERVICE_EXISTS) {
-    return false;
-  }
-
-  ::CloseServiceHandle(service);
-  ::CloseServiceHandle(scm);
-  return true;
-}
-
 }  // namespace
 
 TEST(WinUtil, GetDownloadProgress) {

@@ -316,10 +316,10 @@ void AppTestHelper::FirstTaskRun() {
                 WithSwitch("install_data_index",
                            WithSwitch("app_id", WithSystemScope(Wrap(
                                                     &CallServiceUpdate)))))},
-    {"setup_fake_legacy_updater_data",
-     WithSystemScope(Wrap(&SetupFakeLegacyUpdaterData))},
-    {"expect_legacy_updater_data_migrated",
-     WithSystemScope(Wrap(&ExpectLegacyUpdaterDataMigrated))},
+    {"setup_fake_legacy_updater",
+     WithSystemScope(Wrap(&SetupFakeLegacyUpdater))},
+    {"expect_legacy_updater_migrated",
+     WithSystemScope(Wrap(&ExpectLegacyUpdaterMigrated))},
     {"run_recovery_component",
      WithSwitch("version", WithSwitch("app_id", WithSystemScope(Wrap(
                                                     &RunRecoveryComponent))))},

@@ -99,6 +99,23 @@ extern const wchar_t kLegacyExeName[];
 inline constexpr base::TimeDelta kCreateUpdaterInstanceDelay =
     base::Milliseconds(200);
 
+// `kLegacyServiceNamePrefix` is the common prefix for the legacy GoogleUpdate
+// service names.
+extern const wchar_t kLegacyServiceNamePrefix[];
+
+// "Google Update Service" is the common prefix for the legacy GoogleUpdate
+// service display names.
+extern const wchar_t kLegacyServiceDisplayNamePrefix[];
+
+// "Google Update" is the prefix for the legacy GoogleUpdate "Run" key value
+// under HKCU.
+extern const wchar_t kLegacyRunValuePrefix[];
+
+// "GoogleUpdateTask{Machine/User}" is the common prefix for the legacy
+// GoogleUpdate tasks for system and user respectively.
+extern const wchar_t kLegacyTaskNamePrefixSystem[];
+extern const wchar_t kLegacyTaskNamePrefixUser[];
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_WIN_WIN_CONSTANTS_H_
