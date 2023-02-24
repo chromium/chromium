@@ -985,6 +985,14 @@ void ArcNetHostImpl::AddPasspointCredentials(
                      weak_factory_.GetWeakPtr()));
 }
 
+void ArcNetHostImpl::RequestPasspointAppApproval(
+    mojom::PasspointApprovalRequestPtr request,
+    RequestPasspointAppApprovalCallback callback) {
+  // TODO(b/266151265): Start a dialog for Passpoint approval.
+  std::move(callback).Run(
+      mojom::PasspointApprovalResponse::New(/*allow=*/false));
+}
+
 void ArcNetHostImpl::AddPasspointCredentialsWithProperties(
     base::Value::Dict properties) {
   if (properties.empty()) {

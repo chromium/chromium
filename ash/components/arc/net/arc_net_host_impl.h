@@ -93,6 +93,9 @@ class ArcNetHostImpl : public KeyedService,
   void StartLohs(mojom::LohsConfigPtr config,
                  StartLohsCallback callback) override;
   void StopLohs() override;
+  void RequestPasspointAppApproval(
+      mojom::PasspointApprovalRequestPtr request,
+      RequestPasspointAppApprovalCallback callback) override;
 
   // Overridden from ash::NetworkStateHandlerObserver.
   void ScanCompleted(const ash::DeviceState* /*unused*/) override;
