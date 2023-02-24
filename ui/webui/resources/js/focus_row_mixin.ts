@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {assert} from './assert_ts.js';
 import {focusWithoutInk} from './focus_without_ink.js';
 import {FocusRow, FocusRowDelegate} from './focus_row.js';

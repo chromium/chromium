@@ -10,9 +10,9 @@
  * handled by a C++ templatizer.
  */
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {parseHtmlSubset, sanitizeInnerHtml, SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import {parseHtmlSubset, sanitizeInnerHtml, SanitizeInnerHtmlOpts} from '//resources/js/parse_html_subset.js';
+import {dedupingMixin, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

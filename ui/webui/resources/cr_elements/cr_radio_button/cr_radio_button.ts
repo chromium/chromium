@@ -7,8 +7,8 @@ import '../cr_hidden_style.css.js';
 import '../cr_shared_vars.css.js';
 import './cr_radio_button_style.css.js';
 
+import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaperRippleBehavior} from 'chrome://resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 
 import {getTemplate} from './cr_radio_button.html.js';
 import {CrRadioButtonMixin, CrRadioButtonMixinInterface} from './cr_radio_button_mixin.js';
