@@ -4,24 +4,12 @@
 
 import("//chrome/browser/resources/settings/chromeos/os_settings.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":fake_settings_search_handler",
-    ":fake_user_action_recorder",
-  ]
-}
-
-js_library("fake_settings_search_handler") {
-  deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile" ]
-}
-
-js_library("fake_user_action_recorder") {
-  deps = [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_js_library_for_compile" ]
-}
+preprocessed_folder = "preprocessed"
+tsc_folder = "tsc"
 
 mojom("test_api_mojom") {
   testonly = true
@@ -235,37 +223,46 @@ test_files = [
   "app_management/toggle_row_test.js",
 ]
 
-copy("copy_ts") {
-  sources = test_files
-  outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  in_files = test_files
+  out_folder = "$target_gen_dir/$preprocessed_folder"
 }
 
-copy("copy_mojo") {
-  sources = [ "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/test_api.test-mojom-webui.js" ]
-  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+copy("copy_mojom") {
   deps = [ ":test_api_mojom_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/test_api.test-mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocessed_folder/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {
   allow_js = true
-  root_dir = target_gen_dir
-  out_dir = "$target_gen_dir/tsc"
-  in_files = [ "test_api.test-mojom-webui.js" ] + test_files
+  tsconfig_base = "tsconfig_base.json"
+  root_dir = "$target_gen_dir/$preprocessed_folder"
+  out_dir = "$target_gen_dir/$tsc_folder"
+  in_files = test_files + [ "test_api.test-mojom-webui.js" ]
   deps = [
     "//ash/webui/common/resources/hotspot:build_ts",
     "//chrome/browser/resources/settings/chromeos:build_ts",
     "//chrome/test/data/webui:build_ts",
     "//ui/webui/resources/cr_components/app_management:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
-    ":copy_mojo",
-    ":copy_ts",
+    ":copy_mojom",
+    ":preprocess",
   ]
-  path_mappings = [ "chrome://webui-test/*|" +
-                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                                target_gen_dir) ]
+  path_mappings = [
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+    "chrome://os-settings/*|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/settings/chromeos/tsc/*",
+            target_gen_dir),
+  ]
+  definitions = ts_definition_files
 }
 
 generate_grd("build_grdp") {

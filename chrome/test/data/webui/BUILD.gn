@@ -310,7 +310,6 @@ if (is_chromeos_ash) {
       "cr_components/chromeos:closure_compile",
       "nearby_share:closure_compile",
       "nearby_share/shared:closure_compile",
-      "settings/chromeos:closure_compile",
     ]
   }
 }

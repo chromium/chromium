@@ -97,6 +97,8 @@ ts_library("build_ts") {
       src_ts_files + html_wrapper_files + css_wrapper_files + mojom_webui_files
   out_dir = tsc_output_dir
 
+  # Allows .d.ts files to be generated for output JS files, so this build target
+  # can be referenced by other ts_library() targets (e.g. browser tests)
   composite = true
 }
 
