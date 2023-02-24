@@ -245,13 +245,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
   //   - NEW_CARD otherwise.
   absl::optional<CreditCard> ExtractCreditCard(const FormStructure& form);
 
-  // Returns the extracted IBAN from the `form` if applicable.
-  // This is the case if it is a new IBAN or a local IBAN.
-  //
-  // The function has one side-effect:
-  // - record_type of the returned IBAN is set to
-  //   - LOCAL_IBAN if a local IBAN matches;
-  //   - NEW_IBAN if no local IBAN matches
+  // Returns the extracted IBAN from the `form` if it is a new IBAN.
   absl::optional<IBAN> ExtractIBAN(const FormStructure& form);
 
   // Tries to initiate the saving of the `credit_card_import_candidate`
@@ -275,7 +269,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
           address_profile_import_candidates,
       bool allow_prompt = true);
 
-  // Extracts the IBAN from the form structure.
+  // Helper function which extracts the IBAN from the form structure.
   IBAN ExtractIBANFromForm(const FormStructure& form);
 
   // Go through the `form` fields and find a UPI ID to extract. The return value

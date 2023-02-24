@@ -918,6 +918,13 @@ absl::optional<IBAN> FormDataImporter::ExtractIBAN(const FormStructure& form) {
   if (candidate_iban.value().empty())
     return absl::nullopt;
 
+  // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
+  // submitted a form with an IBAN, which indicates that the user is familiar
+  // with IBANs as a concept. We set the pref so that even if the user travels
+  // to a country where IBAN functionality is not typically used, they will
+  // still be able to save new IBANs from the settings page using this pref.
+  personal_data_manager_->SetAutofillHasSeenIban();
+
   bool found_existing_local_iban = base::ranges::any_of(
       personal_data_manager_->GetLocalIBANs(), [&](const auto& iban) {
         return iban->value() == candidate_iban.value();

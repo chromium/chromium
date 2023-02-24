@@ -30,6 +30,7 @@ extern const char kAutofillCreditCardFidoAuthOfferCheckboxState[];
 // Please use kAutofillCreditCardEnabled, kAutofillIBANEnabled and
 // kAutofillProfileEnabled instead.
 extern const char kAutofillEnabledDeprecated[];
+extern const char kAutofillHasSeenIban[];
 extern const char kAutofillIBANEnabled[];
 extern const char kAutofillLastVersionDeduped[];
 extern const char kAutofillLastVersionDisusedAddressesDeleted[];
@@ -66,6 +67,10 @@ void SetCreditCardFIDOAuthEnabled(PrefService* prefs, bool enabled);
 bool IsAutofillCreditCardEnabled(const PrefService* prefs);
 
 void SetAutofillCreditCardEnabled(PrefService* prefs, bool enabled);
+
+bool HasSeenIban(const PrefService* prefs);
+
+void SetAutofillHasSeenIban(PrefService* prefs);
 
 bool IsAutofillIBANEnabled(const PrefService* prefs);
 

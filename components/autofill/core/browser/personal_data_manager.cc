@@ -829,6 +829,14 @@ std::string PersonalDataManager::AddIBAN(const IBAN& iban) {
   if (!IsAutofillIBANEnabled())
     return std::string();
 
+  // Sets the `kAutofillHasSeenIban` pref to true indicating that the user has
+  // added an IBAN via Chrome payment settings page or accepted the save-IBAN
+  // prompt, which indicates that the user is familiar with IBANs as a concept.
+  // We set the pref so that even if the user travels to a country where IBAN
+  // functionality is not typically used, they will still be able to save new
+  // IBANs from the settings page using this pref.
+  SetAutofillHasSeenIban();
+
   // Early exit if `is_off_the_record_` is true, or an IBAN which has the same
   // guid exists in `local_ibans_`, or fail to get local database.
   if (is_off_the_record_ || FindByGUID(local_ibans_, iban.guid()) ||
@@ -1521,6 +1529,14 @@ bool PersonalDataManager::IsAutofillProfileEnabled() const {
 
 bool PersonalDataManager::IsAutofillCreditCardEnabled() const {
   return prefs::IsAutofillCreditCardEnabled(pref_service_);
+}
+
+bool PersonalDataManager::IsAutofillHasSeenIbanPrefEnabled() const {
+  return prefs::HasSeenIban(pref_service_);
+}
+
+void PersonalDataManager::SetAutofillHasSeenIban() {
+  prefs::SetAutofillHasSeenIban(pref_service_);
 }
 
 bool PersonalDataManager::IsAutofillIBANEnabled() const {

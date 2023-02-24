@@ -46,6 +46,12 @@ const char kAutofillCreditCardFidoAuthOfferCheckboxState[] =
 // Boolean that is true if Autofill is enabled and allowed to save data.
 const char kAutofillEnabledDeprecated[] = "autofill.enabled";
 
+// Boolean that is true if a form with an IBAN field has ever been submitted, or
+// an IBAN has ever been saved via Chrome payments settings page. This helps to
+// enable IBAN functionality for those users who are not in a country where IBAN
+// is generally available but have used IBAN already.
+const char kAutofillHasSeenIban[] = "autofill.has_seen_iban";
+
 // Boolean that is true if Autofill is enabled and allowed to save IBAN data.
 extern const char kAutofillIBANEnabled[] = "autofill.iban_enabled";
 
@@ -108,7 +114,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDeduped, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-
+  registry->RegisterBooleanPref(
+      prefs::kAutofillHasSeenIban, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDisusedAddressesDeleted, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -167,6 +175,16 @@ bool IsAutofillCreditCardEnabled(const PrefService* prefs) {
 
 void SetAutofillCreditCardEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillCreditCardEnabled, enabled);
+}
+
+bool HasSeenIban(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillHasSeenIban);
+}
+
+// If called, always sets the pref to true, and once true, it will follow the
+// user around forever.
+void SetAutofillHasSeenIban(PrefService* prefs) {
+  prefs->SetBoolean(kAutofillHasSeenIban, true);
 }
 
 bool IsAutofillIBANEnabled(const PrefService* prefs) {
