@@ -900,7 +900,7 @@ TEST_F(FileNetLogObserverBoundedTest, InprogressDirectoryBlocked) {
 
   // By creating a file where a directory should be, it will not be possible to
   // write any event files.
-  EXPECT_TRUE(base::WriteFile(GetInprogressDirectory(), "x", 1));
+  EXPECT_TRUE(base::WriteFile(GetInprogressDirectory(), "x"));
 
   CreateAndStartObserving(nullptr, kTotalFileSize, kTotalNumFiles);
 
