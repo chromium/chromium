@@ -474,9 +474,9 @@ constexpr CGFloat kSignInPromoHeadlineFontSize = 17.0;
       // Lays out content vertically for standard view.
       self.buttonVerticalStackView.axis = UILayoutConstraintAxisVertical;
       self.buttonVerticalStackView.spacing =
-          kTitledPromoStyle.kButtonStackViewSubViewSpacing;
+          kStandardPromoStyle.kButtonStackViewSubViewSpacing;
       self.mainPromoStackView.spacing =
-          kTitledPromoStyle.kMainPromoSubViewSpacing;
+          kStandardPromoStyle.kMainPromoSubViewSpacing;
       self.contentStackView.axis = UILayoutConstraintAxisVertical;
       self.contentStackView.spacing =
           kStandardPromoStyle.kContentStackViewSubViewSpacing;
