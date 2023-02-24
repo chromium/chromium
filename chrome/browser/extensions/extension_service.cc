@@ -392,8 +392,6 @@ ExtensionService::ExtensionService(
   on_app_terminating_subscription_ =
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
           &ExtensionService::OnAppTerminating, base::Unretained(this)));
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
 
   host_registry_observation_.Observe(ExtensionHostRegistry::Get(profile));
 
@@ -2015,23 +2013,28 @@ void ExtensionService::OnAppTerminating() {
   browser_terminating_ = true;
 }
 
-void ExtensionService::Observe(int type,
-                               const content::NotificationSource& source,
-                               const content::NotificationDetails& details) {
-  DCHECK(type == content::NOTIFICATION_RENDERER_PROCESS_TERMINATED);
-  content::RenderProcessHost* process =
-      content::Source<content::RenderProcessHost>(source).ptr();
+void ExtensionService::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  if (!host_observation_.IsObservingSource(host)) {
+    host_observation_.AddObservation(host);
+  }
+}
+
+void ExtensionService::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  host_observation_.RemoveObservation(host);
+
   Profile* host_profile =
-      Profile::FromBrowserContext(process->GetBrowserContext());
+      Profile::FromBrowserContext(host->GetBrowserContext());
   if (!profile_->IsSameOrParent(host_profile->GetOriginalProfile()))
     return;
 
   ProcessMap* process_map = ProcessMap::Get(profile_);
-  if (process_map->Contains(process->GetID())) {
+  if (process_map->Contains(host->GetID())) {
     // An extension process was terminated, this might have resulted in an
     // app or extension becoming idle.
     std::set<std::string> extension_ids =
-        process_map->GetExtensionsInProcess(process->GetID());
+        process_map->GetExtensionsInProcess(host->GetID());
     // In addition to the extensions listed in the process map, one of those
     // extensions could be referencing a shared module which is waiting for
     // idle to update. Check all imports of these extensions, too.
@@ -2062,7 +2065,7 @@ void ExtensionService::Observe(int type,
       }
     }
   }
-  process_map->RemoveAllFromProcess(process->GetID());
+  process_map->RemoveAllFromProcess(host->GetID());
 }
 
 int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {
