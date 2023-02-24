@@ -118,7 +118,7 @@
     /* Bases */
     header: {
       light: '$cros.ref.secondary90',
-      dark:  '$cros.ref.secondary20',
+      dark:  '$cros.ref.secondary15',
     },
     'app-base-shaded': {
       light: '$cros.ref.neutralvariant95',
