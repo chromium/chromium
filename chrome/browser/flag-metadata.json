@@ -5011,12 +5011,12 @@
   {
     "name": "ntp-comprehensive-theme-realbox",
     "owners": [ "romanarora", "tiborg", "tluk" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 116
   },
   {
     "name": "ntp-comprehensive-theming",
     "owners": [ "romanarora", "tiborg", "tluk" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 116
   },
   {
     "name": "ntp-desktop-lens",
