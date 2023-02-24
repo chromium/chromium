@@ -137,7 +137,6 @@ int FingerprintStorage::GetRecentUnlockAttemptCount(base::TimeTicks timestamp) {
 
 void FingerprintStorage::OnRestarted() {
   LOG(WARNING) << "Biod restarted";
-  GetRecordsForUser();
 }
 
 void FingerprintStorage::OnStatusChanged(
@@ -181,7 +180,12 @@ void FingerprintStorage::OnAuthScanDone(
 void FingerprintStorage::OnSessionFailed() {}
 
 void FingerprintStorage::OnGetRecords(
-    const base::flat_map<std::string, std::string>& fingerprints_list_mapping) {
+    const base::flat_map<std::string, std::string>& fingerprints_list_mapping,
+    bool success) {
+  if (!success) {
+    LOG(ERROR) << "Get Records failure";
+    return;
+  }
   if (!IsFingerprintDisabledByPolicy(profile_->GetPrefs(), Purpose::kAny)) {
     profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
                                      fingerprints_list_mapping.size());

@@ -347,9 +347,11 @@ void FingerprintChromeOS::OnStartAuthSession(
 
 void FingerprintChromeOS::OnGetRecordsForUser(
     GetRecordsForUserCallback callback,
-    const std::vector<dbus::ObjectPath>& records) {
-  if (records.size() == 0) {
-    std::move(callback).Run({base::flat_map<std::string, std::string>()});
+    const std::vector<dbus::ObjectPath>& records,
+    bool success) {
+  if (records.size() == 0 || success == false) {
+    std::move(callback).Run({base::flat_map<std::string, std::string>()},
+                            success);
     StartNextRequest();
     return;
   }
@@ -372,7 +374,7 @@ void FingerprintChromeOS::OnGetLabelFromRecordPath(
   records_path_to_label_[record_path.value()] = label;
   if (records_path_to_label_.size() == num_records) {
     DCHECK(on_get_records_);
-    std::move(on_get_records_).Run(records_path_to_label_);
+    std::move(on_get_records_).Run(records_path_to_label_, true);
     StartNextRequest();
   }
 }

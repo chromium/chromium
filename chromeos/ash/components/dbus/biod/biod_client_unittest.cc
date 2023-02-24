@@ -258,7 +258,7 @@ TEST_F(BiodClientTest, TestStartEnrollSession) {
   EXPECT_EQ(kFakeObjectPath, returned_path);
 }
 
-TEST_F(BiodClientTest, TestGetRecordsForUser) {
+TEST_F(BiodClientTest, TestGetRecordsForUserWithRecords) {
   const std::string kFakeId("fakeId");
   const dbus::ObjectPath kFakeObjectPath(std::string("/fake/object/path"));
   const dbus::ObjectPath kFakeObjectPath2(std::string("/fake/object/path2"));
@@ -275,21 +275,49 @@ TEST_F(BiodClientTest, TestGetRecordsForUser) {
                        std::move(response));
   std::vector<dbus::ObjectPath> returned_object_paths = {
       dbus::ObjectPath(kInvalidTestPath)};
-  client_->GetRecordsForUser(
-      kFakeId,
-      base::BindOnce(&test_utils::CopyObjectPathArray, &returned_object_paths));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(kFakeObjectPaths, returned_object_paths);
+  bool returned_success = false;
 
-  // Verify that by sending a empty reponse the response is an empty array of
-  // object paths.
-  AddMethodExpectation(biod::kBiometricsManagerGetRecordsForUserMethod,
-                       nullptr);
-  returned_object_paths = {dbus::ObjectPath(kInvalidTestPath)};
   client_->GetRecordsForUser(
       kFakeId,
-      base::BindOnce(&test_utils::CopyObjectPathArray, &returned_object_paths));
+      base::BindOnce(
+          [](std::vector<dbus::ObjectPath>& returned_paths,
+             bool& returned_success, const std::vector<dbus::ObjectPath>& paths,
+             bool success) {
+            test_utils::CopyObjectPathArray(&returned_paths, paths);
+            returned_success = success;
+          },
+          std::ref(returned_object_paths), std::ref(returned_success)));
   base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(returned_success, true);
+  EXPECT_EQ(kFakeObjectPaths, returned_object_paths);
+}
+
+TEST_F(BiodClientTest, TestGetRecordsForUserWithoutRecords) {
+  const std::string kFakeId("fakeId");
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter writer(response.get());
+
+  // Create a fake response with an empty array. The response also
+  // should be an empty array.
+  AddMethodExpectation(biod::kBiometricsManagerGetRecordsForUserMethod,
+                       std::move(response));
+  std::vector<dbus::ObjectPath> returned_object_paths = {
+      dbus::ObjectPath(kInvalidTestPath)};
+  bool returned_success = false;
+
+  client_->GetRecordsForUser(
+      kFakeId,
+      base::BindOnce(
+          [](std::vector<dbus::ObjectPath>& returned_paths,
+             bool& returned_success, const std::vector<dbus::ObjectPath>& paths,
+             bool success) {
+            test_utils::CopyObjectPathArray(&returned_paths, paths);
+            returned_success = success;
+          },
+          std::ref(returned_object_paths), std::ref(returned_success)));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(returned_success, true);
   EXPECT_EQ(std::vector<dbus::ObjectPath>(), returned_object_paths);
 }
 
@@ -311,6 +339,30 @@ TEST_F(BiodClientTest, TestDestroyAllRecords) {
                        nullptr);
   result = false;
   client_->DestroyAllRecords(
+      base::BindOnce(&test_utils::CopyDBusMethodCallResult, &result));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(result);
+}
+
+TEST_F(BiodClientTest, TestRemoveRecord) {
+  const dbus::ObjectPath kFakeObjectPath(std::string("/fake/object/path"));
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter writer(response.get());
+
+  // Create an empty response to simulate success.
+  AddMethodExpectation(biod::kRecordRemoveMethod, std::move(response));
+  bool result = false;
+  client_->RemoveRecord(
+      kFakeObjectPath,
+      base::BindOnce(&test_utils::CopyDBusMethodCallResult, &result));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(result);
+
+  // Return a null response to simulate failure.
+  AddMethodExpectation(biod::kRecordRemoveMethod, nullptr);
+  result = false;
+  client_->RemoveRecord(
+      kFakeObjectPath,
       base::BindOnce(&test_utils::CopyDBusMethodCallResult, &result));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(result);

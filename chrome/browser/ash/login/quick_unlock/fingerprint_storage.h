@@ -42,7 +42,6 @@ class FingerprintStorage final
   static const int kMaximumUnlockAttempts = 5;
   static constexpr base::TimeDelta kRecentUnlockAttemptsDelta =
       base::Seconds(3);
-
   // Registers profile prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
@@ -104,8 +103,15 @@ class FingerprintStorage final
   void OnSessionFailed() override;
 
  private:
-  void OnGetRecords(const base::flat_map<std::string, std::string>&
-                        fingerprints_list_mapping);
+  void OnGetRecords(
+      const base::flat_map<std::string, std::string>& fingerprints_list_mapping,
+      bool success);
+
+  // GetRecordsForUser logic
+  void GetRecordsForUserInternal();
+
+  // On GetRecordsForUser failure, retries to retrieve the records
+  void RetryGetRecords();
 
   friend class FingerprintStorageTestApi;
   friend class QuickUnlockStorage;
