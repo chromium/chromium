@@ -63,14 +63,16 @@ void PrintHelp() {
           "  onc_validator [OPTION]... [TYPE] onc_file\n"
           "\n"
           "Valid TYPEs are:\n");
-  for (size_t i = 0; i < std::size(kTypes); ++i)
-    fprintf(stderr, "  %s\n", kTypes[i]);
+  for (auto& type : kTypes) {
+    fprintf(stderr, "  %s\n", type);
+  }
 
   fprintf(stderr,
           "\n"
           "Valid OPTIONs are:\n");
-  for (size_t i = 0; i < std::size(kSwitches); ++i)
-    fprintf(stderr, "  --%s\n", kSwitches[i]);
+  for (auto& switch_val : kSwitches) {
+    fprintf(stderr, "  --%s\n", switch_val);
+  }
 
   fprintf(stderr,
           "\n"
@@ -88,18 +90,18 @@ void PrintHelp() {
           kStatusArgumentError);
 }
 
-base::Value::Dict ReadDictionary(const std::string& filename) {
+absl::optional<base::Value::Dict> ReadDictionary(const std::string& filename) {
   base::FilePath path(filename);
   JSONFileValueDeserializer deserializer(path,
                                          base::JSON_ALLOW_TRAILING_COMMAS);
 
   std::string json_error;
   std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(NULL, &json_error);
+      deserializer.Deserialize(nullptr, &json_error);
   if (!value) {
     LOG(ERROR) << "Couldn't json-deserialize file '" << filename
                << "': " << json_error;
-    return nullptr;
+    return absl::nullopt;
   }
 
   if (!value->is_dict()) {
@@ -122,10 +124,11 @@ int main(int argc, const char* argv[]) {
     return kStatusArgumentError;
   }
 
-  base::Value::Dict onc_object = ReadDictionary(args[1]);
+  absl::optional<base::Value::Dict> onc_object = ReadDictionary(args[1]);
 
-  if (!onc_object)
+  if (!onc_object) {
     return kStatusJsonError;
+  }
 
   chromeos::onc::Validator validator(
       command_line.HasSwitch(kSwitchErrorOnUnknownField),
@@ -141,7 +144,7 @@ int main(int argc, const char* argv[]) {
     validator.SetOncSource(::onc::ONC_SOURCE_USER_IMPORT);
 
   std::string type_arg(args[0]);
-  const chromeos::onc::OncValueSignature* signature = NULL;
+  const chromeos::onc::OncValueSignature* signature = nullptr;
   if (type_arg == kToplevelConfiguration) {
     signature = &chromeos::onc::kToplevelConfigurationSignature;
   } else if (type_arg == kNetworkConfiguration) {
@@ -154,8 +157,7 @@ int main(int argc, const char* argv[]) {
   }
 
   chromeos::onc::Validator::Result result;
-  validator.ValidateAndRepairObject(
-      signature, Base::Value(std::move(onc_object)), &result);
+  validator.ValidateAndRepairObject(signature, onc_object.value(), &result);
 
   switch (result) {
     case chromeos::onc::Validator::VALID:

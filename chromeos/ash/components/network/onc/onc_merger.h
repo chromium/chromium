@@ -27,8 +27,8 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value::Dict MergeSettingsAndPoliciesToEffective(
     const base::Value::Dict* user_policy,
     const base::Value::Dict* device_policy,
-    const base::Value* user_settings,
-    const base::Value* shared_settings);
+    const base::Value::Dict* user_settings,
+    const base::Value::Dict* shared_settings);
 
 // Like MergeSettingsWithPoliciesToEffective but creates one dictionary in place
 // of each field that exists in any of the argument dictionaries. Each of these
@@ -42,8 +42,8 @@ base::Value::Dict MergeSettingsAndPoliciesToAugmented(
     const chromeos::onc::OncValueSignature& signature,
     const base::Value::Dict* user_policy,
     const base::Value::Dict* device_policy,
-    const base::Value* user_settings,
-    const base::Value* shared_settings,
+    const base::Value::Dict* user_settings,
+    const base::Value::Dict* shared_settings,
     const base::Value::Dict* active_settings);
 
 }  // namespace ash::onc

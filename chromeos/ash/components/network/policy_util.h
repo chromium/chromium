@@ -29,7 +29,7 @@ extern COMPONENT_EXPORT(CHROMEOS_NETWORK) const char kFakeCredential[];
 //   https://crbug.com/408990 .
 base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
                                    const base::Value::Dict* network_policy,
-                                   const base::Value* user_settings,
+                                   const base::Value::Dict* user_settings,
                                    const base::Value::Dict* active_settings,
                                    const NetworkProfile* profile);
 
@@ -39,7 +39,7 @@ base::Value::Dict CreateManagedONC(const base::Value::Dict* global_policy,
 void SetShillPropertiesForGlobalPolicy(
     const base::Value::Dict& shill_dictionary,
     const base::Value::Dict& global_network_policy,
-    base::Value::Dict* shill_properties_to_update);
+    base::Value::Dict& shill_properties_to_update);
 
 // Creates a Shill property dictionary from the given arguments. The resulting
 // dictionary will be sent to Shill by the caller. Depending on the profile
@@ -51,7 +51,7 @@ base::Value::Dict CreateShillConfiguration(
     const std::string& guid,
     const base::Value::Dict* global_policy,
     const base::Value::Dict* network_policy,
-    const base::Value* user_settings);
+    const base::Value::Dict* user_settings);
 
 // Returns true if |policy| matches |actual_network|, which must be part of a
 // ONC NetworkConfiguration. This should be the only such matching function

@@ -194,16 +194,18 @@ std::string GetNameFromProperties(const std::string& service_path,
 std::unique_ptr<NetworkUIData> GetUIDataFromValue(
     const base::Value& ui_data_value) {
   const std::string* ui_data_str = ui_data_value.GetIfString();
-  if (!ui_data_str)
+  if (!ui_data_str) {
     return nullptr;
-  if ((*ui_data_str).empty())
+  }
+  if (ui_data_str->empty()) {
     return std::make_unique<NetworkUIData>();
+  }
   absl::optional<base::Value::Dict> ui_data_dict =
       chromeos::onc::ReadDictionaryFromJson(*ui_data_str);
   if (!ui_data_dict.has_value()) {
     return nullptr;
   }
-  return std::make_unique<NetworkUIData>(base::Value(std::move(*ui_data_dict)));
+  return std::make_unique<NetworkUIData>(ui_data_dict.value());
 }
 
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
@@ -215,8 +217,9 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
     return nullptr;
   }
   std::unique_ptr<NetworkUIData> ui_data = GetUIDataFromValue(*ui_data_value);
-  if (!ui_data)
+  if (!ui_data) {
     LOG(ERROR) << "UIData is not a valid JSON dictionary.";
+  }
   return ui_data;
 }
 

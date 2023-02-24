@@ -10,20 +10,20 @@
 namespace ash {
 
 TEST(NetworkUIDataTest, ONCSource) {
-  base::Value ui_data_dict(base::Value::Type::DICT);
+  base::Value::Dict ui_data_dict;
 
-  ui_data_dict.SetStringKey("onc_source", "user_import");
+  ui_data_dict.Set("onc_source", "user_import");
   {
     NetworkUIData ui_data(ui_data_dict);
     EXPECT_EQ(::onc::ONC_SOURCE_USER_IMPORT, ui_data.onc_source());
   }
 
-  ui_data_dict.SetStringKey("onc_source", "device_policy");
+  ui_data_dict.Set("onc_source", "device_policy");
   {
     NetworkUIData ui_data(ui_data_dict);
     EXPECT_EQ(::onc::ONC_SOURCE_DEVICE_POLICY, ui_data.onc_source());
   }
-  ui_data_dict.SetStringKey("onc_source", "user_policy");
+  ui_data_dict.Set("onc_source", "user_policy");
   {
     NetworkUIData ui_data(ui_data_dict);
     EXPECT_EQ(::onc::ONC_SOURCE_USER_POLICY, ui_data.onc_source());

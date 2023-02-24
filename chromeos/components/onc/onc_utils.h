@@ -82,9 +82,10 @@ void SetHiddenSSIDField(base::Value::Dict& wifi_fields);
 // by |mask|. To find sensitive fields, signature and field name are checked
 // with the function FieldIsCredential().
 COMPONENT_EXPORT(CHROMEOS_ONC)
-base::Value MaskCredentialsInOncObject(const OncValueSignature& signature,
-                                       const base::Value& onc_object,
-                                       const std::string& mask);
+base::Value::Dict MaskCredentialsInOncObject(
+    const OncValueSignature& signature,
+    const base::Value::Dict& onc_object,
+    const std::string& mask);
 
 // Decrypts |onc_blob| with |passphrase| if necessary. Clears |network_configs|,
 // |global_network_config| and |certificates| and fills them with the validated

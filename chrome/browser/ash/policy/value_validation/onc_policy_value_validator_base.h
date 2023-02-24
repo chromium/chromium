@@ -50,16 +50,16 @@ class ONCPolicyValueValidatorBase : public PolicyValueValidator<PayloadProto> {
     }
 
     chromeos::onc::Validator validator(
-        false,  // Ignore unknown fields.
-        false,  // Ignore invalid recommended field names.
-        true,   // Fail on missing fields.
-        true,   // Validate for managed ONC.
-        true);  // Log warnings.
+        /*error_on_unknown_field=*/false,
+        /*error_on_wrong_recommended=*/false,
+        /*error_on_missing_field=*/true,
+        /*managed_onc=*/true,
+        /*log_warnings=*/true);
     validator.SetOncSource(source_);
     chromeos::onc::Validator::Result validation_result;
     validator.ValidateAndRepairObject(
-        &chromeos::onc::kToplevelConfigurationSignature,
-        base::Value(std::move(*root_dict)), &validation_result);
+        &chromeos::onc::kToplevelConfigurationSignature, root_dict.value(),
+        &validation_result);
 
     bool error_found = false;
     for (const chromeos::onc::Validator::ValidationIssue& issue :

@@ -276,37 +276,39 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
   // We need to ensure that required configuration properties (e.g. Type) are
   // included for ONC validation and translation to Shill properties.
-  base::Value user_settings_copy = user_settings.Clone();
-  user_settings_copy.SetKey(
-      ::onc::network_config::kType,
-      base::Value(network_util::TranslateShillTypeToONC(state->type())));
-  user_settings_copy.MergeDictionary(&user_settings);
+  base::Value::Dict user_settings_copy = user_settings.GetDict().Clone();
+  if (!user_settings_copy.contains(::onc::network_config::kType)) {
+    user_settings_copy.Set(
+        ::onc::network_config::kType,
+        network_util::TranslateShillTypeToONC(state->type()));
+  }
 
   // Validate the ONC dictionary. We are liberal and ignore unknown field
   // names. User settings are only partial ONC, thus we ignore missing fields.
   chromeos::onc::Validator validator(
-      false,  // Ignore unknown fields.
-      false,  // Ignore invalid recommended field names.
-      false,  // Ignore missing fields.
-      false,  // This ONC does not come from policy.
-      true);  // Log warnings.
+      /*error_on_unknown_field=*/false,
+      /*error_on_wrong_recommended=*/false,
+      /*error_on_missing_field=*/false,
+      /*managed_onc=*/false,
+      /*log_warnings=*/true);
 
   chromeos::onc::Validator::Result validation_result;
-  base::Value validated_user_settings = validator.ValidateAndRepairObject(
-      &chromeos::onc::kNetworkConfigurationSignature, user_settings_copy,
-      &validation_result);
+  absl::optional<base::Value::Dict> validated_user_settings =
+      validator.ValidateAndRepairObject(
+          &chromeos::onc::kNetworkConfigurationSignature, user_settings_copy,
+          &validation_result);
   if (validation_result == chromeos::onc::Validator::INVALID) {
     InvokeErrorCallback(service_path, std::move(error_callback),
                         kInvalidUserSettings);
     return;
   }
-  if (validation_result == chromeos::onc::Validator::VALID_WITH_WARNINGS)
+  if (validation_result == chromeos::onc::Validator::VALID_WITH_WARNINGS) {
     NET_LOG(USER) << "Validation of ONC user settings produced warnings.";
-  DCHECK(validated_user_settings.is_dict());
+  }
 
   // Don't allow AutoConnect=true for unmanaged wifi networks if
   // 'AllowOnlyPolicyNetworksToAutoconnect' policy is active.
-  if (EnablesUnmanagedWifiAutoconnect(validated_user_settings.GetDict()) &&
+  if (EnablesUnmanagedWifiAutoconnect(validated_user_settings.value()) &&
       AllowOnlyPolicyNetworksToAutoconnect()) {
     InvokeErrorCallback(service_path, std::move(error_callback),
                         kInvalidUserSettings);
@@ -316,7 +318,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
   // Fill in HexSSID field from contents of SSID field if not set already.
   chromeos::onc::FillInHexSSIDFieldsInOncObject(
       chromeos::onc::kNetworkConfigurationSignature,
-      validated_user_settings.GetDict());
+      validated_user_settings.value());
 
   const base::Value::Dict* network_policy = policies->GetPolicyByGuid(guid);
   if (network_policy) {
@@ -325,7 +327,7 @@ void ManagedNetworkConfigurationHandlerImpl::SetProperties(
 
   base::Value::Dict shill_dictionary = policy_util::CreateShillConfiguration(
       *profile, guid, policies->GetGlobalNetworkConfig(), network_policy,
-      &validated_user_settings);
+      &validated_user_settings.value());
 
   SetShillProperties(service_path, std::move(shill_dictionary),
                      std::move(callback), std::move(error_callback));
@@ -384,22 +386,23 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
       false);  // Don't log warnings.
 
   chromeos::onc::Validator::Result validation_result;
-  base::Value validated_properties = validator.ValidateAndRepairObject(
-      &chromeos::onc::kNetworkConfigurationSignature, properties,
-      &validation_result);
+  absl::optional<base::Value::Dict> validated_properties =
+      validator.ValidateAndRepairObject(
+          &chromeos::onc::kNetworkConfigurationSignature, properties.GetDict(),
+          &validation_result);
   if (validation_result == chromeos::onc::Validator::INVALID) {
     InvokeErrorCallback("", std::move(error_callback), kInvalidUserSettings);
     return;
   }
-  if (validation_result == chromeos::onc::Validator::VALID_WITH_WARNINGS)
+  if (validation_result == chromeos::onc::Validator::VALID_WITH_WARNINGS) {
     NET_LOG(DEBUG) << "Validation of ONC user settings produced warnings.";
-  DCHECK(validated_properties.is_dict());
+  }
 
   // Fill in HexSSID field from contents of SSID field if not set already - this
   // is required to properly match the configuration against existing policies.
   chromeos::onc::FillInHexSSIDFieldsInOncObject(
       chromeos::onc::kNetworkConfigurationSignature,
-      validated_properties.GetDict());
+      validated_properties.value());
 
   // Make sure the network is not configured through a user policy.
   const ProfilePolicies* policies = nullptr;
@@ -412,7 +415,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     }
 
     if (policies->HasPolicyMatchingShillProperties(
-            validated_properties.GetDict())) {
+            validated_properties.value())) {
       InvokeErrorCallback("", std::move(error_callback),
                           kNetworkAlreadyConfigured);
       return;
@@ -427,7 +430,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
   }
 
   if (policies->HasPolicyMatchingShillProperties(
-          validated_properties.GetDict())) {
+          validated_properties.value())) {
     InvokeErrorCallback("", std::move(error_callback),
                         kNetworkAlreadyConfigured);
     return;
@@ -448,7 +451,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
     // forgotten while the UI is open. Configuration should succeed and the GUID
     // can be reused.
     if (network_state) {
-      if (!MatchesExistingNetworkState(validated_properties.GetDict(),
+      if (!MatchesExistingNetworkState(validated_properties.value(),
                                        network_state)) {
         InvokeErrorCallback(network_state->path(), std::move(error_callback),
                             kNetworkAlreadyConfigured);
@@ -468,7 +471,7 @@ void ManagedNetworkConfigurationHandlerImpl::CreateConfiguration(
       policy_util::CreateShillConfiguration(*profile, guid,
                                             nullptr,  // no global policy
                                             nullptr,  // no network policy
-                                            &validated_properties);
+                                            &validated_properties.value());
 
   network_configuration_handler_->CreateShillConfiguration(
       shill_dictionary, std::move(callback), std::move(error_callback));
@@ -1286,7 +1289,7 @@ void ManagedNetworkConfigurationHandlerImpl::SendProperties(
   std::unique_ptr<NetworkUIData> ui_data =
       shill_property_util::GetUIDataFromProperties(shill_properties.value());
 
-  const base::Value* user_settings = nullptr;
+  const base::Value::Dict* user_settings = nullptr;
 
   if (ui_data && profile) {
     user_settings = ui_data->GetUserSettingsDictionary();

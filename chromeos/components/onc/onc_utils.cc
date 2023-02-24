@@ -84,13 +84,12 @@ bool IsUserLoginPasswordPlaceholder(const std::string& field_name,
 // passphrases) in ONC.
 class OncMaskValues : public Mapper {
  public:
-  static base::Value Mask(const OncValueSignature& signature,
-                          const base::Value& onc_object,
-                          const std::string& mask) {
+  static base::Value::Dict Mask(const OncValueSignature& signature,
+                                const base::Value::Dict& onc_object,
+                                const std::string& mask) {
     OncMaskValues masker(mask);
     bool error = false;
-    base::Value result(
-        masker.MapObject(signature, onc_object.GetDict(), &error));
+    base::Value::Dict result = masker.MapObject(signature, onc_object, &error);
     return result;
   }
 
@@ -582,9 +581,10 @@ void SetHiddenSSIDField(base::Value::Dict& wifi_fields) {
   wifi_fields.Set(::onc::wifi::kHiddenSSID, false);
 }
 
-base::Value MaskCredentialsInOncObject(const OncValueSignature& signature,
-                                       const base::Value& onc_object,
-                                       const std::string& mask) {
+base::Value::Dict MaskCredentialsInOncObject(
+    const OncValueSignature& signature,
+    const base::Value::Dict& onc_object,
+    const std::string& mask) {
   return OncMaskValues::Mask(signature, onc_object, mask);
 }
 
@@ -664,8 +664,10 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   validator.SetOncSource(onc_source);
 
   Validator::Result validation_result;
-  base::Value validated_toplevel_onc = validator.ValidateAndRepairObject(
-      &kToplevelConfigurationSignature, toplevel_onc, &validation_result);
+  absl::optional<base::Value::Dict> validated_toplevel_onc =
+      validator.ValidateAndRepairObject(&kToplevelConfigurationSignature,
+                                        toplevel_onc.GetDict(),
+                                        &validation_result);
 
   if (from_policy) {
     UMA_HISTOGRAM_BOOLEAN("Enterprise.ONC.PolicyValidation",
@@ -678,17 +680,15 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
                    << GetSourceAsString(onc_source);
     success = false;
   } else if (validation_result == Validator::INVALID ||
-             validated_toplevel_onc.is_none()) {
+             !validated_toplevel_onc.has_value()) {
     NET_LOG(ERROR) << "ONC is invalid and couldn't be repaired: "
                    << GetSourceAsString(onc_source);
     return false;
   }
 
-  base::Value::Dict& validated_toplevel_onc_dict =
-      validated_toplevel_onc.GetDict();
   if (certificates) {
-    base::Value::List* validated_certs = validated_toplevel_onc_dict.FindList(
-        ::onc::toplevel_config::kCertificates);
+    base::Value::List* validated_certs =
+        validated_toplevel_onc->FindList(::onc::toplevel_config::kCertificates);
     if (validated_certs)
       *certificates = std::move(*validated_certs);
   }
@@ -697,9 +697,8 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
   // nullptr, because ResolveServerCertRefsInNetworks could affect the return
   // value of the function (which is supposed to aggregate validation issues in
   // all segments of the ONC blob).
-  base::Value::List* validated_networks_list =
-      validated_toplevel_onc_dict.FindList(
-          ::onc::toplevel_config::kNetworkConfigurations);
+  base::Value::List* validated_networks_list = validated_toplevel_onc->FindList(
+      ::onc::toplevel_config::kNetworkConfigurations);
   if (validated_networks_list) {
     FillInHexSSIDFieldsInNetworks(*validated_networks_list);
     // Set HiddenSSID to default value to solve the issue crbug.com/1171837
@@ -722,7 +721,7 @@ bool ParseAndValidateOncForImport(const std::string& onc_blob,
 
   if (global_network_config) {
     base::Value::Dict* validated_global_config =
-        validated_toplevel_onc_dict.FindDict(
+        validated_toplevel_onc->FindDict(
             ::onc::toplevel_config::kGlobalNetworkConfiguration);
     if (validated_global_config) {
       *global_network_config = std::move(*validated_global_config);

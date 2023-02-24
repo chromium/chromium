@@ -290,38 +290,35 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
       if (!policy.has_value()) {
         return false;
       }
-      return SetPolicy(onc_source, userhash, base::Value(std::move(*policy)));
+      return SetPolicy(onc_source, userhash, std::move(policy.value()));
     }
-    base::Value policy_value = test_utils::ReadTestDictionaryValue(path_to_onc);
-    if (!policy_value.is_dict()) {
-      return false;
-    }
+    base::Value::Dict policy_value =
+        test_utils::ReadTestDictionary(path_to_onc);
     return SetPolicy(onc_source, userhash, std::move(policy_value));
   }
 
   bool SetPolicy(::onc::ONCSource onc_source,
                  const std::string& userhash,
-                 base::Value policy) {
-    chromeos::onc::Validator validator(true,   // error_on_unknown_field
-                                       true,   // error_on_wrong_recommended
-                                       false,  // error_on_missing_field
-                                       true,   // managed_onc
-                                       true);  // log_warnings
+                 base::Value::Dict policy) {
+    chromeos::onc::Validator validator(/*error_on_unknown_field=*/true,
+                                       /*error_on_wrong_recommended=*/true,
+                                       /*error_on_missing_field=*/false,
+                                       /*managed_onc=*/true,
+                                       /*log_warnings=*/true);
     validator.SetOncSource(onc_source);
     chromeos::onc::Validator::Result validation_result;
-    base::Value validated_policy = validator.ValidateAndRepairObject(
-        &chromeos::onc::kToplevelConfigurationSignature, policy,
-        &validation_result);
+    absl::optional<base::Value::Dict> validated_policy =
+        validator.ValidateAndRepairObject(
+            &chromeos::onc::kToplevelConfigurationSignature, policy,
+            &validation_result);
     if (validation_result == chromeos::onc::Validator::INVALID) {
       ADD_FAILURE() << "Network configuration invalid.";
       return false;
     }
-    const base::Value::Dict& validated_policy_dict = validated_policy.GetDict();
 
     base::Value::List network_configs;
-    const base::Value::List* found_network_configs =
-        validated_policy_dict.FindList(
-            ::onc::toplevel_config::kNetworkConfigurations);
+    const base::Value::List* found_network_configs = validated_policy->FindList(
+        ::onc::toplevel_config::kNetworkConfigurations);
     if (found_network_configs) {
       for (const auto& network_config : *found_network_configs) {
         network_configs.Append(network_config.Clone());
@@ -329,9 +326,8 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
     }
 
     base::Value::Dict global_config;
-    const base::Value::Dict* found_global_config =
-        validated_policy_dict.FindDict(
-            ::onc::toplevel_config::kGlobalNetworkConfiguration);
+    const base::Value::Dict* found_global_config = validated_policy->FindDict(
+        ::onc::toplevel_config::kGlobalNetworkConfiguration);
     if (found_global_config) {
       global_config = found_global_config->Clone();
     }
@@ -344,9 +340,9 @@ class ManagedNetworkConfigurationHandlerTest : public testing::Test {
   void SetUpEntry(const std::string& path_to_shill_json,
                   const std::string& profile_path,
                   const std::string& entry_path) {
-    base::Value entry = test_utils::ReadTestDictionaryValue(path_to_shill_json);
-    GetShillProfileClient()->AddEntry(profile_path, entry_path,
-                                      entry.GetDict());
+    base::Value::Dict entry =
+        test_utils::ReadTestDictionary(path_to_shill_json);
+    GetShillProfileClient()->AddEntry(profile_path, entry_path, entry);
   }
 
   void ResetManagedNetworkConfigurationHandler() {
@@ -462,7 +458,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, VariableSetAfterPolicy) {
         "Type": "UnencryptedConfiguration"
       })";
   EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-                        base::test::ParseJson(onc_policy)));
+                        base::test::ParseJsonDict(onc_policy)));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -534,7 +530,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, VariableSetBeforePolicy) {
         "Type": "UnencryptedConfiguration"
       })";
   EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-                        base::test::ParseJson(onc_policy)));
+                        base::test::ParseJsonDict(onc_policy)));
   base::RunLoop().RunUntilIdle();
 
   std::string service_path =
@@ -582,7 +578,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, VariableDoesNotAffectPolicy) {
         "Type": "UnencryptedConfiguration"
       })";
   EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-                        base::test::ParseJson(onc_policy)));
+                        base::test::ParseJsonDict(onc_policy)));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(managed_handler()->IsAnyPolicyApplicationRunning());
@@ -1195,7 +1191,7 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
       "Type": "UnencryptedConfiguration"
     })";
   EXPECT_TRUE(SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1,
-                        base::test::ParseJson(onc_policy)));
+                        base::test::ParseJsonDict(onc_policy)));
   base::RunLoop().RunUntilIdle();
 
   // Expect that "policy_wifi1" policy has been applied by checking that the

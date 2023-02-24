@@ -18,8 +18,7 @@
 #include "components/onc/onc_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace onc {
+namespace chromeos::onc {
 
 namespace {
 // A valid but empty (no networks and no certificates) and unencrypted
@@ -37,7 +36,7 @@ class ONCValidatorTest : public ::testing::Test {
   // validation is stored, so that expectations can be checked afterwards using
   // one of the Expect* functions below.
   void Validate(bool strict,
-                base::Value onc_object,
+                base::Value::Dict onc_object,
                 const OncValueSignature* signature,
                 bool managed_onc,
                 ::onc::ONCSource onc_source) {
@@ -67,23 +66,25 @@ class ONCValidatorTest : public ::testing::Test {
 
   void ExpectValid() {
     EXPECT_EQ(Validator::VALID, validation_result_);
-    EXPECT_TRUE(test_utils::Equals(&original_object_, &repaired_object_));
+    EXPECT_TRUE(
+        test_utils::Equals(&original_object_, &repaired_object_.value()));
   }
 
-  void ExpectRepairWithWarnings(const base::Value& expected_repaired) {
+  void ExpectRepairWithWarnings(const base::Value::Dict& expected_repaired) {
     EXPECT_EQ(Validator::VALID_WITH_WARNINGS, validation_result_);
-    EXPECT_TRUE(test_utils::Equals(&expected_repaired, &repaired_object_));
+    EXPECT_TRUE(
+        test_utils::Equals(&expected_repaired, &repaired_object_.value()));
   }
 
   void ExpectInvalid() {
     EXPECT_EQ(Validator::INVALID, validation_result_);
-    EXPECT_TRUE(repaired_object_.is_none());
+    EXPECT_FALSE(repaired_object_.has_value());
   }
 
  private:
   Validator::Result validation_result_;
-  base::Value original_object_;
-  base::Value repaired_object_;
+  base::Value::Dict original_object_;
+  absl::optional<base::Value::Dict> repaired_object_;
 };
 
 namespace {
@@ -120,8 +121,8 @@ TEST_F(ONCValidatorTest, EmptyUnencryptedConfiguration) {
   absl::optional<base::Value::Dict> dict =
       ReadDictionaryFromJson(kEmptyUnencryptedConfiguration);
   EXPECT_TRUE(dict.has_value());
-  Validate(true, base::Value(std::move(*dict)),
-           &kToplevelConfigurationSignature, false, ::onc::ONC_SOURCE_NONE);
+  Validate(true, std::move(dict.value()), &kToplevelConfigurationSignature,
+           false, ::onc::ONC_SOURCE_NONE);
   ExpectValid();
 }
 
@@ -133,15 +134,15 @@ class ONCValidatorValidTest : public ONCValidatorTest,
 
 TEST_P(ONCValidatorValidTest, StrictValidationValid) {
   OncParams onc = GetParam();
-  Validate(true, test_utils::ReadTestDictionaryValue(onc.location),
-           onc.signature, onc.is_managed, onc.onc_source);
+  Validate(true, test_utils::ReadTestDictionary(onc.location), onc.signature,
+           onc.is_managed, onc.onc_source);
   ExpectValid();
 }
 
 TEST_P(ONCValidatorValidTest, LiberalValidationValid) {
   OncParams onc = GetParam();
-  Validate(false, test_utils::ReadTestDictionaryValue(onc.location),
-           onc.signature, onc.is_managed, onc.onc_source);
+  Validate(false, test_utils::ReadTestDictionary(onc.location), onc.signature,
+           onc.is_managed, onc.onc_source);
   ExpectValid();
 }
 
@@ -316,12 +317,12 @@ class ONCValidatorTestRepairable
  public:
   // Load the common test data and return the dictionary at the field with
   // name |name|.
-  base::Value GetDictionaryFromTestFile(const std::string& name) {
+  base::Value::Dict GetDictionaryFromTestFile(const std::string& name) {
     base::Value dict = test_utils::ReadTestDictionaryValue(
         "invalid_settings_with_repairs.json");
-    base::Value* result = dict.GetDict().Find(name);
+    base::Value::Dict* result = dict.GetDict().FindDict(name);
     EXPECT_TRUE(result);
-    return result ? std::move(*result) : base::Value();
+    return result ? std::move(*result) : base::Value::Dict();
   }
 };
 
@@ -638,5 +639,4 @@ INSTANTIATE_TEST_SUITE_P(
                       true),
             ExpectBothNotValid("", "invalid-scope-due-to-missing-type"))));
 
-}  // namespace onc
-}  // namespace chromeos
+}  // namespace chromeos::onc

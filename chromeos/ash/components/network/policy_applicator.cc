@@ -284,7 +284,7 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
   }
   remaining_policy_guids_.erase(new_guid);
 
-  const base::Value* user_settings =
+  const base::Value::Dict* user_settings =
       ui_data ? ui_data->GetUserSettingsDictionary() : nullptr;
   base::Value::Dict new_shill_properties =
       policy_util::CreateShillConfiguration(profile_, new_guid,
@@ -341,7 +341,7 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
   // network settings have to be applied.
   base::Value::Dict shill_properties_to_update;
   policy_util::SetShillPropertiesForGlobalPolicy(
-      entry_properties, global_network_config_, &shill_properties_to_update);
+      entry_properties, global_network_config_, shill_properties_to_update);
   if (shill_properties_to_update.empty()) {
     VLOG(2) << "Ignore unmanaged entry.";
     // Calling a SetProperties of Shill with an empty dictionary is a no op.
@@ -443,7 +443,7 @@ void PolicyApplicator::ApplyRemainingPolicies() {
 
     base::Value::Dict shill_dictionary = policy_util::CreateShillConfiguration(
         profile_, guid, &global_network_config_, network_policy,
-        nullptr /* no user settings */);
+        /*user_settings=*/nullptr);
 
     handler_->CreateConfigurationFromPolicy(
         shill_dictionary,

@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/values.h"
 #include "components/onc/onc_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -22,7 +23,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
   NetworkUIData();
   NetworkUIData(const NetworkUIData& other);
   NetworkUIData& operator=(const NetworkUIData& other);
-  explicit NetworkUIData(const base::Value& dict);
+  explicit NetworkUIData(const base::Value::Dict& dict);
   ~NetworkUIData();
 
   // Creates a NetworkUIData object from |onc_source|. This function is used to
@@ -30,11 +31,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
   static std::unique_ptr<NetworkUIData> CreateFromONC(
       ::onc::ONCSource onc_source);
 
-  // Returns a |user_settings_| as a base::Value::Type::DICT Value*.
-  const base::Value* GetUserSettingsDictionary() const;
+  // Returns a |user_settings_|.
+  const base::Value::Dict* GetUserSettingsDictionary() const;
 
-  // Setus |user_settings_| to the provided value which must be a dictionary.
-  void SetUserSettingsDictionary(base::Value dict);
+  // Sets |user_settings_| to the provided value.
+  void SetUserSettingsDictionary(base::Value::Dict dict);
 
   // Returns a JSON string representing currently configured values for storing
   // in Shill.
@@ -46,9 +47,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
   std::string GetONCSourceAsString() const;
 
   ::onc::ONCSource onc_source_;
-  // This can be a NONE value if there is no user settings dictionary, or a
-  // DICTIONARY value otherwise.
-  base::Value user_settings_;
+  absl::optional<base::Value::Dict> user_settings_;
 };
 
 }  // namespace ash

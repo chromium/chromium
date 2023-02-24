@@ -231,10 +231,10 @@ TEST_P(ONCUtilsMaskCredentialsTest, Test) {
   ASSERT_TRUE(expected_after_masking_value)
       << "Could not parse " << GetParam().expected_after_masking;
 
-  base::Value masked = MaskCredentialsInOncObject(*(GetParam().onc_signature),
-                                                  *onc_value, "******");
+  base::Value::Dict masked = MaskCredentialsInOncObject(
+      *(GetParam().onc_signature), onc_value->GetDict(), "******");
 
-  EXPECT_EQ(masked, *expected_after_masking_value);
+  EXPECT_EQ(masked, expected_after_masking_value->GetDict());
 }
 
 constexpr MaskCredentialsTestCase kMaskCredentialsTestCases[] = {
