@@ -1057,7 +1057,7 @@
       'gpu-fyi-try-android-p-pixel-2-32': 'gpu_tests_android_release_trybot_reclient',
       'gpu-fyi-try-android-pixel-6-64': 'gpu_tests_android_release_trybot_arm64_reclient',
       'gpu-fyi-try-android-r-pixel-4-32': 'gpu_tests_android_release_trybot_reclient',
-      'gpu-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64',
+      'gpu-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64_reclient',
       'linux_android_dbg_ng': 'android_debug_bot',
       'try-nougat-phone-tester': 'android_debug_trybot_arm64_reclient',
     },
@@ -1065,7 +1065,7 @@
     'tryserver.chromium.angle': {
       'android-angle-chromium-try': 'gpu_tests_android_release_trybot_arm64_fastbuild_reclient',
       'fuchsia-angle-try': 'angle_deqp_release_trybot_fuchsia_reclient',
-      'ios-angle-try-intel': 'angle_deqp_release_trybot_ios',
+      'ios-angle-try-intel': 'angle_deqp_release_trybot_ios_reclient',
       'linux-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
       'mac-angle-chromium-try': 'gpu_tests_release_trybot_reclient',
       'win-angle-chromium-x64-try': 'gpu_tests_release_trybot_reclient',
@@ -1121,12 +1121,12 @@
     },
 
     'tryserver.chromium.dawn': {
-      'android-dawn-arm-rel': 'dawn_tests_android_release_trybot',
-      'dawn-android-arm-deps-rel': 'dawn_tests_android_release_trybot',
+      'android-dawn-arm-rel': 'dawn_tests_android_release_trybot_reclient',
+      'dawn-android-arm-deps-rel': 'dawn_tests_android_release_trybot_reclient',
       'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
-      'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot',
-      'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot',
+      'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_reclient',
+      'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_reclient',
       'dawn-try-win-x64-intel-exp': 'dawn_tests_release_trybot_reclient',
       'dawn-try-win-x86-intel-exp': 'dawn_tests_release_trybot_x86_reclient',
       'dawn-try-win10-x64-asan-rel': 'dawn_tests_asan_release_trybot_reclient',
@@ -1134,7 +1134,7 @@
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86_reclient',
       'linux-dawn-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
-      'mac-dawn-rel': 'dawn_tests_release_trybot',
+      'mac-dawn-rel': 'dawn_tests_release_trybot_reclient',
       'win-dawn-rel': 'dawn_tests_release_trybot_reclient',
     },
 
@@ -1167,8 +1167,8 @@
       'gpu-fyi-try-linux-nvidia-exp': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-linux-nvidia-rel': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-linux-nvidia-tsn': 'gpu_fyi_tests_release_trybot_tsan_reclient',
-      'gpu-try-linux-nvidia-dbg': 'gpu_tests_debug_bot',
-      'gpu-try-linux-nvidia-rel': 'gpu_tests_release_trybot',
+      'gpu-try-linux-nvidia-dbg': 'gpu_tests_debug_bot_reclient',
+      'gpu-try-linux-nvidia-rel': 'gpu_tests_release_trybot_reclient',
       'layout_test_leak_detection': 'release_trybot_reclient',
       'leak_detection_linux': 'release_trybot_reclient',
       'linux-1mbu-compile-fyi-rel': 'release_trybot_reclient',
@@ -1244,7 +1244,7 @@
       'gpu-fyi-try-mac-amd-retina-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
       'gpu-fyi-try-mac-amd-retina-exp': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-mac-amd-retina-rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'gpu-fyi-try-mac-arm64-apple-m1-exp': 'gpu_fyi_tests_release_trybot_arm64',
+      'gpu-fyi-try-mac-arm64-apple-m1-exp': 'gpu_fyi_tests_release_trybot_arm64_reclient',
       'gpu-fyi-try-mac-arm64-apple-m1-rel': 'gpu_fyi_tests_release_trybot_arm64_reclient',
       'gpu-fyi-try-mac-intel-asan': 'gpu_fyi_tests_release_trybot_asan_reclient',
       'gpu-fyi-try-mac-intel-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
@@ -1335,7 +1335,7 @@
       'linux-swangle-chromium-try-x64': 'gpu_tests_release_trybot_reclient',
       'linux-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
       'linux-swangle-try-x64': 'angle_deqp_release_trybot_reclient',
-      'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot',
+      'mac-swangle-chromium-try-x64': 'gpu_tests_release_trybot_reclient',
       'win-swangle-chromium-try-x86': 'gpu_tests_release_trybot_x86_resource_allowlisting_reclient',
       'win-swangle-try-tot-swiftshader-x64': 'angle_deqp_release_trybot_reclient',
       'win-swangle-try-tot-swiftshader-x86': 'angle_deqp_release_trybot_x86_reclient',
@@ -1803,8 +1803,8 @@
       'angle_deqp_tests', 'shared_release_trybot_reclient', 'fuchsia',
     ],
 
-    'angle_deqp_release_trybot_ios': [
-      'angle_deqp_tests', 'release_trybot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
+    'angle_deqp_release_trybot_ios_reclient': [
+      'angle_deqp_tests', 'release_trybot_reclient', 'ios', 'ios_simulator', 'ios_cpu_x64', 'xctest',
     ],
 
     'angle_deqp_release_trybot_reclient': [
@@ -2409,10 +2409,6 @@
       'codesearch', 'android_without_codecs', 'static', 'goma',
     ],
 
-    'dawn_tests_android_release_trybot': [
-      'dawn_no_gl', 'android', 'release_trybot_minimal_symbols',
-    ],
-
     'dawn_tests_android_release_trybot_reclient': [
       'dawn_no_gl', 'android', 'release_trybot_minimal_symbols_reclient',
     ],
@@ -2431,10 +2427,6 @@
 
     'dawn_tests_release_bot_dcheck_always_on_x86_reclient': [
       'dawn_tests', 'release_trybot_minimal_symbols_reclient', 'x86',
-    ],
-
-    'dawn_tests_release_trybot': [
-      'dawn_tests', 'release_trybot',
     ],
 
     'dawn_tests_release_trybot_reclient': [
@@ -2539,10 +2531,6 @@
       'gpu_fyi_tests', 'dx12vk', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
     ],
 
-    'gpu_fyi_tests_release_trybot_arm64': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'arm64', 'disable_nacl',
-    ],
-
     'gpu_fyi_tests_release_trybot_arm64_reclient': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'arm64', 'disable_nacl',
     ],
@@ -2580,10 +2568,6 @@
       'gpu_tests', 'android', 'release_bot_reclient', 'arm64',
       'resource_allowlisting', 'static_angle', 'android_fastbuild', 'webview_google',
       'android_no_proguard', 'use_clang_coverage',
-    ],
-
-    'gpu_tests_android_release_trybot_arm64': [
-      'gpu_tests', 'android', 'release_trybot_minimal_symbols', 'arm64', 'static_angle',
     ],
 
     'gpu_tests_android_release_trybot_arm64_fastbuild_reclient': [
@@ -2704,10 +2688,6 @@
 
     'gpu_tests_release_bot_x86_no_symbols_reclient': [
       'gpu_tests', 'release_bot_reclient', 'x86', 'no_symbols',
-    ],
-
-    'gpu_tests_release_trybot': [
-      'gpu_tests', 'release_trybot',
     ],
 
     'gpu_tests_release_trybot_invert_fieldtrials': [
