@@ -42,6 +42,12 @@ VideoEncoder::PendingEncode::PendingEncode() = default;
 VideoEncoder::PendingEncode::PendingEncode(PendingEncode&&) = default;
 VideoEncoder::PendingEncode::~PendingEncode() = default;
 
+VideoEncoder::EncodeOptions::EncodeOptions(bool key_frame)
+    : key_frame(key_frame) {}
+VideoEncoder::EncodeOptions::EncodeOptions() = default;
+VideoEncoder::EncodeOptions::EncodeOptions(const EncodeOptions&) = default;
+VideoEncoder::EncodeOptions::~EncodeOptions() = default;
+
 void VideoEncoder::DisablePostedCallbacks() {
   post_callbacks_ = false;
 }

@@ -44,7 +44,7 @@ class MEDIA_EXPORT OffloadingVideoEncoder final : public VideoEncoder {
                   EncoderStatusCB done_cb) override;
 
   void Encode(scoped_refptr<VideoFrame> frame,
-              bool key_frame,
+              const EncodeOptions& encode_options,
               EncoderStatusCB done_cb) override;
 
   void ChangeOptions(const Options& options,

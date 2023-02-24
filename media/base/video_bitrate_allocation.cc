@@ -23,6 +23,8 @@ static media::Bitrate MakeReplacementBitrate(const media::Bitrate& old,
       return media::Bitrate::ConstantBitrate(target_bps);
     case media::Bitrate::Mode::kVariable:
       return media::Bitrate::VariableBitrate(target_bps, peak_bps);
+    case media::Bitrate::Mode::kExternal:
+      return media::Bitrate::ExternalRateControl();
   }
 }
 
@@ -42,6 +44,11 @@ VideoBitrateAllocation::VideoBitrateAllocation(Bitrate::Mode mode) {
       // For variable bitrates, the peak must not be zero as enforced by
       // Bitrate.
       sum_bitrate_ = Bitrate::VariableBitrate(0u, 1u);
+      break;
+    case Bitrate::Mode::kExternal:
+      // For variable bitrates, the peak must not be zero as enforced by
+      // Bitrate.
+      sum_bitrate_ = Bitrate::ExternalRateControl();
       break;
   }
 }
@@ -150,6 +157,9 @@ std::string VideoBitrateAllocation::ToString() const {
       break;
     case Bitrate::Mode::kVariable:
       ss << "VBR with peak bps " << sum_bitrate_.peak_bps();
+      break;
+    case Bitrate::Mode::kExternal:
+      ss << "External rate control";
       break;
   }
   return ss.str();

@@ -491,19 +491,19 @@ void VideoEncodeAcceleratorAdapter::InitializeInternalOnAcceleratorThread() {
 }
 
 void VideoEncodeAcceleratorAdapter::Encode(scoped_refptr<VideoFrame> frame,
-                                           bool key_frame,
+                                           const EncodeOptions& encode_options,
                                            EncoderStatusCB done_cb) {
   DCHECK(!accelerator_task_runner_->RunsTasksInCurrentSequence());
   accelerator_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread,
-                     base::Unretained(this), std::move(frame), key_frame,
+                     base::Unretained(this), std::move(frame), encode_options,
                      WrapCallback(std::move(done_cb))));
 }
 
 void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     scoped_refptr<VideoFrame> frame,
-    bool key_frame,
+    const EncodeOptions& encode_options,
     EncoderStatusCB done_cb) {
   TRACE_EVENT1("media",
                "VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread",
@@ -515,7 +515,7 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
     auto pending_encode = std::make_unique<PendingEncode>();
     pending_encode->done_callback = std::move(done_cb);
     pending_encode->frame = std::move(frame);
-    pending_encode->key_frame = key_frame;
+    pending_encode->options = encode_options;
     pending_encodes_.push_back(std::move(pending_encode));
     if (state_ == State::kWaitingForFirstFrame)
       InitializeInternalOnAcceleratorThread();
@@ -563,6 +563,7 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
 
   frame = std::move(result).value();
 
+  bool key_frame = encode_options.key_frame;
   if (last_frame_color_space_ != frame->ColorSpace()) {
     last_frame_color_space_ = frame->ColorSpace();
     key_frame = true;
@@ -914,7 +915,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
 
   // Send off the encodes that came in while we were waiting for initialization.
   for (auto& encode : pending_encodes_) {
-    EncodeOnAcceleratorThread(std::move(encode->frame), encode->key_frame,
+    EncodeOnAcceleratorThread(std::move(encode->frame), encode->options,
                               std::move(encode->done_callback));
   }
   pending_encodes_.clear();

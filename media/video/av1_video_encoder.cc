@@ -105,6 +105,15 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
       case Bitrate::Mode::kConstant:
         config.rc_end_usage = AOM_CBR;
         break;
+      case Bitrate::Mode::kExternal:
+        // libaom doesn't have a special rate control mode for per-frame
+        // quantizer. Instead we just set CBR and set
+        // AV1E_SET_QUANTIZER_ONE_PASS before each frame.
+        config.rc_end_usage = AOM_CBR;
+        // Let the whole AV1 quantizer range to be used.
+        config.rc_max_quantizer = 63;
+        config.rc_min_quantizer = 1;
+        break;
     }
   } else {
     config.rc_end_usage = AOM_VBR;
@@ -293,7 +302,7 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
 }
 
 void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
-                             bool key_frame,
+                             const EncodeOptions& encode_options,
                              EncoderStatusCB done_cb) {
   done_cb = BindCallbackToCurrentLoopIfNeeded(std::move(done_cb));
   if (!codec_) {
@@ -393,6 +402,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       NOTREACHED();
   }
 
+  bool key_frame = encode_options.key_frame;
   auto duration_us = GetFrameDuration(*frame).InMicroseconds();
   last_frame_timestamp_ = frame->timestamp();
   if (last_frame_color_space_ != frame->ColorSpace()) {
@@ -405,6 +415,15 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   if (!temporal_id_status.has_value()) {
     std::move(done_cb).Run(std::move(temporal_id_status).error());
     return;
+  }
+
+  if (encode_options.quantizer.has_value()) {
+    DCHECK_EQ(options_.bitrate->mode(), Bitrate::Mode::kExternal);
+    // Convert double quantizer to an integer within codec's supported range.
+    int qp = static_cast<int>(std::lround(encode_options.quantizer.value()));
+    qp = std::clamp(qp, static_cast<int>(config_.rc_min_quantizer),
+                    static_cast<int>(config_.rc_max_quantizer));
+    aom_codec_control(codec_.get(), AV1E_SET_QUANTIZER_ONE_PASS, qp);
   }
 
   TRACE_EVENT1("media", "aom_codec_encode", "timestamp", frame->timestamp());

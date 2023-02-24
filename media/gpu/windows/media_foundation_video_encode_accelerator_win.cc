@@ -1077,6 +1077,9 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
       var.ulVal = eAVEncCommonRateControlMode_PeakConstrainedVBR;
       break;
     }
+    case Bitrate::Mode::kExternal:
+      // Unsupported.
+      return false;
   }
   hr = codec_api_->SetValue(&CODECAPI_AVEncCommonRateControlMode, &var);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set CommonRateControlMode", false);

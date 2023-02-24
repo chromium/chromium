@@ -570,11 +570,14 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
        (kCPBSizeScale + H264SPS::kCPBSizeScaleConstantTerm)) -
       1;
   switch (curr_params_.bitrate_allocation.GetMode()) {
-    case (Bitrate::Mode::kConstant):
+    case Bitrate::Mode::kConstant:
       current_sps_.cbr_flag[0] = true;
       break;
-    case (Bitrate::Mode::kVariable):
+    case Bitrate::Mode::kVariable:
       current_sps_.cbr_flag[0] = false;
+      break;
+    case Bitrate::Mode::kExternal:
+      NOTREACHED();
       break;
   }
   current_sps_.initial_cpb_removal_delay_length_minus_1 =

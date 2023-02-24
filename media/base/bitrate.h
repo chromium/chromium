@@ -14,9 +14,12 @@ namespace media {
 
 class MEDIA_EXPORT Bitrate {
  public:
-  // Indicates whether constant bitrate (CBR) or variable bitrate (VBR) should
-  // be used for encoding.
-  enum class Mode { kConstant, kVariable };
+  // Indicates whether
+  // - constant bitrate (CBR)
+  // - variable bitrate (VBR)
+  // - or external rate control
+  // should be used for encoding.
+  enum class Mode { kConstant, kVariable, kExternal };
 
   // Required by Mojo for serialization and de-serialization. Creates an
   // invalid constant bitrate with |target_| and |peak_| set to 0u. Prefer
@@ -34,6 +37,7 @@ class MEDIA_EXPORT Bitrate {
     return Bitrate(Mode::kConstant, target_bps, 0);
   }
   static Bitrate VariableBitrate(uint32_t target_bps, uint32_t peak_bps);
+  static Bitrate ExternalRateControl();
 
   // Deleted variants: you must SAFELY convert to uint32_t before calling.
   // See base/numerics/safe_conversions.h for functions to safely convert

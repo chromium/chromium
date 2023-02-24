@@ -308,7 +308,7 @@ void WebmEncoderMuxer::EncodeVideoImpl(scoped_refptr<media::VideoFrame> frame) {
   encoded_video_params_.push(EncodedVideoFrameParams{
       *frame->metadata().reference_time, frame->visible_rect().size()});
   video_encoder_->Encode(
-      std::move(frame), /*key_frame=*/false,
+      std::move(frame), media::VideoEncoder::EncodeOptions(/*key_frame=*/false),
       base::BindOnce(&WebmEncoderMuxer::OnEncoderStatus,
                      weak_ptr_factory_.GetWeakPtr(), /*for_video=*/true));
 }

@@ -103,9 +103,9 @@ class MODULES_EXPORT VideoEncoder : public EncoderBase<VideoEncoderTraits> {
   void ResetInternal() override;
 
   void OnEncodeDone(Request* request, media::EncoderStatus status);
+  media::VideoEncoder::EncodeOptions CreateEncodeOptions(Request* request);
   // This will execute shortly after the async readback completes.
-  void OnReadbackDone(bool keyframe,
-                      uint32_t reset_count,
+  void OnReadbackDone(Request* request,
                       scoped_refptr<media::VideoFrame> txt_frame,
                       media::VideoEncoder::EncoderStatusCB done_callback,
                       scoped_refptr<media::VideoFrame> result_frame);

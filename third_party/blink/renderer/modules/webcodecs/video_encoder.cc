@@ -867,10 +867,10 @@ void VideoEncoder::ProcessEncode(Request* request) {
   DCHECK_GT(requested_encodes_, 0u);
 
   auto frame = request->input->frame();
-  bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
-                  request->encodeOpts->keyFrameNonNull();
+  auto encode_options = CreateEncodeOptions(request);
   active_encodes_++;
-  request->StartTracingVideoEncode(keyframe, frame->timestamp());
+  request->StartTracingVideoEncode(encode_options.key_frame,
+                                   frame->timestamp());
 
   auto encode_done_callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
       &VideoEncoder::OnEncodeDone, MakeUnwrappingCrossThreadWeakHandle(this),
@@ -886,8 +886,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
   // TODO(crbug.com/1229845): We shouldn't be reading back frames here.
   if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
     auto readback_done_callback = WTF::BindOnce(
-        &VideoEncoder::OnReadbackDone, WrapWeakPersistent(this), keyframe,
-        reset_count_, frame, std::move(encode_done_callback));
+        &VideoEncoder::OnReadbackDone, WrapWeakPersistent(this),
+        WrapPersistent(request), frame, std::move(encode_done_callback));
     if (StartReadback(std::move(frame), std::move(readback_done_callback))) {
       request->input->close();
     } else {
@@ -913,21 +913,30 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
   --requested_encodes_;
   ScheduleDequeueEvent();
-  media_encoder_->Encode(frame, keyframe, std::move(encode_done_callback));
+  media_encoder_->Encode(frame, encode_options,
+                         std::move(encode_done_callback));
 
   // We passed a copy of frame() above, so this should be safe to close here.
   request->input->close();
 }
 
+media::VideoEncoder::EncodeOptions VideoEncoder::CreateEncodeOptions(
+    Request* request) {
+  media::VideoEncoder::EncodeOptions result;
+  result.key_frame = request->encodeOpts->hasKeyFrameNonNull() &&
+                     request->encodeOpts->keyFrameNonNull();
+  return result;
+}
+
 void VideoEncoder::OnReadbackDone(
-    bool keyframe,
-    uint32_t reset_count,
+    Request* request,
     scoped_refptr<media::VideoFrame> txt_frame,
     media::VideoEncoder::EncoderStatusCB done_callback,
     scoped_refptr<media::VideoFrame> result_frame) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("media", "CopyRGBATextureToVideoFrame", this);
-  if (reset_count_ != reset_count)
+  if (reset_count_ != request->reset_count) {
     return;
+  }
 
   if (!result_frame) {
     callback_runner_->PostTask(
@@ -940,10 +949,11 @@ void VideoEncoder::OnReadbackDone(
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto encode_options = CreateEncodeOptions(request);
   --requested_encodes_;
   ScheduleDequeueEvent();
   blocking_request_in_progress_ = false;
-  media_encoder_->Encode(std::move(result_frame), keyframe,
+  media_encoder_->Encode(std::move(result_frame), encode_options,
                          std::move(done_callback));
   ProcessRequests();
 }

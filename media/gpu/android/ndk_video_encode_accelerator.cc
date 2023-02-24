@@ -349,7 +349,7 @@ void NdkVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   DCHECK(media_codec_);
   VideoEncoder::PendingEncode encode;
   encode.frame = std::move(frame);
-  encode.key_frame = force_keyframe;
+  encode.options = VideoEncoder::EncodeOptions(force_keyframe);
   pending_frames_.push_back(std::move(encode));
   FeedInput();
 }
@@ -485,7 +485,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
     return;
 
   scoped_refptr<VideoFrame> frame = std::move(pending_frames_.front().frame);
-  bool key_frame = pending_frames_.front().key_frame;
+  bool key_frame = pending_frames_.front().options.key_frame;
   pending_frames_.pop_front();
 
   if (key_frame) {
