@@ -86,6 +86,13 @@ export class BrailleDisplayManager {
     }
   }
 
+  static init() {
+    if (BrailleDisplayManager.instance) {
+      throw new Error('Cannot create two BrailleDisplayManager instances');
+    }
+    BrailleDisplayManager.instance = new BrailleDisplayManager();
+  }
+
   /**
    * @param {!NavBraille} content Content to send to the braille display.
    * @param {!ExpandingBrailleTranslator.ExpansionType} expansionType
@@ -520,3 +527,6 @@ BrailleDisplayManager.COORDS_TO_BRAILLE_DOT_ =
  * @const {number}
  */
 BrailleDisplayManager.CURSOR_BLINK_TIME_MS = 1000;
+
+/** @type {BrailleDisplayManager} */
+BrailleDisplayManager.instance;

@@ -21,11 +21,6 @@ import {BrailleTranslatorManager} from './braille_translator_manager.js';
 /** @implements {BrailleInterface} */
 export class BrailleBackground {
   constructor() {
-    /** @private {!BrailleDisplayManager} */
-    this.displayManager_ = new BrailleDisplayManager();
-    this.displayManager_.setCommandListener(
-        (evt, content) => this.onBrailleKeyEvent_(evt, content));
-
     /** @private {boolean} */
     this.frozen_ = false;
 
@@ -39,14 +34,18 @@ export class BrailleBackground {
     this.lastContent_ = null;
     /** @private {?string} */
     this.lastContentId_ = null;
+
+    BrailleDisplayManager.instance.setCommandListener(
+        (evt, content) => this.onBrailleKeyEvent_(evt, content));
   }
 
   static init() {
     if (BrailleBackground.instance) {
       throw new Error('Cannot create two BrailleBackground instances');
     }
-    // Must be called before BrailleBackground is constructed.
+    // Must be called in the following order for dependencies.
     BrailleTranslatorManager.init();
+    BrailleDisplayManager.init();
 
     BrailleBackground.instance = new BrailleBackground();
   }
@@ -71,7 +70,7 @@ export class BrailleBackground {
     if (this.frozen_) {
       return;
     }
-    this.displayManager_.setImageContent(imageDataUrl);
+    BrailleDisplayManager.instance.setImageContent(imageDataUrl);
   }
 
   /** @override */
@@ -86,22 +85,22 @@ export class BrailleBackground {
 
   /** @override */
   getDisplayState() {
-    return this.displayManager_.getDisplayState();
+    return BrailleDisplayManager.instance.getDisplayState();
   }
 
   /** @override */
   panLeft() {
-    this.displayManager_.panLeft();
+    BrailleDisplayManager.instance.panLeft();
   }
 
   /** @override */
   panRight() {
-    this.displayManager_.panRight();
+    BrailleDisplayManager.instance.panRight();
   }
 
   /** @override */
   route(displayPosition) {
-    return this.displayManager_.route(displayPosition);
+    return BrailleDisplayManager.instance.route(displayPosition);
   }
 
   /** @override */
@@ -121,7 +120,7 @@ export class BrailleBackground {
     const updateContent = () => {
       this.lastContent_ = newContentId ? newContent : null;
       this.lastContentId_ = newContentId;
-      this.displayManager_.setContent(
+      BrailleDisplayManager.instance.setContent(
           newContent, this.inputHandler_.getExpansionType());
     };
     this.inputHandler_.onDisplayContentChanged(newContent.text, updateContent);

@@ -15,12 +15,14 @@ ChromeVoxEditingTest = class extends ChromeVoxE2ETest {
 
     // Alphabetical based on file path.
     await importModule(
-        'BrailleTranslatorManager',
-        '/chromevox/background/braille/braille_translator_manager.js');
-    await importModule(
         'BrailleCommandHandler',
         '/chromevox/background/braille/braille_command_handler.js');
-    await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+    await importModule(
+        'BrailleDisplayManager',
+        '/chromevox/background/braille/braille_display_manager.js');
+    await importModule(
+        'BrailleTranslatorManager',
+        '/chromevox/background/braille/braille_translator_manager.js');
     await importModule(
         'DesktopAutomationInterface',
         '/chromevox/background/desktop_automation_interface.js');
@@ -2055,7 +2057,7 @@ AX_TEST_F(
       }
 
       // Fake an available display.
-      ChromeVox.braille.displayManager_.refreshDisplayState_(
+      BrailleDisplayManager.instance.refreshDisplayState_(
           {available: true, textRowCount: 1, textColumnCount: 40});
 
       // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
@@ -2067,7 +2069,7 @@ AX_TEST_F(
       await BrailleTranslatorManager.instance.loadTablesForTest();
 
       // Fake an available display.
-      ChromeVox.braille.displayManager_.refreshDisplayState_(
+      BrailleDisplayManager.instance.refreshDisplayState_(
           {available: true, textRowCount: 1, textColumnCount: 40});
 
       // Set braille to use 6-dot braille (which is defaulted to UEB grade 2
