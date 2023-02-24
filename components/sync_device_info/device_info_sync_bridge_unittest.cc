@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/sync_device_info/device_info_sync_bridge.h"
-#include "build/build_config.h"
 
 #include <algorithm>
 #include <map>
@@ -21,6 +20,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/model_type.h"
