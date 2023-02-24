@@ -450,6 +450,10 @@ class Surface final : public ui::PropertyHandler {
   // if one can not be determined. See go/secure-exo-ids for more details.
   SecurityDelegate* GetSecurityDelegate();
 
+  // Sets the accessibility window ID sent from the shell client to the window.
+  // A negative number removes it.
+  void SetClientAccessibilityId(int id);
+
  private:
   struct State {
     State();

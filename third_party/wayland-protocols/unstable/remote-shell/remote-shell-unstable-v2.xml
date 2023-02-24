@@ -709,6 +709,8 @@
 
     <request name="set_accessibility_id" since="1">
       <description summary="set accessibility ID to the surface">
+        [Deprecated] Use zaura_surface's set_accessibility_id instead.
+
         Set accessibility window ID to the surface. A negative number removes
         the existing accessibility ID from the surface.
       </description>

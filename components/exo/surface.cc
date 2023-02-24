@@ -1784,4 +1784,16 @@ SecurityDelegate* Surface::GetSecurityDelegate() {
   return nullptr;
 }
 
+void Surface::SetClientAccessibilityId(int id) {
+  if (!window_) {
+    return;
+  }
+
+  if (id >= 0) {
+    exo::SetShellClientAccessibilityId(window_.get(), id);
+  } else {
+    exo::SetShellClientAccessibilityId(window_.get(), absl::nullopt);
+  }
+}
+
 }  // namespace exo

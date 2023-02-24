@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="50">
+  <interface name="zaura_shell" version="51">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -160,7 +160,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_surface" version="47">
+  <interface name="zaura_surface" version="51">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -588,6 +588,15 @@
         Informs the client that the tooltip is hidden.
       </description>
     </event>
+
+    <!-- Version 51 additions -->
+    <request name="set_accessibility_id" since="51">
+      <description summary="set accessibility ID to the surface">
+        Set accessibility window ID to the surface. A negative number removes
+        the existing accessibility ID from the surface.
+      </description>
+      <arg name="id" type="int" summary="Accessibility ID. Negative number removes existing accessibility ID from the surface."/>
+    </request>
   </interface>
 
   <interface name="zaura_output" version="45">

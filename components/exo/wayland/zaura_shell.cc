@@ -297,6 +297,12 @@ void aura_surface_hide_tooltip(wl_client* client, wl_resource* resource) {
   GetUserDataAs<AuraSurface>(resource)->HideTooltip();
 }
 
+void aura_surface_set_accessibility_id(wl_client* client,
+                                       wl_resource* resource,
+                                       int32_t id) {
+  GetUserDataAs<AuraSurface>(resource)->SetAccessibilityId(id);
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -328,6 +334,7 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_release,
     aura_surface_show_tooltip,
     aura_surface_hide_tooltip,
+    aura_surface_set_accessibility_id,
 };
 
 }  // namespace
@@ -707,6 +714,10 @@ void AuraSurface::HideTooltip() {
   tooltip_text_ = std::u16string();
   auto* window = surface_->window();
   ash::Shell::Get()->tooltip_controller()->UpdateTooltip(window);
+}
+
+void AuraSurface::SetAccessibilityId(int id) {
+  surface_->SetClientAccessibilityId(id);
 }
 
 chromeos::OrientationType OrientationLock(uint32_t orientation_lock) {
