@@ -543,6 +543,12 @@ crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/1357064 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
+# finder:group-start crbug.com/1383180 failures happen in many tests, so can be classified as stale for one specific test
+crbug.com/1383180 [ android android-pixel-6 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
+crbug.com/1383180 [ android android-pixel-6 target-cpu-64 ] conformance/textures/misc/texture-video-transparent.html [ RetryOnFailure ]
+crbug.com/1383180 [ android android-pixel-6 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
+crbug.com/1383180 [ android android-pixel-6 ] conformance/textures/video/* [ RetryOnFailure ]
+# finder:group-end
 
 ## Misc failures ##
 
