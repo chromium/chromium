@@ -392,16 +392,16 @@ scoped_refptr<StaticBitmapImage> BakeOrientation(
   }
 
   auto* canvas = resource_provider->Canvas();
-
-  auto affineTransform = input->CurrentFrameOrientation().TransformFromDefault(
-      gfx::SizeF(src_rect.size()));
+  ImageOrientation orientation = input->CurrentFrameOrientation();
+  auto affineTransform =
+      orientation.TransformToDefault(gfx::SizeF(src_rect.size()));
   canvas->concat(AffineTransformToSkM44(affineTransform));
 
   gfx::Rect dst_rect = src_rect;
   // The destination rect will have its width and height already reversed
   // for the orientation of the image, as it was needed for page layout, so
   // we need to reverse it back here.
-  if (input->CurrentFrameOrientation().UsesWidthAsHeight()) {
+  if (orientation.UsesWidthAsHeight()) {
     dst_rect.set_size(gfx::TransposeSize(dst_rect.size()));
   }
 
