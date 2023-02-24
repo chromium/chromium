@@ -503,6 +503,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare"
     units="ms" expires_after="M110">
+  <obsolete>
+    No longer gathered for several milestones as of M111. Not sure precisely
+    when gathering of this metric stopped.
+  </obsolete>
   <owner>skare@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
