@@ -224,13 +224,6 @@ component("gl") {
       ]
     }
 
-    if (is_linux || is_chromeos || use_ozone) {
-      sources += [
-        "native_pixmap_egl_binding_helper.cc",
-        "native_pixmap_egl_binding_helper.h",
-      ]
-    }
-
     if (is_linux || is_chromeos) {
       sources += [
         "gl_image_gl_texture.cc",
