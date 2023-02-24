@@ -99,6 +99,7 @@ public class AutofillServerCardEditorTest {
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED_CARD = new CreditCard(
             /* guid= */ "1", /* origin= */ "", /* isLocal= */ false, /* isCached= */ true,
+            /* isVirtual= */ false,
             /* name= */ "John Doe", /* number= */ "4444333322221111", /* obfuscatedNumber= */ "",
             /* month= */ "5", AutofillTestHelper.nextYear(), /* basicCardIssuerNetwork = */ "visa",
             /* issuerIconDrawableId= */ 0, /* billingAddressId= */ "", /* serverId= */ "",
@@ -110,7 +111,8 @@ public class AutofillServerCardEditorTest {
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD =
             new CreditCard(/* guid= */ "2", /* origin= */ "", /* isLocal= */ false,
-                    /* isCached= */ true, /* name= */ "John Doe", /* number= */ "4444333322221111",
+                    /* isCached= */ true, /* isVirtual= */ false, /* name= */ "John Doe",
+                    /* number= */ "4444333322221111",
                     /* obfuscatedNumber= */ "", /* month= */ "5", AutofillTestHelper.nextYear(),
                     /* basicCardIssuerNetwork = */ "visa", /* issuerIconDrawableId= */ 0,
                     /* billingAddressId= */ "", /* serverId= */ "", /* instrumentId= */ 234,
@@ -122,7 +124,8 @@ public class AutofillServerCardEditorTest {
 
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_NOT_ELIGIBLE_CARD =
             new CreditCard(/* guid= */ "3", /* origin= */ "", /* isLocal= */ false,
-                    /* isCached= */ true, /* name= */ "John Doe", /* number= */ "4444333322221111",
+                    /* isCached= */ true, /* isVirtual= */ false, /* name= */ "John Doe",
+                    /* number= */ "4444333322221111",
                     /* obfuscatedNumber= */ "", /* month= */ "5", AutofillTestHelper.nextYear(),
                     /* basicCardIssuerNetwork = */ "visa", /* issuerIconDrawableId= */ 0,
                     /* billingAddressId= */ "", /* serverId= */ "", /* instrumentId= */ 345,

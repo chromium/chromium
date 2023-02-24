@@ -300,7 +300,8 @@ public class AutofillTestHelper {
             int iconId) {
         return new CreditCard(/* guid= */ "",
                 /* origin= */ "",
-                /* isLocal= */ isLocal, /* isCached= */ false, /* name= */ name,
+                /* isLocal= */ isLocal, /* isCached= */ false, /* isVirtual= */ false,
+                /* name= */ name,
                 /* number= */ number,
                 /* obfuscatedNumber= */ "", /* month= */ month, year,
                 /* basicCardIssuerNetwork =*/"",

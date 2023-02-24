@@ -236,6 +236,7 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
       ConvertUTF8ToJavaString(env, card.origin()),
       card.record_type() == CreditCard::LOCAL_CARD,
       card.record_type() == CreditCard::FULL_SERVER_CARD,
+      card.record_type() == CreditCard::VIRTUAL_CARD,
       ConvertUTF16ToJavaString(env, card.GetRawInfo(CREDIT_CARD_NAME_FULL)),
       ConvertUTF16ToJavaString(env, card.GetRawInfo(CREDIT_CARD_NUMBER)),
       ConvertUTF16ToJavaString(env, card.NetworkAndLastFourDigits()),
@@ -304,6 +305,8 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
     if (Java_CreditCard_getIsCached(env, jcard)) {
       card->set_record_type(CreditCard::FULL_SERVER_CARD);
     } else {
+      // Native copies of virtual credit card objects should not be created.
+      DCHECK(!Java_CreditCard_getIsVirtual(env, jcard));
       card->set_record_type(CreditCard::MASKED_SERVER_CARD);
       card->SetNetworkForMaskedCard(
           data_util::GetIssuerNetworkForBasicCardIssuerNetwork(
