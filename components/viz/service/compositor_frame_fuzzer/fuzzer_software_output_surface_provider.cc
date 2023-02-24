@@ -56,8 +56,7 @@ class PNGSoftwareOutputDevice : public SoftwareOutputDevice {
         /*discard_transparency=*/false,
         /*comments=*/{}, &output);
 
-    base::WriteFile(NextOutputFilePath(),
-                    reinterpret_cast<char*>(output.data()), output.size());
+    base::WriteFile(NextOutputFilePath(), output);
   }
 
  private:
