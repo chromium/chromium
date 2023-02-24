@@ -12,8 +12,7 @@
 #include "base/time/time.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 
-namespace ash {
-namespace metrics_util {
+namespace ash::metrics_util {
 
 using ReportCallback = base::RepeatingCallback<void(
     const cc::FrameSequenceMetrics::CustomReportData&)>;
@@ -57,7 +56,6 @@ ASH_PUBLIC_EXPORT int CalculateSmoothness(
 ASH_PUBLIC_EXPORT int CalculateJank(
     const cc::FrameSequenceMetrics::CustomReportData& data);
 
-}  // namespace metrics_util
-}  // namespace ash
+}  // namespace ash::metrics_util
 
 #endif  // ASH_PUBLIC_CPP_METRICS_UTIL_H_
