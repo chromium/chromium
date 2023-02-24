@@ -492,7 +492,7 @@
   {
     "name": "autofill-enable-fido-progress-dialog",
     "owners": [ "siashah", "yiian" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 120
   },
   {
     "name": "autofill-enable-iban-client-side-url-filtering",
