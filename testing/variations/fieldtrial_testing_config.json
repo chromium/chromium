@@ -6841,6 +6841,33 @@
             ]
         }
     ],
+    "JourneysNavigationContextClustering": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "JourneysPersistClustersInHistoryDbAfterStartupDelayMinutes": "1",
+                        "JourneysPersistClustersInHistoryDbPeriodMinutes": "1",
+                        "persist_clusters_recluster_window_days": "0",
+                        "persist_on_query": "true"
+                    },
+                    "enable_features": [
+                        "HistoryClustersNavigationContextClustering",
+                        "HistoryClustersPersistedClusters"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysNonSupportedLocales": [
         {
             "platforms": [
@@ -6856,27 +6883,6 @@
                     },
                     "enable_features": [
                         "Journeys"
-                    ]
-                }
-            ]
-        }
-    ],
-    "JourneysPersistence": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {},
-                    "enable_features": [
-                        "HistoryClustersPersistedClusters"
                     ]
                 }
             ]
