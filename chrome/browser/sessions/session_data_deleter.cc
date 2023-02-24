@@ -35,6 +35,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace {
@@ -122,8 +123,15 @@ void SessionDataDeleterInternal::Run(
         // Fire and forget. Session cookies will be cleaned up on start as well.
         // (SQLitePersistentCookieStore::Backend::DeleteSessionCookiesOnStartup)
         base::DoNothing());
-    host_content_settings_map->ClearSettingsForOneType(
-        ContentSettingsType::CLIENT_HINTS);
+
+    // Only clear client hints preference when durable client hints cache was
+    // disabled.
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kDurableClientHintsCache)) {
+      host_content_settings_map->ClearSettingsForOneType(
+          ContentSettingsType::CLIENT_HINTS);
+    }
+
     host_content_settings_map->ClearSettingsForOneType(
         ContentSettingsType::REDUCED_ACCEPT_LANGUAGE);
   }
