@@ -36,7 +36,7 @@ if (is_android) {
 # Writable mmap isn't supported on Fuchsia, so it should be bypassed.
 posix_bypass_mmap = (is_android && current_cpu != "x86") || is_fuchsia
 
-enable_built_in_dns = !is_ios
+enable_built_in_dns = use_blink
 
 # Unix sockets are not supported on iOS.
 enable_unix_sockets = is_posix && !is_ios
