@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeTouchpads, SettingsPerDeviceTouchpadSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
+import {FakeInputDeviceSettingsProvider, fakeTouchpads, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceTouchpadSubsectionElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -13,6 +15,11 @@ suite('PerDeviceTouchpadSubsection', function() {
    * @type {?SettingsPerDeviceTouchpadSubsectionElement}
    */
   let subsection = null;
+  /**
+   * @type {?FakeInputDeviceSettingsProvider}
+   */
+  let provider = null;
+
 
   setup(() => {
     PolymerTest.clearBody();
@@ -20,16 +27,20 @@ suite('PerDeviceTouchpadSubsection', function() {
 
   teardown(() => {
     subsection = null;
+    provider = null;
   });
 
   /**
    * @return {!Promise}
    */
   function initializePerDeviceTouchpadSubsection() {
+    provider = new FakeInputDeviceSettingsProvider();
+    provider.setFakeTouchpads(fakeTouchpads);
+    setInputDeviceSettingsProviderForTesting(provider);
     subsection =
         document.createElement('settings-per-device-touchpad-subsection');
     assertTrue(subsection != null);
-    subsection.touchpad = fakeTouchpads[0];
+    subsection.touchpad = {...fakeTouchpads[0]};
     subsection.allowScrollSettings_ = true;
     document.body.appendChild(subsection);
     return flushTasks();
@@ -55,7 +66,99 @@ suite('PerDeviceTouchpadSubsection', function() {
     return flushTasks();
   }
 
-  /**Test that touchpad settings data are from the touchpad provider.*/
+  // Test that API are updated when touchpad settings change.
+  test('Update API when touchpad settings change', async () => {
+    await initializePerDeviceTouchpadSubsection();
+    const enableTapToClickButton =
+        subsection.shadowRoot.querySelector('#enableTapToClick');
+    enableTapToClickButton.click();
+    await flushTasks();
+    let updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.tapToClickEnabled,
+        enableTapToClickButton.pref.value);
+
+    const enableTapDraggingButton =
+        subsection.shadowRoot.querySelector('#enableTapDragging');
+    enableTapDraggingButton.click();
+    await flushTasks();
+    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.tapDraggingEnabled,
+        enableTapDraggingButton.pref.value);
+
+    const touchpadAccelerationButton =
+        subsection.shadowRoot.querySelector('#touchpadAcceleration');
+    touchpadAccelerationButton.click();
+    await flushTasks();
+    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.accelerationEnabled,
+        touchpadAccelerationButton.pref.value);
+
+    const touchpadScrollAccelerationButton =
+        subsection.shadowRoot.querySelector('#touchpadScrollAcceleration');
+    touchpadScrollAccelerationButton.click();
+    await flushTasks();
+    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.scrollAcceleration,
+        touchpadScrollAccelerationButton.pref.value);
+
+    const touchpadScrollSpeedSlider = assert(
+        subsection.shadowRoot.querySelector('#touchpadScrollSpeedSlider'));
+    MockInteractions.pressAndReleaseKeyOn(
+        touchpadScrollSpeedSlider.shadowRoot.querySelector('cr-slider'),
+        39 /* right */, [], 'ArrowRight');
+    await flushTasks();
+    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.scrollSensitivity,
+        touchpadScrollSpeedSlider.pref.value);
+
+    const touchpadSensitivitySlider =
+        assert(subsection.shadowRoot.querySelector('#touchpadSensitivity'));
+    MockInteractions.pressAndReleaseKeyOn(
+        touchpadSensitivitySlider.shadowRoot.querySelector('cr-slider'),
+        39 /* right */, [], 'ArrowRight');
+    await flushTasks();
+    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.sensitivity,
+        touchpadSensitivitySlider.pref.value);
+
+    const touchpadHapticClickSensitivitySlider = assert(
+        subsection.shadowRoot.querySelector('#touchpadHapticClickSensitivity'));
+    MockInteractions.pressAndReleaseKeyOn(
+        touchpadHapticClickSensitivitySlider.shadowRoot.querySelector(
+            'cr-slider'),
+        39 /* right */, [], 'ArrowRight');
+    await flushTasks();
+    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.hapticSensitivity,
+        touchpadHapticClickSensitivitySlider.pref.value);
+
+    const touchpadHapticFeedbackToggleButton =
+        subsection.shadowRoot.querySelector('#touchpadHapticFeedbackToggle');
+    touchpadHapticFeedbackToggleButton.click();
+    await flushTasks();
+    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.hapticEnabled,
+        touchpadHapticFeedbackToggleButton.checked);
+
+    const touchpadReverseScrollToggleButton =
+        subsection.shadowRoot.querySelector('#enableReverseScrollingToggle');
+    touchpadReverseScrollToggleButton.click();
+    await flushTasks();
+    updatedTouchpads = await provider.getConnectedTouchpadSettings();
+    assertEquals(
+        updatedTouchpads[0].settings.reverseScrolling,
+        touchpadReverseScrollToggleButton.checked);
+  });
+
+  // Test that touchpad settings data are from the touchpad provider.
   test('Verify touchpad settings data', async () => {
     await initializePerDeviceTouchpadSubsection();
     let enableTapToClickButton =
@@ -83,7 +186,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         subsection.shadowRoot.querySelector('#touchpadScrollSpeedSlider'));
     assertTrue(isVisible(touchpadScrollSpeedSlider));
     assertEquals(
-        fakeTouchpads[0].settings.hapticSensitivity,
+        fakeTouchpads[0].settings.scrollSensitivity,
         touchpadScrollSpeedSlider.pref.value);
     let touchpadSensitivitySlider =
         assert(subsection.shadowRoot.querySelector('#touchpadSensitivity'));
@@ -94,7 +197,7 @@ suite('PerDeviceTouchpadSubsection', function() {
         subsection.shadowRoot.querySelector('#touchpadHapticClickSensitivity'));
     assertTrue(isVisible(touchpadHapticClickSensitivitySlider));
     assertEquals(
-        fakeTouchpads[0].settings.scrollSensitivity,
+        fakeTouchpads[0].settings.hapticSensitivity,
         touchpadHapticClickSensitivitySlider.pref.value);
     let touchpadHapticFeedbackToggleButton =
         subsection.shadowRoot.querySelector('#touchpadHapticFeedbackToggle');
