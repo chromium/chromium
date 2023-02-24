@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
@@ -11,6 +12,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace payments {
 namespace {
@@ -35,11 +37,22 @@ class PaymentHandlerHeaderViewUITest
     }
   }
 
+  void ExpectHistograms() {
+    // Navigate away in order to flush use counters.
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                       GURL(url::kAboutBlankURL)));
+    histograms_.ExpectBucketCount(
+        "Blink.UseCounter.Features",
+        blink::mojom::WebFeature::kPaymentHandlerMinimalHeaderUX,
+        minimal_header_ux_enabled_ ? 1 : 0);
+  }
+
  protected:
   bool minimal_header_ux_enabled_;
 
  private:
   base::test::ScopedFeatureList features_;
+  base::HistogramTester histograms_;
 };
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
@@ -93,6 +106,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
     EXPECT_EQ(u"Payment App",
               GetLabelText(DialogViewID::SHEET_TITLE, view_stack->top()));
   }
+
+  ExpectHistograms();
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
@@ -131,6 +146,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
 
   // The payment app has no icon, so it should not be displayed on the header.
   EXPECT_FALSE(IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON));
+
+  ExpectHistograms();
 }
 
 IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
@@ -184,6 +201,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
     ResetEventWaiter(DialogEvent::BACK_NAVIGATION);
     ClickOnDialogViewAndWait(DialogViewID::BACK_BUTTON);
   }
+
+  ExpectHistograms();
 }
 
 // Test that the header and dialog heights are consistent with when there is no
@@ -244,6 +263,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, ConsistentHeaderHeight) {
           ->height());
 
   ClickOnCancel();
+
+  ExpectHistograms();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerHeaderViewUITest, testing::Bool());
