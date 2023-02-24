@@ -1122,10 +1122,6 @@ bool Value::RemoveKey(StringPiece key) {
   return GetDict().Remove(key);
 }
 
-absl::optional<Value> Value::ExtractKey(StringPiece key) {
-  return GetDict().Extract(key);
-}
-
 Value* Value::FindPath(StringPiece path) {
   return GetDict().FindByDottedPath(path);
 }

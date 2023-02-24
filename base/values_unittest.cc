@@ -1398,7 +1398,7 @@ TEST(ValuesTest, SetStringPath) {
   ASSERT_FALSE(root.SetByDottedPath("foo.bar.zoo", "ola mundo"));
 }
 
-TEST(ValuesTest, RemoveKey) {
+TEST(ValuesTest, Remove) {
   Value::Dict root;
   root.Set("one", Value(123));
 
@@ -1412,7 +1412,7 @@ TEST(ValuesTest, RemoveKey) {
   EXPECT_FALSE(root.Remove("one"));
 }
 
-TEST(ValuesTest, ExtractKey) {
+TEST(ValuesTest, Extract) {
   Value::Dict root;
   root.Set("one", Value(123));
 
@@ -1426,7 +1426,7 @@ TEST(ValuesTest, ExtractKey) {
   EXPECT_EQ(absl::nullopt, root.Extract("one"));
 }
 
-TEST(ValuesTest, RemovePath) {
+TEST(ValuesTest, RemoveByDottedPath) {
   Value::Dict root;
   root.SetByDottedPath("one.two.three", Value(123));
 
