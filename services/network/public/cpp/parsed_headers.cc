@@ -106,7 +106,8 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   // doesn't know anything about blink.
   // The code here only parses the No-Vary-Search header if it is present.
   if (base::FeatureList::IsEnabled(network::features::kPrefetchNoVarySearch))
-    parsed_headers->no_vary_search = ParseNoVarySearch(*headers);
+    parsed_headers->no_vary_search_with_parse_error =
+        ParseNoVarySearch(*headers);
 
   return parsed_headers;
 }

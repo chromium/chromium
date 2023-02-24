@@ -399,7 +399,8 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
   DCHECK(mojo::Equals(lhs->reporting_endpoints, rhs->reporting_endpoints));
   DCHECK(mojo::Equals(lhs->variants_headers, rhs->variants_headers));
   DCHECK(mojo::Equals(lhs->content_language, rhs->content_language));
-  DCHECK(mojo::Equals(lhs->no_vary_search, rhs->no_vary_search));
+  DCHECK(mojo::Equals(lhs->no_vary_search_with_parse_error,
+                      rhs->no_vary_search_with_parse_error));
   NOTREACHED() << "The parsed headers don't match, but we don't know which "
                   "field does not match. Please add a DCHECK before this one "
                   "checking for the missing field.";

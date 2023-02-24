@@ -313,6 +313,8 @@ void PrefetchDocumentManager::OnPrefetchedHeadReceived(const GURL& url) {
 
   const auto* head = it->second->GetHead();
   DCHECK(head);
+  no_vary_search_helper_.MaybeSendErrorsToConsole(url, *head,
+                                                  render_frame_host());
   no_vary_search_helper_.AddUrl(url, *head);
 }
 

@@ -12,7 +12,7 @@
 namespace network {
 
 COMPONENT_EXPORT(NETWORK_CPP)
-mojom::NoVarySearchPtr ParseNoVarySearch(
+mojom::NoVarySearchWithParseErrorPtr ParseNoVarySearch(
     const net::HttpResponseHeaders& headers);
 
 }  // namespace network

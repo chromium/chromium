@@ -17,8 +17,11 @@ network::mojom::URLResponseHeadPtr CreateHead() {
   network::mojom::URLResponseHeadPtr head =
       network::mojom::URLResponseHead::New();
   head->parsed_headers = network::mojom::ParsedHeaders::New();
-  head->parsed_headers->no_vary_search = network::mojom::NoVarySearch::New();
-  head->parsed_headers->no_vary_search->vary_on_key_order = true;
+  head->parsed_headers->no_vary_search_with_parse_error =
+      network::mojom::NoVarySearchWithParseError::NewNoVarySearch(
+          network::mojom::NoVarySearch::New());
+  head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
+      ->vary_on_key_order = true;
   return head;
 }
 
@@ -28,7 +31,8 @@ TEST(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyVaryParams) {
       network::features::kPrefetchNoVarySearch);
 
   network::mojom::URLResponseHeadPtr head = CreateHead();
-  head->parsed_headers->no_vary_search->search_variance =
+  head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
+      ->search_variance =
       network::mojom::SearchParamsVariance::NewVaryParams({"a"});
 
   NoVarySearchHelper helper;
@@ -57,7 +61,8 @@ TEST(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyNoVaryParams) {
       network::features::kPrefetchNoVarySearch);
 
   network::mojom::URLResponseHeadPtr head = CreateHead();
-  head->parsed_headers->no_vary_search->search_variance =
+  head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
+      ->search_variance =
       network::mojom::SearchParamsVariance::NewNoVaryParams({"a"});
   const GURL test_url = GURL("https://a.com/home.html?a=2&b=3");
 
@@ -86,9 +91,11 @@ TEST(NoVarySearchHelperTest, AddAndMatchUrlEmptyNoVaryParams) {
       network::features::kPrefetchNoVarySearch);
 
   network::mojom::URLResponseHeadPtr head = CreateHead();
-  head->parsed_headers->no_vary_search->search_variance =
+  head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
+      ->search_variance =
       network::mojom::SearchParamsVariance::NewNoVaryParams({});
-  head->parsed_headers->no_vary_search->vary_on_key_order = false;
+  head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
+      ->vary_on_key_order = false;
   const GURL test_url = GURL("https://a.com/away.html?a=2&b=3&c=6");
 
   NoVarySearchHelper helper;

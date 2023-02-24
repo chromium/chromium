@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/types/expected.h"
 #include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -22,8 +23,9 @@ absl::optional<std::vector<std::string>> ParseStringList(
   std::vector<std::string> keys;
   keys.reserve(items.size());
   for (const auto& item : items) {
-    if (!item.item.is_string())
+    if (!item.item.is_string()) {
       return absl::nullopt;
+    }
     keys.push_back(UnescapePercentEncodedUrl(item.item.GetString()));
   }
   return keys;
@@ -97,22 +99,21 @@ HttpNoVarySearchData HttpNoVarySearchData::CreateFromVaryParams(
 }
 
 // static
-absl::optional<HttpNoVarySearchData> HttpNoVarySearchData::ParseFromHeaders(
+base::expected<HttpNoVarySearchData, HttpNoVarySearchData::ParseErrorEnum>
+HttpNoVarySearchData::ParseFromHeaders(
     const HttpResponseHeaders& response_headers) {
   std::string normalized_header;
   if (!response_headers.GetNormalizedHeader("No-Vary-Search",
                                             &normalized_header)) {
     // This means there is no No-Vary-Search header. Return nullopt.
-    return absl::nullopt;
+    return base::unexpected(ParseErrorEnum::kOk);
   }
 
   // The no-vary-search header is a dictionary type structured field.
   const auto dict = structured_headers::ParseDictionary(normalized_header);
   if (!dict.has_value()) {
     // We don't recognize anything else. So this is an authoring error.
-    // TODO(crbug.com/1378075) Find a way to communicate that header value
-    // is incorrect.
-    return absl::nullopt;
+    return base::unexpected(ParseErrorEnum::kNotDictionary);
   }
 
   return ParseNoVarySearchDictionary(dict.value());
@@ -135,7 +136,7 @@ bool HttpNoVarySearchData::vary_by_default() const {
 }
 
 // static
-absl::optional<HttpNoVarySearchData>
+base::expected<HttpNoVarySearchData, HttpNoVarySearchData::ParseErrorEnum>
 HttpNoVarySearchData::ParseNoVarySearchDictionary(
     const structured_headers::Dictionary& dict) {
   static constexpr const char* kKeyOrder = "key-order";
@@ -151,18 +152,18 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   // If the dictionary contains unknown keys, fail parsing.
   for (const auto& [key, value] : dict) {
     // We don't recognize any other key. So this is an authoring error.
-    // TODO(crbug.com/1378075) Find a way to communicate that keys in the
-    // dictionary are incorrect.
-    if (!base::Contains(kValidKeys, key))
-      return absl::nullopt;
+    if (!base::Contains(kValidKeys, key)) {
+      return base::unexpected(ParseErrorEnum::kUnknownDictionaryKey);
+    }
   }
 
   // Populate `vary_on_key_order` based on the `key-order` key.
   if (dict.contains(kKeyOrder)) {
     const auto& key_order = dict.at(kKeyOrder);
     if (key_order.member_is_inner_list ||
-        !key_order.member[0].item.is_boolean())
-      return absl::nullopt;
+        !key_order.member[0].item.is_boolean()) {
+      return base::unexpected(ParseErrorEnum::kNonBooleanKeyOrder);
+    }
     vary_on_key_order = !key_order.member[0].item.GetBoolean();
   }
 
@@ -171,13 +172,14 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
     const auto& params = dict.at(kParams);
     if (params.member_is_inner_list) {
       auto keys = ParseStringList(params.member);
-      if (!keys.has_value())
-        return absl::nullopt;
+      if (!keys.has_value()) {
+        return base::unexpected(ParseErrorEnum::kParamsNotStringList);
+      }
       no_vary_params = std::move(*keys);
     } else if (params.member[0].item.is_boolean()) {
       vary_by_default = !params.member[0].item.GetBoolean();
     } else {
-      return absl::nullopt;
+      return base::unexpected(ParseErrorEnum::kParamsNotStringList);
     }
   }
 
@@ -186,11 +188,16 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   // (i.e., params don't vary by default).
   if (dict.contains(kExcept)) {
     const auto& excepted_params = dict.at(kExcept);
-    if (vary_by_default || !excepted_params.member_is_inner_list)
-      return absl::nullopt;
+    if (vary_by_default) {
+      return base::unexpected(ParseErrorEnum::kExceptWithoutTrueParams);
+    }
+    if (!excepted_params.member_is_inner_list) {
+      return base::unexpected(ParseErrorEnum::kExceptNotStringList);
+    }
     auto keys = ParseStringList(excepted_params.member);
-    if (!keys.has_value())
-      return absl::nullopt;
+    if (!keys.has_value()) {
+      return base::unexpected(ParseErrorEnum::kExceptNotStringList);
+    }
     vary_params = std::move(*keys);
   }
 
@@ -203,7 +210,7 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
       vary_on_key_order) {
     // If header is present but it's value is equivalent to only default values
     // then it is the same as if there were no header present.
-    return absl::nullopt;
+    return base::unexpected(ParseErrorEnum::kDefaultValue);
   }
 
   HttpNoVarySearchData no_vary_search;
@@ -212,7 +219,7 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   no_vary_search.vary_on_key_order_ = vary_on_key_order;
   no_vary_search.vary_by_default_ = vary_by_default;
 
-  return no_vary_search;
+  return base::ok(no_vary_search);
 }
 
 }  // namespace net

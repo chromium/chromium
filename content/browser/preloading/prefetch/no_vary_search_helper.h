@@ -20,6 +20,8 @@ class URLResponseHead;
 
 namespace content {
 
+class RenderFrameHost;
+
 // Helper class to keep track of prefetched URLs that have No-Vary-Search
 // header present in their responses.
 class CONTENT_EXPORT NoVarySearchHelper {
@@ -36,6 +38,13 @@ class CONTENT_EXPORT NoVarySearchHelper {
   // Try to match `url` within tracked urls with No-Vary-Search information.
   // Return the matched url or absl::nullopt otherwise.
   absl::optional<GURL> MatchUrl(const GURL& url) const;
+
+  // Send No-Vary-Search parsing errors in DevTools console.
+  // The method will test if there are errors/warning that the developer
+  // needs to know about, and if there are send them to the DevTools console.
+  void MaybeSendErrorsToConsole(const GURL& url,
+                                const network::mojom::URLResponseHead& head,
+                                RenderFrameHost& rfh) const;
 
   // Return the (URL,NoVarySearchInfo) pairs for a specific Url without
   // query and reference. Allow as input urls with query and/or reference
