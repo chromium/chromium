@@ -615,7 +615,7 @@ crbug.com/angleproject/7421 [ android android-pixel-2 angle-disabled no-passthro
 ## Pixel 4 ##
 
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
-crbug.com/1289303 [ android-pixel-4 android-r angle-disabled no-passthrough ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
+crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/texture-video-transparent.html [ Failure ] # finder:disable-narrowing
 
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
@@ -636,6 +636,8 @@ crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/video/* [ Ret
 crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/video/* [ RetryOnFailure ]
 # finder:group-end
+
+crbug.com/1419019 [ android android-pixel-4 no-passthrough ] conformance2/transform_feedback/too-small-buffers.html [ RetryOnFailure ]
 
 #####################
 # ChromeOS failures #
