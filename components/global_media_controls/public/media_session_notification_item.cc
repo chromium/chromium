@@ -58,11 +58,13 @@ MediaSessionNotificationItem::MediaSessionNotificationItem(
     Delegate* delegate,
     const std::string& request_id,
     const std::string& source_name,
+    const absl::optional<base::UnguessableToken>& source_id,
     mojo::Remote<media_session::mojom::MediaController> controller,
     media_session::mojom::MediaSessionInfoPtr session_info)
     : delegate_(delegate),
       request_id_(request_id),
-      source_(GetSource(source_name)) {
+      source_(GetSource(source_name)),
+      source_id_(source_id) {
   DCHECK(delegate_);
 
   SetController(std::move(controller), std::move(session_info));
@@ -234,6 +236,11 @@ bool MediaSessionNotificationItem::RequestMediaRemoting() {
     return false;
   media_controller_remote_->RequestMediaRemoting();
   return true;
+}
+
+absl::optional<base::UnguessableToken>
+MediaSessionNotificationItem::GetSourceId() const {
+  return source_id_;
 }
 
 void MediaSessionNotificationItem::SetController(

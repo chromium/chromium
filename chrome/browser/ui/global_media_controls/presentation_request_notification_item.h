@@ -99,6 +99,7 @@ class PresentationRequestNotificationItem final
   void SetVolume(float volume) override {}
   void SetMute(bool mute) override {}
   bool RequestMediaRemoting() override;
+  absl::optional<base::UnguessableToken> GetSourceId() const override;
 
   void UpdateViewWithMetadata();
   void UpdateViewWithImages();

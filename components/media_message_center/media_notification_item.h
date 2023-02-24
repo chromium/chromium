@@ -8,6 +8,11 @@
 #include "base/component_export.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class UnguessableToken;
+}  // namespace base
 
 namespace media_message_center {
 
@@ -75,6 +80,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationItem {
 
   // Returns the type of source.
   virtual media_message_center::SourceType SourceType() = 0;
+
+  // Returns the ID of the source of the media session, if it has one.
+  virtual absl::optional<base::UnguessableToken> GetSourceId() const = 0;
 };
 
 }  // namespace media_message_center

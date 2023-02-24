@@ -59,6 +59,7 @@ class CastMediaNotificationItem
   void SetVolume(float volume) override;
   void SetMute(bool mute) override;
   bool RequestMediaRemoting() override;
+  absl::optional<base::UnguessableToken> GetSourceId() const override;
 
   // media_router::mojom::MediaStatusObserver:
   void OnMediaStatusUpdated(

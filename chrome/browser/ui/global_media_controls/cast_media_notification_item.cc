@@ -224,6 +224,11 @@ bool CastMediaNotificationItem::RequestMediaRemoting() {
   return false;
 }
 
+absl::optional<base::UnguessableToken> CastMediaNotificationItem::GetSourceId()
+    const {
+  return absl::nullopt;
+}
+
 media_message_center::SourceType CastMediaNotificationItem::SourceType() {
   return media_message_center::SourceType::kCast;
 }

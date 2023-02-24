@@ -29,6 +29,10 @@ class MockMediaNotificationItem : public MediaNotificationItem {
   MOCK_METHOD(void, SetMute, (bool));
   MOCK_METHOD(bool, RequestMediaRemoting, ());
   MOCK_METHOD(media_message_center::SourceType, SourceType, ());
+  MOCK_METHOD((absl::optional<base::UnguessableToken>),
+              GetSourceId,
+              (),
+              (const));
 
   base::WeakPtr<MockMediaNotificationItem> GetWeakPtr();
 

@@ -7,7 +7,7 @@ module media_session.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 // These are the different modes the AudioFocusManager can enforce audio focus.
 [Stable, Extensible]
@@ -62,6 +62,7 @@ struct AudioFocusRequestState {
 
   [MinVersion=2] string? source_name;
   [MinVersion=3] mojo_base.mojom.UnguessableToken? request_id;
+  [MinVersion=9] mojo_base.mojom.UnguessableToken? source_id;
 };
 
 // The observer for audio focus events.

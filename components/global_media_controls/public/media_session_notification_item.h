@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -63,6 +64,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
       Delegate* delegate,
       const std::string& request_id,
       const std::string& source_name,
+      const absl::optional<base::UnguessableToken>& source_id,
       mojo::Remote<media_session::mojom::MediaController> controller,
       media_session::mojom::MediaSessionInfoPtr session_info);
   MediaSessionNotificationItem(const MediaSessionNotificationItem&) = delete;
@@ -105,6 +107,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   void SetVolume(float volume) override {}
   void SetMute(bool mute) override;
   bool RequestMediaRemoting() override;
+  absl::optional<base::UnguessableToken> GetSourceId() const override;
 
   // Stops the media session.
   void Stop();
@@ -177,6 +180,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
 
   // The source of the media session (e.g. arc, web).
   const Source source_;
+
+  // The ID assigned to `source_`.
+  absl::optional<base::UnguessableToken> source_id_;
 
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;
 
