@@ -185,11 +185,8 @@ bool WriteJPEGFile(const base::FilePath& path,
     return false;
   }
 
-  size_t bytes_written = base::WriteFile(
-      path, reinterpret_cast<const char*>(&output[0]), output.size());
-  if (bytes_written != output.size()) {
-    LOG(ERROR) << "Wrote " << bytes_written << " byte(s) instead of "
-               << output.size() << " to " << path.value();
+  if (!base::WriteFile(path, output)) {
+    LOG(ERROR) << "Writing to " << path.value() << " failed.";
     return false;
   }
   return true;
