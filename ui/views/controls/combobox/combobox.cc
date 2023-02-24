@@ -75,6 +75,10 @@ class TransparentButton : public Button {
     button_controller()->set_notify_action(
         ButtonController::NotifyAction::kOnPress);
 
+    if (features::IsChromeRefresh2023()) {
+      views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                    GetCornerRadius());
+    }
     InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
     InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
@@ -159,6 +163,14 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
 
   UpdateBorder();
 
+  // The combobox uses the ink drop on the TransparentButton, but the focus ring
+  // needs to be set on the combobox itself. To ensure that the ink drop fills
+  // the entire bounds of the combobox including the portion of the combobox
+  // bounds that the focus ring paints over, we need to install the focus ring
+  // first so that the focus ring is added as a child before the
+  // TransparentButton and therefore painted before the ink drop.
+  FocusRing::Install(this);
+
   arrow_button_ =
       AddChildView(std::make_unique<TransparentButton>(base::BindRepeating(
           &Combobox::ArrowButtonPressed, base::Unretained(this))));
@@ -188,7 +200,6 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   GetCornerRadius());
   }
-  FocusRing::Install(this);
 }
 
 Combobox::~Combobox() {
