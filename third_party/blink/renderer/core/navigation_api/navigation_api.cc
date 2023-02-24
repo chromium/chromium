@@ -838,8 +838,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   }
   auto* navigate_event =
       NavigateEvent::Create(window_, event_type_names::kNavigate, init);
-  navigate_event->SetUrl(params->url);
-  navigate_event->SaveStateFromDestinationItem(params->destination_item);
+  navigate_event->SetDispatchParams(params);
 
   DCHECK(!ongoing_navigate_event_);
   ongoing_navigate_event_ = navigate_event;
@@ -860,21 +859,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   if (navigate_event->HasNavigationActions()) {
     transition_ = MakeGarbageCollected<NavigationTransition>(
         script_state, navigation_type, currentEntry());
-
-    DCHECK(!params->destination_item || !params->state_object);
-    auto* state_object = params->destination_item
-                             ? params->destination_item->StateObject()
-                             : params->state_object.get();
-
-    // In the spec, the URL and history update steps are not called for reloads.
-    // In our implementation, we call the corresponding function anyway, but
-    // |type| being a reload type makes it do none of the spec-relevant
-    // steps. Instead it does stuff like the loading spinner and use counters.
-    window_->document()->Loader()->RunURLAndHistoryUpdateSteps(
-        params->url, params->destination_item,
-        mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
-        state_object, params->frame_load_type, params->is_browser_initiated,
-        params->is_synchronously_committed_same_document);
+    navigate_event->DoCommit();
 
     // This is considered a soft navigation URL change at this point, when the
     // user visible URL change happens, and before the interception handler

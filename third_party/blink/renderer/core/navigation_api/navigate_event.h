@@ -47,7 +47,9 @@ class NavigateEvent final : public Event,
                 const AtomicString& type,
                 NavigateEventInit* init);
 
-  void SetUrl(const KURL& url) { url_ = url; }
+  void SetDispatchParams(NavigateEventDispatchParams* dispatch_params) {
+    dispatch_params_ = dispatch_params;
+  }
 
   String navigationType() { return navigation_type_; }
   NavigationDestination* destination() { return destination_; }
@@ -61,6 +63,8 @@ class NavigateEvent final : public Event,
 
   void intercept(NavigationInterceptOptions*, ExceptionState&);
 
+  void DoCommit();
+
   void scroll(ExceptionState&);
   void PotentiallyProcessScrollBehavior();
 
@@ -72,8 +76,6 @@ class NavigateEvent final : public Event,
 
   void ResetFocusIfNeeded();
   bool ShouldSendAxEvents() const;
-
-  void SaveStateFromDestinationItem(HistoryItem*);
 
   // FocusedElementChangeObserver implementation:
   void DidChangeFocus() final;
@@ -95,9 +97,9 @@ class NavigateEvent final : public Event,
   ScriptValue info_;
   absl::optional<V8NavigationFocusReset> focus_reset_behavior_ = absl::nullopt;
   absl::optional<V8NavigationScrollBehavior> scroll_behavior_ = absl::nullopt;
-  absl::optional<HistoryItem::ViewState> history_item_view_state_;
 
-  KURL url_;
+  Member<NavigateEventDispatchParams> dispatch_params_;
+
   bool has_navigation_actions_ = false;
   HeapVector<ScriptPromise> navigation_action_promises_list_;
   HeapVector<Member<V8NavigationInterceptHandler>>

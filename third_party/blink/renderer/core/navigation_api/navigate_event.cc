@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -59,7 +60,7 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
 
   if (!can_intercept_) {
     exception_state.ThrowSecurityError(
-        "A navigation with URL '" + url_.ElidedString() +
+        "A navigation with URL '" + dispatch_params_->url.ElidedString() +
         "' cannot be intercepted by in a window with origin '" +
         DomWindow()->GetSecurityOrigin()->ToString() + "' and URL '" +
         DomWindow()->Url().ElidedString() + "'.");
@@ -118,6 +119,25 @@ void NavigateEvent::intercept(NavigationInterceptOptions* options,
   has_navigation_actions_ = true;
   if (options->hasHandler())
     navigation_action_handlers_list_.push_back(options->handler());
+}
+
+void NavigateEvent::DoCommit() {
+  DCHECK(!dispatch_params_->destination_item ||
+         !dispatch_params_->state_object);
+  auto* state_object = dispatch_params_->destination_item
+                           ? dispatch_params_->destination_item->StateObject()
+                           : dispatch_params_->state_object.get();
+
+  // In the spec, the URL and history update steps are not called for reloads.
+  // In our implementation, we call the corresponding function anyway, but
+  // |type| being a reload type makes it do none of the spec-relevant
+  // steps. Instead it does stuff like the loading spinner and use counters.
+  DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
+      dispatch_params_->url, dispatch_params_->destination_item,
+      mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
+      state_object, dispatch_params_->frame_load_type,
+      dispatch_params_->is_browser_initiated,
+      dispatch_params_->is_synchronously_committed_same_document);
 }
 
 void NavigateEvent::FinalizeNavigationActionPromisesList() {
@@ -205,11 +225,6 @@ void NavigateEvent::PotentiallyProcessScrollBehavior() {
   DefinitelyProcessScrollBehavior();
 }
 
-void NavigateEvent::SaveStateFromDestinationItem(HistoryItem* item) {
-  if (item)
-    history_item_view_state_ = item->GetViewState();
-}
-
 WebFrameLoadType LoadTypeFromNavigation(const String& navigation_type) {
   if (navigation_type == "push")
     return WebFrameLoadType::kStandard;
@@ -226,13 +241,19 @@ WebFrameLoadType LoadTypeFromNavigation(const String& navigation_type) {
 void NavigateEvent::DefinitelyProcessScrollBehavior() {
   DCHECK(!did_process_scroll_behavior_);
   did_process_scroll_behavior_ = true;
+
+  absl::optional<HistoryItem::ViewState> view_state =
+      dispatch_params_->destination_item
+          ? dispatch_params_->destination_item->GetViewState()
+          : absl::nullopt;
+
   // Use mojom::blink::ScrollRestorationType::kAuto unconditionally here
   // because we are certain that we want to actually scroll if we reach this
   // point. Using mojom::blink::ScrollRestorationType::kManual would block the
   // scroll.
   DomWindow()->GetFrame()->Loader().ProcessScrollForSameDocumentNavigation(
-      url_, LoadTypeFromNavigation(navigation_type_), history_item_view_state_,
-      mojom::blink::ScrollRestorationType::kAuto);
+      dispatch_params_->url, LoadTypeFromNavigation(navigation_type_),
+      view_state, mojom::blink::ScrollRestorationType::kAuto);
 }
 
 const AtomicString& NavigateEvent::InterfaceName() const {
@@ -242,6 +263,7 @@ const AtomicString& NavigateEvent::InterfaceName() const {
 void NavigateEvent::Trace(Visitor* visitor) const {
   Event::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
+  visitor->Trace(dispatch_params_);
   visitor->Trace(destination_);
   visitor->Trace(signal_);
   visitor->Trace(form_data_);
