@@ -115,8 +115,7 @@ TEST(FirefoxImporterUtilsTest, GetFirefoxImporterName) {
       temp_dir.GetPath().AppendASCII("application.ini"));
   for (size_t i = 0; i < std::size(GetFirefoxImporterNameCases); ++i) {
     base::WriteFile(app_ini_file,
-                    GetFirefoxImporterNameCases[i].app_ini_content.c_str(),
-                    GetFirefoxImporterNameCases[i].app_ini_content.size());
+                    GetFirefoxImporterNameCases[i].app_ini_content);
     EXPECT_EQ(
         GetFirefoxImporterName(temp_dir.GetPath()),
         l10n_util::GetStringUTF16(GetFirefoxImporterNameCases[i].resource_id));
