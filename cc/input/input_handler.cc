@@ -568,12 +568,8 @@ void InputHandler::RecordScrollEnd(ui::ScrollInputType input_type) {
 
 InputHandlerPointerResult InputHandler::MouseMoveAt(
     const gfx::Point& viewport_point) {
-  InputHandlerPointerResult result;
-  if (compositor_delegate_->GetSettings()
-          .compositor_threaded_scrollbar_scrolling) {
-    result =
-        scrollbar_controller_->HandlePointerMove(gfx::PointF(viewport_point));
-  }
+  InputHandlerPointerResult result =
+      scrollbar_controller_->HandlePointerMove(gfx::PointF(viewport_point));
 
   // Early out if there are no animation controllers and avoid the hit test.
   // This happens on platforms without animated scrollbars.
@@ -620,10 +616,7 @@ InputHandlerPointerResult InputHandler::MouseMoveAt(
 }
 
 PointerResultType InputHandler::HitTest(const gfx::PointF& viewport_point) {
-  return compositor_delegate_->GetSettings()
-                 .compositor_threaded_scrollbar_scrolling
-             ? scrollbar_controller_->HitTest(viewport_point)
-             : PointerResultType::kUnhandled;
+  return scrollbar_controller_->HitTest(viewport_point);
 }
 
 InputHandlerPointerResult InputHandler::MouseDown(
@@ -638,15 +631,8 @@ InputHandlerPointerResult InputHandler::MouseDown(
     scroll_element_id_mouse_currently_captured_ =
         scroll_element_id_mouse_currently_over_;
   }
-
-  InputHandlerPointerResult result;
-  if (compositor_delegate_->GetSettings()
-          .compositor_threaded_scrollbar_scrolling) {
-    result = scrollbar_controller_->HandlePointerDown(viewport_point,
-                                                      shift_modifier);
-  }
-
-  return result;
+  return scrollbar_controller_->HandlePointerDown(viewport_point,
+                                                  shift_modifier);
 }
 
 InputHandlerPointerResult InputHandler::MouseUp(
@@ -662,13 +648,7 @@ InputHandlerPointerResult InputHandler::MouseUp(
     if (animation_controller)
       animation_controller->DidMouseUp();
   }
-
-  InputHandlerPointerResult result;
-  if (compositor_delegate_->GetSettings()
-          .compositor_threaded_scrollbar_scrolling)
-    result = scrollbar_controller_->HandlePointerUp(viewport_point);
-
-  return result;
+  return scrollbar_controller_->HandlePointerUp(viewport_point);
 }
 
 void InputHandler::MouseLeave() {

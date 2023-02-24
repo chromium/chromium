@@ -13832,7 +13832,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimatedUpdateInnerViewport) {
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
        FadedOutPaintedOverlayScrollbarHitTest) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -13898,7 +13897,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 // Tests that no scrolls occur when thumb_len equals track_len.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollOnLargeThumb) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -13958,7 +13956,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollOnLargeThumb) {
 // for the vertical scrollbar.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, AutoscrollOnDeletedScrollbar) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14058,7 +14055,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, AutoscrollOnDeletedScrollbar) {
 // ScrollbarController.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, PointerMoveOutOfSequence) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14132,7 +14128,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PointerMoveOutOfSequence) {
 // This tests that faded-out Mac scrollbars can't be interacted with.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, FadedOutPaintedScrollbarHitTest) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14182,7 +14177,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, FadedOutPaintedScrollbarHitTest) {
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
        SingleGSUForScrollbarThumbDragPerFrame) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14402,7 +14396,6 @@ TEST_F(LayerTreeHostImplTest, FrameCounterNotReset) {
 // the same frame.
 TEST_F(LayerTreeHostImplTest, AutoscrollTaskAbort) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14475,7 +14468,6 @@ TEST_F(LayerTreeHostImplTest, AutoscrollTaskAbort) {
 // Tests that the ScrollbarController handles jump clicks.
 TEST_F(LayerTreeHostImplTest, JumpOnScrollbarClick) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14575,7 +14567,6 @@ TEST_F(LayerTreeHostImplTest, JumpOnScrollbarClick) {
 // populated.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragAfterJumpClick) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14655,7 +14646,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragAfterJumpClick) {
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
        AbortAnimatedScrollBeforeStartingAutoscroll) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14743,7 +14733,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 // a mousewheel) wants to animate the scroll offset.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, AnimatedScrollYielding) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14849,7 +14838,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, AnimatedScrollYielding) {
 // cause the scroller to jump.
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragScrollerLengthIncrease) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.
@@ -14947,7 +14935,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ThumbDragScrollerLengthIncrease) {
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, MainThreadFallback) {
   LayerTreeSettings settings = DefaultSettings();
-  settings.compositor_threaded_scrollbar_scrolling = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
 
   // Setup the viewport.

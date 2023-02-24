@@ -134,10 +134,6 @@ class CC_EXPORT LayerTreeSettings {
   // deadlines.
   bool wait_for_all_pipeline_stages_before_draw = false;
 
-  // Determines whether mouse interactions on composited scrollbars are handled
-  // on the compositor thread.
-  bool compositor_threaded_scrollbar_scrolling = true;
-
   // If enabled, the scroll deltas will be a percentage of the target scroller.
   bool percent_based_scrolling = false;
 
