@@ -75,7 +75,7 @@ class SingleClientOsPreferencesSyncTest : public SyncTest {
   const char* const kOsPreferenceKey = ash::prefs::kShelfAutoHideBehavior;
   const base::Value kOsPreferenceNewValue =
       base::Value(ash::kShelfAutoHideBehaviorAlways);
-  const char* const kOsPriorityPreferenceKey = ::prefs::kTapToClickEnabled;
+  const char* const kOsPriorityPreferenceKey = ash::prefs::kTapToClickEnabled;
   const base::Value kOsPriorityPreferenceNewValue = base::Value(false);
 };
 

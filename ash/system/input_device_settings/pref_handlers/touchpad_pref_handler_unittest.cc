@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -19,6 +21,16 @@ const std::string kDictFakeValue = "fake_value";
 
 const std::string kTouchpadKey1 = "device_key1";
 const std::string kTouchpadKey2 = "device_key2";
+
+const int kTestSensitivity = 2;
+const bool kTestReverseScrolling = false;
+const bool kTestAccelerationEnabled = false;
+const bool kTestTapToClickEnabled = false;
+const bool kTestThreeFingerClickEnabled = false;
+const bool kTestTapDraggingEnabled = false;
+const bool kTestScrollAcceleration = false;
+const int kTestHapticSensitivity = 2;
+const bool kTestHapticFeedbackEnabled = false;
 
 const mojom::TouchpadSettings kTouchpadSettingsDefault(
     /*sensitivity=*/kDefaultSensitivity,
@@ -81,6 +93,28 @@ class TouchpadPrefHandlerTest : public AshTestBase {
 
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kTouchpadDeviceSettingsDictPref);
+    // We are using these test constants as a a way to differentiate values
+    // retrieved from prefs or default touchpad settings.
+    pref_service_->registry()->RegisterIntegerPref(prefs::kTouchpadSensitivity,
+                                                   kTestSensitivity);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kNaturalScroll,
+                                                   kTestReverseScrolling);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kTouchpadAcceleration,
+                                                   kTestAccelerationEnabled);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kTapToClickEnabled,
+                                                   kTestTapToClickEnabled);
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kEnableTouchpadThreeFingerClick, kTestThreeFingerClickEnabled);
+    pref_service_->registry()->RegisterBooleanPref(prefs::kTapDraggingEnabled,
+                                                   kTestTapDraggingEnabled);
+    pref_service_->registry()->RegisterIntegerPref(
+        prefs::kTouchpadScrollSensitivity, kTestSensitivity);
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kTouchpadScrollAcceleration, kTestScrollAcceleration);
+    pref_service_->registry()->RegisterIntegerPref(
+        prefs::kTouchpadHapticClickSensitivity, kTestHapticSensitivity);
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kTouchpadHapticFeedback, kTestHapticFeedbackEnabled);
   }
 
   void CheckTouchpadSettingsAndDictAreEqual(
@@ -286,6 +320,26 @@ TEST_F(TouchpadPrefHandlerTest, NewTouchpadDefaultSettings) {
   ASSERT_NE(nullptr, settings_dict);
   CheckTouchpadSettingsAndDictAreEqual(kTouchpadSettingsDefault,
                                        *settings_dict);
+}
+
+TEST_F(TouchpadPrefHandlerTest, TouchpadObserveredInTransitionPeriod) {
+  mojom::Touchpad touchpad;
+  touchpad.device_key = kTouchpadKey1;
+  Shell::Get()->input_device_tracker()->OnTouchpadConnected(touchpad);
+  // Initialize Touchpad settings for the device and check that the global
+  // prefs were used as defaults.
+  mojom::TouchpadSettingsPtr settings =
+      CallInitializeTouchpadSettings(touchpad.device_key);
+  ASSERT_EQ(settings->sensitivity, kTestSensitivity);
+  ASSERT_EQ(settings->reverse_scrolling, kTestReverseScrolling);
+  ASSERT_EQ(settings->acceleration_enabled, kTestAccelerationEnabled);
+  ASSERT_EQ(settings->tap_to_click_enabled, kTestTapToClickEnabled);
+  ASSERT_EQ(settings->three_finger_click_enabled, kTestThreeFingerClickEnabled);
+  ASSERT_EQ(settings->tap_dragging_enabled, kTestTapDraggingEnabled);
+  ASSERT_EQ(settings->scroll_sensitivity, kTestSensitivity);
+  ASSERT_EQ(settings->scroll_acceleration, kTestScrollAcceleration);
+  ASSERT_EQ(settings->haptic_sensitivity, kTestHapticSensitivity);
+  ASSERT_EQ(settings->haptic_enabled, kTestHapticFeedbackEnabled);
 }
 
 class TouchpadSettingsPrefConversionTest

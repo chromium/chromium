@@ -631,6 +631,24 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMouseScrollSensitivity[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMouseScrollAcceleration[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadAcceleration[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEnableTouchpadThreeFingerClick[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTapToClickEnabled[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadScrollSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadScrollAcceleration[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadHapticFeedback[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kTouchpadHapticClickSensitivity[];
+
 }  // namespace prefs
 }  // namespace ash
 

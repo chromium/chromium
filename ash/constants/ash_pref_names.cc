@@ -1352,6 +1352,38 @@ const char kMouseScrollSensitivity[] = "settings.mouse.scroll_sensitivity";
 // disabled, only simple linear scaling is applied based on sensitivity.
 const char kMouseScrollAcceleration[] = "settings.mouse.scroll_acceleration";
 
+// A integer pref for the touchpad sensitivity.
+const char kTouchpadSensitivity[] = "settings.touchpad.sensitivity2";
+
+// A boolean pref set to true if touchpad acceleration is enabled. When
+// disabled only simple linear scaling is applied based on sensitivity.
+const char kTouchpadAcceleration[] = "settings.touchpad.acceleration";
+
+// A boolean pref set to true if touchpad three-finger-click is enabled.
+const char kEnableTouchpadThreeFingerClick[] =
+    "settings.touchpad.enable_three_finger_click";
+
+// A boolean pref set to true if touchpad tap-to-click is enabled.
+const char kTapToClickEnabled[] = "settings.touchpad.enable_tap_to_click";
+
+// A integer pref for the touchpad scroll sensitivity, in the range
+// [PointerSensitivity::kLowest, PointerSensitivity::kHighest].
+const char kTouchpadScrollSensitivity[] =
+    "settings.touchpad.scroll_sensitivity";
+
+// A boolean pref set to true if touchpad scroll acceleration is enabled. When
+// disabled only simple linear scaling is applied based on sensitivity.
+const char kTouchpadScrollAcceleration[] =
+    "settings.touchpad.scroll_acceleration";
+
+// A boolean pref set to true if touchpad haptic feedback is enabled.
+const char kTouchpadHapticFeedback[] = "settings.touchpad.haptic_feedback";
+
+// A integer pref for the touchpad haptic click sensitivity ranging from Soft
+// feedback to Firm feedback [1, 3, 5].
+const char kTouchpadHapticClickSensitivity[] =
+    "settings.touchpad.haptic_click_sensitivity";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

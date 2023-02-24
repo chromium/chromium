@@ -35,6 +35,7 @@
 #include "ui/display/display_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_switches.h"
@@ -80,7 +81,7 @@ const CommandLinePrefStore::BooleanSwitchToPreferenceMapEntry
          prefs::kSafeBrowsingEnhanced, true},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         {ash::switches::kEnableTouchpadThreeFingerClick,
-         prefs::kEnableTouchpadThreeFingerClick, true},
+         ash::prefs::kEnableTouchpadThreeFingerClick, true},
         {switches::kEnableUnifiedDesktop,
          prefs::kUnifiedDesktopEnabledByDefault, true},
         {ash::switches::kEnableCastReceiver, prefs::kCastReceiverEnabled, true},

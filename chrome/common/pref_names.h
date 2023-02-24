@@ -208,17 +208,9 @@ extern const char kPrintingAPIExtensionsAllowlist[];
 extern const char kEnableSyncConsent[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kTapToClickEnabled[];
-extern const char kEnableTouchpadThreeFingerClick[];
 extern const char kPrimaryPointingStickButtonRight[];
 extern const char kOwnerPrimaryPointingStickButtonRight[];
 extern const char kPointingStickAcceleration[];
-extern const char kTouchpadAcceleration[];
-extern const char kTouchpadScrollAcceleration[];
-extern const char kTouchpadHapticFeedback[];
-extern const char kTouchpadHapticClickSensitivity[];
-extern const char kTouchpadSensitivity[];
-extern const char kTouchpadScrollSensitivity[];
 extern const char kPointingStickSensitivity[];
 extern const char kUse24HourClock[];
 extern const char kUserTimezone[];

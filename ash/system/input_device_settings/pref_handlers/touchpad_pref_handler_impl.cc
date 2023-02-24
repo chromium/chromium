@@ -4,14 +4,57 @@
 
 #include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "base/check.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
+namespace {
+mojom::TouchpadSettingsPtr GetDefaultTouchpadSettings() {
+  mojom::TouchpadSettingsPtr settings = mojom::TouchpadSettings::New();
+  settings->sensitivity = kDefaultSensitivity;
+  settings->reverse_scrolling = kDefaultReverseScrolling;
+  settings->acceleration_enabled = kDefaultAccelerationEnabled;
+  settings->tap_to_click_enabled = kDefaultTapToClickEnabled;
+  settings->three_finger_click_enabled = kDefaultThreeFingerClickEnabled;
+  settings->tap_dragging_enabled = kDefaultTapDraggingEnabled;
+  settings->scroll_sensitivity = kDefaultSensitivity;
+  settings->scroll_acceleration = kDefaultScrollAcceleration;
+  settings->haptic_sensitivity = kDefaultHapticSensitivity;
+  settings->haptic_enabled = kDefaultHapticFeedbackEnabled;
+  return settings;
+}
+
+// GetTouchpadSettingsFromPrefs returns a touchpad settings based on user prefs
+// to be used as settings for new touchpads.
+mojom::TouchpadSettingsPtr GetTouchpadSettingsFromPrefs(PrefService* prefs) {
+  mojom::TouchpadSettingsPtr settings = mojom::TouchpadSettings::New();
+  settings->sensitivity = prefs->GetInteger(prefs::kTouchpadSensitivity);
+  settings->reverse_scrolling = prefs->GetBoolean(prefs::kNaturalScroll);
+  settings->acceleration_enabled =
+      prefs->GetBoolean(prefs::kTouchpadAcceleration);
+  settings->tap_to_click_enabled = prefs->GetBoolean(prefs::kTapToClickEnabled);
+  settings->three_finger_click_enabled =
+      prefs->GetBoolean(prefs::kEnableTouchpadThreeFingerClick);
+  settings->tap_dragging_enabled =
+      prefs->GetBoolean(prefs::kTapDraggingEnabled);
+  settings->scroll_sensitivity =
+      prefs->GetInteger(prefs::kTouchpadScrollSensitivity);
+  settings->scroll_acceleration =
+      prefs->GetBoolean(prefs::kTouchpadScrollAcceleration);
+  settings->haptic_sensitivity =
+      prefs->GetInteger(prefs::kTouchpadHapticClickSensitivity);
+  settings->haptic_enabled = prefs->GetBoolean(prefs::kTouchpadHapticFeedback);
+  return settings;
+}
+
+}  // namespace
 
 TouchpadPrefHandlerImpl::TouchpadPrefHandlerImpl() = default;
 TouchpadPrefHandlerImpl::~TouchpadPrefHandlerImpl() = default;
@@ -23,7 +66,7 @@ void TouchpadPrefHandlerImpl::InitializeTouchpadSettings(
       pref_service->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
   const auto* settings_dict = devices_dict.FindDict(touchpad->device_key);
   if (!settings_dict) {
-    touchpad->settings = GetNewTouchpadSettings(*touchpad);
+    touchpad->settings = GetNewTouchpadSettings(pref_service, *touchpad);
   } else {
     touchpad->settings =
         RetreiveTouchpadSettings(pref_service, *touchpad, *settings_dict);
@@ -80,21 +123,16 @@ void TouchpadPrefHandlerImpl::UpdateTouchpadSettings(
 }
 
 mojom::TouchpadSettingsPtr TouchpadPrefHandlerImpl::GetNewTouchpadSettings(
+    PrefService* prefs,
     const mojom::Touchpad& touchpad) {
-  // TODO(michaelcheco): Implement pulling from old device settings if the
-  // device was observed in the transition period.
-  mojom::TouchpadSettingsPtr settings = mojom::TouchpadSettings::New();
-  settings->sensitivity = kDefaultSensitivity;
-  settings->reverse_scrolling = kDefaultReverseScrolling;
-  settings->acceleration_enabled = kDefaultAccelerationEnabled;
-  settings->tap_to_click_enabled = kDefaultTapToClickEnabled;
-  settings->three_finger_click_enabled = kDefaultThreeFingerClickEnabled;
-  settings->tap_dragging_enabled = kDefaultTapDraggingEnabled;
-  settings->scroll_sensitivity = kDefaultSensitivity;
-  settings->scroll_acceleration = kDefaultScrollAcceleration;
-  settings->haptic_sensitivity = kDefaultHapticSensitivity;
-  settings->haptic_enabled = kDefaultHapticFeedbackEnabled;
-  return settings;
+  // TODO(michaelcheco): Remove once transitioned to per-device settings.
+  if (Shell::Get()->input_device_tracker()->WasDevicePreviouslyConnected(
+          InputDeviceTracker::InputDeviceCategory::kTouchpad,
+          touchpad.device_key)) {
+    return GetTouchpadSettingsFromPrefs(prefs);
+  }
+
+  return GetDefaultTouchpadSettings();
 }
 
 mojom::TouchpadSettingsPtr TouchpadPrefHandlerImpl::RetreiveTouchpadSettings(
