@@ -239,7 +239,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetricsTest.java",
   "junit/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceNotificationTest.java",
   "junit/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapterTest.java",
-  "junit/src/org/chromium/chrome/browser/services/gcm/BundleToPersistableBundleConverterTest.java",
   "junit/src/org/chromium/chrome/browser/settings/SettingsActivityUnitTest.java",
   "junit/src/org/chromium/chrome/browser/share/LensUtilsTest.java",
   "junit/src/org/chromium/chrome/browser/share/ShareButtonControllerUnitTest.java",

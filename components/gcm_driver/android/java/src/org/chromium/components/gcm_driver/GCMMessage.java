@@ -5,6 +5,7 @@
 package org.chromium.components.gcm_driver;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -129,6 +130,15 @@ public class GCMMessage {
     @Nullable
     public static GCMMessage createFromBundle(Bundle bundle) {
         return create(bundle, new BundleReader());
+    }
+
+    /**
+     * Creates a GCMMessage object based on the given bundle. Assumes that the bundle has previously
+     * been created through {@link #toPersistableBundle}.
+     */
+    @Nullable
+    public static GCMMessage createFromPersistableBundle(PersistableBundle bundle) {
+        return create(bundle, new PersistableBundleReader());
     }
 
     /**
@@ -265,6 +275,14 @@ public class GCMMessage {
     }
 
     /**
+     * Serializes the contents of this GCM Message to a new bundle that can be stored, for example
+     * for purposes of scheduling a job.
+     */
+    public PersistableBundle toPersistableBundle() {
+        return serialize(new PersistableBundleWriter());
+    }
+
+    /**
      * Serializes the contents of this GCM Message to a JSONObject such that it
      * could be stored as a String.
      */
@@ -321,6 +339,23 @@ public class GCMMessage {
         }
     }
 
+    private static class PersistableBundleReader implements Reader<PersistableBundle> {
+        @Override
+        public boolean hasKey(PersistableBundle bundle, String key) {
+            return bundle.containsKey(key);
+        }
+
+        @Override
+        public String readString(PersistableBundle bundle, String key) {
+            return bundle.getString(key);
+        }
+
+        @Override
+        public String[] readStringArray(PersistableBundle bundle, String key) {
+            return bundle.getStringArray(key);
+        }
+    }
+
     private static class JSONReader implements Reader<JSONObject> {
         @Override
         public boolean hasKey(JSONObject jsonObj, String key) {
@@ -353,6 +388,23 @@ public class GCMMessage {
         public T createOutputObject();
         public void writeString(T out, String key, String value);
         public void writeStringArray(T out, String key, String[] value);
+    }
+
+    private class PersistableBundleWriter implements Writer<PersistableBundle> {
+        @Override
+        public PersistableBundle createOutputObject() {
+            return new PersistableBundle();
+        }
+
+        @Override
+        public void writeString(PersistableBundle bundle, String key, String value) {
+            bundle.putString(key, value);
+        }
+
+        @Override
+        public void writeStringArray(PersistableBundle bundle, String key, String[] value) {
+            bundle.putStringArray(key, value);
+        }
     }
 
     private class BundleWriter implements Writer<Bundle> {

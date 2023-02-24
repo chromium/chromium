@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.services.gcm;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.PersistableBundle;
 
 import androidx.annotation.MainThread;
@@ -33,18 +32,8 @@ public class GCMBackgroundTask implements BackgroundTask {
     @Override
     public boolean onStartTask(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
-        PersistableBundle persistableExtras = taskParameters.getExtras();
-
-        // All types supported by PersistableBundle are part of BaseBundle (with the exception of
-        // full PersistableBundle entries themselves), which Bundle also extends, so it is always
-        // safe to put entries from a PersistableBundle into a Bundle. This conversion previously
-        // happened within the BackgroundTaskScheduler, but as part of deprecating support for
-        // earlier Android versions, there was no longer any need to hide PersistableBundle from the
-        // public API.
-        Bundle extras = new Bundle();
-        extras.putAll(persistableExtras);
-
-        GCMMessage message = GCMMessage.createFromBundle(extras);
+        PersistableBundle extras = taskParameters.getExtras();
+        GCMMessage message = GCMMessage.createFromPersistableBundle(extras);
         if (message == null) {
             Log.e(TAG, "The received bundle containing message data could not be validated.");
             return false;

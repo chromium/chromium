@@ -981,7 +981,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/segmentation_platform/PriceTrackingActionProvider.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/ReaderModeActionProvider.java",
   "java/src/org/chromium/chrome/browser/segmentation_platform/SignalAccumulator.java",
-  "java/src/org/chromium/chrome/browser/services/gcm/BundleToPersistableBundleConverter.java",
   "java/src/org/chromium/chrome/browser/services/gcm/ChromeGcmListenerServiceImpl.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundServiceImpl.java",
   "java/src/org/chromium/chrome/browser/services/gcm/GCMBackgroundTask.java",
