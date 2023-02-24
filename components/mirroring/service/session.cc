@@ -823,7 +823,10 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   if (initially_starting_session) {
     if (session_params_.is_remote_playback) {
       InitMediaRemoter({});
+      // Hold off video and audio streaming while waiting for the session to
+      // switch to Remoting.
       video_capture_client_->Pause();
+      audio_input_device_->Stop();
       remote_playback_start_time_ = base::Time::Now();
       remote_playback_start_timer_.Start(
           FROM_HERE, kStartRemotePlaybackTimeOut,
