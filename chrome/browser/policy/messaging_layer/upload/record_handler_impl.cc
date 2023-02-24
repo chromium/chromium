@@ -12,6 +12,7 @@
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -238,7 +239,8 @@ class RecordHandlerImpl::ReportUploader
  public:
   ReportUploader(
       FileUploadJob::Delegate* delegate,
-      scoped_refptr<StorageModuleInterface> storage,
+      base::RepeatingCallback<scoped_refptr<StorageModuleInterface>()>
+          storage_getter,
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
@@ -278,7 +280,8 @@ class RecordHandlerImpl::ReportUploader
 
   const raw_ptr<FileUploadJob::Delegate> delegate_;
 
-  const scoped_refptr<StorageModuleInterface> storage_;
+  const base::RepeatingCallback<scoped_refptr<StorageModuleInterface>()>
+      storage_getter_;
 
   bool need_encryption_key_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<EncryptedRecord> records_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -303,7 +306,8 @@ class RecordHandlerImpl::ReportUploader
 
 RecordHandlerImpl::ReportUploader::ReportUploader(
     FileUploadJob::Delegate* delegate,
-    scoped_refptr<StorageModuleInterface> storage,
+    base::RepeatingCallback<scoped_refptr<StorageModuleInterface>()>
+        storage_getter,
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
@@ -313,7 +317,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
       delegate_(delegate),
-      storage_(storage),
+      storage_getter_(storage_getter),
       need_encryption_key_(need_encryption_key),
       records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
@@ -389,7 +393,7 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&ProcessFileUpload, base::Unretained(delegate_.get()),
-                       storage_, priority, std::move(record_copy),
+                       storage_getter_.Run(), priority, std::move(record_copy),
                        std::move(resume_cb)));
     return;  // We will resume on `resume_cb`
   }
@@ -663,10 +667,11 @@ RecordHandlerImpl::ReportUploader::SequenceInformationValueToProto(
 RecordHandlerImpl::RecordHandlerImpl(
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
     std::unique_ptr<FileUploadJob::Delegate> delegate,
-    scoped_refptr<StorageModuleInterface> storage)
+    base::RepeatingCallback<scoped_refptr<StorageModuleInterface>()>
+        storage_getter)
     : sequenced_task_runner_(sequenced_task_runner),
       delegate_(std::move(delegate)),
-      storage_(storage) {}
+      storage_getter_(storage_getter) {}
 
 RecordHandlerImpl::~RecordHandlerImpl() = default;
 
@@ -677,7 +682,7 @@ void RecordHandlerImpl::HandleRecords(
     CompletionCallback upload_complete_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   Start<RecordHandlerImpl::ReportUploader>(
-      delegate_.get(), storage_, need_encryption_key, std::move(records),
+      delegate_.get(), storage_getter_, need_encryption_key, std::move(records),
       std::move(scoped_reservation), std::move(upload_complete_cb),
       std::move(encryption_key_attached_cb), sequenced_task_runner_);
 }

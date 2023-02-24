@@ -9,7 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -33,7 +35,8 @@ class RecordHandlerImpl : public RecordHandler {
   RecordHandlerImpl(
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
       std::unique_ptr<FileUploadJob::Delegate> delegate,
-      scoped_refptr<StorageModuleInterface> storage);
+      base::RepeatingCallback<scoped_refptr<StorageModuleInterface>()>
+          storage_getter);
   ~RecordHandlerImpl() override;
 
   // Base class RecordHandler method implementation.
@@ -52,7 +55,8 @@ class RecordHandlerImpl : public RecordHandler {
 
   // The next two fields are only used for LOG_UPLOAD events.
   const std::unique_ptr<FileUploadJob::Delegate> delegate_;
-  scoped_refptr<StorageModuleInterface> storage_;
+  const base::RepeatingCallback<scoped_refptr<StorageModuleInterface>()>
+      storage_getter_;
 };
 
 }  // namespace reporting

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
@@ -51,7 +52,9 @@ UploadClient::UploadClient()
       handler_(std::make_unique<RecordHandlerImpl>(
           sequenced_task_runner_,
           std::make_unique<FileUploadDelegate>(),
-          ReportQueueProvider::GetInstance()->storage())) {}
+          base::BindRepeating([]() {
+            return ReportQueueProvider::GetInstance()->storage();
+          }))) {}
 
 UploadClient::~UploadClient() = default;
 
