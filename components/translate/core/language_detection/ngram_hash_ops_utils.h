@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_NGRAM_HASH_OPS_UTILS_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace translate {
