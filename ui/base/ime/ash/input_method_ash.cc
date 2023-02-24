@@ -990,8 +990,10 @@ CompositionText InputMethodAsh::ExtractCompositionText(
     for (const auto& text_ime_text_span : text_ime_text_spans) {
       const uint32_t start = text_ime_text_span.start_offset;
       const uint32_t end = text_ime_text_span.end_offset;
-      if (start >= end)
+      if (start >= end || end >= char16_offsets.size()) {
+        LOG(ERROR) << "IME composition invalid bounds.";
         continue;
+      }
       ui::ImeTextSpan ime_text_span(ui::ImeTextSpan::Type::kComposition,
                                     char16_offsets[start], char16_offsets[end],
                                     text_ime_text_span.thickness,
