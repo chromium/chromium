@@ -40,14 +40,13 @@ void RenderMediaClient::Initialize() {
 }
 
 RenderMediaClient::RenderMediaClient()
-    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      io_task_runner_(RenderThreadImpl::current()->GetIOTaskRunner()) {
+    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
   // We'll first try to query the supported video decoder configurations
   // asynchronously. If IsSupportedVideoType() is called before we get a
-  // response, that method will fall back to querying the video decoder
-  // configurations synchronously.
+  // response, that method will block if its not on the main thread or fall
+  // back to querying the video decoder configurations synchronously otherwise.
   //
   // The base::Unretained()s here are safe here since the MediaClient is never
   // destructed.
@@ -88,31 +87,21 @@ bool RenderMediaClient::IsSupportedAudioType(const media::AudioType& type) {
 
 bool RenderMediaClient::IsSupportedVideoType(const media::VideoType& type) {
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
-  // This method should not run on the IO thread: we don't want to make the sync
-  // mojo call below on that thread.
-  DCHECK(!io_task_runner_->RunsTasksInCurrentSequence());
-  {
-    base::AutoLock lock(supported_video_decoder_profiles_lock_);
-    if (!supported_video_decoder_profiles_are_known_) {
-      // We didn't get the response for the asynchronous query in time. Let's
-      // fall back to a synchronous query.
+  if (!did_update_.IsSignaled()) {
+    // The asynchronous request didn't complete in time, so we must now block
+    // or retrieve the information synchronously.
+    if (main_task_runner_->BelongsToCurrentThread()) {
       media::SupportedVideoDecoderConfigs configs;
       media::VideoDecoderType video_decoder_type;
       if (!video_decoder_for_supported_profiles_->GetSupportedConfigs(
               &configs, &video_decoder_type)) {
         configs.clear();
       }
-      UpdateVideoProfilesInternal(configs);
-      supported_video_decoder_profiles_are_known_ = true;
-
-      // The base::Unretained() here is safe because the MediaClient is never
-      // destructed.
-      main_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &RenderMediaClient::
-                  ResetConnectionForSupportedProfilesQueryOnMainThread,
-              base::Unretained(this)));
+      OnGetSupportedVideoDecoderConfigs(configs, video_decoder_type);
+      DCHECK(did_update_.IsSignaled());
+    } else {
+      // There's already an asynchronous request on the main thread, so wait...
+      did_update_.Wait();
     }
   }
 #endif
@@ -136,19 +125,20 @@ void RenderMediaClient::OnGetSupportedVideoDecoderConfigs(
     const media::SupportedVideoDecoderConfigs& configs,
     media::VideoDecoderType type) {
 #if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
-  base::AutoLock lock(supported_video_decoder_profiles_lock_);
-  if (!supported_video_decoder_profiles_are_known_) {
-    UpdateVideoProfilesInternal(configs);
-    supported_video_decoder_profiles_are_known_ = true;
-
-    // The base::Unretained() here is safe because the MediaClient is never
-    // destructed.
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&RenderMediaClient::
-                           ResetConnectionForSupportedProfilesQueryOnMainThread,
-                       base::Unretained(this)));
+  if (did_update_.IsSignaled()) {
+    return;
   }
+
+  UpdateVideoProfilesInternal(configs);
+  did_update_.Signal();
+
+  // The base::Unretained() here is safe because the MediaClient is never
+  // destructed.
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RenderMediaClient::
+                         ResetConnectionForSupportedProfilesQueryOnMainThread,
+                     base::Unretained(this)));
 #endif
 }
 
