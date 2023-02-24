@@ -95,6 +95,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_caption_button.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
 // Keep the functions in this file in alphabetical order.
@@ -507,8 +508,7 @@ bool CanToggleFloatingWindow() {
   if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
     return false;
   }
-  aura::Window* window = window_util::GetActiveWindow();
-  return window && chromeos::wm::CanFloatWindow(window);
+  return window_util::GetActiveWindow() != nullptr;
 }
 
 bool CanToggleGameDashboard() {
@@ -1259,7 +1259,13 @@ void ToggleFloating() {
   DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   aura::Window* window = window_util::GetActiveWindow();
   DCHECK(window);
-  DCHECK(chromeos::wm::CanFloatWindow(window));
+  // `CanFloatWindow` check is placed here rather than
+  // `CanToggleFloatingWindow` as otherwise the bounce would not behave
+  // properly.
+  if (!chromeos::wm::CanFloatWindow(window)) {
+    wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
+    return;
+  }
   Shell::Get()->float_controller()->ToggleFloat(window);
   base::RecordAction(base::UserMetricsAction("Accel_Toggle_Floating"));
 }
