@@ -85,6 +85,7 @@ class MenuScrollButton : public View {
 
   void OnDragEntered(const ui::DropTargetEvent& event) override {
     DCHECK(host_->GetMenuItem()->GetMenuController());
+    host_->GetMenuItem()->GetMenuController()->SetEnabledScrollButtons(true);
     host_->GetMenuItem()->GetMenuController()->OnDragEnteredScrollButton(
         host_, is_up_);
   }
