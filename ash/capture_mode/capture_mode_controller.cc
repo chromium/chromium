@@ -396,6 +396,19 @@ base::FilePath GetTempDir() {
   return temp_dir;
 }
 
+int GetNotificationTitleIdForFile(const base::FilePath& file_path) {
+  if (file_path.MatchesExtension(".gif")) {
+    return IDS_ASH_SCREEN_CAPTURE_GIF_RECORDING_TITLE;
+  }
+
+  if (file_path.MatchesExtension(".webm")) {
+    return IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE;
+  }
+
+  DCHECK(file_path.MatchesExtension(".png"));
+  return IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE;
+}
+
 }  // namespace
 
 CaptureModeController::CaptureModeController(
@@ -1301,7 +1314,7 @@ void CaptureModeController::OnVideoFileSaved(
       // NOTE: Holding space `client` may be `nullptr` in tests.
       if (auto* client = HoldingSpaceController::Get()->client()) {
         client->AddScreenCapture(
-            recording_type_ == RecordingType::kGif
+            saved_video_file_path.MatchesExtension(".gif")
                 ? HoldingSpaceItem::Type::kScreenRecordingGif
                 : HoldingSpaceItem::Type::kScreenRecording,
             saved_video_file_path);
@@ -1324,8 +1337,7 @@ void CaptureModeController::ShowPreviewNotification(
     const gfx::Image& preview_image,
     const CaptureModeType type) {
   const bool for_video = type == CaptureModeType::kVideo;
-  const int title_id = for_video ? IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE
-                                 : IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_TITLE;
+  const int title_id = GetNotificationTitleIdForFile(screen_capture_path);
   const int message_id = for_video && low_disk_space_threshold_reached_
                              ? IDS_ASH_SCREEN_CAPTURE_LOW_STORAGE_SPACE_MESSAGE
                              : IDS_ASH_SCREEN_CAPTURE_MESSAGE;

@@ -5238,6 +5238,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_RECORDING_TITLE" desc="The titile of the notification which shows after a screen recording is taken.">
         Screen recording taken
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_GIF_RECORDING_TITLE" desc="The titile of the notification which shows after a screen recording is taken.">
+        GIF recording taken
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_MESSAGE" desc="The message shows in the screenshot or screen recording notification.">
         Show in folder
       </message>
