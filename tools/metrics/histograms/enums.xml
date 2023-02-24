@@ -37512,45 +37512,6 @@ Called by update_extension_permission.py.-->
   <int value="1" label="v2"/>
 </enum>
 
-<enum name="FaultTolerantHeap">
-  <int value="0" label="FTH_OFF">FTH is completely off.</int>
-  <int value="1" label="FTH_HKLM">FTH is enabled in HKLM.</int>
-  <int value="2" label="FTH_HKCU">FTH is enabled in HKCU.</int>
-  <int value="3" label="FTH_HKCU_HKLM">FTH is enabled in HKCU and HKLM.</int>
-  <int value="4" label="FTH_ACLAYERS">AcLayers.dll is loaded.</int>
-  <int value="5" label="FTH_ACLAYERS_HKLM">
-    AcLayers.dll is loaded and FTH is enabled in HKLM.
-  </int>
-  <int value="6" label="FTH_ACLAYERS_HKCU">
-    AcLayers.dll is loaded and FTH is enabled in HKCU.
-  </int>
-  <int value="7" label="FTH_ACLAYERS_HKCU_HKLM">
-    AcLayers.dll is loaded and FTH is enabled in HKCU and HKLM.
-  </int>
-  <int value="8" label="FTH_ACXTRNAL">AcXtrnal is loaded.</int>
-  <int value="9" label="FTH_ACXTRNAL_HKLM">
-    AcXtrnal is loaded and FTH is enabled in HKLM.
-  </int>
-  <int value="10" label="FTH_ACXTRNAL_HKCU">
-    AcXtrnal is loaded and FTH is enabled in HKCU.
-  </int>
-  <int value="11" label="FTH_ACXTRNAL_HKCU_HKLM">
-    AcXtrnal is loaded and FTH is enabled in HKCU and HKLM.
-  </int>
-  <int value="12" label="FTH_ACXTRNAL_ACLAYERS">
-    AcXtrmal and AcLayers.dll are loaded.
-  </int>
-  <int value="13" label="FTH_ACXTRNAL_ACLAYERS_HKLM">
-    AcXtrmal and AcLayers.dll are loaded and FTH is enabled in HKLM.
-  </int>
-  <int value="14" label="FTH_ACXTRNAL_ACLAYERS_HKCU">
-    AcXtrmal and AcLayers.dll are loaded and FTH is enabled in HKCU.
-  </int>
-  <int value="15" label="FTH_ACXTRNAL_ACLAYERS_HKCU_HKLM">
-    AcXtrmal and AcLayers.dll are loaded and FTH is enabled in HKCU and HKLM.
-  </int>
-</enum>
-
 <enum name="FaviconAvailabilityStatus">
   <int value="0" label="Favicon available locally"/>
   <int value="1" label="Favicon available via sync"/>

@@ -5867,16 +5867,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FaultTolerantHeap" enum="FaultTolerantHeap"
-    expires_after="M77">
-  <owner>brucedawson@chromium.org</owner>
-  <summary>
-    Records several bits of information about whether the Windows
-    FaultTolerantHeap might be enabled. This is logged (from a delayed task)
-    when the browser process starts up.
-  </summary>
-</histogram>
-
 <histogram name="Favicon.OnDemandIconExistsInDb" units="units"
     expires_after="2021-06-08">
   <obsolete>
@@ -13568,15 +13558,6 @@ should be kept until we remove incident reporting. -->
     The number of registered shell extensions found on the user's machine. This
     is emitted shortly after startup when the shell extensions enumeration is
     done. Doesn't count duplicates.
-  </summary>
-</histogram>
-
-<histogram name="ThirdPartyModules.TimeDateStampObtained" enum="BooleanSuccess"
-    expires_after="M85">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    Indicates whether the TimeDateStamp for a loaded module was successfully
-    obtained.
   </summary>
 </histogram>
 
