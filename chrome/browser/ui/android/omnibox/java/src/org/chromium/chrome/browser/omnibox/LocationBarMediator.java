@@ -144,6 +144,9 @@ class LocationBarMediator
                 @Override
                 public void setValue(LocationBarMediator object, float value) {
                     ((LocationBarTablet) mLocationBarLayout).setWidthChangeAnimationFraction(value);
+                    if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext) && mUrlHasFocus) {
+                        mEmbedderImpl.recalculateOmniboxAlignment();
+                    }
                 }
             };
 
@@ -175,6 +178,7 @@ class LocationBarMediator
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
     private final SaveOfflineButtonState mSaveOfflineButtonState;
     private final OmniboxUma mOmniboxUma;
+    private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
@@ -209,7 +213,8 @@ class LocationBarMediator
             @NonNull LensController lensController,
             @NonNull Runnable launchAssistanceSettingsAction,
             @NonNull SaveOfflineButtonState saveOfflineButtonState, @NonNull OmniboxUma omniboxUma,
-            @NonNull BooleanSupplier isToolbarMicEnabledSupplier) {
+            @NonNull BooleanSupplier isToolbarMicEnabledSupplier,
+            @NonNull OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -233,6 +238,7 @@ class LocationBarMediator
         mSaveOfflineButtonState = saveOfflineButtonState;
         mOmniboxUma = omniboxUma;
         mIsToolbarMicEnabledSupplier = isToolbarMicEnabledSupplier;
+        mEmbedderImpl = dropdownEmbedder;
     }
 
     /**

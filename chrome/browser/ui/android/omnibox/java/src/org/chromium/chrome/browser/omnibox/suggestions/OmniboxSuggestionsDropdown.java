@@ -54,7 +54,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final int mStandardBgColor;
     private final int mIncognitoBgColor;
 
-    private final int[] mTempPosition = new int[2];
     private final Rect mTempRect = new Rect();
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
 
@@ -576,8 +575,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     private void adjustHorizontalPosition() {
-        setPadding(mOmniboxAlignment.paddingLeft, getPaddingTop(), mOmniboxAlignment.paddingRight,
-                getPaddingBottom());
+        if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
+            // Set our left edge using translation x. This avoids needing to relayout (like setting
+            // a left margin would) and is less risky than calling View#setLeft(), which is intended
+            // for use by the layout system.
+            setTranslationX(mOmniboxAlignment.left);
+        } else {
+            setPadding(mOmniboxAlignment.paddingLeft, getPaddingTop(),
+                    mOmniboxAlignment.paddingRight, getPaddingBottom());
+        }
     }
 
     public void emitWindowContentChanged() {

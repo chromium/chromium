@@ -192,7 +192,8 @@ public class LocationBarCoordinator
                 overrideUrlLoadingDelegate, LocaleManager.getInstance(), templateUrlServiceSupplier,
                 backKeyBehavior, windowAndroid, isTabletWindow() && isTabletLayout(),
                 searchEngineLogoUtils, LensController.getInstance(), launchAssistanceSettingsAction,
-                saveOfflineButtonState, omniboxUma, isToolbarMicEnabledSupplier);
+                saveOfflineButtonState, omniboxUma, isToolbarMicEnabledSupplier,
+                mOmniboxDropdownEmbedderImpl);
         if (backPressManager != null && BackPressManager.isEnabled()) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }

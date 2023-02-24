@@ -18,6 +18,7 @@ import android.view.ViewTreeObserver;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -26,7 +27,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowDelegate;
 
@@ -45,6 +50,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     // probably because you used position[1] instead of position[0].
     private static final int ALIGNMENT_TOP = 43;
 
+    public @Rule TestRule mProcessor = new Features.JUnitProcessor();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock WindowAndroid mWindowAndroid;
@@ -61,6 +67,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     public void setUp() {
         mContextWeakRef = new WeakReference<>(ContextUtils.getApplicationContext());
         doReturn(mContextWeakRef).when(mWindowAndroid).getContext();
+        doReturn(mContextWeakRef.get()).when(mAnchorView).getContext();
         doReturn(mViewTreeObserver).when(mAnchorView).getViewTreeObserver();
         doReturn(mContentView).when(mAnchorView).getRootView();
         doReturn(mContentView).when(mContentView).findViewById(android.R.id.content);
@@ -104,6 +111,24 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    public void
+    testRecalculateOmniboxAlignment_phoneRevampEnabled() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(40).when(mHorizontalAlignmentView).getLeft();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(
+                new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 0, 0), alignment);
+    }
+
+    @Test
     @Config(qualifiers = "w600dp-h820dp")
     public void testRecalculateOmniboxAlignment_tablet() {
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
@@ -112,6 +137,25 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
         assertEquals(new OmniboxAlignment(0, ANCHOR_HEIGHT + ANCHOR_TOP, ANCHOR_WIDTH, 40,
                              ANCHOR_WIDTH - ALIGNMENT_WIDTH - 40),
+                alignment);
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h820dp")
+    @EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
+            "force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:enable_modernize_visual_update_on_tablet/true"})
+    public void
+    testRecalculateOmniboxAlignment_tabletRevampEnabled() {
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
+        doReturn(40).when(mHorizontalAlignmentView).getLeft();
+        doReturn(60).when(mHorizontalAlignmentView).getTop();
+        mImpl.recalculateOmniboxAlignment();
+        OmniboxAlignment alignment = mImpl.getCurrentAlignment();
+        assertEquals(new OmniboxAlignment(40, ANCHOR_HEIGHT + ANCHOR_TOP, ALIGNMENT_WIDTH, 0, 0),
                 alignment);
     }
 }
