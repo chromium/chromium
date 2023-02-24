@@ -89,15 +89,15 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
 // function to create the above mock instead.
 class AudioDebugRecordingHelperUnderTest : public AudioDebugRecordingHelper {
  public:
-  using CreatedWriterCallback =
+  using ChangedWriterCallback =
       base::RepeatingCallback<void(MockAudioDebugFileWriter*)>;
 
   AudioDebugRecordingHelperUnderTest(
       const AudioParameters& params,
       base::OnceClosure on_destruction_closure,
-      CreatedWriterCallback created_writer_callback)
+      ChangedWriterCallback changed_writer_callback)
       : AudioDebugRecordingHelper(params, std::move(on_destruction_closure)),
-        created_writer_callback_(std::move(created_writer_callback)) {}
+        changed_writer_callback_(std::move(changed_writer_callback)) {}
 
   AudioDebugRecordingHelperUnderTest(
       const AudioDebugRecordingHelperUnderTest&) = delete;
@@ -113,12 +113,16 @@ class AudioDebugRecordingHelperUnderTest : public AudioDebugRecordingHelper {
       base::File file) override {
     MockAudioDebugFileWriter* writer =
         new MockAudioDebugFileWriter(params, std::move(file));
-    created_writer_callback_.Run(writer);
+    changed_writer_callback_.Run(writer);
     return AudioDebugFileWriter::Ptr(
         writer, base::OnTaskRunnerDeleter(writer->GetTaskRunner()));
   }
 
-  CreatedWriterCallback created_writer_callback_;
+  void WillDestroyAudioDebugFileWriter() override {
+    changed_writer_callback_.Run(nullptr);
+  }
+
+  ChangedWriterCallback changed_writer_callback_;
 };
 
 class AudioDebugRecordingHelperTest : public ::testing::Test {
