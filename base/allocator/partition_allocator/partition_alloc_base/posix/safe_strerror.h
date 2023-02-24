@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 
 namespace partition_alloc::internal::base {
 

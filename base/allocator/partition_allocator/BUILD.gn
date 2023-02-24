@@ -102,7 +102,6 @@ component("partition_alloc") {
     "partition_alloc_base/memory/ref_counted.h",
     "partition_alloc_base/memory/scoped_policy.h",
     "partition_alloc_base/memory/scoped_refptr.h",
-    "partition_alloc_base/migration_adapter.h",
     "partition_alloc_base/no_destructor.h",
     "partition_alloc_base/numerics/checked_math.h",
     "partition_alloc_base/numerics/checked_math_impl.h",

@@ -182,7 +182,7 @@ float SingleBucket(Allocator* allocator) {
       reinterpret_cast<MemoryAllocationPerfNode*>(allocator->Alloc(kAllocSize));
   size_t allocated_memory = kAllocSize;
 
-  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   MemoryAllocationPerfNode* cur = first;
   do {
     auto* next = reinterpret_cast<MemoryAllocationPerfNode*>(
@@ -215,7 +215,7 @@ float SingleBucketWithFree(Allocator* allocator) {
   // Allocate an initial element to make sure the bucket stays set up.
   void* elem = allocator->Alloc(kAllocSize);
 
-  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     void* cur = allocator->Alloc(kAllocSize);
     PA_CHECK(cur != nullptr);
@@ -234,7 +234,7 @@ float MultiBucket(Allocator* allocator) {
   MemoryAllocationPerfNode* cur = first;
   size_t allocated_memory = kAllocSize;
 
-  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     for (int i = 0; i < kMultiBucketRounds; i++) {
       size_t size = kMultiBucketMinimumSize + (i * kMultiBucketIncrement);
@@ -276,7 +276,7 @@ float MultiBucketWithFree(Allocator* allocator) {
     elems.push_back(cur);
   }
 
-  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     for (int i = 0; i < kMultiBucketRounds; i++) {
       void* cur = allocator->Alloc(kMultiBucketMinimumSize +
@@ -297,7 +297,7 @@ float MultiBucketWithFree(Allocator* allocator) {
 float DirectMapped(Allocator* allocator) {
   constexpr size_t kSize = 2 * 1000 * 1000;
 
-  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     void* cur = allocator->Alloc(kSize);
     PA_CHECK(cur != nullptr);

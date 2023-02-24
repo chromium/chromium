@@ -13,7 +13,6 @@
 #include <type_traits>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 

@@ -69,7 +69,7 @@ class Spin : public base::PlatformThreadForTesting::Delegate {
 }  // namespace
 
 TEST(PartitionLockPerfTest, Simple) {
-  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   [[maybe_unused]] uint32_t data = 0;
 
   Lock lock;
@@ -106,7 +106,7 @@ TEST(PartitionLockPerfTest, WithCompetingThreads) {
   while (thread_main.started_count() != kThreads) {
   }
 
-  base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
+  ::base::LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
   do {
     lock.Acquire();
     data += 1;

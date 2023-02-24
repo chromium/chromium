@@ -14,7 +14,6 @@
 #include <iosfwd>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_ref.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "build/build_config.h"
