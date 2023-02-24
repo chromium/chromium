@@ -15,6 +15,10 @@ NetworkIdentifier GeneratePskNetworkId(const std::string& ssid) {
                            shill::kSecurityClassPsk);
 }
 
+NetworkIdentifier GenerateInvalidPskNetworkId(const std::string& ssid) {
+  return NetworkIdentifier(ssid.data(), shill::kSecurityClassPsk);
+}
+
 sync_pb::WifiConfigurationSpecifics GenerateTestWifiSpecifics(
     const NetworkIdentifier& id,
     const std::string& passphrase = "passphrase",

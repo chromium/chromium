@@ -263,6 +263,11 @@ void SyncedNetworkMetricsLogger::RecordApplyNetworkFailed() {
   base::UmaHistogramBoolean(kApplyResultHistogram, false);
 }
 
+void SyncedNetworkMetricsLogger::RecordApplyGenerateLocalNetworkConfig(
+    bool success) {
+  base::UmaHistogramBoolean(kApplyGenerateLocalNetworkConfigHistogram, success);
+}
+
 void SyncedNetworkMetricsLogger::RecordApplyNetworkFailureReason(
     ApplyNetworkFailureReason error_enum,
     const std::string& error_string) {
