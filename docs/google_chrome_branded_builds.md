@@ -74,3 +74,25 @@ Once that CL lands, an auto-roller bot will update the main repo's src-internal
 hash reference in `//DEPS` ([example autoroll CL](https://crrev.com/c/4024955))
 and your new internal resources will be available on the bots. The chromium-side
 CL making use of it can then be uploaded.
+
+## Internal Clank assets
+
+Internal Clank assets live in [Clank's internal downstream repo](https://chrome-internal.googlesource.com/clank/internal/apps).
+In general, to check in product-specific assets:
+- Add `//components` ones under
+  `//components/[product_name]/java/res/drawable/[asset_name]`.
+  E.g.
+  [`//components/page_info/java/res/drawable/product_logo.png`](https://chrome-internal.googlesource.com/clank/internal/apps/+/refs/heads/main/components/page_info/java/res/drawable)
+
+To add assets there, `cd` to this repo, add your new assets and `git cl
+upload` to start an internal code review. Once it lands, an auto-roller bot will
+update the main repo's src/clank hash reference in `//DEPS`
+([example autoroll CL](https://chromium-review.googlesource.com/c/chromium/src/+/4282317))
+and your new internal assets will be available on the bots. The chromium-side
+CL making use of it can then be uploaded.
+
+The internal asset is only available on a Chrome branded build. We can not
+utilize icons from the internal repo directly from Java because the assets
+wouldn't be available in public builds. We can work around this by passing the
+resource id to the native side and then back to Java (example [CL1](https://crrev.com/c/3327235),
+[CL2](https://crrev.com/c/4286715)).
