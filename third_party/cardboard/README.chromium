@@ -11,6 +11,7 @@ The Cardboard SDK supports a simple API used for displaying VR scenes on
 smartphones inserted into Cardboard viewers.
 
 Local Modifications:
-Created local top-level BUILD.gn based on src/sdk/build.gradle
-Created local proguard-rules.pro to remove wildcard rules
-Created local override for device_gyroscope_sensor to remove static initializers
+* Created local top-level BUILD.gn based on src/sdk/build.gradle
+* Created local proguard-rules.pro to remove wildcard rules
+* Created local override for device_gyroscope_sensor to remove static initializers
+* Created local override for LoadJClass in jni_utils to leaverage //base JNI loading due to splits.
