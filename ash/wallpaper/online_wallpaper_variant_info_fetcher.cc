@@ -34,6 +34,10 @@ bool IsSuitableOnlineWallpaperVariant(const OnlineWallpaperVariant& variant,
       return mode == ColorMode::kLightMode;
     case backdrop::Image_ImageType_IMAGE_TYPE_DARK_MODE:
       return mode == ColorMode::kDarkMode;
+    case backdrop::Image_ImageType_IMAGE_TYPE_MORNING_MODE:
+    case backdrop::Image_ImageType_IMAGE_TYPE_LATE_AFTERNOON_MODE:
+      // TODO(b/266612412): Handle these image types properly.
+      return false;
   }
 }
 
