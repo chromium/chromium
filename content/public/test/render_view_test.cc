@@ -376,20 +376,6 @@ void RenderViewTest::SetUp() {
   content_client_.reset(CreateContentClient());
   SetContentClient(content_client_.get());
 
-  // Blink needs to be initialized before calling CreateContentRendererClient()
-  // because it uses blink internally.
-  blink_platform_impl_.Initialize();
-  blink::Initialize(blink_platform_impl_.Get(), &binders_,
-                    blink_platform_impl_.GetMainThreadScheduler());
-
-  content_browser_client_.reset(CreateContentBrowserClient());
-  content_renderer_client_.reset(CreateContentRendererClient());
-  SetBrowserClientForTesting(content_browser_client_.get());
-  SetRendererClientForTesting(content_renderer_client_.get());
-
-  agent_scheduling_group_ = MockAgentSchedulingGroup::Create(*render_thread_);
-  render_widget_host_ = CreateRenderWidgetHost();
-
 #if BUILDFLAG(IS_WIN)
   // This needs to happen sometime before PlatformInitialize.
   // This isn't actually necessary for most tests: most tests are able to
@@ -405,8 +391,25 @@ void RenderViewTest::SetUp() {
   command_line_ =
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
   params_ = std::make_unique<MainFunctionParams>(command_line_.get());
+  // Platform needs to be initialized before blink::Initialize. This is because
+  // Blink retrieves fonts for EdgeScrollbarNativeThemeFluent, but the platform
+  // expects the font manager singleton to be uninitialized.
   platform_ = std::make_unique<RendererMainPlatformDelegate>(*params_);
   platform_->PlatformInitialize();
+
+  // Blink needs to be initialized before calling CreateContentRendererClient()
+  // because it uses Blink internally.
+  blink_platform_impl_.Initialize();
+  blink::Initialize(blink_platform_impl_.Get(), &binders_,
+                    blink_platform_impl_.GetMainThreadScheduler());
+
+  content_browser_client_.reset(CreateContentBrowserClient());
+  content_renderer_client_.reset(CreateContentRendererClient());
+  SetBrowserClientForTesting(content_browser_client_.get());
+  SetRendererClientForTesting(content_renderer_client_.get());
+
+  agent_scheduling_group_ = MockAgentSchedulingGroup::Create(*render_thread_);
+  render_widget_host_ = CreateRenderWidgetHost();
 
   // Ensure that we register any necessary schemes when initializing WebKit,
   // since we are using a MockRenderThread.

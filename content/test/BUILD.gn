@@ -1806,6 +1806,7 @@ test("content_browsertests") {
       "../browser/renderer_host/direct_manipulation_win_browsertest.cc",
       "../browser/renderer_host/render_process_host_sandbox_policy_win_browsertest.cc",
       "../browser/scheduler/responsiveness/native_event_observer_browsertest_win.cc",
+      "../renderer/fluent_scrollbar_browsertest.cc",
     ]
 
     deps += [
