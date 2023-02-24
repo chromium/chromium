@@ -52,6 +52,7 @@
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -194,8 +195,7 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
 std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
     const password_manager::PasswordForm& form,
     bool are_passwords_revealed,
-    views::EditablePasswordCombobox::IsPasswordRevealPermittedCheck
-        reveal_permitted_check) {
+    views::Button::PressedCallback reveal_password_callback) {
   DCHECK(!form.IsFederatedCredential());
   std::vector<std::u16string> passwords =
       form.all_possible_passwords.empty()
@@ -209,12 +209,12 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
       std::make_unique<ui::SimpleComboboxModel>(
           std::vector<ui::SimpleComboboxModel::Item>(passwords.begin(),
                                                      passwords.end())),
-      views::style::CONTEXT_BUTTON, STYLE_PRIMARY_MONOSPACED, display_arrow);
+      views::style::CONTEXT_BUTTON, STYLE_PRIMARY_MONOSPACED, display_arrow,
+      std::move(reveal_password_callback));
   combobox->SetText(form.password_value);
   combobox->SetPasswordIconTooltips(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD),
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
-  combobox->SetIsPasswordRevealPermittedCheck(std::move(reveal_permitted_check));
   combobox->RevealPasswords(are_passwords_revealed);
   combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSWORD_LABEL));
@@ -340,8 +340,8 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         CreateEditablePasswordCombobox(
             password_form,
             controller_.are_passwords_revealed_when_bubble_is_opened(),
-            base::BindRepeating(&SaveUpdateBubbleController::RevealPasswords,
-                                base::Unretained(&controller_)));
+            base::BindRepeating(&PasswordSaveUpdateView::TogglePasswordRevealed,
+                                base::Unretained(this)));
     // Set up layout:
     SetLayoutManager(std::make_unique<AutoResizingLayout>());
     views::View* root_view = AddChildView(std::make_unique<views::View>());
@@ -698,4 +698,12 @@ void PasswordSaveUpdateView::UpdateFootnote() {
   // The footnote size could have changed since it depends on whether it
   // affects the account store, and hence resize.
   SizeToContents();
+}
+
+void PasswordSaveUpdateView::TogglePasswordRevealed() {
+  if (password_dropdown_->ArePasswordsRevealed()) {
+    password_dropdown_->RevealPasswords(false);
+  } else if (controller_.RevealPasswords()) {
+    password_dropdown_->RevealPasswords(true);
+  }
 }
