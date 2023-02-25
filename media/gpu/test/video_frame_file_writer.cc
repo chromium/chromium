@@ -236,10 +236,7 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   // Write the PNG data to file.
   base::FilePath file_path(
       output_folder_.Append(filename).AddExtension(FILE_PATH_LITERAL(".png")));
-  const int size = base::checked_cast<int>(png_output.size());
-  const int bytes_written = base::WriteFile(
-      file_path, reinterpret_cast<char*>(png_output.data()), size);
-  ASSERT_TRUE(bytes_written == size);
+  ASSERT_TRUE(base::WriteFile(file_path, png_output));
 }
 
 void VideoFrameFileWriter::WriteVideoFrameYUV(
