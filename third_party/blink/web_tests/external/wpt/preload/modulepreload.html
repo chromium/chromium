@@ -36,17 +36,17 @@ function attachAndWaitForError(element) {
 promise_test(function(t) {
     var link = document.createElement('link');
     link.rel = 'modulepreload';
-    link.href = 'resources/dummy.js';
+    link.href = 'resources/dummy.js?unique';
     return attachAndWaitForLoad(link).then(() => {
-        verifyNumberOfDownloads('resources/dummy.js', 1);
+        verifyNumberOfDownloads('resources/dummy.js?unique', 1);
 
         // Verify that <script> doesn't fetch the module again.
         var script = document.createElement('script');
         script.type = 'module';
-        script.src = 'resources/dummy.js';
+        script.src = 'resources/dummy.js?unique';
         return attachAndWaitForLoad(script);
     }).then(() => {
-        verifyNumberOfDownloads('resources/dummy.js', 1);
+        verifyNumberOfDownloads('resources/dummy.js?unique', 1);
     });
 }, 'link rel=modulepreload');
 

@@ -1546,23 +1546,6 @@ crbug.com/6606 external/wpt/mathml/relations/html5-tree/href-click-3.html [ Fail
 # values and mathvariant attribute. Currently, we only support the new
 # text-transform: auto, use the UA rule for the <mi> element and map
 # mathvariant="normal" to "text-transform: none".
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-bold-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-bold-fraktur-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-bold-italic-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-bold-sans-serif-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-bold-script-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-double-struck-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-fraktur-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-initial-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-italic-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-looped-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-monospace-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-sans-serif-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-sans-serif-bold-italic-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-sans-serif-italic-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-script-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-stretched-001.tentative.html [ Failure ]
-crbug.com/1076420 external/wpt/css/css-text/text-transform/math/text-transform-math-tailed-001.tentative.html [ Failure ]
 crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-bold-fraktur.html [ Failure ]
 crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-bold-italic.html [ Failure ]
 crbug.com/1076420 external/wpt/mathml/relations/css-styling/mathvariant-bold-sans-serif.html [ Failure ]
@@ -2949,6 +2932,8 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-pr
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
+crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/background-fetch.https.html [ Timeout ]
@@ -6914,10 +6899,10 @@ crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeou
 crbug.com/v8/13743 fast/forms/ValidityState-patternMismatch.html [ Failure Pass ]
 
 # To land rename CL in devtools repo
-crbug.com/1418045 http/tests/devtools/portals/portals-console.js [ Timeout Crash Failure Pass ]
-crbug.com/1418045 http/tests/devtools/portals/portals-elements-activate.js [ Timeout Crash Failure Pass ]
-crbug.com/1418045 http/tests/devtools/components/cookies-table.js [ Timeout Crash Failure Pass ]
-crbug.com/1418045 http/tests/devtools/oopif/oopif-elements-inspect.js [ Timeout Crash Failure Pass ]
-crbug.com/1418045 http/tests/devtools/network/request-name-path.js [ Timeout Crash Failure Pass ]
-crbug.com/1418045 http/tests/devtools/inspector-backend-commands.js [ Timeout Crash Failure Pass ]
-crbug.com/1418045 http/tests/devtools/sources/debugger-breakpoints/nodejs-set-breakpoint.js [ Timeout Crash Failure Pass ]
+crbug.com/1418045 http/tests/devtools/portals/portals-console.js [ Crash Failure Pass Timeout ]
+crbug.com/1418045 http/tests/devtools/portals/portals-elements-activate.js [ Crash Failure Pass Timeout ]
+crbug.com/1418045 http/tests/devtools/components/cookies-table.js [ Crash Failure Pass Timeout ]
+crbug.com/1418045 http/tests/devtools/oopif/oopif-elements-inspect.js [ Crash Failure Pass Timeout ]
+crbug.com/1418045 http/tests/devtools/network/request-name-path.js [ Crash Failure Pass Timeout ]
+crbug.com/1418045 http/tests/devtools/inspector-backend-commands.js [ Crash Failure Pass Timeout ]
+crbug.com/1418045 http/tests/devtools/sources/debugger-breakpoints/nodejs-set-breakpoint.js [ Crash Failure Pass Timeout ]
