@@ -105,6 +105,9 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // HotseatWidget::GetHotseatSize() to get the actual widget size.
   int GetHotseatSize(HotseatDensity density) const;
 
+  // Returns the padding between the shelf and elevated homecher.
+  int GetHomecherElevatedAppBarOffset() const;
+
   // Size of the shelf when visible (height when the shelf is horizontal and
   // width when the shelf is vertical).
   int shelf_size() const;
@@ -201,6 +204,10 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
 
   bool in_overview_mode() const { return overview_mode_; }
 
+  bool elevate_tablet_mode_app_bar() const {
+    return elevate_tablet_mode_app_bar_;
+  }
+
   // Gets the current color for the shelf control buttons.
   SkColor GetShelfControlButtonColor(const views::Widget* widget) const;
 
@@ -235,6 +242,15 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // Size of the shelf in tablet mode.
   int GetSystemShelfSizeInTabletMode() const;
 
+  // Size of the insets used in tablet mode to allocate space to the shelf.
+  int GetSystemShelfInsetsInTabletMode() const;
+
+  // Minimum size for the inline app bar.
+  int GetMinimumInlineAppBarSize() const;
+
+  // Updates 'elevate_tablet_mode_app_bar_' for `inline_app_bar_size`.
+  void UpdateShowElevatedAppBar(const gfx::Size& inline_app_bar_size);
+
  private:
   friend class ShelfConfigTest;
 
@@ -265,33 +281,36 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   bool CalculateIsInApp(bool app_list_visible,
                         bool virtual_keyboard_shown) const;
 
+  // Whether tablet mode homecher should use elevated app bar.
+  bool elevate_tablet_mode_app_bar_ = false;
+
   // Whether the in app shelf should be shown in overview mode.
-  bool use_in_app_shelf_in_overview_;
+  bool use_in_app_shelf_in_overview_ = false;
 
   // True if device is currently in overview mode.
-  bool overview_mode_;
+  bool overview_mode_ = false;
 
   // True if device is currently in tablet mode.
-  bool in_tablet_mode_;
+  bool in_tablet_mode_ = false;
 
   // Whether shelf is currently standard or dense.
-  bool is_dense_;
+  bool is_dense_ = false;
 
   // Whether the shelf is currently in in-app state.
-  bool is_in_app_;
+  bool is_in_app_ = false;
 
   // Whether the device is in split view. Only tracked in overview mode.
-  bool in_split_view_with_overview_;
+  bool in_split_view_with_overview_ = false;
 
   // Whether the shelf buttons (navigation controls, and overview tray button)
   // should be shown.
-  bool shelf_controls_shown_;
+  bool shelf_controls_shown_ = false;
 
   // Whether virtual IME keyboard is shown.
-  bool is_virtual_keyboard_shown_;
+  bool is_virtual_keyboard_shown_ = false;
 
   // Whether the app list (or home launcher in tablet mode) is visible.
-  bool is_app_list_visible_;
+  bool is_app_list_visible_ = false;
 
   // Size of the icons within shelf buttons.
   const int shelf_button_icon_size_;

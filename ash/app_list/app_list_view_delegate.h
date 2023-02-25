@@ -162,6 +162,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // ShelfConfig.
   virtual int GetShelfSize() = 0;
 
+  // Gets the tablet mode shelf insets from the ShelfConfig.
+  virtual int GetSystemShelfInsetsInTabletMode() = 0;
+
   // Returns whether tablet mode is currently enabled.
   virtual bool IsInTabletMode() = 0;
 

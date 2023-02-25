@@ -114,6 +114,9 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // Calculates the hotseat target bounds's size for the given target state.
   gfx::Size CalculateTargetBoundsSize(HotseatState hotseat_target_state) const;
 
+  // Calculates space available for app bar if shown inline with shelf.
+  gfx::Size CalculateInlineAppBarSize() const;
+
   // ShelfComponent:
   void CalculateTargetBounds() override;
   gfx::Rect GetTargetBounds() const override;
