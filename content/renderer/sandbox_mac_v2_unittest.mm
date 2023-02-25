@@ -109,10 +109,10 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
   CHECK(result) << error;
 
   // Test the properties of the sandbox profile.
-  const char log_msg[] = "logged";
-  CHECK_NE(-1, base::WriteFile(log_file, log_msg, sizeof(log_msg)));
+  constexpr base::StringPiece log_msg = "logged";
+  CHECK(base::WriteFile(log_file, base::StringPiece(log_msg)));
   // Log file is write only.
-  char read_buf[sizeof(log_msg)];
+  char read_buf[log_msg.size()];
   CHECK_EQ(-1, base::ReadFile(log_file, read_buf, sizeof(read_buf)));
 
   // Try executing the blessed binary.
