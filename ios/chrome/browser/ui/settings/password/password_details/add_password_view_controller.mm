@@ -121,8 +121,9 @@ const int kMaxNoteCharAmount = 1000;
 // If YES, the password details are shown without requiring any authentication.
 @property(nonatomic, assign) BOOL showPasswordWithoutAuth;
 
-// Stores the user email if the user is authenticated amd syncing passwords.
-@property(nonatomic, readonly) NSString* syncingUserEmail;
+// The account where passwords are being saved to, or nil if passwords are only
+// being saved locally.
+@property(nonatomic, strong) NSString* accountSavingPasswords;
 
 // Stores the user current typed password. (Used for testing).
 @property(nonatomic, strong) NSString* passwordForTesting;
@@ -133,7 +134,7 @@ const int kMaxNoteCharAmount = 1000;
 
 #pragma mark - ViewController Life Cycle.
 
-- (instancetype)initWithSyncingUserEmail:(NSString*)syncingUserEmail {
+- (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _isDuplicatedCredential = NO;
@@ -142,7 +143,6 @@ const int kMaxNoteCharAmount = 1000;
     _isTLDMissingMessageShown = NO;
     _isNoteFooterShown = NO;
     _isNoteValid = YES;
-    _syncingUserEmail = syncingUserEmail;
   }
   return self;
 }
@@ -378,10 +378,10 @@ const int kMaxNoteCharAmount = 1000;
 }
 
 - (NSString*)footerText {
-  if (self.syncingUserEmail) {
+  if (self.accountSavingPasswords) {
     return l10n_util::GetNSStringF(
         IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
-        base::SysNSStringToUTF16(self.syncingUserEmail));
+        base::SysNSStringToUTF16(self.accountSavingPasswords));
   }
 
   return l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
@@ -511,6 +511,10 @@ const int kMaxNoteCharAmount = 1000;
 }
 
 #pragma mark - AddPasswordDetailsConsumer
+
+- (void)setAccountSavingPasswords:(NSString*)accountSavingPasswords {
+  _accountSavingPasswords = accountSavingPasswords;
+}
 
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound {
   if (duplicateFound == self.isDuplicatedCredential) {

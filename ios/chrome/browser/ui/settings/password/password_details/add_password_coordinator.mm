@@ -8,11 +8,9 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -79,27 +77,15 @@
 }
 
 - (void)start {
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  DCHECK(authenticationService);
-  NSString* syncingUserEmail = nil;
-  id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
-  if (identity) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    if (syncSetupService->IsDataTypeActive(syncer::PASSWORDS)) {
-      syncingUserEmail = identity.userEmail;
-    }
-  }
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  self.viewController = [[AddPasswordViewController alloc] init];
 
-  self.viewController = [[AddPasswordViewController alloc]
-      initWithSyncingUserEmail:syncingUserEmail];
-
-  self.mediator = [[AddPasswordMediator alloc] initWithDelegate:self
-                                           passwordCheckManager:_manager];
+  self.mediator = [[AddPasswordMediator alloc]
+          initWithDelegate:self
+      passwordCheckManager:_manager
+               prefService:browserState->GetPrefs()
+               syncService:SyncServiceFactory::GetForBrowserState(
+                               browserState)];
   self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
   self.viewController.addPasswordHandler = self;

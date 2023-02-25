@@ -98,8 +98,8 @@ class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
   }
 
   ChromeTableViewController* InstantiateController() override {
-    AddPasswordViewController* controller = [[AddPasswordViewController alloc]
-        initWithSyncingUserEmail:syncing_user_email_];
+    AddPasswordViewController* controller =
+        [[AddPasswordViewController alloc] init];
     controller.delegate = delegate_;
     return controller;
   }
@@ -135,13 +135,8 @@ class AddPasswordViewControllerTest : public ChromeTableViewControllerTest {
 
   FakeAddPasswordDelegate* delegate() { return delegate_; }
 
-  void SetUserSyncingEmail(NSString* syncing_user_email) {
-    syncing_user_email_ = syncing_user_email;
-  }
-
  private:
   FakeAddPasswordDelegate* delegate_ = nil;
-  NSString* syncing_user_email_ = nil;
 };
 
 // Tests that password is shown/hidden.
@@ -257,12 +252,11 @@ TEST_F(AddPasswordViewControllerTest, TestSectionsInAddDuplicated) {
 }
 
 // Tests the footer text of the view controller when adding a new credential and
-// the user syncing email address is provided.
-TEST_F(AddPasswordViewControllerTest, TestFooterTextWithSyncingEmail) {
-  SetUserSyncingEmail(@"example@gmail.com");
-
+// the user email address is provided.
+TEST_F(AddPasswordViewControllerTest, TestFooterTextWithEmail) {
   AddPasswordViewController* passwords_controller =
       static_cast<AddPasswordViewController*>(controller());
+  [passwords_controller setAccountSavingPasswords:@"example@gmail.com"];
   [passwords_controller loadModel];
 
   CheckSectionFooter(

@@ -21,10 +21,7 @@
     : AutofillEditTableViewController <AddPasswordDetailsConsumer>
 
 // The designated initializer.
-// `syncingUserEmail` stores the user email if the user is authenticated amd
-// syncing passwords.
-- (instancetype)initWithSyncingUserEmail:(NSString*)syncingUserEmail
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

@@ -26,6 +26,7 @@ source_set("password_details") {
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/passwords",

@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator.h"
 
+#import "base/check.h"
+#import "base/containers/flat_set.h"
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/cancelable_task_tracker.h"
@@ -12,8 +15,11 @@
 #import "base/task/thread_pool.h"
 #import "components/password_manager/core/browser/form_parsing/form_parser.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_details_consumer.h"
@@ -52,16 +58,14 @@ bool CheckForDuplicates(
 
 @interface AddPasswordMediator () <AddPasswordViewControllerDelegate> {
   // Password Check manager.
-  IOSChromePasswordCheckManager* _manager;
+  raw_ptr<IOSChromePasswordCheckManager> _manager;
+  // Pref service.
+  raw_ptr<PrefService> _prefService;
+  // Sync service.
+  raw_ptr<syncer::SyncService> _syncService;
   // Used to create and run validation tasks.
   std::unique_ptr<base::CancelableTaskTracker> _validationTaskTracker;
 }
-
-// Caches the password form data submitted by the user. This value is set only
-// when the user tries to save a credential which has username and site similar
-// to an existing credential.
-@property(nonatomic, readonly) absl::optional<password_manager::PasswordForm>
-    cachedPasswordForm;
 
 // Delegate for this mediator.
 @property(nonatomic, weak) id<AddPasswordMediatorDelegate> delegate;
@@ -78,11 +82,15 @@ bool CheckForDuplicates(
 @implementation AddPasswordMediator
 
 - (instancetype)initWithDelegate:(id<AddPasswordMediatorDelegate>)delegate
-            passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+            passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                     prefService:(PrefService*)prefService
+                     syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _delegate = delegate;
     _manager = manager;
+    _prefService = prefService;
+    _syncService = syncService;
     _sequencedTaskRunner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     _validationTaskTracker = std::make_unique<base::CancelableTaskTracker>();
@@ -94,6 +102,18 @@ bool CheckForDuplicates(
   if (_consumer == consumer)
     return;
   _consumer = consumer;
+  // TODO(crbug.com/1392699): This logic keeps showing up, there should be a
+  // helper IsSavingPasswordsToAccount(), or GetAccountSavingPasswords().
+  if (password_manager::sync_util::IsPasswordSyncEnabled(_syncService) ||
+      password_manager::features_util::IsOptedInForAccountStorage(
+          _prefService, _syncService)) {
+    CoreAccountInfo account = _syncService->GetAccountInfo();
+    DCHECK(!account.IsEmpty());
+    [_consumer
+        setAccountSavingPasswords:base::SysUTF8ToNSString(account.email)];
+  } else {
+    [_consumer setAccountSavingPasswords:nil];
+  }
 }
 
 - (void)dealloc {
@@ -101,12 +121,7 @@ bool CheckForDuplicates(
   _validationTaskTracker.reset();
 }
 
-#pragma mark - AddPasswordTableViewControllerDelegate
-
-- (void)addPasswordViewController:(AddPasswordViewController*)viewController
-           didEditPasswordDetails:(PasswordDetails*)password {
-  NOTREACHED();
-}
+#pragma mark - AddPasswordViewControllerDelegate
 
 - (void)addPasswordViewController:(AddPasswordViewController*)viewController
             didAddPasswordDetails:(NSString*)username
@@ -127,7 +142,9 @@ bool CheckForDuplicates(
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     credential.note = SysNSStringToUTF16(note);
   }
-  credential.stored_in = {password_manager::PasswordForm::Store::kProfileStore};
+  credential.stored_in = {
+      password_manager::features_util::GetDefaultPasswordStore(_prefService,
+                                                               _syncService)};
 
   password_manager::CredentialFacet facet;
   facet.url = self.URL;
