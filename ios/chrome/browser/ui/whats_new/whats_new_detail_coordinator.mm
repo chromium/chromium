@@ -67,8 +67,12 @@
 }
 
 - (void)stop {
-  [self.baseNavigationController popToViewController:self.viewController
-                                            animated:NO];
+  // Pop the detail view controller if it is at the top of the navigation stack.
+  if (self.baseNavigationController.topViewController == self.viewController) {
+    [self.baseNavigationController popViewControllerAnimated:NO];
+    self.viewController = nil;
+  }
+
   [super stop];
 }
 
