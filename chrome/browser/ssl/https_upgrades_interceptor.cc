@@ -44,6 +44,8 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+using security_interstitials::https_only_mode::RecordHttpsFirstModeNavigation;
+
 namespace {
 
 // Used to handle upgrading/fallback for tests using EmbeddedTestServer which
@@ -92,15 +94,6 @@ bool ShouldCreateLoader(const network::ResourceRequest& resource_request,
     return true;
   }
   return false;
-}
-
-// Helper to record an HTTPS-First Mode navigation event.
-// TODO(crbug.com/1394910): Rename these metrics now that they apply to both
-// HTTPS-First Mode and HTTPS Upgrades.
-void RecordHttpsFirstModeNavigation(
-    security_interstitials::https_only_mode::Event event) {
-  base::UmaHistogramEnumeration(
-      security_interstitials::https_only_mode::kEventHistogram, event);
 }
 
 // Helper to configure an artificial redirect to `new_url`. This configures
@@ -153,18 +146,9 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(int frame_tree_node_id) {
     return nullptr;
   }
   PrefService* prefs = profile->GetPrefs();
-  // Both HTTPS-First Mode and HTTPS-Upgrades are forms of upgrading all HTTP
-  // navigations to HTTPS, with HTTPS-First Mode additionally enabling the
-  // HTTP interstitial on fallback.
   bool https_first_mode_enabled =
       base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
       prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  bool https_upgrades_enabled =
-      https_first_mode_enabled ||
-      base::FeatureList::IsEnabled(features::kHttpsUpgrades);
-  if (!https_upgrades_enabled) {
-    return nullptr;
-  }
   return std::make_unique<HttpsUpgradesInterceptor>(frame_tree_node_id,
                                                     https_first_mode_enabled);
 }
@@ -194,22 +178,6 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     return;
   }
 
-  // TODO(crbug.com/1394910): Check for HttpsUpgrades and HttpsAllowlist
-  // enterprise policies as well. It might be best to consolidate these checks
-  // into the HttpsUpgradesNavigationThrottle which sees the navigation first.
-  auto* prefs = profile->GetPrefs();
-  bool https_first_mode_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsFirstModeV2) && prefs &&
-      prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-  bool https_upgrades_enabled =
-      base::FeatureList::IsEnabled(features::kHttpsUpgrades) ||
-      https_first_mode_enabled;
-  if (!https_upgrades_enabled) {
-    // Don't upgrade the request and let the default loader continue.
-    std::move(callback).Run({});
-    return;
-  }
-
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
   // Could be null if the FrameTreeNode's RenderFrameHost is shutting down.
@@ -235,6 +203,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 
   // Don't upgrade navigation if it is allowlisted.
   // First, check the enterprise policy HTTP allowlist.
+  PrefService* prefs = profile->GetPrefs();
   if (IsHostnameInAllowlist(tentative_resource_request.url,
                             prefs->GetList(prefs::kHttpAllowlist))) {
     std::move(callback).Run({});
@@ -331,6 +300,24 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     return;
   }
 
+  // TODO(crbug.com/1394910): Check for HttpsUpgrades and HttpsAllowlist
+  // enterprise policies as well (possibly earlier). It might be best to
+  // consolidate these checks into the HttpsUpgradesNavigationThrottle which
+  // sees the navigation first, but we need to ensure not to break metrics in
+  // the process.
+
+  // Both HTTPS-First Mode and HTTPS-Upgrades are forms of upgrading all HTTP
+  // navigations to HTTPS, with HTTPS-First Mode additionally enabling the
+  // HTTP interstitial on fallback.
+  if (!base::FeatureList::IsEnabled(features::kHttpsUpgrades) &&
+      !http_interstitial_enabled_) {
+    // Don't upgrade the request and let the default loader continue, but record
+    // that the request *would have* upgraded, had upgrading been enabled.
+    RecordHttpsFirstModeNavigation(Event::kUpgradeNotAttempted);
+    std::move(callback).Run({});
+    return;
+  }
+
   // Mark navigation as upgraded.
   tab_helper->set_is_navigation_upgraded(true);
   tab_helper->set_fallback_url(tentative_resource_request.url);
@@ -372,7 +359,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   }
 
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
-  if (!tab_helper->is_navigation_upgraded()) {
+  if (!tab_helper || !tab_helper->is_navigation_upgraded()) {
     return false;
   }
 

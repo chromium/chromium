@@ -1017,6 +1017,28 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
           contents));
 }
 
+// Tests that if HTTPS-First Mode is disabled, metrics are recorded on
+// upgrade-eligible navigations.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       MetricsRecordedWhenHFMDisabled) {
+  GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
+
+  // Ensure HTTPS-First Mode is off.
+  SetPref(false);
+
+  // NavigateToURL() returns `true` because the navigation is not redirected.
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify that navigation event metrics were correctly recorded.
+  histograms()->ExpectTotalCount(kEventHistogram, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeNotAttempted,
+                                  1);
+}
+
 // A simple test fixture that ensures the kHttpsOnlyMode feature is enabled and
 // constructs a HistogramTester (so that it gets initialized before browser
 // startup). Used for testing pref tracking logic.

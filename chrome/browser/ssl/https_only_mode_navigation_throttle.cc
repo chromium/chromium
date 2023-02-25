@@ -19,19 +19,13 @@
 #include "net/base/net_errors.h"
 
 using security_interstitials::https_only_mode::Event;
+using security_interstitials::https_only_mode::RecordHttpsFirstModeNavigation;
 
 namespace {
 
 // Time that the throttle will wait before canceling the upgraded navigation and
 // showing the HTTPS-Only Mode interstitial.
 base::TimeDelta g_fallback_delay = base::Seconds(3);
-
-// Helper to record an HTTPS-First Mode navigation event.
-void RecordHttpsFirstModeNavigation(
-    security_interstitials::https_only_mode::Event event) {
-  base::UmaHistogramEnumeration(
-      security_interstitials::https_only_mode::kEventHistogram, event);
-}
 
 }  // namespace
 
