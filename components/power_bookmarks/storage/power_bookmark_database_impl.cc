@@ -68,26 +68,40 @@ bool CheckIfPowerWithIdExists(sql::Database* db, const base::GUID& guid) {
   return count > 0;
 }
 
+bool MatchPattern(std::string field, std::string pattern, bool case_sensitive) {
+  if (!case_sensitive) {
+    field = base::ToLowerASCII(field);
+    pattern = base::ToLowerASCII(pattern);
+  }
+  return base::MatchPattern(field, pattern);
+}
+
 bool MatchesSearchQuery(const sync_pb::PowerBookmarkSpecifics& specifics,
-                        const std::string& query) {
+                        const std::string& query,
+                        bool case_sensitive) {
   if (query.empty()) {
     return true;
   }
   std::string pattern = base::StrCat({"*", query, "*"});
-  if (base::MatchPattern(specifics.url(), pattern))
-    return true;
+  std::vector<std::string> match_fields = {};
 
-  // A note can be matched by its contents.
+  // Different powers can define their own match fields.
   switch (specifics.power_type()) {
     case sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE:
-      if (base::MatchPattern(
-              specifics.power_entity().note_entity().plain_text(), pattern)) {
-        return true;
-      }
+      match_fields.push_back(
+          specifics.power_entity().note_entity().plain_text());
       break;
     default:
+      match_fields.push_back(specifics.url());
       break;
   }
+
+  for (const std::string& match_field : match_fields) {
+    if (MatchPattern(match_field, pattern, case_sensitive)) {
+      return true;
+    }
+  }
+
   return false;
 }
 
@@ -98,7 +112,8 @@ bool MatchesSearchParams(const sync_pb::PowerBookmarkSpecifics& specifics,
       search_params.power_type != specifics.power_type()) {
     return false;
   }
-  if (!MatchesSearchQuery(specifics, search_params.query)) {
+  if (!MatchesSearchQuery(specifics, search_params.query,
+                          search_params.case_sensitive)) {
     return false;
   }
   return true;
