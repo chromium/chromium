@@ -13,6 +13,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/ui/side_panel/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/history_clusters_types.h"
@@ -23,6 +27,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -47,34 +52,31 @@ class MockHistoryClustersTabHelper
       : HistoryClustersTabHelper(web_contents) {}
 };
 
-std::unique_ptr<TestingProfile> MakeTestingProfile() {
-  TestingProfile::Builder profile_builder;
-  profile_builder.AddTestingFactory(
-      &HistoryClustersServiceFactory::GetInstance(),
-      base::BindRepeating([](content::BrowserContext* browser_context)
-                              -> std::unique_ptr<KeyedService> {
-        return std::make_unique<history_clusters::TestHistoryClustersService>();
-      }));
-  return profile_builder.Build();
-}
-
 }  // namespace
 
-class HistoryClustersPageHandlerTest : public testing::Test {
+class HistoryClustersPageHandlerTest : public BrowserWithTestWindowTest {
  public:
-  HistoryClustersPageHandlerTest()
-      : profile_(MakeTestingProfile()),
-        test_history_clusters_service_(
-            static_cast<history_clusters::TestHistoryClustersService*>(
-                HistoryClustersServiceFactory::GetForBrowserContext(
-                    profile_.get()))),
-        web_contents_(factory_.CreateWebContents(profile_.get())),
-        mock_history_clusters_tab_helper_(
-            MockHistoryClustersTabHelper::CreateForWebContents(
-                web_contents_.get())),
-        handler_(std::make_unique<HistoryClustersPageHandler>(
-            mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>(),
-            web_contents_)) {}
+  HistoryClustersPageHandlerTest() = default;
+
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+
+    test_history_clusters_service_ =
+        static_cast<history_clusters::TestHistoryClustersService*>(
+            HistoryClustersServiceFactory::GetForBrowserContext(profile()));
+    web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile()));
+    mock_history_clusters_tab_helper_ =
+        MockHistoryClustersTabHelper::CreateForWebContents(web_contents_.get());
+    handler_ = std::make_unique<HistoryClustersPageHandler>(
+        mojo::PendingReceiver<ntp::history_clusters::mojom::PageHandler>(),
+        web_contents_.get());
+  }
+
+  void TearDown() override {
+    web_contents_.reset();
+    BrowserWithTestWindowTest::TearDown();
+  }
 
   history_clusters::TestHistoryClustersService&
   test_history_clusters_service() {
@@ -88,13 +90,19 @@ class HistoryClustersPageHandlerTest : public testing::Test {
   HistoryClustersPageHandler& handler() { return *handler_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  // BrowserWithTestWindowTest:
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{&HistoryClustersServiceFactory::GetInstance(),
+             base::BindRepeating([](content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+               return std::make_unique<
+                   history_clusters::TestHistoryClustersService>();
+             })}};
+  }
 
   raw_ptr<history_clusters::TestHistoryClustersService>
       test_history_clusters_service_;
-  content::TestWebContentsFactory factory_;
-  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
+  std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<MockHistoryClustersTabHelper> mock_history_clusters_tab_helper_;
   std::unique_ptr<HistoryClustersPageHandler> handler_;
 };
@@ -207,4 +215,19 @@ TEST_F(HistoryClustersPageHandlerTest, ShowJourneysSidePanel) {
   handler().ShowJourneysSidePanel(kSampleQuery);
 
   EXPECT_EQ(kSampleQuery, query);
+}
+
+TEST_F(HistoryClustersPageHandlerTest, OpenUrlsInTabGroup) {
+  const std::vector<GURL> urls = {GURL("http://foo/1"), GURL("http://foo/2"),
+                                  GURL("http://www.google.com/search?q=foo")};
+  handler().OpenUrlsInTabGroup(urls);
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(urls.size(), static_cast<size_t>(tab_strip_model->GetTabCount()));
+  for (size_t i = 0; i < urls.size(); i++) {
+    ASSERT_EQ(urls[i], tab_strip_model->GetWebContentsAt(i)->GetURL());
+  }
+
+  TabGroupModel* tab_group_model = tab_strip_model->group_model();
+  ASSERT_EQ(1u, tab_group_model->ListTabGroups().size());
 }

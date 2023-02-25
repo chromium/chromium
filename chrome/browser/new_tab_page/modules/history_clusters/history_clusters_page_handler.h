@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
+class GURL;
 
 namespace content {
 class WebContents;
@@ -42,6 +43,7 @@ class HistoryClustersPageHandler
   // mojom::PageHandler:
   void GetCluster(GetClusterCallback callback) override;
   void ShowJourneysSidePanel(const std::string& query) override;
+  void OpenUrlsInTabGroup(const std::vector<GURL>&) override;
 
  private:
   // Forward the most relevant history cluster to the callback if any.
