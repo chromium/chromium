@@ -104,8 +104,7 @@ class EncryptedReportingUploadProvider::UploadHelper
 
   // Upload client (protected by sequenced task runner). Once set, is used
   // repeatedly.
-  std::unique_ptr<UploadClient> upload_client_
-      GUARDED_BY_CONTEXT(sequenced_task_checker_);
+  std::unique_ptr<UploadClient> upload_client_;
 
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
