@@ -9,7 +9,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_change_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cookie_list_item.h"
-#include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -112,7 +112,7 @@ CookieListItem* CookieChangeEvent::ToCookieListItem(
       list_item->setExpires(absl::nullopt);
     } else {
       list_item->setExpires(
-          ConvertTimeToEpochTimeStamp(canonical_cookie.ExpiryDate()));
+          ConvertTimeToDOMHighResTimeStamp(canonical_cookie.ExpiryDate()));
     }
   }
 

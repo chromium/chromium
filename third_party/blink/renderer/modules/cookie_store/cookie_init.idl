@@ -15,7 +15,7 @@ dictionary CookieInit {
   required USVString value;
   USVString? domain = null;
   USVString path = "/";
-  EpochTimeStamp? expires = null;
+  DOMHighResTimeStamp? expires = null;
   CookieSameSite sameSite = "strict";
   [RuntimeEnabled=PartitionedCookies] boolean partitioned = false;
 };

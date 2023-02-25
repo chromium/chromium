@@ -16,6 +16,10 @@ inline double ConvertDOMHighResTimeStampToSeconds(
   return milliseconds / base::Time::kMillisecondsPerSecond;
 }
 
+inline DOMHighResTimeStamp ConvertTimeToDOMHighResTimeStamp(base::Time time) {
+  return static_cast<DOMHighResTimeStamp>(time.ToJsTimeIgnoringNull());
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOM_HIGH_RES_TIME_STAMP_H_
