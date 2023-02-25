@@ -1018,11 +1018,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
                                 process);
   }
 
-  std::string tag;
-  if (base::FeatureList::IsEnabled(features::kSharedSandboxPolicies))
-    tag = delegate->GetSandboxTag();
-
-  auto policy = g_broker_services->CreatePolicy(tag);
+  auto policy = g_broker_services->CreatePolicy(delegate->GetSandboxTag());
   ResultCode result = GeneratePolicyForSandboxedProcess(
       cmd_line, process_type, handles_to_inherit, delegate, policy.get());
   if (SBOX_ALL_OK != result)
