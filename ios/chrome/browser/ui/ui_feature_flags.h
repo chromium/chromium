@@ -144,9 +144,19 @@ bool IsConsistencyNewAccountInterfaceEnabled();
 
 // Feature flag to enable add to home screen in share menu.
 BASE_DECLARE_FEATURE(kAddToHomeScreen);
+
 // Param to disable the feature in incognito.
 extern const char kAddToHomeScreenDisableIncognitoParam[];
+
 // Helper function to check the feature add to home screen.
 bool ShouldAddToHomeScreen(bool in_incognito);
+
+// Feature flag to enable indicating the Account Storage error in the Account
+// Cell when Sync is turned OFF.
+BASE_DECLARE_FEATURE(kIndicateAccountStorageErrorInAccountCell);
+
+// Returns true if the `kIndicateAccountStorageErrorInAccountCell` feature is
+// enabled.
+bool IsIndicateAccountStorageErrorInAccountCellEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

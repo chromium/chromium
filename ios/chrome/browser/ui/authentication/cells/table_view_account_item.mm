@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -17,10 +18,10 @@
 namespace {
 
 // Padding used between the text and error icon.
-const CGFloat kHorizontalPaddingBetweenTextAndError = 5;
+constexpr CGFloat kHorizontalPaddingBetweenTextAndError = 5;
 
 // Size of the error icon image.
-const CGFloat KErrorIconImageSize = 18;
+constexpr CGFloat KErrorIconImageSize = 22.;
 
 }  // namespace
 
@@ -46,10 +47,9 @@ const CGFloat KErrorIconImageSize = 18;
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
   if (self.shouldDisplayError) {
-    cell.errorIcon.image = [[UIImage imageNamed:@"settings_error"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    cell.errorIcon.image =
+        DefaultSymbolWithPointSize(kErrorCircleFillSymbol, KErrorIconImageSize);
     cell.errorIcon.tintColor = [UIColor colorNamed:kRedColor];
-    cell.detailTextLabel.textColor = [UIColor colorNamed:kRedColor];
   } else {
     cell.errorIcon.image = nil;
     cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];

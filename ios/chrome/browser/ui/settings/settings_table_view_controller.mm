@@ -1896,6 +1896,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
           _identity, IdentityAvatarSize::TableViewIcon);
   identityAccountItem.text = _identity.userFullName;
   identityAccountItem.detailText = _identity.userEmail;
+  identityAccountItem.shouldDisplayError =
+      GetAccountErrorUIInfo(_browserState) != nil;
 }
 
 - (void)reloadAccountCell {

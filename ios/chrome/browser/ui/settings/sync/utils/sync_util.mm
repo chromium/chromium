@@ -4,16 +4,26 @@
 
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/metrics/histogram_macros.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
+#import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -23,6 +33,7 @@
 #endif
 
 namespace {
+
 // Enumerated constants for logging when a sign-in error infobar was shown
 // to the user. This was added for crbug/265352 to quantify how often this
 // bug shows up in the wild. The logged histogram count should be interpreted
@@ -40,6 +51,17 @@ enum InfobarSyncError : uint8_t {
   SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 7,
   kMaxValue = SYNC_TRUSTED_VAULT_RECOVERABILITY_DEGRADED,
 };
+
+AccountErrorUIInfo* GetAccountErrorUIInfoForPassphraseError() {
+  AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
+       initWithErrorType:syncer::SyncService::UserActionableError::
+                             kNeedsPassphrase
+      userActionableType:AccountErrorUserActionableType::kEnterPassphrase
+               messageID:IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_MESSAGE
+           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_BUTTON];
+
+  return errorInfo;
+}
 
 }  // namespace
 
@@ -208,4 +230,37 @@ bool DisplaySyncErrors(ChromeBrowserState* browser_state,
   DCHECK(infoBarManager);
   return SyncErrorInfoBarDelegate::Create(infoBarManager, browser_state,
                                           presenter);
+}
+
+AccountErrorUIInfo* GetAccountErrorUIInfo(ChromeBrowserState* browserState) {
+  if (!IsIndicateAccountStorageErrorInAccountCellEnabled()) {
+    return nil;
+  }
+
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  DCHECK(syncService);
+  if (syncService->IsSyncFeatureEnabled()) {
+    // Don't indicate account errors when Sync is enabled.
+    return nil;
+  }
+
+  switch (syncService->GetUserActionableError()) {
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      return GetAccountErrorUIInfoForPassphraseError();
+    case syncer::SyncService::UserActionableError::kNone:
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
+      break;
+  }
+
+  return nil;
 }

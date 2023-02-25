@@ -4139,6 +4139,12 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
            =1 {{count} saved profile available above your keyboard.}
            other {{count} saved profiles available above your keyboard.}}
       </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_BUTTON" desc="Label for the button to open the passphrase dialog from the accounts table. [iOS only]">
+        Enter Passphrase…
+      </message>
+      <message name="IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
+        Sync is not working. To start sync enter your passphrase.
+      </message>
     </messages>
   </release>
 </grit>

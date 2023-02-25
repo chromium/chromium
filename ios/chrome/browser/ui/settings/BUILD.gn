@@ -357,6 +357,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync:test_support",
     "//ios/chrome/browser/translate",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication/cells",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/icons",

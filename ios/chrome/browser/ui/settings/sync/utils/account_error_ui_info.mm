@@ -1,0 +1,27 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/settings/sync/utils/account_error_ui_info.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@implementation AccountErrorUIInfo
+
+- (instancetype)
+     initWithErrorType:(syncer::SyncService::UserActionableError)errorType
+    userActionableType:(AccountErrorUserActionableType)userActionableType
+             messageID:(int)messageID
+         buttonLabelID:(int)buttonLabelID {
+  if (self = [super init]) {
+    _errorType = errorType;
+    _userActionableType = userActionableType;
+    _messageID = messageID;
+    _buttonLabelID = buttonLabelID;
+  }
+  return self;
+}
+
+@end

@@ -1387,6 +1387,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kAddToHomeScreen,
                                     kAddToHomeScreenVariations,
                                     "IOSEditMenuPartialTranslate")},
+    {"indicate-account-storage-error-in-account-cell",
+     flag_descriptions::kIndicateAccountStorageErrorInAccountCellName,
+     flag_descriptions::kIndicateAccountStorageErrorInAccountCellDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIndicateAccountStorageErrorInAccountCell)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

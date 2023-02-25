@@ -170,6 +170,9 @@ SyncService::UserActionableError TestSyncService::GetUserActionableError()
   if (auth_error_.IsPersistentError()) {
     return UserActionableError::kSignInNeedsUpdate;
   }
+  if (user_settings_.IsPassphraseRequiredForPreferredDataTypes()) {
+    return UserActionableError::kNeedsPassphrase;
+  }
   return UserActionableError::kNone;
 }
 

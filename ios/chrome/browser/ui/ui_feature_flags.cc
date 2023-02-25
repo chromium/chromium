@@ -185,3 +185,12 @@ bool ShouldShowPartialTranslateInIncognito() {
       kIOSEditMenuPartialTranslate,
       kIOSEditMenuPartialTranslateNoIncognitoParam, false);
 }
+
+BASE_FEATURE(kIndicateAccountStorageErrorInAccountCell,
+             "IndicatePassphraseErrorForSignedInUser",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIndicateAccountStorageErrorInAccountCellEnabled() {
+  return base::FeatureList::IsEnabled(
+      kIndicateAccountStorageErrorInAccountCell);
+}

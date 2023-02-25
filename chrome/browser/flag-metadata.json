@@ -4355,6 +4355,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "indicate-account-storage-error-in-account-cell",
+    "owners": [  "vincb", "mastiz", "chrome-sync-dev@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "info-card-acknowledgement-tracking",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 120

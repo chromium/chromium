@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
+#import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
@@ -32,11 +34,18 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
+#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
+#import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -68,7 +77,7 @@ const CGFloat kSymbolAddAccountPointSize = 20;
 
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAccounts = kSectionIdentifierEnumZero,
-  SectionIdentifierSync,
+  SectionIdentifierError,
   SectionIdentifierSignOut,
 };
 
@@ -84,14 +93,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Detailed description of the actions taken by sign out, e.g. turning off
   // sync.
   ItemTypeSignOutSyncingFooter,
+  // Indicates the errors related to the signed in account.
+  ItemTypeAccountErrorMessage,
+  // Button to resolve the account error.
+  ItemTypeAccountErrorButton,
+
 };
+
+// Size of the symbols.
+constexpr CGFloat kSymbolSize = 15.;
 
 }  // namespace
 
 @interface AccountsTableViewController () <
     ChromeAccountManagerServiceObserver,
     IdentityManagerObserverBridgeDelegate,
-    SignoutActionSheetCoordinatorDelegate> {
+    SignoutActionSheetCoordinatorDelegate,
+    SyncObserverModelBridge> {
   Browser* _browser;
   BOOL _closeSettingsOnAddAccount;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
@@ -107,6 +125,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Enable lookup of item corresponding to a given identity GAIA ID string.
   NSDictionary<NSString*, TableViewItem*>* _identityMap;
+
+  std::unique_ptr<SyncObserverBridge> _syncObserver;
+
+  // The type of account error that is being displayed in the error section.
+  // Is set to kNone when there is no error section.
+  syncer::SyncService::UserActionableError _diplayedAccountErrorType;
+
+  // The type of actionable the user needs to take to resolve the error.
+  AccountErrorUserActionableType _accountErrorUserActionableType;
 }
 
 // Modal alert to choose between remove an identity and show MyGoogle UI.
@@ -156,6 +183,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
             self, _accountManagerService);
+    syncer::SyncService* syncService =
+        SyncServiceFactory::GetForBrowserState(_browser->GetBrowserState());
+    DCHECK(syncService);
+    _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
+    _diplayedAccountErrorType = syncer::SyncService::UserActionableError::kNone;
+    _accountErrorUserActionableType = AccountErrorUserActionableType::kNoAction;
   }
 
   return self;
@@ -191,6 +224,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.removeAccountCoordinator = nil;
   [self stopBrowserStateServiceObservers];
   _accountManagerServiceObserver.reset();
+  _syncObserver.reset();
   _browser = nullptr;
   _accountManagerService = nullptr;
 
@@ -279,6 +313,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [model setFooter:[self restrictedIdentitiesFooterItem]
         forSectionWithIdentifier:SectionIdentifierAccounts];
   }
+
+  // Account Storage errors section.
+  [self updateErrorSectionModelAndReloadViewIfNeeded:NO];
 
   // Sign out section.
   [model addSectionWithIdentifier:SectionIdentifierSignOut];
@@ -394,6 +431,103 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return item;
 }
 
+// Initializes the passphrase error message item.
+- (TableViewItem*)accountErrorMessageItemWithMessageID:(int)messageID {
+  SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
+      initWithType:ItemTypeAccountErrorMessage];
+  item.detailText = l10n_util::GetNSString(messageID);
+  item.image = DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
+  item.imageViewTintColor = [UIColor colorNamed:kRedColor];
+  return item;
+}
+
+// Initializes the passphrase error button to open the passphrase dialog.
+- (TableViewItem*)accountErrorButtonItemWithLabelID:(int)labelID {
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeAccountErrorButton];
+  item.text = l10n_util::GetNSString(labelID);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  return item;
+}
+
+// Updates the error section in the table view model to indicate the latest
+// account error if the states of the account error and the table view model
+// don't match. If `reloadViewIfNeeded` is NO, only the model will be
+// updated without reloading the view. Can refresh, add or remove the error
+// section when an update is needed.
+- (void)updateErrorSectionModelAndReloadViewIfNeeded:(BOOL)reloadViewIfNeeded {
+  AccountErrorUIInfo* errorInfo =
+      GetAccountErrorUIInfo(_browser->GetBrowserState());
+  BOOL hadErrorSection = [self.tableViewModel
+      hasSectionForSectionIdentifier:SectionIdentifierError];
+  syncer::SyncService::UserActionableError newErrorType =
+      errorInfo ? errorInfo.errorType
+                : syncer::SyncService::UserActionableError::kNone;
+
+  if (newErrorType == syncer::SyncService::UserActionableError::kNone &&
+      _diplayedAccountErrorType ==
+          syncer::SyncService::UserActionableError::kNone) {
+    DCHECK(!hadErrorSection);
+    // Don't update if there is no error to indicate or to remove.
+    return;
+  }
+
+  if (reloadViewIfNeeded && newErrorType == _diplayedAccountErrorType) {
+    DCHECK(hadErrorSection);
+    // Don't update if there is already a model and a view, and the state of
+    // the model already matches the error that has to be indicated.
+    return;
+  }
+
+  _diplayedAccountErrorType = newErrorType;
+  _accountErrorUserActionableType = errorInfo.userActionableType;
+
+  if (hadErrorSection) {
+    // Remove the section from the model to either clear the error section when
+    // there is no error or to update the type of error to indicate.
+    NSUInteger index = [self.tableViewModel
+        sectionForSectionIdentifier:SectionIdentifierError];
+    [self.tableViewModel removeSectionWithIdentifier:SectionIdentifierError];
+
+    if (errorInfo == nil) {
+      // Delete the error section in the view when there is an error section
+      // while there is no account error to indicate.
+      if (reloadViewIfNeeded) {
+        [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:index]
+                      withRowAnimation:UITableViewRowAnimationAutomatic];
+      }
+      return;
+    }
+  }
+
+  // Update the error section in the model to indicate the latest account error.
+  NSInteger sectionIndex =
+      [self.tableViewModel
+          sectionForSectionIdentifier:SectionIdentifierAccounts] +
+      1;
+  [self.tableViewModel insertSectionWithIdentifier:SectionIdentifierError
+                                           atIndex:sectionIndex];
+  [self.tableViewModel addItem:[self accountErrorMessageItemWithMessageID:
+                                         errorInfo.messageID]
+       toSectionWithIdentifier:SectionIdentifierError];
+  [self.tableViewModel addItem:[self accountErrorButtonItemWithLabelID:
+                                         errorInfo.buttonLabelID]
+       toSectionWithIdentifier:SectionIdentifierError];
+
+  if (reloadViewIfNeeded) {
+    if (hadErrorSection) {
+      // Only refresh the section if there was already an error section, where
+      // there was a change in the type of error to indicate (excluding kNone).
+      [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+    } else {
+      [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+  }
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UIView*)tableView:(UITableView*)tableView
@@ -410,8 +544,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       linkView.delegate = self;
       break;
     }
-    case SectionIdentifierSync:
-      break;
   }
   return view;
 }
@@ -452,6 +584,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self showSignOutWithItemView:itemView];
       break;
     }
+    case ItemTypeAccountErrorButton: {
+      [self handleAccountErrorUserActionable];
+      break;
+    }
+    case ItemTypeAccountErrorMessage:
+      // Do not handle row selection on the account error message item because
+      // its selection is disabled. The only purpose of the item is to show a
+      // message that gives details on the error.
+      break;
     case ItemTypeSignInHeader:
     case ItemTypeSignOutSyncingFooter:
     case ItemTypeRestrictedAccountsFooter:
@@ -460,6 +601,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - SyncObserverModelBridge
+
+- (void)onSyncStateChanged {
+  [self updateErrorSectionModelAndReloadViewIfNeeded:YES];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -770,6 +917,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
   [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
+}
+
+#pragma mark - Internal
+
+- (void)handleAccountErrorUserActionable {
+  switch (_accountErrorUserActionableType) {
+    case AccountErrorUserActionableType::kEnterPassphrase: {
+      [self openPassphraseDialog];
+      break;
+    }
+    case AccountErrorUserActionableType::kNoAction:
+      break;
+  }
+}
+
+// Opens the passphrase dialog.
+- (void)openPassphraseDialog {
+  UIViewController<SettingsRootViewControlling>* controllerToPush =
+      [[SyncEncryptionPassphraseTableViewController alloc]
+          initWithBrowser:_browser];
+
+  // Verify that the accounts table is displayed from a navigation controller.
+  DCHECK(self.navigationController);
+
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // clean up.
+  controllerToPush.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
+      _browser->GetCommandDispatcher());
+  [self.navigationController pushViewController:controllerToPush animated:YES];
 }
 
 @end
