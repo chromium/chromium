@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalViewProperties.PedalIcon;
+import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -38,6 +38,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     // Only show pedals when the suggestion is on the top 3 suggestions.
     private static final int PEDAL_MAX_SHOW_POSITION = 3;
 
+    private final @NonNull Context mContext;
     private final @NonNull OmniboxPedalDelegate mOmniboxPedalDelegate;
     private final @NonNull AutocompleteDelegate mAutocompleteDelegate;
     private @NonNull Set<Integer> mLastVisiblePedals = new ArraySet<>();
@@ -58,6 +59,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
             @NonNull OmniboxPedalDelegate omniboxPedalDelegate,
             @NonNull AutocompleteDelegate autocompleteDelegate) {
         super(context, suggestionHost, editingTextProvider, faviconFetcher, bookmarkState);
+        mContext = context;
         mOmniboxPedalDelegate = omniboxPedalDelegate;
         mAutocompleteDelegate = autocompleteDelegate;
     }
@@ -102,20 +104,27 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
         final int pedalsCount = omniboxPedalList.size();
         final List<ListItem> modelList = new ArrayList<>(pedalsCount);
 
-        for (OmniboxPedal omniboxPedal : omniboxPedalList) {
-            final PropertyModel pedalModel = new PropertyModel(PedalViewProperties.ALL_KEYS);
-            pedalModel.set(PedalViewProperties.PEDAL, omniboxPedal);
-            pedalModel.set(PedalViewProperties.PEDAL_ICON, getPedalIcon(omniboxPedal));
-            pedalModel.set(
-                    PedalViewProperties.ON_PEDAL_CLICK, v -> executeAction(omniboxPedal, position));
+        for (OmniboxPedal chip : omniboxPedalList) {
+            final var chipModel = new PropertyModel.Builder(ChipProperties.ALL_KEYS)
+                                          .with(ChipProperties.TEXT, chip.getHint())
+                                          .build();
+
+            // Apply changes manually to investigate bizarre CQ finding.
+            final var chipIcon = mOmniboxPedalDelegate.getIcon(chip);
+            chipModel.set(ChipProperties.CONTENT_DESCRIPTION,
+                    mContext.getString(R.string.accessibility_omnibox_pedal, chip.getHint()));
+            chipModel.set(ChipProperties.ENABLED, true);
+            chipModel.set(ChipProperties.CLICK_HANDLER, m -> executeAction(chip, position));
+            chipModel.set(ChipProperties.ICON, chipIcon.iconRes);
+            chipModel.set(ChipProperties.APPLY_ICON_TINT, chipIcon.tintWithTextColor);
 
             modelList.add(
-                    new ListItem(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW, pedalModel));
+                    new ListItem(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW, chipModel));
 
-            if (omniboxPedal.hasPedalId()) {
-                mLastVisiblePedals.add(omniboxPedal.getPedalID());
-            } else if (omniboxPedal.hasActionId()
-                    && omniboxPedal.getActionID() == OmniboxActionType.HISTORY_CLUSTERS) {
+            if (chip.hasPedalId()) {
+                mLastVisiblePedals.add(chip.getPedalID());
+            } else if (chip.hasActionId()
+                    && chip.getActionID() == OmniboxActionType.HISTORY_CLUSTERS) {
                 mJourneysActionShownPosition = position;
             }
         }
@@ -123,16 +132,6 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
         model.set(PedalSuggestionViewProperties.PEDAL_LIST, modelList);
         model.set(
                 BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.COMPACT);
-    }
-
-    /**
-     * Get default icon for pedal suggestion.
-     * @param omniboxPedal OmniboxPedal for the suggestion.
-     * @return The icon's information.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    PedalIcon getPedalIcon(@NonNull OmniboxPedal omniboxPedal) {
-        return mOmniboxPedalDelegate.getIcon(omniboxPedal);
     }
 
     void executeAction(@NonNull OmniboxPedal omniboxPedal, int position) {

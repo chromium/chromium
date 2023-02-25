@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.omnibox.action.OmniboxActionType;
 import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalViewProperties.PedalIcon;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
@@ -185,7 +184,7 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
     }
 
     @Override
-    public @NonNull PedalIcon getIcon(OmniboxPedal omniboxPedal) {
+    public @NonNull ChipIcon getIcon(OmniboxPedal omniboxPedal) {
         if (!omniboxPedal.hasPedalId()) {
             return getActionIcon(omniboxPedal);
         }
@@ -203,9 +202,9 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
             case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
             case OmniboxPedalType.VIEW_CHROME_HISTORY:
             case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
-                return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
+                return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
             case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
-                return new PedalIcon(R.drawable.ic_dino, /*tintWithTextColor=*/true);
+                return new ChipIcon(R.drawable.ic_dino, /*tintWithTextColor=*/true);
             default:
                 // Please confirm the icon for the new pedals in
                 // chrome/browser/ui/omnibox/omnibox_pedal_implementations.cc, if the new pedal uses
@@ -213,18 +212,18 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 assert false : "New pedals need to confirm the icon and add the list above.";
                 break;
         }
-        return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
+        return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
     }
 
     /** Returns the icon for an action that's not a pedal. */
-    private PedalIcon getActionIcon(OmniboxPedal omniboxPedal) {
+    private ChipIcon getActionIcon(OmniboxPedal omniboxPedal) {
         int omniboxActionType = omniboxPedal.getActionID();
 
         switch (omniboxActionType) {
             case OmniboxActionType.HISTORY_CLUSTERS:
-                return new PedalIcon(R.drawable.ic_journeys, /*tintWithTextColor=*/true);
+                return new ChipIcon(R.drawable.ic_journeys, /*tintWithTextColor=*/true);
             default:
-                return new PedalIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
+                return new ChipIcon(R.drawable.fre_product_logo, /*tintWithTextColor=*/false);
         }
     }
 

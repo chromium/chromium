@@ -65,6 +65,7 @@ public class ChipView extends LinearLayout {
     private ViewGroup mEndIconWrapper;
     private AppCompatTextView mSecondaryText;
     private int mMaxWidth = Integer.MAX_VALUE;
+    private boolean mTintWithTextColor;
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
@@ -357,6 +358,7 @@ public class ChipView extends LinearLayout {
      *      color. If not, the tint will be cleared.
      */
     private void setTint(boolean tintWithTextColor) {
+        mTintWithTextColor = tintWithTextColor;
         if (mPrimaryText.getTextColors() != null && tintWithTextColor) {
             ImageViewCompat.setImageTintList(mStartIcon, mPrimaryText.getTextColors());
         } else {
@@ -381,6 +383,21 @@ public class ChipView extends LinearLayout {
     @Override
     public void setBackgroundTintList(ColorStateList color) {
         mRippleBackgroundHelper.setBackgroundColor(color);
+    }
+
+    /**
+     * Specify primary text color.
+     *
+     * This method applies a different text color, and if the caller previously installed a Tinted
+     * icon - updates the icon tint.
+     *
+     * TODO(crbug/1418077): This method is not intended as part of public API. It's exposed only
+     * temporarily until Incognito theming issue is resolved. Reduce visibility or remove the method
+     * once it is no longer needed.
+     */
+    public void setTextColor(@ColorInt int color) {
+        mPrimaryText.setTextColor(color);
+        setTint(mTintWithTextColor);
     }
 
     /**
@@ -439,5 +456,19 @@ public class ChipView extends LinearLayout {
             super.onMeasure(
                     MeasureSpec.makeMeasureSpec(mMaxWidth, MeasureSpec.EXACTLY), heightMeasureSpec);
         }
+    }
+
+    @Override
+    public boolean isFocused() {
+        // When the selection does not follow focus, we still want to properly reflect the user
+        // selection by highlighting the chip.
+        // An example where this happens is: the user interacts with the Omnibox, and the typed
+        // query triggers an Action chip to be shown.
+        // These chips can be navigated to using physical keyboard (arrow keys to select
+        // corresponding suggestion, tab to activate the chip).
+        // At this time the Omnibox continues to retain focus, but Chip should be highlighted, as
+        // pressing <Enter> on the keyboard will activate the Chip.
+        // Make sure the highlight is properly reflected.
+        return super.isFocused() || (isSelected() && !isInTouchMode());
     }
 }

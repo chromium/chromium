@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
@@ -19,6 +20,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -267,10 +269,7 @@ public final class BaseSuggestionViewBinder<T extends View>
 
         // Background color to be used for suggestions
         var ctx = view.getContext();
-        var background = new ColorDrawable(isIncognito(model)
-                        ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
-                        : ChromeColors.getSurfaceColor(
-                                ctx, R.dimen.omnibox_suggestion_bg_elevation));
+        var background = new ColorDrawable(getSuggestionBackgroundColor(model, view.getContext()));
         // Ripple effect to use when the user interacts with the suggestion.
         var ripple = OmniboxResourceProvider.resolveAttributeToDrawable(ctx,
                 model.get(SuggestionCommonProperties.COLOR_SCHEME),
@@ -282,6 +281,19 @@ public final class BaseSuggestionViewBinder<T extends View>
         // See go/omnibox:drawables for more details.
         sFocusableDrawableState = layer.getConstantState();
         view.setBackground(layer);
+    }
+
+    /**
+     * Retrieve the background color to be applied to suggestion.
+     *
+     * @param model A property model to look up relevant properties.
+     * @param ctx Context used to retrieve appropriate color value.
+     * @return @ColorInt value representing the color to be applied.
+     */
+    public static @ColorInt int getSuggestionBackgroundColor(PropertyModel model, Context ctx) {
+        return isIncognito(model)
+                ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
+                : ChromeColors.getSurfaceColor(ctx, R.dimen.omnibox_suggestion_bg_elevation);
     }
 
     /**

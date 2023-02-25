@@ -7,17 +7,12 @@ package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.res.ResourcesCompat;
-
-import com.google.android.material.color.MaterialColors;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
-import org.chromium.ui.util.ColorUtils;
 
 /**
  * Container view for the {@link ChipView}.
@@ -38,13 +33,6 @@ public class PedalView extends FrameLayout {
 
         setFocusable(true);
         mPedal = new ChipView(context, R.style.OmniboxPedalChipThemeOverlay);
-
-        final int baseColor = MaterialColors.getColor(context, R.attr.colorSurface, TAG);
-        final int overlayColor = MaterialColors.getColor(context, R.attr.colorOutline, TAG);
-        final float alpha =
-                ResourcesCompat.getFloat(context.getResources(), R.dimen.chip_outline_alpha);
-        mPedal.setBorder(context.getResources().getDimensionPixelSize(R.dimen.chip_border_width),
-                ColorUtils.getColorWithOverlay(baseColor, overlayColor, alpha));
 
         var layoutParams =
                 new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -71,11 +59,6 @@ public class PedalView extends FrameLayout {
     public void setSelected(boolean isSelected) {
         super.setSelected(isSelected);
         mPedal.setSelected(false);
-    }
-
-    /** @return The Primary TextView in this view. */
-    TextView getPedalTextView() {
-        return mPedal.getPrimaryTextView();
     }
 
     /** @return The {@link ChipView} in this view. */

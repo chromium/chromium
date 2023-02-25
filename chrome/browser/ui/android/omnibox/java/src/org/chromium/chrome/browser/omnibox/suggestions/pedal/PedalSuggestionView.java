@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -68,12 +67,6 @@ public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutVie
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public BaseSuggestionView<T> getBaseSuggestionView() {
         return mBaseSuggestionView;
-    }
-
-    /** @return The Primary TextView in the pedal view. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public TextView getPedalTextView() {
-        return mPedalList.get(0).getPedalTextView();
     }
 
     /** @return The {@link ChipView} in this view. */

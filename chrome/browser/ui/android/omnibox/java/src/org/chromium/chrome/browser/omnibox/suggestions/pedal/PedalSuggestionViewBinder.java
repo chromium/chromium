@@ -4,19 +4,15 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
-import android.graphics.Color;
 import android.view.View;
 
 import androidx.core.view.ViewCompat;
 
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.pedal.PedalViewProperties.PedalIcon;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.omnibox.action.OmniboxPedal;
+import org.chromium.components.browser_ui.widget.chips.ChipViewBinder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,29 +42,27 @@ public final class PedalSuggestionViewBinder<T extends View>
         mBaseViewBinder.bind(model, view.getBaseSuggestionView(), propertyKey);
 
         if (PedalSuggestionViewProperties.PEDAL_LIST == propertyKey) {
-            List<ListItem> omniboxPedalList = model.get(PedalSuggestionViewProperties.PEDAL_LIST);
-            // Always get the first pedal item during the first step of Actions in Suggest.
-            ListItem omniboxPedalListItem = omniboxPedalList.get(0);
-            OmniboxPedal omniboxPedal = omniboxPedalListItem.model.get(PedalViewProperties.PEDAL);
-            final String hint = omniboxPedal.getHint();
-            final String contentDescription =
-                    view.getContext().getString(R.string.accessibility_omnibox_pedal, hint);
-            view.getPedalTextView().setText(hint);
-            view.getPedalTextView().setContentDescription(contentDescription);
-            final @BrandedColorScheme int brandedColorScheme =
-                    model.get(SuggestionCommonProperties.COLOR_SCHEME);
-            view.getPedalTextView().setTextColor(
-                    OmniboxResourceProvider.getSuggestionPrimaryTextColor(
-                            view.getContext(), brandedColorScheme));
-
-            // Set up icon and click listener from the pedal list item model.
-            PedalIcon icon = omniboxPedalListItem.model.get(PedalViewProperties.PEDAL_ICON);
-            view.getPedalChipView().setIcon(icon.iconRes, icon.tintWithTextColor);
-            view.getPedalChipView().setBackgroundColor(Color.TRANSPARENT);
-            view.getPedalChipView().setOnClickListener(
-                    omniboxPedalListItem.model.get(PedalViewProperties.ON_PEDAL_CLICK));
+            List<ListItem> chipList = model.get(PedalSuggestionViewProperties.PEDAL_LIST);
+            // TODO(crbug/1418077): Turn this into a proper MVC.
+            // We're introducing support for multiple chips (not landed yet) and migrating from
+            // FrameView to RecyclerView.
+            PropertyModel chipModel = chipList.get(0).model;
+            for (var property : chipModel.getAllSetProperties()) {
+                ChipViewBinder.bind(chipModel, view.getPedalChipView(), property);
+            }
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             BaseSuggestionViewBinder.applySelectableBackground(model, view.getPedalView());
+            // Apply changes to Chips as well.
+            // Currently chips work well in light and dark themes, but poorly in an Incognito mode.
+            // Need to research how to plumb styling properly so that Incognito mode is properly
+            // reflected.
+            List<ListItem> chipList = model.get(PedalSuggestionViewProperties.PEDAL_LIST);
+            var brandedColorScheme = model.get(SuggestionCommonProperties.COLOR_SCHEME);
+            var chip = view.getPedalChipView();
+            chip.setBackgroundColor(BaseSuggestionViewBinder.getSuggestionBackgroundColor(
+                    model, view.getContext()));
+            chip.setTextColor(OmniboxResourceProvider.getSuggestionPrimaryTextColor(
+                    view.getContext(), brandedColorScheme));
         } else if (SuggestionCommonProperties.LAYOUT_DIRECTION == propertyKey) {
             ViewCompat.setLayoutDirection(
                     view.getPedalView(), model.get(SuggestionCommonProperties.LAYOUT_DIRECTION));

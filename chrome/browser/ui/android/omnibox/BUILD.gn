@@ -124,7 +124,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/pedal/PedalSuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/pedal/PedalSuggestionViewProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/pedal/PedalView.java",
-    "java/src/org/chromium/chrome/browser/omnibox/suggestions/pedal/PedalViewProperties.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/AlignmentManager.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionProcessor.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionView.java",
