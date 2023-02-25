@@ -15,8 +15,7 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "base/at_exit.h"                                 // nogncheck
-#include "content/public/app/content_main_runner.h"       // nogncheck
-#include "content/shell/browser/shell_application_ios.h"  // nogncheck
+#include "content/shell/app/ios/shell_application_ios.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -49,15 +48,7 @@ int main(int argc, const char** argv) {
   // Create this here since it's needed to start the crash handler.
   base::AtExitManager at_exit;
 
-  content::ShellMainDelegate delegate;
-  content::ContentMainParams params(&delegate);
-  params.argc = argc;
-  params.argv = argv;
-  auto runner = content::ContentMainRunner::Create();
-  int res = content::RunContentProcess(std::move(params), runner.get());
-  if (res != 0) {
-    return res;
-  }
+  // We will create the ContentMainRunner once the UIApplication is ready.
   return RunShellApplication(argc, argv);
 }
 

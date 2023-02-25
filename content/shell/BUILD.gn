@@ -114,6 +114,13 @@ static_library("content_shell_app") {
       "app/shell_main_delegate_mac.mm",
     ]
   }
+  if (is_ios) {
+    sources += [
+      "app/ios/shell_application_ios.h",
+      "app/ios/shell_application_ios.mm",
+    ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
   defines = [
     "CONTENT_SHELL_VERSION=\"$content_shell_version\"",
     "CONTENT_SHELL_MAJOR_VERSION=\"$content_shell_major_version\"",
@@ -204,8 +211,6 @@ static_library("content_shell_lib") {
 
   if (is_ios) {
     sources += [
-      "browser/shell_application_ios.h",
-      "browser/shell_application_ios.mm",
       "browser/shell_platform_delegate_ios.mm",
       "browser/shell_web_contents_view_delegate_ios.mm",
     ]
