@@ -189,6 +189,13 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
   if (launch_elevated) {
     invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_ELEVATED);
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (delegate_->ShouldUseUntrustedMojoInvitation()) {
+    invitation.set_extra_flags(MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS);
+  }
+#endif
+
   if (process.process.IsValid()) {
 #if !BUILDFLAG(IS_FUCHSIA)
     if (mojo_named_channel_) {

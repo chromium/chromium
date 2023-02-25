@@ -56,8 +56,9 @@ RendererSandboxedProcessLauncherDelegate::GetSandboxType() {
 
 #if BUILDFLAG(IS_WIN)
 RendererSandboxedProcessLauncherDelegateWin::
-    RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line,
-                                                bool is_jit_disabled)
+    RendererSandboxedProcessLauncherDelegateWin(
+        const base::CommandLine& cmd_line,
+        bool is_jit_disabled)
     : renderer_code_integrity_enabled_(
           GetContentClient()->browser()->IsRendererCodeIntegrityEnabled()),
       renderer_app_container_disabled_(
@@ -66,9 +67,9 @@ RendererSandboxedProcessLauncherDelegateWin::
     dynamic_code_can_be_disabled_ = true;
     return;
   }
-  if (cmd_line->HasSwitch(blink::switches::kJavaScriptFlags)) {
+  if (cmd_line.HasSwitch(blink::switches::kJavaScriptFlags)) {
     std::string js_flags =
-        cmd_line->GetSwitchValueASCII(blink::switches::kJavaScriptFlags);
+        cmd_line.GetSwitchValueASCII(blink::switches::kJavaScriptFlags);
     std::vector<base::StringPiece> js_flag_list = base::SplitStringPiece(
         js_flags, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const auto& js_flag : js_flag_list) {
@@ -160,6 +161,11 @@ bool RendererSandboxedProcessLauncherDelegateWin::CetCompatible() {
   // non-compliant way. CET can be enabled where the renderer is known to
   // be jitless.
   return dynamic_code_can_be_disabled_;
+}
+
+bool RendererSandboxedProcessLauncherDelegateWin::
+    ShouldUseUntrustedMojoInvitation() {
+  return true;
 }
 
 #endif  // BUILDFLAG(IS_WIN)

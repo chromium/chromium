@@ -29,7 +29,7 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   ~SandboxedProcessLauncherDelegate() override {}
 
 #if BUILDFLAG(IS_WIN)
-  // SandboxDelegate:
+  // sandbox::policy::SandboxDelegate:
   std::string GetSandboxTag() override;
   bool DisableDefaultPolicy() override;
   bool GetAppContainerId(std::string* appcontainer_id) override;
@@ -37,10 +37,17 @@ class CONTENT_EXPORT SandboxedProcessLauncherDelegate
   void PostSpawnTarget(base::ProcessHandle process) override;
   bool ShouldUnsandboxedRunInJob() override;
   bool CetCompatible() override;
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN)
   // Override to return true if the process should be launched as an elevated
   // process (which implies no sandbox).
   virtual bool ShouldLaunchElevated();
+
+  // Whether or not to use the MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS flag
+  // on the outgoing invitation used to create the mojo connection to this
+  // process.
+  virtual bool ShouldUseUntrustedMojoInvitation();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)

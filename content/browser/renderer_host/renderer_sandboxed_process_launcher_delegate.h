@@ -28,6 +28,7 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegate
   bool EnableCpuSecurityMitigations() override;
 #endif  // BUILDFLAG(IS_MAC)
 
+  // sandbox::policy::SandboxDelegate:
   sandbox::mojom::Sandbox GetSandboxType() override;
 };
 
@@ -36,15 +37,16 @@ class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegate
 class CONTENT_EXPORT RendererSandboxedProcessLauncherDelegateWin
     : public RendererSandboxedProcessLauncherDelegate {
  public:
-  RendererSandboxedProcessLauncherDelegateWin(base::CommandLine* cmd_line,
+  RendererSandboxedProcessLauncherDelegateWin(const base::CommandLine& cmd_line,
                                               bool is_jit_disabled);
-
+  // sandbox::policy::SandboxDelegate:
   std::string GetSandboxTag() override;
-
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override;
   void PostSpawnTarget(base::ProcessHandle process) override;
-
   bool CetCompatible() override;
+
+  // SandboxedProcessLauncherDelegate:
+  bool ShouldUseUntrustedMojoInvitation() override;
 
  private:
   const bool renderer_code_integrity_enabled_;

@@ -32,16 +32,22 @@ bool SandboxedProcessLauncherDelegate::PreSpawnTarget(
 void SandboxedProcessLauncherDelegate::PostSpawnTarget(
     base::ProcessHandle process) {}
 
-bool SandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
-  return false;
-}
-
 bool SandboxedProcessLauncherDelegate::ShouldUnsandboxedRunInJob() {
   return false;
 }
 
 bool SandboxedProcessLauncherDelegate::CetCompatible() {
   return true;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN)
+bool SandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
+  return false;
+}
+
+bool SandboxedProcessLauncherDelegate::ShouldUseUntrustedMojoInvitation() {
+  return false;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
