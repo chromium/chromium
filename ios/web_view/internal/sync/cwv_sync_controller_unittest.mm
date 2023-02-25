@@ -130,18 +130,6 @@ TEST_F(CWVSyncControllerTest, StopSyncAndClearIdentity) {
   EXPECT_FALSE(sync_controller.currentIdentity);
 }
 
-TEST_F(CWVSyncControllerTest, Syncing) {
-  CWVSyncController* sync_controller = [[CWVSyncController alloc]
-      initWithSyncService:&sync_service_
-          identityManager:identity_test_environment_.identity_manager()
-              prefService:&pref_service_];
-  sync_service_.SetTransportState(
-      syncer::SyncService::TransportState::DISABLED);
-  EXPECT_FALSE(sync_controller.syncing);
-  sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  EXPECT_TRUE(sync_controller.syncing);
-}
-
 TEST_F(CWVSyncControllerTest, PassphraseNeeded) {
   CWVSyncController* sync_controller = [[CWVSyncController alloc]
       initWithSyncService:&sync_service_
@@ -195,31 +183,6 @@ TEST_F(CWVSyncControllerTest, DelegateDidStartAndStopSync) {
   sync_service_.FireStateChanged();
   sync_service_.SetTransportState(
       syncer::SyncService::TransportState::DISABLED);
-  sync_service_.FireStateChanged();
-
-  [delegate verify];
-}
-
-TEST_F(CWVSyncControllerTest, DelegateDidFailWithError) {
-  CWVSyncController* sync_controller = [[CWVSyncController alloc]
-      initWithSyncService:&sync_service_
-          identityManager:identity_test_environment_.identity_manager()
-              prefService:&pref_service_];
-
-  id delegate = OCMStrictProtocolMock(@protocol(CWVSyncControllerDelegate));
-  [delegate setExpectationOrderMatters:YES];
-  sync_controller.delegate = delegate;
-
-  OCMExpect([delegate
-        syncController:sync_controller
-      didFailWithError:[OCMArg checkWithBlock:^BOOL(NSError* error) {
-        // TestSyncService uses INVALID_GAIA_CREDENTIALS for persistent auth
-        // errors.
-        return error.code == CWVSyncErrorInvalidGAIACredentials &&
-               error.domain == CWVSyncErrorDomain;
-      }]]);
-  OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
-  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
   sync_service_.FireStateChanged();
 
   [delegate verify];

@@ -19,51 +19,10 @@
 #import "ios/web_view/public/cwv_identity.h"
 #import "ios/web_view/public/cwv_sync_controller_data_source.h"
 #import "ios/web_view/public/cwv_sync_controller_delegate.h"
-#import "ios/web_view/public/cwv_sync_errors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-NSErrorDomain const CWVSyncErrorDomain =
-    @"org.chromium.chromewebview.SyncErrorDomain";
-NSErrorUserInfoKey const CWVSyncErrorDescriptionKey =
-    @"org.chromium.chromewebview.SyncErrorDescriptionKey";
-NSErrorUserInfoKey const CWVSyncErrorMessageKey =
-    @"org.chromium.chromewebview.SyncErrorMessageKey";
-
-namespace {
-
-CWVSyncError CWVConvertGoogleServiceAuthErrorToCWVSyncError(
-    const GoogleServiceAuthError& error) {
-  // SyncService only reports persistent auth errors.
-  DCHECK(!error.IsTransientError());
-
-  switch (error.state()) {
-    case GoogleServiceAuthError::NONE:
-      return CWVSyncErrorNone;
-    case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
-      return CWVSyncErrorInvalidGAIACredentials;
-    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
-      return CWVSyncErrorUserNotSignedUp;
-    case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
-      return CWVSyncErrorUnexpectedServiceResponse;
-    case GoogleServiceAuthError::CONNECTION_FAILED:
-    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
-    case GoogleServiceAuthError::REQUEST_CANCELED:
-      // Transient errors are unreachable.
-      NOTREACHED();
-      return CWVSyncErrorNone;
-    // The following errors are unexpected on iOS.
-    case GoogleServiceAuthError::SERVICE_ERROR:
-    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-    case GoogleServiceAuthError::NUM_STATES:
-      NOTREACHED();
-      return CWVSyncErrorNone;
-  }
-}
-
-}  // namespace
 
 @interface CWVSyncController ()
 
@@ -107,7 +66,6 @@ class WebViewSyncControllerObserverBridge : public syncer::SyncServiceObserver {
   std::unique_ptr<ios_web_view::WebViewSyncControllerObserverBridge> _observer;
   PrefService* _prefService;
   syncer::SyncService::TransportState _lastTransportState;
-  GoogleServiceAuthError _lastAuthError;
 }
 
 namespace {
@@ -167,11 +125,6 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 }
 
 #pragma mark - Public Methods
-
-- (BOOL)isSyncing {
-  return _syncService->GetTransportState() ==
-         syncer::SyncService::TransportState::ACTIVE;
-}
 
 - (CWVIdentity*)currentIdentity {
   if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
@@ -260,30 +213,6 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
               respondsToSelector:@selector(syncControllerDidStopSync:)]) {
         [_delegate syncControllerDidStopSync:self];
       }
-    }
-  }
-
-  if (_lastAuthError.state() != _syncService->GetAuthError().state()) {
-    _lastAuthError = _syncService->GetAuthError();
-    DCHECK(!_lastAuthError.IsTransientError());
-
-    CWVSyncError code =
-        CWVConvertGoogleServiceAuthErrorToCWVSyncError(_lastAuthError);
-    if (code != CWVSyncErrorNone &&
-        [_delegate respondsToSelector:@selector(syncController:
-                                              didFailWithError:)]) {
-      NSString* description =
-          base::SysUTF8ToNSString(_lastAuthError.ToString());
-      NSString* message =
-          base::SysUTF8ToNSString(_lastAuthError.error_message());
-      NSError* error =
-          [NSError errorWithDomain:CWVSyncErrorDomain
-                              code:code
-                          userInfo:@{
-                            CWVSyncErrorDescriptionKey : description,
-                            CWVSyncErrorMessageKey : message,
-                          }];
-      [_delegate syncController:self didFailWithError:error];
     }
   }
 
