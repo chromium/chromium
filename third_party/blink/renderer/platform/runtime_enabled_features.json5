@@ -497,6 +497,11 @@
       status: "stable",
     },
     {
+      name: "Canvas2dCanvasFilter",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "Canvas2dImageChromium",
       base_feature: "none",
       public: true,

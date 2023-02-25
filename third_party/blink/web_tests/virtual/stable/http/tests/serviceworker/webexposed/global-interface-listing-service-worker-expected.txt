@@ -109,9 +109,6 @@ interface CanMakePaymentEvent : ExtendableEvent
     attribute @@toStringTag
     method constructor
     method respondWith
-interface CanvasFilter
-    attribute @@toStringTag
-    method constructor
 interface CanvasGradient
     attribute @@toStringTag
     method addColorStop
