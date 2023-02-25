@@ -914,6 +914,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.IntelVpSuperResolution.{State}.{Call}" enum="Hresult"
+    expires_after="2023-05-18">
+  <owner>magchen@chromium.org</owner>
+  <owner>zmo@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Records HRESULT in IntelVpSuperResolution. This metric is only collected on
+    Intel Windows every frame from video streams.
+  </summary>
+  <token key="State">
+    <variant name="Off" summary="off"/>
+    <variant name="On" summary="on"/>
+  </token>
+  <token key="Call">
+    <variant name="VideoProcessorBlt" summary="vpblt"/>
+    <variant name="VpeFnMode" summary="mode"/>
+    <variant name="VpeFnScaling" summary="scaling"/>
+    <variant name="VpeFnVersion" summary="version"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.IOSurface.CATransactionTimeUs" units="microseconds"
     expires_after="2023-08-20">
   <owner>magchen@chromium.org</owner>
