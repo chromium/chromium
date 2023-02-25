@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_model_utils.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -60,19 +61,6 @@ struct AllDownloadUIModelsInfo {
   // downloading items are done.
   bool all_done = true;
 };
-
-bool IsPendingDeepScanning(const DownloadUIModel* model) {
-  return model->GetState() == download::DownloadItem::IN_PROGRESS &&
-         model->GetDangerType() ==
-             download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
-}
-
-bool IsModelInProgress(const DownloadUIModel* model) {
-  if (model->IsDangerous() && !IsPendingDeepScanning(model)) {
-    return false;
-  }
-  return model->GetState() == download::DownloadItem::IN_PROGRESS;
-}
 
 AllDownloadUIModelsInfo GetAllModelsInfo(
     std::vector<std::unique_ptr<DownloadUIModel>>& all_models) {
