@@ -16,6 +16,10 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace bookmarks {
+class BookmarkModel;
+}
+
 namespace power_bookmarks {
 class PowerBookmarkService;
 }
@@ -87,6 +91,7 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
   const raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<power_bookmarks::PowerBookmarkService> service_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   const raw_ptr<Browser> browser_;
   raw_ptr<UserNotesSidePanelUI> user_notes_ui_ = nullptr;
   bool start_creation_after_tab_change_ = false;
