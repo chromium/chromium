@@ -37,8 +37,7 @@ const base::FilePath::CharType kUIDevToolsActivePortFileName[] =
 void WriteUIDevtoolsPortToFile(base::FilePath output_dir, int port) {
   base::FilePath path = output_dir.Append(kUIDevToolsActivePortFileName);
   std::string port_target_string = base::StringPrintf("%d", port);
-  if (base::WriteFile(path, port_target_string.c_str(),
-                      static_cast<int>(port_target_string.length())) < 0) {
+  if (!base::WriteFile(path, port_target_string)) {
     LOG(ERROR) << "Error writing UIDevTools active port to file";
   }
 }
