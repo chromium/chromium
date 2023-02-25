@@ -57,11 +57,12 @@ int main(int argc, char** argv) {
   base::FilePath file_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath("output_file");
   CHECK(!file_path.empty());
-  int written = base::WriteFile(file_path, blob.data, blob.raw_size);
   int error_code = 0;
-  if (written != blob.raw_size) {
-    fprintf(stderr, "Error: WriteFile of %d snapshot bytes returned %d.\n",
-            blob.raw_size, written);
+  if (!base::WriteFile(file_path,
+                       base::as_bytes(base::make_span(
+                           blob.data, static_cast<size_t>(blob.raw_size))))) {
+    fprintf(stderr, "Error: WriteFile of %d snapshot has failed.\n",
+            blob.raw_size);
     error_code = 1;
   }
 
