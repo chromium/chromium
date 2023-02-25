@@ -281,23 +281,21 @@ void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
   if (!ambient_observer_remote_.is_bound())
     return;
 
-  // First, empty the WebUI store so it doesn't show the previously selected
-  // albums' previews. If |settings_->topic_source| is Google photos, refetch
-  // the previews because the selected albums may have changed. Otherwise, we
-  // fallback to the preview urls that comes with the albums.
+  // Empty the WebUI store so it doesn't show the previously selected albums'
+  // previews.
   OnPreviewsFetched(std::vector<GURL>());
-  if (settings_->topic_source == ash::AmbientModeTopicSource::kGooglePhotos)
-    FetchGooglePhotosAlbumsPreviews(settings_->selected_album_ids);
-
-  if (features::IsPersonalizationJellyEnabled() &&
-      settings_->topic_source == ash::AmbientModeTopicSource::kArtGallery) {
+  if (features::IsPersonalizationJellyEnabled()) {
     if (is_updating_backend_) {
       // Once settings updated, fetch preview images.
       needs_update_previews_ = true;
     } else {
       // Fetch preview images if settings have been updated.
-      FetchArtGalleryPreviews();
+      FetchPreviewImages();
     }
+  } else if (settings_->topic_source ==
+             ash::AmbientModeTopicSource::kGooglePhotos) {
+    // When Jelly is not enabled, only fetch google photos albums previews.
+    FetchGooglePhotosAlbumsPreviews(settings_->selected_album_ids);
   }
 
   ambient_observer_remote_->OnTopicSourceChanged(settings_->topic_source);
@@ -397,7 +395,7 @@ void PersonalizationAppAmbientProviderImpl::OnUpdateSettings(bool success) {
     update_settings_retry_backoff_.Reset();
     cached_settings_ = settings_sent_for_update_;
     if (needs_update_previews_) {
-      FetchArtGalleryPreviews();
+      FetchPreviewImages();
     }
   } else {
     update_settings_retry_backoff_.InformOfRequest(/*succeeded=*/false);
@@ -532,7 +530,7 @@ void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
   OnTopicSourceChanged();
 }
 
-void PersonalizationAppAmbientProviderImpl::FetchArtGalleryPreviews() {
+void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
   needs_update_previews_ = false;
   previews_weak_factory_.InvalidateWeakPtrs();
   ash::AmbientBackendController::Get()->FetchPreviewImages(
@@ -540,6 +538,7 @@ void PersonalizationAppAmbientProviderImpl::FetchArtGalleryPreviews() {
                      previews_weak_factory_.GetWeakPtr()));
 }
 
+// TODO(b/270434334): Remove when Jelly is enabled by default.
 void PersonalizationAppAmbientProviderImpl::FetchGooglePhotosAlbumsPreviews(
     const std::vector<std::string>& album_ids) {
   const int num_previews = features::IsPersonalizationJellyEnabled() ? 3 : 4;
