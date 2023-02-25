@@ -611,10 +611,9 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
 
   // Setup data dir.
   ASSERT_TRUE(profile_temp_dir.CreateUniqueTempDir());
-  ASSERT_EQ(
+  ASSERT_TRUE(
       base::WriteFile(profile_temp_dir.GetPath().AppendASCII(kTestDataFileIn),
-                      nullptr, 0),
-      0);
+                      base::StringPiece()));
 
   fidl::InterfaceRequest<fuchsia::component::Binder> binder_request;
   fidl::InterfaceRequest<fuchsia::web::Context> context_request;
@@ -651,8 +650,8 @@ TEST_F(ContextProviderImplTest, WithProfileDir) {
   ASSERT_PRED1(base::PathExists, data_dir.AppendASCII(kTestDataFileIn));
 
   // Make sure that the mapped dir can be written to.
-  ASSERT_EQ(base::WriteFile(data_dir.AppendASCII(kTestDataFileOut), nullptr, 0),
-            0);
+  ASSERT_TRUE(base::WriteFile(data_dir.AppendASCII(kTestDataFileOut),
+                              base::StringPiece()));
   ASSERT_PRED1(base::PathExists,
                profile_temp_dir.GetPath().AppendASCII(kTestDataFileOut));
 }
