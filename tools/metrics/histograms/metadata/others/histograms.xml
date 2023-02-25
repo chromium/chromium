@@ -7052,31 +7052,6 @@ chromium-metrics-reviews@google.com.
   <summary>The time it takes to open a hyphenation dictionary file.</summary>
 </histogram>
 
-<histogram name="ICU.CreateInstance" enum="ICUCreateInstanceCode"
-    expires_after="2021-02-21">
-  <owner>ftang@chromium.org</owner>
-  <owner>intl-libs-team@google.com</owner>
-  <summary>
-    This metric logs the creation of key ICU objects. These object creation
-    called directly from Chrome code or indirectly from depending library such
-    as blink and v8.
-  </summary>
-</histogram>
-
-<histogram name="ICU.DataFile" enum="ICUDataFileCode"
-    expires_after="2021-02-21">
-  <owner>ftang@chromium.org</owner>
-  <owner>intl-libs-team@google.com</owner>
-  <summary>
-    This metric logs the ICU built-in data file name opened and used by chrome.
-    These file open calls are perform internally inside ICU while Chrome
-    directly or indirectly call ICU to create object and cause ICU to load new
-    data files, such as loading codeset conversion table, create break iterator,
-    and open dictionary files for word break/line break iterator. It however
-    does not include the opening of resource bundle files.
-  </summary>
-</histogram>
-
 <histogram name="Import.ImportedHistorySize.AutoImportFromIE" units="urls"
     expires_after="M77">
   <owner>gcomanici@chromium.org</owner>
