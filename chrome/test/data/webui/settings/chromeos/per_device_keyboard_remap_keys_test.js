@@ -161,4 +161,19 @@ suite('PerDeviceKeyboardRemapKeys', function() {
     assertEquals(
         metaKeyDropdown.shadowRoot.querySelector('select').value, metaKeyValue);
   });
+
+  /**
+   * Verify that if the keyboard is disconnected while the user is in
+   * the remapping page, it will switch back to per device keyboard page.
+   */
+  test('re-route to back page when keyboard disconnected', async () => {
+    await initializeRemapKeyspage();
+    // Check it's currently in the modifier remapping page.
+    assertEquals(
+        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
+        Router.getInstance().currentRoute);
+    const updatedKeyboards = [fakeKeyboards[1], fakeKeyboards[2]];
+    page.onKeyboardListUpdated(updatedKeyboards);
+    assertEquals(routes.PER_DEVICE_KEYBOARD, Router.getInstance().currentRoute);
+  });
 });

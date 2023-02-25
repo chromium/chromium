@@ -212,6 +212,22 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         });
   }
 
+  onKeyboardListUpdated(keyboards: Keyboard[]): void {
+    if (Router.getInstance().currentRoute !==
+        routes.PER_DEVICE_KEYBOARD_REMAP_KEYS) {
+      return;
+    }
+
+    const updatedKeyboard =
+        keyboards.find(keyboard => keyboard.id === this.keyboard.id);
+
+    // If the keyboard is disconnected in remapping page, go back to
+    // per_device_keyboard page.
+    if (!updatedKeyboard) {
+      Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
+    }
+  }
+
   /**
    * Initializes the dropdown menu options for remapping keys.
    */
