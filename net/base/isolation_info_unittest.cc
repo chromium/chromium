@@ -138,10 +138,7 @@ TEST_P(IsolationInfoTest, DebugString) {
   EXPECT_EQ(isolation_info.DebugString(), base::StrCat(parts));
 }
 
-// TODO(crbug.com/1419563): Disabled as it was causing consistent failures
-// across multiple builders
-TEST_P(IsolationInfoTest,
-       DISABLED_CreateNetworkAnonymizationKeyForIsolationInfo) {
+TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
   IsolationInfo isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin2,
       SiteForCookies::FromOrigin(kOrigin1), kPartyContextEmpty, &kNonce1);
@@ -182,7 +179,10 @@ TEST_P(IsolationInfoTest,
 
 // A 2.5-keyed NAK created with two identical opaque origins should be
 // same-site.
-TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfoOpaque) {
+// TODO(crbug.com/1419563): Disabled as it was causing consistent failures
+// across multiple builders
+TEST_P(IsolationInfoTest,
+       DISABLED_CreateNetworkAnonymizationKeyForIsolationInfoOpaque) {
   url::Origin opaque;
   IsolationInfo isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kMainFrame, opaque, opaque,
