@@ -104,9 +104,7 @@ TEST_F(FileClusteringBackendTest, Success) {
       })";
   base::FilePath file_path =
       temp_dir().Append(FILE_PATH_LITERAL("clusters.json"));
-  ASSERT_EQ(static_cast<int32_t>(clusters_json_string.size()),
-            base::WriteFile(file_path, clusters_json_string.data(),
-                            clusters_json_string.size()));
+  ASSERT_TRUE(base::WriteFile(file_path, clusters_json_string));
 
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kClustersOverrideFile, file_path);
