@@ -6830,6 +6830,9 @@ crbug.com/1399780 external/wpt/content-security-policy/embedded-enforcement/subs
 # TODO(crbug.com/1403877): Deflake this test.
 virtual/portals/http/tests/devtools/portals/portals-elements-nesting.js [ Failure Pass ]
 
+# TODO(crbug.com/1419063): Deflake.
+http/tests/media/media-load-nonmedia-crossorigin.html [ Failure Pass ]
+
 # TODO(crbug.com/1404614): Fix this test on MacOS (sheriff 2023-01-03).
 crbug.com/1404614 [ Mac ] external/wpt/url/url-setters-a-area.window.html?exclude=(file|javascript|mailto) [ Failure Pass ]
 
