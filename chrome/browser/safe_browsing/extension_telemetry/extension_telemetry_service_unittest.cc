@@ -189,7 +189,7 @@ void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
 
   extension_prefs_->UpdateExtensionPref(
       extension_id, "last_update_time",
-      std::make_unique<base::Value>(base::TimeToValue(base::Time::Now())));
+      base::Value(base::TimeToValue(base::Time::Now())));
 }
 
 void ExtensionTelemetryServiceTest::UnregisterExtensionWithExtensionService(

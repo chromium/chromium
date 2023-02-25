@@ -28,6 +28,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/extensions/default_app_order.h"
@@ -135,7 +136,8 @@ void ChromeAppSorting::MigrateAppIndex(
 
       page = PageIntegerAsStringOrdinal(old_page_index);
       SetPageOrdinal(*ext_id, page);
-      prefs->UpdateExtensionPref(*ext_id, kPrefPageIndexDeprecated, nullptr);
+      prefs->UpdateExtensionPref(*ext_id, kPrefPageIndexDeprecated,
+                                 absl::nullopt);
     }
 
     int old_app_launch_index = 0;
@@ -151,7 +153,7 @@ void ChromeAppSorting::MigrateAppIndex(
         app_launches_to_convert[page][old_app_launch_index] = &*ext_id;
 
       prefs->UpdateExtensionPref(*ext_id, kPrefAppLaunchIndexDeprecated,
-                                 nullptr);
+                                 absl::nullopt);
     }
   }
 
@@ -367,11 +369,11 @@ void ChromeAppSorting::SetAppLaunchOrdinal(
     return;
   }
 
-  std::unique_ptr<base::Value> new_value =
-      new_app_launch_ordinal.IsValid()
-          ? std::make_unique<base::Value>(
-                new_app_launch_ordinal.ToInternalValue())
-          : nullptr;
+  absl::optional<base::Value> new_value;
+  if (new_app_launch_ordinal.IsValid()) {
+    new_value = base::Value(new_app_launch_ordinal.ToInternalValue());
+  }
+
   ExtensionPrefs::Get(browser_context_)
       ->UpdateExtensionPref(extension_id, kPrefAppLaunchOrdinal,
                             std::move(new_value));
@@ -453,10 +455,10 @@ void ChromeAppSorting::SetPageOrdinal(
     return;
   }
 
-  std::unique_ptr<base::Value> new_value =
-      new_page_ordinal.IsValid()
-          ? std::make_unique<base::Value>(new_page_ordinal.ToInternalValue())
-          : nullptr;
+  absl::optional<base::Value> new_value;
+  if (new_page_ordinal.IsValid()) {
+    new_value = base::Value(new_page_ordinal.ToInternalValue());
+  }
 
   ExtensionPrefs::Get(browser_context_)
       ->UpdateExtensionPref(extension_id, kPrefPageOrdinal,
@@ -470,8 +472,9 @@ void ChromeAppSorting::ClearOrdinals(const std::string& extension_id) {
                        GetAppLaunchOrdinal(extension_id));
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
-  prefs->UpdateExtensionPref(extension_id, kPrefPageOrdinal, nullptr);
-  prefs->UpdateExtensionPref(extension_id, kPrefAppLaunchOrdinal, nullptr);
+  prefs->UpdateExtensionPref(extension_id, kPrefPageOrdinal, absl::nullopt);
+  prefs->UpdateExtensionPref(extension_id, kPrefAppLaunchOrdinal,
+                             absl::nullopt);
 }
 
 int ChromeAppSorting::PageStringOrdinalAsInteger(

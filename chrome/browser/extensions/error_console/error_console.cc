@@ -24,6 +24,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/logging_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -95,7 +96,7 @@ void ErrorConsole::SetReportingForExtension(const std::string& extension_id,
     mask &= ~(1 << type);
 
   prefs_->UpdateExtensionPref(extension_id, kStoreExtensionErrorsPref,
-                              std::make_unique<base::Value>(mask));
+                              base::Value(mask));
 }
 
 void ErrorConsole::SetReportingAllForExtension(
@@ -107,7 +108,7 @@ void ErrorConsole::SetReportingAllForExtension(
   int mask = enabled ? (1 << ExtensionError::NUM_ERROR_TYPES) - 1 : 0;
 
   prefs_->UpdateExtensionPref(extension_id, kStoreExtensionErrorsPref,
-                              std::make_unique<base::Value>(mask));
+                              base::Value(mask));
 }
 
 bool ErrorConsole::IsReportingEnabledForExtension(
@@ -125,7 +126,8 @@ void ErrorConsole::UseDefaultReportingForExtension(
   if (!enabled_ || !crx_file::id_util::IdIsValid(extension_id))
     return;
 
-  prefs_->UpdateExtensionPref(extension_id, kStoreExtensionErrorsPref, nullptr);
+  prefs_->UpdateExtensionPref(extension_id, kStoreExtensionErrorsPref,
+                              absl::nullopt);
 }
 
 void ErrorConsole::ReportError(std::unique_ptr<ExtensionError> error) {

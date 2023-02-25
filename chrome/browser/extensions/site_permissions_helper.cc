@@ -205,7 +205,7 @@ void SitePermissionsHelper::SetShowAccessRequestsInToolbar(
     bool show_access_requests_in_toolbar) {
   ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
       extension_id, kPrefShowAccessRequestsInToolbar,
-      std::make_unique<base::Value>(show_access_requests_in_toolbar));
+      base::Value(show_access_requests_in_toolbar));
 }
 
 }  // namespace extensions

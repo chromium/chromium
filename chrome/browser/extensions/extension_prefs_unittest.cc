@@ -41,6 +41,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::Time;
 using extensions::mojom::APIPermissionID;
@@ -703,9 +704,9 @@ class ExtensionPrefsMigratesToLastUpdateTime : public ExtensionPrefsTest {
     // Re-create migration scenario by removing the new first_install_time,
     // last_update_time pref keys and adding back the legacy install_time key.
     prefs()->UpdateExtensionPref(extension_->id(), kLastUpdateTimePrefKey,
-                                 nullptr);
+                                 absl::nullopt);
     prefs()->UpdateExtensionPref(extension_->id(), kFirstInstallTimePrefKey,
-                                 nullptr);
+                                 absl::nullopt);
     time_str_ = base::NumberToString(
         base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
     prefs()->SetStringPref(extension_->id(), kOldInstallTimePrefMap, time_str_);
@@ -1075,7 +1076,7 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
     constexpr char kTestValue[] = "test_value";
     prefs()->UpdateExtensionPref(extension_->id(),
                                  ExtensionPrefs::kFakeObsoletePrefForTesting,
-                                 std::make_unique<base::Value>(kTestValue));
+                                 base::Value(kTestValue));
     std::string str_value;
     EXPECT_TRUE(prefs()->ReadPrefAsString(
         extension_->id(), ExtensionPrefs::kFakeObsoletePrefForTesting,
@@ -1084,9 +1085,8 @@ class ExtensionPrefsObsoletePrefRemoval : public ExtensionPrefsTest {
 
     // TODO(crbug.com/1015619): Remove 2023-05. kPrefStringForIdMapping.
     base::Value::Dict dictionary;
-    prefs()->UpdateExtensionPref(
-        extension_->id(), kPrefStringForIdMapping,
-        std::make_unique<base::Value>(std::move(dictionary)));
+    prefs()->UpdateExtensionPref(extension_->id(), kPrefStringForIdMapping,
+                                 base::Value(std::move(dictionary)));
     EXPECT_TRUE(
         prefs()->ReadPrefAsDict(extension_->id(), kPrefStringForIdMapping));
 
@@ -1232,14 +1232,17 @@ TEST_F(ExtensionPrefsSimpleTest, OldWithholdingPrefMigration) {
 
   // We need to explicitly remove the default value for the new pref as it is
   // added on install by default.
-  prefs.prefs()->UpdateExtensionPref(previous_false_id, kNewPrefKey, nullptr);
-  prefs.prefs()->UpdateExtensionPref(previous_true_id, kNewPrefKey, nullptr);
-  prefs.prefs()->UpdateExtensionPref(previous_empty_id, kNewPrefKey, nullptr);
+  prefs.prefs()->UpdateExtensionPref(previous_false_id, kNewPrefKey,
+                                     absl::nullopt);
+  prefs.prefs()->UpdateExtensionPref(previous_true_id, kNewPrefKey,
+                                     absl::nullopt);
+  prefs.prefs()->UpdateExtensionPref(previous_empty_id, kNewPrefKey,
+                                     absl::nullopt);
 
   prefs.prefs()->UpdateExtensionPref(previous_false_id, kOldPrefKey,
-                                     std::make_unique<base::Value>(false));
+                                     base::Value(false));
   prefs.prefs()->UpdateExtensionPref(previous_true_id, kOldPrefKey,
-                                     std::make_unique<base::Value>(true));
+                                     base::Value(true));
 
   // First make sure that all prefs start out as we expect them to be.
   bool bool_value = false;
@@ -1316,8 +1319,7 @@ TEST_F(ExtensionPrefsSimpleTest, MigrateToNewExternalUninstallBits) {
   // dictionary.
   prefs.prefs()->UpdateExtensionPref(
       external_extension, "state",
-      std::make_unique<base::Value>(
-          Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED));
+      base::Value(Extension::DEPRECATED_EXTERNAL_EXTENSION_UNINSTALLED));
 
   // Cause the migration.
   prefs.RecreateExtensionPrefs();

@@ -55,7 +55,7 @@ class OmniboxFocusInteractiveTest : public ExtensionBrowserTest {
     ExtensionPrefs* prefs = ExtensionPrefs::Get(browser()->profile());
     prefs->UpdateExtensionPref(extension->id(),
                                kNtpOverridingExtensionAcknowledged,
-                               std::make_unique<base::Value>(true));
+                               base::Value(true));
 
     return extension;
   }

@@ -577,9 +577,8 @@ TEST_F(ExtensionAppTest, InvalidOrdinal) {
   // Creates a corrupted ordinal case.
   extensions::ExtensionPrefs* prefs =
       extensions::ExtensionPrefs::Get(profile_.get());
-  prefs->UpdateExtensionPref(
-      kHostedAppId, "page_ordinal",
-      std::make_unique<base::Value>("a corrupted ordinal"));
+  prefs->UpdateExtensionPref(kHostedAppId, "page_ordinal",
+                             base::Value("a corrupted ordinal"));
 
   // This should not assert or crash.
   CreateBuilder();

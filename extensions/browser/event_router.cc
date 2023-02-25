@@ -1262,9 +1262,8 @@ void EventRouter::SetRegisteredEvents(const std::string& extension_id,
   const char* pref_key = type == RegisteredEventType::kLazy
                              ? kRegisteredLazyEvents
                              : kRegisteredServiceWorkerEvents;
-  extension_prefs_->UpdateExtensionPref(
-      extension_id, pref_key,
-      std::make_unique<base::Value>(std::move(events_list)));
+  extension_prefs_->UpdateExtensionPref(extension_id, pref_key,
+                                        base::Value(std::move(events_list)));
 }
 
 void EventRouter::AddFilterToEvent(const std::string& event_name,

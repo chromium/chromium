@@ -64,7 +64,7 @@ void SetLaunchType(content::BrowserContext* context,
 
   ExtensionPrefs::Get(context)->UpdateExtensionPref(
       extension_id, kPrefLaunchType,
-      std::make_unique<base::Value>(static_cast<int>(launch_type)));
+      base::Value(static_cast<int>(launch_type)));
 
   // Sync the launch type.
   const Extension* extension =

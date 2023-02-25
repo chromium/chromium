@@ -446,9 +446,8 @@ ExtensionTtsEngineUpdateVoicesFunction::Run() {
 
   // Save these voices to the extension's prefs if they validated.
   auto* extension_prefs = extensions::ExtensionPrefs::Get(browser_context());
-  extension_prefs->UpdateExtensionPref(
-      extension()->id(), kPrefTtsVoices,
-      base::Value::ToUniquePtrValue(voices_data.Clone()));
+  extension_prefs->UpdateExtensionPref(extension()->id(), kPrefTtsVoices,
+                                       voices_data.Clone());
 
   // Notify that voices have changed.
   content::TtsController::GetInstance()->VoicesChanged();

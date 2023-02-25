@@ -22,6 +22,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -72,9 +73,11 @@ void ExtensionMessageBubbleController::Delegate::SetBubbleInfoBeenAcknowledged(
   if (pref_name.empty())
     return;
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
-  prefs->UpdateExtensionPref(
-      extension_id, pref_name,
-      value ? std::make_unique<base::Value>(value) : nullptr);
+  absl::optional<base::Value> pref_value;
+  if (value) {
+    pref_value = base::Value(value);
+  }
+  prefs->UpdateExtensionPref(extension_id, pref_name, std::move(pref_value));
 }
 
 std::string

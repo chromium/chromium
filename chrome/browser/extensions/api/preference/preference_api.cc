@@ -524,15 +524,13 @@ void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,
   if (incognito) {
     ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
         extension_id, pref_names::kPrefIncognitoContentSettings,
-        base::Value::ToUniquePtrValue(
-            base::Value(content_settings_store()->GetSettingsForExtension(
-                extension_id, kExtensionPrefsScopeIncognitoPersistent))));
+        base::Value(content_settings_store()->GetSettingsForExtension(
+            extension_id, kExtensionPrefsScopeIncognitoPersistent)));
   } else {
     ExtensionPrefs::Get(profile_)->UpdateExtensionPref(
         extension_id, pref_names::kPrefContentSettings,
-        base::Value::ToUniquePtrValue(
-            base::Value(content_settings_store()->GetSettingsForExtension(
-                extension_id, kExtensionPrefsScopeRegular))));
+        base::Value(content_settings_store()->GetSettingsForExtension(
+            extension_id, kExtensionPrefsScopeRegular)));
   }
 }
 

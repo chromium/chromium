@@ -114,7 +114,7 @@ void AcknowledgePreExistingNtpExtensions(Profile* profile) {
     if (overrides.find(chrome::kChromeUINewTabHost) != overrides.end()) {
       prefs->UpdateExtensionPref(extension->id(),
                                  kNtpOverridingExtensionAcknowledged,
-                                 std::make_unique<base::Value>(true));
+                                 base::Value(true));
     }
   }
 }

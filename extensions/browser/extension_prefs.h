@@ -309,7 +309,7 @@ class ExtensionPrefs : public KeyedService {
 
   void UpdateExtensionPref(const std::string& id,
                            base::StringPiece key,
-                           std::unique_ptr<base::Value> value);
+                           absl::optional<base::Value> value);
 
   void DeleteExtensionPrefs(const std::string& id);
 

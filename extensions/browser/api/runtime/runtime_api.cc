@@ -632,9 +632,8 @@ ExtensionFunction::ResponseAction RuntimeSetUninstallURLFunction::Run() {
   }
 
   ExtensionPrefs::Get(browser_context())
-      ->UpdateExtensionPref(
-          extension_id(), kUninstallUrl,
-          std::make_unique<base::Value>(std::move(params->url)));
+      ->UpdateExtensionPref(extension_id(), kUninstallUrl,
+                            base::Value(std::move(params->url)));
   return RespondNow(NoArguments());
 }
 
