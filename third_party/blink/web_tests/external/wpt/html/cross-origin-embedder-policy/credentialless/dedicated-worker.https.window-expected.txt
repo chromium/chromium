@@ -1,8 +1,10 @@
 This is a testharness.js-based test.
 PASS dedicated-worker
 PASS fetch same-origin + credentialless worker
+PASS fetch same-origin + require_corp worker
 PASS fetch same-origin
 PASS fetch cross-origin
 FAIL fetch cross-origin + credentialless worker assert_equals: coep:none =>  expected (undefined) undefined but got (string) "cross_origin"
+FAIL fetch cross-origin + require_corp worker assert_equals: coep:credentialless =>  expected (string) "cross_origin" but got (undefined) undefined
 Harness: the test ran to completion.
 
