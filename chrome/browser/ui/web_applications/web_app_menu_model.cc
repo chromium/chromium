@@ -36,8 +36,7 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-using WebExposedIsolationLevel =
-    content::RenderFrameHost::WebExposedIsolationLevel;
+using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 constexpr int WebAppMenuModel::kUninstallAppCommandId;
 constexpr int WebAppMenuModel::kExtensionsMenuCommandId;

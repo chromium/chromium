@@ -112,8 +112,7 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-using WebExposedIsolationLevel =
-    content::RenderFrameHost::WebExposedIsolationLevel;
+using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 using content::NavigationController;
 using content::NavigationEntry;

@@ -31,11 +31,10 @@ const char kAppUrl[] = "https://isolated.app";
 const char kAppUrl2[] = "https://isolated.app/page";
 const char kNonAppUrl[] = "https://example.com";
 const char kNonAppUrl2[] = "https://example.com/page";
-static constexpr RenderFrameHost::WebExposedIsolationLevel kNotIsolated =
-    RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
-static constexpr RenderFrameHost::WebExposedIsolationLevel
-    kMaybeIsolatedApplication =
-        RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+static constexpr WebExposedIsolationLevel kNotIsolated =
+    WebExposedIsolationLevel::kNotIsolated;
+static constexpr WebExposedIsolationLevel kMaybeIsolatedApplication =
+    WebExposedIsolationLevel::kMaybeIsolatedApplication;
 
 class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
@@ -155,8 +154,7 @@ class IsolatedWebAppThrottleTest : public RenderViewHostTestHarness {
     return child_rfh->GetFrameTreeNodeId();
   }
 
-  RenderFrameHost::WebExposedIsolationLevel GetWebExposedIsolationLevel(
-      int frame_tree_node_id) {
+  WebExposedIsolationLevel GetWebExposedIsolationLevel(int frame_tree_node_id) {
     return FrameTreeNode::GloballyFindByID(frame_tree_node_id)
         ->current_frame_host()
         ->GetWebExposedIsolationLevel();

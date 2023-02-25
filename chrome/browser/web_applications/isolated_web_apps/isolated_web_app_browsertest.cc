@@ -250,8 +250,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
-  EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
-                kMaybeIsolatedApplication,
+  EXPECT_EQ(content::WebExposedIsolationLevel::kMaybeIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
 }
 
@@ -279,8 +278,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_NE(app_browser, browser());
   EXPECT_TRUE(
       AppBrowserController::IsForWebApp(app_browser, url_info.app_id()));
-  EXPECT_EQ(content::RenderFrameHost::WebExposedIsolationLevel::
-                kMaybeIsolatedApplication,
+  EXPECT_EQ(content::WebExposedIsolationLevel::kMaybeIsolatedApplication,
             app_frame->GetWebExposedIsolationLevel());
 }
 
@@ -641,8 +639,7 @@ var kApplicationServerKey = new Uint8Array([
   auto* new_storage_partition = new_app_frame->GetStoragePartition();
   EXPECT_EQ(new_storage_partition, storage_partition_);
   EXPECT_EQ(new_app_frame->GetWebExposedIsolationLevel(),
-            content::RenderFrameHost::WebExposedIsolationLevel::
-                kMaybeIsolatedApplication);
+            content::WebExposedIsolationLevel::kMaybeIsolatedApplication);
   EXPECT_TRUE(AppBrowserController::IsWebApp(new_app_window));
 }
 

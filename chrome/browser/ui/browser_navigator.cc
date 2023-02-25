@@ -83,8 +83,7 @@
 using content::GlobalRequestID;
 using content::NavigationController;
 using content::WebContents;
-using WebExposedIsolationLevel =
-    content::RenderFrameHost::WebExposedIsolationLevel;
+using WebExposedIsolationLevel = content::WebExposedIsolationLevel;
 
 class BrowserNavigatorWebContentsAdoption {
  public:

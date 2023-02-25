@@ -2315,20 +2315,19 @@ bool RenderFrameHostImpl::RequiresProxyToParent() {
   return GetSiteInstance() != parent_->GetSiteInstance();
 }
 
-RenderFrameHost::WebExposedIsolationLevel
-RenderFrameHostImpl::GetWebExposedIsolationLevel() {
+WebExposedIsolationLevel RenderFrameHostImpl::GetWebExposedIsolationLevel() {
   WebExposedIsolationInfo info =
       GetSiteInstance()->GetSiteInfo().web_exposed_isolation_info();
   if (info.is_isolated_application()) {
     // TODO(crbug.com/1159832): Check the document policy once it's available to
     // find out if this frame is actually isolated.
-    return RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication;
+    return WebExposedIsolationLevel::kMaybeIsolatedApplication;
   } else if (info.is_isolated()) {
     // TODO(crbug.com/1159832): Check the document policy once it's available to
     // find out if this frame is actually isolated.
-    return RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolated;
+    return WebExposedIsolationLevel::kMaybeIsolated;
   }
-  return RenderFrameHost::WebExposedIsolationLevel::kNotIsolated;
+  return WebExposedIsolationLevel::kNotIsolated;
 }
 
 const GURL& RenderFrameHostImpl::GetLastCommittedURL() const {

@@ -434,6 +434,7 @@ source_set("browser_sources") {
     "web_contents_view_delegate.cc",
     "web_contents_view_delegate.h",
     "web_drag_dest_delegate.h",
+    "web_exposed_isolation_level.h",
     "web_ui.h",
     "web_ui_browser_interface_broker_registry.h",
     "web_ui_controller.cc",

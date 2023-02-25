@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/extra_mojo_js_features.mojom.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "ipc/ipc_listener.h"
@@ -455,69 +456,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns true if the frame is out of process relative to its parent.
   virtual bool IsCrossProcessSubframe() = 0;
-
-  // Reflects the web-exposed isolation properties of a given frame, which
-  // depends both on the process in which the frame lives, as well as the agent
-  // cluster into which it has been placed.
-  //
-  // Three broad categories are possible:
-  //
-  // 1.  The frame may not be isolated in a web-facing way.
-  //
-  // 2.  The frame may be "cross-origin isolated", corresponding to the value
-  //     returned by `WorkerOrWindowGlobalScope.crossOriginIsolated`, and gating
-  //     the set of APIs which specify [CrossOriginIsolated] attributes. The
-  //     requirements for this level of isolation are described in [1] and [2]
-  //     below.
-  //
-  //     In practice this means that the frame is guaranteed to be hosted in a
-  //     process that is isolated to the frame's origin. Additionally, the
-  //     frame may embed cross-origin frames and workers only if they have
-  //     opted in to being embedded by asserting CORS or CORP headers.
-  //
-  // 3.  The frame may be an "isolated application", corresponding to a mostly
-  //     TBD set of restrictions we're exploring in https://crbug.com/1206150,
-  //     and which currently gate the set of APIs which specify
-  //     [DirectSocketEnabled] attributes.
-  //
-  // The enum below is ordered from least-isolated to most-isolated.
-  //
-  // [1]
-  // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/crossOriginIsolated
-  // [2] https://w3c.github.io/webappsec-permissions-policy/
-  //
-  // NOTE: some of the information needed to fully determine a frame's
-  // isolation status is currently not available in the browser process.
-  // Access to web platform API's must be checked in the renderer, with the
-  // WebExposedIsolationLevel on the browser side only used as a backup to
-  // catch misbehaving renderers.
-  enum class WebExposedIsolationLevel {
-    // The frame is not in a cross-origin isolated agent cluster. It may not
-    // meet the requirements for such isolation in itself, or it may be
-    // hosted in a process capable of supporting cross-origin isolation or
-    // application isolation, but barred from using those capabilities by
-    // its embedder.
-    kNotIsolated,
-
-    // The frame is in a cross-origin isolated process and agent cluster,
-    // allowed to access web platform APIs gated on [CrossOriginIsolated].
-    //
-    // TODO(clamy): Remove this "maybe" status once it is possible to determine
-    // conclusively whether the document is capable of calling cross-origin
-    // isolated APIs by examining the active document policy.
-    kMaybeIsolated,
-    kIsolated,
-
-    // The frame is in a cross-origin isolated process and agent cluster that
-    // supports application isolation, allowing access to web platform APIs
-    // gated on both [CrossOriginIsolated] and [DirectSocketEnabled].
-    //
-    // TODO(clamy): Remove this "maybe" status once it is possible to determine
-    // conclusively whether the document is capable of calling cross-origin
-    // isolated APIs by examining the active document policy.
-    kMaybeIsolatedApplication,
-    kIsolatedApplication
-  };
 
   // Returns the web-exposed isolation level of a frame's agent cluster.
   //

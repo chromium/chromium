@@ -5507,7 +5507,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Not isolated:
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
-  EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
 
   // Cross-Origin Isolated:
@@ -5517,11 +5517,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                                 "Cross-Origin-Opener-Policy: same-origin&"
                                 "Cross-Origin-Embedder-Policy: require-corp")));
   // Status can be kIsolated or kMaybeIsolated.
-  EXPECT_LT(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+  EXPECT_LT(WebExposedIsolationLevel::kNotIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
-  EXPECT_GT(
-      RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication,
-      root_frame_host()->GetWebExposedIsolationLevel());
+  EXPECT_GT(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+            root_frame_host()->GetWebExposedIsolationLevel());
 }
 
 namespace {
@@ -5587,7 +5586,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
   navigation_observer.Wait();
 
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
-  EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kNotIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kNotIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
 
   // Cross-Origin Isolated:
@@ -5597,7 +5596,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
                              "/set-header?"
                              "Cross-Origin-Opener-Policy: same-origin&"
                              "Cross-Origin-Embedder-Policy: require-corp")));
-  EXPECT_EQ(RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolated,
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolated,
             root_frame_host()->GetWebExposedIsolationLevel());
 
   // Isolated Application:
@@ -5606,11 +5605,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
       /*site_instance=*/nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(app_shell,
                             https_server()->GetURL(kAppHost, "/empty.html")));
-  EXPECT_EQ(
-      RenderFrameHost::WebExposedIsolationLevel::kMaybeIsolatedApplication,
-      app_shell->web_contents()
-          ->GetPrimaryMainFrame()
-          ->GetWebExposedIsolationLevel());
+  EXPECT_EQ(WebExposedIsolationLevel::kMaybeIsolatedApplication,
+            app_shell->web_contents()
+                ->GetPrimaryMainFrame()
+                ->GetWebExposedIsolationLevel());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

@@ -78,7 +78,7 @@ void CheckIsCrossOriginIsolatedOnUISeq(
     return;
   }
   if (rfh->GetWebExposedIsolationLevel() ==
-          content::RenderFrameHost::WebExposedIsolationLevel::kNotIsolated &&
+          content::WebExposedIsolationLevel::kNotIsolated &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity)) {
     std::move(bad_message_callback)
