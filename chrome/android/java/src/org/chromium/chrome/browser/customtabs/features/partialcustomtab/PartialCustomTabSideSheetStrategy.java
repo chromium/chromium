@@ -78,16 +78,6 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     @Override
-    public void onPostInflationStartup() {
-        super.onPostInflationStartup();
-
-        if (mIsMaximized) {
-            mIsMaximized = false;
-            toggleMaximize(/*animate=*/false);
-        }
-    }
-
-    @Override
     @PartialCustomTabType
     public int getStrategyType() {
         return PartialCustomTabType.SIDE_SHEET;
@@ -169,20 +159,15 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private void onMaximizeEnd(boolean animate) {
         if (isMaximized()) {
             if (mSheetOnRight) configureLayoutBeyondScreen(false);
-            notifyResized();
+            maybeInvokeResizeCallback();
         } else {
             // System UI dimensions are not settled yet. Post the task.
             new Handler().post(() -> {
                 if (mSheetOnRight) configureLayoutBeyondScreen(false);
                 initializeSize();
-                notifyResized();
+                maybeInvokeResizeCallback();
             });
         }
-    }
-
-    private void notifyResized() {
-        var attrs = mActivity.getWindow().getAttributes();
-        mOnResizedCallback.onResized(attrs.height, attrs.width);
     }
 
     @Override
@@ -209,7 +194,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
         initializeSize();
         updateShadowOffset();
-        // TODO(crbug.com/1406107): Check if we should invoke the resize callback
+        maybeInvokeResizeCallback();
     }
 
     @Override
@@ -274,19 +259,22 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     @Override
     protected void initializeSize() {
         initializeHeight();
-        mHeight = mDisplayHeight - mStatusbarHeight - mNavbarHeight;
 
         positionOnWindow();
         setCoordinatorLayoutHeight(MATCH_PARENT);
 
         updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
+
+        if (mIsMaximized) {
+            mIsMaximized = false;
+            toggleMaximize(/*animate=*/false);
+        }
     }
 
     private void positionOnWindow() {
-        int width = calculateWidth(mUnclampedInitialWidth);
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        attrs.height = mHeight;
-        attrs.width = width;
+        attrs.height = mDisplayHeight - mStatusbarHeight - mNavbarHeight;
+        attrs.width = calculateWidth(mUnclampedInitialWidth);
 
         attrs.y = mStatusbarHeight;
         attrs.x = mSheetOnRight ? mVersionCompat.getDisplayWidth() - attrs.width : 0;

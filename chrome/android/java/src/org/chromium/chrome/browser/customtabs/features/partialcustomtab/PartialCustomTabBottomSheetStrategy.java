@@ -156,8 +156,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         mUnclampedInitialHeight = initialHeight;
         mIsFixedHeight = isFixedHeight;
-        mHeight = MATCH_PARENT;
-        mWidth = MATCH_PARENT;
     }
 
     @Override
@@ -635,21 +633,6 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         int cctHeight = mDisplayHeight - mActivity.getWindow().getAttributes().y - toolbarHeight;
         lp.height = cctHeight;
         mSpinnerView.setLayoutParams(lp);
-    }
-
-    private void maybeInvokeResizeCallback() {
-        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        if (isFullHeight() || isFullscreen()) {
-            mOnResizedCallback.onResized(mDisplayHeight, mDisplayWidth);
-            mHeight = mDisplayHeight;
-            mWidth = mDisplayWidth;
-        } else {
-            if ((mHeight != attrs.height && mHeight > 0) || (mWidth != attrs.width && mWidth > 0)) {
-                mOnResizedCallback.onResized(attrs.height, attrs.width);
-            }
-            mHeight = attrs.height;
-            mWidth = attrs.width;
-        }
     }
 
     private void changeVisibilityNavbarButtons(boolean show) {

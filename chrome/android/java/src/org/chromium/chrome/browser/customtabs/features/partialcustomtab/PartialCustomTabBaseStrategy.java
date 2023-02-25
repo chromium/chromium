@@ -128,6 +128,11 @@ public abstract class PartialCustomTabBaseStrategy
 
         mHandleStrategyFactory = handleStrategyFactory;
         mIsFullscreen = fullscreenManager::getPersistentFullscreenMode;
+
+        // Initialize size info used for resize callback to skip the very first one that settles
+        // down to the initial height/width.
+        mHeight = MATCH_PARENT;
+        mWidth = MATCH_PARENT;
     }
 
     @Override
@@ -194,8 +199,7 @@ public abstract class PartialCustomTabBaseStrategy
         attrs.y = 0;
         attrs.x = 0;
         mActivity.getWindow().setAttributes(attrs);
-        mOnResizedCallback.onResized(
-                mVersionCompat.getDisplayHeight(), mVersionCompat.getDisplayWidth());
+        maybeInvokeResizeCallback();
     }
 
     @Override
@@ -203,9 +207,23 @@ public abstract class PartialCustomTabBaseStrategy
         // |mNavbarHeight| is zero now. Post the task instead.
         new Handler().post(() -> {
             initializeSize();
-            var attrs = mActivity.getWindow().getAttributes();
-            mOnResizedCallback.onResized(attrs.height, attrs.width);
+            maybeInvokeResizeCallback();
         });
+    }
+
+    protected void maybeInvokeResizeCallback() {
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        if (isFullHeight() || isFullscreen()) {
+            mOnResizedCallback.onResized(mDisplayHeight, mDisplayWidth);
+            mHeight = mDisplayHeight;
+            mWidth = mDisplayWidth;
+        } else {
+            if ((mHeight != attrs.height && mHeight > 0) || (mWidth != attrs.width && mWidth > 0)) {
+                mOnResizedCallback.onResized(attrs.height, attrs.width);
+            }
+            mHeight = attrs.height;
+            mWidth = attrs.width;
+        }
     }
 
     @PartialCustomTabType
