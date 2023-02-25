@@ -133,8 +133,8 @@ class UpdateNotificationControllerTest : public AshTestBase {
   }
 
   void AddSlowBootFilePath(const base::FilePath& file_path) {
-    int bytes_written = base::WriteFile(file_path, "1\n", 2);
-    EXPECT_TRUE(bytes_written == 2);
+    bool success = base::WriteFile(file_path, "1\n");
+    EXPECT_TRUE(success);
     Shell::Get()
         ->system_notification_controller()
         ->update_->slow_boot_file_path_ = file_path;
