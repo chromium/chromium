@@ -201,9 +201,19 @@ Notification* MessageCenterImpl::FindParentNotification(
       notification_list_->GetNotificationsByNotifierId(
           notification->notifier_id());
 
-  // `notifications` keeps notifications ordered with the most recent one in the
-  // front. If we have notifications for this notifier_id we return the last
-  // notification..
+  auto parent_notification_it = base::ranges::find_if(
+      notifications,
+      [](Notification* notification) { return notification->group_parent(); });
+
+  // If there's already a notification assigned to be the group parent,
+  // returns that notification immediately.
+  if (parent_notification_it != notifications.cend()) {
+    return *parent_notification_it;
+  }
+
+  // Otherwise, the parent notification should be the oldest one. Since
+  // `notifications` keeps notifications ordered with the most recent one in
+  // the front, the oldest one should be the last in the list.
   return notifications.size() ? *notifications.rbegin() : nullptr;
 }
 

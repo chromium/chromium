@@ -18,8 +18,6 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
-#include "ui/events/test/event_generator.h"
-#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -571,6 +569,52 @@ TEST_P(NotificationGroupingControllerTest, DISABLED_ChildNotificationRemove) {
   EXPECT_EQ(0u, message_center->GetVisibleNotifications().size());
   EXPECT_FALSE(message_center->FindNotificationById(id_parent));
   EXPECT_FALSE(message_center->FindNotificationById(id0));
+}
+
+TEST_P(NotificationGroupingControllerTest,
+       ChildNotificationsWithDifferentPriorities) {
+  auto* message_center = MessageCenter::Get();
+  std::string id0, id1, id2;
+  const GURL url(u"http://test-url.com/");
+
+  // Create 2 notifications with low priority, the parent notification should be
+  // low priority as well.
+  auto notification = MakeNotification(id0, url);
+  notification->set_priority(message_center::LOW_PRIORITY);
+  message_center->AddNotification(std::move(notification));
+
+  notification = MakeNotification(id1, url);
+  notification->set_priority(message_center::LOW_PRIORITY);
+  message_center->AddNotification(std::move(notification));
+
+  std::string id_parent = id0 + kIdSuffixForGroupContainerNotification;
+  auto* parent_notification = message_center->FindNotificationById(id_parent);
+  ASSERT_TRUE(parent_notification->group_parent());
+  ASSERT_EQ(message_center::LOW_PRIORITY, parent_notification->priority());
+
+  // Now create another notification in the group with normal priority. Parent
+  // should still have the same id and have normal priority now.
+  id2 = AddNotificationWithOriginUrl(url);
+  parent_notification = message_center->FindNotificationById(id_parent);
+  ASSERT_TRUE(parent_notification);
+  ASSERT_EQ(message_center::DEFAULT_PRIORITY, parent_notification->priority());
+
+  // There should be 4 notifications now (no duplicates created).
+  EXPECT_EQ(4u, message_center->GetVisibleNotifications().size());
+
+  // Remove one child then add back. Parent notification is still retained with
+  // same id.
+  message_center->RemoveNotification(id0,
+                                     /*by_user=*/false);
+  notification = MakeNotification(id0, url);
+  notification->set_priority(message_center::LOW_PRIORITY);
+  message_center->AddNotification(std::move(notification));
+
+  parent_notification = message_center->FindNotificationById(id_parent);
+  ASSERT_TRUE(parent_notification->group_parent());
+
+  // Should have no duplicates.
+  EXPECT_EQ(4u, message_center->GetVisibleNotifications().size());
 }
 
 }  // namespace ash
