@@ -58,14 +58,20 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
 
  private:
   bool IsCertAllowedForTrust(CERTCertificate* cert) const;
+  CertificateTrust GetTrustForNSSTrust(const CERTCertTrust& trust) const;
 
-  SECTrustType trust_type_;
+  CertificateTrust GetTrustIgnoringSystemTrust(
+      const ParsedCertificate* cert,
+      base::SupportsUserData* debug_data) const;
+  CertificateTrust GetTrustWithSystemTrust(
+      const ParsedCertificate* cert,
+      base::SupportsUserData* debug_data) const;
+
+  const SECTrustType trust_type_;
+  const CK_ATTRIBUTE_TYPE trust_attr_type_;
 
   // |ignore_system_certs_trust_settings_| specifies if the system trust
   // settings should be considered when determining a cert's trustworthiness.
-  //
-  // TODO(hchao, sleevi): Figure out how to ignore built-in trust settings,
-  // while respecting user-configured trust settings, for these certificates.
   const bool ignore_system_trust_settings_ = false;
 
   // |user_slot_trust_setting_| specifies which slots certificates must be

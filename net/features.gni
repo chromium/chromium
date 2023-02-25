@@ -48,5 +48,6 @@ declare_args() {
   # builtin verifier using platform roots, depending on the platform.
   # See https://crbug.com/1216547 for status.
   chrome_root_store_supported =
-      is_win || is_mac || (is_android && !is_cronet_build)
+      is_win || is_mac || (is_android && !is_cronet_build) || is_linux ||
+      is_chromeos
 }
