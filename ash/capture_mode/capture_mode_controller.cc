@@ -198,10 +198,8 @@ base::FilePath SelectFilePathForCapturedFile(
 base::FilePath DoSaveFile(scoped_refptr<base::RefCountedMemory> data,
                           const base::FilePath& path) {
   DCHECK(data);
-  const int size = static_cast<int>(data->size());
-  DCHECK(size);
-  if (size != base::WriteFile(
-                  path, reinterpret_cast<const char*>(data->front()), size)) {
+  DCHECK(data->size());
+  if (!base::WriteFile(path, *data)) {
     LOG(ERROR) << "Failed to save file: " << path;
     return base::FilePath();
   }
