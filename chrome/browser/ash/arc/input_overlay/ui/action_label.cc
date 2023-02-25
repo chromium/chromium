@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 
+#include <string.h>
 #include <set>
 
 #include "ash/style/style_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/constants.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
+#include "chrome/browser/ash/arc/input_overlay/util.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -90,9 +92,14 @@ constexpr char kQuote[] = "'";
 constexpr char kComma[] = ",";
 constexpr char kPeriod[] = ".";
 constexpr char kSlash[] = "/";
-constexpr char kBackSpace[] = "back";
-constexpr char kEnter[] = "enter";
+constexpr char kBackSpace[] = "⌫";
+constexpr char kEnter[] = "↵";
+constexpr char kSpace[] = "␣";
 constexpr char kEscape[] = "esc";
+// TODO(b/260937747): Remove for Alpha when AlphaV2 flag is removed.
+constexpr char kBackSpaceAlpha[] = "back";
+constexpr char kEnterAlpha[] = "enter";
+constexpr char kSpaceAlpha[] = "space";
 
 // Modifier keys.
 constexpr char kAlt[] = "alt";
@@ -343,9 +350,9 @@ std::string GetDisplayText(const ui::DomCode code) {
     case ui::DomCode::SLASH:
       return kSlash;
     case ui::DomCode::BACKSPACE:
-      return kBackSpace;
+      return AllowReposition() ? kBackSpace : kBackSpaceAlpha;
     case ui::DomCode::ENTER:
-      return kEnter;
+      return AllowReposition() ? kEnter : kEnterAlpha;
     case ui::DomCode::ESCAPE:
       return kEscape;
     // Modifier keys.
@@ -360,6 +367,8 @@ std::string GetDisplayText(const ui::DomCode code) {
       return kShift;
     case ui::DomCode::CAPS_LOCK:
       return kCap;
+    case ui::DomCode::SPACE:
+      return AllowReposition() ? kSpace : kSpaceAlpha;
     default:
       std::string dom_code_string =
           ui::KeycodeConverter::DomCodeToCodeString(code);
@@ -448,9 +457,7 @@ void ActionLabel::Init() {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(0, allow_reposition_ ? kSideInset : kSideInsetAlpha)));
-  SetAccessibleName(mouse_action_ == MouseAction::NONE
-                        ? label()->GetText()
-                        : base::UTF8ToUTF16(GetClassName()));
+  CustomizeAccessibilityName();
 }
 
 ActionLabel::ActionLabel(int radius,
@@ -484,12 +491,12 @@ ActionLabel::~ActionLabel() = default;
 
 void ActionLabel::SetTextActionLabel(const std::string& text) {
   label()->SetText(base::UTF8ToUTF16(text));
-  SetAccessibleName(label()->GetText());
+  CustomizeAccessibilityName();
 }
 
 void ActionLabel::SetImageActionLabel(MouseAction mouse_action) {
-  SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
   set_mouse_action(mouse_action);
+  CustomizeAccessibilityName();
 }
 
 void ActionLabel::SetDisplayMode(DisplayMode mode) {
@@ -734,6 +741,32 @@ void ActionLabel::SetBackgroundForEdit() {
 
 bool ActionLabel::IsInputUnbound() {
   return base::UTF16ToUTF8(GetText()) == kUnknownBind;
+}
+
+void ActionLabel::CustomizeAccessibilityName() {
+  if (mouse_action_ != MouseAction::NONE) {
+    SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
+    return;
+  }
+
+  if (!allow_reposition_) {
+    SetAccessibleName(label()->GetText());
+    return;
+  }
+
+  // TODO(b/260868602): Update the name.
+  const std::string text = base::UTF16ToUTF8(label()->GetText());
+  std::u16string name;
+  if (text.compare(kSpace) == 0) {
+    name = u"space";
+  } else if (text.compare(kEnter) == 0) {
+    name = u"enter";
+  } else if (text.compare(kBackSpace) == 0) {
+    name = u"backspace";
+  } else {
+    name = label()->GetText();
+  }
+  SetAccessibleName(name);
 }
 
 }  // namespace arc::input_overlay
