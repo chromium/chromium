@@ -36,8 +36,8 @@ namespace {
 // An async version of SendKeyPressSync since we don't get notified when a
 // menu is showing.
 void SendKeyPress(Browser* browser, ui::KeyboardCode key) {
-  ASSERT_TRUE(ui_controls::SendKeyPress(
-      browser->window()->GetNativeWindow(), key, false, false, false, false));
+  ASSERT_TRUE(ui_controls::SendKeyPress(browser->window()->GetNativeWindow(),
+                                        key, false, false, false, false));
 }
 
 // Helper class that waits until the focus has changed to a view other
@@ -60,9 +60,7 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
     focus_manager_->RemoveFocusChangeListener(this);
   }
 
-  void Wait() {
-    content::RunMessageLoop();
-  }
+  void Wait() { content::RunMessageLoop(); }
 
  private:
   // views::FocusChangeListener:
@@ -158,8 +156,9 @@ class KeyboardAccessTest : public InProcessBrowserTest {
   }
 
   void WaitForFocusedViewIDToChange(int original_view_id) {
-    if (GetFocusedViewID() != original_view_id)
+    if (GetFocusedViewID() != original_view_id) {
       return;
+    }
     gfx::NativeWindow window = browser()->window()->GetNativeWindow();
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     views::FocusManager* focus_manager = widget->GetFocusManager();
@@ -204,19 +203,20 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
       browser_view->toolbar_button_provider()->GetAppMenuButton(), browser(),
       false);
 
-  if (focus_omnibox)
+  if (focus_omnibox) {
     browser()->window()->GetLocationBar()->FocusLocation(false);
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS doesn't have a way to just focus the app menu, so we use Alt+F to
   // bring up the menu.
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_F, false, shift, true, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F, false,
+                                              shift, true, false));
 #else
   ui::KeyboardCode menu_key =
       alternate_key_sequence ? ui::VKEY_MENU : ui::VKEY_F10;
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), menu_key, false, shift, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), menu_key, false, shift,
+                                              false, false));
 #endif
 
   if (shift) {
@@ -233,10 +233,11 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
   // See above comment. Since we already brought up the menu, no need to do this
   // on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (alternate_key_sequence)
+  if (alternate_key_sequence) {
     SendKeyPress(browser(), ui::VKEY_DOWN);
-  else
+  } else {
     SendKeyPress(browser(), ui::VKEY_RETURN);
+  }
 #endif
 
   // Wait for the new tab to appear.
@@ -280,14 +281,12 @@ void KeyboardAccessTest::TestSystemMenuWithKeyboard() {
   // Sending the Alt space keys to the browser will bring up the system menu
   // which runs a model loop. We set a CBT hook to look for the menu and send
   // keystrokes to it.
-  HHOOK cbt_hook = ::SetWindowsHookEx(WH_CBT,
-                                      SystemMenuTestCBTHook,
-                                      NULL,
+  HHOOK cbt_hook = ::SetWindowsHookEx(WH_CBT, SystemMenuTestCBTHook, NULL,
                                       ::GetCurrentThreadId());
   ASSERT_TRUE(cbt_hook);
 
-  bool ret = ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_SPACE, false, false, true, false);
+  bool ret = ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_SPACE, false,
+                                             false, true, false);
   EXPECT_TRUE(ret);
 
   if (ret) {
@@ -381,8 +380,8 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
 
   browser()->window()->GetLocationBar()->FocusLocation(false);
 
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_F10, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F10, false,
+                                              false, false, false));
 
   WaitForFocusedViewIDToChange(original_view_id);
 
@@ -420,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_TestAltMenuKeyboardAccess) {
 
 // If this flakes, use http://crbug.com/62311.
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_TestShiftAltMenuKeyboardAccess DISABLED_TestShiftAltMenuKeyboardAccess
+#define MAYBE_TestShiftAltMenuKeyboardAccess \
+  DISABLED_TestShiftAltMenuKeyboardAccess
 #else
 #define MAYBE_TestShiftAltMenuKeyboardAccess TestShiftAltMenuKeyboardAccess
 #endif
@@ -469,8 +469,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-      browser(), ui::VKEY_TAB, true, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, true,
+                                              false, false, false));
   ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
 
   ui_test_utils::NavigateToURLWithDisposition(

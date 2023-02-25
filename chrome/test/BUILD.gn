@@ -9755,7 +9755,7 @@ if (!is_android) {
         "../browser/ui/views/frame/picture_in_picture_browser_frame_view_interactive_uitest.cc",
         "../browser/ui/views/frame/tab_strip_region_view_interactive_uitest.cc",
         "../browser/ui/views/fullscreen_control/fullscreen_control_view_interactive_uitest.cc",
-        "../browser/ui/views/keyboard_access_browsertest.cc",
+        "../browser/ui/views/keyboard_access_interactive_uitest.cc",
         "../browser/ui/views/location_bar/location_icon_view_interactive_uitest.cc",
         "../browser/ui/views/location_bar/selected_keyword_view_interactive_uitest.cc",
         "../browser/ui/views/location_bar/star_view_interactive_uitest.cc",
@@ -9845,7 +9845,7 @@ if (!is_android) {
           # TODO(port): This times out. Attempts have been made to fix the
           # individual failures, but each time I disable a test from these
           # suites, it seems like one or another starts timing out too.
-          "../browser/ui/views/keyboard_access_browsertest.cc",
+          "../browser/ui/views/keyboard_access_interactive_uitest.cc",
         ]
       }
       if (is_chromeos_ash) {
