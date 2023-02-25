@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler_impl.h"
-#include "ash/constants/ash_pref_names.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/chromeos/events/mojom/modifier_key.mojom.h"
+#include "ui/chromeos/events/pref_names.h"
 
 namespace ash {
 namespace {

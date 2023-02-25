@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_pref_names.h"
-#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
