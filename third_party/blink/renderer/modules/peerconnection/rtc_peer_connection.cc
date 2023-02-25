@@ -1679,8 +1679,8 @@ ScriptPromise RTCPeerConnection::LegacyCallbackBasedGetStats(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  UseCounter::Count(context,
-                    WebFeature::kRTCPeerConnectionGetStatsLegacyNonCompliant);
+  Deprecation::CountDeprecation(
+      context, WebFeature::kRTCPeerConnectionGetStatsLegacyNonCompliant);
   auto* stats_request = MakeGarbageCollected<RTCStatsRequestImpl>(
       GetExecutionContext(), this, success_callback, selector);
   // FIXME: Add passing selector as part of the statsRequest.
