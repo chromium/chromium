@@ -68,6 +68,10 @@ per-file *openscreen*.json=jophba@chromium.org
 per-file *openscreen*.json=mfoltz@chromium.org
 per-file *openscreen*.json=rwkeane@google.com
 
+# Code Coverage
+per-file chromium.coverage.json=jeffyoon@google.com
+per-file chromium.coverage.json=pasthana@google.com
+
 # Any non-trivial change to a *.pyl file has corresponding changes to at least
 # one *.json file. Consequently, any change to a *.pyl file will still need
 # approval according to the per-file OWNERS rules above. Giving '*' ownership
