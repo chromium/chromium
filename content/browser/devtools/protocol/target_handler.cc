@@ -619,9 +619,12 @@ void TargetHandler::Throttle::Clear() {
   CleanupPointers();
   agent_host_ = nullptr;
   auto_attacher_ = nullptr;
-  if (is_deferring_)
+  if (is_deferring_) {
+    is_deferring_ = false;
     Resume();
-  is_deferring_ = false;
+    // DO NOT ADD CODE after this. The callback above might have destroyed the
+    // NavigationHandle that owns this NavigationThrottle.
+  }
 }
 
 class TargetHandler::TargetFilter {

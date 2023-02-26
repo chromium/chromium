@@ -8699,10 +8699,14 @@ void NavigationRequest::RendererCancellationWindowEnded() {
   // ended, so the navigation can resume if it is currently waiting for this
   // signal.
   renderer_cancellation_window_ended_ = true;
+  renderer_cancellation_listener_.reset();
   if (renderer_cancellation_window_ended_callback_) {
     std::move(renderer_cancellation_window_ended_callback_).Run();
+    // DO NOT ADD CODE after this. The callback triggers
+    // RendererCancellationThrottle::NavigationCancellationWindowEnded() and
+    // eventually NavigationThrottle::Resume(), which might have destroyed the
+    // NavigationRequest.
   }
-  renderer_cancellation_listener_.reset();
 }
 
 bool NavigationRequest::ShouldWaitForRendererCancellationWindowToEnd() {

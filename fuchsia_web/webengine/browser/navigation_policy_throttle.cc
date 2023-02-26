@@ -47,29 +47,35 @@ NavigationPolicyThrottle::~NavigationPolicyThrottle() {
 
 void NavigationPolicyThrottle::OnNavigationPolicyProviderDisconnected(
     content::NavigationThrottle::ThrottleCheckResult check_result) {
-  if (is_paused_) {
-    CancelDeferredNavigation(check_result);
-    is_paused_ = false;
-  }
-
   policy_handler_ = nullptr;
+
+  if (is_paused_) {
+    is_paused_ = false;
+    CancelDeferredNavigation(check_result);
+    // DO NOT ADD CODE after this. The callback above will destroy the
+    // NavigationHandle that owns this NavigationThrottle.
+  }
 }
 
 void NavigationPolicyThrottle::OnRequestedNavigationEvaluated(
     fuchsia::web::NavigationDecision decision) {
   DCHECK(is_paused_);
+  is_paused_ = false;
 
   switch (decision.Which()) {
     case fuchsia::web::NavigationDecision::kProceed:
       Resume();
+      // DO NOT ADD CODE after this. The callback above might have destroyed
+      // the NavigationHandle that owns this NavigationThrottle.
       break;
     case fuchsia::web::NavigationDecision::kAbort:
       CancelDeferredNavigation(content::NavigationThrottle::CANCEL);
+      // DO NOT ADD CODE after this. The callback above will destroy the
+      // NavigationHandle that owns this NavigationThrottle.
       break;
     default:
       NOTREACHED();
   }
-  is_paused_ = false;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
