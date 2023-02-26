@@ -46,6 +46,8 @@ SyncStatusTracker::SyncStatusTracker() = default;
 SyncStatusTracker::~SyncStatusTracker() = default;
 
 SyncState SyncStatusTracker::GetSyncState(const base::FilePath path) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (path.empty() || !path.IsAbsolute()) {
     return SyncState::CreateNotFound(path);
   }
@@ -57,6 +59,8 @@ SyncState SyncStatusTracker::GetSyncState(const base::FilePath path) const {
 }
 
 const std::vector<const SyncState> SyncStatusTracker::GetChangesAndClean() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::vector<const SyncState> updated_sync_states;
 
   // Traverse trie.
@@ -111,6 +115,8 @@ void SyncStatusTracker::SetSyncState(const int64_t id,
                                      const SyncStatus status,
                                      const int64_t transferred,
                                      const int64_t total) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (path.empty() || !path.IsAbsolute()) {
     return;
   }
