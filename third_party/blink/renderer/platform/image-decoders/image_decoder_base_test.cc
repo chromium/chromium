@@ -59,9 +59,9 @@ void SaveMD5Sum(const base::FilePath& path, blink::ImageFrame* frame_buffer) {
                bitmap.width() * bitmap.height() * sizeof(uint32_t), &digest);
 
   // Write sum to disk.
-  int bytes_written = base::WriteFile(
-      path, reinterpret_cast<const char*>(&digest), sizeof digest);
-  ASSERT_EQ(sizeof digest, size_t{bytes_written});
+  ASSERT_TRUE(base::WriteFile(
+      path,
+      base::as_bytes(base::make_span(&digest, 1)));
 }
 #endif
 
