@@ -632,7 +632,7 @@ crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] deqp/da
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/primitiverestart/00.html [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/textureshadow/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/video/* [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance/textures/video/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/video/* [ RetryOnFailure ]
 # finder:group-end
@@ -683,7 +683,6 @@ crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conforma
 crbug.com/1241183 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/misc/immutable-tex-render-feedback.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 crbug.com/1401968 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/video/tex-3d-rgb16f-rgb-half_float.html [ RetryOnFailure ]
-crbug.com/1401968 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/textures/video/tex-3d-rg32f-rg-float.html [ RetryOnFailure ]
 
 
 # Must investigate ChromeOS failures with passthrough command decoder.
