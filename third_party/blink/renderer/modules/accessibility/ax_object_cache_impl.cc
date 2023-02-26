@@ -1615,6 +1615,15 @@ void AXObjectCacheImpl::Remove(LayoutObject* layout_object) {
     if (node->IsPseudoElement()) {
       DeferTreeUpdate(&AXObjectCacheImpl::EnsureMarkDirtyWithCleanLayout, node);
     }
+    // If an image is removed, ensure it's entire subtree is deleted as there
+    // may have been children supplied via a map.
+    if (IsA<HTMLImageElement>(node)) {
+      if (AXObject* ax_image = SafeGet(node)) {
+        RemoveSubtree(ax_image);
+        return;
+      }
+    }
+
     Remove(node);
     return;
   }
@@ -1675,6 +1684,14 @@ void AXObjectCacheImpl::Remove(AbstractInlineTextBox* inline_text_box) {
   inline_text_box_object_mapping_.erase(iter);
 
   Remove(ax_id);
+}
+
+void AXObjectCacheImpl::RemoveSubtree(AXObject* object) {
+  DCHECK(object);
+  for (AXObject* child : object->CachedChildrenIncludingIgnored()) {
+    RemoveSubtree(child);
+  }
+  Remove(object);
 }
 
 AXID AXObjectCacheImpl::GenerateAXID() const {
@@ -2095,12 +2112,25 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
   // descendants of the attached node, thus ChildrenChangedWithCleanLayout()
   // must be called. It handles ignored logic, ensuring that the first ancestor
   // that should have this as a child will be updated.
-  ChildrenChangedWithCleanLayout(
-      Get(LayoutTreeBuilderTraversal::Parent(*node)));
+  ChildrenChangedWithCleanLayout(LayoutTreeBuilderTraversal::Parent(*node));
 
   // If an image map area is added, we need to update children on the image.
   if (IsA<HTMLAreaElement>(node))
     ChildrenChangedWithCleanLayout(AXObject::ComputeNonARIAParent(*this, node));
+
+  // Rare edge case: if an image is added, it could have changed the order of
+  // images with the same usemap in the document. Only the first image for a
+  // given <map> should have the <area> children. Therefore, get the current
+  // primary image before it's updated, and ensure its children are
+  // recalculated.
+  if (IsA<HTMLImageElement>(node)) {
+    if (HTMLMapElement* map = AXObject::GetMapForImage(node)) {
+      HTMLImageElement* primary_image_element = map->ImageElement();
+      if (node != primary_image_element) {
+        ChildrenChangedWithCleanLayout(SafeGet(primary_image_element));
+      }
+    }
+  }
 
   // Once we have reached the threshold number of roles that forces a data
   // table, invalidate the AXTable if it was previously a layout table, so that

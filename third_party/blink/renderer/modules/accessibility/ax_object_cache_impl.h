@@ -161,6 +161,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void Remove(Document*) override;
   void Remove(AbstractInlineTextBox*) override;
   void Remove(AXObject*);  // Calls more specific Remove methods as necessary.
+  void RemoveSubtree(AXObject* object);
 
   // For any ancestor that could contain the passed-in AXObject* in their cached
   // children, clear their children and set needs to update children on them.

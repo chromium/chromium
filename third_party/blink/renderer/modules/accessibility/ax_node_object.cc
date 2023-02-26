@@ -4115,8 +4115,8 @@ void AXNodeObject::AddImageMapChildren() {
   HTMLImageElement* curr_image_element = DynamicTo<HTMLImageElement>(GetNode());
   DCHECK(curr_image_element);
   DCHECK(curr_image_element->IsLink());
-  String usemap = curr_image_element->FastGetAttribute(html_names::kUsemapAttr);
-  DCHECK(!usemap.empty());
+  DCHECK(
+      !curr_image_element->FastGetAttribute(html_names::kUsemapAttr).empty());
 
   // Even though several images can point to the same map via usemap, only
   // use one reported via HTMLImageMapElement::ImageElement(), which is always

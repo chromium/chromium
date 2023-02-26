@@ -932,15 +932,6 @@ bool AXObject::CanComputeAsNaturalParent(Node* node) {
     return false;
   }
 
-  // Image map parent-child relationships work as follows:
-  // - The image is the parent
-  // - The DOM children of the associated <map> are the children
-  // This is accomplished by having GetParentNodeForComputeParent() return the
-  // <img> instead of the <map> for the map's children.
-  if (IsA<HTMLMapElement>(node)) {
-    return false;
-  }
-
   // An image cannot be the natural DOM parent of another AXObject, it can only
   // have <area> children, which are from another part of the DOM tree.
   if (IsA<HTMLImageElement>(node)) {
@@ -952,7 +943,15 @@ bool AXObject::CanComputeAsNaturalParent(Node* node) {
 
 // static
 bool AXObject::CanHaveChildren(Element& element) {
-  DCHECK(!IsA<HTMLMapElement>(element));
+  // Image map parent-child relationships work as follows:
+  // - The image is the parent
+  // - The DOM children of the associated <map> are the children
+  // This is accomplished by having GetParentNodeForComputeParent() return the
+  // <img> instead of the <map> for the map's children.
+  if (IsA<HTMLMapElement>(element)) {
+    return false;
+  }
+
   // Placeholder gets exposed as an attribute on the input accessibility node,
   // so there's no need to add its text children. Placeholder text is a separate
   // node that gets removed when it disappears, so this will only be present if
