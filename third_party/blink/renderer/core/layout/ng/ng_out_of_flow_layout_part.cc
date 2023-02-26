@@ -1579,6 +1579,13 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
       node_info.container_physical_content_size.ConvertToLogical(
           candidate_writing_direction.GetWritingMode());
 
+  recordreplay::Assert(
+      "[RUN-1239-1435] NGOutOfFlowLayoutPart::TryCalculateOffset %d %d %d %s",
+      node_info.container_physical_content_size.width.RawValue(),
+      node_info.container_physical_content_size.height.RawValue(),
+      container_content_size_in_candidate_writing_mode.block_size.RawValue(),
+      node_info.node.ToString().Utf8().c_str());
+
   // Determine if we need to actually run the full OOF-positioned sizing, and
   // positioning algorithm.
   //
@@ -1589,9 +1596,6 @@ bool NGOutOfFlowLayoutPart::TryCalculateOffset(
   //  - The candidate has an inline container (instead of the default
   //    containing-block).
   // Note: Only check for cache results if this is our first layout pass.
-  recordreplay::Assert(
-      "[RUN-1239] NGOutOfFlowLayoutPart::TryCalculateOffset A %d",
-      is_first_run, test_if_margin_box_fits, allow_first_tier_oof_cache_, node_info.inline_container);
   if (is_first_run && !test_if_margin_box_fits && allow_first_tier_oof_cache_ &&
       !node_info.inline_container) {
     if (const NGLayoutResult* cached_result =
