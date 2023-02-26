@@ -1494,7 +1494,7 @@ class DrawsContentChangeLayer : public Layer {
 
   void SetFakeDrawsContent(bool fake_draws_content) {
     fake_draws_content_ = fake_draws_content;
-    SetDrawsContent(HasDrawableContent());
+    UpdateDrawsContent();
   }
 
  private:

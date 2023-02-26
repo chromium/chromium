@@ -257,7 +257,7 @@ void Layer::SetIsDrawable(bool drawable) {
     return;
   }
   is_drawable_ = drawable;
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
 }
 
 void Layer::SetBackgroundColor(SkColor4f color) {
@@ -312,11 +312,8 @@ bool Layer::draws_content() const {
   return cc_layer() ? cc_layer()->draws_content() : draws_content_;
 }
 
-void Layer::SetDrawsContent(bool value) {
-  if (cc_layer()) {
-    cc_layer()->SetDrawsContent(value);
-    return;
-  }
+void Layer::UpdateDrawsContent() {
+  bool value = HasDrawableContent();
   if (draws_content_ == value) {
     return;
   }

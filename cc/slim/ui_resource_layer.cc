@@ -116,7 +116,7 @@ void UIResourceLayer::SetLayerTree(LayerTree* tree) {
 
   Layer::SetLayerTree(tree);
   RefreshResource();
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
 }
 
 bool UIResourceLayer::HasDrawableContent() const {
@@ -134,7 +134,7 @@ void UIResourceLayer::SetUIResourceIdInternal(cc::UIResourceId resource_id) {
     return;
   }
   resource_id_ = resource_id;
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
   NotifyPropertyChanged();
 }
 

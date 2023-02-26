@@ -206,7 +206,7 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
 
 void PictureLayer::ClearClient() {
   picture_layer_inputs_.client = nullptr;
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
 }
 
 void PictureLayer::SetNearestNeighbor(bool nearest_neighbor) {

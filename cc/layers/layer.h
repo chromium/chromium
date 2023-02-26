@@ -599,7 +599,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // the layer itself has no content to contribute, even though the layer was
   // given SetIsDrawable(true).
   bool draws_content() const { return GetBitFlag(kDrawsContentFlagMask); }
-  void SetDrawsContent(bool value);
 
   // Returns the number of layers in this layers subtree (excluding itself) for
   // which DrawsContent() is true.
@@ -865,6 +864,10 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // false if there is no content to be displayed. If they do have content, then
   // they should return the value from this base class method.
   virtual bool HasDrawableContent() const;
+
+  // Updates draws_content() according to the current HasDrawableContent().
+  // This should be called when HasDrawableContent() changes.
+  void UpdateDrawsContent();
 
   // Called when the layer's number of drawable descendants changes.
   void AddDrawableDescendants(int num);

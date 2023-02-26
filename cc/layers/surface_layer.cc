@@ -78,7 +78,7 @@ void SurfaceLayer::SetSurfaceId(const viz::SurfaceId& surface_id,
   } else if (!deadline_policy.use_existing_deadline()) {
     deadline_in_frames_.Write(*this) = deadline_policy.deadline_in_frames();
   }
-  SetDrawsContent(HasDrawableContent());
+  UpdateDrawsContent();
   SetNeedsCommit();
 }
 
