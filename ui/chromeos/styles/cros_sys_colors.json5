@@ -120,6 +120,10 @@
       light: '$cros.ref.secondary90',
       dark:  '$cros.ref.secondary15',
     },
+    'header-unfocused': {
+      light: 'blend(rgba($cros.ref.primary40.rgb, .11), $cros.ref.neutral99)',
+      dark: 'blend(rgba($cros.ref.primary80.rgb, .11), $cros.ref.neutral10)',
+    },
     'app-base-shaded': {
       light: '$cros.ref.neutralvariant95',
       dark:  'blend(rgba($black.rgb, 0.4), $cros.ref.neutral10)'
@@ -171,7 +175,11 @@
     },
     scrim: {
       light: 'rgba($cros.ref.neutralvariant60.rgb, 0.6)',
-      dark:  'rgba($cros.ref.neutralvariant10.rgb, 0.6)',
+      dark:  'rgba($cros.ref.neutralvariant0.rgb, 0.6)',
+    },
+    scrim2: {
+      light: 'rgba($cros.ref.secondary90.rgb, 0.6)',
+      dark:  'rgba($cros.ref.secondary30.rgb, 0.48)',
     },
     'inverse-surface': {
       light: '$cros.ref.neutral20',
