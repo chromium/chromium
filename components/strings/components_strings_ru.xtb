@@ -695,7 +695,7 @@
 <translation id="2664887757054927933">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />)}=2{2 пароля (для <ph name="DOMAIN_LIST" />)}one{# пароль (для <ph name="DOMAIN_LIST" />)}few{# пароля (для <ph name="DOMAIN_LIST" />)}many{# паролей (для <ph name="DOMAIN_LIST" />)}other{# пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Наверх</translation>
 <translation id="2666117266261740852">Закройте другие вкладки, расширения и приложения.</translation>
-<translation id="266935134738038806">Перейти на сайт</translation>
+<translation id="266935134738038806">Открыть сайт</translation>
 <translation id="2672201172023654893">Этим браузером не управляет администратор.</translation>
 <translation id="2673968385134502798">Игры</translation>
 <translation id="2674170444375937751">Удалить эти страницы из истории посещений?</translation>
