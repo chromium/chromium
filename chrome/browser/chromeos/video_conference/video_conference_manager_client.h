@@ -57,6 +57,12 @@ class VideoConferenceManagerClientImpl
   // current VC apps and notifies the manager if a field has changed.
   void HandleMediaUsageUpdate();
 
+  // Notifies VCManager of media device usage while the device is system
+  // disabled.
+  void HandleDeviceUsedWhileDisabled(
+      crosapi::mojom::VideoConferenceMediaDevice device,
+      const std::u16string& app_name);
+
   // crosapi::mojom::VideoConferenceManagerClient overrides
   void GetMediaApps(GetMediaAppsCallback callback) override;
   void ReturnToApp(const base::UnguessableToken& id,
@@ -85,11 +91,6 @@ class VideoConferenceManagerClientImpl
 
   // Previous status
   crosapi::mojom::VideoConferenceMediaUsageStatusPtr status_;
-
-  // The following two fields are true if the camera/microphone is system-wide
-  // software disabled OR disabled via a hardware switch.
-  bool camera_system_disabled_{false};
-  bool microphone_system_disabled_{false};
 
   std::unique_ptr<VideoConferenceMediaListener> media_listener_;
 

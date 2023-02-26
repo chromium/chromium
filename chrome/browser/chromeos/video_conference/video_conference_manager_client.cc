@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
@@ -44,11 +45,16 @@ VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl()
                                         &VideoConferenceManagerClientImpl::
                                             HandleMediaUsageUpdate,
                                         base::Unretained(this)),
-                                    /*create_vc_web_app_callback=*/base::
-                                        BindRepeating(
-                                            &VideoConferenceManagerClientImpl::
-                                                CreateVideoConferenceWebApp,
-                                            base::Unretained(this)));
+                                    /*create_vc_web_app_callback=*/
+                                    base::BindRepeating(
+                                        &VideoConferenceManagerClientImpl::
+                                            CreateVideoConferenceWebApp,
+                                        base::Unretained(this)),
+                                    /*device_used_while_disabled_callback=*/
+                                    base::BindRepeating(
+                                        &VideoConferenceManagerClientImpl::
+                                            HandleDeviceUsedWhileDisabled,
+                                        base::Unretained(this)));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Bind remote and pass receiver to VideoConferenceManagerAsh.
@@ -163,6 +169,21 @@ void VideoConferenceManagerClientImpl::HandleMediaUsageUpdate() {
   NotifyManager(std::move(status));
 }
 
+void VideoConferenceManagerClientImpl::HandleDeviceUsedWhileDisabled(
+    crosapi::mojom::VideoConferenceMediaDevice device,
+    const std::u16string& app_name) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  remote_->NotifyDeviceUsedWhileDisabled(std::move(device), app_name,
+                                         base::DoNothing());
+#else
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->video_conference_manager_ash()
+      ->NotifyDeviceUsedWhileDisabled(std::move(device), app_name,
+                                      base::DoNothing());
+#endif
+}
+
 void VideoConferenceManagerClientImpl::GetMediaApps(
     GetMediaAppsCallback callback) {
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps;
@@ -212,19 +233,8 @@ void VideoConferenceManagerClientImpl::SetSystemMediaDeviceStatus(
     crosapi::mojom::VideoConferenceMediaDevice device,
     bool disabled,
     SetSystemMediaDeviceStatusCallback callback) {
-  switch (device) {
-    case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
-      camera_system_disabled_ = disabled;
-      std::move(callback).Run(true);
-      break;
-    case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
-      microphone_system_disabled_ = disabled;
-      std::move(callback).Run(true);
-      break;
-    case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:
-      std::move(callback).Run(false);
-      return;
-  }
+  media_listener_->SetSystemMediaDeviceStatus(std::move(device), disabled);
+  std::move(callback).Run(true);
 }
 
 void VideoConferenceManagerClientImpl::NotifyManager(

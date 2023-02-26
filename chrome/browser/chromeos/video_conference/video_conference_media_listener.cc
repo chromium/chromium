@@ -4,10 +4,14 @@
 
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 
+#include <string>
+#include <utility>
+
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -16,15 +20,35 @@ namespace video_conference {
 VideoConferenceMediaListener::VideoConferenceMediaListener(
     base::RepeatingCallback<void()> media_usage_update_callback,
     base::RepeatingCallback<VideoConferenceWebApp*(content::WebContents*)>
-        create_vc_web_app_callback)
-    : media_usage_update_callback_(media_usage_update_callback),
-      create_vc_web_app_callback_(create_vc_web_app_callback) {
+        create_vc_web_app_callback,
+    base::RepeatingCallback<void(crosapi::mojom::VideoConferenceMediaDevice,
+                                 const std::u16string&)>
+        device_used_while_disabled_callback)
+    : media_usage_update_callback_(std::move(media_usage_update_callback)),
+      create_vc_web_app_callback_(std::move(create_vc_web_app_callback)),
+      device_used_while_disabled_callback_(
+          std::move(device_used_while_disabled_callback)) {
   observation_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
                            ->GetMediaStreamCaptureIndicator()
                            .get());
 }
 
 VideoConferenceMediaListener::~VideoConferenceMediaListener() = default;
+
+void VideoConferenceMediaListener::SetSystemMediaDeviceStatus(
+    crosapi::mojom::VideoConferenceMediaDevice device,
+    bool disabled) {
+  switch (device) {
+    case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
+      camera_system_disabled_ = disabled;
+      break;
+    case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
+      microphone_system_disabled_ = disabled;
+      break;
+    case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:
+      return;
+  }
+}
 
 void VideoConferenceMediaListener::OnIsCapturingVideoChanged(
     content::WebContents* contents,
@@ -36,6 +60,13 @@ void VideoConferenceMediaListener::OnIsCapturingVideoChanged(
   // upon the deletion of a `VideoConferenceWebApp` with an is_capturing of
   // false.
   if (vc_app) {
+    if (camera_system_disabled_ && !vc_app->state().is_capturing_camera &&
+        is_capturing_video) {
+      device_used_while_disabled_callback_.Run(
+          crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+          contents->GetTitle());
+    }
+
     vc_app->state().is_capturing_camera = is_capturing_video;
     media_usage_update_callback_.Run();
   }
@@ -51,6 +82,13 @@ void VideoConferenceMediaListener::OnIsCapturingAudioChanged(
   // upon the deletion of a `VideoConferenceWebApp` with an is_capturing of
   // false.
   if (vc_app) {
+    if (microphone_system_disabled_ &&
+        !vc_app->state().is_capturing_microphone && is_capturing_audio) {
+      device_used_while_disabled_callback_.Run(
+          crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+          contents->GetTitle());
+    }
+
     vc_app->state().is_capturing_microphone = is_capturing_audio;
     media_usage_update_callback_.Run();
   }
