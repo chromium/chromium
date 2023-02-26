@@ -2930,7 +2930,7 @@ crbug.com/626703 [ Win ] external/wpt/speculation-rules/prerender/restriction-pr
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Timeout Failure ]
+crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/dedicated-worker.https.window.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] external/wpt/html/semantics/links/hyperlink-auditing/headers.optional.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/IndexedDB/idb-explicit-commit.any.html [ Timeout ]

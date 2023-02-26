@@ -265222,16 +265222,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "0cbfded8f62b2916c038fc6b3ce43a61ce18aaad",
-     []
-    ],
-    "mtime.json": [
-     "7128177bcc7233162b50353d09ba99b3e79fab26",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -537915,6 +537905,13 @@
        ],
        "infinite_backtracking.html": [
         "52f6e316b1faa3abec3d0680a6be68ab0d2e6b07",
+        [
+         null,
+         {}
+        ]
+       ],
+       "input-maxlength-emoji.html": [
+        "068abad9363065afff404b3e30f33615ca6e5111",
         [
          null,
          {}
