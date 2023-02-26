@@ -49,7 +49,7 @@ gfx::ImageSkia CreateResizedResourceImage(int icon_resource,
 apps::ScaleToSize GetScaleToSize(const gfx::ImageSkia& image_skia);
 
 // Decodes `data` to a SkBitmap. The decode happens in-process, so must only be
-// done with trusted data.
+// done with trusted data. Returns an empty bitmap if decoding fails.
 SkBitmap DecompressToSkBitmap(const unsigned char* data, size_t size);
 
 // Creates an ImageSkia for the given `bitmap` and `icon_scale`;
