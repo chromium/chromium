@@ -18,6 +18,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -90,23 +91,8 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
   }
 
   void SetUpOnMainThread() override {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    ASSERT_TRUE(web_contents != nullptr);
-
-    auto autofill_client =
-        std::make_unique<testing::NiceMock<MockAutofillClient>>(web_contents);
-    autofill_client_ = autofill_client.get();
-    web_contents->SetUserData(autofill_client_->UserDataKey(),
-                              std::move(autofill_client));
-
-    password_manager::ContentPasswordManagerDriverFactoryTestApi(
-        password_manager::ContentPasswordManagerDriverFactory::FromWebContents(
-            web_contents))
-        .SetAutofillClient(autofill_client_);
-
-    Observe(web_contents);
-    prefs::RegisterProfilePrefs(autofill_client_->GetPrefRegistry());
+    Observe(web_contents());
+    prefs::RegisterProfilePrefs(autofill_client().GetPrefRegistry());
 
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -115,9 +101,8 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
 
   void TearDownOnMainThread() override {
     // Verify the expectations here, because closing the browser may incur
-    // other calls in `autofill_client_` e.g., HideAutofillPopup().
-    testing::Mock::VerifyAndClearExpectations(autofill_client_);
-    web_contents()->RemoveUserData(autofill_client_->UserDataKey());
+    // other calls in `autofill_client()` e.g., HideAutofillPopup().
+    testing::Mock::VerifyAndClearExpectations(&autofill_client());
   }
 
   void OnVisibilityChanged(content::Visibility visibility) override {
@@ -153,8 +138,14 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
+  testing::NiceMock<MockAutofillClient>& autofill_client() {
+    auto* client = autofill_client_injector_[web_contents()];
+    CHECK(client);
+    return *client;
+  }
+
   ContentAutofillDriverFactory* autofill_driver_factory() {
-    return autofill_client_->GetAutofillDriverFactory();
+    return autofill_client().GetAutofillDriverFactory();
   }
 
  protected:
@@ -163,13 +154,14 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
   base::OnceClosure same_document_navigation_callback_;
   base::OnceClosure subframe_navigation_callback_;
 
-  raw_ptr<testing::NiceMock<MockAutofillClient>> autofill_client_;
+  TestAutofillClientInjector<testing::NiceMock<MockAutofillClient>>
+      autofill_client_injector_;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        SwitchTabAndHideAutofillPopup) {
-  EXPECT_CALL(*autofill_client_,
+  EXPECT_CALL(autofill_client(),
               HideAutofillPopup(PopupHidingReason::kTabGone));
 
   scoped_refptr<content::MessageLoopRunner> runner =
@@ -189,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
   // The Autofill popup should be hidden for same document navigations. It may
   // called twice because the zoom changed event may also fire for same-page
   // navigations.
-  EXPECT_CALL(*autofill_client_,
+  EXPECT_CALL(autofill_client(),
               HideAutofillPopup(PopupHidingReason::kNavigation))
       .Times(testing::AtLeast(1));
 
@@ -213,13 +205,13 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
   int host_id = content::RenderFrameHost::kNoFrameTreeNodeId;
 
   {
-    EXPECT_CALL(*autofill_client_,
+    EXPECT_CALL(autofill_client(),
                 HideAutofillPopup(PopupHidingReason::kNavigation))
         .Times(0);
     host_id = prerender_helper().AddPrerender(prerender_url);
   }
 
-  EXPECT_CALL(*autofill_client_,
+  EXPECT_CALL(autofill_client(),
               HideAutofillPopup(PopupHidingReason::kNavigation))
       .Times(testing::AtLeast(1));
 
@@ -236,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The Autofill popup should NOT be hidden for subframe navigations.
-  EXPECT_CALL(*autofill_client_, HideAutofillPopup).Times(0);
+  EXPECT_CALL(autofill_client(), HideAutofillPopup).Times(0);
 
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
@@ -253,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        TestPageNavigationHidingAutofillPopup) {
   // HideAutofillPopup is called once for each navigation.
-  EXPECT_CALL(*autofill_client_,
+  EXPECT_CALL(autofill_client(),
               HideAutofillPopup(PopupHidingReason::kNavigation))
       .Times(2);
 
