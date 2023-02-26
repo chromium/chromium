@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <sstream>
 
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -676,6 +677,12 @@ void PaintArtifactCompositor::Update(
   // Make compositing decisions, storing the result in |pending_layers_|.
   CollectPendingLayers(artifact);
   PendingLayer::DecompositeTransforms(pending_layers_);
+
+  std::stringstream ss;
+  for (auto& pending_layer : pending_layers_) {
+    ss << pending_layer.CcLayer().id() << ", ";
+  }
+  recordreplay::Assert("[Run-1229-1434] PaintArtifactCompositor::Update %d %s", host->GetId(), ss.str().c_str());
 
   LayerListBuilder layer_list_builder;
   PropertyTreeManager property_tree_manager(*this, *host->property_trees(),
