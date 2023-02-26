@@ -1209,7 +1209,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
 
   dict->Set("GUEST_OS", true);
 
-  dict->Set("JELLY", base::FeatureList::IsEnabled(ash::features::kJelly));
+  dict->Set("JELLY", ash::features::IsJellyEnabled());
 
   dict->Set("DRIVE_SHORTCUTS",
             base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
