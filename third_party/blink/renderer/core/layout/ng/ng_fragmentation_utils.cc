@@ -1332,6 +1332,17 @@ PhysicalOffset OffsetInStitchedFragments(
 #endif
     }
     stitched_block_size += NGFragment(writing_direction, walker).BlockSize();
+
+    // Repeated content isn't stitched, so just stop when we have processed one
+    // fragment.
+    if (walker.BreakToken() && walker.BreakToken()->IsRepeated()) {
+#if DCHECK_IS_ON()
+      // We haven't necessarily found |fragment|, but it doesn't matter in this
+      // case. Just silence the DHCECK below.
+      found_self = true;
+#endif
+      break;
+    }
   }
 #if DCHECK_IS_ON()
   DCHECK(found_self);
