@@ -50,7 +50,7 @@ class ElementTrackerMac::ContextData {
 
   void ActivateElement(ElementIdentifier identifier) {
     const auto it = elements_.find(identifier);
-    DCHECK(it != elements_.end());
+    CHECK(it != elements_.end());
     ui::ElementTracker::GetFrameworkDelegate()->NotifyElementActivated(
         it->second.get());
   }
