@@ -111,17 +111,16 @@ class PlatformKeysTest : public PlatformKeysTestBase {
 
     // Set up the test policy that gives |extension_| the permission to access
     // corporate keys.
-    base::Value key_permissions_policy(base::Value::Type::DICT);
+    base::Value::Dict key_permissions_policy;
     {
-      base::Value cert1_key_permission(base::Value::Type::DICT);
-      cert1_key_permission.SetKey("allowCorporateKeyUsage", base::Value(true));
-      key_permissions_policy.SetKey(kExtensionId,
-                                    std::move(cert1_key_permission));
+      base::Value::Dict cert1_key_permission;
+      cert1_key_permission.Set("allowCorporateKeyUsage", true);
+      key_permissions_policy.Set(kExtensionId, std::move(cert1_key_permission));
     }
 
     policy.Set(policy::key::kKeyPermissions, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               std::move(key_permissions_policy), nullptr);
+               base::Value(std::move(key_permissions_policy)), nullptr);
 
     mock_policy_provider()->UpdateChromePolicy(policy);
   }

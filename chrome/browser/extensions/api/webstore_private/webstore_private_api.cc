@@ -345,12 +345,12 @@ ExtensionInstallStatus AddExtensionToPendingList(
   ScopedDictPrefUpdate pending_requests_update(
       profile->GetPrefs(), prefs::kCloudExtensionRequestIds);
   DCHECK(!pending_requests_update->Find(id));
-  base::Value request_data(base::Value::Type::DICT);
-  request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                      ::base::TimeToValue(base::Time::Now()));
+  base::Value::Dict request_data;
+  request_data.Set(extension_misc::kExtensionRequestTimestamp,
+                   ::base::TimeToValue(base::Time::Now()));
   if (!justification.empty()) {
-    request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
-                        base::Value(justification));
+    request_data.Set(extension_misc::kExtensionWorkflowJustification,
+                     justification);
   }
   pending_requests_update->Set(id, std::move(request_data));
   // Query the new extension install status again. It should be changed from

@@ -59,7 +59,7 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
 
   // Called on the UI thread.
   void ReturnFailure(const std::string& error);
-  void ReturnSuccess(int64_t file_size);
+  void ReturnSuccess(int file_size);
 
   // Callback called once the MHTML generation is done.
   void MHTMLGenerated(int64_t mhtml_file_size);

@@ -223,7 +223,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnFailure(const std::string& error) {
   Respond(Error(error));
 }
 
-void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
+void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int file_size) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   WebContents* web_contents = GetWebContents();
@@ -235,10 +235,10 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
   ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(source_process_id(),
                                                            mhtml_path_);
 
-  base::Value response(base::Value::Type::DICT);
-  response.SetStringKey("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());
-  response.SetIntKey("mhtmlFileLength", file_size);
-  response.SetIntKey("requestId", request_id());
+  base::Value::Dict response;
+  response.Set("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());
+  response.Set("mhtmlFileLength", file_size);
+  response.Set("requestId", request_id());
 
   // Add a reference, extending the lifespan of this extension function until
   // the response has been received by the renderer. This function generates a
@@ -251,7 +251,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
   if (is_from_service_worker())
     AddWorkerResponseTarget();
 
-  Respond(OneArgument(std::move(response)));
+  Respond(OneArgument(base::Value(std::move(response))));
 }
 
 WebContents* PageCaptureSaveAsMHTMLFunction::GetWebContents() {

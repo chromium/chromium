@@ -755,7 +755,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
-  base::Value result(base::Value::Type::DICT);
+  base::Value::Dict result;
 
   for (const auto& path : params->paths) {
     // Ignore non-allowed paths.
@@ -767,9 +767,9 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
       guest_os::RecordTerminalSettingsChangesUMAs(
           Profile::FromBrowserContext(browser_context()));
     }
-    result.SetKey(path, service->GetValue(path).Clone());
+    result.Set(path, service->GetValue(path).Clone());
   }
-  return RespondNow(OneArgument(std::move(result)));
+  return RespondNow(OneArgument(base::Value(std::move(result))));
 }
 
 TerminalPrivateSetPrefsFunction::~TerminalPrivateSetPrefsFunction() = default;

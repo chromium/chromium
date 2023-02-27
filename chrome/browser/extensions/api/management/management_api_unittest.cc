@@ -384,8 +384,8 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
         extensions::UNINSTALL_SOURCE_CHROME_EXTENSIONS_PAGE, 2);
 
     // Try again, using showConfirmDialog: false.
-    base::Value options(base::Value::Type::DICT);
-    options.SetBoolPath("showConfirmDialog", false);
+    base::Value::Dict options;
+    options.Set("showConfirmDialog", false);
     uninstall_args.Append(std::move(options));
     function = base::MakeRefCounted<ManagementUninstallFunction>();
     function->set_source_context_type(Feature::WEBUI_CONTEXT);
