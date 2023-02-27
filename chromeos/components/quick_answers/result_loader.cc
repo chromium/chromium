@@ -19,7 +19,6 @@ namespace {
 using network::ResourceRequest;
 using network::SharedURLLoaderFactory;
 
-// TODO(llin): Update the policy detail after finalizing on the consent check.
 constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("quick_answers_loader", R"(
           semantics: {
@@ -30,9 +29,11 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
               "or unit conversion."
             trigger:
               "Right click to trigger context menu."
-            data: "Currently selected text, device language and "
-                  "source language of the selected text "
-                  "is sent to Google API only for translation."
+            data: "Currently selected text is sent to Google API for "
+            "generating answers. Source language of the selected text "
+            "is sent to Google API only for translation and dictionary "
+            "definition. Device language is sent to Google API "
+            "only for translation."
             destination: GOOGLE_OWNED_SERVICE
           }
           policy: {
@@ -47,7 +48,13 @@ constexpr net::NetworkTrafficAnnotationTag kNetworkTrafficAnnotationTag =
                     QuickAnswersEnabled: false
                 }
                 QuickAnswersTranslationEnabled {
-                    QuickAnswersTranslationEnabled: true
+                    QuickAnswersTranslationEnabled: false
+                }
+                QuickAnswersDefinitionEnabled {
+                    QuickAnswersDefinitionEnabled: false
+                }
+                QuickAnswersUnitConversionEnabled {
+                    QuickAnswersUnitConversionEnabled: false
                 }
             }
           })");
