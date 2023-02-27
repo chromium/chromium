@@ -208,10 +208,6 @@ void LocationProviderWinrt::HandleErrorCondition(
       event = WindowsRTLocationRequestEvent::
           WINDOWS_RT_LOCATION_CALLBACK_EVENT_POSITION_UNAVAILABLE;
       break;
-    case mojom::Geoposition::ErrorCode::TIMEOUT:
-      event = WindowsRTLocationRequestEvent::
-          WINDOWS_RT_LOCATION_CALLBACK_EVENT_TIMEOUT;
-      break;
     default:
       event = WindowsRTLocationRequestEvent::
           WINDOWS_RT_LOCATION_CALLBACK_EVENT_UNKNOWN_ERROR_CONDITION;

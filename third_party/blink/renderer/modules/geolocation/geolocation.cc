@@ -82,7 +82,6 @@ GeolocationPositionError* CreatePositionError(
       error_code = GeolocationPositionError::kPositionUnavailable;
       break;
     case device::mojom::blink::Geoposition::ErrorCode::NONE:
-    case device::mojom::blink::Geoposition::ErrorCode::TIMEOUT:
       NOTREACHED();
       break;
   }

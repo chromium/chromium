@@ -25,8 +25,7 @@ struct Geoposition {
     NONE = 0,  // Chrome addition.
     PERMISSION_DENIED = 1,
     POSITION_UNAVAILABLE = 2,
-    TIMEOUT = 3,
-    LAST = TIMEOUT
+    LAST = POSITION_UNAVAILABLE
   };
 
   // Whether this geoposition is valid.
