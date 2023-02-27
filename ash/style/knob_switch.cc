@@ -122,6 +122,10 @@ void KnobSwitch::Layout() {
   knob_->SetPosition(gfx::Point(knob_x, knob_y));
 }
 
+int KnobSwitch::GetHeightForWidth(int w) const {
+  return kSwitchHeight;
+}
+
 void KnobSwitch::StateChanged(ButtonState old_state) {
   if (GetState() == ButtonState::STATE_DISABLED) {
     track_->SetEnabled(false);
