@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -163,13 +164,15 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
   if (!extension)
     return;
 
-  if (crosapi::browser_util::IsAshWebBrowserEnabled()) {
-    extensions::ExtensionTabUtil::OpenOptionsPage(
-        extension,
-        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()));
-  } else {
-    // Lacros is the only browser, so open the options page in an Ash app window
-    // instead of a regular Ash browser window.
+  // If Lacros is the only browser, we need to open the options page in an Ash
+  // app window instead of a regular Ash browser window so that the user can't
+  // navigate in Ash. We do so using the OsUrlHandler SWA. Exception: Kiosk mode
+  // doesn't support SWA but already hide the navigation bar.
+  // TODO(neis): Merge with similar code elsewhere and move to a common place.
+  bool open_with_os_url_handler =
+      !crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      !profiles::IsKioskSession();
+  if (open_with_os_url_handler) {
     DCHECK(extensions::OptionsPageInfo::ShouldOpenInTab(extension));
     GURL url = extensions::OptionsPageInfo::GetOptionsPage(extension);
     // NOTE: If unexpectedly the primary user profile does not yet exist,
@@ -185,6 +188,10 @@ void AccessibilityHandler::OpenExtensionOptionsPage(const char extension_id[]) {
     ash::LaunchSystemWebAppAsync(
         profile, ash::SystemWebAppType::OS_URL_HANDLER, launch_params,
         std::make_unique<apps::WindowInfo>(display_id));
+  } else {
+    extensions::ExtensionTabUtil::OpenOptionsPage(
+        extension,
+        chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()));
   }
 }
 

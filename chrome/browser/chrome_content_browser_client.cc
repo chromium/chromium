@@ -405,6 +405,7 @@
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -7442,14 +7443,16 @@ bool ChromeContentBrowserClient::OpenExternally(
 
   // If Lacros is the only browser, we intercept any WebUI URLs that would be
   // opened in a regular browser window. We open these with the OsUrlHandler SWA
-  // instead, which will load them in an app window.
-  bool should_open_in_ash_app =
+  // instead, which will load them in an app window (no navigation bar).
+  bool open_with_os_url_handler =
       from_webui && !crosapi::browser_util::IsAshWebBrowserEnabled() &&
+      // Kiosk sessions don't support SWA and already hide the navigation bar.
+      !profiles::IsKioskSession() &&
       // Terminal's tabs must remain in the Terminal SWA.
       !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
       ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url) &&
       !ash::GetCapturingSystemAppForURL(profile, url);
-  if (should_open_in_ash_app) {
+  if (open_with_os_url_handler) {
     ash::SystemAppLaunchParams launch_params;
     launch_params.url = url;
     int64_t display_id =
