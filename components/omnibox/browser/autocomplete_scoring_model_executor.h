@@ -34,6 +34,9 @@ class AutocompleteScoringModelExecutor
 
  protected:
   // optimization_guide::BaseModelExecutor:
+  //
+  // The autocomplete scoring model has multiple inputs, one for each input
+  // signal, and each should be added to a separate input tensor.
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
                   ModelInput input) override;
   absl::optional<ModelOutput> Postprocess(

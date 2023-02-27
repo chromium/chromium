@@ -18,11 +18,17 @@ AutocompleteScoringModelExecutor::~AutocompleteScoringModelExecutor() = default;
 bool AutocompleteScoringModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     ModelInput input) {
-  DCHECK_EQ(1u, input_tensors.size());
+  DCHECK_EQ(input.size(), input_tensors.size());
   DCHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
-  absl::Status status =
-      tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
-  return status.ok();
+  for (size_t i = 0; i < input.size(); ++i) {
+    std::vector<float> data = {input[i]};
+    absl::Status status =
+        tflite::task::core::PopulateTensor<float>(data, input_tensors[i]);
+    if (!status.ok()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 absl::optional<AutocompleteScoringModelExecutor::ModelOutput>
