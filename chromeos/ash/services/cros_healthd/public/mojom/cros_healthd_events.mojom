@@ -416,6 +416,24 @@ union TouchscreenEventInfo {
   TouchscreenConnectedEvent connected_event@2;
 };
 
+// Stylus garage event info.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct StylusGarageEventInfo {
+  [Stable, Extensible]
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField,
+    // Stylus inserted into the garage.
+    kInsert,
+    // Stylus removed from the garage.
+    kRemove,
+  };
+
+  State state@0;
+};
+
 // Implemented by clients who desire events.
 //
 // NextMinVersion: 1, NextIndex: 1
@@ -427,7 +445,7 @@ interface EventObserver {
 
 // Union of event info.
 //
-// NextMinVersion: 7, NextIndex: 13
+// NextMinVersion: 8, NextIndex: 14
 [Stable, Extensible]
 union EventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -459,11 +477,13 @@ union EventInfo {
   [MinVersion=5] HdmiEventInfo hdmi_event_info@11;
   // Touchscreen event info.
   [MinVersion=6] TouchscreenEventInfo touchscreen_event_info@12;
+  // Stylus garagge event info.
+  [MinVersion=7] StylusGarageEventInfo stylus_garage_event_info@13;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 8, NextIndex: 14
+// NextMinVersion: 9, NextIndex: 15
 [Stable, Extensible]
 enum EventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -481,4 +501,5 @@ enum EventCategoryEnum {
   [MinVersion=5] kTouchpad = 11,
   [MinVersion=6] kHdmi = 12,
   [MinVersion=7] kTouchscreen = 13,
+  [MinVersion=8] kStylusGarage = 14,
 };
