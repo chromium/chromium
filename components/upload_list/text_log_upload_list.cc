@@ -238,8 +238,7 @@ void TextLogUploadList::ClearUploadList(const base::Time& begin,
   if (new_contents.size() == 0) {
     base::DeleteFile(upload_log_path_);
   } else {
-    base::WriteFile(upload_log_path_, new_contents.c_str(),
-                    new_contents.size());
+    base::WriteFile(upload_log_path_, new_contents);
   }
 }
 

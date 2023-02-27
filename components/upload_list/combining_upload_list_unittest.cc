@@ -53,22 +53,19 @@ TEST_F(CombiningUploadListTest, ThreeWayCombine) {
 1614008000,ddee0008
 1614012000,ddee0012
   )";
-  ASSERT_GT(base::WriteFile(first_log_path(), kFirstList, strlen(kFirstList)),
-            0);
+  ASSERT_TRUE(base::WriteFile(first_log_path(), kFirstList));
 
   constexpr char kSecondList[] = R"(
 {"upload_time":"1614002000","upload_id":"ddee0002"}
 {"upload_time":"1614006000","upload_id":"ddee0006"}
 {"upload_time":"1614010000","upload_id":"ddee0010"}
   )";
-  ASSERT_GT(
-      base::WriteFile(second_log_path(), kSecondList, strlen(kSecondList)), 0);
+  ASSERT_TRUE(base::WriteFile(second_log_path(), kSecondList));
 
   constexpr char kThirdList[] = R"(
 {"upload_time":"1614014000","upload_id":"ddee0014"}
   )";
-  ASSERT_GT(base::WriteFile(third_log_path(), kThirdList, strlen(kThirdList)),
-            0);
+  ASSERT_TRUE(base::WriteFile(third_log_path(), kThirdList));
 
   std::vector<scoped_refptr<UploadList>> sublists = {
       first_reader_, second_reader_, third_reader_};
@@ -138,25 +135,19 @@ TEST_F(CombiningUploadListTest, SortCaptureTimeOrUploadTime) {
 {"capture_time":"1614004000","upload_id":"ddee0004","upload_time":"1614999999"}
 {"capture_time":"1614007000","upload_id":"ddee0007","upload_time":"1600000000"}
   )";
-  ASSERT_GT(base::WriteFile(first_log_path(), kUploadAndCaptureTimes,
-                            strlen(kUploadAndCaptureTimes)),
-            0);
+  ASSERT_TRUE(base::WriteFile(first_log_path(), kUploadAndCaptureTimes));
   constexpr char kJustCaptureTimes[] = R"(
 {"capture_time":"1614002000","upload_id":"ddee0002"}
 {"capture_time":"1614005000","upload_id":"ddee0005"}
 {"capture_time":"1614008000","upload_id":"ddee0008"}
   )";
-  ASSERT_GT(base::WriteFile(second_log_path(), kJustCaptureTimes,
-                            strlen(kJustCaptureTimes)),
-            0);
+  ASSERT_TRUE(base::WriteFile(second_log_path(), kJustCaptureTimes));
   constexpr char kJustUploadTimes[] = R"(
 {"upload_time":"1614003000","upload_id":"ddee0003"}
 {"upload_time":"1614006000","upload_id":"ddee0006"}
 {"upload_time":"1614009000","upload_id":"ddee0009"}
   )";
-  ASSERT_GT(base::WriteFile(third_log_path(), kJustUploadTimes,
-                            strlen(kJustUploadTimes)),
-            0);
+  ASSERT_TRUE(base::WriteFile(third_log_path(), kJustUploadTimes));
 
   std::vector<scoped_refptr<UploadList>> sublists = {
       first_reader_, second_reader_, third_reader_};
@@ -222,25 +213,19 @@ TEST_F(CombiningUploadListTest, Clear) {
 {"capture_time":"1614004000","upload_id":"ddee0004","upload_time":"1614999999"}
 {"capture_time":"1614007000","upload_id":"ddee0007","upload_time":"1600000000"}
 )";
-  ASSERT_GT(base::WriteFile(first_log_path(), kUploadAndCaptureTimes,
-                            strlen(kUploadAndCaptureTimes)),
-            0);
+  ASSERT_TRUE(base::WriteFile(first_log_path(), kUploadAndCaptureTimes));
   constexpr char kJustCaptureTimes[] = R"(
 {"capture_time":"1614002000","upload_id":"ddee0002"}
 {"capture_time":"1614005000","upload_id":"ddee0005"}
 {"capture_time":"1614008000","upload_id":"ddee0008"}
 )";
-  ASSERT_GT(base::WriteFile(second_log_path(), kJustCaptureTimes,
-                            strlen(kJustCaptureTimes)),
-            0);
+  ASSERT_TRUE(base::WriteFile(second_log_path(), kJustCaptureTimes));
   constexpr char kJustUploadTimes[] = R"(
 {"upload_time":"1614003000","upload_id":"ddee0003"}
 {"upload_time":"1614006000","upload_id":"ddee0006"}
 {"upload_time":"1614009000","upload_id":"ddee0009"}
 )";
-  ASSERT_GT(base::WriteFile(third_log_path(), kJustUploadTimes,
-                            strlen(kJustUploadTimes)),
-            0);
+  ASSERT_TRUE(base::WriteFile(third_log_path(), kJustUploadTimes));
 
   std::vector<scoped_refptr<UploadList>> sublists = {
       first_reader_, second_reader_, third_reader_};
