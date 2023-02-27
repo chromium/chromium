@@ -466,12 +466,12 @@ class PLATFORM_EXPORT ResourceFetcher
   DocumentResourceMap cached_resources_map_;
 
   // |image_resources_| is the subset of all image resources for the document.
-  HeapHashSet<WeakMember<Resource>> image_resources_;
+  HeapHashSet<WeakMember<Resource>,  WTF::MemberHashRecordReplayRegisteredPointerId<Resource>> image_resources_;
 
   // |not_loaded_image_resources_| is a subset of |image_resources_| where
   // |Resource::IsLoaded| might be false. The is used for performance
   // optimizations and might still contain images which are actually loaded.
-  HeapHashSet<WeakMember<Resource>> not_loaded_image_resources_;
+  HeapHashSet<WeakMember<Resource>, WTF::MemberHashRecordReplayRegisteredPointerId<Resource>> not_loaded_image_resources_;
 
   HeapHashMap<PreloadKey, Member<Resource>> preloads_;
   HeapVector<Member<Resource>> matched_preloads_;
@@ -482,13 +482,13 @@ class PLATFORM_EXPORT ResourceFetcher
   TaskHandle unused_preloads_timer_;
 
   using ResourceTimingInfoMap =
-      HeapHashMap<Member<Resource>, scoped_refptr<ResourceTimingInfo>>;
+      HeapHashMap<Member<Resource>, scoped_refptr<ResourceTimingInfo>, WTF::MemberHashRecordReplayRegisteredPointerId<Resource>>;
   ResourceTimingInfoMap resource_timing_info_map_;
 
   Vector<scoped_refptr<ResourceTimingInfo>> scheduled_resource_timing_reports_;
 
-  HeapHashSet<Member<ResourceLoader>> loaders_;
-  HeapHashSet<Member<ResourceLoader>> non_blocking_loaders_;
+  HeapHashSet<Member<ResourceLoader>, WTF::MemberHashRecordReplayRegisteredPointerId<ResourceLoader>> loaders_;
+  HeapHashSet<Member<ResourceLoader>, WTF::MemberHashRecordReplayRegisteredPointerId<ResourceLoader>> non_blocking_loaders_;
 
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources_;
 
