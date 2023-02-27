@@ -1136,7 +1136,8 @@ OSStatus AUAudioInputStream::Provide(UInt32 number_of_frames,
     DCHECK_EQ(audio_bus->frames(),
               static_cast<int>(input_params_.frames_per_buffer()));
 
-    sink_->OnData(audio_bus, capture_time, normalized_volume);
+    sink_->OnData(audio_bus, capture_time, normalized_volume,
+                  glitch_accumulator_.GetAndReset());
 
     // Move the capture time forward for each vended block.
     capture_time += AudioTimestampHelper::FramesToTime(audio_bus->frames(),
@@ -1293,6 +1294,9 @@ void AUAudioInputStream::UpdateCaptureTimestamp(
     base::TimeDelta lost_audio_duration = AudioTimestampHelper::FramesToTime(
         lost_frames, input_params_.sample_rate());
     glitch_reporter_.UpdateStats(lost_audio_duration);
+    if (lost_audio_duration.is_positive()) {
+      glitch_accumulator_.Add({.duration = lost_audio_duration, .count = 1});
+    }
   }
 
   // Store the last sample time for use next time we get called back.

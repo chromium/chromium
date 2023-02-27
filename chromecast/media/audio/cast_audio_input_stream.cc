@@ -150,7 +150,7 @@ bool CastAudioInputStream::OnCaptureData(const char* data, size_t size) {
   DCHECK(input_callback_);
   input_callback_->OnData(audio_bus_.get(),
                           base::TimeTicks() + base::Microseconds(timestamp_us),
-                          /* volume */ 1.0);
+                          /* volume */ 1.0, {});
   return true;
 }
 

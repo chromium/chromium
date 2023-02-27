@@ -310,7 +310,7 @@ void OpenSLESInputStream::ReadBufferQueue() {
   // TODO(henrika): Investigate if it is possible to get an accurate
   // delay estimation.
   callback_->OnData(audio_bus_.get(), base::TimeTicks::Now() - hardware_delay_,
-                    0.0);
+                    0.0, {});
 
   // Done with this buffer. Send it to device for recording.
   SLresult err =

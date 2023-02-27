@@ -40,7 +40,9 @@ constexpr int kParametersAlignment = 16;
 struct MEDIA_SHMEM_EXPORT ALIGNAS(kParametersAlignment)
     AudioInputBufferParameters {
   double volume;
-  int64_t capture_time_us;  // base::TimeTicks in microseconds.
+  int64_t capture_time_us;     // base::TimeTicks in microseconds.
+  int64_t glitch_duration_us;  // base::TimeDelta in microseconds.
+  uint32_t glitch_count;
   uint32_t size;
   uint32_t id;
   bool key_pressed;

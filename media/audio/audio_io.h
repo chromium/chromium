@@ -147,7 +147,8 @@ class MEDIA_EXPORT AudioInputStream {
     // monotonically increasing.
     virtual void OnData(const AudioBus* source,
                         base::TimeTicks capture_time,
-                        double volume) = 0;
+                        double volume,
+                        const AudioGlitchInfo& audio_glitch_info) = 0;
 
     // There was an error while recording audio. The audio sink cannot be
     // destroyed yet. No direct action needed by the AudioInputStream, but it

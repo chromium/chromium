@@ -21,11 +21,16 @@ AudioProcessorHandler::AudioProcessorHandler(
         controls_receiver,
     media::AecdumpRecordingManager* aecdump_recording_manager)
     : audio_processor_(media::AudioProcessor::Create(
-          std::move(deliver_processed_audio_callback),
+          // Unretained is safe because this class owns audio_processor_, so it
+          // will be destroyed first.
+          base::BindRepeating(&AudioProcessorHandler::DeliverProcessedAudio,
+                              base::Unretained(this)),
           std::move(log_callback),
           settings,
           input_format,
           output_format)),
+      deliver_processed_audio_callback_(
+          std::move(deliver_processed_audio_callback)),
       receiver_(this, std::move(controls_receiver)),
       aecdump_recording_manager_(aecdump_recording_manager) {
   DCHECK(settings.NeedAudioModification());
@@ -47,7 +52,9 @@ void AudioProcessorHandler::ProcessCapturedAudio(
     const media::AudioBus& audio_source,
     base::TimeTicks audio_capture_time,
     double volume,
-    bool key_pressed) {
+    bool key_pressed,
+    const media::AudioGlitchInfo& audio_glitch_info) {
+  glitch_info_accumulator_.Add(audio_glitch_info);
   const int num_preferred_channels =
       num_preferred_channels_.load(std::memory_order_acquire);
   audio_processor_->ProcessCapturedAudio(audio_source, audio_capture_time,
@@ -91,5 +98,14 @@ void AudioProcessorHandler::StartAecdump(base::File aecdump_file) {
 void AudioProcessorHandler::StopAecdump() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   audio_processor_->OnStopDump();
+}
+
+void AudioProcessorHandler::DeliverProcessedAudio(
+    const media::AudioBus& audio_bus,
+    base::TimeTicks audio_capture_time,
+    absl::optional<double> new_volume) {
+  deliver_processed_audio_callback_.Run(audio_bus, audio_capture_time,
+                                        new_volume,
+                                        glitch_info_accumulator_.GetAndReset());
 }
 }  // namespace audio

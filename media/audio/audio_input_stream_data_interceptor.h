@@ -56,7 +56,8 @@ class MEDIA_EXPORT AudioInputStreamDataInterceptor
   // Implementation of AudioInputCallback
   void OnData(const AudioBus* source,
               base::TimeTicks capture_time,
-              double volume) override;
+              double volume,
+              const AudioGlitchInfo& audio_glitch_info) override;
 
   void OnError() override;
 

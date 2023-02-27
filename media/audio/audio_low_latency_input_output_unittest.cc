@@ -161,7 +161,8 @@ class FullDuplexAudioSinkSource
   void OnError() override {}
   void OnData(const AudioBus* src,
               base::TimeTicks capture_time,
-              double volume) override {
+              double volume,
+              const AudioGlitchInfo& glitch_info) override {
     base::AutoLock lock(lock_);
 
     // Update three components in the AudioDelayState for this recorded

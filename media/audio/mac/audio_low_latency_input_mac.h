@@ -53,6 +53,7 @@
 #include "media/audio/mac/audio_manager_mac.h"
 #include "media/audio/system_glitch_reporter.h"
 #include "media/base/audio_block_fifo.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
@@ -263,6 +264,9 @@ class MEDIA_EXPORT AUAudioInputStream
   // Used to aggregate and report glitch metrics to UMA (periodically) and to
   // text logs (when a stream ends).
   SystemGlitchReporter glitch_reporter_;
+
+  // Used to accumulate glitches to be passed to the AudioInputCallback.
+  AudioGlitchInfo::Accumulator glitch_accumulator_;
 
   // Callback to send statistics info.
   AudioManager::LogCallback log_callback_;

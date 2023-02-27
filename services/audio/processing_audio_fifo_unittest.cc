@@ -10,7 +10,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "media/audio/simple_sources.h"
+#include "media/base/audio_glitch_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace audio {
@@ -25,11 +27,13 @@ struct TestCaptureData {
   TestCaptureData(std::unique_ptr<media::AudioBus> audio_bus,
                   base::TimeTicks capture_time,
                   double volume,
-                  bool key_pressed)
+                  bool key_pressed,
+                  const media::AudioGlitchInfo& audio_glitch_info)
       : audio_bus(std::move(audio_bus)),
         capture_time(capture_time),
         volume(volume),
-        key_pressed(key_pressed) {}
+        key_pressed(key_pressed),
+        audio_glitch_info(audio_glitch_info) {}
 
   TestCaptureData(const TestCaptureData&) = delete;
   TestCaptureData& operator=(const TestCaptureData&) = delete;
@@ -43,6 +47,7 @@ struct TestCaptureData {
   base::TimeTicks capture_time;
   double volume;
   bool key_pressed;
+  media::AudioGlitchInfo audio_glitch_info;
 };
 
 void VerifyAudioDataEqual(const media::AudioBus& first,
@@ -59,11 +64,13 @@ void VerifyProcessingData(const TestCaptureData& expected_data,
                           const media::AudioBus& audio_bus,
                           base::TimeTicks capture_time,
                           double volume,
-                          bool key_pressed) {
+                          bool key_pressed,
+                          const media::AudioGlitchInfo& audio_glitch_info) {
   VerifyAudioDataEqual(*expected_data.audio_bus, audio_bus);
   EXPECT_EQ(expected_data.capture_time, capture_time);
   EXPECT_DOUBLE_EQ(expected_data.volume, volume);
   EXPECT_EQ(expected_data.key_pressed, key_pressed);
+  EXPECT_EQ(expected_data.audio_glitch_info, audio_glitch_info);
 }
 
 class ProcessingAudioFifoTest : public testing::Test {
@@ -133,7 +140,7 @@ class ProcessingAudioFifoTest : public testing::Test {
 
     for (int i = 0; i < count; ++i) {
       dest->emplace_back(CreateAudioData(timestamp), capture_time,
-                         i * volume_step, i % 2);
+                         i * volume_step, i % 2, media::AudioGlitchInfo());
 
       timestamp += params_.GetBufferDuration();
       capture_time += base::Milliseconds(5);
@@ -171,24 +178,27 @@ TEST_F(ProcessingAudioFifoTest, ConstructStartDestroy) {
 
 TEST_F(ProcessingAudioFifoTest, PushData_OneBuffer) {
   TestCaptureData test_data(CreateAudioData(), base::TimeTicks(), kTestVolume,
-                            true);
+                            true,
+                            {.duration = base::Milliseconds(123), .count = 5});
 
   base::WaitableEvent data_processed;
 
   auto verify_data = [&](const media::AudioBus& audio_bus,
                          base::TimeTicks capture_time, double volume,
-                         bool key_pressed) {
+                         bool key_pressed,
+                         const media::AudioGlitchInfo& audio_glitch_info) {
     // The processing callback should receive the same data that was pushed into
     // the fifo.
     VerifyProcessingData(test_data, audio_bus, capture_time, volume,
-                         key_pressed);
+                         key_pressed, audio_glitch_info);
     data_processed.Signal();
   };
 
   SetupFifo(base::BindLambdaForTesting(verify_data));
 
   fifo()->PushData(test_data.audio_bus.get(), test_data.capture_time,
-                   test_data.volume, test_data.key_pressed);
+                   test_data.volume, test_data.key_pressed,
+                   test_data.audio_glitch_info);
 
   data_processed.Wait();
 }
@@ -203,17 +213,20 @@ TEST_F(ProcessingAudioFifoTest, PushData_MultipleBuffers_SingleBatch) {
   base::WaitableEvent all_data_processed;
 
   int buffer_number = 0;
-  auto verify_sequential_data = [&](const media::AudioBus& process_data,
-                                    base::TimeTicks capture_time, double volume,
-                                    bool key_pressed) {
-    // Callbacks should receive buffers from |capture_buffers| in the order in
-    // which they are pushed.
-    VerifyProcessingData(capture_buffers[buffer_number], process_data,
-                         capture_time, volume, key_pressed);
+  auto verify_sequential_data =
+      [&](const media::AudioBus& process_data, base::TimeTicks capture_time,
+          double volume, bool key_pressed,
+          const media::AudioGlitchInfo& audio_glitch_info) {
+        // Callbacks should receive buffers from |capture_buffers| in the order
+        // in which they are pushed.
+        VerifyProcessingData(capture_buffers[buffer_number], process_data,
+                             capture_time, volume, key_pressed,
+                             audio_glitch_info);
 
-    if (++buffer_number == kNumberOfBuffers)
-      all_data_processed.Signal();
-  };
+        if (++buffer_number == kNumberOfBuffers) {
+          all_data_processed.Signal();
+        }
+      };
 
   SetupFifo(base::BindLambdaForTesting(verify_sequential_data));
 
@@ -221,7 +234,7 @@ TEST_F(ProcessingAudioFifoTest, PushData_MultipleBuffers_SingleBatch) {
   for (int i = 0; i < kNumberOfBuffers; ++i) {
     TestCaptureData& data = capture_buffers[i];
     fifo()->PushData(data.audio_bus.get(), data.capture_time, data.volume,
-                     data.key_pressed);
+                     data.key_pressed, {});
   }
 
   all_data_processed.Wait();
@@ -239,16 +252,18 @@ TEST_F(ProcessingAudioFifoTest, PushData_MultipleBuffers_WaitBetweenBuffers) {
       base::WaitableEvent::ResetPolicy::AUTOMATIC);
 
   int buffer_number = 0;
-  auto verify_sequential_data = [&](const media::AudioBus& process_data,
-                                    base::TimeTicks capture_time, double volume,
-                                    bool key_pressed) {
-    // Callbacks should receive buffers from |capture_buffers| in the order in
-    // which they are pushed.
-    VerifyProcessingData(capture_buffers[buffer_number++], process_data,
-                         capture_time, volume, key_pressed);
+  auto verify_sequential_data =
+      [&](const media::AudioBus& process_data, base::TimeTicks capture_time,
+          double volume, bool key_pressed,
+          const media::AudioGlitchInfo& audio_glitch_info) {
+        // Callbacks should receive buffers from |capture_buffers| in the order
+        // in which they are pushed.
+        VerifyProcessingData(capture_buffers[buffer_number++], process_data,
+                             capture_time, volume, key_pressed,
+                             audio_glitch_info);
 
-    single_buffer_processed.Signal();
-  };
+        single_buffer_processed.Signal();
+      };
 
   SetupFifo(base::BindLambdaForTesting(verify_sequential_data));
 
@@ -257,7 +272,7 @@ TEST_F(ProcessingAudioFifoTest, PushData_MultipleBuffers_WaitBetweenBuffers) {
   for (int i = 0; i < kNumberOfBuffers; ++i) {
     TestCaptureData& data = capture_buffers[i];
     fifo()->PushData(data.audio_bus.get(), data.capture_time, data.volume,
-                     data.key_pressed);
+                     data.key_pressed, {});
     single_buffer_processed.Wait();
   }
 }
@@ -273,16 +288,19 @@ TEST_F(ProcessingAudioFifoTest, ProcessesAllAvailableData) {
   base::WaitableEvent all_buffers_processed;
 
   int buffer_number = 0;
-  auto verify_sequential_data = [&](const media::AudioBus& process_data,
-                                    base::TimeTicks capture_time, double volume,
-                                    bool key_pressed) {
-    VerifyProcessingData(capture_buffers[buffer_number++], process_data,
-                         capture_time, volume, key_pressed);
+  auto verify_sequential_data =
+      [&](const media::AudioBus& process_data, base::TimeTicks capture_time,
+          double volume, bool key_pressed,
+          const media::AudioGlitchInfo& audio_glitch_info) {
+        VerifyProcessingData(capture_buffers[buffer_number++], process_data,
+                             capture_time, volume, key_pressed,
+                             audio_glitch_info);
 
-    any_buffer_processed.Signal();
-    if (buffer_number == kNumberOfBuffers)
-      all_buffers_processed.Signal();
-  };
+        any_buffer_processed.Signal();
+        if (buffer_number == kNumberOfBuffers) {
+          all_buffers_processed.Signal();
+        }
+      };
 
   // The processing thread won't be woken up when new data is pushed.
   SetupFifoWithFakeEvent(base::BindLambdaForTesting(verify_sequential_data));
@@ -291,7 +309,7 @@ TEST_F(ProcessingAudioFifoTest, ProcessesAllAvailableData) {
   for (int i = 0; i < kNumberOfBuffers; ++i) {
     TestCaptureData& data = capture_buffers[i];
     fifo()->PushData(data.audio_bus.get(), data.capture_time, data.volume,
-                     data.key_pressed);
+                     data.key_pressed, {});
   }
 
   // No data should have been processed by now.
@@ -309,7 +327,8 @@ TEST_F(ProcessingAudioFifoTest, NoDataToProcess) {
 
   SetupFifoWithFakeEvent(base::BindLambdaForTesting(
       [&](const media::AudioBus& process_data, base::TimeTicks capture_time,
-          double volume, bool key_pressed) {
+          double volume, bool key_pressed,
+          const media::AudioGlitchInfo& audio_glitch_info) {
         ADD_FAILURE() << "Processing callback unexpectedly called";
         processing_callback_called.Signal();
       }));
@@ -327,14 +346,15 @@ TEST_F(ProcessingAudioFifoTest, DontProcessPendingDataDuringStop) {
 
   SetupFifoWithFakeEvent(base::BindLambdaForTesting(
       [&](const media::AudioBus& process_data, base::TimeTicks capture_time,
-          double volume, bool key_pressed) {
+          double volume, bool key_pressed,
+          const media::AudioGlitchInfo& audio_glitch_info) {
         ADD_FAILURE() << "Processing callback unexpectedly called";
         processing_callback_called.Signal();
       }));
 
   // Push data into the FIFO, without calling SignalFakeNewCaptureEvent().
   fifo()->PushData(CreateAudioData().get(), base::TimeTicks(), kTestVolume,
-                   true);
+                   true, {});
 
   // The pushed data should not be processed when we stop and destroy the FIFO.
   TearDownFifo();
@@ -356,6 +376,12 @@ TEST_F(ProcessingAudioFifoTest, FifoFull_DroppedFrames) {
     return buffer_number + batch_number * kBatchSize;
   };
 
+  // We intend to drop batch 1. This means that errors will be propagated on the
+  // first buffer of batch 2.
+  capture_buffers[get_idx(0, 2)].audio_glitch_info = {
+      .duration = params_.GetBufferDuration() * kBatchSize,
+      .count = kBatchSize};
+
   base::WaitableEvent buffer_batch_processed(
       base::WaitableEvent::ResetPolicy::AUTOMATIC);
 
@@ -364,19 +390,21 @@ TEST_F(ProcessingAudioFifoTest, FifoFull_DroppedFrames) {
   // batch will be queued, after the first batch is done processing.
   int buffer_number = 0;
   int batch_number = 0;
-  auto verify_dropped_data = [&](const media::AudioBus& process_data,
-                                 base::TimeTicks capture_time, double volume,
-                                 bool key_pressed) {
-    // Verify we don't get any buffers from the 2nd batch.
-    VerifyProcessingData(capture_buffers[get_idx(buffer_number, batch_number)],
-                         process_data, capture_time, volume, key_pressed);
+  auto verify_dropped_data =
+      [&](const media::AudioBus& process_data, base::TimeTicks capture_time,
+          double volume, bool key_pressed,
+          const media::AudioGlitchInfo& audio_glitch_info) {
+        // Verify we don't get any buffers from the 2nd batch.
+        VerifyProcessingData(
+            capture_buffers[get_idx(buffer_number, batch_number)], process_data,
+            capture_time, volume, key_pressed, audio_glitch_info);
 
-    if (++buffer_number == kBatchSize) {
-      buffer_number = 0;
-      batch_number = 2;  // Skip from 1st to 3rd batch of buffers.
-      buffer_batch_processed.Signal();
-    }
-  };
+        if (++buffer_number == kBatchSize) {
+          buffer_number = 0;
+          batch_number = 2;  // Skip from 1st to 3rd batch of buffers.
+          buffer_batch_processed.Signal();
+        }
+      };
 
   SetupFifoWithFakeEvent(base::BindLambdaForTesting(verify_dropped_data));
 
@@ -386,7 +414,7 @@ TEST_F(ProcessingAudioFifoTest, FifoFull_DroppedFrames) {
     for (int buffer = 0; buffer < kBatchSize; ++buffer) {
       TestCaptureData& data = capture_buffers[get_idx(buffer, batch)];
       fifo()->PushData(data.audio_bus.get(), data.capture_time, data.volume,
-                       data.key_pressed);
+                       data.key_pressed, {});
     }
 
     // Skip processing the first batch, ensuring the second batch will be
@@ -414,7 +442,8 @@ TEST_F(ProcessingAudioFifoTest, StopDuringBatchProcess) {
   int number_of_calls = 0;
   auto verify_stopping = [&](const media::AudioBus& process_data,
                              base::TimeTicks capture_time, double volume,
-                             bool key_pressed) {
+                             bool key_pressed,
+                             const media::AudioGlitchInfo& audio_glitch_info) {
     // We should only get one processing callback call, since calling
     // SetFifoStoppingFlag() should prevent further data from being processed.
     EXPECT_LE(++number_of_calls, 1);
@@ -430,7 +459,7 @@ TEST_F(ProcessingAudioFifoTest, StopDuringBatchProcess) {
   for (int i = 0; i < kNumberOfBuffers; ++i) {
     TestCaptureData& data = capture_buffers[i];
     fifo()->PushData(data.audio_bus.get(), data.capture_time, data.volume,
-                     data.key_pressed);
+                     data.key_pressed, {});
   }
 
   // Process a single buffer.

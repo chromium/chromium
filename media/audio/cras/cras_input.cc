@@ -425,7 +425,7 @@ void CrasInputStream::ReadAudio(size_t frames,
 
   audio_bus_->FromInterleaved<SignedInt16SampleTypeTraits>(
       reinterpret_cast<int16_t*>(buffer), audio_bus_->frames());
-  callback_->OnData(audio_bus_.get(), capture_time, normalized_volume);
+  callback_->OnData(audio_bus_.get(), capture_time, normalized_volume, {});
 }
 
 void CrasInputStream::NotifyStreamError(int err) {

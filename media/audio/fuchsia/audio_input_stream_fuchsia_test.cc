@@ -39,7 +39,8 @@ class TestCaptureCallback final : public AudioInputStream::AudioInputCallback {
   // AudioCapturerSource::CaptureCallback implementation.
   void OnData(const AudioBus* source,
               base::TimeTicks capture_time,
-              double volume) override {
+              double volume,
+              const AudioGlitchInfo& glitch_info) override {
     auto bus = AudioBus::Create(source->channels(), source->frames());
     source->CopyTo(bus.get());
     packets_.push_back(std::move(bus));

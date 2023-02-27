@@ -16,6 +16,7 @@
 #include "media/audio/cras/audio_manager_cras.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,11 @@ namespace media {
 
 class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
  public:
-  MOCK_METHOD3(OnData, void(const AudioBus*, base::TimeTicks, double));
+  MOCK_METHOD4(OnData,
+               void(const AudioBus*,
+                    base::TimeTicks,
+                    double,
+                    const AudioGlitchInfo& glitch_info));
   MOCK_METHOD0(OnError, void());
 };
 
@@ -123,7 +128,7 @@ class CrasInputStreamTest : public testing::Test {
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-    EXPECT_CALL(mock_callback, OnData(_, _, _))
+    EXPECT_CALL(mock_callback, OnData(_, _, _, _))
         .WillOnce(InvokeWithoutArgs(&event, &base::WaitableEvent::Signal));
 
     test_stream->Start(&mock_callback);
