@@ -2171,8 +2171,23 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
   // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime, which
   // may happen with refills.
-  if (form_structure->field_count() != form.fields.size())
+  if (action == mojom::RendererFormDataAction::kFill) {
+    base::UmaHistogramBoolean(
+        "Autofill.SkippingFormFillDueToChangedFieldCount",
+        form_structure->field_count() != form.fields.size());
+  }
+  if (form_structure->field_count() != form.fields.size()) {
+    LOG_AF(buffer)
+        << Tr{} << "*"
+        << "Skipped filling of form because the number of fields to be "
+           "filled differs from the number of fields registered in the form "
+           "cache."
+        << CTag{"table"};
+    LOG_AF(log_manager()) << LoggingScope::kFilling
+                          << LogMessage::kSendFillingData << Br{}
+                          << std::move(buffer);
     return;
+  }
 
   if (action == mojom::RendererFormDataAction::kFill && !is_refill) {
     SetFillingContext(

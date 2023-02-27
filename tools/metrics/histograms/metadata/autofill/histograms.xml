@@ -3815,6 +3815,17 @@ chromium-metrics-reviews@google.com.
   <token key="SourcePair" variants="Autofill.ShadowPredictions.SourcePair"/>
 </histogram>
 
+<histogram name="Autofill.SkippingFormFillDueToChangedFieldCount"
+    enum="Boolean" expires_after="2023-08-20">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records whether an autofill operation was skipped because the number of
+    fields to be filled is different than that number of fields registered in
+    the form cache.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Snackbar.{SnackbarType}.ActionClicked"
     enum="BooleanShown" expires_after="2023-11-01">
   <owner>siashah@chromium.org</owner>
