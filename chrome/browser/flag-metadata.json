@@ -142,6 +142,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "ambient-mode-managed-screensaver-enabled",
+    "owners": [ "eariassoto", "fahadmansoor", "ghostbusters@google.com" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "android-force-app-language-prompt",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 115

@@ -4698,6 +4698,12 @@ const char kPersonalizationJellyDescription[] =
     "Feature to enable the Jelly design in Personalization App. Requires "
     "jelly-colors flag to be enabled.";
 
+const char kAmbientModeManagedScreensaverName[] =
+    "Enables the managed screensaver";
+const char kAmbientModeManagedScreensaverDescription[] =
+    "Enables a managed screensaver that is controlled by admin through "
+    "enterprise settings.";
+
 const char kAmbientModeThrottleAnimationName[] =
     "Throttle the frame rate of Lottie animations in ambient mode";
 const char kAmbientModeThrottleAnimationDescription[] =

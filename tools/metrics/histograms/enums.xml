@@ -58815,6 +58815,8 @@ from previous Chrome versions.
   <int value="-1646653199" label="WallpaperGooglePhotosIntegration:enabled"/>
   <int value="-1646196271" label="WebRtcStatsReportIdl:disabled"/>
   <int value="-1646016597" label="IsolatePrerenders:disabled"/>
+  <int value="-1646002522"
+      label="ChromeOSAmbientModeManagedScreensaver:enabled"/>
   <int value="-1645071473" label="ChromeColors:disabled"/>
   <int value="-1644308778" label="WASAPIRawAudioCapture:disabled"/>
   <int value="-1643933608" label="SyncAutofillWalletOfferData:enabled"/>
@@ -62211,6 +62213,8 @@ from previous Chrome versions.
   <int value="255806443" label="GetDisplayMediaSet:disabled"/>
   <int value="256753680" label="ChromeKioskEnableLacros:disabled"/>
   <int value="257206347" label="GuestOSGenericInstaller:disabled"/>
+  <int value="257348975"
+      label="ChromeOSAmbientModeManagedScreensaver:disabled"/>
   <int value="258621334"
       label="HappinessTrackingSurveysForDesktopDemo:disabled"/>
   <int value="259021228" label="OffMainThreadFetch:disabled"/>
