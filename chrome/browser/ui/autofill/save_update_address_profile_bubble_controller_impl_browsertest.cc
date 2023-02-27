@@ -38,18 +38,16 @@ class SaveUpdateAddressProfileBubbleControllerImplTest
         profile, original_profile,
         AutofillClient::SaveAddressProfilePromptOptions{.show_prompt = true},
         base::DoNothing());
-    controller_ = SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
-        web_contents);
-    DCHECK(controller_);
+    DCHECK(controller());
   }
 
   SaveUpdateAddressProfileBubbleControllerImpl* controller() {
-    return controller_;
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    DCHECK(web_contents);
+    return SaveUpdateAddressProfileBubbleControllerImpl::FromWebContents(
+        web_contents);
   }
-
- private:
-  raw_ptr<SaveUpdateAddressProfileBubbleControllerImpl, DanglingUntriaged>
-      controller_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUpdateAddressProfileBubbleControllerImplTest,
