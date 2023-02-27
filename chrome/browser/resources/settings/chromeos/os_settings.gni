@@ -193,7 +193,6 @@ web_component_files = [
   "chromeos/os_people_page/lock_screen_password_prompt_dialog.ts",
   "chromeos/os_people_page/os_people_page.ts",
   "chromeos/os_people_page/os_personalization_options.ts",
-  "chromeos/os_people_page/os_signout_dialog.ts",
   "chromeos/os_people_page/os_sync_controls.ts",
   "chromeos/os_people_page/os_sync_encryption_options.ts",
   "chromeos/os_people_page/os_sync_page.ts",

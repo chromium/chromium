@@ -178,7 +178,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   OS_PRIVACY: Route;
   OS_RESET: Route;
   OS_SEARCH: Route;
-  OS_SIGN_OUT: Route;
   OS_SYNC: Route;
   OS_PEOPLE: Route;
   PER_DEVICE_KEYBOARD: Route;
@@ -220,13 +219,12 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   const r: Partial<OsSettingsRoutes> = {};
   const {Section, Subpage} = routesMojomWebui;
 
-  // Special routes: BASIC is the main page which loads if no path is
-  // provided, ADVANCED is the bottom section of the main page which is not
-  // visible unless the user enables it, and OS_SIGN_OUT is a sign out dialog.
+  // Special routes:
+  // - BASIC is the main page which loads if no path is provided
+  // - ADVANCED is the bottom section of the main page which is not
+  //   visible unless the user enables it
   r.BASIC = new Route('/');
   r.ADVANCED = new Route('/advanced');
-  r.OS_SIGN_OUT = r.BASIC.createChild('/osSignOut');
-  r.OS_SIGN_OUT.isNavigableDialog = true;
 
   // Network section.
   r.INTERNET = createSection(
