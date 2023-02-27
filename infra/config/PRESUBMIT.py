@@ -110,7 +110,7 @@ _IGNORE_OUTAGE_FOOTER = 'Infra-Config-Ignore-Outage'
 def CheckOutagesConfigOnCommit(input_api, output_api):
   outages_pyl = input_api.os_path.join(
       input_api.PresubmitLocalPath(), 'generated/outages.pyl')
-  with open(outages_pyl) as f:
+  with open(outages_pyl, encoding='utf-8') as f:
     outages_config = input_api.ast.literal_eval(f.read())
 
   if not outages_config:
