@@ -44,6 +44,7 @@ class ExtensionTelemetryFileProcessor;
 class ExtensionTelemetryPersister;
 class ExtensionTelemetryReportRequest;
 class ExtensionTelemetryReportRequest_ExtensionInfo;
+class ExtensionTelemetryReportRequest_ExtensionInfo_FileInfo;
 class ExtensionTelemetryUploader;
 class SafeBrowsingTokenFetcher;
 
@@ -189,6 +190,22 @@ class ExtensionTelemetryService : public KeyedService {
 
   // Stops and clears any offstore file data collection objects/contexts.
   void StopOffstoreFileDataCollection();
+
+  // Stores offstore extension file data retrieved from PrefService.
+  struct OffstoreExtensionFileData {
+    OffstoreExtensionFileData();
+    ~OffstoreExtensionFileData();
+    OffstoreExtensionFileData(const OffstoreExtensionFileData&);
+
+    std::string manifest;
+    std::vector<ExtensionTelemetryReportRequest_ExtensionInfo_FileInfo>
+        file_infos;
+  };
+
+  // Given an |extension_id|, retrieves the collected file data from PrefService
+  // if available.
+  absl::optional<OffstoreExtensionFileData> RetrieveOffstoreFileDataForReport(
+      const extensions::ExtensionId& extension_id);
 
   // The persister object is bound to the threadpool. This prevents the
   // the read/write operations the `persister_` runs from blocking
