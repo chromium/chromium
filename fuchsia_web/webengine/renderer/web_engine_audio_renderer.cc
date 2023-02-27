@@ -274,7 +274,7 @@ void WebEngineAudioRenderer::InitializeStreamSink() {
   if (GetPlaybackState() == PlaybackState::kStartPending)
     StartAudioConsumer();
 
-  ScheduleReadDemuxerStream();
+  ScheduleBufferTimers();
 }
 
 media::TimeSource* WebEngineAudioRenderer::GetTimeSource() {
@@ -294,7 +294,7 @@ void WebEngineAudioRenderer::StartPlaying() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   renderer_started_ = true;
-  ScheduleReadDemuxerStream();
+  ScheduleBufferTimers();
 }
 
 void WebEngineAudioRenderer::SetVolume(float volume) {
@@ -414,7 +414,7 @@ void WebEngineAudioRenderer::SetMediaTime(base::TimeDelta time) {
   }
 
   FlushInternal();
-  ScheduleReadDemuxerStream();
+  ScheduleBufferTimers();
 }
 
 base::TimeDelta WebEngineAudioRenderer::CurrentMediaTime() {
@@ -429,29 +429,27 @@ bool WebEngineAudioRenderer::GetWallClockTimes(
     const std::vector<base::TimeDelta>& media_timestamps,
     std::vector<base::TimeTicks>* wall_clock_times) {
   wall_clock_times->reserve(media_timestamps.size());
-  auto now = base::TimeTicks::Now();
 
   base::AutoLock lock(timeline_lock_);
 
   const bool is_time_moving = IsTimeMoving();
 
   if (media_timestamps.empty()) {
-    wall_clock_times->push_back(is_time_moving ? now : reference_time_);
+    wall_clock_times->push_back(is_time_moving ? base::TimeTicks::Now()
+                                               : reference_time_);
     return is_time_moving;
   }
 
-  base::TimeTicks wall_clock_base = is_time_moving ? reference_time_ : now;
+  base::TimeTicks wall_clock_base =
+      is_time_moving ? reference_time_ : base::TimeTicks::Now();
 
   for (base::TimeDelta timestamp : media_timestamps) {
-    base::TimeTicks wall_clock_time;
-
     auto relative_pos = timestamp - media_pos_;
     if (is_time_moving) {
       // See https://fuchsia.dev/reference/fidl/fuchsia.media#formulas .
       relative_pos = relative_pos * reference_delta_ / media_delta_;
     }
-    wall_clock_time = wall_clock_base + relative_pos;
-    wall_clock_times->push_back(wall_clock_time);
+    wall_clock_times->push_back(wall_clock_base + relative_pos);
   }
 
   return is_time_moving;
@@ -475,6 +473,7 @@ void WebEngineAudioRenderer::OnError(media::PipelineStatus status) {
   stream_sink_.Unbind();
   sysmem_buffer_stream_.reset();
   read_timer_.Stop();
+  out_of_buffer_timer_.Stop();
   renderer_started_ = false;
 
   if (is_demuxer_read_pending_) {
@@ -504,7 +503,7 @@ void WebEngineAudioRenderer::OnAudioConsumerStatusChanged(
     return;
   }
 
-  bool reschedule_read_timer = false;
+  bool reschedule_timers = false;
 
   if (status.has_presentation_timeline()) {
     if (GetPlaybackState() != PlaybackState::kStopped) {
@@ -519,7 +518,7 @@ void WebEngineAudioRenderer::OnAudioConsumerStatusChanged(
       reference_delta_ = status.presentation_timeline().reference_delta;
       media_delta_ = status.presentation_timeline().subject_delta;
 
-      reschedule_read_timer = true;
+      reschedule_timers = true;
     }
   }
 
@@ -529,7 +528,7 @@ void WebEngineAudioRenderer::OnAudioConsumerStatusChanged(
     DCHECK(!new_min_lead_time.is_zero());
     if (new_min_lead_time != min_lead_time_) {
       min_lead_time_ = new_min_lead_time;
-      reschedule_read_timer = true;
+      reschedule_timers = true;
     }
   }
   if (status.has_max_lead_time()) {
@@ -538,49 +537,80 @@ void WebEngineAudioRenderer::OnAudioConsumerStatusChanged(
     DCHECK(!new_max_lead_time.is_zero());
     if (new_max_lead_time != max_lead_time_) {
       max_lead_time_ = new_max_lead_time;
-      reschedule_read_timer = true;
+      reschedule_timers = true;
     }
   }
 
-  if (reschedule_read_timer) {
-    read_timer_.Stop();
-    ScheduleReadDemuxerStream();
+  if (reschedule_timers) {
+    ScheduleBufferTimers();
   }
 
   RequestAudioConsumerStatus();
 }
 
-void WebEngineAudioRenderer::ScheduleReadDemuxerStream() {
+void WebEngineAudioRenderer::ScheduleBufferTimers() {
+  std::vector<base::TimeDelta> media_timestamps;
+  if (!last_packet_timestamp_.is_min()) {
+    media_timestamps.push_back(last_packet_timestamp_);
+  }
+  std::vector<base::TimeTicks> wall_clock_times;
+  bool is_time_moving = GetWallClockTimes(media_timestamps, &wall_clock_times);
+
+  ScheduleReadDemuxerStream(is_time_moving, wall_clock_times[0]);
+  ScheduleOutOfBufferTimer(is_time_moving, wall_clock_times[0]);
+}
+
+void WebEngineAudioRenderer::ScheduleReadDemuxerStream(
+    bool is_time_moving,
+    base::TimeTicks end_of_buffer_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!renderer_started_ || !demuxer_stream_ || read_timer_.IsRunning() ||
-      is_demuxer_read_pending_ || is_at_end_of_stream_) {
+  read_timer_.Stop();
+
+  if (!renderer_started_ || !demuxer_stream_ || is_demuxer_read_pending_ ||
+      is_at_end_of_stream_) {
     return;
   }
 
-  base::TimeDelta next_read_delay;
-  if (!last_packet_timestamp_.is_min()) {
-    std::vector<base::TimeTicks> wall_clock_times;
-    bool is_time_moving =
-        GetWallClockTimes({last_packet_timestamp_}, &wall_clock_times);
-    base::TimeDelta relative_buffer_pos =
-        wall_clock_times[0] - base::TimeTicks::Now();
+  base::TimeTicks next_read_time;
 
+  // If playback is not active then there is no need to buffer more.
+  if (!is_time_moving) {
     // Check if we have buffered more than |max_lead_time_|.
-    if (relative_buffer_pos >= max_lead_time_) {
-      // If playback is not active then there is no need to buffer more.
-      if (!is_time_moving)
-        return;
-
-      // If the buffer is larger than |max_lead_time_|, then the next read
-      // should be delayed.
-      next_read_delay = relative_buffer_pos - max_lead_time_;
+    if (end_of_buffer_time >= base::TimeTicks::Now() + max_lead_time_) {
+      return;
     }
   }
 
-  read_timer_.Start(FROM_HERE, next_read_delay,
+  // Schedule the next read at the time when the buffer size will be below
+  // `max_lead_time_` (may be in the past).
+  next_read_time = end_of_buffer_time - max_lead_time_;
+
+  read_timer_.Start(FROM_HERE, next_read_time,
                     base::BindOnce(&WebEngineAudioRenderer::ReadDemuxerStream,
                                    base::Unretained(this)));
+}
+
+void WebEngineAudioRenderer::ScheduleOutOfBufferTimer(
+    bool is_time_moving,
+    base::TimeTicks end_of_buffer_time) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  out_of_buffer_timer_.Stop();
+
+  if (buffer_state_ == media::BUFFERING_HAVE_NOTHING || !is_time_moving ||
+      is_at_end_of_stream_) {
+    return;
+  }
+
+  // Time when the `stream_sink_` will run out of buffer.
+  base::TimeTicks out_of_buffer_time = end_of_buffer_time - min_lead_time_;
+
+  out_of_buffer_timer_.Start(
+      FROM_HERE, out_of_buffer_time,
+      base::BindOnce(&WebEngineAudioRenderer::SetBufferState,
+                     base::Unretained(this), media::BUFFERING_HAVE_NOTHING),
+      base::subtle::DelayPolicy::kFlexibleNoSooner);
 }
 
 void WebEngineAudioRenderer::ReadDemuxerStream() {
@@ -606,7 +636,7 @@ void WebEngineAudioRenderer::OnDemuxerStreamReadDone(
 
   if (drop_next_demuxer_read_result_) {
     drop_next_demuxer_read_result_ = false;
-    ScheduleReadDemuxerStream();
+    ScheduleBufferTimers();
     return;
   }
 
@@ -621,7 +651,7 @@ void WebEngineAudioRenderer::OnDemuxerStreamReadDone(
 
       // Continue reading the stream. Decryptor won't finish output buffer
       // initialization until it starts receiving data on the input.
-      ScheduleReadDemuxerStream();
+      ScheduleBufferTimers();
 
       client_->OnAudioConfigChange(demuxer_stream_->audio_decoder_config());
     } else {
@@ -659,7 +689,7 @@ void WebEngineAudioRenderer::OnDemuxerStreamReadDone(
 
   sysmem_buffer_stream_->EnqueueBuffer(std::move(buffer));
 
-  ScheduleReadDemuxerStream();
+  ScheduleBufferTimers();
 }
 
 void WebEngineAudioRenderer::SendInputPacket(
@@ -697,11 +727,14 @@ void WebEngineAudioRenderer::OnStreamSendDone(
     GetWallClockTimes({packet->timestamp()}, &wall_clock_times);
     base::TimeDelta relative_buffer_pos =
         wall_clock_times[0] - base::TimeTicks::Now();
-    if (relative_buffer_pos >= min_lead_time_)
+    if (relative_buffer_pos >= min_lead_time_) {
       SetBufferState(media::BUFFERING_HAVE_ENOUGH);
-  }
 
-  ScheduleReadDemuxerStream();
+      // Reschedule timers to ensure that the state is changed back to
+      // `BUFFERING_HAVE_NOTHING` when necessary.
+      ScheduleBufferTimers();
+    }
+  }
 }
 
 void WebEngineAudioRenderer::SetBufferState(
@@ -723,6 +756,7 @@ void WebEngineAudioRenderer::FlushInternal() {
   SetBufferState(media::BUFFERING_HAVE_NOTHING);
   last_packet_timestamp_ = base::TimeDelta::Min();
   read_timer_.Stop();
+  out_of_buffer_timer_.Stop();
   is_at_end_of_stream_ = false;
 
   if (is_demuxer_read_pending_) {
@@ -787,8 +821,6 @@ void WebEngineAudioRenderer::OnSysmemBufferStreamOutputPacket(
     // The packet will be sent after StreamSink is connected.
     delayed_packets_.push_back(std::move(packet));
   }
-
-  ScheduleReadDemuxerStream();
 }
 
 void WebEngineAudioRenderer::OnSysmemBufferStreamEndOfStream() {

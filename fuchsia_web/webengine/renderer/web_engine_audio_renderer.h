@@ -116,12 +116,22 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   void RequestAudioConsumerStatus();
   void OnAudioConsumerStatusChanged(fuchsia::media::AudioConsumerStatus status);
 
+  // Calls `ScheduleReadDemuxerStream()` and `ScheduleOutOfBufferTimer()` to
+  // schedule the corresponding timers.
+  void ScheduleBufferTimers();
+
   // Helpers to pump data from |demuxer_stream_| to |stream_sink_|.
-  void ScheduleReadDemuxerStream();
+  void ScheduleReadDemuxerStream(bool is_time_moving,
+                                 base::TimeTicks end_of_buffer_time);
   void ReadDemuxerStream();
   void OnDemuxerStreamReadDone(
       media::DemuxerStream::Status status,
       media::DemuxerStream::DecoderBufferVector buffers);
+
+  // Schedules `out_of_buffer_timer_` timer, which transitions the renderer to
+  // the `BUFFERING_HAVE_NOTHING` state.
+  void ScheduleOutOfBufferTimer(bool is_time_moving,
+                                base::TimeTicks end_of_buffer_time);
 
   // Sends the specified packet to |stream_sink_|.
   void SendInputPacket(media::StreamProcessorHelper::IoPacket packet);
@@ -190,7 +200,8 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   media::BufferingState buffer_state_ = media::BUFFERING_HAVE_NOTHING;
 
   base::TimeDelta last_packet_timestamp_ = base::TimeDelta::Min();
-  base::OneShotTimer read_timer_;
+  base::DeadlineTimer read_timer_;
+  base::DeadlineTimer out_of_buffer_timer_;
 
   media::SysmemAllocatorClient sysmem_allocator_{"WebEngineAudioRenderer"};
   std::unique_ptr<media::SysmemCollectionClient> input_buffer_collection_;

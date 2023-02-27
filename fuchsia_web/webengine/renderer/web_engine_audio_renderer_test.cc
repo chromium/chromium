@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "media/base/buffering_state.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/renderer_client.h"
@@ -1151,4 +1152,30 @@ TEST_P(WebEngineAudioRendererTest, PlaybackBeforeSinkCreation) {
   stream_sink_ = audio_consumer_->TakeStreamSink();
   EXPECT_GT(stream_sink_->received_packets()->size(), 0U);
   EXPECT_FALSE(stream_sink_->received_end_of_stream());
+}
+
+TEST_P(WebEngineAudioRendererTest, Buffering) {
+  ASSERT_NO_FATAL_FAILURE(CreateAndInitializeRenderer());
+
+  constexpr base::TimeDelta kStartPos = base::TimeDelta();
+  ASSERT_NO_FATAL_FAILURE(StartPlayback(kStartPos));
+
+  constexpr base::TimeDelta kTimeBeforeBuffering = base::Milliseconds(500);
+  FillDemuxerStream(kTimeBeforeBuffering);
+
+  // Buffering state should be set to BUFFERING_HAVE_ENOUGH while the renderer
+  // still has data to play.
+  task_environment_.FastForwardBy(kTimeBeforeBuffering - kMinLeadTime -
+                                  kPacketDuration);
+  EXPECT_EQ(client_.buffering_state(), media::BUFFERING_HAVE_ENOUGH);
+
+  // Buffering state should be updated once the renderer runs out of data it can
+  // read from the demuxer.
+  task_environment_.FastForwardBy(kPacketDuration);
+  EXPECT_EQ(client_.buffering_state(), media::BUFFERING_HAVE_NOTHING);
+
+  // Buffering state should be updated once more data is read from the demuxer.
+  FillDemuxerStream(kTimeBeforeBuffering + kMinLeadTime);
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(client_.buffering_state(), media::BUFFERING_HAVE_ENOUGH);
 }
