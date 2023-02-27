@@ -447,13 +447,8 @@ TEST_P(AudioManagerCrasTestAEC, DefaultBehavior) {
 
   EXPECT_TRUE(ExperimentalAecActive(params));
   EXPECT_EQ(AecActive(params), aec_supported);
-  if (aec_supported) {
-    EXPECT_FALSE(NsActive(params));
-    EXPECT_FALSE(AgcActive(params));
-  } else {
-    EXPECT_FALSE(NsActive(params));
-    EXPECT_FALSE(AgcActive(params));
-  }
+  EXPECT_FALSE(NsActive(params));
+  EXPECT_FALSE(AgcActive(params));
 }
 
 TEST_P(AudioManagerCrasTestAEC, DefaultBehaviorSystemAecEnforcedByPolicy) {
