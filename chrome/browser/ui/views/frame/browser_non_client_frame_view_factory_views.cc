@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -98,7 +98,7 @@ std::unique_ptr<BrowserNonClientFrameView> CreateBrowserNonClientFrameView(
 
 #if BUILDFLAG(IS_WIN)
   if (frame->ShouldUseNativeFrame())
-    return std::make_unique<GlassBrowserFrameView>(frame, browser_view);
+    return std::make_unique<BrowserFrameViewWin>(frame, browser_view);
 #endif
   auto view = CreateOpaqueBrowserFrameView(frame, browser_view);
   view->InitViews();

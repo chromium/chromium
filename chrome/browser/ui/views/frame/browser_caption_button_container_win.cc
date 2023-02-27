@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/glass_browser_caption_button_container.h"
+#include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 
 #include <memory>
 
 #include "chrome/browser/ui/frame/window_frame_util.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include "chrome/browser/ui/views/frame/windows_tab_search_caption_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,7 +22,7 @@ namespace {
 
 std::unique_ptr<WindowsCaptionButton> CreateCaptionButton(
     views::Button::PressedCallback callback,
-    GlassBrowserFrameView* frame_view,
+    BrowserFrameViewWin* frame_view,
     ViewID button_type,
     int accessible_name_resource_id) {
   return std::make_unique<WindowsCaptionButton>(
@@ -37,8 +37,8 @@ bool HitTestCaptionButton(WindowsCaptionButton* button,
 
 }  // anonymous namespace
 
-GlassBrowserCaptionButtonContainer::GlassBrowserCaptionButtonContainer(
-    GlassBrowserFrameView* frame_view)
+BrowserCaptionButtonContainer::BrowserCaptionButtonContainer(
+    BrowserFrameViewWin* frame_view)
     : frame_view_(frame_view),
       minimize_button_(AddChildView(CreateCaptionButton(
           base::BindRepeating(&BrowserFrame::Minimize,
@@ -87,18 +87,20 @@ GlassBrowserCaptionButtonContainer::GlassBrowserCaptionButtonContainer(
                                    /* adjust_width_for_height */ false,
                                    views::MinimumFlexSizeRule::kScaleToZero));
 
-  if (frame_view_->browser_view()->AppUsesWindowControlsOverlay())
+  if (frame_view_->browser_view()->AppUsesWindowControlsOverlay()) {
     UpdateButtonToolTipsForWindowControlsOverlay();
+  }
 }
 
-GlassBrowserCaptionButtonContainer::~GlassBrowserCaptionButtonContainer() {}
+BrowserCaptionButtonContainer::~BrowserCaptionButtonContainer() = default;
 
-int GlassBrowserCaptionButtonContainer::NonClientHitTest(
+int BrowserCaptionButtonContainer::NonClientHitTest(
     const gfx::Point& point) const {
   DCHECK(HitTestPoint(point))
       << "should only be called with a point inside this view's bounds";
-  if (tab_search_button_ && HitTestCaptionButton(tab_search_button_, point))
+  if (tab_search_button_ && HitTestCaptionButton(tab_search_button_, point)) {
     return HTCLIENT;
+  }
   // BrowserView covers the frame view when Window Controls Overlay is enabled.
   // The native window that encompasses Web Contents gets the mouse events meant
   // for the caption buttons, so returning HTClient allows these buttons to be
@@ -107,21 +109,25 @@ int GlassBrowserCaptionButtonContainer::NonClientHitTest(
       (HitTestCaptionButton(minimize_button_, point) ||
        HitTestCaptionButton(maximize_button_, point) ||
        HitTestCaptionButton(restore_button_, point) ||
-       HitTestCaptionButton(close_button_, point)))
+       HitTestCaptionButton(close_button_, point))) {
     return HTCLIENT;
-  if (HitTestCaptionButton(minimize_button_, point))
+  }
+  if (HitTestCaptionButton(minimize_button_, point)) {
     return HTMINBUTTON;
-  if (HitTestCaptionButton(maximize_button_, point))
+  }
+  if (HitTestCaptionButton(maximize_button_, point)) {
     return HTMAXBUTTON;
-  if (HitTestCaptionButton(restore_button_, point))
+  }
+  if (HitTestCaptionButton(restore_button_, point)) {
     return HTMAXBUTTON;
-  if (HitTestCaptionButton(close_button_, point))
+  }
+  if (HitTestCaptionButton(close_button_, point)) {
     return HTCLOSE;
+  }
   return HTCAPTION;
 }
 
-void GlassBrowserCaptionButtonContainer::
-    OnWindowControlsOverlayEnabledChanged() {
+void BrowserCaptionButtonContainer::OnWindowControlsOverlayEnabledChanged() {
   if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
     SetBackground(
         views::CreateSolidBackground(frame_view_->GetTitlebarColor()));
@@ -136,13 +142,12 @@ void GlassBrowserCaptionButtonContainer::
   UpdateButtonToolTipsForWindowControlsOverlay();
 }
 
-TabSearchBubbleHost*
-GlassBrowserCaptionButtonContainer::GetTabSearchBubbleHost() {
+TabSearchBubbleHost* BrowserCaptionButtonContainer::GetTabSearchBubbleHost() {
   return tab_search_button_ ? tab_search_button_->tab_search_bubble_host()
                             : nullptr;
 }
 
-void GlassBrowserCaptionButtonContainer::OnThemeChanged() {
+void BrowserCaptionButtonContainer::OnThemeChanged() {
   if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
     SetBackground(
         views::CreateSolidBackground(frame_view_->GetTitlebarColor()));
@@ -150,9 +155,10 @@ void GlassBrowserCaptionButtonContainer::OnThemeChanged() {
   views::View::OnThemeChanged();
 }
 
-void GlassBrowserCaptionButtonContainer::ResetWindowControls() {
-  if (tab_search_button_)
+void BrowserCaptionButtonContainer::ResetWindowControls() {
+  if (tab_search_button_) {
     tab_search_button_->SetState(views::Button::STATE_NORMAL);
+  }
   minimize_button_->SetState(views::Button::STATE_NORMAL);
   maximize_button_->SetState(views::Button::STATE_NORMAL);
   restore_button_->SetState(views::Button::STATE_NORMAL);
@@ -160,7 +166,7 @@ void GlassBrowserCaptionButtonContainer::ResetWindowControls() {
   InvalidateLayout();
 }
 
-void GlassBrowserCaptionButtonContainer::AddedToWidget() {
+void BrowserCaptionButtonContainer::AddedToWidget() {
   views::Widget* const widget = GetWidget();
 
   DCHECK(!widget_observation_.IsObserving());
@@ -177,18 +183,18 @@ void GlassBrowserCaptionButtonContainer::AddedToWidget() {
   }
 }
 
-void GlassBrowserCaptionButtonContainer::RemovedFromWidget() {
+void BrowserCaptionButtonContainer::RemovedFromWidget() {
   DCHECK(widget_observation_.IsObserving());
   widget_observation_.Reset();
 }
 
-void GlassBrowserCaptionButtonContainer::OnWidgetBoundsChanged(
+void BrowserCaptionButtonContainer::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
   UpdateButtons();
 }
 
-void GlassBrowserCaptionButtonContainer::UpdateButtons() {
+void BrowserCaptionButtonContainer::UpdateButtons() {
   minimize_button_->SetVisible(frame_view_->browser_view()->CanMinimize());
 
   const bool is_maximized = frame_view_->IsMaximized();
@@ -205,7 +211,7 @@ void GlassBrowserCaptionButtonContainer::UpdateButtons() {
   InvalidateLayout();
 }
 
-void GlassBrowserCaptionButtonContainer::
+void BrowserCaptionButtonContainer::
     UpdateButtonToolTipsForWindowControlsOverlay() {
   if (frame_view_->browser_view()->IsWindowControlsOverlayEnabled()) {
     minimize_button_->SetTooltipText(minimize_button_->GetAccessibleName());
@@ -220,5 +226,5 @@ void GlassBrowserCaptionButtonContainer::
   }
 }
 
-BEGIN_METADATA(GlassBrowserCaptionButtonContainer, views::View)
+BEGIN_METADATA(BrowserCaptionButtonContainer, views::View)
 END_METADATA

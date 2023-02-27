@@ -10,8 +10,8 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
@@ -23,7 +23,7 @@
 
 WindowsCaptionButton::WindowsCaptionButton(
     PressedCallback callback,
-    GlassBrowserFrameView* frame_view,
+    BrowserFrameViewWin* frame_view,
     ViewID button_type,
     const std::u16string& accessible_name)
     : views::Button(std::move(callback)),

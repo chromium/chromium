@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 
 #include <tuple>
 
@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
+#include "chrome/browser/ui/views/frame/browser_caption_button_container_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/glass_browser_caption_button_container.h"
 #include "chrome/browser/ui/views/frame/windows_caption_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
@@ -37,31 +37,32 @@
 #include "ui/color/color_provider.h"
 #include "ui/views/view_utils.h"
 
-class GlassBrowserFrameViewTest : public InProcessBrowserTest {
+class BrowserFrameViewWinTest : public InProcessBrowserTest {
  public:
-  GlassBrowserFrameViewTest() = default;
-  GlassBrowserFrameViewTest(const GlassBrowserFrameViewTest&) = delete;
-  GlassBrowserFrameViewTest& operator=(const GlassBrowserFrameViewTest&) =
-      delete;
-  ~GlassBrowserFrameViewTest() override = default;
+  BrowserFrameViewWinTest() = default;
+  BrowserFrameViewWinTest(const BrowserFrameViewWinTest&) = delete;
+  BrowserFrameViewWinTest& operator=(const BrowserFrameViewWinTest&) = delete;
+  ~BrowserFrameViewWinTest() override = default;
 
  protected:
-  GlassBrowserFrameView* GetGlassBrowserFrameView() {
+  BrowserFrameViewWin* GetBrowserFrameViewWin() {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     views::NonClientFrameView* frame_view =
         browser_view->GetWidget()->non_client_view()->frame_view();
 
-    if (!views::IsViewClass<GlassBrowserFrameView>(frame_view))
+    if (!views::IsViewClass<BrowserFrameViewWin>(frame_view)) {
       return nullptr;
-    return static_cast<GlassBrowserFrameView*>(frame_view);
+    }
+    return static_cast<BrowserFrameViewWin*>(frame_view);
   }
 
   const WindowsCaptionButton* GetMaximizeButton() {
-    auto* glass_frame_view = GetGlassBrowserFrameView();
-    if (!glass_frame_view)
+    auto* frame_view = GetBrowserFrameViewWin();
+    if (!frame_view) {
       return nullptr;
+    }
     auto* caption_button_container =
-        glass_frame_view->caption_button_container_for_testing();
+        frame_view->caption_button_container_for_testing();
     return static_cast<const WindowsCaptionButton*>(
         caption_button_container->GetViewByID(VIEW_ID_MAXIMIZE_BUTTON));
   }
@@ -69,12 +70,13 @@ class GlassBrowserFrameViewTest : public InProcessBrowserTest {
 
 // Test that in touch mode, the maximize button is enabled for a non-maximized
 // window.
-IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
                        NonMaximizedTouchMaximizeButtonState) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
   auto* maximize_button = GetMaximizeButton();
-  if (!maximize_button)
+  if (!maximize_button) {
     GTEST_SKIP();
+  }
 
   EXPECT_TRUE(maximize_button->GetVisible());
   EXPECT_TRUE(maximize_button->GetEnabled());
@@ -82,14 +84,15 @@ IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
 
 // Test that in touch mode, the maximize button is disabled and not visible for
 // a maximized window.
-IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
                        MaximizedTouchMaximizeButtonState) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{true};
-  auto* glass_frame_view = GetGlassBrowserFrameView();
-  if (!glass_frame_view)
+  auto* frame_view = GetBrowserFrameViewWin();
+  if (!frame_view) {
     GTEST_SKIP();
+  }
 
-  glass_frame_view->frame()->Maximize();
+  frame_view->frame()->Maximize();
 
   auto* maximize_button = GetMaximizeButton();
 
@@ -100,12 +103,13 @@ IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
 
 // Test that in non touch mode, the maximize button is enabled for a
 // non-maximized window.
-IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
                        NonTouchNonMaximizedMaximizeButtonState) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{false};
   auto* maximize_button = GetMaximizeButton();
-  if (!maximize_button)
+  if (!maximize_button) {
     GTEST_SKIP();
+  }
 
   EXPECT_TRUE(maximize_button->GetVisible());
   EXPECT_TRUE(maximize_button->GetEnabled());
@@ -113,28 +117,28 @@ IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
 
 // Test that in non touch mode, the maximize button is enabled and not visible
 // for a maximized window.
-IN_PROC_BROWSER_TEST_F(GlassBrowserFrameViewTest,
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
                        NonTouchMaximizedMaximizeButtonState) {
   ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper_{false};
-  auto* glass_frame_view = GetGlassBrowserFrameView();
-  if (!glass_frame_view)
+  auto* frame_view = GetBrowserFrameViewWin();
+  if (!frame_view) {
     GTEST_SKIP();
+  }
 
-  glass_frame_view->frame()->Maximize();
+  frame_view->frame()->Maximize();
 
   auto* maximize_button = GetMaximizeButton();
   EXPECT_FALSE(maximize_button->GetVisible());
   EXPECT_TRUE(maximize_button->GetEnabled());
 }
 
-class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
+class WebAppBrowserFrameViewWinTest : public InProcessBrowserTest {
  public:
-  WebAppGlassBrowserFrameViewTest() = default;
-  WebAppGlassBrowserFrameViewTest(const WebAppGlassBrowserFrameViewTest&) =
-      delete;
-  WebAppGlassBrowserFrameViewTest& operator=(
-      const WebAppGlassBrowserFrameViewTest&) = delete;
-  ~WebAppGlassBrowserFrameViewTest() override = default;
+  WebAppBrowserFrameViewWinTest() = default;
+  WebAppBrowserFrameViewWinTest(const WebAppBrowserFrameViewWinTest&) = delete;
+  WebAppBrowserFrameViewWinTest& operator=(
+      const WebAppBrowserFrameViewWinTest&) = delete;
+  ~WebAppBrowserFrameViewWinTest() override = default;
 
   GURL GetStartURL() { return GURL("https://test.org"); }
 
@@ -144,16 +148,13 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
     WebAppToolbarButtonContainer::DisableAnimationForTesting();
   }
 
-  // Windows 7 does not use GlassBrowserFrameView when Aero glass is not
-  // enabled. Skip testing in this scenario.
-  // TODO(https://crbug.com/863278): Force Aero glass on Windows 7 for this
-  // test.
-  bool InstallAndLaunchWebApp() {
+  void InstallAndLaunchWebApp() {
     auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GetStartURL();
     web_app_info->scope = GetStartURL().GetWithoutFilename();
-    if (theme_color_)
+    if (theme_color_) {
       web_app_info->theme_color = *theme_color_;
+    }
 
     web_app::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
@@ -166,112 +167,98 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
     views::NonClientFrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
-    if (!views::IsViewClass<GlassBrowserFrameView>(frame_view))
-      return false;
-    glass_frame_view_ = static_cast<GlassBrowserFrameView*>(frame_view);
+    frame_view_ = static_cast<BrowserFrameViewWin*>(frame_view);
 
     web_app_frame_toolbar_ = browser_view_->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar_);
     DCHECK(web_app_frame_toolbar_->GetVisible());
-    return true;
   }
 
   absl::optional<SkColor> theme_color_ = SK_ColorBLUE;
   raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<GlassBrowserFrameView, DanglingUntriaged> glass_frame_view_ = nullptr;
+  raw_ptr<BrowserFrameViewWin, DanglingUntriaged> frame_view_ = nullptr;
   raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
       nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ThemeColor) {
-  if (!InstallAndLaunchWebApp())
-    return;
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, ThemeColor) {
+  InstallAndLaunchWebApp();
 
-  EXPECT_EQ(glass_frame_view_->GetTitlebarColor(), *theme_color_);
+  EXPECT_EQ(frame_view_->GetTitlebarColor(), *theme_color_);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, NoThemeColor) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, NoThemeColor) {
   theme_color_ = absl::nullopt;
-  if (!InstallAndLaunchWebApp())
-    return;
+  InstallAndLaunchWebApp();
 
   EXPECT_EQ(
-      glass_frame_view_->GetTitlebarColor(),
+      frame_view_->GetTitlebarColor(),
       browser()->window()->GetColorProvider()->GetColor(ui::kColorFrameActive));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, MaximizedLayout) {
-  if (!InstallAndLaunchWebApp())
-    return;
-
-  glass_frame_view_->frame()->Maximize();
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, MaximizedLayout) {
+  InstallAndLaunchWebApp();
+  frame_view_->frame()->Maximize();
   RunScheduledLayouts();
 
   views::View* const window_title =
-      glass_frame_view_->GetViewByID(VIEW_ID_WINDOW_TITLE);
+      frame_view_->GetViewByID(VIEW_ID_WINDOW_TITLE);
   DCHECK_GT(window_title->x(), 0);
   DCHECK_GE(web_app_frame_toolbar_->y(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, RTLTopRightHitTest) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, RTLTopRightHitTest) {
   base::i18n::SetRTLForTesting(true);
-  if (!InstallAndLaunchWebApp())
-    return;
-
+  InstallAndLaunchWebApp();
   RunScheduledLayouts();
 
   // Avoid the top right resize corner.
   constexpr int kInset = 10;
-  EXPECT_EQ(glass_frame_view_->NonClientHitTest(
-                gfx::Point(glass_frame_view_->width() - kInset, kInset)),
+  EXPECT_EQ(frame_view_->NonClientHitTest(
+                gfx::Point(frame_view_->width() - kInset, kInset)),
             HTCAPTION);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, Fullscreen) {
-  if (!InstallAndLaunchWebApp())
-    return;
-
-  glass_frame_view_->frame()->SetFullscreen(true);
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, Fullscreen) {
+  InstallAndLaunchWebApp();
+  frame_view_->frame()->SetFullscreen(true);
   browser_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Verify that all children except the ClientView are hidden when the window
   // is fullscreened.
-  for (views::View* child : glass_frame_view_->children()) {
+  for (views::View* child : frame_view_->children()) {
     EXPECT_EQ(views::IsViewClass<views::ClientView>(child),
               child->GetVisible());
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewTest, ContainerHeight) {
-  if (!InstallAndLaunchWebApp())
-    return;
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinTest, ContainerHeight) {
+  InstallAndLaunchWebApp();
 
-  static_cast<views::View*>(glass_frame_view_)
+  static_cast<views::View*>(frame_view_)
       ->GetWidget()
       ->LayoutRootViewIfNecessary();
 
-  EXPECT_EQ(
-      web_app_frame_toolbar_->height(),
-      glass_frame_view_->caption_button_container_for_testing()->height());
+  EXPECT_EQ(web_app_frame_toolbar_->height(),
+            frame_view_->caption_button_container_for_testing()->height());
 
-  glass_frame_view_->frame()->Maximize();
+  frame_view_->frame()->Maximize();
 
-  EXPECT_EQ(
-      web_app_frame_toolbar_->height(),
-      glass_frame_view_->caption_button_container_for_testing()->height());
+  EXPECT_EQ(web_app_frame_toolbar_->height(),
+            frame_view_->caption_button_container_for_testing()->height());
 }
 
-class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
+class WebAppBrowserFrameViewWinWindowControlsOverlayTest
     : public InProcessBrowserTest {
  public:
-  WebAppGlassBrowserFrameViewWindowControlsOverlayTest() = default;
-  WebAppGlassBrowserFrameViewWindowControlsOverlayTest(
-      const WebAppGlassBrowserFrameViewWindowControlsOverlayTest&) = delete;
-  WebAppGlassBrowserFrameViewWindowControlsOverlayTest& operator=(
-      const WebAppGlassBrowserFrameViewWindowControlsOverlayTest&) = delete;
+  WebAppBrowserFrameViewWinWindowControlsOverlayTest() = default;
+  WebAppBrowserFrameViewWinWindowControlsOverlayTest(
+      const WebAppBrowserFrameViewWinWindowControlsOverlayTest&) = delete;
+  WebAppBrowserFrameViewWinWindowControlsOverlayTest& operator=(
+      const WebAppBrowserFrameViewWinWindowControlsOverlayTest&) = delete;
 
-  ~WebAppGlassBrowserFrameViewWindowControlsOverlayTest() override = default;
+  ~WebAppBrowserFrameViewWinWindowControlsOverlayTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -280,7 +267,7 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     InProcessBrowserTest::SetUp();
   }
 
-  bool InstallAndLaunchWebAppWithWindowControlsOverlay() {
+  void InstallAndLaunchWebAppWithWindowControlsOverlay() {
     GURL start_url = web_app_frame_toolbar_helper_
                          .LoadWindowControlsOverlayTestPageWithDataAndGetURL(
                              embedded_test_server(), &temp_dir_);
@@ -317,16 +304,12 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     views::NonClientFrameView* frame_view =
         browser_view_->GetWidget()->non_client_view()->frame_view();
 
-    if (!views::IsViewClass<GlassBrowserFrameView>(frame_view))
-      return false;
-
-    glass_frame_view_ = static_cast<GlassBrowserFrameView*>(frame_view);
+    frame_view_ = static_cast<BrowserFrameViewWin*>(frame_view);
     auto* web_app_frame_toolbar =
         browser_view_->web_app_frame_toolbar_for_testing();
 
     DCHECK(web_app_frame_toolbar);
     DCHECK(web_app_frame_toolbar->GetVisible());
-    return true;
   }
 
   void ToggleWindowControlsOverlayEnabledAndWait() {
@@ -340,54 +323,46 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
   }
 
   raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
-  raw_ptr<GlassBrowserFrameView, DanglingUntriaged> glass_frame_view_ = nullptr;
+  raw_ptr<BrowserFrameViewWin, DanglingUntriaged> frame_view_ = nullptr;
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
 
  private:
   base::ScopedTempDir temp_dir_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
                        ContainerHeight) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  EXPECT_EQ(
-      browser_view_->web_app_frame_toolbar_for_testing()->height(),
-      glass_frame_view_->caption_button_container_for_testing()->height());
+  EXPECT_EQ(browser_view_->web_app_frame_toolbar_for_testing()->height(),
+            frame_view_->caption_button_container_for_testing()->height());
 
-  glass_frame_view_->frame()->Maximize();
+  frame_view_->frame()->Maximize();
 
-  EXPECT_EQ(
-      browser_view_->web_app_frame_toolbar_for_testing()->height(),
-      glass_frame_view_->caption_button_container_for_testing()->height());
+  EXPECT_EQ(browser_view_->web_app_frame_toolbar_for_testing()->height(),
+            frame_view_->caption_button_container_for_testing()->height());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
                        Fullscreen) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
   ToggleWindowControlsOverlayEnabledAndWait();
 
-  EXPECT_GT(glass_frame_view_->GetBoundsForClientView().y(), 0);
+  EXPECT_GT(frame_view_->GetBoundsForClientView().y(), 0);
 
-  glass_frame_view_->frame()->SetFullscreen(true);
+  frame_view_->frame()->SetFullscreen(true);
   browser_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // ClientView should be covering the entire screen.
-  EXPECT_EQ(glass_frame_view_->GetBoundsForClientView().y(), 0);
+  EXPECT_EQ(frame_view_->GetBoundsForClientView().y(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
                        CaptionButtonsTooltip) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
   auto* caption_button_container =
-      glass_frame_view_->caption_button_container_for_testing();
+      frame_view_->caption_button_container_for_testing();
   auto* minimize_button = static_cast<const WindowsCaptionButton*>(
       caption_button_container->GetViewByID(VIEW_ID_MINIMIZE_BUTTON));
   auto* maximize_button = static_cast<const WindowsCaptionButton*>(
@@ -423,39 +398,35 @@ IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
   EXPECT_EQ(close_button->GetTooltipText(), u"");
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
                        CaptionButtonHitTest) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
-  glass_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
+  frame_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Avoid the top right resize corner.
   constexpr int kInset = 10;
-  const gfx::Point kPoint(glass_frame_view_->width() - kInset, kInset);
+  const gfx::Point kPoint(frame_view_->width() - kInset, kInset);
 
-  EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
+  EXPECT_EQ(frame_view_->NonClientHitTest(kPoint), HTCLOSE);
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
   // Verify the component updates on toggle.
-  EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCLIENT);
+  EXPECT_EQ(frame_view_->NonClientHitTest(kPoint), HTCLIENT);
 
   ToggleWindowControlsOverlayEnabledAndWait();
 
   // Verify the component clears when the feature is turned off.
-  EXPECT_EQ(glass_frame_view_->NonClientHitTest(kPoint), HTCLOSE);
+  EXPECT_EQ(frame_view_->NonClientHitTest(kPoint), HTCLOSE);
 }
 
 // Regression test for https://crbug.com/1286896.
-IN_PROC_BROWSER_TEST_F(WebAppGlassBrowserFrameViewWindowControlsOverlayTest,
+IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
                        TitlebarLayoutAfterUpdateWindowTitle) {
-  if (!InstallAndLaunchWebAppWithWindowControlsOverlay())
-    return;
-
+  InstallAndLaunchWebAppWithWindowControlsOverlay();
   ToggleWindowControlsOverlayEnabledAndWait();
-  glass_frame_view_->GetWidget()->LayoutRootViewIfNecessary();
-  glass_frame_view_->UpdateWindowTitle();
+  frame_view_->GetWidget()->LayoutRootViewIfNecessary();
+  frame_view_->UpdateWindowTitle();
 
   WebAppFrameToolbarView* web_app_frame_toolbar =
       browser_view_->web_app_frame_toolbar_for_testing();

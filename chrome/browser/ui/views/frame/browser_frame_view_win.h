@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_FRAME_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_FRAME_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_gdi_object.h"
@@ -16,18 +16,18 @@
 
 class BrowserView;
 class TabSearchBubbleHost;
-class GlassBrowserCaptionButtonContainer;
+class BrowserCaptionButtonContainer;
 
-class GlassBrowserFrameView : public BrowserNonClientFrameView,
-                              public TabIconViewModel {
+class BrowserFrameViewWin : public BrowserNonClientFrameView,
+                            public TabIconViewModel {
  public:
-  METADATA_HEADER(GlassBrowserFrameView);
+  METADATA_HEADER(BrowserFrameViewWin);
 
   // Constructs a non-client view for an BrowserFrame.
-  GlassBrowserFrameView(BrowserFrame* frame, BrowserView* browser_view);
-  GlassBrowserFrameView(const GlassBrowserFrameView&) = delete;
-  GlassBrowserFrameView& operator=(const GlassBrowserFrameView&) = delete;
-  ~GlassBrowserFrameView() override;
+  BrowserFrameViewWin(BrowserFrame* frame, BrowserView* browser_view);
+  BrowserFrameViewWin(const BrowserFrameViewWin&) = delete;
+  BrowserFrameViewWin& operator=(const BrowserFrameViewWin&) = delete;
+  ~BrowserFrameViewWin() override;
 
   // BrowserNonClientFrameView:
   bool CaptionButtonsOnLeadingEdge() const override;
@@ -71,8 +71,8 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
 
   SkColor GetTitlebarColor() const;
 
-  const GlassBrowserCaptionButtonContainer*
-  caption_button_container_for_testing() const {
+  const BrowserCaptionButtonContainer* caption_button_container_for_testing()
+      const {
     return caption_button_container_;
   }
 
@@ -85,7 +85,7 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   void Layout() override;
 
  private:
-  friend class GlassBrowserCaptionButtonContainer;
+  friend class BrowserCaptionButtonContainer;
 
   // Describes the type of titlebar that a window might have; used to query
   // whether specific elements may be present.
@@ -174,7 +174,7 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   // The container holding the caption buttons (minimize, maximize, close, etc.)
   // May be null if the caption button container is destroyed before the frame
   // view. Always check for validity before using!
-  raw_ptr<GlassBrowserCaptionButtonContainer> caption_button_container_;
+  raw_ptr<BrowserCaptionButtonContainer> caption_button_container_;
 
   // Whether or not the window throbber is currently animating.
   bool throbber_running_ = false;
@@ -187,4 +187,4 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
   static void InitThrobberIcons();
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_FRAME_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_

@@ -1412,7 +1412,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #if BUILDFLAG(IS_WIN)
   // TODO(zturner): Throbber icons and cursors are still stored in chrome.dll,
   // this can be killed once those are merged into resources.pak. See
-  // GlassBrowserFrameView::InitThrobberIcons(), https://crbug.com/368327 and
+  // BrowserFrameViewWin::InitThrobberIcons(), https://crbug.com/368327 and
   // https://crbug.com/1178117.
   ui::SetResourcesDataDLL(_AtlBaseModule.GetResourceInstance());
 #endif

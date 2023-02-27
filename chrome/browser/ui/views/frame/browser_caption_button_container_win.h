@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_CAPTION_BUTTON_CONTAINER_WIN_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_CAPTION_BUTTON_CONTAINER_WIN_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -14,7 +14,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-class GlassBrowserFrameView;
+class BrowserFrameViewWin;
 class TabSearchBubbleHost;
 class WindowsCaptionButton;
 class WindowsTabSearchCaptionButton;
@@ -22,13 +22,12 @@ class WindowsTabSearchCaptionButton;
 // Provides a container for Windows caption buttons that can be moved between
 // frame and browser window as needed. When extended horizontally, becomes a
 // grab bar for moving the window.
-class GlassBrowserCaptionButtonContainer : public views::View,
-                                           public views::WidgetObserver {
+class BrowserCaptionButtonContainer : public views::View,
+                                      public views::WidgetObserver {
  public:
-  METADATA_HEADER(GlassBrowserCaptionButtonContainer);
-  explicit GlassBrowserCaptionButtonContainer(
-      GlassBrowserFrameView* frame_view);
-  ~GlassBrowserCaptionButtonContainer() override;
+  METADATA_HEADER(BrowserCaptionButtonContainer);
+  explicit BrowserCaptionButtonContainer(BrowserFrameViewWin* frame_view);
+  ~BrowserCaptionButtonContainer() override;
 
   // Tests to see if the specified |point| (which is expressed in this view's
   // coordinates and which must be within this view's bounds) is within one of
@@ -43,7 +42,7 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   TabSearchBubbleHost* GetTabSearchBubbleHost();
 
  private:
-  friend class GlassBrowserFrameView;
+  friend class BrowserFrameViewWin;
 
   // views::View:
   void AddedToWidget() override;
@@ -67,7 +66,7 @@ class GlassBrowserCaptionButtonContainer : public views::View,
   // hwnd which prevent tooltips being shown for the caption buttons.
   void UpdateButtonToolTipsForWindowControlsOverlay();
 
-  const raw_ptr<GlassBrowserFrameView> frame_view_;
+  const raw_ptr<BrowserFrameViewWin> frame_view_;
   raw_ptr<WindowsTabSearchCaptionButton> tab_search_button_ = nullptr;
   const raw_ptr<WindowsCaptionButton> minimize_button_;
   const raw_ptr<WindowsCaptionButton> maximize_button_;
@@ -78,9 +77,9 @@ class GlassBrowserCaptionButtonContainer : public views::View,
       widget_observation_{this};
 
   base::CallbackListSubscription subscription_ =
-      ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(
-          &GlassBrowserCaptionButtonContainer::UpdateButtons,
-          base::Unretained(this)));
+      ui::TouchUiController::Get()->RegisterCallback(
+          base::BindRepeating(&BrowserCaptionButtonContainer::UpdateButtons,
+                              base::Unretained(this)));
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_GLASS_BROWSER_CAPTION_BUTTON_CONTAINER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_CAPTION_BUTTON_CONTAINER_WIN_H_

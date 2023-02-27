@@ -6,8 +6,8 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view_win.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,7 +15,7 @@
 #include "ui/views/view_class_properties.h"
 
 WindowsTabSearchCaptionButton::WindowsTabSearchCaptionButton(
-    GlassBrowserFrameView* frame_view,
+    BrowserFrameViewWin* frame_view,
     ViewID button_type,
     const std::u16string& accessible_name)
     : WindowsCaptionButton(views::Button::PressedCallback(),

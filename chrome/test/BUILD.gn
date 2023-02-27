@@ -3553,7 +3553,9 @@ if (!is_android) {
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
       ]
       if (is_win) {
-        sources += [ "../browser/ui/views/frame/glass_browser_frame_view_browsertest_win.cc" ]
+        sources += [
+          "../browser/ui/views/frame/browser_frame_view_browsertest_win.cc",
+        ]
       }
       if (is_mac) {
         sources += [
