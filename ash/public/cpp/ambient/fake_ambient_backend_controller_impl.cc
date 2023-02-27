@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -129,6 +130,7 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
 }
 
 void FakeAmbientBackendControllerImpl::FetchPreviewImages(
+    const gfx::Size& preview_size,
     OnPreviewImagesFetchedCallback callback) {
   std::vector<GURL> urls = {GURL(kFakeUrl)};
   // Pretend to respond asynchronously.

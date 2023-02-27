@@ -393,9 +393,9 @@ void AmbientBackendControllerImpl::FetchScreenUpdateInfo(
 }
 
 void AmbientBackendControllerImpl::FetchPreviewImages(
+    const gfx::Size& preview_size,
     OnPreviewImagesFetchedCallback callback) {
   constexpr int num_topics = 3;
-  const gfx::Size preview_size = gfx::Size(360, 130);
   OnScreenUpdateInfoFetchedCallback combined_callback =
       base::BindOnce(&ToPreviewUrls).Then(std::move(callback));
   Shell::Get()->ambient_controller()->RequestAccessToken(base::BindOnce(

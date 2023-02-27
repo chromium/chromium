@@ -33,7 +33,8 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
       bool show_pair_personal_portraits,
       const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) override;
-  void FetchPreviewImages(OnPreviewImagesFetchedCallback callback) override;
+  void FetchPreviewImages(const gfx::Size& preview_size,
+                          OnPreviewImagesFetchedCallback callback) override;
   void GetSettings(GetSettingsCallback callback) override;
   void UpdateSettings(const AmbientSettings& settings,
                       UpdateSettingsCallback callback) override;

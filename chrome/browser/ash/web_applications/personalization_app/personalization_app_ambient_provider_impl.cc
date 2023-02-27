@@ -46,9 +46,13 @@ namespace ash::personalization_app {
 
 namespace {
 
-// Width and height of the preview image for personal album.
-constexpr int kBannerWidthPx = 160;
-constexpr int kBannerHeightPx = 160;
+// Width and height of the preview images.
+// When Jelly is enabled, the max possible preview image container is 360x130.
+// Double the fetched image W/H to stay sharp when scaled down.
+const int kBannerWidthPx =
+    (features::IsPersonalizationJellyEnabled() ? 720 : 160);
+const int kBannerHeightPx =
+    (features::IsPersonalizationJellyEnabled() ? 260 : 160);
 
 constexpr int kMaxRetries = 3;
 
@@ -534,6 +538,7 @@ void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
   needs_update_previews_ = false;
   previews_weak_factory_.InvalidateWeakPtrs();
   ash::AmbientBackendController::Get()->FetchPreviewImages(
+      gfx::Size(kBannerWidthPx, kBannerHeightPx),
       base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnPreviewsFetched,
                      previews_weak_factory_.GetWeakPtr()));
 }
@@ -542,14 +547,10 @@ void PersonalizationAppAmbientProviderImpl::FetchPreviewImages() {
 void PersonalizationAppAmbientProviderImpl::FetchGooglePhotosAlbumsPreviews(
     const std::vector<std::string>& album_ids) {
   const int num_previews = features::IsPersonalizationJellyEnabled() ? 3 : 4;
-  const int preview_width =
-      features::IsPersonalizationJellyEnabled() ? 360 : kBannerWidthPx;
-  const int preview_height =
-      features::IsPersonalizationJellyEnabled() ? 130 : kBannerHeightPx;
   DCHECK(!album_ids.empty());
   previews_weak_factory_.InvalidateWeakPtrs();
   ash::AmbientBackendController::Get()->GetGooglePhotosAlbumsPreview(
-      album_ids, preview_width, preview_height, num_previews,
+      album_ids, kBannerWidthPx, kBannerHeightPx, num_previews,
       base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnPreviewsFetched,
                      previews_weak_factory_.GetWeakPtr()));
 }

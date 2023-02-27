@@ -131,7 +131,8 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
       const gfx::Size& screen_size,
       OnScreenUpdateInfoFetchedCallback callback) = 0;
 
-  virtual void FetchPreviewImages(OnPreviewImagesFetchedCallback callback) = 0;
+  virtual void FetchPreviewImages(const gfx::Size& preview_size,
+                                  OnPreviewImagesFetchedCallback callback) = 0;
 
   // Get ambient mode Settings from server.
   virtual void GetSettings(GetSettingsCallback callback) = 0;
