@@ -71,6 +71,7 @@
 //content/test/data/attribution_reporting/interop/event_level_trigger_priority.json
 //content/test/data/attribution_reporting/interop/event_report_window.json
 //content/test/data/attribution_reporting/interop/event_source.json
+//content/test/data/attribution_reporting/interop/event_source_trigger_priority.json
 //content/test/data/attribution_reporting/interop/expired_source.json
 //content/test/data/attribution_reporting/interop/most_recent_source.json
 //content/test/data/attribution_reporting/interop/rate_limit_max_attribution_reporting_endpoints.json
