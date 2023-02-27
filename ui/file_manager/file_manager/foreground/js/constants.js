@@ -145,6 +145,7 @@ constants.ICON_TYPES = {
   DRIVE_RECENT: 'drive_recent',
   DRIVE_SHARED_WITH_ME: 'drive_shared_with_me',
   DRIVE: 'drive',
+  ERROR: 'error',
   EXCEL: 'excel',
   EXTERNAL_MEDIA: 'external_media',
   FOLDER: 'folder',

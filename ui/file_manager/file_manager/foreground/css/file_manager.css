@@ -590,6 +590,11 @@ body.check-select .dialog-header
   background-image: none;
 }
 
+.dialog-header #cloud-wrapper {
+  position: relative;
+  display: flex;
+}
+
 .dialog-header #search-wrapper {
   display: flex;
 }
