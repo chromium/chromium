@@ -500,6 +500,10 @@ TEST_F(SlimLayerTreeCompositorFrameTest, CopyOutputRequest) {
   auto solid_color_layer =
       CreateSolidColorLayer(viewport_.size(), SkColors::kGray);
   layer_tree_->SetRoot(solid_color_layer);
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    EXPECT_FALSE(layer_tree_->NeedsBeginFrames());
+  }
 
   auto copy_request_no_source_1 = std::make_unique<viz::CopyOutputRequest>(
       viz::CopyOutputRequest::ResultFormat::RGBA,
@@ -531,6 +535,7 @@ TEST_F(SlimLayerTreeCompositorFrameTest, CopyOutputRequest) {
   copy_request_with_difference_source->set_source(token2);
 
   layer_tree_->RequestCopyOfOutput(std::move(copy_request_no_source_1));
+  EXPECT_TRUE(layer_tree_->NeedsBeginFrames());
   layer_tree_->RequestCopyOfOutput(std::move(copy_request_no_source_2));
   layer_tree_->RequestCopyOfOutput(std::move(copy_request_with_source));
   layer_tree_->RequestCopyOfOutput(std::move(copy_request_with_same_source));

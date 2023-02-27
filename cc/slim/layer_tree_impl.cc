@@ -118,6 +118,7 @@ void LayerTreeImpl::RequestCopyOfOutput(
     }
   }
   copy_requests_for_next_frame_.push_back(std::move(request));
+  SetNeedsDraw();
 }
 
 base::OnceClosure LayerTreeImpl::DeferBeginFrame() {
