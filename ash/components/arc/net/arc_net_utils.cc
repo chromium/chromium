@@ -41,19 +41,12 @@ ash::NetworkStateHandler* GetStateHandler() {
 // Parses a shill IPConfig dictionary and adds the relevant fields to
 // the given |network| NetworkConfiguration object.
 void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
-                        const base::Value* shill_ipconfig) {
-  const base::Value::Dict* shill_ipconfig_dict = shill_ipconfig->GetIfDict();
-  if (!shill_ipconfig_dict) {
-    return;
-  }
-
+                        const base::Value::Dict* shill_ipconfig) {
   // Only set the IP address and gateway if both are defined and non empty.
-  const auto* address =
-      shill_ipconfig_dict->FindString(shill::kAddressProperty);
-  const auto* gateway =
-      shill_ipconfig_dict->FindString(shill::kGatewayProperty);
+  const auto* address = shill_ipconfig->FindString(shill::kAddressProperty);
+  const auto* gateway = shill_ipconfig->FindString(shill::kGatewayProperty);
   const int prefixlen =
-      shill_ipconfig_dict->FindInt(shill::kPrefixlenProperty).value_or(0);
+      shill_ipconfig->FindInt(shill::kPrefixlenProperty).value_or(0);
   if (address && !address->empty() && gateway && !gateway->empty()) {
     if (prefixlen < 64) {
       network->host_ipv4_prefix_length = prefixlen;
@@ -69,7 +62,7 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   // If the user has overridden DNS with the "Google nameservers" UI options,
   // the kStaticIPConfigProperty object will be empty except for DNS addresses.
   if (const auto* dns_list =
-          shill_ipconfig_dict->FindList(shill::kNameServersProperty)) {
+          shill_ipconfig->FindList(shill::kNameServersProperty)) {
     for (const auto& dns_value : *dns_list) {
       const std::string& dns = dns_value.GetString();
       if (dns.empty()) {
@@ -87,19 +80,19 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   }
 
   if (const auto* domains =
-          shill_ipconfig_dict->FindList(shill::kSearchDomainsProperty)) {
+          shill_ipconfig->FindList(shill::kSearchDomainsProperty)) {
     for (const auto& domain : *domains) {
       network->host_search_domains->push_back(domain.GetString());
     }
   }
 
-  const int mtu = shill_ipconfig_dict->FindInt(shill::kMtuProperty).value_or(0);
+  const int mtu = shill_ipconfig->FindInt(shill::kMtuProperty).value_or(0);
   if (mtu > 0) {
     network->host_mtu = mtu;
   }
 
   if (const auto* include_routes_list =
-          shill_ipconfig_dict->FindList(shill::kIncludedRoutesProperty)) {
+          shill_ipconfig->FindList(shill::kIncludedRoutesProperty)) {
     for (const auto& include_routes_value : *include_routes_list) {
       const std::string& include_route = include_routes_value.GetString();
       if (!include_route.empty()) {
@@ -109,7 +102,7 @@ void AddIpConfiguration(arc::mojom::NetworkConfiguration* network,
   }
 
   if (const auto* exclude_routes_list =
-          shill_ipconfig_dict->FindList(shill::kExcludedRoutesProperty)) {
+          shill_ipconfig->FindList(shill::kExcludedRoutesProperty)) {
     for (const auto& exclude_routes_value : *exclude_routes_list) {
       const std::string& exclude_route = exclude_routes_value.GetString();
       if (!exclude_route.empty()) {
@@ -154,7 +147,7 @@ namespace arc::net_utils {
 
 arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
     const ash::NetworkState* network_state,
-    const base::Value* shill_dict) {
+    const base::Value::Dict* shill_dict) {
   auto mojo = arc::mojom::NetworkConfiguration::New();
   // Initialize optional array fields to avoid null guards both here and in ARC.
   mojo->host_ipv6_global_addresses = std::vector<std::string>();
@@ -172,7 +165,7 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   mojo->type = TranslateNetworkType(network_state->type());
   mojo->is_metered =
       shill_dict &&
-      shill_dict->FindBoolPath(shill::kMeteredProperty).value_or(false);
+      shill_dict->FindBool(shill::kMeteredProperty).value_or(false);
 
   // IP configuration data is added from the properties of the underlying shill
   // Device and shill Service attached to the Device. Device properties are
@@ -192,15 +185,20 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   if (const auto* device =
           GetStateHandler()->GetDeviceState(network_state->device_path())) {
     mojo->network_interface = device->interface();
-    for (const auto kv : device->ip_configs()) {
-      AddIpConfiguration(mojo.get(), &kv.second);
+    for (const auto [key, value] : device->ip_configs()) {
+      if (value.is_dict()) {
+        AddIpConfiguration(mojo.get(), &value.GetDict());
+      }
     }
   }
 
   if (shill_dict) {
     for (const auto* property :
          {shill::kStaticIPConfigProperty, shill::kSavedIPConfigProperty}) {
-      AddIpConfiguration(mojo.get(), shill_dict->GetDict().Find(property));
+      const base::Value::Dict* config = shill_dict->FindDict(property);
+      if (config) {
+        AddIpConfiguration(mojo.get(), config);
+      }
     }
   }
 
@@ -215,9 +213,10 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
     mojo->wifi->rssi = network_state->rssi();
     if (shill_dict) {
       mojo->wifi->hidden_ssid =
-          shill_dict->FindBoolPath(shill::kWifiHiddenSsid).value_or(false);
+          shill_dict->FindBoolByDottedPath(shill::kWifiHiddenSsid)
+              .value_or(false);
       const auto* fqdn =
-          shill_dict->FindStringPath(shill::kPasspointFQDNProperty);
+          shill_dict->FindStringByDottedPath(shill::kPasspointFQDNProperty);
       if (fqdn && !fqdn->empty()) {
         mojo->wifi->fqdn = *fqdn;
       }
@@ -360,7 +359,7 @@ arc::mojom::NetworkType TranslateNetworkType(const std::string& type) {
 std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::string& arc_vpn_path,
     const ash::NetworkStateHandler::NetworkStateList& network_states,
-    const std::map<std::string, base::Value>& shill_network_properties,
+    const std::map<std::string, base::Value::Dict>& shill_network_properties,
     const std::vector<patchpanel::NetworkDevice>& devices) {
   // Move the devices vector to a map keyed by its physical interface name in
   // order to avoid multiple loops. The map also filters non-ARC devices.
@@ -391,7 +390,7 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     }
 
     const auto it = shill_network_properties.find(network_path);
-    const auto* shill_dict =
+    const base::Value::Dict* shill_dict =
         (it != shill_network_properties.end()) ? &it->second : nullptr;
     auto network = TranslateNetworkProperties(state, shill_dict);
     network->is_default_network = state == GetStateHandler()->DefaultNetwork();

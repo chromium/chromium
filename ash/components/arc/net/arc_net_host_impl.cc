@@ -1169,8 +1169,7 @@ void ArcNetHostImpl::ReceiveShillProperties(
     return;
   }
 
-  shill_network_properties_[service_path] =
-      base::Value(std::move(*shill_properties));
+  shill_network_properties_[service_path] = std::move(*shill_properties);
 
   // Get patchpanel devices and update active networks.
   ash::PatchPanelClient::Get()->GetDevices(base::BindOnce(
@@ -1209,15 +1208,14 @@ void ArcNetHostImpl::NetworkListChanged() {
 void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
                                StartLohsCallback callback) {
   NET_LOG(USER) << "Starting LOHS";
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
 
   if (config->hexssid.empty()) {
     NET_LOG(ERROR) << "Cannot create local only hotspot without hex ssid";
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
-  dict.GetDict().Set(shill::kTetheringConfSSIDProperty,
-                     base::Value(config->hexssid));
+  dict.Set(shill::kTetheringConfSSIDProperty, config->hexssid);
 
   if (config->band != arc::mojom::WifiBand::k2Ghz) {
     // TODO(b/257880335): Support 5Ghz band as well
@@ -1226,8 +1224,7 @@ void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
-  dict.GetDict().Set(shill::kTetheringConfBandProperty,
-                     base::Value(shill::kBand2GHz));
+  dict.Set(shill::kTetheringConfBandProperty, shill::kBand2GHz);
 
   if (config->security_type != arc::mojom::SecurityType::WPA_PSK) {
     NET_LOG(ERROR) << "Unsupported security for LOHS: " << config->security_type
@@ -1240,16 +1237,14 @@ void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
     std::move(callback).Run(arc::mojom::LohsStatus::kErrorInvalidArgument);
     return;
   }
-  dict.GetDict().Set(shill::kTetheringConfSecurityProperty,
-                     base::Value(shill::kSecurityWpa2));
-  dict.GetDict().Set(shill::kTetheringConfPassphraseProperty,
-                     base::Value(config->passphrase.value()));
+  dict.Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2);
+  dict.Set(shill::kTetheringConfPassphraseProperty, config->passphrase.value());
 
   NET_LOG(USER) << "Set Shill Manager property: " << shill::kLOHSConfigProperty
                 << ": " << dict;
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ash::ShillManagerClient::Get()->SetProperty(
-      shill::kLOHSConfigProperty, dict,
+      shill::kLOHSConfigProperty, base::Value(std::move(dict)),
       base::BindOnce(&SetLohsConfigPropertySuccessCallback,
                      std::move(callback_split.first)),
       base::BindOnce(&SetLohsConfigPropertyFailureCallback,
