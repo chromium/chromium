@@ -26,6 +26,7 @@
 #include "components/visitedlink/browser/visitedlink_event_listener.h"
 #include "components/visitedlink/browser/visitedlink_writer.h"
 #include "components/visitedlink/common/visitedlink.mojom.h"
+#include "components/visitedlink/common/visitedlink_common.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -542,6 +543,39 @@ TEST_F(VisitedLinkTest, Listener) {
   // Verify that VisitedLinkWriter::Listener::Reset(true) was called when the
   // table was loaded.
   EXPECT_EQ(1, listener->completely_reset_count());
+}
+
+TEST_F(VisitedLinkTest, HashRangeWraparound) {
+  ASSERT_TRUE(InitVisited(0, true, true));
+
+  // Create two fingerprints that, when added, will create a wraparound hash
+  // range.
+  const VisitedLinkCommon::Fingerprint kFingerprint0 =
+      writer_->DefaultTableSize() - 1;
+  const VisitedLinkCommon::Fingerprint kFingerprint1 = kFingerprint0 + 1;
+
+  // Add the two fingerprints.
+  const VisitedLinkCommon::Hash hash0 =
+      writer_->AddFingerprint(kFingerprint0, false);
+  const VisitedLinkCommon::Hash hash1 =
+      writer_->AddFingerprint(kFingerprint1, false);
+
+  // Verify the hashes form a range that wraps around.
+  EXPECT_EQ(hash0, VisitedLinkCommon::Hash(writer_->DefaultTableSize() - 1));
+  EXPECT_EQ(hash1, 0);
+
+  // Write the database to file.
+  writer_->WriteUsedItemCountToFile();
+  writer_->WriteHashRangeToFile(hash0, hash1);
+
+  // Close and reopen the database.
+  ClearDB();
+  ASSERT_TRUE(InitVisited(0, true, true));
+
+  // Verify database contents.
+  ASSERT_EQ(writer_->GetUsedCount(), 2);
+  ASSERT_TRUE(writer_->IsVisited(kFingerprint0));
+  ASSERT_TRUE(writer_->IsVisited(kFingerprint1));
 }
 
 class VisitCountingContext : public mojom::VisitedLinkNotificationSink {

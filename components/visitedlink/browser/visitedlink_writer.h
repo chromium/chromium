@@ -177,6 +177,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   FRIEND_TEST_ALL_PREFIXES(VisitedLinkTest, Delete);
   FRIEND_TEST_ALL_PREFIXES(VisitedLinkTest, BigDelete);
   FRIEND_TEST_ALL_PREFIXES(VisitedLinkTest, BigImport);
+  FRIEND_TEST_ALL_PREFIXES(VisitedLinkTest, HashRangeWraparound);
 
   // Keeps the result of loading the table from the database file to the UI
   // thread.
