@@ -1065,9 +1065,9 @@ bool Schema::InternalStorage::ParseEnum(const base::Value::Dict& schema,
     return false;
   }
   schema_node->extra = static_cast<int>(restriction_nodes_.size());
-  restriction_nodes_.emplace_back();
-  restriction_nodes_.back().enumeration_restriction.offset_begin = offset_begin;
-  restriction_nodes_.back().enumeration_restriction.offset_end = offset_end;
+  restriction_nodes_.push_back(RestrictionNode{
+      .enumeration_restriction = RestrictionNode::EnumerationRestriction{
+          .offset_begin = offset_begin, .offset_end = offset_end}});
   return true;
 }
 
@@ -1081,9 +1081,9 @@ bool Schema::InternalStorage::ParseRangedInt(const base::Value::Dict& schema,
     return false;
   }
   schema_node->extra = static_cast<int>(restriction_nodes_.size());
-  restriction_nodes_.emplace_back();
-  restriction_nodes_.back().ranged_restriction.max_value = max_value;
-  restriction_nodes_.back().ranged_restriction.min_value = min_value;
+  restriction_nodes_.push_back(
+      RestrictionNode{.ranged_restriction = RestrictionNode::RangedRestriction{
+                          .max_value = max_value, .min_value = min_value}});
   return true;
 }
 
@@ -1105,10 +1105,9 @@ bool Schema::InternalStorage::ParseStringPattern(
   strings_.push_back(*pattern);
   string_enums_.push_back(strings_.back().c_str());
   schema_node->extra = static_cast<int>(restriction_nodes_.size());
-  restriction_nodes_.emplace_back();
-  restriction_nodes_.back().string_pattern_restriction.pattern_index = index;
-  restriction_nodes_.back().string_pattern_restriction.pattern_index_backup =
-      index;
+  restriction_nodes_.push_back(RestrictionNode{
+      .string_pattern_restriction = RestrictionNode::StringPatternRestriction{
+          .pattern_index = index, .pattern_index_backup = index}});
   return true;
 }
 
