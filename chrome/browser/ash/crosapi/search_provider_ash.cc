@@ -63,6 +63,10 @@ void SearchProviderAsh::OnSearchResultsReceived(
   }
 }
 
+bool SearchProviderAsh::IsSearchControllerConnected() const {
+  return search_controller_.is_bound() && search_controller_.is_connected();
+}
+
 void SearchProviderAsh::BindPublisher(
     SearchResultsReceivedCallback callback,
     mojo::PendingAssociatedReceiver<mojom::SearchResultsPublisher> publisher) {

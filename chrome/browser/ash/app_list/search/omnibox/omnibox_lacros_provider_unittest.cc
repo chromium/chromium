@@ -8,9 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
@@ -330,6 +328,86 @@ TEST_F(OmniboxLacrosProviderTest, UnhandledUrls) {
             search_controller_->last_results()[0]->id());
   EXPECT_EQ("opentab://https://docs.google.com/doc2",
             search_controller_->last_results()[1]->id());
+}
+
+// A secondary test fixture which does not have any search producer connected to
+// the crosapi manager.
+class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
+ public:
+  OmniboxLacrosProviderNoCrosAPITest() = default;
+  OmniboxLacrosProviderNoCrosAPITest(
+      const OmniboxLacrosProviderNoCrosAPITest&) = delete;
+  OmniboxLacrosProviderNoCrosAPITest& operator=(
+      const OmniboxLacrosProviderNoCrosAPITest&) = delete;
+  ~OmniboxLacrosProviderNoCrosAPITest() override = default;
+
+  void SetUp() override {
+    // Create the profile manager and an active profile.
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    // The profile needs a template URL service for history Omnibox results.
+    profile_ = profile_manager_->CreateTestingProfile(
+        chrome::kInitialProfile,
+        {{TemplateURLServiceFactory::GetInstance(),
+          base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor)}});
+
+    // The idle service has dependencies we can't instantiate in unit tests.
+    crosapi::IdleServiceAsh::DisableForTesting();
+
+    // The crosapi manager reads the global login state.
+    ash::LoginState::Initialize();
+
+    crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+
+    // Create fake lacros-side logic.
+    crosapi_manager_->crosapi_ash()->search_provider_ash();
+
+    // Create client of our provider.
+    search_controller_ = std::make_unique<TestSearchController>();
+
+    // Create the object to actually test.
+    omnibox_provider_ = std::make_unique<OmniboxLacrosProvider>(
+        profile_, &list_controller_, crosapi_manager_.get());
+    omnibox_provider_->set_controller(search_controller_.get());
+  }
+
+  void TearDown() override {
+    omnibox_provider_.reset();
+    search_controller_.reset();
+    crosapi_manager_.reset();
+    ash::LoginState::Shutdown();
+    profile_ = nullptr;
+    profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
+  }
+
+  // Starts a search and waits for the query to be sent to "lacros" over a Mojo
+  // pipe.
+  void StartSearch(const std::u16string& query) {
+    omnibox_provider_->Start(query);
+    base::RunLoop().RunUntilIdle();
+  }
+
+ protected:
+  std::unique_ptr<TestSearchController> search_controller_;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestAppListControllerDelegate list_controller_;
+  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  TestingProfile* profile_;
+  std::unique_ptr<OmniboxLacrosProvider> omnibox_provider_;
+};
+
+TEST_F(OmniboxLacrosProviderNoCrosAPITest, SystemURLsWorkWithNoSearchProvider) {
+  StartSearch(u"os://flags");
+
+  ASSERT_EQ(1u, search_controller_->last_results().size());
+  EXPECT_EQ("os://flags", search_controller_->last_results()[0]->id());
+  EXPECT_EQ(1.0, search_controller_->last_results()[0]->relevance());
+  EXPECT_EQ(u"os://flags", search_controller_->last_results()[0]->title());
+  EXPECT_EQ(u"", search_controller_->last_results()[0]->details());
 }
 
 }  // namespace app_list::test
