@@ -26,6 +26,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
@@ -50,6 +51,12 @@ bool DownloadUIModelIsRecent(const DownloadUIModel* model,
                              base::Time cutoff_time) {
   return ((model->GetStartTime().is_null() && !model->IsDone()) ||
           model->GetStartTime() > cutoff_time);
+}
+
+bool IsPendingDeepScanning(const DownloadUIModel& model) {
+  return model.GetState() == download::DownloadItem::IN_PROGRESS &&
+         model.GetDangerType() ==
+             download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
 }
 
 using DownloadUIModelPtrList = std::list<DownloadUIModelPtr>;
@@ -201,31 +208,22 @@ void DownloadBubbleUIController::OnContentProviderGoingDown() {
 void DownloadBubbleUIController::OnItemsAdded(
     const OfflineContentProvider::OfflineItemList& items) {
   bool any_new = false;
-  bool any_in_progress = false;
   for (const OfflineItem& item : items) {
     if (MaybeAddOfflineItem(item, /*is_new=*/true)) {
-      if (item.state == OfflineItemState::IN_PROGRESS) {
-        any_in_progress = true;
-      }
       any_new = true;
     }
   }
   if (any_new) {
-    display_controller_->OnNewItem(
-        /*show_details=*/(
-            any_in_progress &&
-            (browser_ == chrome::FindLastActiveWithProfile(profile_.get()))),
-        /*show_animation=*/false);
+    display_controller_->OnNewItem(/*show_animation=*/false);
   }
 }
 
 void DownloadBubbleUIController::OnNewItem(download::DownloadItem* item,
-                                           bool show_details) {
+                                           bool may_show_animation) {
   auto model = std::make_unique<DownloadItemModel>(item);
   model->SetActionedOn(false);
-  display_controller_->OnNewItem(
-      (item->GetState() == download::DownloadItem::IN_PROGRESS) && show_details,
-      model->ShouldShowDownloadStartedAnimation());
+  display_controller_->OnNewItem(may_show_animation &&
+                                 model->ShouldShowDownloadStartedAnimation());
 }
 
 bool DownloadBubbleUIController::ShouldShowIncognitoIcon(
@@ -266,8 +264,9 @@ void DownloadBubbleUIController::OnItemUpdated(
                      }),
       offline_items_.end());
   bool was_added = MaybeAddOfflineItem(item, /*is_new=*/false);
+  OfflineItemModel model(offline_manager_, item);
   display_controller_->OnUpdatedItem(
-      std::make_unique<OfflineItemModel>(offline_manager_, item)->IsDone(),
+      model.IsDone(), IsPendingDeepScanning(model),
       was_added &&
           (browser_ == chrome::FindLastActiveWithProfile(profile_.get())));
 }
@@ -277,15 +276,18 @@ void DownloadBubbleUIController::OnDownloadUpdated(
     download::DownloadItem* item) {
   // manager can be different from download_notifier_ when the current profile
   // is off the record.
+  DownloadItemModel model(item);
   if (manager != download_notifier_.GetManager()) {
     display_controller_->OnUpdatedItem(item->IsDone(),
-                                       /*show_details_if_done=*/false);
+                                       IsPendingDeepScanning(model),
+                                       /*may_show_details=*/false);
     return;
   }
-  bool show_details_if_done =
-      std::make_unique<DownloadItemModel>(item)->ShouldShowInBubble() &&
+  bool may_show_details =
+      model.ShouldShowInBubble() &&
       (browser_ == chrome::FindLastActiveWithProfile(profile_.get()));
-  display_controller_->OnUpdatedItem(item->IsDone(), show_details_if_done);
+  display_controller_->OnUpdatedItem(
+      item->IsDone(), IsPendingDeepScanning(model), may_show_details);
 }
 
 void DownloadBubbleUIController::PruneOfflineItems() {
