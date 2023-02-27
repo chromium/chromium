@@ -3797,7 +3797,7 @@ def CheckSetNoParent(input_api, output_api):
 
     allowed_owners_files_file = 'build/OWNERS.setnoparent'
     allowed_owners_files = set()
-    with open(allowed_owners_files_file, 'r') as f:
+    with open(allowed_owners_files_file, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
             if not line or line.startswith('#'):
@@ -5338,7 +5338,7 @@ def ChecksCommon(input_api, output_api):
             continue
 
         use_python3 = False
-        with open(f.LocalPath()) as fp:
+        with open(f.LocalPath(), encoding='utf-8') as fp:
             use_python3 = any(
                 line.startswith('USE_PYTHON3 = True')
                 for line in fp.readlines())
