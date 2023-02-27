@@ -824,9 +824,8 @@ base::ScopedFD FakeFileSystemInstance::CreateRegularFileDescriptor(
     bool create_success =
         base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &path);
     DCHECK(create_success);
-    int written_size =
-        base::WriteFile(path, file.content.data(), file.content.size());
-    DCHECK_EQ(static_cast<int>(file.content.size()), written_size);
+    bool write_success = base::WriteFile(path, file.content);
+    DCHECK(write_success);
     regular_file_paths_[file.url] = path;
   }
   base::File regular_file(regular_file_paths_[file.url], flags);

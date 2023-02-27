@@ -124,8 +124,7 @@ absl::optional<gfx::GpuMemoryBufferHandle> CreateGpuMemoryBufferHandle(
 base::ScopedFD CreateTempFileForTesting(const std::string& data) {
   base::FilePath path;
   base::CreateTemporaryFile(&path);
-  if (base::WriteFile(path, data.c_str(), data.size()) !=
-      base::MakeStrictNum(data.size())) {
+  if (!base::WriteFile(path, data)) {
     VLOGF(1) << "Cannot write the whole data into file.";
     return base::ScopedFD();
   }

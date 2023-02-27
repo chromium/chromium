@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <string>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -43,9 +44,8 @@ TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_FileMissing) {
 TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_FileSizeTooSmall) {
   base::FilePath file;
   ASSERT_TRUE(base::CreateTemporaryFile(&file));
-  char data[100];
-  memset(data, 0, sizeof(data));
-  base::WriteFile(file, data, sizeof(data));
+  std::vector<uint8_t> data(100, 0);
+  base::WriteFile(file, data);
 
   EXPECT_FALSE(IsSystemImageExtFormat(file));
 }
@@ -53,9 +53,8 @@ TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_FileSizeTooSmall) {
 TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_MagicNumberDoesNotMatch) {
   base::FilePath file;
   ASSERT_TRUE(base::CreateTemporaryFile(&file));
-  char data[2048];
-  memset(data, 0, sizeof(data));
-  base::WriteFile(file, data, sizeof(data));
+  std::vector<uint8_t> data(2048, 0);
+  base::WriteFile(file, data);
 
   EXPECT_FALSE(IsSystemImageExtFormat(file));
 }
@@ -63,12 +62,11 @@ TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_MagicNumberDoesNotMatch) {
 TEST_F(FileSystemStatusTest, IsSystemImageExtFormat_MagicNumberMatches) {
   base::FilePath file;
   ASSERT_TRUE(base::CreateTemporaryFile(&file));
-  char data[2048];
-  memset(data, 0, sizeof(data));
+  std::vector<uint8_t> data(2048, 0);
   // Magic signature (0xEF53) is in little-endian order.
   data[0x400 + 0x38] = 0x53;
   data[0x400 + 0x39] = 0xEF;
-  base::WriteFile(file, data, sizeof(data));
+  base::WriteFile(file, data);
 
   EXPECT_TRUE(IsSystemImageExtFormat(file));
 }
