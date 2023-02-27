@@ -121,6 +121,10 @@ void SurfaceLayer::SetLayerTree(LayerTree* tree) {
     return;
   }
 
+  if (layer_tree() == tree) {
+    return;
+  }
+
   if (layer_tree() && surface_range_.IsValid()) {
     static_cast<LayerTreeImpl*>(layer_tree())
         ->RemoveSurfaceRange(surface_range_);

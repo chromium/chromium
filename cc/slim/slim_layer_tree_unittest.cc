@@ -234,6 +234,27 @@ TEST_F(SlimLayerTreeTest, ReferencedSurfaceRange) {
             std::vector<viz::SurfaceRange>());
 }
 
+TEST_F(SlimLayerTreeTest, DestroyTreeBeforeLayer) {
+  // Regression test for use after free.
+  auto root_layer = Layer::Create();
+
+  // Use SurfaceLayer here because it accesses LayerTreeImpl pointer in
+  // SetLayerTree.
+  auto surface_layer = SurfaceLayer::Create();
+  root_layer->AddChild(surface_layer);
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  viz::SurfaceId end(viz::FrameSinkId(1u, 2u),
+                     viz::LocalSurfaceId(5u, 6u, token));
+  surface_layer->SetSurfaceId(end, cc::DeadlinePolicy::UseDefaultDeadline());
+
+  layer_tree_->SetRoot(root_layer);
+
+  layer_tree_.reset();
+
+  EXPECT_EQ(root_layer->layer_tree(), nullptr);
+  EXPECT_EQ(surface_layer->layer_tree(), nullptr);
+}
+
 }  // namespace
 
 }  // namespace cc::slim

@@ -43,7 +43,9 @@ LayerTreeImpl::PresentationCallbackInfo::operator=(PresentationCallbackInfo&&) =
 
 LayerTreeImpl::LayerTreeImpl(LayerTreeClient* client) : client_(client) {}
 
-LayerTreeImpl::~LayerTreeImpl() = default;
+LayerTreeImpl::~LayerTreeImpl() {
+  SetRoot(nullptr);
+}
 
 cc::UIResourceManager* LayerTreeImpl::GetUIResourceManager() {
   return &ui_resource_manager_;

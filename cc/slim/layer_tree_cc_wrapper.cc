@@ -76,7 +76,9 @@ LayerTreeCcWrapper::LayerTreeCcWrapper(InitParams init_params)
       cc::LayerTreeHost::CreateSingleThreaded(this, std::move(cc_init_params));
 }
 
-LayerTreeCcWrapper::~LayerTreeCcWrapper() = default;
+LayerTreeCcWrapper::~LayerTreeCcWrapper() {
+  SetRoot(nullptr);
+}
 
 cc::UIResourceManager* LayerTreeCcWrapper::GetUIResourceManager() {
   return host_->GetUIResourceManager();
@@ -150,9 +152,13 @@ void LayerTreeCcWrapper::SetRoot(scoped_refptr<Layer> root) {
     root_->SetLayerTree(nullptr);
   }
   root_ = std::move(root);
-  root_->SetLayerTree(this);
-  DCHECK(root_->cc_layer_);
-  host_->SetRootLayer(root_->cc_layer_);
+  if (root_) {
+    root_->SetLayerTree(this);
+    DCHECK(root_->cc_layer_);
+    host_->SetRootLayer(root_->cc_layer_);
+  } else {
+    host_->SetRootLayer(nullptr);
+  }
 }
 
 void LayerTreeCcWrapper::SetFrameSink(std::unique_ptr<FrameSink> sink) {
