@@ -2833,6 +2833,9 @@ extern const char kCalendarModelDebugModeDescription[];
 extern const char kCaptureModeDemoToolsName[];
 extern const char kCaptureModeDemoToolsDescription[];
 
+extern const char kCaptureModeGifRecordingName[];
+extern const char kCaptureModeGifRecordingDescription[];
+
 extern const char kDesks16Name[];
 extern const char kDesks16Description[];
 

@@ -4931,6 +4931,11 @@ const char kCaptureModeDemoToolsDescription[] =
     "Enables the ability to show clicks and keys during video recordings to "
     "enhance demo experience.";
 
+const char kCaptureModeGifRecordingName[] =
+    "Enable GIF recording in screen capture";
+const char kCaptureModeGifRecordingDescription[] =
+    "Enables the ability to record the screen into animated GIFs";
+
 const char kCalendarModelDebugModeName[] = "Monthly Calendar Model Debug Mode";
 const char kCalendarModelDebugModeDescription[] =
     "Debug mode for Monthly Calendar Model. This helps a lot in diagnosing any "

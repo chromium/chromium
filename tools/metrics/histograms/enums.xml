@@ -58560,6 +58560,7 @@ from previous Chrome versions.
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
   <int value="-1811394154" label="disable-webrtc-hw-vp8-encoding"/>
   <int value="-1810891359" label="SendTabToSelfManageDevicesLink:disabled"/>
+  <int value="-1810354047" label="GifRecording:enabled"/>
   <int value="-1810294310" label="AndroidPaymentApps:enabled"/>
   <int value="-1809969509" label="FilesSinglePartitionFormat:disabled"/>
   <int value="-1809891158" label="WebAuthenticationCable:enabled"/>
@@ -59161,6 +59162,7 @@ from previous Chrome versions.
   <int value="-1466206556" label="ArcDocumentsProviderUnknownSize:enabled"/>
   <int value="-1466100014" label="EchePhoneHubPermissionsOnboarding:disabled"/>
   <int value="-1465172796" label="CCTModule:disabled"/>
+  <int value="-1465138299" label="GifRecording:disabled"/>
   <int value="-1464860971" label="BluetoothCoredump:enabled"/>
   <int value="-1464832541" label="EnableFuzzyAppSearch:disabled"/>
   <int value="-1463489219" label="OfflinePagesCTSuppressNotifications:enabled"/>
