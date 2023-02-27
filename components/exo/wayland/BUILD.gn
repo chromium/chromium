@@ -263,6 +263,7 @@ source_set("unit_tests") {
   sources = [
     "clients/security_delegate_binding_test.cc",
     "server_unittest.cc",
+    "surface_augmenter_unittest.cc",
     "surface_unittest.cc",
     "test/client_util.cc",
     "test/client_util.h",

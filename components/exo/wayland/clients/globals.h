@@ -46,6 +46,7 @@ struct Globals {
   std::unique_ptr<zcr_stylus_v2> stylus;
   std::unique_ptr<zcr_remote_shell_v1> cr_remote_shell_v1;
   std::unique_ptr<zcr_remote_shell_v2> cr_remote_shell_v2;
+  std::unique_ptr<surface_augmenter> surface_augmenter;
 
   base::flat_map<std::string, uint32_t> requested_versions;
 };

@@ -57,6 +57,7 @@ void RegistryHandler(void* data,
   BIND(zcr_stylus_v2, stylus)
   BIND(zcr_remote_shell_v1, cr_remote_shell_v1)
   BIND(zcr_remote_shell_v2, cr_remote_shell_v2)
+  BIND(surface_augmenter, surface_augmenter)
 
 #undef BIND
 }
