@@ -105,7 +105,7 @@ struct BASE_EXPORT ShortcutProperties {
   int icon_index = -1;
   // The app model id for the shortcut.
   std::wstring app_id;
-  // Whether this is a dual mode shortcut (Win8+).
+  // Whether this is a dual mode shortcut (Windows).
   bool dual_mode = false;
   // The CLSID of the COM object registered with the OS via the shortcut. This
   // is for app activation via user interaction with a toast notification in the

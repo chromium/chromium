@@ -14,9 +14,8 @@
 namespace base {
 namespace internal {
 
-// Assert that the memory priority of |thread| is |memory_priority|. No-op on
-// Windows 7 because ::GetThreadInformation() is not available. Exposed for unit
-// tests.
+// Assert that the memory priority of `thread` is `memory_priority`. Exposed
+// for unit tests.
 BASE_EXPORT void AssertMemoryPriority(HANDLE thread, int memory_priority);
 
 }  // namespace internal

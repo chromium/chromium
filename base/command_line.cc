@@ -484,7 +484,7 @@ void CommandLine::ParseFromString(StringPieceType command_line) {
   int num_args = 0;
   wchar_t** args = NULL;
   // When calling CommandLineToArgvW, use the apiset if available.
-  // Doing so will bypass loading shell32.dll on Win8+.
+  // Doing so will bypass loading shell32.dll on Windows.
   HMODULE downlevel_shell32_dll =
       ::LoadLibraryEx(L"api-ms-win-downlevel-shell32-l1-1-0.dll", nullptr,
                       LOAD_LIBRARY_SEARCH_SYSTEM32);
