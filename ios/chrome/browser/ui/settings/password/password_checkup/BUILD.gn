@@ -36,6 +36,14 @@ source_set("password_checkup_ui") {
   ]
 }
 
+source_set("password_checkup_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_checkup_constants.h",
+    "password_checkup_constants.mm",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
