@@ -91048,6 +91048,19 @@
        {}
       ]
      ],
+     "out-of-flow-in-multicolumn-116.html": [
+      "fac536a65b34163867de1aad2b7f7378046abb47",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-000.html": [
       "72b10f5cdd3092a042f1f90bff04e9428d61608e",
       [
@@ -153236,7 +153249,7 @@
       ]
      ],
      "nesting-basic.html": [
-      "dde3ebbcfdb8d268d22fa8ce6940655808c0a202",
+      "19ff48e4a29588e48eb19570149ad7525827cd8c",
       [
        null,
        [
@@ -265222,16 +265235,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "983cc92d01067ca020189f9e5effbcb567ecb0de",
-     []
-    ],
-    "mtime.json": [
-     "857d0df88de2144b20a8349790ad84bc8f5fe711",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -305315,7 +305318,7 @@
       []
      ],
      "nesting-basic-ref.html": [
-      "8825ad47d277feb6e64fde381107833e84ccbc56",
+      "8038f369cde2b496106223551ab9441a79d2621e",
       []
      ],
      "supports-is-consistent-ref.html": [
@@ -371993,7 +371996,7 @@
       []
      ],
      "frame-timing.js": [
-      "019bd424b55065451eb4ad0a132d3a6befbbb5fc",
+      "65710e22c8fc39b4cc3ef5aa93460a2f4736f8d6",
       []
      ],
      "frameset-timing-frame.html": [
@@ -372118,6 +372121,14 @@
      ],
      "notify_parent.html": [
       "c104f3c8f0695a96646cf24a730eef0342f95876",
+      []
+     ],
+     "object-frame-options-200.asis": [
+      "122445326bdef6d058e1adf4d6a2b51e4f6889da",
+      []
+     ],
+     "object-frame-options-403.asis": [
+      "fd64f0bcdbb7c17f60f485a25cfa78c6317e0ce6",
       []
      ],
      "object-navigate-back.html": [
@@ -582768,6 +582779,15 @@
       {}
      ]
     ],
+    "entries-for-object-frame-options-deny.html": [
+     "a69b642971ba6adfbde8afcd451b29603cb7fcf3",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "entry-attributes.html": [
      "94f219f229107e4764134187f111dcc7757f617d",
      [
@@ -582865,7 +582885,7 @@
      ]
     ],
     "iframe-sequence-of-events.html": [
-     "02d1c362c9df491439fd81ed9be48d5859a2e94f",
+     "5d719fb9153f18f35d239c3135f3fd844aa8558c",
      [
       null,
       {}
