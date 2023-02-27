@@ -6391,6 +6391,21 @@
             ]
         }
     ],
+    "IOSSFSymbolsInOmnibox": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseSFSymbolsInOmnibox"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSScopedCriticalActionReuseEnabled": [
         {
             "platforms": [
