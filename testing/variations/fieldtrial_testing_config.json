@@ -11577,6 +11577,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "DeferNotifyInMotion",
                         "SuppressToolbarCaptures",
                         "UpdateBrowserControlsWithoutProxy"
                     ]
