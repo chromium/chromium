@@ -61,7 +61,7 @@ class FilesystemProxyFileStreamReaderTest : public FileStreamReaderTest {
                  size_t buf_size,
                  base::Time* modification_time) override {
     base::FilePath path = test_dir().AppendASCII(file_name);
-    base::WriteFile(path, buf, buf_size);
+    base::WriteFile(path, base::StringPiece(buf, buf_size));
 
     base::File::Info file_info;
     ASSERT_TRUE(base::GetFileInfo(path, &file_info));

@@ -817,9 +817,9 @@ TEST_F(FileSystemOperationImplTest, TestCopySuccessSamePath) {
 TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileSuccess) {
   base::FilePath src_local_disk_file_path;
   base::CreateTemporaryFile(&src_local_disk_file_path);
-  const char test_data[] = "foo";
-  int data_size = std::size(test_data);
-  base::WriteFile(src_local_disk_file_path, test_data, data_size);
+  constexpr base::StringPiece test_data = "foo";
+  constexpr int data_size = test_data.size();
+  base::WriteFile(src_local_disk_file_path, test_data);
 
   FileSystemURL dest_dir(CreateDirectory("dest"));
 
@@ -841,14 +841,14 @@ TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileSuccess) {
   EXPECT_EQ(data_size,
             base::ReadFile(PlatformPath("dest/file"), buffer, data_size));
   for (int i = 0; i < data_size; ++i)
-    EXPECT_EQ(test_data[i], buffer[i]);
+    EXPECT_EQ(test_data.at(i), buffer[i]);
 }
 
 TEST_F(FileSystemOperationImplTest, TestCopyInForeignFileFailureByQuota) {
   base::FilePath src_local_disk_file_path;
   base::CreateTemporaryFile(&src_local_disk_file_path);
-  const char test_data[] = "foo";
-  base::WriteFile(src_local_disk_file_path, test_data, std::size(test_data));
+  constexpr base::StringPiece test_data = "foo";
+  base::WriteFile(src_local_disk_file_path, test_data);
 
   FileSystemURL dest_dir(CreateDirectory("dest"));
 
@@ -1074,9 +1074,9 @@ TEST_F(FileSystemOperationImplTest, TestTruncate) {
   FileSystemURL file(CreateFile("file"));
   base::FilePath platform_path = PlatformPath("file");
 
-  char test_data[] = "test data";
-  int data_size = static_cast<int>(sizeof(test_data));
-  EXPECT_EQ(data_size, base::WriteFile(platform_path, test_data, data_size));
+  constexpr base::StringPiece test_data = "test data";
+  constexpr int data_size = test_data.size();
+  EXPECT_TRUE(base::WriteFile(platform_path, test_data));
 
   // Check that its length is the size of the data written.
   EXPECT_EQ(
@@ -1099,10 +1099,11 @@ TEST_F(FileSystemOperationImplTest, TestTruncate) {
   char data[100];
   EXPECT_EQ(length, base::ReadFile(platform_path, data, length));
   for (int i = 0; i < length; ++i) {
-    if (i < static_cast<int>(sizeof(test_data)))
-      EXPECT_EQ(test_data[i], data[i]);
-    else
+    if (i < static_cast<int>(test_data.size())) {
+      EXPECT_EQ(test_data.at(i), data[i]);
+    } else {
       EXPECT_EQ(0, data[i]);
+    }
   }
 
   // Shorten the file by truncating it.
@@ -1116,7 +1117,7 @@ TEST_F(FileSystemOperationImplTest, TestTruncate) {
   EXPECT_EQ(length, GetFileSize("file"));
   EXPECT_EQ(length, base::ReadFile(platform_path, data, length));
   for (int i = 0; i < length; ++i)
-    EXPECT_EQ(test_data[i], data[i]);
+    EXPECT_EQ(test_data.at(i), data[i]);
 
   // Truncate is not a 'read' access.  (Here expected access count is 1
   // since we made 1 read access for GetMetadata.)
