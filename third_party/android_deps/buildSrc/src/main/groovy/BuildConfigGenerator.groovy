@@ -639,6 +639,10 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # https://crbug.com/989505\n')
                 sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
                 break
+            case 'androidx_benchmark_benchmark_macro':
+                // Manually add dep onto DISALLOWED_DEP androidx.profileinstaller.
+                sb.append('  deps += [ ":androidx_profileinstaller_profileinstaller_java" ]\n')
+                break
             case 'androidx_core_core':
                 sb.with {
                     append('\n')
