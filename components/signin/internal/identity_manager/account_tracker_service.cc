@@ -105,8 +105,7 @@ bool SaveImage(scoped_refptr<base::RefCountedMemory> png_data,
     LOG(ERROR) << "Failed to create parent directory of: " << image_path;
     return false;
   }
-  if (base::WriteFile(image_path, png_data->front_as<char>(),
-                      png_data->size()) == -1) {
+  if (!base::WriteFile(image_path, *png_data)) {
     LOG(ERROR) << "Failed to save image to file: " << image_path;
     return false;
   }
