@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -33,11 +33,12 @@
 
 namespace network {
 namespace {
-static base::LazyInstance<HostResolver::ResolveHostCallback>::Leaky
-    resolve_host_callback;
+
+HostResolver::ResolveHostCallback& GetResolveHostCallback() {
+  static base::NoDestructor<HostResolver::ResolveHostCallback> callback;
+  return *callback;
 }
 
-namespace {
 absl::optional<net::HostResolver::ResolveHostParameters>
 ConvertOptionalParameters(
     const mojom::ResolveHostParametersPtr& mojo_parameters) {
@@ -110,10 +111,11 @@ void HostResolver::ResolveHost(
          optional_parameters->source != net::HostResolverSource::MULTICAST_DNS);
 #endif  // !BUILDFLAG(ENABLE_MDNS)
 
-  if (resolve_host_callback.Get())
-    resolve_host_callback.Get().Run(host->is_host_port_pair()
-                                        ? host->get_host_port_pair().host()
-                                        : host->get_scheme_host_port().host());
+  if (!GetResolveHostCallback().is_null()) {
+    GetResolveHostCallback().Run(host->is_host_port_pair()
+                                     ? host->get_host_port_pair().host()
+                                     : host->get_scheme_host_port().host());
+  }
 
   auto request = std::make_unique<ResolveHostRequest>(
       internal_resolver_, std::move(host), network_anonymization_key,
@@ -171,7 +173,7 @@ size_t HostResolver::GetNumOutstandingRequestsForTesting() const {
 
 void HostResolver::SetResolveHostCallbackForTesting(
     ResolveHostCallback callback) {
-  resolve_host_callback.Get() = std::move(callback);
+  GetResolveHostCallback() = std::move(callback);
 }
 
 void HostResolver::AsyncSetUp() {
