@@ -32,10 +32,6 @@
 
 namespace {
 
-// Used to generate a unique id when emitting the "Long Navigation to First
-// Contentful Paint" trace event.
-int g_num_trace_events_in_process = 0;
-
 // The threshold to emit a trace event is the 99th percentile
 // of the histogram on Windows Stable as of Feb 26th, 2020.
 constexpr base::TimeDelta kFirstContentfulPaintTraceThreshold =
@@ -431,6 +427,19 @@ void UmaPageLoadMetricsObserver::OnDomContentLoadedEventStart(
         internal::kBackgroundHistogramDomContentLoaded,
         timing.document_timing->dom_content_loaded_event_start.value());
   }
+
+  auto trace_id = TRACE_ID_WITH_SCOPE(
+      "UmaPageLoadMetricsObserver::OnDomContentLoadedEventStart",
+      TRACE_ID_LOCAL(this));
+  base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "loading", "PageLoadMetrics.NavigationToDOMContentLoadedEventFired",
+      trace_id, navigation_start, "URL", GetDelegate().GetUrl());
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "loading", "PageLoadMetrics.NavigationToDOMContentLoadedEventFired",
+      trace_id,
+      navigation_start +
+          timing.document_timing->dom_content_loaded_event_start.value());
 }
 
 void UmaPageLoadMetricsObserver::OnLoadEventStart(
@@ -443,6 +452,16 @@ void UmaPageLoadMetricsObserver::OnLoadEventStart(
     PAGE_LOAD_HISTOGRAM(internal::kBackgroundHistogramLoad,
                         timing.document_timing->load_event_start.value());
   }
+
+  auto trace_id = TRACE_ID_WITH_SCOPE(
+      "UmaPageLoadMetricsObserver::OnLoadEventStart", TRACE_ID_LOCAL(this));
+  base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "loading", "PageLoadMetrics.NavigationToMainFrameOnLoad", trace_id,
+      navigation_start, "URL", GetDelegate().GetUrl());
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "loading", "PageLoadMetrics.NavigationToMainFrameOnLoad", trace_id,
+      navigation_start + timing.document_timing->load_event_start.value());
 }
 
 void UmaPageLoadMetricsObserver::OnFirstPaintInPage(
@@ -509,16 +528,32 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     // paint.
     if (timing.paint_timing->first_contentful_paint.value() >
         kFirstContentfulPaintTraceThreshold) {
+      auto trace_id = TRACE_ID_WITH_SCOPE(
+          "UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage_for_"
+          "LongNavigation",
+          TRACE_ID_LOCAL(this));
       base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          "latency", "Long Navigation to First Contentful Paint",
-          TRACE_ID_LOCAL(g_num_trace_events_in_process), navigation_start);
+          "latency", "Long Navigation to First Contentful Paint", trace_id,
+          navigation_start);
       TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          "latency", "Long Navigation to First Contentful Paint",
-          TRACE_ID_LOCAL(g_num_trace_events_in_process),
+          "latency", "Long Navigation to First Contentful Paint", trace_id,
           navigation_start +
               timing.paint_timing->first_contentful_paint.value());
-      g_num_trace_events_in_process++;
+    }
+    {
+      auto trace_id = TRACE_ID_WITH_SCOPE(
+          "UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage",
+          TRACE_ID_LOCAL(this));
+      base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+          "loading", "PageLoadMetrics.NavigationToFirstContentfulPaint",
+          trace_id, navigation_start, "URL", GetDelegate().GetUrl());
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+          "loading", "PageLoadMetrics.NavigationToFirstContentfulPaint",
+          trace_id,
+          navigation_start +
+              timing.paint_timing->first_contentful_paint.value());
     }
 
     UMA_HISTOGRAM_ENUMERATION(
@@ -979,6 +1014,18 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
         GetDelegate().GetNavigationStart() +
             all_frames_largest_contentful_paint.Time().value(),
         "data", all_frames_largest_contentful_paint.DataAsTraceValue());
+
+    auto trace_id = TRACE_ID_WITH_SCOPE(
+        "UmaPageLoadMetricsObserver::RecordTimingHistograms",
+        TRACE_ID_LOCAL(this));
+    base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+        "loading", "PageLoadMetrics.NavigationToLargestContentfulPaint",
+        trace_id, navigation_start, "URL", GetDelegate().GetUrl());
+    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+        "loading", "PageLoadMetrics.NavigationToLargestContentfulPaint",
+        trace_id,
+        navigation_start + all_frames_largest_contentful_paint.Time().value());
   }
 
   if (main_frame_timing.interactive_timing->longest_input_timestamp) {
