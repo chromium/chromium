@@ -144,6 +144,7 @@
 //content/test/data/back_forward_cache/page_with_hung_iframe.html
 //content/test/data/back_forward_cache/page_with_indexedDB.html
 //content/test/data/back_forward_cache/page_with_indexedDB.js
+//content/test/data/back_forward_cache/page_with_non_existing_image.html
 //content/test/data/back_forward_cache/page_with_nonexistent_script.html
 //content/test/data/back_forward_cache/page_with_pageshow.html
 //content/test/data/back_forward_cache/page_with_same_origin_subframe_with_pageshow.html

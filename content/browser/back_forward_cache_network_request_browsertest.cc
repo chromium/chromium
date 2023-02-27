@@ -928,6 +928,68 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ("error", EvalJs(rfh_1.get(), "image_load_status"));
 }
 
+class BackForwardCacheBrowserTestWithDisallowJavaScriptExecution
+    : public BackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kBackForwardCacheNotReachedOnJavaScriptExecution);
+    DCHECK(base::FeatureList::IsEnabled(
+        blink::features::kBackForwardCacheNotReachedOnJavaScriptExecution));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithDisallowJavaScriptExecution,
+    EvictWillNotTriggerReadystatechange) {
+  net::test_server::ControllableHttpResponse image_response(
+      embedded_test_server(), "/back_forward_cache/image.png");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/back_forward_cache/page_with_non_existing_image.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  shell()->LoadURL(url_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  // Start sending response before the page gets in the back-forward cache, so
+  // that the readystate of the document is interactive instead of complete.
+  image_response.WaitForRequest();
+  image_response.Send(net::HTTP_OK, "image/png");
+  image_response.Send(" ");
+  ASSERT_TRUE(WaitForDOMContentLoaded(rfh_a.get()));
+  // Add event listener and make sure that the readystate is set to interactive.
+  ASSERT_EQ("interactive", EvalJs(rfh_a.get(), "interactivePromise"));
+
+  // 2) Navigate to B. Use |LoadURL()| and |TestNavigationManager| instead of
+  // |NavigateToURL()| because the first navigation to a.com has not been
+  // complete yet because of in-flight image request.
+  TestNavigationManager nav_manager(web_contents(), url_b);
+  shell()->LoadURL(url_b);
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 3) Evict entry A. This will change the readystate to complete as part of
+  // document detach, but the readystatechange event is queued instead of being
+  // fired synchronously.
+  DisableBFCacheForRFHForTesting(rfh_a->GetGlobalId());
+  EXPECT_TRUE(rfh_a->is_evicted_from_back_forward_cache());
+
+  // 4.) Go back. Expect that readystatechange event has not been fired, and
+  // NOTREACHED is not hit.
+  TestNavigationManager nav_manager_2(web_contents(), url_a);
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(nav_manager_2.WaitForNavigationFinished());
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
+                         kDisableForRenderFrameHostCalled},
+                    {}, {}, {RenderFrameHostDisabledForTestingReason()}, {},
+                    FROM_HERE);
+}
+
 class BackForwardCacheWithKeepaliveSupportBrowserTest
     : public BackForwardCacheBrowserTest {
  public:
