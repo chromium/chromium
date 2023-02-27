@@ -632,6 +632,10 @@ test("gl_unittests") {
     deps += [ "//media/base/win:test_support" ]
     libs = [ "dxguid.lib" ]
   }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
 }
 
 # We can't run this test on real Chrome OS hardware for Ozone, so new target.
