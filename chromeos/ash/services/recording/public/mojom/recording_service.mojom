@@ -39,6 +39,9 @@ enum RecordingStatus {
   kLowDiskSpace,
   // Ended due to reaching a critically low DriveFS quota.
   kLowDriveFsQuota,
+  // Ended due to the video encoder not supporting mid-recording
+  // re-configuation.
+  kVideoEncoderReconfigurationFailure,
 };
 
 // Defines the interface for retrieving the remaining amount of DriveFS free

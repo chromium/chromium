@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
 #include "media/base/encoder_status.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_types.h"
 
 namespace media {
 class AudioBus;
@@ -35,6 +36,27 @@ using OnFailureCallback =
 // underlying actual encoders.
 class RecordingEncoder : public RecordingFileIoHelper::Delegate {
  public:
+  // Defines an interface for the actual encoders types to provide the
+  // capabilities that they support.
+  class Capabilities {
+   public:
+    Capabilities() = default;
+    Capabilities(const Capabilities&) = delete;
+    Capabilities& operator=(const Capabilities&) = delete;
+    virtual ~Capabilities() = default;
+
+    // Returns the pixel format that the encoder supports, which should be used
+    // to initialize the frame sink video capturer in the GPU. Video frames
+    // received from the capturer should be in this pixel format.
+    virtual media::VideoPixelFormat GetSupportedPixelFormat() const = 0;
+
+    // Returns whether the encoder supports size changes of the video frames
+    // during recording (e.g. due to screen rotation, DSF changes, ... etc.).
+    // Size changes during recording require a reconfiguration of the video
+    // encoder.
+    virtual bool SupportsVideoFrameSizeChanges() const = 0;
+  };
+
   explicit RecordingEncoder(OnFailureCallback on_failure_callback);
   RecordingEncoder(const RecordingEncoder&) = delete;
   RecordingEncoder& operator=(const RecordingEncoder&) = delete;

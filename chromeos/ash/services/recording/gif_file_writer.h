@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "base/files/file.h"
+#include "base/strings/string_piece_forward.h"
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
 
 namespace recording {
@@ -32,6 +33,16 @@ class GifFileWriter {
   // Writes the contents of the given `buffer` whose length is `buffer_size` to
   // the `gif_file_`.
   void WriteBuffer(const uint8_t* const buffer, size_t buffer_size);
+
+  // Writes the given `string` to the `gif_file_`.
+  void WriteString(base::StringPiece string);
+
+  // Writes the given 16-bit `value` to the `gif_file_` in little endian format
+  // such that the least significant bit gets written first.
+  void WriteShort(uint16_t value);
+
+  // Flushes the contents of the file to the underlying storage.
+  void FlushFile();
 
  private:
   // Writes the given `data` to the `gif_file_` and check for IO errors or disk

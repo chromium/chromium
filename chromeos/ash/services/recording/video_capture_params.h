@@ -9,8 +9,8 @@
 
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
+#include "media/base/video_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/bindings/struct_forward.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -78,10 +78,12 @@ class VideoCaptureParams {
     return current_frame_sink_size_pixels_;
   }
 
-  // Initializes the given |capturer| (passed by ref) according to the capture
-  // parameters. The given |capturer| must be bound before calling this.
+  // Initializes the given `capturer` (passed by ref) according to the capture
+  // parameters. The given `capturer` must be bound before calling this.
+  // The given `supported_pixel_format` will be used to initialize `capturer`.
   void InitializeVideoCapturer(
-      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer) const;
+      mojo::Remote<viz::mojom::FrameSinkVideoCapturer>& capturer,
+      media::VideoPixelFormat supported_pixel_format) const;
 
   // Returns the bounds to which a video frame, whose
   // |original_frame_visible_rect_pixels| is given, should be cropped. If no

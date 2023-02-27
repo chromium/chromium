@@ -75,6 +75,10 @@ class WebmEncoderMuxer : public RecordingEncoder {
       const base::FilePath& webm_file_path,
       OnFailureCallback on_failure_callback);
 
+  // Creates and returns an object that specifies the capabilities of this
+  // encoder.
+  static std::unique_ptr<Capabilities> CreateCapabilities();
+
   WebmEncoderMuxer(
       PassKey,
       const media::VideoEncoder::Options& video_encoder_options,

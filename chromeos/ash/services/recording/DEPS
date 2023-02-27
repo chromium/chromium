@@ -12,6 +12,8 @@ include_rules = [
   "+services/viz/privileged/mojom/compositing",
   "+testing/gmock/include/gmock/gmock.h",
   "+testing/gtest/include/gtest/gtest.h",
+  "+third_party/skia/include/core/SkBitmap.h",
+  "+third_party/skia/include/core/SkColor.h",
   "+ui/gfx",
 
   # Abseil is allowed by default, but some features are banned. See

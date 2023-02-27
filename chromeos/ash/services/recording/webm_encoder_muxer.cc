@@ -16,6 +16,7 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/muxers/file_webm_muxer_delegate.h"
 #include "media/muxers/muxer.h"
 
@@ -38,6 +39,25 @@ namespace {
 // audio frames stored in |pending_audio_frames_|.
 constexpr size_t kMaxPendingFrames = 10;
 constexpr size_t kMaxDroppedFrames = 4 * kMaxFrameRate;
+
+// -----------------------------------------------------------------------------
+// WebmEncoderCapabilities:
+
+// Implements the capabilities for WebM encoding.
+class WebmEncoderCapabilities : public RecordingEncoder::Capabilities {
+ public:
+  WebmEncoderCapabilities() = default;
+  WebmEncoderCapabilities(const WebmEncoderCapabilities&) = delete;
+  WebmEncoderCapabilities& operator=(const WebmEncoderCapabilities&) = delete;
+  ~WebmEncoderCapabilities() override = default;
+
+  // RecordingEncoder::Capabilities:
+  media::VideoPixelFormat GetSupportedPixelFormat() const override {
+    return media::PIXEL_FORMAT_I420;
+  }
+
+  bool SupportsVideoFrameSizeChanges() const override { return true; }
+};
 
 // -----------------------------------------------------------------------------
 // RecordingMuxerDelegate:
@@ -112,6 +132,12 @@ base::SequenceBound<RecordingEncoder> WebmEncoderMuxer::Create(
       std::move(blocking_task_runner), PassKey(), video_encoder_options,
       audio_input_params, std::move(drive_fs_quota_delegate), webm_file_path,
       std::move(on_failure_callback));
+}
+
+// static
+std::unique_ptr<RecordingEncoder::Capabilities>
+WebmEncoderMuxer::CreateCapabilities() {
+  return std::make_unique<WebmEncoderCapabilities>();
 }
 
 WebmEncoderMuxer::WebmEncoderMuxer(

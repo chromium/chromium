@@ -36,7 +36,8 @@ enum class EndRecordingReason {
   kVideoEncodingError,
   kProjectorTranscriptionError,
   kLowDriveFsQuota,
-  kMaxValue = kLowDriveFsQuota,
+  kVideoEncoderReconfigurationFailure,
+  kMaxValue = kVideoEncoderReconfigurationFailure,
 };
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.

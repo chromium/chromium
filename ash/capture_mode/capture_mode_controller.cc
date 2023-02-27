@@ -375,6 +375,10 @@ void EmitServiceRecordingStatus(recording::mojom::RecordingStatus status) {
     case RecordingStatus::kLowDriveFsQuota:
       RecordEndRecordingReason(EndRecordingReason::kLowDriveFsQuota);
       break;
+    case RecordingStatus::kVideoEncoderReconfigurationFailure:
+      RecordEndRecordingReason(
+          EndRecordingReason::kVideoEncoderReconfigurationFailure);
+      break;
   }
 }
 
