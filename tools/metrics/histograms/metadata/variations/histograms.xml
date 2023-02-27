@@ -42,6 +42,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ChildProcess.FieldTrials.GetInitiallyActiveFieldTrials.FromString"
+    enum="Boolean" expires_after="2023-07-15">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Logged if there is no field trial allocator available when getting the list
+    of initially active field trials, resulting to a fallback to the command \
+    line. Note: False is never logged.
+  </summary>
+</histogram>
+
+<histogram name="ChildProcess.FieldTrials.PopulateLaunchOptions.CommandLine"
+    enum="Boolean" expires_after="2023-07-15">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Logged if the command line was populated with field trial information due to
+    the read-only shared memory handle not being available, when starting a
+    child process. Note: False is never logged.
+  </summary>
+</histogram>
+
 <histogram name="Variations.AppliedSeed.Size" units="bytes"
     expires_after="2023-07-30">
   <owner>caitlinfischer@google.com</owner>

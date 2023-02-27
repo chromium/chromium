@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -642,6 +643,9 @@ void FieldTrialList::GetInitiallyActiveFieldTrials(
   DCHECK(global_->create_trials_from_command_line_called_);
 
   if (!global_->field_trial_allocator_) {
+    UmaHistogramBoolean(
+        "ChildProcess.FieldTrials.GetInitiallyActiveFieldTrials.FromString",
+        true);
     GetActiveFieldTrialGroupsFromString(
         command_line.GetSwitchValueASCII(switches::kForceFieldTrials),
         active_groups);
@@ -738,6 +742,8 @@ void FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
 
   // If the readonly handle did not get created, fall back to flags.
   if (!global_ || !global_->readonly_allocator_region_.IsValid()) {
+    UmaHistogramBoolean(
+        "ChildProcess.FieldTrials.PopulateLaunchOptions.CommandLine", true);
     AddFeatureAndFieldTrialFlags(command_line);
     return;
   }
