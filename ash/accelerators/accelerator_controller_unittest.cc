@@ -427,12 +427,8 @@ class AcceleratorControllerTest : public AshTestBase {
     if (!base::DirectoryExists(file_path.DirName()))
       base::CreateDirectory(file_path.DirName());
 
-    int data_size = static_cast<int>(json_string.size());
-    int bytes_written =
-        base::WriteFile(file_path, json_string.data(), data_size);
-    if (bytes_written != data_size) {
-      LOG(ERROR) << " Wrote " << bytes_written << " byte(s) instead of "
-                 << data_size << " to " << file_path.value();
+    if (!base::WriteFile(file_path, json_string)) {
+      LOG(ERROR) << "Writing to " << file_path.value() << " failed.";
       return false;
     }
     return true;
