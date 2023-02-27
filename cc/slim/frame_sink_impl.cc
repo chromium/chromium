@@ -53,7 +53,10 @@ FrameSinkImpl::FrameSinkImpl(
       io_thread_id_(io_thread_id) {}
 
 FrameSinkImpl::~FrameSinkImpl() {
-  for (const auto& uploaded_resource_pair : uploaded_resources_) {
+  // Iterate a copy of `uploaded_resources_` since it might be modified
+  // when `UIResourceReleased()` is called.
+  for (const auto& uploaded_resource_pair :
+       UploadedResourceMap(uploaded_resources_)) {
     resource_provider_.RemoveImportedResource(
         uploaded_resource_pair.second.viz_resource_id);
   }
@@ -160,6 +163,7 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
   uploaded_resource.size = resource_bitmap.GetSize();
   uploaded_resource.is_opaque = resource_bitmap.GetOpaque();
 
+  DCHECK(!uploaded_resources_.contains(resource_id));
   uploaded_resources_.emplace(resource_id, uploaded_resource);
 }
 

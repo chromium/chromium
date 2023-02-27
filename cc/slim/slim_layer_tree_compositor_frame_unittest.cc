@@ -635,6 +635,50 @@ TEST_F(SlimLayerTreeCompositorFrameTest, UIResourceLayerAppendQuads) {
   }
 }
 
+TEST_F(SlimLayerTreeCompositorFrameTest, ReclaimResources) {
+  constexpr size_t kNumLayers = 6;
+  std::vector<scoped_refptr<UIResourceLayer>> layers;
+  for (size_t i = 0; i < kNumLayers; ++i) {
+    layers.push_back(UIResourceLayer::Create());
+    layers[i]->SetBounds(viewport_.size());
+    layers[i]->SetIsDrawable(true);
+    if (i == 0u) {
+      layer_tree_->SetRoot(layers[i]);
+    } else {
+      layers[i - 1]->AddChild(layers[i]);
+    }
+
+    auto image_info =
+        SkImageInfo::Make(1, 1, kN32_SkColorType, kPremul_SkAlphaType);
+    SkBitmap bitmap;
+    bitmap.allocPixels(image_info);
+    bitmap.setImmutable();
+    layers[i]->SetBitmap(bitmap);
+  }
+
+  viz::CompositorFrame frame = ProduceFrame();
+  EXPECT_EQ(frame.resource_list.size(), kNumLayers);
+  for (size_t i = 0; i < kNumLayers; ++i) {
+    EXPECT_TRUE(frame_sink_->client_resource_provider()->InUseByConsumer(
+        frame.resource_list[i].id));
+  }
+
+  // Return every other resource.
+  std::vector<viz::ReturnedResource> returned_resources;
+  for (size_t i = 0; i < kNumLayers; i += 2) {
+    returned_resources.push_back(frame.resource_list[i].ToReturnedResource());
+  }
+  frame_sink_->ReclaimResources(std::move(returned_resources));
+  for (size_t i = 0; i < kNumLayers; i += 2) {
+    EXPECT_FALSE(frame_sink_->client_resource_provider()->InUseByConsumer(
+        frame.resource_list[i].id));
+  }
+  for (size_t i = 1; i < kNumLayers; i += 2) {
+    EXPECT_TRUE(frame_sink_->client_resource_provider()->InUseByConsumer(
+        frame.resource_list[i].id));
+  }
+}
+
 TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
   auto nine_patch_layer = NinePatchLayer::Create();
   nine_patch_layer->SetBounds(viewport_.size());
