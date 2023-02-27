@@ -51,8 +51,7 @@ class SavedTabGroupBrowserListener : public TabStripModelObserver {
   base::Token GetOrCreateTrackedIDForWebContents(
       content::WebContents* web_contents);
 
-  // Stops tracking the webcontents for changes. CHECKS if not currently
-  // tracked.
+  // Stops tracking the webcontents for changes.
   void StopTrackingWebContents(content::WebContents* web_contents);
 
   // TabStripModelObserver:

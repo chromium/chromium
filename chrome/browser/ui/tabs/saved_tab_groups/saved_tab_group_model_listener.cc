@@ -84,7 +84,6 @@ base::Token SavedTabGroupBrowserListener::GetOrCreateTrackedIDForWebContents(
 
 void SavedTabGroupBrowserListener::StopTrackingWebContents(
     content::WebContents* web_contents) {
-  CHECK(web_contents_to_tab_id_map_.count(web_contents) > 0);
   web_contents_to_tab_id_map_.erase(web_contents);
 }
 
