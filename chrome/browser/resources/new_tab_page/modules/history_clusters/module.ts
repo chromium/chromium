@@ -51,4 +51,4 @@ async function createElement(): Promise<HTMLElement|null> {
 }
 
 export const historyClustersDescriptor: ModuleDescriptor = new ModuleDescriptor(
-    /*id=*/ 'history-clusters', createElement);
+    /*id=*/ 'history_clusters', createElement);

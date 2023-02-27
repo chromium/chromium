@@ -59,7 +59,7 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
-    details.emplace_back("history-clusters",
+    details.emplace_back("history_clusters",
                          IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
   }
 
