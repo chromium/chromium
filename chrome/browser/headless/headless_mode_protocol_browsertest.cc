@@ -157,9 +157,8 @@ void HeadlessModeProtocolBrowserTest::ProcessTestResult(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kResetResults)) {
     LOG(INFO) << "Updating expectations in " << expectation_path;
-    int result = base::WriteFile(expectation_path, test_result.data(),
-                                 static_cast<int>(test_result.size()));
-    CHECK(test_result.size() == static_cast<size_t>(result));
+    bool success = base::WriteFile(expectation_path, test_result);
+    CHECK(success);
   }
 
   std::string expectation;
