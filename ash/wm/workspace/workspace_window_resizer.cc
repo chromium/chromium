@@ -310,15 +310,6 @@ std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
     return std::make_unique<TabletModeFloatWindowResizer>(window_state);
   }
 
-  // Window dragging from top and tab dragging are disabled if "WebUITabStrip"
-  // feature is enabled. "WebUITabStrip" will be enabled on 81 for Krane and on
-  // 82 for all other boards.
-  // TODO(xdai): Clean up this flag since now the feature "WebUITabStrip" was
-  // enabled by default on all ChromeOS devices.
-  if (features::IsWebUITabStripEnabled()) {
-    return nullptr;
-  }
-
   return nullptr;
 }
 

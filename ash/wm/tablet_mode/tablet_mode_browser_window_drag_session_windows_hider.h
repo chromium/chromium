@@ -19,6 +19,9 @@ namespace ash {
 // launcher if home launcher is enabled. Only need to do so if we need
 // to scale up and down the source window when dragging a tab window out
 // of it.
+// TODO(xdai): This class is now only used by `TabDragDropDelegate`, and
+// `dragged_window` parameter is no longer needed. Clean up this class and move
+// it to where it's used.
 class ASH_EXPORT TabletModeBrowserWindowDragSessionWindowsHider
     : public aura::WindowObserver {
  public:

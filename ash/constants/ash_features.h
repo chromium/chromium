@@ -901,11 +901,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldUseV2DeviceSync();
 
 // Keep alphabetized.
 
-// These two functions are supposed to be temporary functions to set or get
-// whether "WebUITabStrip" feature is enabled from Chrome.
-COMPONENT_EXPORT(ASH_CONSTANTS) void SetWebUITabStripEnabled(bool enabled);
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWebUITabStripEnabled();
-
 }  // namespace ash::features
 
 #endif  // ASH_CONSTANTS_ASH_FEATURES_H_

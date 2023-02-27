@@ -397,7 +397,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
  private:
   friend class SplitViewControllerTest;
   friend class SplitViewOverviewSessionTest;
-  class TabDraggedWindowObserver;
   class DividerSnapAnimation;
   class AutoSnapController;
   class ToBeSnappedWindowsObserver;
@@ -603,9 +602,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Backdrop layers that may be visible below windows when resizing.
   std::unique_ptr<ui::Layer> left_resize_backdrop_layer_;
   std::unique_ptr<ui::Layer> right_resize_backdrop_layer_;
-
-  // The window observer that obseves the tab-dragged window in tablet mode.
-  std::unique_ptr<TabDraggedWindowObserver> dragged_window_observer_;
 
   // The distance between the origin of the `split_view_divider_` and the origin
   // of the current display's work area in screen coordinates.

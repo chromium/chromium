@@ -250,93 +250,6 @@ void RemoveSnappingWindowFromOverviewIfApplicable(
 }  // namespace
 
 // -----------------------------------------------------------------------------
-// TabDraggedWindowObserver:
-
-// The window observer that observes the current tab-dragged window. When it's
-// created, it observes the dragged window, and there are two possible results
-// after the user finishes dragging: 1) the dragged window stays a new window
-// and SplitViewController needs to decide where to put the window; 2) the
-// dragged window's tabs are attached into another browser window and thus is
-// destroyed.
-class SplitViewController::TabDraggedWindowObserver
-    : public aura::WindowObserver {
- public:
-  TabDraggedWindowObserver(
-      SplitViewController* split_view_controller,
-      aura::Window* dragged_window,
-      SplitViewController::SnapPosition desired_snap_position,
-      const gfx::Point& last_location_in_screen)
-      : split_view_controller_(split_view_controller),
-        dragged_window_(dragged_window),
-        desired_snap_position_(desired_snap_position),
-        last_location_in_screen_(last_location_in_screen) {
-    DCHECK(window_util::IsDraggingTabs(dragged_window_));
-    dragged_window_->AddObserver(this);
-  }
-
-  TabDraggedWindowObserver(const TabDraggedWindowObserver&) = delete;
-  TabDraggedWindowObserver& operator=(const TabDraggedWindowObserver&) = delete;
-
-  ~TabDraggedWindowObserver() override {
-    if (dragged_window_)
-      dragged_window_->RemoveObserver(this);
-  }
-
-  // aura::WindowObserver:
-  void OnWindowDestroying(aura::Window* window) override {
-    // At this point we know the newly created dragged window is going to be
-    // destroyed due to all of its tabs are attaching into another window.
-    EndTabDragging(window, /*is_being_destroyed=*/true);
-  }
-
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override {
-    DCHECK_EQ(window, dragged_window_);
-    if (key == kIsDraggingTabsKey && !window_util::IsDraggingTabs(window)) {
-      // At this point we know the newly created dragged window just finished
-      // dragging.
-      EndTabDragging(window, /*is_being_destroyed=*/false);
-    }
-  }
-
- private:
-  // Called after the tab dragging is ended, the dragged window is either
-  // destroyed because of merging into another window, or stays as a separate
-  // window.
-  void EndTabDragging(aura::Window* window, bool is_being_destroyed) {
-    dragged_window_->RemoveObserver(this);
-    dragged_window_ = nullptr;
-
-    WindowState::Get(window)->set_snap_action_source(
-        WindowSnapActionSource::kDragTabToSnap);
-    split_view_controller_->EndWindowDragImpl(window, is_being_destroyed,
-                                              desired_snap_position_,
-                                              last_location_in_screen_);
-
-    // Update the source window's bounds if applicable.
-    UpdateSourceWindowBoundsAfterDragEnds(window);
-  }
-
-  // The source window might have been scaled down during dragging, we should
-  // update its bounds to ensure it has the right bounds after the drag ends.
-  void UpdateSourceWindowBoundsAfterDragEnds(aura::Window* window) {
-    aura::Window* source_window =
-        window->GetProperty(kTabDraggingSourceWindowKey);
-    if (source_window) {
-      TabletModeWindowState::UpdateWindowPosition(
-          WindowState::Get(source_window),
-          WindowState::BoundsChangeAnimationType::kAnimate);
-    }
-  }
-
-  SplitViewController* split_view_controller_;
-  aura::Window* dragged_window_;
-  SplitViewController::SnapPosition desired_snap_position_;
-  gfx::Point last_location_in_screen_;
-};
-
-// -----------------------------------------------------------------------------
 // DividerSnapAnimation:
 
 // Animates the divider to its closest fixed position.
@@ -560,15 +473,8 @@ class SplitViewController::AutoSnapController
     DCHECK(split_view_controller_->InTabletSplitViewMode());
 
     // Do not snap the window if the activation change is caused by dragging a
-    // window, or by dragging a tab. Note the two values
-    // WindowState::is_dragged() and IsDraggingTabs() might not be exactly the
-    // same under certain circumstance, e.g., when a tab is dragged out from a
-    // browser window, a new browser window will be created for the dragged tab
-    // and then be activated, and at that time, IsDraggingTabs() is true, but
-    // WindowState::is_dragged() is still false. And later after the window drag
-    // starts, WindowState::is_dragged() will then be true.
-    if (WindowState::Get(window)->is_dragged() ||
-        window_util::IsDraggingTabs(window)) {
+    // window.
+    if (WindowState::Get(window)->is_dragged()) {
       return;
     }
 
@@ -1636,13 +1542,9 @@ void SplitViewController::OnWindowDragEnded(
     aura::Window* dragged_window,
     SnapPosition desired_snap_position,
     const gfx::Point& last_location_in_screen) {
-  if (window_util::IsDraggingTabs(dragged_window)) {
-    dragged_window_observer_ = std::make_unique<TabDraggedWindowObserver>(
-        this, dragged_window, desired_snap_position, last_location_in_screen);
-  } else {
-    EndWindowDragImpl(dragged_window, dragged_window->is_destroying(),
-                      desired_snap_position, last_location_in_screen);
-  }
+  DCHECK(!window_util::IsDraggingTabs(dragged_window));
+  EndWindowDragImpl(dragged_window, dragged_window->is_destroying(),
+                    desired_snap_position, last_location_in_screen);
 }
 
 void SplitViewController::OnWindowDragCanceled() {
@@ -3044,22 +2946,9 @@ void SplitViewController::EndWindowDragImpl(
           WindowState::BoundsChangeAnimationType::kAnimate);
     }
   } else {
-    aura::Window* initiator_window =
-        window->GetProperty(kTabDraggingSourceWindowKey);
     // Note SnapWindow() might put the previous window that was snapped at the
     // |desired_snap_position| in overview.
     SnapWindow(window, desired_snap_position, /*activate_window=*/true);
-
-    if (!was_splitview_active && initiator_window &&
-        initiator_window != window) {
-      // If splitview mode was not active before snapping the dragged
-      // window, snap the initiator window to the other side of the screen
-      // if it's not the same window as the dragged window.
-      SnapWindow(initiator_window,
-                 (desired_snap_position == SnapPosition::kPrimary)
-                     ? SnapPosition::kSecondary
-                     : SnapPosition::kPrimary);
-    }
   }
 }
 

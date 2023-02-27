@@ -36,10 +36,6 @@ void CreateShell() {
 AshShellInit::AshShellInit() {
   CreateShell();
   ash::Shell::GetPrimaryRootWindow()->GetHost()->Show();
-
-  // Push browser feature flags to ash.
-  ash::features::SetWebUITabStripEnabled(
-      base::FeatureList::IsEnabled(features::kWebUITabStrip));
 }
 
 AshShellInit::~AshShellInit() {

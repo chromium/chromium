@@ -451,7 +451,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   float scroll_offset_for_testing() const { return scroll_offset_; }
 
  private:
-  class TargetWindowObserver;
   friend class DesksTemplatesTest;
   friend class OverviewTestBase;
 
@@ -572,16 +571,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // overview item is being dragged, and is destroyed when the drag ends or
   // overview mode is ended. The drop target is hidden when a snap preview area
   // is shown. You can drop a window into overview by dragging to the drop
-  // target or by dragging to almost anywhere while the drop target is shown. A
-  // plus sign in the center of the drop target indicates tab dragging.
+  // target or by dragging to almost anywhere while the drop target is shown.
   std::unique_ptr<views::Widget> drop_target_widget_;
-
-  // The observer of the target window, which is the window that the dragged
-  // tabs are going to merge into after the drag ends. After the dragged tabs
-  // merge into the target window, and if the target window is a minimized
-  // window in overview and is not destroyed yet, we need to update the overview
-  // minimized widget's content view so that it reflects the merge.
-  std::unique_ptr<TargetWindowObserver> target_window_observer_;
 
   // True if the overview grid should animate when exiting overview mode. Note
   // even if it's true, it doesn't mean all window items in the grid should

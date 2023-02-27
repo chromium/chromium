@@ -162,7 +162,6 @@ class DragDropOperationTestWithWebUITabStripTest
     : public DragDropOperationTest {
  public:
   DragDropOperationTestWithWebUITabStripTest() {
-    ash::features::SetWebUITabStripEnabled(true);
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kWebUITabStripTabDragIntegration);
   }

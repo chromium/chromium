@@ -98,33 +98,6 @@ gfx::Rect GetRestoreBounds(WindowState* window_state) {
   return window_state->window()->GetBoundsInScreen();
 }
 
-// Returns true if |window| is the source window of the current tab-dragging
-// window.
-bool IsTabDraggingSourceWindow(aura::Window* window) {
-  if (!window)
-    return false;
-
-  MruWindowTracker::WindowList window_list =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
-  if (window_list.empty())
-    return false;
-
-  // Find the window that's currently in tab-dragging process. There is at most
-  // one such window.
-  aura::Window* dragged_window = nullptr;
-  for (auto* maybe_dragged_window : window_list) {
-    if (window_util::IsDraggingTabs(maybe_dragged_window)) {
-      dragged_window = maybe_dragged_window;
-      break;
-    }
-  }
-  if (!dragged_window)
-    return false;
-
-  return dragged_window->GetProperty(ash::kTabDraggingSourceWindowKey) ==
-         window;
-}
-
 // True if `window` is floated. If `window` is not floated, it is animated if:
 //   - It is the top window in the MRU list.
 //   - It the top window in the MRU list is a floated window, and `window` is
@@ -400,14 +373,12 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
         // Floated windows in tablet mode are freeform, so they can placed
         // anywhere, not just centered.
         window_state->SetBoundsDirectCrossFade(bounds_in_parent, to_float);
-      } else if (window_util::IsDraggingTabs(window_state->window()) ||
-                 IsTabDraggingSourceWindow(window_state->window()) ||
-                 TabDragDropDelegate::IsSourceWindowForDrag(
+      } else if (TabDragDropDelegate::IsSourceWindowForDrag(
                      window_state->window()) ||
                  BoundsChangeIsFromVKAndAllowed(window_state->window())) {
-        // If the window is the current tab-dragged window or the current tab-
-        // dragged window's source window, we may need to update its bounds
-        // during dragging.
+        // If the window is the current tab-dragged window's source window or
+        // bounds change is allowed, we may need to update its bounds during
+        // dragging.
         window_state->SetBoundsDirect(bounds_in_parent);
       } else if (current_state_type_ == WindowStateType::kMaximized) {
         // Having a maximized window, it could have been created with an empty
@@ -569,11 +540,6 @@ WindowStateType TabletModeWindowState::GetSnappedWindowStateType(
 
 void TabletModeWindowState::UpdateBounds(WindowState* window_state,
                                          bool animated) {
-  // Do not update window's bounds if it's in tab-dragging process. The bounds
-  // will be updated later when the drag ends.
-  if (window_util::IsDraggingTabs(window_state->window()))
-    return;
-
   // Do not update minimized windows bounds until it was unminimized.
   if (current_state_type_ == WindowStateType::kMinimized)
     return;

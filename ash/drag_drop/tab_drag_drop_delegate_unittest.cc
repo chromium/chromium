@@ -74,7 +74,6 @@ class MockNewWindowDelegate : public TestNewWindowDelegate {
 class TabDragDropDelegateTest : public AshTestBase {
  public:
   TabDragDropDelegateTest() {
-    ash::features::SetWebUITabStripEnabled(true);
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kWebUITabStripTabDragIntegration);
   }

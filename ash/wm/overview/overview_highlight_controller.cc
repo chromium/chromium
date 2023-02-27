@@ -276,24 +276,6 @@ void OverviewHighlightController::ResetHighlightedView() {
   highlighted_view_ = nullptr;
 }
 
-void OverviewHighlightController::HideTabDragHighlight() {
-  if (tab_dragged_view_)
-    tab_dragged_view_->SetHighlightVisibility(false);
-  tab_dragged_view_ = nullptr;
-}
-
-void OverviewHighlightController::ShowTabDragHighlight(
-    OverviewHighlightableView* view) {
-  if (tab_dragged_view_)
-    tab_dragged_view_->SetHighlightVisibility(false);
-  tab_dragged_view_ = view;
-  tab_dragged_view_->SetHighlightVisibility(true);
-}
-
-bool OverviewHighlightController::IsTabDragHighlightVisible() const {
-  return !!tab_dragged_view_;
-}
-
 std::vector<OverviewHighlightableView*>
 OverviewHighlightController::GetTraversableViews() const {
   std::vector<OverviewHighlightableView*> traversable_views;

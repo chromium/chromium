@@ -286,9 +286,8 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
   widget->Init(std::move(params));
   widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
 
-  // Show plus icon if drag a tab from a multi-tab window.
-  widget->SetContentsView(std::make_unique<DropTargetView>(
-      dragged_window->GetProperty(kTabDraggingSourceWindowKey)));
+  widget->SetContentsView(
+      std::make_unique<DropTargetView>(/*has_plus_icon=*/false));
   aura::Window* drop_target_window = widget->GetNativeWindow();
   drop_target_window->parent()->StackChildAtBottom(drop_target_window);
   widget->Show();
@@ -405,75 +404,6 @@ class DesksBarSlideAnimation {
 
  private:
   std::unique_ptr<views::Widget> desks_widget_;
-};
-
-// The class to observe the overview window that the dragged tabs will merge
-// into. After the dragged tabs merge into the overview window, and if the
-// overview window represents a minimized window, we need to update the
-// overview minimized widget's content view so that it reflects the merge.
-class OverviewGrid::TargetWindowObserver : public aura::WindowObserver {
- public:
-  TargetWindowObserver() = default;
-
-  TargetWindowObserver(const TargetWindowObserver&) = delete;
-  TargetWindowObserver& operator=(const TargetWindowObserver&) = delete;
-
-  ~TargetWindowObserver() override { StopObserving(); }
-
-  void StartObserving(aura::Window* window) {
-    if (target_window_)
-      StopObserving();
-
-    target_window_ = window;
-    target_window_->AddObserver(this);
-  }
-
-  // aura::WindowObserver:
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override {
-    DCHECK_EQ(window, target_window_);
-    // When the property is cleared, the dragged window should have been merged
-    // into |target_window_|, update the corresponding window item in overview.
-    if (key == chromeos::kIsDeferredTabDraggingTargetWindowKey &&
-        !window->GetProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey)) {
-      UpdateWindowItemInOverviewContaining(window);
-      StopObserving();
-    }
-  }
-
-  void OnWindowDestroying(aura::Window* window) override {
-    DCHECK_EQ(window, target_window_);
-    StopObserving();
-  }
-
- private:
-  void UpdateWindowItemInOverviewContaining(aura::Window* window) {
-    OverviewController* overview_controller =
-        Shell::Get()->overview_controller();
-    if (!overview_controller->InOverviewSession())
-      return;
-
-    OverviewGrid* grid =
-        overview_controller->overview_session()->GetGridWithRootWindow(
-            window->GetRootWindow());
-    if (!grid)
-      return;
-
-    OverviewItem* item = grid->GetOverviewItemContaining(window);
-    if (!item)
-      return;
-
-    item->UpdateItemContentViewForMinimizedWindow();
-  }
-
-  void StopObserving() {
-    if (target_window_)
-      target_window_->RemoveObserver(this);
-    target_window_ = nullptr;
-  }
-
-  aura::Window* target_window_ = nullptr;
 };
 
 OverviewGrid::OverviewGrid(aura::Window* root_window,
@@ -1000,40 +930,6 @@ void OverviewGrid::OnWindowDragContinued(
 
   RearrangeDuringDrag(nullptr, window_dragging_state);
   UpdateDropTargetBackgroundVisibility(nullptr, location_in_screen);
-
-  aura::Window* target_window =
-      GetTargetWindowOnLocation(location_in_screen, /*ignored_item=*/nullptr);
-
-  if (SplitViewDragIndicators::GetSnapPosition(window_dragging_state) !=
-      SplitViewController::SnapPosition::kNone) {
-    // If the dragged window is currently dragged into preview window area,
-    // hide the highlight.
-    overview_session_->highlight_controller()->HideTabDragHighlight();
-
-    // Also clear chromeos::kIsDeferredTabDraggingTargetWindowKey key on the
-    // target overview item so that it can't merge into this overview item if
-    // the dragged window is currently in preview window area.
-    if (target_window && !IsDropTargetWindow(target_window))
-      target_window->ClearProperty(
-          chromeos::kIsDeferredTabDraggingTargetWindowKey);
-
-    return;
-  }
-
-  // Show the tab drag highlight if |location_in_screen| is contained by the
-  // browser windows' overview item in overview.
-  if (target_window && target_window->GetProperty(
-                           chromeos::kIsDeferredTabDraggingTargetWindowKey)) {
-    auto* item = GetOverviewItemContaining(target_window);
-    if (!item)
-      return;
-
-    overview_session_->highlight_controller()->ShowTabDragHighlight(
-        item->overview_item_view());
-    return;
-  }
-
-  overview_session_->highlight_controller()->HideTabDragHighlight();
 }
 
 void OverviewGrid::OnWindowDragEnded(aura::Window* dragged_window,
@@ -1046,34 +942,15 @@ void OverviewGrid::OnWindowDragEnded(aura::Window* dragged_window,
   dragged_window_ = nullptr;
 
   // Add the dragged window into drop target in overview if
-  // |should_drop_window_into_overview| is true. Only consider add the dragged
-  // window into drop target if SelectedWindow is false since drop target will
-  // not be selected and tab dragging might drag a tab window to merge it into a
-  // browser window in overview.
-  if (overview_session_->highlight_controller()->IsTabDragHighlightVisible())
-    overview_session_->highlight_controller()->HideTabDragHighlight();
-  else if (should_drop_window_into_overview)
+  // |should_drop_window_into_overview| is true.
+  if (should_drop_window_into_overview) {
     AddDraggedWindowIntoOverviewOnDragEnd(dragged_window);
+  }
 
   RemoveDropTarget();
 
   // Called to reset caption and title visibility after dragging.
   OnSelectorItemDragEnded(snap);
-
-  // After drag ends, if the dragged window needs to merge into another window
-  // |target_window|, and we may need to update |minimized_widget_| that holds
-  // the contents of |target_window| if |target_window| is a minimized window
-  // in overview.
-  aura::Window* target_window =
-      GetTargetWindowOnLocation(location_in_screen, /*ignored_item=*/nullptr);
-  if (target_window && target_window->GetProperty(
-                           chromeos::kIsDeferredTabDraggingTargetWindowKey)) {
-    // Create an window observer and update the minimized window widget after
-    // the dragged window merges into |target_window|.
-    if (!target_window_observer_)
-      target_window_observer_ = std::make_unique<TargetWindowObserver>();
-    target_window_observer_->StartObserving(target_window);
-  }
 
   // Update the grid bounds and reposition windows. Since the grid bounds might
   // be updated based on the preview area during drag, but the window finally
@@ -2560,29 +2437,6 @@ void OverviewGrid::AddDraggedWindowIntoOverviewOnDragEnd(
   DCHECK(overview_session_);
   if (overview_session_->IsWindowInOverview(dragged_window))
     return;
-
-  // Update the dragged window's bounds before adding it to overview. The
-  // dragged window might have resized to a smaller size if the drag
-  // happens on tab(s).
-  if (window_util::IsDraggingTabs(dragged_window)) {
-    const gfx::Rect old_bounds = dragged_window->bounds();
-    // We need to temporarily disable the dragged window's ability to merge
-    // into another window when changing the dragged window's bounds, so
-    // that the dragged window doesn't merge into another window because of
-    // its changed bounds.
-    dragged_window->SetProperty(chromeos::kCanAttachToAnotherWindowKey, false);
-    TabletModeWindowState::UpdateWindowPosition(
-        WindowState::Get(dragged_window),
-        WindowState::BoundsChangeAnimationType::kNone);
-    const gfx::Rect new_bounds = dragged_window->bounds();
-    if (old_bounds != new_bounds) {
-      // It's for smoother animation.
-      const gfx::Transform transform = gfx::TransformBetweenRects(
-          gfx::RectF(new_bounds), gfx::RectF(old_bounds));
-      dragged_window->SetTransform(transform);
-    }
-    dragged_window->ClearProperty(chromeos::kCanAttachToAnotherWindowKey);
-  }
 
   overview_session_->AddItemInMruOrder(dragged_window, /*reposition=*/false,
                                        /*animate=*/false, /*restack=*/true,
