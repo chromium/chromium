@@ -1157,7 +1157,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "FillAndImport",
+                    "params": {
+                        "fill_unrecognized_autocomplete": "true",
+                        "import_from_unrecognized_autocomplete": "true"
+                    },
                     "enable_features": [
                         "AutofillFillAndImportFromMoreFields"
                     ]
