@@ -540,6 +540,12 @@ void ShellSurface::OnPostWindowStateTypeChange(
     UpdateShadow();
   }
 
+  if (root_surface() && window_state->GetStateType() != old_type &&
+      (window_state->GetStateType() == chromeos::WindowStateType::kFullscreen ||
+       old_type == chromeos::WindowStateType::kFullscreen)) {
+    root_surface()->OnFullscreenStateChanged(window_state->IsFullscreen());
+  }
+
   // Re-enable animations if they were disabled in pre state change handler.
   animations_disabler_.reset();
   window_state_is_changing_ = false;

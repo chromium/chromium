@@ -1540,6 +1540,7 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     SetPip();
 
   root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
+  root_surface()->OnFullscreenStateChanged(widget_->IsFullscreen());
 
   WMHelper::GetInstance()->NotifyExoWindowCreated(widget_->GetNativeWindow());
 }

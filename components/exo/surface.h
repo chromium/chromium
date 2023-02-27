@@ -454,6 +454,13 @@ class Surface final : public ui::PropertyHandler {
   // A negative number removes it.
   void SetClientAccessibilityId(int id);
 
+  // Inform observers and subsurfaces about new fullscreen state
+  void OnFullscreenStateChanged(bool fullscreen);
+
+  OverlayPriority GetOverlayPriorityHint() {
+    return state_.overlay_priority_hint;
+  }
+
  private:
   struct State {
     State();
@@ -574,6 +581,9 @@ class Surface final : public ui::PropertyHandler {
 
   // Updates buffer_transform_ to match the current buffer parameters.
   void UpdateBufferTransform(bool y_invert);
+
+  // Update state_.overlay_priority_hint and notify observers
+  void UpdateOverlayPriorityHint(OverlayPriority overlay_priority_hint);
 
   // Puts the current surface into a draw quad, and appends the draw quads into
   // the |frame|.
