@@ -4154,7 +4154,7 @@
     "owners": [ "//chrome/browser/ui/hats/OWNERS" ],
     // A debugging and demo flag to allow UI/dev/testing team to always show the UI
     // components for the survey without being limited by the triggering mechanism.
-    "expiry_milestone": 99
+    "expiry_milestone": 120
   },
   {
     "name": "hardware-media-key-handling",
