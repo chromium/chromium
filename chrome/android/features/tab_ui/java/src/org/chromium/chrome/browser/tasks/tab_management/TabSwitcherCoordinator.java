@@ -19,6 +19,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -119,8 +121,10 @@ public class TabSwitcherCoordinator
     private final TabListCoordinator mTabListCoordinator;
     private final TabSwitcherMediator mMediator;
     private final MultiThumbnailCardProvider mMultiThumbnailCardProvider;
+    private final ScrimCoordinator mGridDialogScrimCoordinator;
+    private final boolean mUsesTabGridDialogCoordinator;
     @Nullable
-    private final TabGridDialogCoordinator mTabGridDialogCoordinator;
+    private TabGridDialogCoordinator mTabGridDialogCoordinator;
     private final TabModelSelector mTabModelSelector;
     private final @TabListCoordinator.TabListMode int mMode;
     private final MessageCardProviderCoordinator mMessageCardProviderCoordinator;
@@ -198,10 +202,58 @@ public class TabSwitcherCoordinator
             PropertyModel containerViewModel =
                     new PropertyModel(TabListContainerProperties.ALL_KEYS);
 
+            OneshotSupplier<TabGridDialogMediator.DialogController> dialogControllerSupplier = null;
+            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)) {
+                mGridDialogScrimCoordinator =
+                        shouldUseNewScrim() ? createScrimCoordinator() : scrimCoordinator;
+                mUsesTabGridDialogCoordinator = true;
+                dialogControllerSupplier =
+                        new OneshotSupplier<TabGridDialogMediator.DialogController>() {
+                            // Implementation is based on OneshotSupplierImpl with modifications
+                            // such that onAvailable does not invoke get() unless the object already
+                            // exists this prevents callers of onAvailable from triggering the lazy
+                            // creation of the TabGridDialogCoordinator before it is required.
+                            private final Promise<TabGridDialogMediator.DialogController> mPromise =
+                                    new Promise<>();
+                            private final ThreadUtils.ThreadChecker mThreadChecker =
+                                    new ThreadUtils.ThreadChecker();
+
+                            @Override
+                            public TabGridDialogMediator.DialogController onAvailable(
+                                    Callback<TabGridDialogMediator.DialogController> callback) {
+                                mThreadChecker.assertOnValidThread();
+                                mPromise.then(callback);
+                                if (!hasValue()) return null;
+
+                                return get();
+                            }
+
+                            @Override
+                            public TabGridDialogMediator.DialogController get() {
+                                mThreadChecker.assertOnValidThread();
+                                if (initTabGridDialogCoordinator()) {
+                                    assert !mPromise.isFulfilled();
+                                    mPromise.fulfill(
+                                            mTabGridDialogCoordinator.getDialogController());
+                                }
+                                assert mPromise.isFulfilled();
+                                return mPromise.getResult();
+                            }
+
+                            @Override
+                            public boolean hasValue() {
+                                return mTabGridDialogCoordinator != null;
+                            }
+                        };
+            } else {
+                mGridDialogScrimCoordinator = null;
+                mUsesTabGridDialogCoordinator = false;
+                mTabGridDialogCoordinator = null;
+            }
             mMediator = new TabSwitcherMediator(activity, this, containerViewModel,
                     tabModelSelector, browserControls, container, tabContentManager, this, this,
                     multiWindowModeStateDispatcher, mode, incognitoReauthControllerSupplier,
-                    backPressManager);
+                    backPressManager, dialogControllerSupplier);
 
             mTabSwitcherCustomViewManager = new TabSwitcherCustomViewManager(mMediator);
 
@@ -274,19 +326,6 @@ public class TabSwitcherCoordinator
                             appendNextMessage(identifier);
                         }
                     });
-
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)) {
-                ScrimCoordinator gridDialogScrimCoordinator =
-                        shouldUseNewScrim() ? createScrimCoordinator() : scrimCoordinator;
-                mTabGridDialogCoordinator = new TabGridDialogCoordinator(activity, tabModelSelector,
-                        tabContentManager, tabCreatorManager, mCoordinatorView, this, mMediator,
-                        this::getTabGridDialogAnimationSourceView, shareDelegateSupplier,
-                        gridDialogScrimCoordinator, rootView);
-                mMediator.setTabGridDialogController(
-                        mTabGridDialogCoordinator.getDialogController());
-            } else {
-                mTabGridDialogCoordinator = null;
-            }
 
             mMenuOrKeyboardActionController = menuOrKeyboardActionController;
 
@@ -369,6 +408,22 @@ public class TabSwitcherCoordinator
     }
 
     /**
+     * @return false if already initialized or true when first initialized.
+     */
+    private boolean initTabGridDialogCoordinator() {
+        assert mUsesTabGridDialogCoordinator;
+        if (mTabGridDialogCoordinator != null) return false;
+
+        mTabGridDialogCoordinator =
+                new TabGridDialogCoordinator(mActivity, mTabModelSelector, mTabContentManager,
+                        mTabCreatorManager, mCoordinatorView, TabSwitcherCoordinator.this,
+                        mMediator, TabSwitcherCoordinator.this::getTabGridDialogAnimationSourceView,
+                        mShareDelegateSupplier, mGridDialogScrimCoordinator,
+                        mTabListCoordinator.getTabGroupTitleEditor(), mRootView);
+        return true;
+    }
+
+    /**
      * Tablet Tab Switcher polish uses a scrim to show/hide tab switcher.
      * Create a new scrim via a new scrim coordinator for tab group dialog.
      * @return if tab switcher polish is enabled on tablets.
@@ -415,11 +470,6 @@ public class TabSwitcherCoordinator
                 if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {
                     setUpTabGroupManualSelectionMode(mActivity);
                 }
-            }
-            if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
-                    && mTabGridDialogCoordinator != null) {
-                mTabGridDialogCoordinator.initWithNative(mActivity, mTabModelSelector,
-                        mTabContentManager, mTabListCoordinator.getTabGroupTitleEditor());
             }
 
             final TabSelectionEditorController controller = mTabSelectionEditorCoordinator != null
@@ -574,8 +624,15 @@ public class TabSwitcherCoordinator
 
     @Override
     public Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
-        if (mTabGridDialogCoordinator != null) {
-            return mTabGridDialogCoordinator::isVisible;
+        if (mUsesTabGridDialogCoordinator) {
+            // mTabGridDialogCoordinator is lazily created when first displaying something in the
+            // dialog. Return false until it has shown something.
+            return () -> {
+                if (mTabGridDialogCoordinator != null) {
+                    return mTabGridDialogCoordinator.isVisible();
+                }
+                return false;
+            };
         }
         return () -> false;
     }

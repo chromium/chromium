@@ -149,7 +149,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private CallbackController mCallbackController;
     private Integer mSoftCleanupDelayMsForTesting;
     private Integer mCleanupDelayMsForTesting;
-    private TabGridDialogMediator.DialogController mTabGridDialogController;
+    private OneshotSupplier<TabGridDialogMediator.DialogController>
+            mTabGridDialogControllerSupplier;
     private TabSelectionEditorCoordinator
             .TabSelectionEditorController mTabSelectionEditorController;
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
@@ -280,6 +281,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
      *         to detect pending re-auth when tab switcher is shown.
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
+     * @param tabGridDialogControllerSupplier {@link TabGridDialogMediator.DialogController}
+     *         supplier for lazy initialization on first use.
      */
     TabSwitcherMediator(Context context, ResetHandler resetHandler,
             PropertyModel containerViewModel, TabModelSelector tabModelSelector,
@@ -288,7 +291,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             PriceWelcomeMessageController priceWelcomeMessageController,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher, @TabListMode int mode,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
-            @Nullable BackPressManager backPressManager) {
+            @Nullable BackPressManager backPressManager,
+            @Nullable OneshotSupplier<TabGridDialogMediator.DialogController>
+                    tabGridDialogControllerSupplier) {
         mResetHandler = resetHandler;
         mContainerViewModel = containerViewModel;
         mTabModelSelector = tabModelSelector;
@@ -321,8 +326,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                         mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
                 mContainerViewModel.set(IS_INCOGNITO, currentTabModelFilter.isIncognito());
                 notifyBackPressStateChangedInternal();
-                if (mTabGridDialogController != null) {
-                    mTabGridDialogController.hideDialog(false);
+                if (mTabGridDialogControllerSupplier != null
+                        && mTabGridDialogControllerSupplier.hasValue()) {
+                    mTabGridDialogControllerSupplier.get().hideDialog(false);
                 }
                 if (!mContainerViewModel.get(IS_VISIBLE)) return;
 
@@ -530,6 +536,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         };
         mMultiWindowModeStateDispatcher.addObserver(mMultiWindowModeObserver);
         notifyBackPressStateChangedInternal();
+
+        mTabGridDialogControllerSupplier = tabGridDialogControllerSupplier;
+        if (mTabGridDialogControllerSupplier != null) {
+            mTabGridDialogControllerSupplier.onAvailable((tabGridDialogController) -> {
+                tabGridDialogController.getHandleBackPressChangedSupplier().addObserver(
+                        mNotifyBackPressedCallback);
+            });
+        }
     }
 
     /**
@@ -556,17 +570,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             mTabSelectionEditorController.getHandleBackPressChangedSupplier().addObserver(
                     mNotifyBackPressedCallback);
         }
-    }
-
-    /**
-     * Set the controller of the TabGridDialog so that it can be directly controlled.
-     * @param tabGridDialogController The handler of the Grid Dialog
-     */
-    void setTabGridDialogController(
-            TabGridDialogMediator.DialogController tabGridDialogController) {
-        mTabGridDialogController = tabGridDialogController;
-        mTabGridDialogController.getHandleBackPressChangedSupplier().addObserver(
-                mNotifyBackPressedCallback);
     }
 
     @VisibleForTesting
@@ -730,10 +733,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
 
     @Override
     public void prepareHideTabSwitcherView() {
-        if (mTabGridDialogController != null) {
+        if (mTabGridDialogControllerSupplier != null
+                && mTabGridDialogControllerSupplier.hasValue()) {
             // Don't wait until switcher container view hides.
             // Hide dialog before GTS hides.
-            mTabGridDialogController.hideDialog(false);
+            mTabGridDialogControllerSupplier.get().hideDialog(false);
         }
     }
 
@@ -743,10 +747,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         setVisibility(false);
         mContainerViewModel.set(ANIMATE_VISIBILITY_CHANGES, true);
 
-        if (mTabGridDialogController != null) {
+        if (mTabGridDialogControllerSupplier != null
+                && mTabGridDialogControllerSupplier.hasValue()) {
             // Don't wait until didSelectTab(), which is after the GTS animation.
             // We need to hide the dialog immediately.
-            mTabGridDialogController.hideDialog(false);
+            mTabGridDialogControllerSupplier.get().hideDialog(false);
         }
     }
 
@@ -864,7 +869,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return false;
         }
 
-        if (mTabGridDialogController != null && mTabGridDialogController.handleBackPressed()) {
+        if (mTabGridDialogControllerSupplier != null && mTabGridDialogControllerSupplier.hasValue()
+                && mTabGridDialogControllerSupplier.get().handleBackPressed()) {
             return true;
         }
 
@@ -897,7 +903,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             return true;
         }
 
-        if (mTabGridDialogController != null && mTabGridDialogController.isVisible()) {
+        if (mTabGridDialogControllerSupplier != null && mTabGridDialogControllerSupplier.hasValue()
+                && mTabGridDialogControllerSupplier.get().isVisible()) {
             return true;
         }
         return false;
@@ -1016,9 +1023,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                     mNotifyBackPressedCallback);
         }
 
-        if (mTabGridDialogController != null) {
-            mTabGridDialogController.getHandleBackPressChangedSupplier().removeObserver(
-                    mNotifyBackPressedCallback);
+        if (mTabGridDialogControllerSupplier != null
+                && mTabGridDialogControllerSupplier.hasValue()) {
+            mTabGridDialogControllerSupplier.get()
+                    .getHandleBackPressChangedSupplier()
+                    .removeObserver(mNotifyBackPressedCallback);
         }
 
         if (mIncognitoReauthController != null) {
@@ -1050,13 +1059,13 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     public TabListMediator.TabActionListener openTabGridDialog(Tab tab) {
         if (!ableToOpenDialog(tab)) return null;
         assert getRelatedTabs(tab.getId()).size() != 1;
-        assert mTabGridDialogController != null;
+        assert mTabGridDialogControllerSupplier != null;
         return tabId -> {
             List<Tab> relatedTabs = getRelatedTabs(tabId);
             if (relatedTabs.size() == 0) {
                 relatedTabs = null;
             }
-            mTabGridDialogController.resetWithListOfTabs(relatedTabs);
+            mTabGridDialogControllerSupplier.get().resetWithListOfTabs(relatedTabs);
             RecordUserAction.record("TabGridDialog.ExpandedFromSwitcher");
         };
     }
