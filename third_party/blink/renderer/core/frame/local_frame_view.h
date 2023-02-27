@@ -470,7 +470,7 @@ class CORE_EXPORT LocalFrameView final
     return user_scrollable_areas_.Get();
   }
 
-  void ServiceScriptedAnimations(base::TimeTicks);
+  void ServiceScrollAnimations(base::TimeTicks);
 
   void ScheduleAnimation(base::TimeDelta = base::TimeDelta(),
                          base::Location location = base::Location::Current());

@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 #include "third_party/blink/renderer/core/frame/frame_view.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -22,6 +23,7 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
@@ -99,13 +101,17 @@ class MockScreenOrientation final
 void DidEnterFullscreen(Document* document) {
   DCHECK(document);
   Fullscreen::DidResolveEnterFullscreenRequest(*document, true /* granted */);
-  document->ServiceScriptedAnimations(base::TimeTicks::Now());
+  PageAnimator::ServiceScriptedAnimations(
+      base::TimeTicks::Now(),
+      {{document->GetScriptedAnimationController(), false}});
 }
 
 void DidExitFullscreen(Document* document) {
   DCHECK(document);
   Fullscreen::DidExitFullscreen(*document);
-  document->ServiceScriptedAnimations(base::TimeTicks::Now());
+  PageAnimator::ServiceScriptedAnimations(
+      base::TimeTicks::Now(),
+      {{document->GetScriptedAnimationController(), false}});
 }
 
 class MockChromeClientForOrientationLockDelegate final

@@ -29,6 +29,7 @@
  */
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 
 #include <memory>
 
@@ -56,6 +57,7 @@
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/dom/node_with_index.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -999,7 +1001,9 @@ TEST_F(DocumentTest, PrefersColorSchemeChanged) {
       mojom::blink::PreferredColorScheme::kDark);
 
   UpdateAllLifecyclePhasesForTest();
-  GetDocument().ServiceScriptedAnimations(base::TimeTicks());
+  PageAnimator::ServiceScriptedAnimations(
+      base::TimeTicks(),
+      {{GetDocument().GetScriptedAnimationController(), false}});
 
   EXPECT_TRUE(listener->IsNotified());
 }

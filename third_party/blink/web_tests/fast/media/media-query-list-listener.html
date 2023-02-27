@@ -9,8 +9,8 @@
 
     var sandbox = document.getElementById("sandbox");
     var iframe = document.createElement("iframe");
-    sandbox.appendChild(iframe);
     iframe.style.width = "80px";
+    sandbox.appendChild(iframe);
 
     var matchMedia = iframe.contentWindow.matchMedia;
     var mediaList = matchMedia("(max-width: 100px)");

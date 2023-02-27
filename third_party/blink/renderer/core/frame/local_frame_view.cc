@@ -3590,7 +3590,7 @@ void LocalFrameView::SetTracksRasterInvalidations(
                        track_raster_invalidations);
 }
 
-void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
+void LocalFrameView::ServiceScrollAnimations(base::TimeTicks start_time) {
   bool can_throttle = CanThrottleRendering();
   // Disallow throttling in case any script needs to do a synchronous
   // lifecycle update in other frames which are throttled.
@@ -3615,7 +3615,6 @@ void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
       }
     }
     GetFrame().AnimateSnapFling(start_time);
-
     // After scroll updates, snapshot scroll state once at top of animation
     // frame.
     GetFrame().UpdateScrollSnapshots();
@@ -3625,7 +3624,6 @@ void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
     SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(*document);
     document->GetDocumentAnimations().UpdateAnimationTimingForAnimationFrame();
   }
-  document->ServiceScriptedAnimations(start_time, can_throttle);
 }
 
 void LocalFrameView::ScheduleAnimation(base::TimeDelta delay,

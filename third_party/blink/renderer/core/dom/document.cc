@@ -8004,19 +8004,6 @@ void Document::CancelAnimationFrame(int id) {
   scripted_animation_controller_->CancelFrameCallback(id);
 }
 
-void Document::ServiceScriptedAnimations(
-    base::TimeTicks monotonic_animation_start_time,
-    bool can_throttle) {
-  base::TimeTicks start_time =
-      can_throttle ? base::TimeTicks() : base::TimeTicks::Now();
-  scripted_animation_controller_->ServiceScriptedAnimations(
-      monotonic_animation_start_time, can_throttle);
-  if (!can_throttle && GetFrame()) {
-    GetFrame()->GetFrameScheduler()->AddTaskTime(base::TimeTicks::Now() -
-                                                 start_time);
-  }
-}
-
 ScriptedIdleTaskController& Document::EnsureScriptedIdleTaskController() {
   if (!scripted_idle_task_controller_) {
     scripted_idle_task_controller_ =
