@@ -556,7 +556,6 @@ export class TabListElement extends CustomElement implements
 
     const tabElement = this.createTabElement_(tab);
     this.placeTabElement(tabElement, tab.index, tab.pinned, tab.groupId);
-    this.addAnimationPromise_(tabElement.slideIn());
     if (tab.active) {
       this.updatePreviouslyActiveTabs_(tab.id);
       this.scrollToTab_(tabElement);

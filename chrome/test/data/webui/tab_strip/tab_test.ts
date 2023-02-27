@@ -59,65 +59,6 @@ suite('Tab', function() {
     document.body.appendChild(tabElement);
   });
 
-  test('slideIn animates scale for the last tab', async () => {
-    document.documentElement.dir = 'ltr';
-    tabElement.style.paddingRight = '100px';
-    const tabElementStyle = window.getComputedStyle(tabElement);
-
-    const animationPromise = tabElement.slideIn();
-    // Before animation completes.
-    assertEquals('20px', tabElementStyle.paddingRight);
-    assertEquals('280px', tabElementStyle.maxWidth);
-    assertEquals('matrix(0, 0, 0, 0, 0, 0)', tabElementStyle.transform);
-    await animationPromise;
-    // After animation completes.
-    assertEquals('100px', tabElementStyle.paddingRight);
-    assertEquals('none', tabElementStyle.maxWidth);
-    assertEquals('none', tabElementStyle.transform);
-  });
-
-  test('slideIn animations for not the last tab', async () => {
-    // Add another element to make sure the element being tested is not the
-    // last.
-    document.body.appendChild(document.createElement('div'));
-
-    document.documentElement.dir = 'ltr';
-    tabElement.style.paddingRight = '100px';
-    const tabElementStyle = window.getComputedStyle(tabElement);
-
-    const animationPromise = tabElement.slideIn();
-    // Before animation completes.
-    assertEquals('0px', tabElementStyle.paddingRight);
-    assertEquals('0px', tabElementStyle.maxWidth);
-    assertEquals('matrix(0, 0, 0, 0, 0, 0)', tabElementStyle.transform);
-    await animationPromise;
-    // After animation completes.
-    assertEquals('100px', tabElementStyle.paddingRight);
-    assertEquals('none', tabElementStyle.maxWidth);
-    assertEquals('none', tabElementStyle.transform);
-  });
-
-  test('slideIn animations right to left for RTL languages', async () => {
-    // Add another element to make sure the element being tested is not the
-    // last.
-    document.body.appendChild(document.createElement('div'));
-
-    document.documentElement.dir = 'rtl';
-    tabElement.style.paddingLeft = '100px';
-    const tabElementStyle = window.getComputedStyle(tabElement);
-
-    const animationPromise = tabElement.slideIn();
-    // Before animation completes.
-    assertEquals('0px', tabElementStyle.paddingLeft);
-    assertEquals('0px', tabElementStyle.maxWidth);
-    assertEquals('matrix(0, 0, 0, 0, 0, 0)', tabElementStyle.transform);
-    await animationPromise;
-    // After animation completes.
-    assertEquals('100px', tabElementStyle.paddingLeft);
-    assertEquals('none', tabElementStyle.maxWidth);
-    assertEquals('none', tabElementStyle.transform);
-  });
-
   test('slideOut animates out the element', async () => {
     testTabsApiProxy.setVisible(true);
     const tabElementStyle = window.getComputedStyle(tabElement);

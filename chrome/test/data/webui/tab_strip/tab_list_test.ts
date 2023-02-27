@@ -306,6 +306,7 @@ suite('TabList', () => {
 
   test('PlacePinnedTabElementAnimatesTabsWithinSameColumn', async () => {
     tabs.forEach(pinTabAt);
+    await flushTasks();
     await tabList.animationPromises;
 
     // Test moving a tab within the same column. If a tab is moved from index 0

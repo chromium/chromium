@@ -260,49 +260,6 @@ export class TabElement extends CustomElement {
     this.toggleAttribute('touch_pressed_', isTouchPressed);
   }
 
-  slideIn(): Promise<void> {
-    const paddingInlineEnd = getPaddingInlineEndProperty();
-
-    // If this TabElement is the last tab, there needs to be enough space for
-    // the view to scroll to it. Therefore, immediately take up all the space
-    // it needs to and only animate the scale.
-    const isLastChild = this.nextElementSibling === null;
-
-    const startState = {
-      maxWidth: isLastChild ? 'var(--tabstrip-tab-width)' : 0,
-      transform: `scale(0)`,
-      [paddingInlineEnd]: isLastChild ? 'var(--tabstrip-tab-spacing)' : 0,
-    };
-
-    const finishState = {
-      maxWidth: `var(--tabstrip-tab-width)`,
-      transform: `scale(1)`,
-      [paddingInlineEnd]: 'var(--tabstrip-tab-spacing)',
-    };
-
-    return new Promise(resolve => {
-      const animation = this.animate([startState, finishState], {
-        duration: 300,
-        easing: 'cubic-bezier(.4, 0, 0, 1)',
-      });
-      animation.onfinish = () => {
-        resolve();
-      };
-
-      // TODO(crbug.com/1035678) By the next animation frame, the animation
-      // should start playing. By the time another animation frame happens,
-      // force play the animation if the animation has not yet begun. Remove
-      // if/when the Blink issue has been fixed.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (animation.pending) {
-            animation.play();
-          }
-        });
-      });
-    });
-  }
-
   slideOut(): Promise<void> {
     if (!this.tabsApi_.isVisible() || this.tab_.pinned ||
         this.tabSwiper_.wasSwiping()) {
