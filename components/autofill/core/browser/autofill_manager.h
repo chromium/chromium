@@ -70,8 +70,7 @@ class AutofillManager
   // - if the request in AutofillDownloadManager was not successful (i.e. no 2XX
   //   response code or a null response body).
   //
-  // The main purpose are unit tests. New pairs of events may be added as
-  // needed.
+  // New pairs of events may be added as needed.
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnAutofillManagerDestroyed(AutofillManager& manager) {}

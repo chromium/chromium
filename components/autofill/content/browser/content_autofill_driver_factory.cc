@@ -90,7 +90,11 @@ ContentAutofillDriverFactory::ContentAutofillDriverFactory(
       client_(client),
       driver_init_hook_(std::move(driver_init_hook)) {}
 
-ContentAutofillDriverFactory::~ContentAutofillDriverFactory() = default;
+ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
+  for (Observer& observer : observers_) {
+    observer.OnContentAutofillDriverFactoryDestroyed(*this);
+  }
+}
 
 std::unique_ptr<ContentAutofillDriver>
 ContentAutofillDriverFactory::CreateDriver(content::RenderFrameHost* rfh) {
@@ -129,6 +133,9 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
     // 5. `render_frame_host->~RenderFrameHostImpl()` finishes.
     if (render_frame_host->IsRenderFrameLive()) {
       driver = CreateDriver(render_frame_host);
+      for (Observer& observer : observers_) {
+        observer.OnContentAutofillDriverCreated(*this, *driver);
+      }
       DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(),
                 driver.get());
     } else {
@@ -169,6 +176,9 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
     driver->renderer_events().HidePopup();
   }
 
+  for (Observer& observer : observers_) {
+    observer.OnContentAutofillDriverWillBeDeleted(*this, *driver);
+  }
   driver_map_.erase(it);
 }
 
