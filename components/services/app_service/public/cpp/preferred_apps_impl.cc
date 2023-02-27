@@ -57,10 +57,7 @@ void WriteDataBlocking(const base::FilePath& preferred_apps_file,
                        const std::string& preferred_apps) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  bool write_success =
-      base::WriteFile(preferred_apps_file, preferred_apps.c_str(),
-                      preferred_apps.size()) != -1;
-  if (!write_success) {
+  if (!base::WriteFile(preferred_apps_file, preferred_apps)) {
     DVLOG(0) << "Fail to write preferred apps to " << preferred_apps_file;
   }
 }

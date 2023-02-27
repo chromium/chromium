@@ -47,8 +47,7 @@ const char* const kUntrustedURLs[] = {
 bool CreateFile(const base::FilePath& file_path) {
   constexpr char kTestData[] = "Hello world!";
 
-  return base::WriteFile(file_path, kTestData, std::size(kTestData)) ==
-         static_cast<int>(std::size(kTestData));
+  return base::WriteFile(file_path, kTestData);
 }
 
 base::FilePath GetZoneIdentifierStreamPath(const base::FilePath& file_path) {
@@ -121,9 +120,7 @@ ScopedZoneForSite::~ScopedZoneForSite() {
 bool AddInternetZoneIdentifierDirectly(const base::FilePath& file_path) {
   static const char kMotwForInternetZone[] = "[ZoneTransfer]\r\nZoneId=3\r\n";
   return base::WriteFile(GetZoneIdentifierStreamPath(file_path),
-                         kMotwForInternetZone,
-                         std::size(kMotwForInternetZone)) ==
-         static_cast<int>(std::size(kMotwForInternetZone));
+                         kMotwForInternetZone);
 }
 
 void CheckQuarantineResult(QuarantineFileResult result,
@@ -311,7 +308,7 @@ TEST_F(QuarantineWinTest, EmptySource_DependsOnLocalConfig) {
 // it and the test would fail.
 TEST_F(QuarantineWinTest, EmptyFile) {
   base::FilePath test_file = GetTempDir().AppendASCII("foo.exe");
-  ASSERT_EQ(0, base::WriteFile(test_file, "", 0u));
+  ASSERT_TRUE(base::WriteFile(test_file, ""));
 
   QuarantineFile(
       test_file, net::FilePathToFileURL(test_file), GURL(), kDummyClientGuid,

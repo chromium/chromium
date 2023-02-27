@@ -82,13 +82,11 @@ void WriteDebugProto(const std::string& serialized_proto,
   EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &path));
   path = path.AppendASCII(file_name);
 
-  size_t bytes_written =
-      base::WriteFile(path, serialized_proto.c_str(), serialized_proto.size());
-
-  if (bytes_written == serialized_proto.size())
+  if (base::WriteFile(path, serialized_proto)) {
     LOG(INFO) << "Debug proto is written to: " << path;
-  else
+  } else {
     LOG(ERROR) << "Could not write debug proto to: " << path;
+  }
 }
 
 template <class T>
