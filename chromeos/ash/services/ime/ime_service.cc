@@ -187,6 +187,9 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, features::kImeUsEnglishModelUpdate.name) == 0) {
     return base::FeatureList::IsEnabled(features::kImeUsEnglishModelUpdate);
   }
+  if (strcmp(feature_name, features::kImeFstDecoderParamsUpdate.name) == 0) {
+    return base::FeatureList::IsEnabled(features::kImeFstDecoderParamsUpdate);
+  }
   return false;
 }
 
