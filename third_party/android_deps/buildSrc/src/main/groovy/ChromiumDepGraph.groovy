@@ -299,6 +299,7 @@ class ChromiumDepGraph {
         // Bill of materials (BOM) deps are used to specify versions for other dependencies and don't have children or
         // artifacts of their own. Add other such empty deps here when we encounter them.
         'org_jetbrains_kotlinx_kotlinx_coroutines_bom',
+        'com_squareup_okio_okio_bom',
     ] as Set
 
     // Local text versions of HTML licenses. This cannot replace PROPERTY_OVERRIDES because some libraries refer to
