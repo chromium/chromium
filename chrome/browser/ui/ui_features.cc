@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui_features.h"
 
 namespace features {
 
