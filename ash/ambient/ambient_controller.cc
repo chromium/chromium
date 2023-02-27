@@ -577,7 +577,9 @@ void AmbientController::CloseUi(bool immediately) {
 
   close_widgets_immediately_ = immediately;
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kClosed);
-  Shell::Get()->cursor_manager()->ShowCursor();
+  if (!Shell::Get()->IsInTabletMode()) {
+    Shell::Get()->cursor_manager()->ShowCursor();
+  }
 }
 
 void AmbientController::ToggleInSessionUi() {
