@@ -2117,7 +2117,7 @@ void StyleResolver::MaybeAddToMatchedPropertiesCache(
                                   matched_property_cache_added, 1);
     matched_properties_cache_.Add(cache_success.key,
                                   state.StyleBuilder().CloneStyle(),
-                                  ComputedStyle::Clone(*state.ParentStyle()));
+                                  state.ParentStyle());
   }
 }
 

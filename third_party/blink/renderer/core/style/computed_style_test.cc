@@ -51,8 +51,8 @@ class ComputedStyleTest : public testing::Test {
     initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
   }
 
-  scoped_refptr<ComputedStyle> CreateComputedStyle() {
-    return ComputedStyle::Clone(*initial_style_);
+  scoped_refptr<const ComputedStyle> InitialComputedStyle() {
+    return initial_style_;
   }
 
   ComputedStyleBuilder CreateComputedStyleBuilder() {
@@ -118,7 +118,7 @@ TEST_F(ComputedStyleTest, Preserve3dForceStackingContext) {
 }
 
 TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
 
   ComputedStyleBuilder builder(*style);
@@ -210,7 +210,7 @@ TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesRespectsTransformAnimation) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetHasCurrentTransformAnimation(true);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -244,7 +244,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesRespectsScaleAnimation) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetHasCurrentScaleAnimation(true);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -256,7 +256,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesRespectsRotateAnimation) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetHasCurrentRotateAnimation(true);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -268,7 +268,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesRespectsTranslateAnimation) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetHasCurrentTranslateAnimation(true);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -280,7 +280,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsOpacity) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetHasCurrentOpacityAnimation(true);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -292,7 +292,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsFilter) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetHasCurrentFilterAnimation(true);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -304,7 +304,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsBackdropFilter) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetHasCurrentBackdropFilterAnimation(true);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -316,7 +316,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsBackfaceVisibility) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -328,7 +328,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsWillChange) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetBackfaceVisibility(EBackfaceVisibility::kHidden);
   builder.SetWillChangeProperties({CSSPropertyID::kOpacity});
@@ -357,7 +357,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsOverflow) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   builder.SetOverflowX(EOverflow::kHidden);
   scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
@@ -369,7 +369,7 @@ TEST_F(ComputedStyleTest,
 
 TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsContainsPaint) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
   // This induces a flat used transform style.
   builder.SetContain(kContainsPaint);
@@ -448,8 +448,8 @@ TEST_F(ComputedStyleTest, BorderStyle) {
   builder.SetBorderTopStyle(EBorderStyle::kSolid);
   builder.SetBorderRightStyle(EBorderStyle::kSolid);
   builder.SetBorderBottomStyle(EBorderStyle::kSolid);
-  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
-  scoped_refptr<const ComputedStyle> other = ComputedStyle::Clone(*style);
+  scoped_refptr<const ComputedStyle> style = builder.CloneStyle();
+  scoped_refptr<const ComputedStyle> other = builder.TakeStyle();
   EXPECT_TRUE(style->BorderSizeEquals(*other));
 
   UPDATE_STYLE(style, SetBorderLeftWidth, LayoutUnit(1));
@@ -545,7 +545,7 @@ TEST_F(ComputedStyleTest, BorderStyle) {
     builder.Set##flag(true);                                               \
     auto style = builder.TakeStyle();                                      \
     EXPECT_TRUE(style->flag());                                            \
-    auto other = CreateComputedStyle();                                    \
+    auto other = InitialComputedStyle();                                   \
     EXPECT_FALSE(other->flag());                                           \
     EXPECT_EQ(ComputedStyle::Difference::inherited,                        \
               ComputedStyle::ComputeDifference(style.get(), other.get())); \
@@ -560,7 +560,7 @@ TEST_F(ComputedStyleTest, BorderStyle) {
     builder.Set##flag(true);                                               \
     auto style = builder.TakeStyle();                                      \
     EXPECT_TRUE(style->flag());                                            \
-    auto other = CreateComputedStyle();                                    \
+    auto other = InitialComputedStyle();                                   \
     EXPECT_FALSE(other->flag());                                           \
     EXPECT_EQ(ComputedStyle::Difference::kEqual,                           \
               ComputedStyle::ComputeDifference(style.get(), other.get())); \
@@ -962,7 +962,7 @@ TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
 }
 
 TEST_F(ComputedStyleTest, InitialVariableNamesEmpty) {
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   EXPECT_TRUE(style->GetVariableNames().empty());
 }
 
@@ -1061,7 +1061,7 @@ TEST_F(ComputedStyleTest, InitialAndInheritedAndNonInheritedVariableNames) {
 }
 
 TEST_F(ComputedStyleTest, GetVariableNamesCount_Invalidation) {
-  scoped_refptr<const ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   EXPECT_EQ(style->GetVariableNamesCount(), 0u);
 
   auto data = css_test_helpers::CreateVariableData("foo");
@@ -1502,7 +1502,7 @@ TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial.get()));
 
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> style = InitialComputedStyle();
   state.SetStyle(*initial);
   EXPECT_FALSE(state.StyleBuilder().Animations());
   EXPECT_FALSE(state.StyleBuilder().Transitions());
@@ -1773,7 +1773,7 @@ TEST_F(ComputedStyleTest, LogicalScrollPaddingUtils) {
 }
 
 TEST_F(ComputedStyleTest, BasicBuilder) {
-  scoped_refptr<ComputedStyle> original = CreateComputedStyle();
+  scoped_refptr<const ComputedStyle> original = InitialComputedStyle();
 
   Length left = Length::Fixed(1.0f);
   Length right = Length::Fixed(2.0f);
@@ -1794,7 +1794,7 @@ TEST_F(ComputedStyleTest, BasicBuilder) {
 TEST_F(ComputedStyleTest, MoveBuilder) {
   Length one = Length::Fixed(1.0f);
 
-  ComputedStyleBuilder builder1(*CreateComputedStyle());
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
   builder1.SetScrollPaddingLeft(one);
 
   ComputedStyleBuilder builder2(std::move(builder1));
@@ -1809,10 +1809,10 @@ TEST_F(ComputedStyleTest, MoveBuilder) {
 TEST_F(ComputedStyleTest, MoveAssignBuilder) {
   Length one = Length::Fixed(1.0f);
 
-  ComputedStyleBuilder builder1(*CreateComputedStyle());
+  ComputedStyleBuilder builder1(*InitialComputedStyle());
   builder1.SetScrollPaddingLeft(one);
 
-  ComputedStyleBuilder builder2(*CreateComputedStyle());
+  ComputedStyleBuilder builder2(*InitialComputedStyle());
   builder2 = std::move(builder1);
 
   EXPECT_FALSE(builder1.TakeStyle());

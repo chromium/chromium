@@ -340,9 +340,6 @@ class ComputedStyle : public ComputedStyleBase,
   // into new instances.
   CORE_EXPORT static scoped_refptr<ComputedStyle> CreateInitialStyleSingleton();
 
-  // Shallow copy into a new instance sharing DataPtrs.
-  CORE_EXPORT static scoped_refptr<ComputedStyle> Clone(const ComputedStyle&);
-
   static const ComputedStyle* NullifyEnsured(const ComputedStyle* style) {
     if (!style) {
       return nullptr;
@@ -2779,10 +2776,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   // Access to UserModify().
   friend class MatchedPropertiesCache;
 
-  explicit ComputedStyleBuilder(const ComputedStyle& style) {
-    style_ = ComputedStyle::Clone(style);
-    SetStyleBase(*style_);
-  }
+  CORE_EXPORT explicit ComputedStyleBuilder(const ComputedStyle& style);
   ComputedStyleBuilder(const ComputedStyleBuilder& builder) = delete;
   ComputedStyleBuilder(ComputedStyleBuilder&&) = default;
   ComputedStyleBuilder& operator=(const ComputedStyleBuilder&) = delete;
@@ -2791,10 +2785,7 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
   scoped_refptr<const ComputedStyle> TakeStyle() { return std::move(style_); }
 
   // NOTE: Prefer `TakeStyle()` if possible.
-  scoped_refptr<const ComputedStyle> CloneStyle() const {
-    DCHECK(style_);
-    return ComputedStyle::Clone(*style_);
-  }
+  CORE_EXPORT scoped_refptr<const ComputedStyle> CloneStyle() const;
 
   CORE_EXPORT void InheritFrom(
       const ComputedStyle& inherit_parent,

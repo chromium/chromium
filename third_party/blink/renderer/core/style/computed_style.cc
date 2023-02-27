@@ -205,10 +205,6 @@ PositionFallbackStyleCache& ComputedStyle::EnsurePositionFallbackStyleCache(
   return *cached_data_->position_fallback_styles_;
 }
 
-scoped_refptr<ComputedStyle> ComputedStyle::Clone(const ComputedStyle& other) {
-  return base::AdoptRef(new ComputedStyle(PassKey(), other));
-}
-
 ALWAYS_INLINE ComputedStyle::ComputedStyle()
     : ComputedStyleBase(), RefCounted<ComputedStyle>() {}
 
@@ -2470,6 +2466,16 @@ bool ComputedStyle::CalculateIsStackingContextWithoutContainment() const {
 
 bool ComputedStyle::IsInTopLayer(const Element& element) const {
   return element.IsInTopLayer() && TopLayer() == ETopLayer::kBrowser;
+}
+
+ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style) {
+  style_ = base::AdoptRef(new ComputedStyle(style));
+  SetStyleBase(*style_);
+}
+
+scoped_refptr<const ComputedStyle> ComputedStyleBuilder::CloneStyle() const {
+  DCHECK(style_);
+  return base::AdoptRef(new ComputedStyle(*style_));
 }
 
 void ComputedStyleBuilder::PropagateIndependentInheritedProperties(
