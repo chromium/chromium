@@ -681,8 +681,6 @@ enum class PresentedState {
     (UIPresentationController*)presentationController {
   DCHECK_EQ(PresentedState::BOOKMARK_BROWSER, self.currentPresentedState);
   DCHECK(self.bookmarkNavigationController);
-  DCHECK_EQ(self.bookmarkBrowser,
-            self.bookmarkNavigationController.topViewController);
   [self.bookmarkBrowser willDismissBySwipeDown];
 }
 

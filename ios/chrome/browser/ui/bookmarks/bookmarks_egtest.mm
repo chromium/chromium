@@ -855,7 +855,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                                      newFolderEnabled:YES];
 }
 
-// Test to swipe down the bookmark view twice..
+// Test to swipe down the bookmark view twice.
 - (void)testBookmarksSwipeDownTwice {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
@@ -877,6 +877,25 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBookmarksHomeTableViewIdentifier)]
       assertWithMatcher:grey_notNil()];
+  // Swipe TableView down.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  // Check that the TableView has been dismissed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
+// Test to swipe down the bookmark view after opening a bookmark folder.
+- (void)testBookmarksSwipeDownAfterOpeningBookmarkFolder {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  // Check that the TableView is presented.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  [BookmarkEarlGreyUI openMobileBookmarks];
   // Swipe TableView down.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kBookmarksHomeTableViewIdentifier)]
