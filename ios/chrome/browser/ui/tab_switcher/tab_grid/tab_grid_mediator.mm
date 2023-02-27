@@ -866,8 +866,8 @@ void RecordTabGridCloseTabsCount(int count) {
     // If the dropped tab is from the same Chrome window and has been removed,
     // cancel the drop operation.
     if (_dragItemID == tabInfo.tabID &&
-        GetTabIndex(self.webStateList, tabInfo.tabID,
-                    /*pinned=*/NO) == WebStateList::kInvalidIndex) {
+        GetWebStateIndex(self.webStateList, tabInfo.tabID) ==
+            WebStateList::kInvalidIndex) {
       return UIDropOperationCancel;
     }
     if (self.browserState->IsOffTheRecord() && tabInfo.incognito) {

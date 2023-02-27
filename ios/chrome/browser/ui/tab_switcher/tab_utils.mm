@@ -20,6 +20,16 @@
 #error "This file requires ARC support."
 #endif
 
+int GetWebStateIndex(WebStateList* web_state_list, NSString* identifier) {
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    if ([identifier isEqualToString:web_state->GetStableIdentifier()]) {
+      return i;
+    }
+  }
+  return WebStateList::kInvalidIndex;
+}
+
 int GetTabIndex(WebStateList* web_state_list,
                 NSString* identifier,
                 BOOL pinned) {
