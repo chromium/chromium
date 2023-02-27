@@ -3098,14 +3098,6 @@
       name: "SpeculationRulesPrefetchWithSubresources",
       base_feature: "none",
     },
-    // Adds a "referrer_policy" key to speculation rules. See https://crbug.com/1355146
-    // TODO(mcnee): This feature shipped in M111. Clean up this flag in M113.
-    {
-      name: "SpeculationRulesReferrerPolicyKey",
-      status: "stable",
-      origin_trial_feature_name: "SpeculationRulesReferrerPolicyKey",
-      implied_by: ["SpeculationRulesPrefetchFuture"],
-    },
     {
       name: "SpeculationRulesRelativeToDocument",
       base_feature: "none",

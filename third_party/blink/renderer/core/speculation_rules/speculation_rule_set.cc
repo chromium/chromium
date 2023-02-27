@@ -66,16 +66,14 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
                                       String* out_error) {
   // https://wicg.github.io/nav-speculation/speculation-rules.html#parse-a-speculation-rule
 
-  // If input has any key other than "source", "urls", "requires", "target_hint"
-  // and "relative_to", then return null.
-  const char* const kKnownKeys[] = {"source",      "urls",  "requires",
-                                    "target_hint", "where", "relative_to"};
+  // If input has any key other than "source", "urls", "where", "requires",
+  // "target_hint", "referrer_policy", "relative_to", and "eagerness", then
+  // return null.
+  const char* const kKnownKeys[] = {
+      "source",          "urls",       "where", "requires", "target_hint",
+      "referrer_policy", "relative_to"};
   const auto kConditionalKnownKeys = [context]() {
     Vector<const char*, 4> conditional_known_keys;
-    if (RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled(
-            context)) {
-      conditional_known_keys.push_back("referrer_policy");
-    }
     if (RuntimeEnabledFeatures::SpeculationRulesEagernessEnabled(context)) {
       conditional_known_keys.push_back("eagerness");
     }
@@ -268,13 +266,12 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
   }
 
+  // Let referrerPolicy be the empty string.
   absl::optional<network::mojom::ReferrerPolicy> referrer_policy;
+  // If input["referrer_policy"] exists:
   JSONValue* referrer_policy_value = input->Get("referrer_policy");
   if (referrer_policy_value) {
-    // Feature gated due to known keys check above.
-    DCHECK(RuntimeEnabledFeatures::SpeculationRulesReferrerPolicyKeyEnabled(
-        context));
-
+    // If input["referrer_policy"] is not a referrer policy, then return null.
     String referrer_policy_str;
     if (!referrer_policy_value->AsString(&referrer_policy_str)) {
       SetParseErrorMessage(out_error, "A referrer policy must be a string.");
@@ -293,6 +290,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
         return nullptr;
       }
       DCHECK_NE(referrer_policy_out, network::mojom::ReferrerPolicy::kDefault);
+      // Set referrerPolicy to input["referrer_policy"].
       referrer_policy = referrer_policy_out;
     }
   }
