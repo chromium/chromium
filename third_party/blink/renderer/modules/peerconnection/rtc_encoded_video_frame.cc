@@ -237,6 +237,12 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
   if (delegate_->PayloadType()) {
     metadata->setPayloadType(*delegate_->PayloadType());
   }
+
+  if (RuntimeEnabledFeatures::RTCEncodedVideoFrameAdditionalMetadataEnabled()) {
+    if (delegate_->CaptureTimeIdentifier()) {
+      metadata->setCaptureTimestamp(delegate_->CaptureTimeIdentifier()->us());
+    }
+  }
   const auto* webrtc_metadata = delegate_->GetMetadata();
   if (!webrtc_metadata)
     return metadata;

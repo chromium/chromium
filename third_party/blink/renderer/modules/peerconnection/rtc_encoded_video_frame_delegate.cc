@@ -31,6 +31,13 @@ uint32_t RTCEncodedVideoFrameDelegate::Timestamp() const {
   return webrtc_frame_ ? webrtc_frame_->GetTimestamp() : 0;
 }
 
+absl::optional<webrtc::Timestamp>
+RTCEncodedVideoFrameDelegate::CaptureTimeIdentifier() const {
+  base::AutoLock lock(lock_);
+  return webrtc_frame_ ? webrtc_frame_->GetCaptureTimeIdentifier()
+                       : absl::nullopt;
+}
+
 DOMArrayBuffer* RTCEncodedVideoFrameDelegate::CreateDataBuffer() const {
   ArrayBufferContents contents;
   {

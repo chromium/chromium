@@ -32,6 +32,7 @@ class RTCEncodedVideoFrameDelegate
 
   String Type() const;
   uint32_t Timestamp() const;
+  absl::optional<webrtc::Timestamp> CaptureTimeIdentifier() const;
   DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
   absl::optional<uint8_t> PayloadType() const;
