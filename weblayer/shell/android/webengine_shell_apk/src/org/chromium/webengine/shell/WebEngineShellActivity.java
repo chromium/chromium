@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -36,8 +37,6 @@ import org.chromium.webengine.WebFragment;
 import org.chromium.webengine.WebMessageCallback;
 import org.chromium.webengine.WebMessageReplyProxy;
 import org.chromium.webengine.WebSandbox;
-import org.chromium.webengine.shell.topbar.TopBarImpl;
-import org.chromium.webengine.shell.topbar.TopBarObservers;
 
 import java.util.Arrays;
 
@@ -137,10 +136,11 @@ public class WebEngineShellActivity extends AppCompatActivity {
         Tab activeTab = mTabManager.getActiveTab();
         ProgressBar progressBar = findViewById(R.id.progress_bar);
         EditText urlBar = findViewById(R.id.url_bar);
+        ImageButton reloadButton = findViewById(R.id.reload_button);
         Button tabCountButton = findViewById(R.id.tab_count);
         Spinner tabListSpinner = findViewById(R.id.tab_list);
-        new TopBarObservers(new TopBarImpl(this, mTabManager, urlBar, progressBar, tabCountButton,
-                                    tabListSpinner),
+        new TopBarObservers(new TopBarImpl(this, mTabManager, urlBar, progressBar, reloadButton,
+                                    tabCountButton, tabListSpinner),
                 mTabManager);
 
         mTabManager.registerTabListObserver(new DefaultObservers.DefaultTabListObserver());

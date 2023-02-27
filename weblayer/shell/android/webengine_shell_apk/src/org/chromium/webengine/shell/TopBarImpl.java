@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.webengine.shell.topbar;
+package org.chromium.webengine.shell;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Patterns;
 import android.view.KeyEvent;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -31,16 +33,24 @@ public class TopBarImpl extends TopBar {
     private final TabManager mTabManager;
     private final EditText mUrlBar;
     private final ProgressBar mProgressBar;
+    private final ImageButton mReloadButton;
+    private final Drawable mRefreshDrawable;
+    private final Drawable mStopDrawable;
     private final Button mTabCountButton;
     private final Spinner mTabListSpinner;
     private final ArrayAdapter<TabWrapper> mTabListAdapter;
 
     public TopBarImpl(Context context, TabManager tabManager, EditText urlBar,
-            ProgressBar progressBar, Button tabCountButton, Spinner tabListSpinner) {
+            ProgressBar progressBar, ImageButton reloadButton, Button tabCountButton,
+            Spinner tabListSpinner) {
         mContext = context;
         mTabManager = tabManager;
         mUrlBar = urlBar;
         mProgressBar = progressBar;
+
+        mReloadButton = reloadButton;
+        mRefreshDrawable = mContext.getDrawable(R.drawable.ic_refresh);
+        mStopDrawable = mContext.getDrawable(R.drawable.ic_stop);
 
         mTabCountButton = tabCountButton;
         mTabCountButton.setText(String.valueOf(getTabsCount()));
@@ -76,6 +86,14 @@ public class TopBarImpl extends TopBar {
             }
         });
 
+        mReloadButton.setOnClickListener(v -> {
+            if (mReloadButton.getDrawable().equals(mRefreshDrawable)) {
+                tabManager.getActiveTab().getNavigationController().reload();
+            } else if (mReloadButton.getDrawable().equals(mStopDrawable)) {
+                tabManager.getActiveTab().getNavigationController().stop();
+            }
+        });
+
         mTabCountButton.setOnClickListener(v -> mTabListSpinner.performClick());
 
         mTabListSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -97,8 +115,10 @@ public class TopBarImpl extends TopBar {
     public void setProgress(double progress) {
         int progressValue = (int) Math.rint(progress * 100);
         if (progressValue != mProgressBar.getMax()) {
+            mReloadButton.setImageDrawable(mStopDrawable);
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
+            mReloadButton.setImageDrawable(mRefreshDrawable);
             mProgressBar.setVisibility(View.INVISIBLE);
         }
         mProgressBar.setProgress(progressValue);
