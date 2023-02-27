@@ -395,9 +395,6 @@ extern const char kContextMenuGoogleLensSearchOptimizationsDescription[];
 extern const char kClientStorageAccessContextAuditingName[];
 extern const char kClientStorageAccessContextAuditingDescription[];
 
-extern const char kClosedTabCacheName[];
-extern const char kClosedTabCacheDescription[];
-
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];

@@ -1087,16 +1087,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "closed-tab-cache",
-    "owners": [
-      "altimin@chromium.org",
-      "sky@chromium.org",
-      "sreejakshetty@chromium.org",
-      "tobias.soppa@code.berlin"
-    ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "cloud-ap-auth",
     "owners": [ "igorruvinov", "zmin" ],
     "expiry_milestone": 120

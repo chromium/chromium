@@ -58681,7 +58681,6 @@ from previous Chrome versions.
   <int value="-1731997767" label="SharingHubDesktopAppMenu:enabled"/>
   <int value="-1731267886" label="AutofillEnableStickyPaymentsBubble:enabled"/>
   <int value="-1731149013" label="AndroidMessagesIntegration:enabled"/>
-  <int value="-1730755478" label="ClosedTabCache:disabled"/>
   <int value="-1729926412" label="enable-webusb-notifications"/>
   <int value="-1729808721" label="SubresourceRedirect:enabled"/>
   <int value="-1728605240" label="UseXpsForPrintingFromPdf:enabled"/>
@@ -63637,7 +63636,6 @@ from previous Chrome versions.
   <int value="1065451331" label="NtpRealboxPedals:disabled"/>
   <int value="1065481614" label="SystemEmojiPickerGIFSupport:disabled"/>
   <int value="1065547630" label="EnableInputNoiseCancellationUi:disabled"/>
-  <int value="1065553214" label="ClosedTabCache:enabled"/>
   <int value="1067618884" label="enable-experimental-input-view-features"/>
   <int value="1067990299" label="enable-ui-devtools"/>
   <int value="1069325321" label="CrostiniGpuSupport:enabled"/>

@@ -693,12 +693,6 @@ const char kChromeLabsDescription[] =
 const char kChromeRefresh2023Name[] = "Chrome Refresh 2023";
 const char kChromeRefresh2023Description[] = "Refresh of Chrome Desktop UI";
 
-const char kClosedTabCacheName[] = "Closed Tab Cache";
-const char kClosedTabCacheDescription[] =
-    "Enables closed tab cache to instantaneously restore recently closed tabs. "
-    "NOTE: This feature is highly experimental and will lead to various "
-    "breakages, enable at your own risk.";
-
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";

@@ -6958,12 +6958,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableBackForwardCacheForScreenReader)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"closed-tab-cache", flag_descriptions::kClosedTabCacheName,
-     flag_descriptions::kClosedTabCacheDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kClosedTabCache)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"windows-scrolling-personality",
      flag_descriptions::kWindowsScrollingPersonalityName,
      flag_descriptions::kWindowsScrollingPersonalityDescription, kOsAll,
