@@ -99,6 +99,12 @@ static void ReportGeolocationViolation(LocalDOMWindow* window) {
   }
 }
 
+bool ValidateGeoposition(const device::mojom::blink::Geoposition& position) {
+  return position.latitude >= -90. && position.latitude <= 90. &&
+         position.longitude >= -180. && position.longitude <= 180. &&
+         position.accuracy >= 0. && !position.timestamp.is_null();
+}
+
 }  // namespace
 
 // static
@@ -496,7 +502,7 @@ void Geolocation::QueryNextPosition() {
 void Geolocation::OnPositionUpdated(
     device::mojom::blink::GeopositionPtr position) {
   disconnected_geolocation_ = false;
-  if (position->valid) {
+  if (ValidateGeoposition(*position)) {
     last_position_ = CreateGeoposition(*position);
     PositionChanged();
   } else {

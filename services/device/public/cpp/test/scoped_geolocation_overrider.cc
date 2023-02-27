@@ -152,13 +152,7 @@ void ScopedGeolocationOverrider::SetGeolocationCloseCallback(
 
 ScopedGeolocationOverrider::FakeGeolocationContext::FakeGeolocationContext(
     mojom::GeopositionPtr position)
-    : position_(std::move(position)) {
-  if (position_) {
-    position_->valid = false;
-    if (ValidateGeoposition(*position_))
-      position_->valid = true;
-  }
-}
+    : position_(std::move(position)) {}
 
 ScopedGeolocationOverrider::FakeGeolocationContext::~FakeGeolocationContext() {}
 
@@ -168,10 +162,6 @@ void ScopedGeolocationOverrider::FakeGeolocationContext::UpdateLocation(
 
   if (!position_)
     return;
-
-  position_->valid = false;
-  if (ValidateGeoposition(*position_))
-    position_->valid = true;
 
   for (auto& impl : impls_) {
     impl->UpdateLocation();
@@ -213,10 +203,6 @@ void ScopedGeolocationOverrider::FakeGeolocationContext::SetOverride(
   override_position_ = std::move(geoposition);
   if (override_position_.is_null())
     return;
-
-  override_position_->valid = false;
-  if (ValidateGeoposition(*override_position_))
-    override_position_->valid = true;
 
   for (auto& impl : impls_) {
     impl->UpdateLocation();

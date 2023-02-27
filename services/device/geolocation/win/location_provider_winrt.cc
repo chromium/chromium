@@ -253,7 +253,7 @@ void LocationProviderWinrt::RegisterCallbacks() {
     if (FAILED(hr)) {
       RecordUmaEvent(WindowsRTLocationRequestEvent::
                          WINDOWS_RT_LOCATION_CALLBACK_EVENT_FAILURE);
-      if (!last_position_.valid) {
+      if (!ValidateGeoposition(last_position_)) {
         HandleErrorCondition(
             mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE,
             "Unable to add a callback to retrieve position for Geolocation "
@@ -331,7 +331,7 @@ void LocationProviderWinrt::OnPositionChanged(
   if (FAILED(hr)) {
     RecordUmaEvent(WindowsRTLocationRequestEvent::
                        WINDOWS_RT_LOCATION_CALLBACK_EVENT_FAILURE);
-    if (!last_position_.valid) {
+    if (!ValidateGeoposition(last_position_)) {
       HandleErrorCondition(
           mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE,
           "Unable to get position from Geolocation API. HRESULT: " +
@@ -348,7 +348,6 @@ void LocationProviderWinrt::OnPositionChanged(
     return;
   }
 
-  location_data.valid = true;
   last_position_ = location_data;
 
   if (!position_received_) {
