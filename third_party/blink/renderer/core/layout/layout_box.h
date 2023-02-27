@@ -2412,6 +2412,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Clear LayoutObject fields of physical fragments.
   void DisassociatePhysicalFragments();
 
+ protected:
   // The CSS border box rect for this box.
   //
   // The rectangle is in LocationContainer's physical coordinates in flipped
@@ -2422,7 +2423,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // include transforms, relative position offsets etc.
   LayoutPoint frame_location_;
 
- protected:
   // TODO(crbug.com/1353190): Remove frame_size_.
   LayoutSize frame_size_;
 

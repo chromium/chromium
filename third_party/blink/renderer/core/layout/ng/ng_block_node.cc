@@ -1516,23 +1516,24 @@ void NGBlockNode::PlaceChildrenInFlowThread(
           placeholder->SetLocation(child_box->Location());
           placeholder->SetSize(child_box->Size());
         }
-      }
 
-      flow_thread->SkipColumnSpanner(child_box, flow_thread_offset);
+        flow_thread->SkipColumnSpanner(child_box, flow_thread_offset);
 
-      if (auto* previous_column_set = DynamicTo<LayoutMultiColumnSet>(
-              placeholder->PreviousSiblingMultiColumnBox()))
-        previous_column_set->FinishLayoutFromNG();
+        if (auto* previous_column_set = DynamicTo<LayoutMultiColumnSet>(
+                placeholder->PreviousSiblingMultiColumnBox())) {
+          previous_column_set->FinishLayoutFromNG();
+        }
 
-      if (pending_column_set) {
-        // The legacy tree builder (the flow thread code) sometimes incorrectly
-        // keeps column sets that shouldn't be there anymore. If we have two
-        // column spanners, that are in fact adjacent, even though there's a
-        // spurious column set between them, the column set hasn't been
-        // initialized correctly (since we still have a pending_column_set at
-        // this point). Say hello to the column set that shouldn't exist, so
-        // that it gets some initialization.
-        pending_column_set->SetIsIgnoredByNG();
+        if (pending_column_set) {
+          // The legacy tree builder (the flow thread code) sometimes
+          // incorrectly keeps column sets that shouldn't be there anymore. If
+          // we have two column spanners, that are in fact adjacent, even though
+          // there's a spurious column set between them, the column set hasn't
+          // been initialized correctly (since we still have a
+          // pending_column_set at this point). Say hello to the column set that
+          // shouldn't exist, so that it gets some initialization.
+          pending_column_set->SetIsIgnoredByNG();
+        }
       }
 
       LayoutBox* next_box = placeholder->NextSiblingMultiColumnBox();
@@ -1578,55 +1579,55 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       has_processed_first_column_in_flow_thread = true;
     }
 
-    if (pending_column_set) {
-      // We're visiting this column set for the first time in this layout pass.
-      // Set up what we can set up. That's everything except for the block-size.
-      // Set the inline-size to that of the content-box of the multicol
-      // container. The inline-offset will be the content-box edge of the
-      // multicol container, and the block-offset will be the block-offset of
-      // the column itself. It doesn't matter which column from the same row we
-      // use, since all columns have the same block-offset and block-size (so
-      // just use the first one).
-      LogicalOffset logical_offset(
-          border_scrollbar_padding.inline_start,
-          converter.ToLogical(child.offset, child_fragment.Size())
-              .block_offset);
-      LogicalSize column_set_logical_size(column_row_inline_size,
-                                          logical_size.block_size);
-      PhysicalOffset physical_offset = converter.ToPhysical(
-          logical_offset, converter.ToPhysical(column_set_logical_size));
-      // We have calculated the physical offset relative to the border edge of
-      // this multicol container fragment. We'll now convert it to a legacy
-      // engine LayoutPoint, which will also take care of converting it into the
-      // flow thread coordinate space, if we happen to be nested inside another
-      // fragmentation context.
-      LayoutPoint point = LayoutBoxUtils::ComputeLocation(
-          child_fragment, physical_offset, physical_fragment,
-          previous_container_break_token);
+    if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+      if (pending_column_set) {
+        // We're visiting this column set for the first time in this layout
+        // pass. Set up what we can set up. That's everything except for the
+        // block-size. Set the inline-size to that of the content-box of the
+        // multicol container. The inline-offset will be the content-box edge of
+        // the multicol container, and the block-offset will be the block-offset
+        // of the column itself. It doesn't matter which column from the same
+        // row we use, since all columns have the same block-offset and
+        // block-size (so just use the first one).
+        LogicalOffset logical_offset(
+            border_scrollbar_padding.inline_start,
+            converter.ToLogical(child.offset, child_fragment.Size())
+                .block_offset);
+        LogicalSize column_set_logical_size(column_row_inline_size,
+                                            logical_size.block_size);
+        PhysicalOffset physical_offset = converter.ToPhysical(
+            logical_offset, converter.ToPhysical(column_set_logical_size));
+        // We have calculated the physical offset relative to the border edge of
+        // this multicol container fragment. We'll now convert it to a legacy
+        // engine LayoutPoint, which will also take care of converting it into
+        // the flow thread coordinate space, if we happen to be nested inside
+        // another fragmentation context.
+        LayoutPoint point = LayoutBoxUtils::ComputeLocation(
+            child_fragment, physical_offset, physical_fragment,
+            previous_container_break_token);
 
-      // TODO(crbug.com/1353190): SetLocation() and SetLogicalWidth() should
-      // be removed.
-      pending_column_set->SetLocation(point);
-      pending_column_set->SetLogicalWidth(column_row_inline_size);
-      pending_column_set->ResetColumnHeight();
-      pending_column_set = nullptr;
-    } else if (should_append_fragmentainer_group) {
-      // Resuming column layout from the previous outer fragmentainer into the
-      // same column set as we used there.
-      flow_thread->AppendNewFragmentainerGroupFromNG();
-      should_append_fragmentainer_group = false;
-    } else if (should_expand_last_set) {
-      if (logical_size.block_size > LayoutUnit()) {
-        auto* last_set = flow_thread->LastMultiColumnSet();
-        last_set->LastFragmentainerGroup().ExtendColumnBlockSizeFromNG(
-            logical_size.block_size);
-        last_set->EndFlow(flow_thread_offset + logical_size.block_size);
-        last_set->FinishLayoutFromNG();
+        pending_column_set->SetLocation(point);
+        pending_column_set->SetLogicalWidth(column_row_inline_size);
+        pending_column_set->ResetColumnHeight();
+        pending_column_set = nullptr;
+      } else if (should_append_fragmentainer_group) {
+        // Resuming column layout from the previous outer fragmentainer into the
+        // same column set as we used there.
+        flow_thread->AppendNewFragmentainerGroupFromNG();
+        should_append_fragmentainer_group = false;
+      } else if (should_expand_last_set) {
+        if (logical_size.block_size > LayoutUnit()) {
+          auto* last_set = flow_thread->LastMultiColumnSet();
+          last_set->LastFragmentainerGroup().ExtendColumnBlockSizeFromNG(
+              logical_size.block_size);
+          last_set->EndFlow(flow_thread_offset + logical_size.block_size);
+          last_set->FinishLayoutFromNG();
+        }
+        should_expand_last_set = false;
       }
-      should_expand_last_set = false;
-    }
 
-    flow_thread->SetCurrentColumnBlockSizeFromNG(logical_size.block_size);
+      flow_thread->SetCurrentColumnBlockSizeFromNG(logical_size.block_size);
+    }
 
     // Each anonymous child of a multicol container constitutes one column.
     // Position each child fragment in the first column that they occur,

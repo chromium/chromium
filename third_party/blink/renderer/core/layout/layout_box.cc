@@ -3527,6 +3527,10 @@ void LayoutBox::InvalidateCachedGeometry() {
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(this)) {
     if (auto* flow_thread = block_flow->MultiColumnFlowThread()) {
       flow_thread->SetHasValidCachedGeometry(false);
+      for (auto* sibling = flow_thread->NextSiblingBox(); sibling;
+           sibling = sibling->NextSiblingBox()) {
+        sibling->SetHasValidCachedGeometry(false);
+      }
     }
   }
 }

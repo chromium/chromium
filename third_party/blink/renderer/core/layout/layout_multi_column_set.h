@@ -73,14 +73,17 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   const MultiColumnFragmentainerGroup& FirstFragmentainerGroup() const {
     NOT_DESTROYED();
+    UpdateGeometryIfNeeded();
     return fragmentainer_groups_.First();
   }
   const MultiColumnFragmentainerGroup& LastFragmentainerGroup() const {
     NOT_DESTROYED();
+    UpdateGeometryIfNeeded();
     return fragmentainer_groups_.Last();
   }
   MultiColumnFragmentainerGroup& LastFragmentainerGroup() {
     NOT_DESTROYED();
+    UpdateGeometryIfNeeded();
     return fragmentainer_groups_.Last();
   }
   unsigned FragmentainerGroupIndexAtFlowThreadOffset(LayoutUnit,
@@ -89,6 +92,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
       LayoutUnit flow_thread_offset,
       PageBoundaryRule rule) {
     NOT_DESTROYED();
+    UpdateGeometryIfNeeded();
     return fragmentainer_groups_[FragmentainerGroupIndexAtFlowThreadOffset(
         flow_thread_offset, rule)];
   }
@@ -96,6 +100,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
       LayoutUnit flow_thread_offset,
       PageBoundaryRule rule) const {
     NOT_DESTROYED();
+    UpdateGeometryIfNeeded();
     return fragmentainer_groups_[FragmentainerGroupIndexAtFlowThreadOffset(
         flow_thread_offset, rule)];
   }
@@ -103,6 +108,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
       const LayoutPoint&) const;
   const MultiColumnFragmentainerGroupList& FragmentainerGroups() const {
     NOT_DESTROYED();
+    UpdateGeometryIfNeeded();
     return fragmentainer_groups_;
   }
 
@@ -263,6 +269,7 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
     NOT_DESTROYED();
     return "LayoutMultiColumnSet";
   }
+  LayoutPoint Location() const override;
 
   // Sets |columnRuleBounds| to the bounds of each column rule rect's painted
   // extent, adjusted by paint offset, before pixel snapping. Returns true if
@@ -303,6 +310,12 @@ class CORE_EXPORT LayoutMultiColumnSet final : public LayoutBlockFlow {
 
   void AddVisualOverflowFromChildren();
   void AddLayoutOverflowFromChildren() override;
+
+  // This function updates frame_location_, frame_size_, and build
+  // fragmentainer_groups_.
+  void UpdateGeometry();
+  // Call UpdateGeometry() if !HasValidCachedGeometry().
+  void UpdateGeometryIfNeeded() const;
 
   MultiColumnFragmentainerGroupList fragmentainer_groups_;
   Member<LayoutFlowThread> flow_thread_;

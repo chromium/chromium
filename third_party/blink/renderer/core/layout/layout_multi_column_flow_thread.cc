@@ -760,6 +760,7 @@ LayoutMultiColumnSet* LayoutMultiColumnFlowThread::PendingColumnSetForNG()
 
 void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   if (!last_set_worked_on_) {
     // There may be no column sets at all (when there's no content inside the
     // multicol container). Still the multicol container itself may take up
@@ -776,6 +777,7 @@ void LayoutMultiColumnFlowThread::AppendNewFragmentainerGroupFromNG() {
 void LayoutMultiColumnFlowThread::SetCurrentColumnBlockSizeFromNG(
     LayoutUnit block_size) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   // There are cases where NG creates an empty column even if we don't create a
   // column set.
   if (!last_set_worked_on_)
@@ -793,11 +795,13 @@ void LayoutMultiColumnFlowThread::FinishLayoutFromNG(
     column_box->ClearNeedsLayout();
   }
 
-  // If we have a trailing column set, finish it.
-  if (auto* last_column_set =
-          DynamicTo<LayoutMultiColumnSet>(LastMultiColumnBox())) {
-    last_column_set->EndFlow(flow_thread_offset);
-    last_column_set->FinishLayoutFromNG();
+  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    // If we have a trailing column set, finish it.
+    if (auto* last_column_set =
+            DynamicTo<LayoutMultiColumnSet>(LastMultiColumnBox())) {
+      last_column_set->EndFlow(flow_thread_offset);
+      last_column_set->FinishLayoutFromNG();
+    }
   }
 
   ValidateColumnSets();
@@ -1073,6 +1077,7 @@ void LayoutMultiColumnFlowThread::SkipColumnSpanner(
     const LayoutBox* layout_object,
     LayoutUnit logical_top_in_flow_thread) {
   NOT_DESTROYED();
+  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   DCHECK(layout_object->IsColumnSpanAll());
 
   // In legacy layout, |last_set_worked_on_| is only updated if we find a column
