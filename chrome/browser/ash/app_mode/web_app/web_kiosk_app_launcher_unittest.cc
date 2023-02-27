@@ -400,7 +400,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, NormalFlow) {
   // `OnAppWindowCreated` method will be called after the lacros-chrome window
   // is created successfully.
   EXPECT_CALL(observer(), OnAppLaunched()).Times(1);
-  browser_manager()->set_is_running(true);
+  browser_manager()->StartRunning();
   launcher()->LaunchApp();
 
   EXEC_AND_WAIT_FOR_CALL(CreateLacrosWindowAndNotify(), observer(),
@@ -413,6 +413,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
   SetupAppData(/*installed*/ true);
   browser_manager()->set_new_fullscreen_window_creation_result(
       crosapi::mojom::CreationResult::kSuccess);
+  browser_manager()->StopRunning();
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->Initialize(), observer(), OnAppPrepared());
 
@@ -420,9 +421,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, WaitBrowserManagerToRun) {
   // will pend until it is ready. The `OnAppWindowCreated` method will be called
   // after the lacros-chrome window is created successfully.
   EXPECT_CALL(observer(), OnAppLaunched()).Times(1);
-  browser_manager()->set_is_running(false);
   launcher()->LaunchApp();
-  browser_manager()->set_is_running(true);
   browser_manager()->StartRunning();
 
   EXEC_AND_WAIT_FOR_CALL(CreateLacrosWindowAndNotify(), observer(),
@@ -443,7 +442,7 @@ TEST_F(WebKioskAppLauncherUsingLacrosTest, FailToLaunchApp) {
 
   EXPECT_CALL(observer(), OnAppLaunched()).Times(1);
   EXPECT_CALL(observer(), OnAppWindowCreated()).Times(0);
-  browser_manager()->set_is_running(true);
+  browser_manager()->StartRunning();
 
   EXEC_AND_WAIT_FOR_CALL(launcher()->LaunchApp(), observer(),
                          OnLaunchFailed(_));

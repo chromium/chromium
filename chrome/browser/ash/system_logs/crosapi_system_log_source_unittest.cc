@@ -23,7 +23,7 @@ class CrosapiSystemLogSourceTest : public ::testing::Test {
 
   void SetUp() override {
     // Set Lacros in running state by default.
-    browser_manager_->set_is_running(true);
+    browser_manager_->StartRunning();
   }
 
  protected:
@@ -38,7 +38,7 @@ class CrosapiSystemLogSourceTest : public ::testing::Test {
 
   void SignalMojoDisconnected() { browser_manager_->SignalMojoDisconnected(); }
 
-  void SetLacrosNotRunning() { browser_manager_->set_is_running(false); }
+  void SetLacrosNotRunning() { browser_manager_->StopRunning(); }
 
   void SetWaitForMojoDisconnect() {
     browser_manager_->set_wait_for_mojo_disconnect(true);
