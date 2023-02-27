@@ -3278,7 +3278,6 @@ if (!is_android) {
         ]
 
         deps += [
-          "//chrome/browser/chromeos/extensions/smart_card_provider_private:browser_tests",
           "//chromeos/constants",
           "//chromeos/dbus/constants",
           "//chromeos/dbus/power",
