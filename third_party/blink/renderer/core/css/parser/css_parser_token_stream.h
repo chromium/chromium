@@ -261,6 +261,9 @@ class CORE_EXPORT CSSParserTokenStream {
     return next_;
   }
 
+  // Assuming the last token was a BlockStart token, ignores tokens
+  // until the matching BlockEnd token or EOF. Requires but does _not_
+  // leave a lookahead token active (for unknown reasons).
   void UncheckedSkipToEndOfBlock();
 
   Vector<CSSParserToken, kInitialBufferSize> buffer_;
