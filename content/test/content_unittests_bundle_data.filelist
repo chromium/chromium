@@ -65,6 +65,7 @@
 //content/test/data/attribution_reporting/interop/dedup_key.json
 //content/test/data/attribution_reporting/interop/default_config.json
 //content/test/data/attribution_reporting/interop/destination_limit.json
+//content/test/data/attribution_reporting/interop/event_level_report_time.json
 //content/test/data/attribution_reporting/interop/event_level_storage_limit.json
 //content/test/data/attribution_reporting/interop/event_level_trigger_filter_data.json
 //content/test/data/attribution_reporting/interop/event_level_trigger_priority.json
