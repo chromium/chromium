@@ -121,6 +121,13 @@ class IbanBubbleViewFullFormBrowserTest
     AddEventObserverToController();
   }
 
+  void TearDownOnMainThread() override {
+    // Explicitly set to null to avoid that it becomes dangling.
+    iban_save_manager_ = nullptr;
+
+    SyncTest::TearDownOnMainThread();
+  }
+
   // The primary main frame's AutofillManager.
   TestAutofillManager* autofill_manager() {
     return autofill_manager_injector_[GetActiveWebContents()];
@@ -368,7 +375,7 @@ class IbanBubbleViewFullFormBrowserTest
 
   void WaitForObservedEvent() { event_waiter_->Wait(); }
 
-  raw_ptr<IBANSaveManager, DanglingUntriaged> iban_save_manager_ = nullptr;
+  raw_ptr<IBANSaveManager> iban_save_manager_ = nullptr;
 
  private:
   AutofillBubbleBase* GetIbanBubbleView() {
