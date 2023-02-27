@@ -421,15 +421,15 @@ AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
   window_is_closed = true;
 }
 
-base::Value AppPlatformMetrics::UsageTime::ConvertToValue() const {
-  base::Value usage_time_dict(base::Value::Type::DICT);
-  usage_time_dict.SetStringKey(kUsageTimeAppIdKey, app_id);
-  usage_time_dict.SetStringKey(kUsageTimeAppTypeKey,
-                               GetAppTypeHistogramName(app_type_name));
-  usage_time_dict.SetPath(kUsageTimeDurationKey,
-                          base::TimeDeltaToValue(running_time));
-  usage_time_dict.SetPath(kReportingUsageTimeDurationKey,
-                          base::TimeDeltaToValue(reporting_usage_time));
+base::Value::Dict AppPlatformMetrics::UsageTime::ConvertToDict() const {
+  base::Value::Dict usage_time_dict;
+  usage_time_dict.Set(kUsageTimeAppIdKey, app_id);
+  usage_time_dict.Set(kUsageTimeAppTypeKey,
+                      GetAppTypeHistogramName(app_type_name));
+  usage_time_dict.Set(kUsageTimeDurationKey,
+                      base::TimeDeltaToValue(running_time));
+  usage_time_dict.Set(kReportingUsageTimeDurationKey,
+                      base::TimeDeltaToValue(reporting_usage_time));
   return usage_time_dict;
 }
 
@@ -1240,20 +1240,20 @@ void AppPlatformMetrics::SaveUsageTime() {
   ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(), kAppUsageTime);
   for (auto it : usage_time_per_two_hours_) {
     const std::string& instance_id = it.first.ToString();
-    auto* const usage_info = usage_dict_pref->FindByDottedPath(instance_id);
+    auto* const usage_info = usage_dict_pref->FindDictByDottedPath(instance_id);
     if (!usage_info) {
       // No entry in the pref store for this instance, so we create a new one.
-      usage_dict_pref->SetByDottedPath(instance_id, it.second.ConvertToValue());
+      usage_dict_pref->SetByDottedPath(instance_id, it.second.ConvertToDict());
       continue;
     }
 
     // Only override the fields tracked by this component so we do not override
     // the reporting usage time.
-    usage_info->SetStringPath(kUsageTimeAppIdKey, it.second.app_id);
-    usage_info->SetStringPath(kUsageTimeAppTypeKey,
-                              GetAppTypeHistogramName(it.second.app_type_name));
-    usage_info->SetPath(kUsageTimeDurationKey,
-                        base::TimeDeltaToValue(it.second.running_time));
+    usage_info->Set(kUsageTimeAppIdKey, it.second.app_id);
+    usage_info->Set(kUsageTimeAppTypeKey,
+                    GetAppTypeHistogramName(it.second.app_type_name));
+    usage_info->Set(kUsageTimeDurationKey,
+                    base::TimeDeltaToValue(it.second.running_time));
   }
 }
 
@@ -1331,9 +1331,10 @@ void AppPlatformMetrics::ClearAppsUsageTimeForInstance(
     const base::StringPiece& instance_id) {
   ScopedDictPrefUpdate usage_time_pref_update(profile_->GetPrefs(),
                                               kAppUsageTime);
-  if (usage_time_pref_update->FindByDottedPath(instance_id)) {
-    usage_time_pref_update->FindByDottedPath(instance_id)
-        ->SetPath(kUsageTimeDurationKey, base::Int64ToValue(0));
+  auto* instance_dict =
+      usage_time_pref_update->FindDictByDottedPath(instance_id);
+  if (instance_dict) {
+    instance_dict->Set(kUsageTimeDurationKey, base::Int64ToValue(0));
   }
 }
 

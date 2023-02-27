@@ -131,14 +131,14 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
     // reset, ideally after the corresponding snapshot has been reported.
     base::TimeDelta reporting_usage_time;
 
-    // Converts the struct UsageTime to base::Value, e.g.:
+    // Converts the struct UsageTime to base::Value::Dict, e.g.:
     // {
     //    "app_id": "hhsosodfjlsjdflkjsdlfksdf",
     //    "app_type": "SystemWebApp",
     //    "time": 3600,
     //    "reporting_usage_time": 1800,
     // }
-    base::Value ConvertToValue() const;
+    base::Value::Dict ConvertToDict() const;
   };
 
   explicit AppPlatformMetrics(Profile* profile,
