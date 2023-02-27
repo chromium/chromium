@@ -1840,6 +1840,10 @@ const char kOfficeSetupComplete[] = "filebrowser.office.setup_complete";
 // Whether we should always move office files without prompting the user first.
 const char kOfficeFilesAlwaysMove[] = "filebrowser.office.always_move";
 
+// Whether the move confirmation dialog has been shown before.
+const char kOfficeMoveConfirmationShown[] =
+    "filebrowser.office.move_confirmation_shown";
+
 // Whether at least one file has been moved to OneDrive.
 const char kOfficeFileMovedToOneDrive[] =
     "filebrowser.office.file_moved_one_drive";

@@ -230,6 +230,7 @@ if (include_js_tests) {
       sources = [
         "chromeos/cloud_upload/cloud_upload_dialog_browsertest.js",
         "chromeos/cloud_upload/file_handler_page_browsertest.js",
+        "chromeos/cloud_upload/move_confirmation_page_browsertest.js",
         "chromeos/crostini_installer_browsertest.js",
         "chromeos/crostini_upgrader_browsertest.js",
         "chromeos/diagnostics/diagnostics_browsertest.js",

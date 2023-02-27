@@ -22,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom-shared.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
@@ -666,6 +667,7 @@ void FindTasksForDialog(Profile* profile,
 
 // static
 void CloudUploadDialog::ShowDialog(
+    Profile* profile,
     mojom::DialogArgsPtr args,
     const mojom::DialogPage dialog_page,
     UploadRequestCallback upload_callback,
@@ -695,9 +697,10 @@ void CloudUploadDialog::ShowDialog(
       tasks.push_back(std::move(task.task_descriptor));
     }
   }
-  CloudUploadDialog* dialog =
-      new CloudUploadDialog(std::move(args), std::move(upload_callback),
-                            dialog_page, std::move(tasks));
+  CloudUploadDialog* dialog = new CloudUploadDialog(
+      std::move(args), std::move(upload_callback), dialog_page,
+      std::move(tasks),
+      file_manager::file_tasks::OfficeMoveConfirmationShown(profile));
 
   dialog->ShowSystemDialog();
 }
@@ -732,7 +735,7 @@ bool CloudUploadDialog::SetUpAndShowDialog(
     // Callback to show the dialog after the tasks have been found.
     file_manager::file_tasks::FindTasksCallback
         find_all_types_of_tasks_callback =
-            base::BindOnce(&ShowDialog, std::move(args), dialog_page,
+            base::BindOnce(&ShowDialog, profile, std::move(args), dialog_page,
                            std::move(upload_callback));
     // Find the file tasks that can open the `file_urls` and then run
     // `ShowDialog`.
@@ -740,8 +743,8 @@ bool CloudUploadDialog::SetUpAndShowDialog(
                        std::move(find_all_types_of_tasks_callback));
 
   } else {
-    ShowDialog(std::move(args), dialog_page, std::move(upload_callback),
-               nullptr);
+    ShowDialog(profile, std::move(args), dialog_page,
+               std::move(upload_callback), nullptr);
   }
   return true;
 }
@@ -789,13 +792,15 @@ CloudUploadDialog::CloudUploadDialog(
     mojom::DialogArgsPtr args,
     UploadRequestCallback callback,
     const mojom::DialogPage dialog_page,
-    std::vector<file_manager::file_tasks::TaskDescriptor> tasks)
+    std::vector<file_manager::file_tasks::TaskDescriptor> tasks,
+    bool office_move_confirmation_shown)
     : SystemWebDialogDelegate(GURL(chrome::kChromeUICloudUploadURL),
                               std::u16string() /* title */),
       dialog_args_(std::move(args)),
       callback_(std::move(callback)),
       dialog_page_(dialog_page),
-      tasks_(std::move(tasks)) {}
+      tasks_(std::move(tasks)),
+      office_move_confirmation_shown_(office_move_confirmation_shown) {}
 
 CloudUploadDialog::~CloudUploadDialog() = default;
 
@@ -820,13 +825,14 @@ const int kDialogHeightForFileHandlerDialogNoLocalApp = 411;
 const int kDialogWidthForDriveSetup = 512;
 const int kDialogHeightForDriveSetup = 220;
 
-const int kDialogWidthForMoveConfirmation = 448;
-const int kDialogHeightForMoveConfirmation = 228;
+const int kDialogWidthForMoveConfirmation = 512;
+const int kDialogHeightForMoveConfirmationWithCheckbox = 260;
+
+const int kDialogHeightForMoveConfirmationWithoutCheckbox = 208;
 }  // namespace
 
 void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
   switch (dialog_page_) {
-    // TODO(cassycc): resize dialog based on number of local file tasks.
     case mojom::DialogPage::kFileHandlerDialog: {
       size->set_width(kDialogWidthForFileHandlerDialog);
       size->set_height(tasks_.size() == 0
@@ -847,7 +853,11 @@ void CloudUploadDialog::GetDialogSize(gfx::Size* size) const {
     case mojom::DialogPage::kMoveConfirmationGoogleDrive:
     case mojom::DialogPage::kMoveConfirmationOneDrive: {
       size->set_width(kDialogWidthForMoveConfirmation);
-      size->set_height(kDialogHeightForMoveConfirmation);
+      if (office_move_confirmation_shown_) {
+        size->set_height(kDialogHeightForMoveConfirmationWithCheckbox);
+      } else {
+        size->set_height(kDialogHeightForMoveConfirmationWithoutCheckbox);
+      }
       return;
     }
   }

@@ -121,6 +121,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   // arguments. These tasks are can be selected by the user to open the files
   // instead of using a cloud provider.
   static void ShowDialog(
+      Profile* profile,
       mojom::DialogArgsPtr args,
       const mojom::DialogPage dialog_page,
       UploadRequestCallback uploadCallback,
@@ -148,7 +149,8 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
       mojom::DialogArgsPtr args,
       UploadRequestCallback callback,
       const mojom::DialogPage dialog_page,
-      std::vector<::file_manager::file_tasks::TaskDescriptor> tasks);
+      std::vector<::file_manager::file_tasks::TaskDescriptor> tasks,
+      bool office_move_confirmation_shown);
   ~CloudUploadDialog() override;
   bool ShouldCloseDialogOnEscape() const override;
   bool ShouldShowCloseButton() const override;
@@ -159,6 +161,7 @@ class CloudUploadDialog : public SystemWebDialogDelegate {
   UploadRequestCallback callback_;
   mojom::DialogPage dialog_page_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> tasks_;
+  bool office_move_confirmation_shown_;
 };
 
 }  // namespace ash::cloud_upload

@@ -37,6 +37,22 @@ export class MoveConfirmationPageElement extends HTMLElement {
 
     moveButton.addEventListener('click', () => this.onMoveButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
+    this.init();
+  }
+
+  $<T extends HTMLElement>(query: string): T {
+    return this.shadowRoot!.querySelector(query)!;
+  }
+
+  async init() {
+    const {moveConfirmationShown: officeMoveConfirmationShown} =
+        await this.proxy.handler.officeMoveConfirmationShown();
+
+    // Only show checkbox if the confirmation has been shown before.
+    if (!officeMoveConfirmationShown) {
+      this.$<CrCheckboxElement>('#always-move-checkbox')!.remove();
+      this.proxy.handler.setOfficeMoveConfirmationShownTrue();
+    }
   }
 
   private getProviderText(cloudProvider: CloudProvider) {
@@ -62,10 +78,10 @@ export class MoveConfirmationPageElement extends HTMLElement {
   }
 
   private onMoveButtonClick(): void {
-    const checkbox = this.shadowRoot!.querySelector<CrCheckboxElement>(
-        '#always-move-checkbox')!;
-    this.proxy.handler.setAlwaysMoveOfficeFiles(checkbox.checked);
-
+    const checkbox = this.$<CrCheckboxElement>('#always-move-checkbox');
+    if (checkbox) {
+      this.proxy.handler.setAlwaysMoveOfficeFiles(checkbox.checked);
+    }
     if (this.cloudProvider === CloudProvider.ONE_DRIVE) {
       this.proxy.handler.respondWithUserActionAndClose(
           UserAction.kUploadToOneDrive);

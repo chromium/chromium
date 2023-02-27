@@ -3,8 +3,8 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    padding: 24px;
-    width: 448px;
+    padding: 32px;
+    width: 512px;
   }
 
   /* TODO(petermarshall): Possibly change font based on the specs */
@@ -20,10 +20,11 @@
   }
 
   cr-checkbox {
-    --cr-checkbox-label-padding-start: 8px;
+    --cr-checkbox-label-padding-start: 12px;
     --cr-checkbox-size: 20px;
-    margin-block-end: 2px;
-    margin-block-start: 18px;
+    margin-top: 16px;
+    padding-bottom: 8px;
+    padding-top: 8px;
   }
 
   .checkbox-text {
@@ -34,6 +35,7 @@
   #button-container {
     display: flex;
     justify-content: flex-end;
+    margin-top: 32px;
   }
 </style>
 
@@ -47,7 +49,7 @@
   whenever you choose to open them.
 </div>
 <cr-checkbox id="always-move-checkbox">
-  <p class="checkbox-text">Do this automatically next time</p>
+  <span class="checkbox-text">Do this automatically next time</span>
 </cr-checkbox>
 <div id="button-container">
   <cr-button class="cancel-button">$i18n{cancel}</cr-button>

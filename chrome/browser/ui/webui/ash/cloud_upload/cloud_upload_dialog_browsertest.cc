@@ -30,6 +30,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
@@ -665,6 +666,75 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
   ASSERT_FALSE(file_manager::file_tasks::GetDefaultTaskFromPrefs(
       *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
 }
+
+// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
+// `kMoveConfirmationOneDrive` and `kMoveConfirmationGoogleDrive` dialogs and
+// True afterwards.
+class MoveConfirmationDialogBrowserTest : public InProcessBrowserTest {
+ public:
+  MoveConfirmationDialogBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kUploadOfficeToCloud);
+  }
+
+  MoveConfirmationDialogBrowserTest(const MoveConfirmationDialogBrowserTest&) =
+      delete;
+  MoveConfirmationDialogBrowserTest& operator=(
+      const MoveConfirmationDialogBrowserTest&) = delete;
+
+  Profile* profile() { return browser()->profile(); }
+
+ protected:
+  // Use a non-managed user in this browser test to ensure
+  // |IsEligibleAndEnabledUploadOfficeToCloud| returns the result of
+  // |IsUploadOfficeToCloudEnabled|.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SetUpCommandLineForNonManagedUser(command_line);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
+// `kMoveConfirmationGoogleDrive` dialog and True afterwards.
+IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
+                       MoveConfirmationGoogleDriveSetsPref) {
+  ASSERT_FALSE(
+      file_manager::file_tasks::OfficeMoveConfirmationShown(profile()));
+  {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar change_observer;
+    change_observer.Init(profile()->GetPrefs());
+    change_observer.Add(prefs::kOfficeMoveConfirmationShown,
+                        run_loop.QuitClosure());
+    ASSERT_TRUE(CloudUploadDialog::SetUpAndShowDialog(
+        profile(), {}, mojom::DialogPage::kMoveConfirmationGoogleDrive));
+
+    // Wait for preference change.
+    run_loop.Run();
+  }
+}
+
+// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
+// `kMoveConfirmationOneDrive` dialog and True afterwards.
+IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
+                       MoveConfirmationOneDriveSetsPref) {
+  ASSERT_FALSE(
+      file_manager::file_tasks::OfficeMoveConfirmationShown(profile()));
+  {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar change_observer;
+    change_observer.Init(profile()->GetPrefs());
+    change_observer.Add(prefs::kOfficeMoveConfirmationShown,
+                        run_loop.QuitClosure());
+    ASSERT_TRUE(CloudUploadDialog::SetUpAndShowDialog(
+        profile(), {}, mojom::DialogPage::kMoveConfirmationOneDrive));
+
+    // Wait for preference change.
+    run_loop.Run();
+  }
+}
+
 }  // namespace ash::cloud_upload
 
 void NonManagedUserWebUIBrowserTest::SetUpCommandLine(

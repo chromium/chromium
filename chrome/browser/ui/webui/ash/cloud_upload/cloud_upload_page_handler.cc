@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_page_handler.h"
+#include <cstddef>
 
 #include "base/functional/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -132,6 +133,16 @@ void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
 
 void CloudUploadPageHandler::SetAlwaysMoveOfficeFiles(bool always_move) {
   file_manager::file_tasks::SetAlwaysMoveOfficeFiles(profile_, always_move);
+}
+
+void CloudUploadPageHandler::SetOfficeMoveConfirmationShownTrue() {
+  file_manager::file_tasks::SetOfficeMoveConfirmationShown(profile_, true);
+}
+
+void CloudUploadPageHandler::OfficeMoveConfirmationShown(
+    OfficeMoveConfirmationShownCallback callback) {
+  std::move(callback).Run(
+      file_manager::file_tasks::OfficeMoveConfirmationShown(profile_));
 }
 
 }  // namespace ash::cloud_upload

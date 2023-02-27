@@ -97,4 +97,12 @@ interface PageHandler {
   // Set the preference for whether we should always move office files without
   // asking the user first.
   SetAlwaysMoveOfficeFiles(bool always_move);
+
+  // Set the preference for whether the move confirmation dialog has been
+  // shown before to true.
+  SetOfficeMoveConfirmationShownTrue();
+
+  // Get the preference for whether the move confirmation dialog has been
+  // shown before.
+  OfficeMoveConfirmationShown() => (bool move_confirmation_shown);
 };

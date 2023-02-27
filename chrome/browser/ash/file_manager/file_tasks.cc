@@ -459,6 +459,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kOfficeSetupComplete, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(prefs::kOfficeFilesAlwaysMove, false);
+  registry->RegisterBooleanPref(prefs::kOfficeMoveConfirmationShown, false);
   registry->RegisterTimePref(prefs::kOfficeFileMovedToOneDrive, base::Time());
   registry->RegisterTimePref(prefs::kOfficeFileMovedToGoogleDrive,
                              base::Time());
@@ -1177,6 +1178,15 @@ void SetAlwaysMoveOfficeFiles(Profile* profile, bool always_move) {
 
 bool AlwaysMoveOfficeFiles(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kOfficeFilesAlwaysMove);
+}
+
+void SetOfficeMoveConfirmationShown(Profile* profile, bool complete) {
+  profile->GetPrefs()->SetBoolean(prefs::kOfficeMoveConfirmationShown,
+                                  complete);
+}
+
+bool OfficeMoveConfirmationShown(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(prefs::kOfficeMoveConfirmationShown);
 }
 
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved) {

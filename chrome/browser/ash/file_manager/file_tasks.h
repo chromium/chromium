@@ -431,6 +431,12 @@ void SetAlwaysMoveOfficeFiles(Profile* profile, bool complete = true);
 // Whether we should always move office files without first asking the user.
 bool AlwaysMoveOfficeFiles(Profile* profile);
 
+// Sets the user preference storing whether the move confirmation dialog has
+// been shown before.
+void SetOfficeMoveConfirmationShown(Profile* profile, bool complete);
+// Whether the move confirmation dialog has been shown before.
+bool OfficeMoveConfirmationShown(Profile* profile);
+
 // Sets the preference `office.file_moved_one_drive`.
 void SetOfficeFileMovedToOneDrive(Profile* profile, base::Time moved);
 // Sets the preference `office.file_moved_google_drive`.
