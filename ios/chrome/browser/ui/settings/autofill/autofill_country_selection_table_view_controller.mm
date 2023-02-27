@@ -114,8 +114,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [self loadModel];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
 
   // Autoscroll to the selected country.
   for (CountryItem* item in [self.tableViewModel
