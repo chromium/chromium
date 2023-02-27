@@ -6,6 +6,7 @@
 
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -73,7 +74,10 @@ WKWebView* BuildWKWebView(CGRect frame,
   web_view.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
 
   if (@available(iOS 16.4, *)) {
-    web_view.inspectable = web::GetWebClient()->EnableWebInspector();
+    if (base::FeatureList::IsEnabled(features::kEnableWebInspector) &&
+        web::GetWebClient()->EnableWebInspector()) {
+      web_view.inspectable = YES;
+    }
   }
 
   return web_view;

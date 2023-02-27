@@ -82,6 +82,9 @@ BASE_DECLARE_FEATURE(kScrollViewProxyScrollEnabledWorkaround);
 // Feature flag to prevent navigation without user interaction.
 BASE_DECLARE_FEATURE(kPreventNavigationWithoutUserInteraction);
 
+// Feature flag to enable Web Inspector support.
+BASE_DECLARE_FEATURE(kEnableWebInspector);
+
 // When true, user control for camera and/or microphone access should be
 // enabled.
 bool IsMediaPermissionsControlEnabled();
