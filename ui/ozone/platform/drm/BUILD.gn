@@ -200,6 +200,8 @@ source_set("gbm_unittests") {
     "gpu/drm_overlay_validator_unittest.cc",
     "gpu/drm_thread_unittest.cc",
     "gpu/drm_window_unittest.cc",
+    "gpu/fake_drm_device_generator.cc",
+    "gpu/fake_drm_device_generator.h",
     "gpu/hardware_display_controller_unittest.cc",
     "gpu/hardware_display_plane_manager_unittest.cc",
     "gpu/mock_drm_device.cc",

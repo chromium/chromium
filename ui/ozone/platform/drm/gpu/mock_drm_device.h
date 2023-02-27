@@ -149,6 +149,9 @@ class MockDrmDevice : public DrmDevice {
   };
 
   explicit MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device);
+  explicit MockDrmDevice(const base::FilePath& path,
+                         std::unique_ptr<GbmDevice> gbm_device,
+                         bool is_primary_device);
 
   MockDrmDevice(const MockDrmDevice&) = delete;
   MockDrmDevice& operator=(const MockDrmDevice&) = delete;
@@ -326,12 +329,12 @@ class MockDrmDevice : public DrmDevice {
 
   bool ValidatePropertyValue(uint32_t id, uint64_t value);
 
-  int set_crtc_call_count_;
-  int add_framebuffer_call_count_;
-  int remove_framebuffer_call_count_;
-  int page_flip_call_count_;
-  int overlay_clear_call_count_;
-  int allocate_buffer_count_;
+  int set_crtc_call_count_ = 0;
+  int add_framebuffer_call_count_ = 0;
+  int remove_framebuffer_call_count_ = 0;
+  int page_flip_call_count_ = 0;
+  int overlay_clear_call_count_ = 0;
+  int allocate_buffer_count_ = 0;
   int test_modeset_count_ = 0;
   int commit_modeset_count_ = 0;
   int seamless_modeset_count_ = 0;
@@ -341,15 +344,15 @@ class MockDrmDevice : public DrmDevice {
   int last_planes_committed_count_ = 0;
   int modeset_sequence_id_ = 0;
 
-  bool set_crtc_expectation_;
-  bool add_framebuffer_expectation_;
-  bool page_flip_expectation_;
-  bool create_dumb_buffer_expectation_;
+  bool set_crtc_expectation_ = true;
+  bool add_framebuffer_expectation_ = true;
+  bool page_flip_expectation_ = true;
+  bool create_dumb_buffer_expectation_ = true;
   bool legacy_gamma_ramp_expectation_ = false;
   bool commit_expectation_ = true;
   bool modeset_with_overlays_expectation_ = true;
 
-  uint32_t current_framebuffer_;
+  uint32_t current_framebuffer_ = 0;
 
   absl::optional<std::string> driver_name_ = "mock";
 

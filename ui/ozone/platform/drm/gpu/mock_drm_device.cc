@@ -295,18 +295,17 @@ MockDrmDevice::MockDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
     : DrmDevice(base::FilePath(),
                 base::ScopedFD(),
                 true /* is_primary_device */,
-                std::move(gbm_device)),
-      set_crtc_call_count_(0),
-      add_framebuffer_call_count_(0),
-      remove_framebuffer_call_count_(0),
-      page_flip_call_count_(0),
-      overlay_clear_call_count_(0),
-      allocate_buffer_count_(0),
-      set_crtc_expectation_(true),
-      add_framebuffer_expectation_(true),
-      page_flip_expectation_(true),
-      create_dumb_buffer_expectation_(true),
-      current_framebuffer_(0) {
+                std::move(gbm_device)) {
+  plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
+}
+
+MockDrmDevice::MockDrmDevice(const base::FilePath& path,
+                             std::unique_ptr<GbmDevice> gbm_device,
+                             bool is_primary_device)
+    : DrmDevice(std::move(path),
+                base::ScopedFD(),
+                is_primary_device,
+                std::move(gbm_device)) {
   plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
 }
 
