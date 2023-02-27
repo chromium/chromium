@@ -298,8 +298,8 @@ class PasswordAutofillManagerTest : public testing::Test {
 
   void SetUp() override {
     // Add a preferred login.
-    fill_data_.preferred_login.username = test_username_;
-    fill_data_.preferred_login.password = test_password_;
+    fill_data_.preferred_login.username_value = test_username_;
+    fill_data_.preferred_login.password_value = test_password_;
   }
 
   void InitializePasswordAutofillManager(TestPasswordManagerClient* client,
@@ -335,8 +335,8 @@ class PasswordAutofillManagerTest : public testing::Test {
 
   autofill::PasswordFormFillData CreateTestFormFillData() {
     autofill::PasswordFormFillData data;
-    data.preferred_login.username = test_username_;
-    data.preferred_login.password = test_password_;
+    data.preferred_login.username_value = test_username_;
+    data.preferred_login.password_value = test_password_;
     data.preferred_login.realm = "http://foo.com/";
     return data;
   }
@@ -514,10 +514,10 @@ TEST_F(PasswordAutofillManagerTest,
     // Load filling data and account-stored duplicate with a different password.
     autofill::PasswordFormFillData data = CreateTestFormFillData();
     autofill::PasswordAndMetadata duplicate;
-    duplicate.password = kAliceAccountStoredPassword;
+    duplicate.password_value = kAliceAccountStoredPassword;
     duplicate.realm = data.preferred_login.realm;
     duplicate.uses_account_store = true;
-    duplicate.username = data.preferred_login.username;
+    duplicate.username_value = data.preferred_login.username_value;
     data.additional_logins.push_back(duplicate);
     favicon::MockFaviconService favicon_service;
     EXPECT_CALL(client, GetFaviconService()).WillOnce(Return(&favicon_service));
@@ -557,7 +557,7 @@ TEST_F(PasswordAutofillManagerTest,
     // When selecting the account-stored credential, make sure the filled
     // password belongs to the selected credential (and not to the first match).
     EXPECT_CALL(*client.mock_driver(),
-                FillSuggestion(test_username_, duplicate.password));
+                FillSuggestion(test_username_, duplicate.password_value));
     EXPECT_CALL(
         autofill_client,
         HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
@@ -966,7 +966,7 @@ TEST_F(PasswordAutofillManagerTest,
   new_data.preferred_login.uses_account_store = true;
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = u"bar.foo@example.com";
+  additional.username_value = u"bar.foo@example.com";
   new_data.additional_logins.push_back(std::move(additional));
   EXPECT_CALL(autofill_client, GetPopupSuggestions())
       .WillRepeatedly(Return(SetLoading(
@@ -1005,17 +1005,17 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = u"John Foo";
+  additional.username_value = u"John Foo";
   data.additional_logins.push_back(additional);
 
   autofill::PasswordAndMetadata additional1;
   additional1.realm = "https://foobarrealm.org";
-  additional1.username = u"Kohn Foo";
+  additional1.username_value = u"Kohn Foo";
   data.additional_logins.push_back(std::move(additional1));
 
   autofill::PasswordAndMetadata additional2;
   additional2.realm = "https://foobarrealm.org";
-  additional2.username = u"Gohn Foo";
+  additional2.username_value = u"Gohn Foo";
   data.additional_logins.push_back(std::move(additional2));
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1058,7 +1058,7 @@ TEST_F(PasswordAutofillManagerTest, ExtractSuggestions) {
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(testing::ElementsAre(
-                  Suggestion::Text(additional.username,
+                  Suggestion::Text(additional.username_value,
                                    Suggestion::Text::IsPrimary(true)),
 #if !BUILDFLAG(IS_ANDROID)
                   kSeparatorEntry,
@@ -1094,12 +1094,12 @@ TEST_F(PasswordAutofillManagerTest, PrettifiedAndroidRealmsAreShownAsLabels) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   autofill::PasswordFormFillData data;
-  data.preferred_login.username = test_username_;
+  data.preferred_login.username_value = test_username_;
   data.preferred_login.realm = "android://hash@com.example1.android/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "android://hash@com.example2.android/";
-  additional.username = u"John Foo";
+  additional.username_value = u"John Foo";
   data.additional_logins.push_back(std::move(additional));
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1133,7 +1133,7 @@ TEST_F(PasswordAutofillManagerTest, FillSuggestionPasswordField) {
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = u"John Foo";
+  additional.username_value = u"John Foo";
   data.additional_logins.push_back(std::move(additional));
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1170,13 +1170,13 @@ TEST_F(PasswordAutofillManagerTest, DisplaySuggestionsWithMatchingTokens) {
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
   std::u16string username = u"foo.bar@example.com";
-  data.preferred_login.username = username;
-  data.preferred_login.password = u"foobar";
+  data.preferred_login.username_value = username;
+  data.preferred_login.password_value = u"foobar";
   data.preferred_login.realm = "http://foo.com/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = u"bar.foo@example.com";
+  additional.username_value = u"bar.foo@example.com";
   data.additional_logins.push_back(additional);
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1190,7 +1190,7 @@ TEST_F(PasswordAutofillManagerTest, DisplaySuggestionsWithMatchingTokens) {
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(ElementsAre(
                   Suggestion::Text(username, Suggestion::Text::IsPrimary(true)),
-                  Suggestion::Text(additional.username,
+                  Suggestion::Text(additional.username_value,
                                    Suggestion::Text::IsPrimary(true)),
 #if !BUILDFLAG(IS_ANDROID)
                   kSeparatorEntry,
@@ -1214,13 +1214,13 @@ TEST_F(PasswordAutofillManagerTest, NoSuggestionForNonPrefixTokenMatch) {
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
   std::u16string username = u"foo.bar@example.com";
-  data.preferred_login.username = username;
-  data.preferred_login.password = u"foobar";
+  data.preferred_login.username_value = username;
+  data.preferred_login.password_value = u"foobar";
   data.preferred_login.realm = "http://foo.com/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = u"bar.foo@example.com";
+  additional.username_value = u"bar.foo@example.com";
   data.additional_logins.push_back(std::move(additional));
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1247,13 +1247,13 @@ TEST_F(PasswordAutofillManagerTest,
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
   std::u16string username = u"foo.bar@example.com";
-  data.preferred_login.username = username;
-  data.preferred_login.password = u"foobar";
+  data.preferred_login.username_value = username;
+  data.preferred_login.password_value = u"foobar";
   data.preferred_login.realm = "http://foo.com/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = u"bar.foo@example.com";
+  additional.username_value = u"bar.foo@example.com";
   data.additional_logins.push_back(additional);
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1266,7 +1266,7 @@ TEST_F(PasswordAutofillManagerTest,
       autofill::ShowPasswordSuggestionsOptions(), element_bounds);
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(ElementsAre(
-                  Suggestion::Text(additional.username,
+                  Suggestion::Text(additional.username_value,
                                    Suggestion::Text::IsPrimary(true)),
 #if !BUILDFLAG(IS_ANDROID)
                   kSeparatorEntry,
@@ -1292,13 +1292,13 @@ TEST_F(PasswordAutofillManagerTest,
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
   std::u16string username = u"foo.bar@example.com";
-  data.preferred_login.username = username;
-  data.preferred_login.password = u"foobar";
+  data.preferred_login.username_value = username;
+  data.preferred_login.password_value = u"foobar";
   data.preferred_login.realm = "http://foo.com/";
 
   autofill::PasswordAndMetadata additional;
   additional.realm = "https://foobarrealm.org";
-  additional.username = u"bar.foo@example.com";
+  additional.username_value = u"bar.foo@example.com";
   data.additional_logins.push_back(additional);
 
   password_autofill_manager_->OnAddPasswordFillData(data);
@@ -1312,7 +1312,7 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(ElementsAre(
                   Suggestion::Text(username, Suggestion::Text::IsPrimary(true)),
-                  Suggestion::Text(additional.username,
+                  Suggestion::Text(additional.username_value,
                                    Suggestion::Text::IsPrimary(true)),
 #if !BUILDFLAG(IS_ANDROID)
                   kSeparatorEntry,
@@ -1327,7 +1327,7 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
   // Initialize PasswordAutofillManager with credentials without username.
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
-  fill_data().preferred_login.username.clear();
+  fill_data().preferred_login.username_value.clear();
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   std::u16string no_username_string =
@@ -1630,8 +1630,8 @@ TEST_F(PasswordAutofillManagerTest, DisplayAccountSuggestionsIndicatorIcon) {
 
   gfx::RectF element_bounds;
   autofill::PasswordFormFillData data;
-  data.preferred_login.username = test_username_;
-  data.preferred_login.password = u"foobar";
+  data.preferred_login.username_value = test_username_;
+  data.preferred_login.password_value = u"foobar";
   data.preferred_login.uses_account_store = true;
 
   password_autofill_manager_->OnAddPasswordFillData(data);

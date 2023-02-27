@@ -503,14 +503,14 @@ struct StructTraits<autofill::mojom::FormDataPredictionsDataView,
 template <>
 struct StructTraits<autofill::mojom::PasswordAndMetadataDataView,
                     autofill::PasswordAndMetadata> {
-  static const std::u16string& username(
+  static const std::u16string& username_value(
       const autofill::PasswordAndMetadata& r) {
-    return r.username;
+    return r.username_value;
   }
 
-  static const std::u16string& password(
+  static const std::u16string& password_value(
       const autofill::PasswordAndMetadata& r) {
-    return r.password;
+    return r.password_value;
   }
 
   static const std::string& realm(const autofill::PasswordAndMetadata& r) {

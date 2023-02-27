@@ -162,13 +162,14 @@ void LogHTMLForm(Logger* logger,
 bool CanShowUsernameSuggestion(const PasswordFormFillData& fill_data,
                                const std::u16string& typed_username) {
   std::u16string typed_username_lower = base::i18n::ToLower(typed_username);
-  if (base::StartsWith(base::i18n::ToLower(fill_data.preferred_login.username),
-                       typed_username_lower, base::CompareCase::SENSITIVE)) {
+  if (base::StartsWith(
+          base::i18n::ToLower(fill_data.preferred_login.username_value),
+          typed_username_lower, base::CompareCase::SENSITIVE)) {
     return true;
   }
 
   for (const auto& login : fill_data.additional_logins) {
-    if (base::StartsWith(base::i18n::ToLower(login.username),
+    if (base::StartsWith(base::i18n::ToLower(login.username_value),
                          typed_username_lower, base::CompareCase::SENSITIVE)) {
       return true;
     }
@@ -187,10 +188,10 @@ void FindMatchesByUsername(const PasswordFormFillData& fill_data,
                            std::u16string* username,
                            std::u16string* password) {
   // Look for any suitable matches to current field text.
-  if (DoUsernamesMatch(fill_data.preferred_login.username, current_username,
-                       exact_username_match)) {
-    *username = fill_data.preferred_login.username;
-    *password = fill_data.preferred_login.password;
+  if (DoUsernamesMatch(fill_data.preferred_login.username_value,
+                       current_username, exact_username_match)) {
+    *username = fill_data.preferred_login.username_value;
+    *password = fill_data.preferred_login.password_value;
     LogMessage(logger, Logger::STRING_USERNAMES_MATCH);
   } else {
     // Scan additional logins for a match.
@@ -202,10 +203,10 @@ void FindMatchesByUsername(const PasswordFormFillData& fill_data,
         // filled without explicit user selection.
         continue;
       }
-      if (DoUsernamesMatch(it.username, current_username,
+      if (DoUsernamesMatch(it.username_value, current_username,
                            exact_username_match)) {
-        *username = it.username;
-        *password = it.password;
+        *username = it.username_value;
+        *password = it.password_value;
         break;
       }
     }
@@ -1875,7 +1876,7 @@ bool PasswordAutofillAgent::FillUserNameAndPassword(
       // data that this value is placeholder.
       current_username = username_element.Value().Utf16();
     } else if (IsElementEditable(username_element)) {
-      current_username = fill_data.preferred_login.username;
+      current_username = fill_data.preferred_login.username_value;
     }
   }
 

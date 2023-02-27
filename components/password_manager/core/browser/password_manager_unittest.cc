@@ -1550,7 +1550,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsStillFilled) {
   observed.push_back(form.form_data);
   manager()->OnPasswordFormsParsed(&driver_, observed);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(form.password_value, form_data.preferred_login.password);
+  EXPECT_EQ(form.password_value, form_data.preferred_login.password_value);
 }
 
 TEST_P(PasswordManagerTest,
@@ -2288,8 +2288,8 @@ TEST_P(PasswordManagerTest, UpdateFormManagers) {
   manager()->UpdateFormManagers();
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(form.username_value, form_data.preferred_login.username);
-  EXPECT_EQ(form.password_value, form_data.preferred_login.password);
+  EXPECT_EQ(form.username_value, form_data.preferred_login.username_value);
+  EXPECT_EQ(form.password_value, form_data.preferred_login.password_value);
 }
 
 TEST_P(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
@@ -2308,8 +2308,10 @@ TEST_P(PasswordManagerTest, AutofillingOfAffiliatedCredentials) {
   manager()->OnPasswordFormsRendered(&driver_, observed_forms);
   task_environment_.RunUntilIdle();
 
-  EXPECT_EQ(android_form.username_value, form_data.preferred_login.username);
-  EXPECT_EQ(android_form.password_value, form_data.preferred_login.password);
+  EXPECT_EQ(android_form.username_value,
+            form_data.preferred_login.username_value);
+  EXPECT_EQ(android_form.password_value,
+            form_data.preferred_login.password_value);
   // On Android Touch To Fill will prevent autofilling credentials on page load.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_TRUE(form_data.wait_for_username);
@@ -3343,8 +3345,10 @@ TEST_P(PasswordManagerTest, FillingAndSavingFallbacksOnNonPasswordForm) {
   task_environment_.RunUntilIdle();
 
   // Check that manual filling fallback available.
-  EXPECT_EQ(saved_match.username_value, form_data.preferred_login.username);
-  EXPECT_EQ(saved_match.password_value, form_data.preferred_login.password);
+  EXPECT_EQ(saved_match.username_value,
+            form_data.preferred_login.username_value);
+  EXPECT_EQ(saved_match.password_value,
+            form_data.preferred_login.password_value);
   // Check that no automatic filling available.
   EXPECT_TRUE(form_data.username_element_renderer_id.is_null());
   EXPECT_TRUE(form_data.password_element_renderer_id.is_null());
@@ -3428,9 +3432,11 @@ TEST_P(PasswordManagerTest, FillSingleUsername) {
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
   task_environment_.RunUntilIdle();
   EXPECT_EQ(form_id, fill_data.form_renderer_id);
-  EXPECT_EQ(saved_match.username_value, fill_data.preferred_login.username);
+  EXPECT_EQ(saved_match.username_value,
+            fill_data.preferred_login.username_value);
   EXPECT_EQ(field_id, fill_data.username_element_renderer_id);
-  EXPECT_EQ(saved_match.password_value, fill_data.preferred_login.password);
+  EXPECT_EQ(saved_match.password_value,
+            fill_data.preferred_login.password_value);
   EXPECT_TRUE(fill_data.password_element_renderer_id.is_null());
 }
 #endif  // !BUILDFLAG(IS_IOS)

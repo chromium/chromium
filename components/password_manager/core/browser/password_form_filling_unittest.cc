@@ -91,7 +91,7 @@ PasswordFormFillData::LoginCollection::const_iterator FindPasswordByUsername(
     const std::vector<autofill::PasswordAndMetadata>& logins,
     const std::u16string& username) {
   return base::ranges::find(logins, username,
-                            &autofill::PasswordAndMetadata::username);
+                            &autofill::PasswordAndMetadata::username_value);
 }
 
 }  // namespace
@@ -199,15 +199,17 @@ TEST_F(PasswordFormFillingTest, Autofill) {
   // Check that the message to the renderer (i.e. |fill_data|) is filled
   // correctly.
   EXPECT_EQ(observed_form_.url, fill_data.url);
-  EXPECT_EQ(saved_match_.username_value, fill_data.preferred_login.username);
-  EXPECT_EQ(saved_match_.password_value, fill_data.preferred_login.password);
+  EXPECT_EQ(saved_match_.username_value,
+            fill_data.preferred_login.username_value);
+  EXPECT_EQ(saved_match_.password_value,
+            fill_data.preferred_login.password_value);
 
   // Check that information about non-preferred best matches is filled.
   ASSERT_EQ(1u, fill_data.additional_logins.size());
   EXPECT_EQ(another_saved_match.username_value,
-            fill_data.additional_logins.begin()->username);
+            fill_data.additional_logins.begin()->username_value);
   EXPECT_EQ(another_saved_match.password_value,
-            fill_data.additional_logins.begin()->password);
+            fill_data.additional_logins.begin()->password_value);
   // Realm is empty for non-psl match.
   EXPECT_TRUE(fill_data.additional_logins.begin()->realm.empty());
 }
@@ -379,8 +381,10 @@ TEST_F(PasswordFormFillingTest, AutofillPSLMatch) {
   EXPECT_EQ(observed_form_.password_element_renderer_id,
             fill_data.password_element_renderer_id);
   EXPECT_EQ(psl_saved_match_.signon_realm, fill_data.preferred_login.realm);
-  EXPECT_EQ(saved_match_.username_value, fill_data.preferred_login.username);
-  EXPECT_EQ(saved_match_.password_value, fill_data.preferred_login.password);
+  EXPECT_EQ(saved_match_.username_value,
+            fill_data.preferred_login.username_value);
+  EXPECT_EQ(saved_match_.password_value,
+            fill_data.preferred_login.password_value);
 }
 
 TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
@@ -451,8 +455,10 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
   EXPECT_EQ(observed_form_.url, fill_data.url);
   EXPECT_TRUE(fill_data.wait_for_username);
   EXPECT_EQ(affiliated_match.signon_realm, fill_data.preferred_login.realm);
-  EXPECT_EQ(saved_match_.username_value, fill_data.preferred_login.username);
-  EXPECT_EQ(saved_match_.password_value, fill_data.preferred_login.password);
+  EXPECT_EQ(saved_match_.username_value,
+            fill_data.preferred_login.username_value);
+  EXPECT_EQ(saved_match_.password_value,
+            fill_data.preferred_login.password_value);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.MatchedFormType",

@@ -287,8 +287,8 @@ PasswordFormFillData CreatePasswordFormFillData(
   result.url = form_on_page.url;
   result.wait_for_username = wait_for_username;
 
-  result.preferred_login.username = preferred_match.username_value;
-  result.preferred_login.password = preferred_match.password_value;
+  result.preferred_login.username_value = preferred_match.username_value;
+  result.preferred_login.password_value = preferred_match.password_value;
 
   if (!form_on_page.only_for_fallback &&
       (form_on_page.HasPasswordElement() || form_on_page.IsSingleUsername())) {
@@ -321,8 +321,8 @@ PasswordFormFillData CreatePasswordFormFillData(
       continue;
     }
     PasswordAndMetadata value;
-    value.username = match->username_value;
-    value.password = match->password_value;
+    value.username_value = match->username_value;
+    value.password_value = match->password_value;
     value.uses_account_store = match->IsUsingAccountStore();
 
     if (IsPublicSuffixMatchOrAffiliationBasedMatch(*match)) {

@@ -27,8 +27,8 @@ namespace autofill {
 
 bool operator==(const PasswordAndMetadata& lhs,
                 const PasswordAndMetadata& rhs) {
-  return lhs.username == rhs.username && lhs.password == rhs.password &&
-         lhs.realm == rhs.realm &&
+  return lhs.username_value == rhs.username_value &&
+         lhs.password_value == rhs.password_value && lhs.realm == rhs.realm &&
          lhs.uses_account_store == rhs.uses_account_store;
 }
 
@@ -54,23 +54,23 @@ void CreateTestFieldDataPredictions(const std::string& signature,
 void CreateTestPasswordFormFillData(PasswordFormFillData* fill_data) {
   fill_data->form_renderer_id = autofill::FormRendererId(1234);
   fill_data->url = GURL("https://foo.com/");
-  fill_data->preferred_login.username = u"TestUsernameFieldValue";
+  fill_data->preferred_login.username_value = u"TestUsernameFieldValue";
   fill_data->username_element_renderer_id = test::MakeFieldRendererId();
-  fill_data->preferred_login.password = u"TestPasswordFieldValue";
+  fill_data->preferred_login.password_value = u"TestPasswordFieldValue";
   fill_data->password_element_renderer_id = test::MakeFieldRendererId();
   fill_data->preferred_login.realm = "https://foo.com/";
   fill_data->preferred_login.uses_account_store = true;
 
   PasswordAndMetadata pr;
-  pr.password = u"Tom_Password";
+  pr.password_value = u"Tom_Password";
   pr.realm = "https://foo.com/";
   pr.uses_account_store = false;
-  pr.username = u"Tom";
+  pr.username_value = u"Tom";
   fill_data->additional_logins.push_back(pr);
-  pr.password = u"Jerry_Password";
+  pr.password_value = u"Jerry_Password";
   pr.realm = "https://bar.com/";
   pr.uses_account_store = true;
-  pr.username = u"Jerry";
+  pr.username_value = u"Jerry";
   fill_data->additional_logins.push_back(pr);
 
   fill_data->wait_for_username = true;

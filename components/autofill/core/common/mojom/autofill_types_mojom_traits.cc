@@ -344,10 +344,12 @@ bool StructTraits<autofill::mojom::PasswordAndMetadataDataView,
                   autofill::PasswordAndMetadata>::
     Read(autofill::mojom::PasswordAndMetadataDataView data,
          autofill::PasswordAndMetadata* out) {
-  if (!data.ReadUsername(&out->username))
+  if (!data.ReadUsernameValue(&out->username_value)) {
     return false;
-  if (!data.ReadPassword(&out->password))
+  }
+  if (!data.ReadPasswordValue(&out->password_value)) {
     return false;
+  }
   if (!data.ReadRealm(&out->realm))
     return false;
 

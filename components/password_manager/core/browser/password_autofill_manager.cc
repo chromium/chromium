@@ -168,18 +168,18 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                     bool is_password_field,
                     std::vector<autofill::Suggestion>* suggestions) {
   AppendSuggestionIfMatching(
-      fill_data.preferred_login.username, current_username, custom_icon,
+      fill_data.preferred_login.username_value, current_username, custom_icon,
       fill_data.preferred_login.realm, show_all, is_password_field,
       fill_data.preferred_login.uses_account_store,
-      fill_data.preferred_login.password.size(), suggestions);
+      fill_data.preferred_login.password_value.size(), suggestions);
 
   int prefered_match = suggestions->size();
 
   for (const auto& login : fill_data.additional_logins) {
-    AppendSuggestionIfMatching(login.username, current_username, custom_icon,
-                               login.realm, show_all, is_password_field,
-                               login.uses_account_store, login.password.size(),
-                               suggestions);
+    AppendSuggestionIfMatching(login.username_value, current_username,
+                               custom_icon, login.realm, show_all,
+                               is_password_field, login.uses_account_store,
+                               login.password_value.size(), suggestions);
   }
 
   std::sort(suggestions->begin() + prefered_match, suggestions->end(),
@@ -601,8 +601,8 @@ void PasswordAutofillManager::OnAddPasswordFillData(
 
   // If there are no username or password suggestions, WebAuthn credentials
   // can still cause a popup to appear.
-  if (fill_data.preferred_login.username.empty() &&
-      fill_data.preferred_login.password.empty()) {
+  if (fill_data.preferred_login.username_value.empty() &&
+      fill_data.preferred_login.password_value.empty()) {
     return;
   }
 
@@ -851,8 +851,8 @@ bool PasswordAutofillManager::FillSuggestion(const std::u16string& username,
         FacetURI::FromPotentiallyInvalidSpec(password_and_meta_data.realm)
             .IsValidAndroidFacetURI();
     metrics_util::LogFilledCredentialIsFromAndroidApp(is_android_credential);
-    password_manager_driver_->FillSuggestion(username,
-                                             password_and_meta_data.password);
+    password_manager_driver_->FillSuggestion(
+        username, password_and_meta_data.password_value);
     return true;
   }
   return false;
@@ -869,7 +869,7 @@ bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
       GetPasswordAndMetadataForUsername(username, item_id, *fill_data_,
                                         &password_and_meta_data)) {
     password_manager_driver_->PreviewSuggestion(
-        username, password_and_meta_data.password);
+        username, password_and_meta_data.password_value);
     return true;
   }
   return false;
@@ -889,10 +889,11 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
       item_id == autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY;
 
   // Look for any suitable matches to current field text.
-  if (fill_data.preferred_login.username == current_username &&
+  if (fill_data.preferred_login.username_value == current_username &&
       fill_data.preferred_login.uses_account_store == item_uses_account_store) {
-    password_and_meta_data->username = current_username;
-    password_and_meta_data->password = fill_data.preferred_login.password;
+    password_and_meta_data->username_value = current_username;
+    password_and_meta_data->password_value =
+        fill_data.preferred_login.password_value;
     password_and_meta_data->realm = fill_data.preferred_login.realm;
     password_and_meta_data->uses_account_store =
         fill_data.preferred_login.uses_account_store;
@@ -903,7 +904,7 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
   auto iter = base::ranges::find_if(
       fill_data.additional_logins,
       [&](const autofill::PasswordAndMetadata& login) {
-        return current_username == login.username &&
+        return current_username == login.username_value &&
                item_uses_account_store == login.uses_account_store;
       });
   if (iter != fill_data.additional_logins.end()) {

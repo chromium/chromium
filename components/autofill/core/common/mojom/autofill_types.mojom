@@ -408,8 +408,8 @@ struct FormDataPredictions {
 // autofill::PasswordAndMetadata
 // (components/autofill/core/common/password_form_fill_data.h)
 struct PasswordAndMetadata {
-  mojo_base.mojom.String16 username;
-  mojo_base.mojom.String16 password;
+  mojo_base.mojom.String16 username_value;
+  mojo_base.mojom.String16 password_value;
   string realm;
   bool uses_account_store;
 };

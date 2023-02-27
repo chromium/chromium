@@ -29,8 +29,8 @@ struct PasswordAndMetadata {
   PasswordAndMetadata& operator=(PasswordAndMetadata&&);
   ~PasswordAndMetadata();
 
-  std::u16string username;
-  std::u16string password;
+  std::u16string username_value;
+  std::u16string password_value;
   std::string realm;
   bool uses_account_store = false;
 };
