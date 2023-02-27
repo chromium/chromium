@@ -137,8 +137,7 @@ TEST_F(SubresourceFilterRulesetPublisherImplTest, NoRuleset_NoIPCMessages) {
 TEST_F(SubresourceFilterRulesetPublisherImplTest,
        PublishedRuleset_IsDistributedToExistingAndNewRenderers) {
   const char kTestFileContents[] = "foobar";
-  base::WriteFile(scoped_temp_file(), kTestFileContents,
-                  strlen(kTestFileContents));
+  base::WriteFile(scoped_temp_file(), kTestFileContents);
 
   RulesetFilePtr file(
       new base::File(scoped_temp_file(),

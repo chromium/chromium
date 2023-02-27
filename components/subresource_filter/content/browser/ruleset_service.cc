@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -15,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -77,7 +79,7 @@ class SentinelFile {
   SentinelFile& operator=(const SentinelFile&) = delete;
 
   bool IsPresent() { return base::PathExists(path_); }
-  bool Create() { return base::WriteFile(path_, nullptr, 0) == 0; }
+  bool Create() { return base::WriteFile(path_, base::StringPiece()); }
   bool Remove() { return base::DeleteFile(path_); }
 
  private:
@@ -378,11 +380,9 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
   }
 
   static_assert(sizeof(uint8_t) == sizeof(char), "Expected char = byte.");
-  const int data_size_in_chars = base::checked_cast<int>(indexed_ruleset_size);
-  if (base::WriteFile(
+  if (!base::WriteFile(
           IndexedRulesetLocator::GetRulesetDataFilePath(scratch_dir.GetPath()),
-          reinterpret_cast<const char*>(indexed_ruleset_data),
-          data_size_in_chars) != data_size_in_chars) {
+          base::make_span(indexed_ruleset_data, indexed_ruleset_size))) {
     return IndexAndWriteRulesetResult::FAILED_WRITING_RULESET_DATA;
   }
 

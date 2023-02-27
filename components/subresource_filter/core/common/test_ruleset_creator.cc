@@ -31,11 +31,7 @@ static_assert(CHAR_BIT == 8, "Assumed char was 8 bits.");
 void WriteRulesetContents(const std::vector<uint8_t>& contents,
                           base::FilePath path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  int ruleset_size_as_int = base::checked_cast<int>(contents.size());
-  int num_bytes_written =
-      base::WriteFile(path, reinterpret_cast<const char*>(contents.data()),
-                      ruleset_size_as_int);
-  ASSERT_EQ(ruleset_size_as_int, num_bytes_written);
+  ASSERT_TRUE(base::WriteFile(path, contents));
 }
 
 std::vector<uint8_t> SerializeUnindexedRulesetWithMultipleRules(

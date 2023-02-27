@@ -329,8 +329,7 @@ TEST(RuleStreamTest, TransferRulesFromFilterListWithUnsupportedOptions) {
 
   // Output all the rules to the |source_ruleset| file.
   std::string joined_rules = base::JoinString(text_rules, "\n");
-  base::WriteFile(source_ruleset.ruleset_path(), joined_rules.data(),
-                  joined_rules.size());
+  base::WriteFile(source_ruleset.ruleset_path(), joined_rules);
 
   // Filter out the rules with parse errors, and save the rest to |contents|.
   TestRulesetContents contents;
