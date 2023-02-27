@@ -13,9 +13,11 @@ import extract_histograms
 import histogram_paths
 import merge_xml
 
-# The allowlist of namespaces that are split across multiple files.
+# The allowlist of namespaces (histogram prefixes, case insensitive) that are
+# split across multiple files.
 _NAMESPACES_IN_MULTIPLE_FILES = [
-    'ash', 'autocomplete', 'chromeos', 'fcminvalidations', 'graphics', 'launch'
+    'ash', 'autocomplete', 'childprocess', 'chromeos', 'fcminvalidations',
+    'graphics', 'launch'
 ]
 
 

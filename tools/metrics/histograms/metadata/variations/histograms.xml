@@ -22,6 +22,26 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="ChildProcess.FieldTrials.CreateFromShmemSuccess"
+    enum="BooleanSuccess" expires_after="2023-07-15">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether creating field trials from shared memory succeeded. Recorded by each
+    child process on process startup.
+  </summary>
+</histogram>
+
+<histogram name="ChildProcess.FieldTrials.CreateFromSwitchSuccess"
+    enum="BooleanSuccess" expires_after="2023-07-15">
+  <owner>asvitkine@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Whether creating field trials from --force-fieldtrials switch succeeded.
+    Recorded by each child process on process startup.
+  </summary>
+</histogram>
+
 <histogram name="Variations.AppliedSeed.Size" units="bytes"
     expires_after="2023-07-30">
   <owner>caitlinfischer@google.com</owner>

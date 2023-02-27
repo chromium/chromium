@@ -2231,24 +2231,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ChildProcess.FieldTrials.CreateFromShmemSuccess"
-    enum="BooleanSuccess" expires_after="M72">
-  <owner>asvitkine@chromium.org</owner>
-  <summary>
-    Whether creating field trials from shared memory succeeded. Recorded by each
-    child process on process startup.
-  </summary>
-</histogram>
-
-<histogram name="ChildProcess.FieldTrials.CreateFromSwitchSuccess"
-    enum="BooleanSuccess" expires_after="M72">
-  <owner>asvitkine@chromium.org</owner>
-  <summary>
-    Whether creating field trials from --force-fieldtrials switch succeeded.
-    Recorded by each child process on process startup.
-  </summary>
-</histogram>
-
 <histogram name="ChildProcess.Killed2" enum="ProcessType2"
     expires_after="never">
 <!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
