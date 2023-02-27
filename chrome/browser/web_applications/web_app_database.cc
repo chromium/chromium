@@ -473,9 +473,9 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         syncer::TimeToProtoTime(web_app.manifest_update_time()));
   }
 
-  if (web_app.install_source_for_metrics()) {
-    local_data->set_install_source_for_metrics(
-        static_cast<int>(*web_app.install_source_for_metrics()));
+  if (web_app.latest_install_source()) {
+    local_data->set_latest_install_source(
+        static_cast<int>(*web_app.latest_install_source()));
   }
 
   if (web_app.chromeos_data().has_value()) {
@@ -1006,12 +1006,12 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetLastLaunchTime(
         syncer::ProtoTimeToTime(local_data.last_launch_time()));
   }
-  if (local_data.has_install_source_for_metrics()) {
-    int install_source = local_data.install_source_for_metrics();
+  if (local_data.has_latest_install_source()) {
+    int install_source = local_data.latest_install_source();
     if (install_source >= 0 &&
         install_source <
             static_cast<int>(webapps::WebappInstallSource::COUNT)) {
-      web_app->SetInstallSourceForMetrics(
+      web_app->SetLatestInstallSource(
           static_cast<webapps::WebappInstallSource>(install_source));
     }
   }

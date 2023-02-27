@@ -375,7 +375,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     features.start_url = provider->registrar_unsafe().GetAppStartUrl(*app_id);
     features.installed = true;
     auto install_source =
-        provider->registrar_unsafe().GetAppInstallSourceForMetrics(*app_id);
+        provider->registrar_unsafe().GetLatestAppInstallSource(*app_id);
     if (install_source)
       features.install_source = static_cast<int>(*install_source);
     DisplayMode display_mode =

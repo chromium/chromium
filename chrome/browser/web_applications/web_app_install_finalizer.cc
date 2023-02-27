@@ -204,7 +204,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(options.source);
   web_app->SetIsFromSyncAndPendingInstallation(false);
-  web_app->SetInstallSourceForMetrics(options.install_surface);
+  web_app->SetLatestInstallSource(options.install_surface);
 
   WriteExternalConfigMapInfo(*web_app, options.source,
                              web_app_info.is_placeholder,

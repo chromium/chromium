@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, InstallSourceRecorded) {
     AppId app_id = InstallShortcutAppForCurrentUrl();
 
     EXPECT_EQ(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
-              *registrar().GetAppInstallSourceForMetrics(app_id));
+              *registrar().GetLatestAppInstallSource(app_id));
     histogram_tester.ExpectUniqueSample(
         "Webapp.Install.InstallEvent",
         static_cast<int>(webapps::WebappInstallSource::MENU_CREATE_SHORTCUT),

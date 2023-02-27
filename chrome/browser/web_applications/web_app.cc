@@ -535,9 +535,9 @@ void WebApp::SetPermissionsPolicy(
   permissions_policy_ = std::move(permissions_policy);
 }
 
-void WebApp::SetInstallSourceForMetrics(
-    absl::optional<webapps::WebappInstallSource> install_source) {
-  install_source_for_metrics_ = install_source;
+void WebApp::SetLatestInstallSource(
+    absl::optional<webapps::WebappInstallSource> latest_install_source) {
+  latest_install_source_ = latest_install_source;
 }
 
 void WebApp::SetAppSizeInBytes(absl::optional<int64_t> app_size_in_bytes) {
@@ -756,7 +756,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.launch_handler_,
         app.parent_app_id_,
         app.permissions_policy_,
-        app.install_source_for_metrics_,
+        app.latest_install_source_,
         app.app_size_in_bytes_,
         app.data_size_in_bytes_,
         app.management_to_external_config_map_,
@@ -880,11 +880,11 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
 
   root.Set("manifest_icons", ConvertDebugValueList(manifest_icons_));
 
-  if (install_source_for_metrics_) {
-    root.Set("install_source_for_metrics",
-             static_cast<int>(*install_source_for_metrics_));
+  if (latest_install_source_) {
+    root.Set("latest_install_source",
+             static_cast<int>(*latest_install_source_));
   } else {
-    root.Set("install_source_for_metrics", "not set");
+    root.Set("latest_install_source", "not set");
   }
 
   base::Value::Dict external_map;

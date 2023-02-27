@@ -385,8 +385,8 @@ void WebAppProvider::DoMigrateProfilePrefs(Profile* profile) {
   ScopedRegistryUpdate update(sync_bridge_.get());
   for (const auto& iter : sources) {
     WebApp* web_app = update->UpdateApp(iter.first);
-    if (web_app && !web_app->install_source_for_metrics()) {
-      web_app->SetInstallSourceForMetrics(
+    if (web_app && !web_app->latest_install_source()) {
+      web_app->SetLatestInstallSource(
           static_cast<webapps::WebappInstallSource>(iter.second));
     }
   }

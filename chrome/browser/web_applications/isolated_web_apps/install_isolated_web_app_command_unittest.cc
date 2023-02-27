@@ -546,7 +546,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
   EXPECT_THAT(web_app->GetSources().test(WebAppManagement::kCommandLine),
               IsTrue());
 
-  EXPECT_THAT(web_app->install_source_for_metrics(),
+  EXPECT_THAT(web_app->latest_install_source(),
               Optional(Eq(InstallSource::ISOLATED_APP_DEV_INSTALL)));
 }
 

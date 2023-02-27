@@ -743,7 +743,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
 
   uint32_t install_source =
       random.next_uint(static_cast<int>(webapps::WebappInstallSource::COUNT));
-  app->SetInstallSourceForMetrics(
+  app->SetLatestInstallSource(
       static_cast<webapps::WebappInstallSource>(install_source));
 
   if (IsChromeOsDataMandatory()) {

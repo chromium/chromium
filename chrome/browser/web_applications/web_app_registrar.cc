@@ -991,15 +991,15 @@ base::Time WebAppRegistrar::GetAppInstallTime(const AppId& app_id) const {
 }
 
 absl::optional<webapps::WebappInstallSource>
-WebAppRegistrar::GetAppInstallSourceForMetrics(const AppId& app_id) const {
+WebAppRegistrar::GetLatestAppInstallSource(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app)
     return absl::nullopt;
 
   absl::optional<webapps::WebappInstallSource> value =
-      web_app->install_source_for_metrics();
+      web_app->latest_install_source();
 
-  // If the migration code hasn't run yet, `WebApp::install_source_for_metrics_`
+  // If the migration code hasn't run yet, `WebApp::latest_install_source_`
   // may not be populated. After migration code is removed, this branch can be
   // deleted.
   if (!value) {

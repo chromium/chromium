@@ -243,9 +243,8 @@ TEST_P(WebAppInstallFinalizerUnitTest, InstallStoresLatestWebAppInstallSource) {
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
 
-  EXPECT_EQ(
-      webapps::WebappInstallSource::INTERNAL_DEFAULT,
-      *registrar().GetAppInstallSourceForMetrics(result.installed_app_id));
+  EXPECT_EQ(webapps::WebappInstallSource::INTERNAL_DEFAULT,
+            *registrar().GetLatestAppInstallSource(result.installed_app_id));
 }
 
 TEST_P(WebAppInstallFinalizerUnitTest, OnWebAppManifestUpdatedTriggered) {

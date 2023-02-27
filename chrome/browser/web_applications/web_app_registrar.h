@@ -227,7 +227,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   base::Time GetAppLastLaunchTime(const AppId& app_id) const;
   base::Time GetAppInstallTime(const AppId& app_id) const;
 
-  absl::optional<webapps::WebappInstallSource> GetAppInstallSourceForMetrics(
+  absl::optional<webapps::WebappInstallSource> GetLatestAppInstallSource(
       const AppId& app_id) const;
 
   // Returns the "icons" field from the app manifest, use |WebAppIconManager| to

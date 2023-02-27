@@ -156,7 +156,6 @@
       "launch_type": "kSingleClient",
       "name": "2591174844 file"
    } ],
-   "install_source_for_metrics": 17,
    "install_time": "1970-01-12 10:04:48.382 UTC",
    "is_from_sync_and_pending_installation": false,
    "is_generated_icon": true,
@@ -171,6 +170,7 @@
    },
    "last_badging_time": "1970-01-15 16:10:56.662 UTC",
    "last_launch_time": "1970-01-21 15:31:39.413 UTC",
+   "latest_install_source": 17,
    "launch_handler": {
       "client_mode": "kNavigateExisting"
    },

@@ -102,7 +102,7 @@ bool NeedsAppIdentityUpdateDialog(bool title_changing,
   // https://crbug.com/1368592 there is a bug with that where it returns the
   // wrong thing for Shortcut apps that specify `scope`.
   if (registrar.IsShortcutApp(app_id) ||
-      registrar.GetAppInstallSourceForMetrics(app_id) ==
+      registrar.GetLatestAppInstallSource(app_id) ==
           webapps::WebappInstallSource::MENU_CREATE_SHORTCUT) {
     return false;
   }

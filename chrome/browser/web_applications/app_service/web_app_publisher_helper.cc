@@ -630,9 +630,8 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
       app_type(), web_app->app_id(), readiness,
       provider_->registrar_unsafe().GetAppShortName(web_app->app_id()),
       GetHighestPriorityInstallReason(web_app),
-      GetInstallSource(
-          provider_->registrar_unsafe().GetAppInstallSourceForMetrics(
-              web_app->app_id())));
+      GetInstallSource(provider_->registrar_unsafe().GetLatestAppInstallSource(
+          web_app->app_id())));
 
   app->description =
       provider_->registrar_unsafe().GetAppDescription(web_app->app_id());
