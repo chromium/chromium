@@ -11,12 +11,12 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/radio_button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Profile;
 
 namespace views {
-class BoxLayout;
 class Label;
 class ProgressBar;
 }  // namespace views
@@ -102,7 +102,10 @@ class BruschettaInstallerView
   raw_ptr<views::Label> primary_message_label_ = nullptr;
   raw_ptr<views::Label> secondary_message_label_ = nullptr;
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
-  raw_ptr<views::BoxLayout> lower_container_layout_ = nullptr;
+  raw_ptr<views::View> radio_button_container_ = nullptr;
+
+  base::flat_map<std::string, raw_ptr<views::RadioButton>> radio_buttons_;
+  std::string selected_config_;
 
   State state_ = State::kConfirmInstall;
   InstallerState installing_state_ = InstallerState::kInstallStarted;

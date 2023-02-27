@@ -92,6 +92,19 @@ bool HasInstallableConfig(const Profile* profile,
   return GetInstallableConfig(profile, config_id).has_value();
 }
 
+base::flat_map<std::string, base::Value::Dict> GetInstallableConfigs(
+    const Profile* profile) {
+  base::flat_map<std::string, base::Value::Dict> ret;
+  for (auto it :
+       profile->GetPrefs()->GetDict(prefs::kBruschettaVMConfiguration)) {
+    if (HasInstallableConfig(profile, it.first)) {
+      ret.emplace(it.first, it.second.GetDict().Clone());
+    }
+  }
+
+  return ret;
+}
+
 bool IsInstalled(Profile* profile, const guest_os::GuestId& guest_id) {
   const base::Value* value = guest_os::GetContainerPrefValue(
       profile, guest_id, guest_os::prefs::kVmNameKey);
