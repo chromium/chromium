@@ -18,6 +18,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/web_state/web_state_impl.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -218,10 +219,12 @@ void JavaScriptFindInPageManagerImpl::SelectDidFinish(
     const base::Value* result) {
   std::string match_context_string;
   if (result && result->is_dict()) {
+    const base::Value::Dict& result_dict = result->GetDict();
     // Get updated match count.
-    const base::Value* matches = result->FindKey(kSelectAndScrollResultMatches);
-    if (matches && matches->is_double()) {
-      int match_count = static_cast<int>(matches->GetDouble());
+    const absl::optional<double> matches =
+        result_dict.FindDouble(kSelectAndScrollResultMatches);
+    if (matches) {
+      int match_count = static_cast<int>(matches.value());
       if (match_count != last_find_request_.GetMatchCountForSelectedFrame()) {
         last_find_request_.SetMatchCountForSelectedFrame(match_count);
         if (delegate_) {
@@ -232,17 +235,17 @@ void JavaScriptFindInPageManagerImpl::SelectDidFinish(
       }
     }
     // Get updated currently selected index.
-    const base::Value* index = result->FindKey(kSelectAndScrollResultIndex);
-    if (index && index->is_double()) {
-      int current_index = static_cast<int>(index->GetDouble());
+    const absl::optional<double> index =
+        result_dict.FindDouble(kSelectAndScrollResultIndex);
+    if (index) {
+      int current_index = static_cast<int>(index.value());
       last_find_request_.SetCurrentSelectedMatchFrameIndex(current_index);
     }
     // Get context string.
-    const base::Value* context_string =
-        result->FindKey(kSelectAndScrollResultContextString);
-    if (context_string && context_string->is_string()) {
-      match_context_string =
-          static_cast<std::string>(context_string->GetString());
+    const std::string* context_string =
+        result_dict.FindString(kSelectAndScrollResultContextString);
+    if (context_string) {
+      match_context_string = *context_string;
     }
   }
   if (delegate_) {

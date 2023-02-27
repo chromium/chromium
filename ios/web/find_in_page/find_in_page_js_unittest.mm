@@ -10,6 +10,7 @@
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "base/values.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
@@ -23,6 +24,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "testing/gtest_mac.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -282,7 +284,7 @@ TEST_F(FindInPageJsTest, FindHighlightMatch) {
       base::BindOnce(^(const base::Value* result) {
         highlight_done = true;
         context_string =
-            result->FindKey(kSelectAndScrollResultContextString)->GetString();
+            *result->GetDict().FindString(kSelectAndScrollResultContextString);
       }),
       kWaitForJSCompletionTimeout);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -328,7 +330,7 @@ TEST_F(FindInPageJsTest, FindHighlightSeparateMatches) {
       base::BindOnce(^(const base::Value* result) {
         highlight_done = true;
         context_string =
-            result->FindKey(kSelectAndScrollResultContextString)->GetString();
+            *result->GetDict().FindString(kSelectAndScrollResultContextString);
       }),
       kWaitForJSCompletionTimeout);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -348,7 +350,7 @@ TEST_F(FindInPageJsTest, FindHighlightSeparateMatches) {
       content_world_, base::BindOnce(^(const base::Value* result) {
         highlight_done = true;
         context_string =
-            result->FindKey(kSelectAndScrollResultContextString)->GetString();
+            *result->GetDict().FindString(kSelectAndScrollResultContextString);
       }),
       kWaitForJSCompletionTimeout);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
@@ -624,13 +626,15 @@ TEST_F(FindInPageJsTest, HiddenMatchBecomesVisible) {
       base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
-        const base::Value* count =
-            result->FindKey(kSelectAndScrollResultMatches);
-        ASSERT_TRUE(count->is_double());
-        ASSERT_EQ(2.0, count->GetDouble());
-        const base::Value* index = result->FindKey(kSelectAndScrollResultIndex);
-        ASSERT_TRUE(index->is_double());
-        ASSERT_EQ(0.0, index->GetDouble());
+        const base::Value::Dict& result_dict = result->GetDict();
+        const absl::optional<double> count =
+            result_dict.FindDouble(kSelectAndScrollResultMatches);
+        ASSERT_TRUE(count);
+        ASSERT_EQ(2.0, count.value());
+        const absl::optional<double> index =
+            result_dict.FindDouble(kSelectAndScrollResultIndex);
+        ASSERT_TRUE(index);
+        ASSERT_EQ(0.0, index.value());
         message_received = true;
       }),
       kWaitForJSCompletionTimeout);
@@ -673,9 +677,11 @@ TEST_F(FindInPageJsTest, MatchBecomesInvisible) {
       base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
-        const base::Value* index = result->FindKey(kSelectAndScrollResultIndex);
-        ASSERT_TRUE(index->is_double());
-        EXPECT_EQ(3.0, index->GetDouble());
+        const base::Value::Dict& result_dict = result->GetDict();
+        const absl::optional<double> index =
+            result_dict.FindDouble(kSelectAndScrollResultIndex);
+        ASSERT_TRUE(index);
+        EXPECT_EQ(3.0, index.value());
         select_last_match_message_received = true;
       }),
       kWaitForJSCompletionTimeout);
@@ -695,13 +701,15 @@ TEST_F(FindInPageJsTest, MatchBecomesInvisible) {
       content_world_, base::BindOnce(^(const base::Value* result) {
         ASSERT_TRUE(result);
         ASSERT_TRUE(result->is_dict());
-        const base::Value* index = result->FindKey(kSelectAndScrollResultIndex);
-        ASSERT_TRUE(index->is_double());
+        const base::Value::Dict& result_dict = result->GetDict();
+        const absl::optional<double> index =
+            result_dict.FindDouble(kSelectAndScrollResultIndex);
+        ASSERT_TRUE(index);
         // Since there are only two visible matches now and this
         // kFindInPageSelectAndScrollToMatch call is asking Find in Page to
         // traverse to a previous match, Find in Page should look for the next
         // previous visible match. This happens to be the 2nd match.
-        EXPECT_EQ(1.0, index->GetDouble());
+        EXPECT_EQ(1.0, index.value());
         select_third_match_message_received = true;
       }),
       kWaitForJSCompletionTimeout);
