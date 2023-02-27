@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src='../../resources/testharness.js'></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div popover=hint id=target>This should be a MANUAL popover, if HTMLPopoverAttribute is enabled and HTMLPopoverHint is disabled</div>
+
+<script>
+const target = document.getElementById('target');
+test(() => {
+  assert_false(target.matches(':open'),"The :open pseudo class should be available and false");
+  assert_true(target.matches(':closed'),"The :closed pseudo class should be available and true");
+},'popover=hint should still function as a popover');
+
+test(() => {
+  assert_true(target.matches(':closed'));
+  target.showPopover(); // Shouldn't throw
+  assert_true(target.matches(':open'));
+  target.hidePopover();
+  assert_true(target.matches(':closed'));
+},`popover=hint should function as a manual popover`);
+
+test(() => {
+  assert_equals(target.popover,'manual','With HTMLPopoverHint disabled, popover=hint should be treated as a manual popover');
+  assert_equals(target.getAttribute('popover'),'hint','The content attribute should still be "hint"');
+},`popover=hint should *not* be feature detected`);
+</script>

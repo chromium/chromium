@@ -69,7 +69,8 @@
     [MeasureAs=ElementTogglePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void togglePopover(optional boolean force);
     [MeasureAs=ElementShowPopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void showPopover();
     [MeasureAs=ElementHidePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void hidePopover();
-    [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect,ReflectOnly=("auto","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
+//    [CEReactions,RuntimeEnabled=HTMLPopoverAttribute,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
+    [CEReactions,RuntimeEnabled=HTMLPopoverAttribute] attribute DOMString? popover;
 
     // Used by both Anchor Positioning and Popover
     [CEReactions,RuntimeEnabled=CSSAnchorPositioning] attribute Element? anchorElement;

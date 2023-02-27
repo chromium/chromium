@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/portal/html_portal_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -3319,6 +3320,8 @@ ax::mojom::blink::IsPopup AXNodeObject::IsPopup() const {
       return ax::mojom::blink::IsPopup::kNone;
     case PopoverValueType::kAuto:
       return ax::mojom::blink::IsPopup::kAuto;
+    case PopoverValueType::kHint:
+      return ax::mojom::blink::IsPopup::kHint;
     case PopoverValueType::kManual:
       return ax::mojom::blink::IsPopup::kManual;
   }
@@ -5771,6 +5774,42 @@ String AXNodeObject::Description(
         description_sources->back().text = description;
       } else {
         return description;
+      }
+    }
+  }
+
+  // For form controls that act as triggering elements for popovers of type
+  // kHint, then set aria-describedby to the popover.
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+    auto popover_target = form_control->popoverTargetElement();
+    if (popover_target.popover &&
+        popover_target.popover->PopoverType() == PopoverValueType::kHint) {
+      DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+      description_from = ax::mojom::blink::DescriptionFrom::kPopoverAttribute;
+      if (description_sources) {
+        description_sources->push_back(DescriptionSource(
+            found_description, html_names::kPopovertargetAttr));
+        description_sources->back().type = description_from;
+      }
+      AXObject* popover_ax_object =
+          AXObjectCache().GetOrCreate(popover_target.popover);
+      if (popover_ax_object) {
+        AXObjectSet visited;
+        description = RecursiveTextAlternative(*popover_ax_object,
+                                               popover_ax_object, visited);
+        if (related_objects) {
+          related_objects->push_back(
+              MakeGarbageCollected<NameSourceRelatedObject>(popover_ax_object,
+                                                            description));
+        }
+        if (description_sources) {
+          DescriptionSource& source = description_sources->back();
+          source.related_objects = *related_objects;
+          source.text = description;
+          found_description = true;
+        } else {
+          return description;
+        }
       }
     }
   }

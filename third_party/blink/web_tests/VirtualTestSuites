@@ -1174,8 +1174,16 @@
     "prefix": "popover-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--disable-blink-features=HTMLSelectMenuElement,HTMLPopoverAttribute"],
+    "args": ["--disable-blink-features=HTMLSelectMenuElement,HTMLPopoverAttribute,HTMLPopoverHint"],
     "expires": "Jul 1, 2023"
+  },
+  {
+    "prefix": "popover-hint-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [],
+    "args": ["--enable-blink-features=HTMLPopoverAttribute",
+      "--disable-blink-features=HTMLPopoverHint"],
+    "expires": "Jan 1, 2024"
   },
   {
     "prefix": "expose-lcp-render-time",

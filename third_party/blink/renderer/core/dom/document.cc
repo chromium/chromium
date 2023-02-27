@@ -7919,7 +7919,17 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-HTMLElement* Document::TopmostPopover() const {
+void Document::SetPopoverHintShowing(HTMLElement* element) {
+  DCHECK(!element || element->HasPopoverAttribute());
+  DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+  popover_hint_showing_ = element;
+}
+
+HTMLElement* Document::TopmostPopoverOrHint() const {
+  if (PopoverHintShowing()) {
+    DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+    return PopoverHintShowing();
+  }
   if (PopoverStack().empty())
     return nullptr;
   return PopoverStack().back();
@@ -8677,6 +8687,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(top_layer_elements_);
   visitor->Trace(top_layer_elements_pending_removal_);
   visitor->Trace(popover_stack_);
+  visitor->Trace(popover_hint_showing_);
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(elements_with_css_toggles_);

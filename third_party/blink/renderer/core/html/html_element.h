@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -62,9 +63,11 @@ enum class ContentEditableType {
 enum class PopoverValueType {
   kNone,
   kAuto,
+  kHint,
   kManual,
 };
 constexpr const char* kPopoverTypeValueAuto = "auto";
+constexpr const char* kPopoverTypeValueHint = "hint";
 constexpr const char* kPopoverTypeValueManual = "manual";
 
 enum class PopoverTriggerAction {
@@ -82,6 +85,11 @@ enum class HidePopoverFocusBehavior {
 enum class HidePopoverTransitionBehavior {
   kFireEventsAndWaitForTransitions,
   kNoEventsNoWaiting,
+};
+
+enum class HidePopoverIndependence {
+  kLeaveUnrelated,
+  kHideUnrelated,
 };
 
 class CORE_EXPORT HTMLElement : public Element {
@@ -211,6 +219,9 @@ class CORE_EXPORT HTMLElement : public Element {
   // Popover API related functions.
   void UpdatePopoverAttribute(String);
   bool HasPopoverAttribute() const;
+  // The IDL reflections:
+  AtomicString popover() const;
+  void setPopover(const AtomicString& value);
   PopoverValueType PopoverType() const;
   bool popoverOpen() const;
   bool IsPopoverReady(PopoverTriggerAction action,
@@ -244,7 +255,8 @@ class CORE_EXPORT HTMLElement : public Element {
   static void HideAllPopoversUntil(const HTMLElement*,
                                    Document&,
                                    HidePopoverFocusBehavior,
-                                   HidePopoverTransitionBehavior);
+                                   HidePopoverTransitionBehavior,
+                                   HidePopoverIndependence);
   // This function checks that the ancestor relationships are still valid for
   // the entire popover stack. These can change in various ways, such as a
   // triggering element changing its `disabled` attribute. If any relationships

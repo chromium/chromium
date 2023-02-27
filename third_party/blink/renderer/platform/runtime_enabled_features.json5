@@ -1798,7 +1798,12 @@
       status: "experimental",
       // Because the OT is already underway, it is being left with the "popup" name.
       origin_trial_feature_name: "HTMLPopupAttribute",
-      implied_by: ["HTMLSelectMenuElement"],
+      implied_by: ["HTMLSelectMenuElement","HTMLPopoverHint"],
+    },
+    {
+      // TODO(crbug.com/1416284): Enables popover=hint functionality.
+      name: "HTMLPopoverHint",
+      status: "experimental",
     },
     {
       name: "HTMLSelectMenuElement",

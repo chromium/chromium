@@ -1493,6 +1493,8 @@ const char* ToString(ax::mojom::IsPopup is_popup) {
       return "";
     case ax::mojom::IsPopup::kAuto:
       return "auto";
+    case ax::mojom::IsPopup::kHint:
+      return "hint";
     case ax::mojom::IsPopup::kManual:
       return "manual";
   }

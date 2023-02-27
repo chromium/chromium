@@ -1176,6 +1176,7 @@ enum IsPopup {
   kNone = 0,
   kManual,
   kAuto,
+  kHint,
 };
 
 enum InvalidState {

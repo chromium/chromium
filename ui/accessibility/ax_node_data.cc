@@ -1579,6 +1579,9 @@ std::string AXNodeData::ToString(bool verbose) const {
           case ax::mojom::IsPopup::kAuto:
             result += " ispopup=auto";
             break;
+          case ax::mojom::IsPopup::kHint:
+            result += " ispopup=hint";
+            break;
           case ax::mojom::IsPopup::kManual:
             result += " ispopup=manual";
             break;

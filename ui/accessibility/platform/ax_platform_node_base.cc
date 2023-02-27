@@ -1355,6 +1355,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::IsPopup::kAuto:
         AddAttributeToList("ispopup", "auto", attributes);
         break;
+      case ax::mojom::IsPopup::kHint:
+        AddAttributeToList("ispopup", "hint", attributes);
+        break;
     }
   }
 
