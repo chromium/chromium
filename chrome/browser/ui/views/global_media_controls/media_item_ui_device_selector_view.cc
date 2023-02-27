@@ -544,9 +544,5 @@ void MediaItemUIDeviceSelectorView::RegisterAudioDeviceCallbacks() {
                                         weak_ptr_factory_.GetWeakPtr()));
 }
 
-void MediaItemUIDeviceSelectorView::DestroyCastController() {
-  cast_controller_.reset();
-}
-
 BEGIN_METADATA(MediaItemUIDeviceSelectorView, views::View)
 END_METADATA

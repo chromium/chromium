@@ -117,7 +117,6 @@ class MediaItemUIDeviceSelectorView
   void OnCastDeviceSelected(const std::string& device_id);
   DeviceEntryUI* GetDeviceEntryUI(views::View* view) const;
   void RegisterAudioDeviceCallbacks();
-  void DestroyCastController();
 
   bool has_expand_button_been_shown_ = false;
   bool have_devices_been_shown_ = false;
@@ -144,8 +143,6 @@ class MediaItemUIDeviceSelectorView
   base::CallbackListSubscription is_device_switching_enabled_subscription_;
 
   raw_ptr<global_media_controls::MediaItemUIView> media_item_ui_ = nullptr;
-
-  std::unique_ptr<media_router::CastDialogController> cast_controller_;
 
   base::ObserverList<MediaItemUIDeviceSelectorObserver> observers_;
 
