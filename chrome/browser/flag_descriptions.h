@@ -2421,9 +2421,6 @@ extern const char kReadAnythingDescription[];
 extern const char kReadAnythingWithScreen2xName[];
 extern const char kReadAnythingWithScreen2xDescription[];
 
-extern const char kEnableUserCloudSigninRestrictionPolicyName[];
-extern const char kEnableUserCloudSigninRestrictionPolicyDescription[];
-
 extern const char kEnableWebHidOnExtensionServiceWorkerName[];
 extern const char kEnableWebHidOnExtensionServiceWorkerDescription[];
 

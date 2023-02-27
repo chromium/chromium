@@ -4229,12 +4229,6 @@ const char kReadAnythingWithScreen2xDescription[] =
     "Have Read Anything use a local machine learning model for web page"
     "distillation.";
 
-const char kEnableUserCloudSigninRestrictionPolicyName[] =
-    "Cloud User level Signin Restrictions Policy";
-const char kEnableUserCloudSigninRestrictionPolicyDescription[] =
-    "Enable the ManagedAccountsSigninRestrictions policy to be set at a cloud "
-    "user level";
-
 const char kEnableWebHidOnExtensionServiceWorkerName[] =
     "Enable WebHID on extension service workers";
 const char kEnableWebHidOnExtensionServiceWorkerDescription[] =

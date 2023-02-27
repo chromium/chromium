@@ -8487,13 +8487,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kOriginAgentClusterDefaultEnabled)},
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"enable-user-cloud-signin-restriction-policy",
-     flag_descriptions::kEnableUserCloudSigninRestrictionPolicyName,
-     flag_descriptions::kEnableUserCloudSigninRestrictionPolicyDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher)},
-
     {"enable-code-based-rbd", flag_descriptions::kCodeBasedRBDName,
      flag_descriptions::kCodeBasedRBDDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kCodeBasedRBD,
