@@ -48,24 +48,22 @@ namespace content {
 
 namespace {
 
-bool KeyEquals(const base::Value* value,
+bool KeyEquals(const base::Value::Dict& dict,
                const char* key_name,
                const char* expected) {
-  const base::Value* content =
-      value->FindKeyOfType(key_name, base::Value::Type::STRING);
+  const std::string* content = dict.FindString(key_name);
   if (!content)
     return false;
-  return content->GetString() == expected;
+  return *content == expected;
 }
 
-bool KeyNotEquals(const base::Value* value,
+bool KeyNotEquals(const base::Value::Dict& dict,
                   const char* key_name,
                   const char* expected) {
-  const base::Value* content =
-      value->FindKeyOfType(key_name, base::Value::Type::STRING);
+  const std::string* content = dict.FindString(key_name);
   if (!content)
     return false;
-  return content->GetString() != expected;
+  return *content != expected;
 }
 
 }  // namespace
@@ -431,20 +429,20 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   // Check that a number of important keys exist in the metadata dictionary.
   absl::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
-  const base::Value* metadata_json =
-      trace_json->FindKeyOfType("metadata", base::Value::Type::DICT);
+  const base::Value::Dict* metadata_json =
+      trace_json->GetDict().FindDict("metadata");
   ASSERT_TRUE(metadata_json);
 
-  EXPECT_TRUE(KeyNotEquals(metadata_json, "cpu-brand", "__stripped__"));
-  EXPECT_TRUE(KeyNotEquals(metadata_json, "network-type", "__stripped__"));
-  EXPECT_TRUE(KeyNotEquals(metadata_json, "os-name", "__stripped__"));
-  EXPECT_TRUE(KeyNotEquals(metadata_json, "user-agent", "__stripped__"));
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "cpu-brand", "__stripped__"));
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "network-type", "__stripped__"));
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "os-name", "__stripped__"));
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "user-agent", "__stripped__"));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_TRUE(KeyNotEquals(metadata_json, "hardware-class", "__stripped__"));
+  EXPECT_TRUE(KeyNotEquals(*metadata_json, "hardware-class", "__stripped__"));
 #endif
 
   // The following field is not whitelisted and is supposed to be stripped.
-  EXPECT_TRUE(KeyEquals(metadata_json, "v8-version", "__stripped__"));
+  EXPECT_TRUE(KeyEquals(*metadata_json, "v8-version", "__stripped__"));
 }
 
 IN_PROC_BROWSER_TEST_F(TracingControllerTest,
