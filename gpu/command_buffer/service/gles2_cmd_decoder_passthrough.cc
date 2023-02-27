@@ -354,6 +354,22 @@ bool PassthroughResources::HasTexturesPendingDestruction() const {
 }
 #endif
 
+void PassthroughResources::SuspendSharedImageAccessIfNeeded() {
+  for (auto& [texture_id, shared_image_data] : texture_shared_image_map) {
+    shared_image_data.SuspendAccessIfNeeded();
+  }
+}
+
+bool PassthroughResources::ResumeSharedImageAccessIfNeeded(gl::GLApi* api) {
+  bool success = true;
+  for (auto& [texture_id, shared_image_data] : texture_shared_image_map) {
+    if (!shared_image_data.ResumeAccessIfNeeded(api)) {
+      success = false;
+    }
+  }
+  return success;
+}
+
 void PassthroughResources::Destroy(gl::GLApi* api,
                                    gl::ProgressReporter* progress_reporter) {
   bool have_context = !!api;
@@ -441,6 +457,8 @@ PassthroughResources::SharedImageData::~SharedImageData() = default;
 PassthroughResources::SharedImageData&
 PassthroughResources::SharedImageData::operator=(SharedImageData&& other) {
   scoped_access_ = std::move(other.scoped_access_);
+  access_mode_ = std::move(other.access_mode_);
+  other.access_mode_.reset();
   representation_ = std::move(other.representation_);
   return *this;
 }
@@ -508,8 +526,39 @@ bool PassthroughResources::SharedImageData::BeginAccess(GLenum mode,
   // necessary.
   scoped_access_ = representation_->BeginScopedAccess(
       mode, SharedImageRepresentation::AllowUnclearedAccess::kNo);
+  if (scoped_access_) {
+    access_mode_.emplace(mode);
+    return true;
+  }
+  return false;
+}
 
+void PassthroughResources::SharedImageData::EndAccess() {
+  DCHECK(is_being_accessed());
+  scoped_access_.reset();
+  access_mode_.reset();
+}
+
+bool PassthroughResources::SharedImageData::ResumeAccessIfNeeded(
+    gl::GLApi* api) {
+  // Do not resume access if BeginAccess was never called or if a scoped access
+  // is already present.
+  if (!is_being_accessed() || scoped_access_) {
+    return true;
+  }
+  scoped_access_ = representation_->BeginScopedAccess(
+      access_mode_.value(),
+      SharedImageRepresentation::AllowUnclearedAccess::kNo);
   return !!scoped_access_;
+}
+
+void PassthroughResources::SharedImageData::SuspendAccessIfNeeded() {
+  // Suspend access if shared image is being accessed and doesn't support
+  // concurrent read access on other clients or devices.
+  if (is_being_accessed() &&
+      representation_->NeedsSuspendAccessForDXGIKeyedMutex()) {
+    scoped_access_.reset();
+  }
 }
 
 GLES2DecoderPassthroughImpl::PendingQuery::PendingQuery() = default;
@@ -2056,6 +2105,14 @@ void GLES2DecoderPassthroughImpl::BeginDecoding() {
   gpu_trace_commands_ = gpu_tracer_->IsTracing() && *gpu_decoder_category_;
   gpu_debug_commands_ = log_commands() || debug() || gpu_trace_commands_;
 
+#if BUILDFLAG(IS_WIN)
+  if (!resources_->ResumeSharedImageAccessIfNeeded(api())) {
+    LOG(ERROR) << "  GLES2DecoderPassthroughImpl: Failed to resume shared "
+                  "image access.";
+    group_->LoseContexts(error::kUnknown);
+  }
+#endif
+
   auto it = active_queries_.find(GL_COMMANDS_ISSUED_CHROMIUM);
   if (it != active_queries_.end()) {
     DCHECK_EQ(it->second.command_processing_start_time, base::TimeTicks());
@@ -2064,6 +2121,10 @@ void GLES2DecoderPassthroughImpl::BeginDecoding() {
 }
 
 void GLES2DecoderPassthroughImpl::EndDecoding() {
+#if BUILDFLAG(IS_WIN)
+  resources_->SuspendSharedImageAccessIfNeeded();
+#endif
+
   gpu_tracer_->EndDecoding();
 
   auto it = active_queries_.find(GL_COMMANDS_ISSUED_CHROMIUM);

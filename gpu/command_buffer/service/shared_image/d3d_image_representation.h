@@ -34,6 +34,8 @@ class GLTexturePassthroughD3DImageRepresentation
       std::vector<scoped_refptr<gles2::TexturePassthrough>> textures);
   ~GLTexturePassthroughD3DImageRepresentation() override;
 
+  bool NeedsSuspendAccessForDXGIKeyedMutex() const override;
+
   const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
       int plane_index) override;
 

@@ -124,6 +124,11 @@ GLTexturePassthroughImageRepresentation::GetTexturePassthrough() {
   return GetTexturePassthrough(0);
 }
 
+bool GLTexturePassthroughImageRepresentation::
+    NeedsSuspendAccessForDXGIKeyedMutex() const {
+  return false;
+}
+
 bool SkiaImageRepresentation::SupportsMultipleConcurrentReadAccess() {
   return false;
 }
