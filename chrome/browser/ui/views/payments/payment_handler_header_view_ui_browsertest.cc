@@ -38,6 +38,9 @@ class PaymentHandlerHeaderViewUITest
   }
 
   void ExpectHistograms() {
+    // Navigate away in order to flush use counters.
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(),
+                                       GURL(url::kAboutBlankURL)));
     histograms_.ExpectBucketCount(
         "Blink.UseCounter.Features",
         blink::mojom::WebFeature::kPaymentHandlerMinimalHeaderUX,
