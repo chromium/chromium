@@ -54,7 +54,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
 
       /**
        * The number of engines visible when the list is collapsed.
-       * This is currently gated behind the #omnibox-active-search-engines-flag.
        */
       visibleEnginesSize: {
         type: Number,
@@ -64,8 +63,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
       /**
        * An array of the first 'visibleEnginesSize' engines in the `engines`
        * array.  These engines are visible even when 'collapsedEngines' is
-       * collapsed. This is currently gated behind the
-       * #omnibox-active-search-engines flag.
+       * collapsed.
        */
       visibleEngines:
           {type: Array, computed: 'computeVisibleEngines_(engines)'},
@@ -73,8 +71,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
       /**
        * An array of all remaining engines not in the `visibleEngines` array.
        * These engines' visibility can be toggled by expanding or collapsing the
-       * engines list. This is currently gated behind the
-       * #omnibox-active-search-engines flag.
+       * engines list.
        */
       collapsedEngines:
           {type: Array, computed: 'computeCollapsedEngines_(engines)'},

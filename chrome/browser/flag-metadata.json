@@ -5123,11 +5123,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-active-search-engines",
-    "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "omnibox-adaptive-suggestions-count",
     "owners": [ "stkhapugin", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

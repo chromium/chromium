@@ -58490,7 +58490,6 @@ from previous Chrome versions.
   <int value="-1847775690"
       label="DiacriticsOnPhysicalKeyboardLongpress:disabled"/>
   <int value="-1846680525" label="WebUIA11yEnhancements:enabled"/>
-  <int value="-1846613349" label="OmniboxActiveSearchEngines:disabled"/>
   <int value="-1846471618"
       label="enable-experimental-accessibility-switch-access-text"/>
   <int value="-1844754731" label="Mash:disabled"/>
@@ -60791,7 +60790,6 @@ from previous Chrome versions.
   <int value="-571655232" label="SideSearch:enabled"/>
   <int value="-571236436" label="AppManagement:disabled"/>
   <int value="-570889908" label="CCTModuleDexLoading:enabled"/>
-  <int value="-570572517" label="OmniboxActiveSearchEngines:enabled"/>
   <int value="-570005880"
       label="AutofillFixServerQueriesIfPasswordManagerIsEnabled:disabled"/>
   <int value="-569256428" label="MacAddressRandomization:enabled"/>
