@@ -70,28 +70,11 @@ GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert) {
   return r;
 }
 
-CK_ATTRIBUTE_TYPE SecTrustTypeToAttributeType(SECTrustType trust_type) {
-  switch (trust_type) {
-    case trustSSL:
-      return CKA_TRUST_SERVER_AUTH;
-    case trustEmail:
-      return CKA_TRUST_EMAIL_PROTECTION;
-    case trustObjectSigning:
-      return CKA_TRUST_CODE_SIGNING;
-    case trustTypeNone:
-      NOTREACHED();
-      return 0;
-  }
-}
-
 }  // namespace
 
-TrustStoreNSS::TrustStoreNSS(SECTrustType trust_type,
-                             SystemTrustSetting system_trust_setting,
+TrustStoreNSS::TrustStoreNSS(SystemTrustSetting system_trust_setting,
                              UserSlotTrustSetting user_slot_trust_setting)
-    : trust_type_(trust_type),
-      trust_attr_type_(SecTrustTypeToAttributeType(trust_type)),
-      ignore_system_trust_settings_(system_trust_setting == kIgnoreSystemTrust),
+    : ignore_system_trust_settings_(system_trust_setting == kIgnoreSystemTrust),
       user_slot_trust_setting_(std::move(user_slot_trust_setting)) {}
 
 TrustStoreNSS::~TrustStoreNSS() = default;
@@ -316,7 +299,7 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
       crypto::ScopedSECItem trust_attr(SECITEM_AllocItem(/*arena=*/nullptr,
                                                          /*item=*/nullptr,
                                                          /*len=*/0));
-      rv = PK11_ReadRawAttribute(PK11_TypeGeneric, obj, trust_attr_type_,
+      rv = PK11_ReadRawAttribute(PK11_TypeGeneric, obj, CKA_TRUST_SERVER_AUTH,
                                  trust_attr.get());
       if (rv != SECSuccess) {
         DVLOG(1) << "trust object for " << base::HexEncode(trust_obj_sha1)
@@ -423,7 +406,7 @@ CertificateTrust TrustStoreNSS::GetTrustWithSystemTrust(
 
 CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
     const CERTCertTrust& trust) const {
-  unsigned int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trust_type_);
+  unsigned int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trustSSL);
 
   // Determine if the certificate is distrusted.
   if ((trust_flags & (CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED_CA |

@@ -29,7 +29,7 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
       absl::variant<UseTrustFromAllUserSlots, crypto::ScopedPK11Slot>;
 
   // Creates a TrustStoreNSS which will find anchors that are trusted for
-  // |trust_type|.
+  // SSL server auth.
   //
   // |system_trust_setting| configures the use of trust from the builtin roots.
   // If |system_trust_setting| is kIgnoreSystemTrust, trust settings from the
@@ -39,8 +39,7 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   //  * UseTrustFromAllUserSlots: all user slots will be allowed.
   //  * nullptr: no user slots will be allowed.
   //  * non-null PK11Slot: the specified slot will be allowed.
-  TrustStoreNSS(SECTrustType trust_type,
-                SystemTrustSetting system_trust_setting,
+  TrustStoreNSS(SystemTrustSetting system_trust_setting,
                 UserSlotTrustSetting user_slot_trust_setting);
 
   TrustStoreNSS(const TrustStoreNSS&) = delete;
@@ -66,9 +65,6 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   CertificateTrust GetTrustWithSystemTrust(
       const ParsedCertificate* cert,
       base::SupportsUserData* debug_data) const;
-
-  const SECTrustType trust_type_;
-  const CK_ATTRIBUTE_TYPE trust_attr_type_;
 
   // |ignore_system_certs_trust_settings_| specifies if the system trust
   // settings should be considered when determining a cert's trustworthiness.

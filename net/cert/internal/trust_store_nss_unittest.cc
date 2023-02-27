@@ -487,15 +487,14 @@ class TrustStoreNSSTestWithSlotFilterType
     switch (slot_filter_type()) {
       case SlotFilterType::kDontFilter:
         return std::make_unique<TrustStoreNSS>(
-            trustSSL, system_trust_setting(),
-            TrustStoreNSS::UseTrustFromAllUserSlots());
+            system_trust_setting(), TrustStoreNSS::UseTrustFromAllUserSlots());
       case SlotFilterType::kDoNotAllowUserSlots:
         return std::make_unique<TrustStoreNSS>(
-            trustSSL, system_trust_setting(),
+            system_trust_setting(),
             /*user_slot_trust_setting=*/nullptr);
       case SlotFilterType::kAllowSpecifiedUserSlot:
         return std::make_unique<TrustStoreNSS>(
-            trustSSL, system_trust_setting(),
+            system_trust_setting(),
             crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())));
     }
   }
@@ -570,7 +569,7 @@ class TrustStoreNSSTestIgnoreSystemCerts
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
     return std::make_unique<TrustStoreNSS>(
-        trustSSL, TrustStoreNSS::kIgnoreSystemTrust,
+        TrustStoreNSS::kIgnoreSystemTrust,
         TrustStoreNSS::UseTrustFromAllUserSlots());
   }
 };
@@ -777,7 +776,7 @@ class TrustStoreNSSTestWithoutSlotFilter
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
     return std::make_unique<TrustStoreNSS>(
-        trustSSL, TrustStoreNSS::kUseSystemTrust,
+        TrustStoreNSS::kUseSystemTrust,
         TrustStoreNSS::UseTrustFromAllUserSlots());
   }
 };
@@ -915,7 +914,7 @@ class TrustStoreNSSTestDoNotAllowUserSlots
   }
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
-    return std::make_unique<TrustStoreNSS>(trustSSL, system_trust_setting(),
+    return std::make_unique<TrustStoreNSS>(system_trust_setting(),
                                            /*user_slot_trust_setting=*/nullptr);
   }
 };
@@ -982,7 +981,7 @@ class TrustStoreNSSTestAllowSpecifiedUserSlot
 
   std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
     return std::make_unique<TrustStoreNSS>(
-        trustSSL, system_trust_setting(),
+        system_trust_setting(),
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(test_nssdb_.slot())));
   }
 };
@@ -1084,8 +1083,7 @@ INSTANTIATE_TEST_SUITE_P(
 class TrustStoreNSSTestDelegate {
  public:
   TrustStoreNSSTestDelegate()
-      : trust_store_nss_(trustSSL,
-                         TrustStoreNSS::kUseSystemTrust,
+      : trust_store_nss_(TrustStoreNSS::kUseSystemTrust,
                          TrustStoreNSS::UseTrustFromAllUserSlots()) {}
 
   void AddCert(std::shared_ptr<const ParsedCertificate> cert) {
