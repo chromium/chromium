@@ -1039,6 +1039,11 @@
         ],
         'experiment_percentage': 100, # https://crbug.com/1251657
       },
+      'Mac Builder Next': {
+        'swarming': {
+          'shards': 20,  # crbug.com/1419045
+        },
+      },
       'Mac10.15 Tests': {
         # crbug.com/1042757
         'swarming': {
