@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Observer should not receive PressureRecord if page loses focus assert_equals: expected "fair" but got "nominal"
+Harness: the test ran to completion.
+
