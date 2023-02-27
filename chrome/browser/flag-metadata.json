@@ -1123,14 +1123,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "consolidated-site-storage-controls",
-    "owners": [
-      "sauski",
-      "chrome-friendly-settings@google.com"
-    ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "consumer-auto-update-toggle-allowed",
     "owners": [
       "kimjae",
