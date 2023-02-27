@@ -357,6 +357,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.BookmarkAppLaunchContainer"
     enum="AppLaunchContainer" expires_after="2023-08-14">
+  <obsolete>
+    Replaced by WebApp.LaunchContainer in M113.
+  </obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
@@ -369,6 +372,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.BookmarkAppLaunchSource" enum="AppLaunchSource"
     expires_after="2023-07-09">
+  <obsolete>
+    Replaced by WebApp.LaunchSource in M113.
+  </obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>

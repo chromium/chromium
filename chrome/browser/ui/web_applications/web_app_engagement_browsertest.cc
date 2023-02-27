@@ -110,17 +110,17 @@ void ExpectTotalCounts(const base::HistogramTester& tester,
 void ExpectLaunchCounts(const base::HistogramTester& tester,
                         base::HistogramBase::Count windowLaunches,
                         base::HistogramBase::Count tabLaunches) {
-  tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
+  tester.ExpectBucketCount("WebApp.LaunchContainer",
                            apps::LaunchContainer::kLaunchContainerWindow,
                            windowLaunches);
-  tester.ExpectBucketCount("Extensions.BookmarkAppLaunchContainer",
+  tester.ExpectBucketCount("WebApp.LaunchContainer",
                            apps::LaunchContainer::kLaunchContainerTab,
                            tabLaunches);
-  tester.ExpectTotalCount("Extensions.BookmarkAppLaunchContainer",
+  tester.ExpectTotalCount("WebApp.LaunchContainer",
                           windowLaunches + tabLaunches);
 
-  tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchSource",
-                            extensions::AppLaunchSource::kSourceTest,
+  tester.ExpectUniqueSample("WebApp.LaunchSource",
+                            apps::LaunchSource::kFromTest,
                             windowLaunches + tabLaunches);
 }
 

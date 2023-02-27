@@ -12,9 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/histogram_macros_internal.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
@@ -57,7 +55,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/base/page_transition_types.h"
@@ -285,8 +282,8 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   auto launch_url = contents->GetLastCommittedURL();
   UpdateLaunchStats(contents, app_id, launch_url);
   RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
-                      extensions::AppLaunchSource::kSourceReparenting,
-                      launch_url, contents);
+                      apps::LaunchSource::kFromReparenting, launch_url,
+                      contents);
 
   if (web_app->launch_handler()
           .value_or(LaunchHandler{})
@@ -500,7 +497,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 
 void RecordAppWindowLaunchMetric(Profile* profile,
                                  const std::string& app_id,
-                                 extensions::AppLaunchSource launch_source) {
+                                 apps::LaunchSource launch_source) {
   WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return;
@@ -514,14 +511,14 @@ void RecordAppWindowLaunchMetric(Profile* profile,
   if (display != DisplayMode::kUndefined) {
     DCHECK_LT(DisplayMode::kUndefined, display);
     DCHECK_LE(display, DisplayMode::kMaxValue);
-    UMA_HISTOGRAM_ENUMERATION("Launch.WebAppDisplayMode", display);
+    base::UmaHistogramEnumeration("Launch.WebAppDisplayMode", display);
   }
 
   // Reparenting launches don't respect the launch_handler setting.
-  if (launch_source != extensions::AppLaunchSource::kSourceReparenting &&
+  if (launch_source != apps::LaunchSource::kFromReparenting &&
       base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableLaunchHandler)) {
-    UMA_HISTOGRAM_ENUMERATION(
+    base::UmaHistogramEnumeration(
         "Launch.WebAppLaunchHandlerClientMode",
         web_app->launch_handler().value_or(LaunchHandler()).client_mode);
   }
@@ -529,7 +526,7 @@ void RecordAppWindowLaunchMetric(Profile* profile,
 
 void RecordLaunchMetrics(const AppId& app_id,
                          apps::LaunchContainer container,
-                         extensions::AppLaunchSource launch_source,
+                         apps::LaunchSource launch_source,
                          const GURL& launch_url,
                          content::WebContents* web_contents) {
   Profile* profile =
@@ -546,10 +543,8 @@ void RecordLaunchMetrics(const AppId& app_id,
   if (container == apps::LaunchContainer::kLaunchContainerWindow)
     RecordAppWindowLaunchMetric(profile, app_id, launch_source);
 
-  // TODO(crbug.com/1014328): Populate WebApp metrics instead of Extensions.
-  UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchSource",
-                            launch_source);
-  UMA_HISTOGRAM_ENUMERATION("Extensions.BookmarkAppLaunchContainer", container);
+  base::UmaHistogramEnumeration("WebApp.LaunchSource", launch_source);
+  base::UmaHistogramEnumeration("WebApp.LaunchContainer", container);
 }
 
 void UpdateLaunchStats(content::WebContents* web_contents,

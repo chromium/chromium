@@ -24,11 +24,13 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -315,10 +317,13 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
       return extensions::AppLaunchSource::kSourceProtocolHandler;
     case LaunchSource::kFromUrlHandler:
       return extensions::AppLaunchSource::kSourceUrlHandler;
-    case apps::LaunchSource::kFromLockScreen:
+    case LaunchSource::kFromLockScreen:
       return extensions::AppLaunchSource::kSourceUntracked;
-    case apps::LaunchSource::kFromAppHomePage:
+    case LaunchSource::kFromAppHomePage:
       return extensions::AppLaunchSource::kSourceAppHomePage;
+    // No equivalent extensions launch source or not needed in extensions:
+    case LaunchSource::kFromReparenting:
+      return extensions::AppLaunchSource::kSourceNone;
   }
 }
 

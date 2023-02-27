@@ -1773,10 +1773,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
             DisplayMode::kMinimalUi);
   EXPECT_FALSE(
       provider->registrar_unsafe().GetAppLastLaunchTime(app_id).is_null());
-  tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchContainer",
+  tester.ExpectUniqueSample("WebApp.LaunchContainer",
                             apps::LaunchContainer::kLaunchContainerWindow, 1);
-  tester.ExpectUniqueSample("Extensions.BookmarkAppLaunchSource",
-                            extensions::AppLaunchSource::kSourceReparenting, 1);
+  tester.ExpectUniqueSample("WebApp.LaunchSource",
+                            apps::LaunchSource::kFromReparenting, 1);
 }
 
 // Tests that the manifest name of the current installable site is used in the

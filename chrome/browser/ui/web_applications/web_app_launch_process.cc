@@ -144,8 +144,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
 
   UpdateLaunchStats(web_contents, params_->app_id, launch_url);
   RecordLaunchMetrics(params_->app_id, params_->container,
-                      apps::GetAppLaunchSource(params_->launch_source),
-                      launch_url, web_contents);
+                      params_->launch_source, launch_url, web_contents);
 
   return web_contents;
 }

@@ -11,7 +11,6 @@
 
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -93,7 +92,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 // side-effects (e.g. updating app launch time).
 void RecordLaunchMetrics(const AppId& app_id,
                          apps::LaunchContainer container,
-                         extensions::AppLaunchSource launch_source,
+                         apps::LaunchSource launch_source,
                          const GURL& launch_url,
                          content::WebContents* web_contents);
 

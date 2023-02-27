@@ -11,6 +11,7 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "extensions/common/constants.h"
 
@@ -149,6 +150,7 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:
+    case apps::LaunchSource::kFromReparenting:
       NOTREACHED();
       break;
   }
@@ -199,6 +201,7 @@ void RecordBuiltInAppLaunch(apps::BuiltInAppName built_in_app_name,
     case apps::LaunchSource::kFromUrlHandler:
     case apps::LaunchSource::kFromLockScreen:
     case apps::LaunchSource::kFromAppHomePage:
+    case apps::LaunchSource::kFromReparenting:
       break;
   }
 }

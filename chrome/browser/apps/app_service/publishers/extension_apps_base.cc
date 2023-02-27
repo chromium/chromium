@@ -37,6 +37,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -345,6 +346,7 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
     case apps::LaunchSource::kFromUrlHandler:
     case apps::LaunchSource::kFromLockScreen:
     case apps::LaunchSource::kFromAppHomePage:
+    case apps::LaunchSource::kFromReparenting:
       break;
   }
 

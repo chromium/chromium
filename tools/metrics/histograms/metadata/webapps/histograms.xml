@@ -827,6 +827,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
+    expires_after="2023-08-14">
+  <owner>phillis@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the container used for a web app launch, when the app is launched
+    (eg. via UI surfaces or intents). Not recorded when the web app is navigated
+    to via URL.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Launcher.LaunchResult"
     enum="WebAppLauncherLaunchResult" expires_after="2023-07-02">
   <owner>davidbienvenu@chromium.org</owner>
@@ -834,6 +845,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     The result of a Progressive Web App (PWA) launcher's attempt to launch
     Chrome. Windows-only.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.LaunchSource" enum="LaunchSource"
+    expires_after="2023-07-09">
+  <owner>phillis@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    The number of times web apps are launched, grouped by apps::LaunchSource.
+    The equivalent histogram on Android is called Launch.HomeScreenSource.
   </summary>
 </histogram>
 

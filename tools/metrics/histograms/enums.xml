@@ -56510,6 +56510,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
   <int value="31" label="URL handler"/>
   <int value="32" label="Lock screen"/>
   <int value="33" label="App Home Page (chrome://apps)"/>
+  <int value="34" label="Reparenting"/>
 </enum>
 
 <enum name="LaunchType">
