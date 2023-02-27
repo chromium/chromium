@@ -587,7 +587,7 @@ TEST_F(CommandStorageBackendTest,
       base::FilePath(kSessionsDirectory)
           .Append(FILE_PATH_LITERAL("Session_13235178308836991")));
   ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
-  ASSERT_EQ(0, base::WriteFile(prev_path, "", 0));
+  ASSERT_TRUE(base::WriteFile(prev_path, ""));
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   auto last_session_info = GetLastSessionInfo(backend.get());
@@ -607,9 +607,9 @@ TEST_F(CommandStorageBackendTest,
       sessions_dir.Append(FILE_PATH_LITERAL("Session_13235178308548874"));
   const auto old_path_2 = sessions_dir.Append(FILE_PATH_LITERAL("Session_0"));
   ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
-  ASSERT_EQ(0, base::WriteFile(prev_path, "", 0));
-  ASSERT_EQ(0, base::WriteFile(old_path_1, "", 0));
-  ASSERT_EQ(0, base::WriteFile(old_path_2, "", 0));
+  ASSERT_TRUE(base::WriteFile(prev_path, ""));
+  ASSERT_TRUE(base::WriteFile(old_path_1, ""));
+  ASSERT_TRUE(base::WriteFile(old_path_2, ""));
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   auto last_session_info = GetLastSessionInfo(backend.get());
@@ -624,7 +624,7 @@ TEST_F(CommandStorageBackendTest,
       restore_path().Append(base::FilePath(kSessionsDirectory)
                                 .Append(FILE_PATH_LITERAL("Session_invalid")));
   ASSERT_TRUE(base::CreateDirectory(prev_path.DirName()));
-  ASSERT_EQ(0, base::WriteFile(prev_path, "", 0));
+  ASSERT_TRUE(base::WriteFile(prev_path, ""));
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   auto last_session_info = GetLastSessionInfo(backend.get());
@@ -639,7 +639,7 @@ TEST_F(CommandStorageBackendTest,
   const auto last_session =
       sessions_dir.Append(FILE_PATH_LITERAL("Session_13235178308548874"));
   ASSERT_TRUE(base::CreateDirectory(last_session.DirName()));
-  ASSERT_EQ(0, base::WriteFile(last_session, "", 0));
+  ASSERT_TRUE(base::WriteFile(last_session, ""));
 
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   char buffer[1];
@@ -652,16 +652,16 @@ TEST_F(CommandStorageBackendTest, GetSessionFiles) {
   EXPECT_TRUE(CommandStorageBackend::GetSessionFilePaths(
                   file_path(), CommandStorageManager::kOther)
                   .empty());
-  ASSERT_EQ(0, base::WriteFile(file_path(), "", 0));
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
   // Not a valid name, as doesn't contain timestamp separator.
-  ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session 123"),
-                               "", 0));
+  ASSERT_TRUE(
+      base::WriteFile(file_path().DirName().AppendASCII("Session 123"), ""));
   // Valid name.
-  ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session_124"),
-                               "", 0));
+  ASSERT_TRUE(
+      base::WriteFile(file_path().DirName().AppendASCII("Session_124"), ""));
   // Valid name, but should not be returned as beginning doesn't match.
-  ASSERT_EQ(
-      0, base::WriteFile(file_path().DirName().AppendASCII("Foo_125"), "", 0));
+  ASSERT_TRUE(
+      base::WriteFile(file_path().DirName().AppendASCII("Foo_125"), ""));
   auto paths = CommandStorageBackend::GetSessionFilePaths(
       file_path(), CommandStorageManager::kOther);
   ASSERT_EQ(1u, paths.size());
@@ -674,14 +674,14 @@ TEST_F(CommandStorageBackendTest, TimestampSeparatorIsAscii) {
 }
 
 TEST_F(CommandStorageBackendTest, GetSessionFilesAreSortedByReverseTimestamp) {
-  ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session_130"),
-                               "", 0));
-  ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session_120"),
-                               "", 0));
-  ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session_125"),
-                               "", 0));
-  ASSERT_EQ(0, base::WriteFile(file_path().DirName().AppendASCII("Session_128"),
-                               "", 0));
+  ASSERT_TRUE(
+      base::WriteFile(file_path().DirName().AppendASCII("Session_130"), ""));
+  ASSERT_TRUE(
+      base::WriteFile(file_path().DirName().AppendASCII("Session_120"), ""));
+  ASSERT_TRUE(
+      base::WriteFile(file_path().DirName().AppendASCII("Session_125"), ""));
+  ASSERT_TRUE(
+      base::WriteFile(file_path().DirName().AppendASCII("Session_128"), ""));
   auto paths = GetSessionFilePathsSortedByReverseTimestamp();
   ASSERT_EQ(4u, paths.size());
   EXPECT_EQ("Session_130", paths[0].BaseName().MaybeAsASCII());
