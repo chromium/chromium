@@ -259,16 +259,6 @@ const CreditCard& SaveCardBubbleControllerImpl::GetCard() const {
   return card_;
 }
 
-AutofillBubbleBase* SaveCardBubbleControllerImpl::GetSaveCardBubbleView()
-    const {
-  return bubble_view();
-}
-
-SavePaymentIconController::PaymentBubbleType
-SaveCardBubbleControllerImpl::GetPaymentBubbleType() const {
-  return PaymentBubbleType::kCreditCard;
-}
-
 bool SaveCardBubbleControllerImpl::ShouldRequestNameFromUser() const {
   return options_.should_request_name_from_user;
 }
@@ -471,7 +461,12 @@ bool SaveCardBubbleControllerImpl::IsIconVisible() const {
 }
 
 AutofillBubbleBase* SaveCardBubbleControllerImpl::GetPaymentBubbleView() const {
-  return GetSaveCardBubbleView();
+  return bubble_view();
+}
+
+SavePaymentIconController::PaymentBubbleType
+SaveCardBubbleControllerImpl::GetPaymentBubbleType() const {
+  return PaymentBubbleType::kCreditCard;
 }
 
 PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {

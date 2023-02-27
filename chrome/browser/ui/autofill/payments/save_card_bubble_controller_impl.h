@@ -118,7 +118,6 @@ class SaveCardBubbleControllerImpl
   const AccountInfo& GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
-  AutofillBubbleBase* GetSaveCardBubbleView() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
 

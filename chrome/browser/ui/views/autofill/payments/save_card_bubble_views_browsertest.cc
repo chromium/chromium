@@ -699,12 +699,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   SaveCardBubbleViews* GetSaveCardBubbleViews() {
-    SaveCardBubbleController* save_card_bubble_controller =
-        SaveCardBubbleController::Get(GetActiveWebContents());
+    SaveCardBubbleControllerImpl::CreateForWebContents(GetActiveWebContents());
+    SaveCardBubbleControllerImpl* save_card_bubble_controller =
+        SaveCardBubbleControllerImpl::FromWebContents(GetActiveWebContents());
     if (!save_card_bubble_controller)
       return nullptr;
     AutofillBubbleBase* save_card_bubble_view =
-        save_card_bubble_controller->GetSaveCardBubbleView();
+        save_card_bubble_controller->GetPaymentBubbleView();
     if (!save_card_bubble_view)
       return nullptr;
     return static_cast<SaveCardBubbleViews*>(save_card_bubble_view);
