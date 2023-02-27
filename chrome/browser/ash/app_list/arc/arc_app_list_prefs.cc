@@ -13,6 +13,7 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
+#include "ash/components/arc/net/arc_net_host_impl.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
@@ -531,6 +532,12 @@ ArcAppListPrefs::ArcAppListPrefs(
       arc::ArcResizeLockManager::GetForBrowserContext(profile_);
   if (resize_lock_manager)
     resize_lock_manager->SetPrefDelegate(this);
+
+  arc::ArcNetHostImpl* net_host =
+      arc::ArcNetHostImpl::GetForBrowserContext(profile_);
+  if (net_host) {
+    net_host->SetArcAppMetadataProvider(this);
+  }
 }
 
 ArcAppListPrefs::~ArcAppListPrefs() {
@@ -1359,6 +1366,15 @@ int ArcAppListPrefs::GetShowSplashScreenDialogCount() const {
 void ArcAppListPrefs::SetShowSplashScreenDialogCount(int count) {
   profile_->GetPrefs()->SetInteger(
       arc::prefs::kArcShowResizeLockSplashScreenLimits, count);
+}
+
+std::string ArcAppListPrefs::GetAppPackageName(const std::string& app_id) {
+  std::unique_ptr<AppInfo> app_info = GetApp(app_id);
+  if (!app_info) {
+    VLOG(2) << "Failed to get app info: " << app_id << ".";
+    return std::string();
+  }
+  return app_info->package_name;
 }
 
 void ArcAppListPrefs::Shutdown() {

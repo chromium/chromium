@@ -76,6 +76,7 @@ static_library("arc") {
     "midis/arc_midis_bridge.h",
     "net/always_on_vpn_manager.cc",
     "net/always_on_vpn_manager.h",
+    "net/arc_app_metadata_provider.h",
     "net/arc_net_host_impl.cc",
     "net/arc_net_host_impl.h",
     "net/arc_net_utils.cc",

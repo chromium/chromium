@@ -15,6 +15,7 @@
 #include "ash/components/arc/net/cert_manager.h"
 #include "ash/components/arc/net/passpoint_dialog_view.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/public/cpp/window_properties.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -287,6 +288,11 @@ ArcNetHostImpl::~ArcNetHostImpl() {
 
 void ArcNetHostImpl::SetPrefService(PrefService* pref_service) {
   pref_service_ = pref_service;
+}
+
+void ArcNetHostImpl::SetArcAppMetadataProvider(
+    ArcAppMetadataProvider* app_metadata_provider) {
+  app_metadata_provider_ = app_metadata_provider;
 }
 
 void ArcNetHostImpl::SetCertManager(std::unique_ptr<CertManager> cert_manager) {
@@ -1006,8 +1012,23 @@ void ArcNetHostImpl::RequestPasspointAppApproval(
         mojom::PasspointApprovalResponse::New(/*allow=*/false));
     return;
   }
-  // TODO(b/266151265): Get app name and check window.
-  PasspointDialogView::Show(window, /*app_name=*/"", std::move(callback));
+  const std::string* app_id = window->GetProperty(ash::kAppIDKey);
+  if (!app_id || app_id->empty()) {
+    NET_LOG(ERROR) << "Failed to get app info";
+    std::move(callback).Run(
+        mojom::PasspointApprovalResponse::New(/*allow=*/false));
+    return;
+  }
+  const std::string package_name =
+      app_metadata_provider_->GetAppPackageName(*app_id);
+  if (request->package_name != package_name) {
+    NET_LOG(ERROR) << "Unexpected app package name of the active window: "
+                   << package_name;
+    std::move(callback).Run(
+        mojom::PasspointApprovalResponse::New(/*allow=*/false));
+    return;
+  }
+  PasspointDialogView::Show(window, request->app_name, std::move(callback));
 }
 
 void ArcNetHostImpl::AddPasspointCredentialsWithProperties(

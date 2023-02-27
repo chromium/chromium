@@ -16,6 +16,7 @@
 
 #include "ash/components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/net/arc_app_metadata_provider.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,7 +67,8 @@ class ArcAppListPrefs : public KeyedService,
                         public arc::ConnectionObserver<arc::mojom::AppInstance>,
                         public arc::ArcSessionManagerObserver,
                         public arc::ArcPolicyBridge::Observer,
-                        public arc::ArcResizeLockPrefDelegate {
+                        public arc::ArcResizeLockPrefDelegate,
+                        public arc::ArcAppMetadataProvider {
  public:
   struct WindowLayout {
     // TODO(sstan): Refactor WindowLayout and AppInfo for adding move
@@ -414,6 +416,9 @@ class ArcAppListPrefs : public KeyedService,
                                       bool is_needed) override;
   int GetShowSplashScreenDialogCount() const override;
   void SetShowSplashScreenDialogCount(int count) override;
+
+  // arc::ArcAppMetadataProvider:
+  std::string GetAppPackageName(const std::string& app_id) override;
 
   // KeyedService:
   void Shutdown() override;

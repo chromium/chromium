@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/components/arc/mojom/net.mojom.h"
+#include "ash/components/arc/net/arc_app_metadata_provider.h"
 #include "ash/components/arc/net/cert_manager.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/files/scoped_file.h"
@@ -60,6 +61,7 @@ class ArcNetHostImpl : public KeyedService,
   ~ArcNetHostImpl() override;
 
   void SetPrefService(PrefService* pref_service);
+  void SetArcAppMetadataProvider(ArcAppMetadataProvider* app_metadata_provider);
   void SetCertManager(std::unique_ptr<CertManager> cert_manager);
 
   // Overridden from mojom::NetHost.
@@ -234,6 +236,7 @@ class ArcNetHostImpl : public KeyedService,
   std::string arc_vpn_service_path_;
   // Owned by the user profile whose context was used to initialize |this|.
   PrefService* pref_service_ = nullptr;
+  ArcAppMetadataProvider* app_metadata_provider_ = nullptr;
 
   std::unique_ptr<CertManager> cert_manager_;
 
