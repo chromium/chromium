@@ -7380,7 +7380,7 @@
   {
     "name": "wifi-connect-mac-address-randomization",
     "owners": [ "jsiuda", "chromeos-wifi-team" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 130
   },
   {
     "name": "win-10-tab-search-caption-button",
