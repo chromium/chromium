@@ -169,7 +169,7 @@
   {
     "name": "apn-revamp",
     "owners": [ "gordonseto@google.com", "cros-connectivity@google.com" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 128
   },
   {
     "name": "app-deduplication-service-fondue",
