@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
@@ -21,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/events/devices/input_device.h"
 
 namespace ash {
@@ -76,9 +78,7 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
 }
 
 void InputDeviceSettingsControllerImpl::Init() {
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->session_controller()->AddObserver(this);
-  }
+  Shell::Get()->session_controller()->AddObserver(this);
   keyboard_notifier_ =
       std::make_unique<InputDeviceNotifier<mojom::KeyboardPtr>>(
           &keyboards_,
@@ -104,9 +104,7 @@ void InputDeviceSettingsControllerImpl::Init() {
 }
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    Shell::Get()->session_controller()->RemoveObserver(this);
-  }
+  Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
@@ -120,6 +118,15 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  // If the flag is disabled, clear all the settings dictionaries.
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    active_pref_service_ = nullptr;
+    pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref, {});
+    pref_service->SetDict(prefs::kMouseDeviceSettingsDictPref, {});
+    pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
+    pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
+    return;
+  }
   active_pref_service_ = pref_service;
   // TODO(michaelcheco): Initialize settings and notify observers.
 }
