@@ -94,7 +94,7 @@ class ASH_EXPORT CalendarEventListItemViewJelly : public ActionableView {
   // The URL for the meeting event.
   const GURL event_url_;
 
-  const std::string hangout_link_;
+  const GURL video_conference_url_;
 
   base::WeakPtrFactory<CalendarEventListItemViewJelly> weak_ptr_factory_{this};
 };

@@ -26,18 +26,18 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
     const base::Time start_time,
     const base::Time end_time,
     bool all_day_event = false,
-    std::string hangout_link = "") {
+    const GURL video_conference_url = GURL()) {
   return calendar_test_utils::CreateEvent(
       "id_0", "summary_0", start_time, end_time,
       google_apis::calendar::CalendarEvent::EventStatus::kConfirmed,
       google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted,
-      all_day_event, hangout_link);
+      all_day_event, video_conference_url);
 }
 
 std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>>
 CreateUpcomingEvents(int event_count = 1,
                      bool all_day_event = false,
-                     std::string hangout_link = "") {
+                     const GURL video_conference_url = GURL()) {
   std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
   auto event_in_ten_mins_start_time =
       base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
@@ -47,7 +47,7 @@ CreateUpcomingEvents(int event_count = 1,
   for (int i = 0; i < event_count; ++i) {
     events.push_back(CreateEvent(event_in_ten_mins_start_time,
                                  event_in_ten_mins_end_time, all_day_event,
-                                 hangout_link));
+                                 video_conference_url));
   }
 
   return events;
@@ -458,9 +458,9 @@ TEST_F(CalendarUpNextViewTest,
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   // Create up next view with upcoming google meet event.
   CreateUpNextView(
-      CreateUpcomingEvents(1, false, "https://meet.google.com/abc-123"));
+      CreateUpcomingEvents(1, false, GURL("https://meet.google.com/abc-123")));
   EXPECT_EQ(GetContentsView()->children().size(), size_t(1));
-  EXPECT_EQ(GetSystemTrayClient()->show_google_meet_count(), 0);
+  EXPECT_EQ(GetSystemTrayClient()->show_video_conference_count(), 0);
 
   // Click the "Join" meeting button.
   const auto* join_meeting_button =
@@ -468,7 +468,7 @@ TEST_F(CalendarUpNextViewTest,
   ASSERT_TRUE(join_meeting_button);
   LeftClickOn(join_meeting_button);
 
-  EXPECT_EQ(GetSystemTrayClient()->show_google_meet_count(), 1);
+  EXPECT_EQ(GetSystemTrayClient()->show_video_conference_count(), 1);
   histogram_tester->ExpectTotalCount(
       "Ash.Calendar.UpNextView.JoinMeetingButton.Pressed", 1);
 }
@@ -482,7 +482,7 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
 
   // Create up next view with 2 upcoming google meet events.
   CreateUpNextView(
-      CreateUpcomingEvents(2, false, "https://meet.google.com/abc-123"));
+      CreateUpcomingEvents(2, false, GURL("https://meet.google.com/abc-123")));
   EXPECT_EQ(GetContentsView()->children().size(), size_t(2));
   auto* focus_manager = up_next_view()->GetFocusManager();
 

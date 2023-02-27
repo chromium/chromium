@@ -85,8 +85,9 @@ SystemTrayClientImpl* g_system_tray_client_instance = nullptr;
 
 // The prefix a calendar event URL *must* have in order to be launched by the
 // calendar web app.
-const char* kOfficialCalendarUrlPrefix =
+constexpr char kOfficialCalendarUrlPrefix[] =
     "https://calendar.google.com/calendar/";
+constexpr char kGoogleMeetSubDomain[] = "meet.google.com";
 
 void ShowSettingsSubPageForActiveUser(const std::string& sub_page) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
@@ -751,11 +752,13 @@ void SystemTrayClientImpl::ShowCalendarEvent(
 
 // TODO(b/269075177): Reuse existing Google Meet PWA instead of opening a new
 // one for each call to `LaunchAppWithUrl`.
-void SystemTrayClientImpl::ShowGoogleMeet(const std::string& hangout_link) {
-  const auto final_url = GURL(hangout_link);
+void SystemTrayClientImpl::ShowVideoConference(
+    const GURL& video_conference_url) {
+  const bool is_google_meet =
+      video_conference_url.DomainIs(kGoogleMeetSubDomain);
 
-  if (!IsAppInstalled(web_app::kGoogleMeetAppId)) {
-    OpenInBrowser(final_url);
+  if (!is_google_meet || !IsAppInstalled(web_app::kGoogleMeetAppId)) {
+    OpenInBrowser(video_conference_url);
     return;
   }
 
@@ -763,12 +766,12 @@ void SystemTrayClientImpl::ShowGoogleMeet(const std::string& hangout_link) {
   if (!proxy) {
     LOG(ERROR) << __FUNCTION__
                << " failed to get active user AppServiceProxyAsh";
-    OpenInBrowser(final_url);
+    OpenInBrowser(video_conference_url);
     return;
   }
 
-  proxy->LaunchAppWithUrl(web_app::kGoogleMeetAppId, ui::EF_NONE, final_url,
-                          apps::LaunchSource::kFromShelf);
+  proxy->LaunchAppWithUrl(web_app::kGoogleMeetAppId, ui::EF_NONE,
+                          video_conference_url, apps::LaunchSource::kFromShelf);
 }
 
 void SystemTrayClientImpl::ShowChannelInfoAdditionalDetails() {

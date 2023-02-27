@@ -168,7 +168,7 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
       calendar_view_controller_(calendar_view_controller),
       selected_date_params_(selected_date_params),
       event_url_(event.html_link()),
-      hangout_link_(event.hangout_link()) {
+      video_conference_url_(event.conference_data_uri()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   const auto [start_time, end_time] = calendar_utils::GetStartAndEndTime(
@@ -256,7 +256,7 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
   horizontal_container_layout_manager->SetFlexForView(vertical_container, 1);
 
   // Join button.
-  if (!event.hangout_link().empty()) {
+  if (!video_conference_url_.is_empty()) {
     views::View* join_button_container =
         horizontal_container->AddChildView(std::make_unique<views::View>());
     auto* layout_vertical_center = join_button_container->SetLayoutManager(
@@ -321,7 +321,11 @@ void CalendarEventListItemViewJelly::OnJoinMeetingButtonPressed(
     const ui::Event& event) {
   calendar_view_controller_->RecordJoinMeetingButtonPressed(event);
 
-  Shell::Get()->system_tray_model()->client()->ShowGoogleMeet(hangout_link_);
+  // The join button won't be shown if `video_conference_url_` doesn't have a
+  // value.
+  DCHECK(!video_conference_url_.is_empty());
+  Shell::Get()->system_tray_model()->client()->ShowVideoConference(
+      video_conference_url_);
 }
 
 BEGIN_METADATA(CalendarEventListItemViewJelly, views::View);
