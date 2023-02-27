@@ -58,3 +58,10 @@ void SaveUPIOfferBubbleViews::Init() {
   label_view->SetElideBehavior(gfx::ElideBehavior::ELIDE_EMAIL);
   AddChildView(std::move(label_view));
 }
+
+void SaveUPIOfferBubbleViews::WindowClosing() {
+  if (controller_) {
+    controller_->OnBubbleClosed();
+    controller_ = nullptr;
+  }
+}

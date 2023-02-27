@@ -29,14 +29,12 @@ class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
 
     // Do lazy initialization of SaveUPIBubbleControllerImpl.
     SaveUPIBubbleControllerImpl::CreateForWebContents(web_contents);
-    controller_ = SaveUPIBubbleControllerImpl::FromWebContents(web_contents);
-    DCHECK(controller_);
+    SaveUPIBubbleControllerImpl* controller =
+        SaveUPIBubbleControllerImpl::FromWebContents(web_contents);
+    DCHECK(controller);
 
-    controller_->OfferUpiIdLocalSave("user@indianbank", base::DoNothing());
+    controller->OfferUpiIdLocalSave("user@indianbank", base::DoNothing());
   }
-
- private:
-  raw_ptr<SaveUPIBubbleControllerImpl, DanglingUntriaged> controller_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SaveUPIBubbleControllerImplTest, InvokeUi) {

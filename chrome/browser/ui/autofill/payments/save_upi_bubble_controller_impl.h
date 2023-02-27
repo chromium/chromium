@@ -42,7 +42,7 @@ class SaveUPIBubbleControllerImpl
   void ShowBubble();
 
   // Weak reference. Will be nullptr if no bubble is currently shown.
-  raw_ptr<SaveUPIBubble, DanglingUntriaged> save_upi_bubble_ = nullptr;
+  raw_ptr<SaveUPIBubble> save_upi_bubble_ = nullptr;
 
   base::OnceCallback<void(bool accept)> save_upi_prompt_callback_;
 
