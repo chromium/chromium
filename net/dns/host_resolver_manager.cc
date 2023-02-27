@@ -262,8 +262,7 @@ base::Value::Dict NetLogDnsTaskFailedParams(
     const HostCache::Entry* saved_results) {
   base::Value::Dict dict;
   if (failed_transaction_type) {
-    dict.Set("dns_query_type",
-             base::strict_cast<int>(failed_transaction_type.value()));
+    dict.Set("dns_query_type", kDnsQueryTypes.at(*failed_transaction_type));
   }
   if (ttl)
     dict.Set("error_ttl_sec",
@@ -280,7 +279,7 @@ base::Value::Dict NetLogDnsTaskExtractionFailureParams(
     const HostCache::Entry& results) {
   base::Value::Dict dict;
   dict.Set("extraction_error", base::strict_cast<int>(extraction_error));
-  dict.Set("dns_query_type", base::strict_cast<int>(dns_query_type));
+  dict.Set("dns_query_type", kDnsQueryTypes.at(dns_query_type));
   dict.Set("results", results.NetLogParams());
   return dict;
 }
@@ -753,7 +752,7 @@ class HostResolverManager::RequestImpl
           base::Value::Dict dict;
           dict.Set("host", request_host_.ToString());
           dict.Set("dns_query_type",
-                   base::strict_cast<int>(parameters_.dns_query_type));
+                   kDnsQueryTypes.at(parameters_.dns_query_type));
           dict.Set("allow_cached_response",
                    parameters_.cache_usage !=
                        ResolveHostParameters::CacheUsage::DISALLOWED);
@@ -1034,7 +1033,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     base::Value::List transactions_needed_value;
     for (const TransactionInfo& info : transactions_needed_) {
       base::Value::Dict transaction_dict;
-      transaction_dict.Set("dns_query_type", base::strict_cast<int>(info.type));
+      transaction_dict.Set("dns_query_type", kDnsQueryTypes.at(info.type));
       transactions_needed_value.Append(std::move(transaction_dict));
     }
     dict.Set("transactions_needed", std::move(transactions_needed_value));
@@ -1049,8 +1048,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       base::Value::List list;
       for (const TransactionInfo& info : transactions_in_progress_) {
         base::Value::Dict transaction_dict;
-        transaction_dict.Set("dns_query_type",
-                             base::strict_cast<int>(info.type));
+        transaction_dict.Set("dns_query_type", kDnsQueryTypes.at(info.type));
         list.Append(std::move(transaction_dict));
       }
       dict.Set("started_transactions", std::move(list));
@@ -1060,8 +1058,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       base::Value::List list;
       for (const TransactionInfo& info : transactions_needed_) {
         base::Value::Dict transaction_dict;
-        transaction_dict.Set("dns_query_type",
-                             base::strict_cast<int>(info.type));
+        transaction_dict.Set("dns_query_type", kDnsQueryTypes.at(info.type));
         list.Append(std::move(transaction_dict));
       }
       dict.Set("queued_transactions", std::move(list));
