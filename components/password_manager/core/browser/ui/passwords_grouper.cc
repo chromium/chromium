@@ -362,12 +362,12 @@ void PasswordsGrouper::GroupPasswordsImpl(
     DCHECK(map_facet_to_group_id.contains(signon_realm));
     GroupId group_id = map_facet_to_group_id[signon_realm];
 
+    // Store group id for sign-on realm.
+    map_signon_realm_to_group_id[SignonRealm(form.signon_realm)] = group_id;
+
+    // Store form for username/password key.
     UsernamePasswordKey key(CreateUsernamePasswordSortKey(form));
     map_group_id_to_forms[group_id][key].push_back(std::move(form));
-
-    // Store group id for sign-on realm. Append "/" because
-    // PasswordForm::signon_realms should always has trailing '/'.
-    map_signon_realm_to_group_id[SignonRealm(signon_realm + "/")] = group_id;
   }
 }
 

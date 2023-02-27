@@ -55,10 +55,11 @@ TEST_F(PasswordsGrouperTest, GetAffiliatedGroupsWithGroupingInfo) {
   blocked_form.blocked_by_user = true;
 
   PasswordForm federated_form;
-  federated_form.signon_realm = "https://federated.com/";
-  federated_form.username_value = u"example@gmail.com";
+  federated_form.url = GURL("https://test.org/");
+  federated_form.signon_realm = "federation://test.com/accounts.federation.com";
+  federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL(u"federatedOrigin.com"));
+      url::Origin::Create(GURL("https://accounts.federation.com"));
 
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(
@@ -92,10 +93,11 @@ TEST_F(PasswordsGrouperTest, GroupPasswords) {
   blocked_form.blocked_by_user = true;
 
   PasswordForm federated_form;
-  federated_form.signon_realm = "https://federated.com/";
-  federated_form.username_value = u"example@gmail.com";
+  federated_form.url = GURL("https://test.org/");
+  federated_form.signon_realm = "federation://test.com/accounts.federation.com";
+  federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL(u"federatedOrigin.com"));
+      url::Origin::Create(GURL("https://accounts.federation.com"));
 
   GroupedFacets group;
   group.facets = {
@@ -132,10 +134,11 @@ TEST_F(PasswordsGrouperTest, GroupPasswordsWithoutAffiliation) {
   blocked_form.blocked_by_user = true;
 
   PasswordForm federated_form;
-  federated_form.signon_realm = "https://federated.com/";
-  federated_form.username_value = u"example@gmail.com";
+  federated_form.url = GURL("https://test.org/");
+  federated_form.signon_realm = "federation://test.com/accounts.federation.com";
+  federated_form.username_value = u"username2";
   federated_form.federation_origin =
-      url::Origin::Create(GURL(u"federatedOrigin.com"));
+      url::Origin::Create(GURL("https://accounts.federation.com"));
 
   EXPECT_CALL(affiliation_service(), GetAllGroups)
       .WillRepeatedly(
