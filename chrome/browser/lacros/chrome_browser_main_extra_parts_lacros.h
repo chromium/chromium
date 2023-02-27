@@ -34,6 +34,7 @@ class TabletModePageBehavior;
 class UiMetricRecorderLacros;
 class VpnExtensionTrackerLacros;
 class WebAuthnRequestRegistrarLacros;
+class MultitaskMenuNudgeDelegateLacros;
 
 namespace arc {
 class ArcIconCacheDelegateProvider;
@@ -185,6 +186,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Controls sync-related Crosapi clients.
   SyncCrosapiManagerLacros sync_crosapi_manager_;
+
+  // Handles getting and setting multitask menu nudge related prefs from ash.
+  std::unique_ptr<MultitaskMenuNudgeDelegateLacros>
+      multitask_menu_nudge_delegate_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

@@ -4,6 +4,7 @@
 
 #include "ash/wm/multitask_menu_nudge_delegate_ash.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_multitask_cue.h"
@@ -18,17 +19,13 @@ PrefService* GetPrefService() {
 }
 
 std::string GetShowCountPrefName(bool tablet_mode) {
-  return tablet_mode
-             ? chromeos::MultitaskMenuNudgeController::kTabletShownCountPrefName
-             : chromeos::MultitaskMenuNudgeController::
-                   kClamshellShownCountPrefName;
+  return tablet_mode ? prefs::kMultitaskMenuNudgeTabletShownCount
+                     : prefs::kMultitaskMenuNudgeClamshellShownCount;
 }
 
 std::string GetLastShownPrefName(bool tablet_mode) {
-  return tablet_mode
-             ? chromeos::MultitaskMenuNudgeController::kTabletLastShownPrefName
-             : chromeos::MultitaskMenuNudgeController::
-                   kClamshellLastShownPrefName;
+  return tablet_mode ? prefs::kMultitaskMenuNudgeTabletLastShown
+                     : prefs::kMultitaskMenuNudgeClamshellLastShown;
 }
 
 }  // namespace

@@ -32,6 +32,7 @@
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/launcher_search/search_controller_lacros.h"
+#include "chrome/browser/lacros/multitask_menu_nudge_delegate_lacros.h"
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
 #include "chrome/browser/lacros/standalone_browser_test_controller.h"
@@ -212,6 +213,11 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 
   smart_reader_client_ =
       std::make_unique<smart_reader::SmartReaderClientImpl>();
+
+  if (chromeos::BrowserParamsProxy::Get()->IsWindowLayoutMenuEnabled()) {
+    multitask_menu_nudge_delegate_ =
+        std::make_unique<MultitaskMenuNudgeDelegateLacros>();
+  }
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(

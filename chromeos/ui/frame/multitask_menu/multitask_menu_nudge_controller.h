@@ -56,27 +56,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
     Delegate();
   };
 
-  // The name of an integer pref that counts the number of times we have shown
-  // the multitask menu education nudge.
-  static constexpr char kClamshellShownCountPrefName[] =
-      "ash.wm_nudge.multitask_menu_nudge_count";
-  static constexpr char kTabletShownCountPrefName[] =
-      "cros.wm_nudge.tablet_multitask_nudge_count";
-
-  // The name of a time pref that stores the time we last showed the multitask
-  // menu education nudge.
-  static constexpr char kClamshellLastShownPrefName[] =
-      "ash.wm_nudge.multitask_menu_nudge_last_shown";
-  static constexpr char kTabletLastShownPrefName[] =
-      "cros.wm_nudge.tablet_multitask_nudge_last_shown";
-
   MultitaskMenuNudgeController();
   MultitaskMenuNudgeController(const MultitaskMenuNudgeController&) = delete;
   MultitaskMenuNudgeController& operator=(const MultitaskMenuNudgeController&) =
       delete;
   ~MultitaskMenuNudgeController() override;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+#endif
 
   // Attempts to show the nudge. Reads preferences and then calls
   // `OnGetPreferences()`.

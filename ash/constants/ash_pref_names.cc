@@ -130,6 +130,20 @@ const char kDeviceWiFiFastTransitionEnabled[] =
 const char kInputNoiseCancellationEnabled[] =
     "ash.input_noise_cancellation_enabled";
 
+// The name of an integer pref that counts the number of times we have shown
+// the multitask menu education nudge.
+const char kMultitaskMenuNudgeClamshellShownCount[] =
+    "ash.wm_nudge.multitask_nudge_count";
+const char kMultitaskMenuNudgeTabletShownCount[] =
+    "cros.wm_nudge.tablet_multitask_nudge_count";
+
+// The name of a time pref that stores the time we last showed the multitask
+// menu education nudge.
+const char kMultitaskMenuNudgeClamshellLastShown[] =
+    "ash.wm_nudge.multitask_menu_nudge_last_shown";
+const char kMultitaskMenuNudgeTabletLastShown[] =
+    "cros.wm_nudge.tablet_multitask_nudge_last_shown";
+
 // The following SAML-related prefs are not settings that the domain admin can
 // set, but information that the SAML Identity Provider can send us:
 

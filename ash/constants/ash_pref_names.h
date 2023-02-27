@@ -57,6 +57,14 @@ extern const char kDeviceWiFiFastTransitionEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kInputNoiseCancellationEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kMultitaskMenuNudgeClamshellShownCount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kMultitaskMenuNudgeTabletShownCount[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kMultitaskMenuNudgeClamshellLastShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kMultitaskMenuNudgeTabletLastShown[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordModifiedTime[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordExpirationTime[];

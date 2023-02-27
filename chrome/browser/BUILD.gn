@@ -5368,6 +5368,8 @@ static_library("browser") {
       "lacros/launcher_search/search_controller_lacros.h",
       "lacros/metrics_reporting_observer.cc",
       "lacros/metrics_reporting_observer.h",
+      "lacros/multitask_menu_nudge_delegate_lacros.cc",
+      "lacros/multitask_menu_nudge_delegate_lacros.h",
       "lacros/net/lacros_extension_proxy_tracker.cc",
       "lacros/net/lacros_extension_proxy_tracker.h",
       "lacros/net/network_change_manager_bridge.cc",
