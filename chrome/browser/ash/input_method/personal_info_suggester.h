@@ -70,13 +70,6 @@ class PersonalInfoSuggester : public Suggester {
   void ShowSuggestion(const std::u16string& text,
                       const size_t confirmed_length);
 
-  int GetPrefValue(const std::string& pref_name);
-
-  // Increment int value for the given pref_name by 1 every time the function is
-  // called. The function has no effect after the int value becomes equal to the
-  // max_value.
-  void IncrementPrefValueTilCapped(const std::string& pref_name, int max_value);
-
   void SetButtonHighlighted(const ui::ime::AssistiveWindowButton& button,
                             bool highlighted);
 

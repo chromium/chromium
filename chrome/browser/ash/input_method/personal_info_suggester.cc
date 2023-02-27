@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/extensions/input_method_api.h"
+#include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -362,14 +363,15 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
 
   std::string error;
   bool show_accept_annotation =
-      GetPrefValue(kPersonalInfoSuggesterAcceptanceCount) < kMaxAcceptanceCount;
+      GetPrefValue(kPersonalInfoSuggesterAcceptanceCount, *profile_) <
+      kMaxAcceptanceCount;
   ui::ime::SuggestionDetails details;
   details.text = text;
   details.confirmed_length = confirmed_length;
   details.show_accept_annotation = show_accept_annotation;
   details.show_setting_link =
-      GetPrefValue(kPersonalInfoSuggesterAcceptanceCount) == 0 &&
-      GetPrefValue(kPersonalInfoSuggesterShowSettingCount) <
+      GetPrefValue(kPersonalInfoSuggesterAcceptanceCount, *profile_) == 0 &&
+      GetPrefValue(kPersonalInfoSuggesterShowSettingCount, *profile_) <
           kMaxShowSettingCount;
   suggestion_handler_->SetSuggestion(focused_context_id_.value(), details,
                                      &error);
@@ -389,36 +391,14 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
     first_shown_ = false;
   } else {
     first_shown_ = true;
-    IncrementPrefValueTilCapped(kPersonalInfoSuggesterShowSettingCount,
-                                kMaxShowSettingCount);
+    IncrementPrefValueUntilCapped(kPersonalInfoSuggesterShowSettingCount,
+                                  kMaxShowSettingCount, *profile_);
     // TODO(jiwan): Add translation to other languages when we support
     // more than English.
     suggestion_handler_->Announce(kShowPersonalInfoSuggestionMessage);
   }
 
   suggestion_shown_ = true;
-}
-
-int PersonalInfoSuggester::GetPrefValue(const std::string& pref_name) {
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kAssistiveInputFeatureSettings);
-  auto value = update->FindInt(pref_name);
-  if (!value.has_value()) {
-    update->Set(pref_name, 0);
-    return 0;
-  }
-  return *value;
-}
-
-void PersonalInfoSuggester::IncrementPrefValueTilCapped(
-    const std::string& pref_name,
-    int max_value) {
-  int value = GetPrefValue(pref_name);
-  if (value < max_value) {
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kAssistiveInputFeatureSettings);
-    update->Set(pref_name, value + 1);
-  }
 }
 
 AssistiveType PersonalInfoSuggester::GetProposeActionType() {
@@ -449,8 +429,8 @@ bool PersonalInfoSuggester::AcceptSuggestion(size_t index) {
     return false;
   }
 
-  IncrementPrefValueTilCapped(kPersonalInfoSuggesterAcceptanceCount,
-                              kMaxAcceptanceCount);
+  IncrementPrefValueUntilCapped(kPersonalInfoSuggesterAcceptanceCount,
+                                kMaxAcceptanceCount, *profile_);
   suggestion_shown_ = false;
   suggestion_handler_->Announce(kAcceptPersonalInfoSuggestionMessage);
 

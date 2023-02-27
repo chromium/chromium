@@ -428,6 +428,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="InputMethod.Assistive.AutocorrectV2.UndoWindow.LearnMoreButtonShown"
+    enum="Boolean" expires_after="2023-09-17">
+  <owner>zacpartridge@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This histogram is recorded when the learn more button is shown in a unique
+    undo window. The button will only be shown on the first 10 undo windows for
+    each user.
+  </summary>
+</histogram>
+
+<histogram
     name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Language}.{Type}"
     enum="IMEAutocorrectPrefStateTransition" expires_after="2023-06-01">
   <owner>curtismcmullan@google.com</owner>

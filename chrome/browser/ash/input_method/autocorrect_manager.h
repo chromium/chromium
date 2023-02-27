@@ -236,7 +236,8 @@ class AutocorrectManager {
     explicit PendingAutocorrectState(const std::u16string& original_text,
                                      const std::u16string& suggested_text,
                                      const base::TimeTicks& start_time,
-                                     bool virtual_keyboard_visible = false);
+                                     bool virtual_keyboard_visible = false,
+                                     bool learn_more_button_visible = false);
     PendingAutocorrectState(const PendingAutocorrectState& other);
     ~PendingAutocorrectState();
 
@@ -271,10 +272,6 @@ class AutocorrectManager {
     // Specifies if undo button is highlighted or not.
     bool undo_button_highlighted = false;
 
-    // Specifies if learn more button is visible or not.
-    // TODO(b/259856275): Calculate when to activate learn_more_button_visible
-    bool learn_more_button_visible = false;
-
     // Specifies if learn more button is highlighted or not.
     bool learn_more_button_highlighted = false;
 
@@ -288,6 +285,9 @@ class AutocorrectManager {
     // Specifies if virtual keyboard was visible when suggesting the pending
     // autocorrect or not.
     bool virtual_keyboard_visible = false;
+
+    // Specifies if learn more button is visible or not.
+    bool learn_more_button_visible = false;
 
     // Records the most recent keypress and if control was down for use in
     // metrics.

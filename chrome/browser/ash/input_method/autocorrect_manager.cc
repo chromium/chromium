@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/autocorrect_enums.h"
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
@@ -42,6 +43,8 @@ constexpr int kDistanceUntilUnderlineHides = 3;
 constexpr int kMaxValidationTries = 4;
 constexpr base::TimeDelta kVeryFastInteractionPeriod = base::Milliseconds(200);
 constexpr base::TimeDelta kFastInteractionPeriod = base::Milliseconds(500);
+constexpr int kUndoWindowShowSettingMaxCount = 10;
+constexpr char kUndoWindowShowSettingCount[] = "undo_window.show_setting_count";
 
 bool IsVkAutocorrect() {
   return ChromeKeyboardControllerClient::HasInstance() &&
@@ -455,7 +458,10 @@ void AutocorrectManager::ProcessSetAutocorrectRangeDone(
   pending_autocorrect_ = AutocorrectManager::PendingAutocorrectState(
       /*original_text=*/original_text, /*suggested_text=*/current_text,
       /*start_time=*/base::TimeTicks::Now(),
-      /*virtual_keyboard_visible=*/IsVkAutocorrect());
+      /*virtual_keyboard_visible=*/IsVkAutocorrect(),
+      /*learn_more_button_visible=*/
+      GetPrefValue(kUndoWindowShowSettingCount, *profile_) <
+          kUndoWindowShowSettingMaxCount);
 
   LogAssistiveAutocorrectInternalState(
       AutocorrectInternalStates::kUnderlineShown);
@@ -984,9 +990,8 @@ void AutocorrectManager::UndoAutocorrect() {
   LogAssistiveAutocorrectAction(AutocorrectActions::kReverted);
   RecordAssistiveCoverage(AssistiveType::kAutocorrectReverted);
   RecordAssistiveSuccess(AssistiveType::kAutocorrectReverted);
-  LogAssistiveAutocorrectDelay(
-    base::TimeTicks::Now() - pending_autocorrect_->start_time);
-
+  LogAssistiveAutocorrectDelay(base::TimeTicks::Now() -
+                               pending_autocorrect_->start_time);
   pending_autocorrect_.reset();
 }
 
@@ -1030,6 +1035,13 @@ void AutocorrectManager::ShowUndoWindow(
   if (!pending_autocorrect_->window_shown_logged) {
     LogAssistiveAutocorrectAction(AutocorrectActions::kWindowShown);
     RecordAssistiveCoverage(AssistiveType::kAutocorrectWindowShown);
+    if (pending_autocorrect_->learn_more_button_visible) {
+      base::UmaHistogramBoolean(
+          "InputMethod.Assistive.AutocorrectV2.UndoWindow.LearnMoreButtonShown",
+          true);
+    }
+    IncrementPrefValueUntilCapped(kUndoWindowShowSettingCount,
+                                  kUndoWindowShowSettingMaxCount, *profile_);
     pending_autocorrect_->window_shown_logged = true;
   }
 
@@ -1162,11 +1174,13 @@ AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
     const std::u16string& original_text,
     const std::u16string& suggested_text,
     const base::TimeTicks& start_time,
-    bool virtual_keyboard_visible)
+    bool virtual_keyboard_visible,
+    bool learn_more_button_visible)
     : original_text(original_text),
       suggested_text(suggested_text),
       start_time(start_time),
-      virtual_keyboard_visible(virtual_keyboard_visible) {}
+      virtual_keyboard_visible(virtual_keyboard_visible),
+      learn_more_button_visible(learn_more_button_visible) {}
 
 AutocorrectManager::PendingAutocorrectState::PendingAutocorrectState(
   const PendingAutocorrectState& other) = default;

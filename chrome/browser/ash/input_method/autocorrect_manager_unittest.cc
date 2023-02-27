@@ -360,6 +360,21 @@ AssistiveWindowProperties CreateVisibleUndoWindowProperties(
   return window_properties;
 }
 
+// A helper to create properties for shown undo window with additional learn
+// more button.
+AssistiveWindowProperties CreateVisibleUndoWindowWithLearnMoreButtonProperties(
+    const std::u16string& original_text,
+    const std::u16string& autocorrected_text) {
+  AssistiveWindowProperties window_properties;
+  window_properties.type = ash::ime::AssistiveWindowType::kUndoWindow;
+  window_properties.visible = true;
+  window_properties.show_setting_link = true;
+  window_properties.announce_string =
+      l10n_util::GetStringFUTF16(IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
+                                 original_text, autocorrected_text);
+  return window_properties;
+}
+
 // A helper to create highlighted undo button in assistive window.
 ui::ime::AssistiveWindowButton CreateHighlightedUndoButton(
     const std::u16string& original_text) {
@@ -707,7 +722,7 @@ TEST_F(AutocorrectManagerTest, MovingCursorInsideRangeShowsAssistiveWindow) {
   manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
 
   AssistiveWindowProperties properties =
-      CreateVisibleUndoWindowProperties(u"teh", u"the");
+      CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler_,
               SetAssistiveWindowProperties(_, properties, _));
 
@@ -731,7 +746,7 @@ TEST_F(AutocorrectManagerTest, MovingCursorOutsideRangeHidesAssistiveWindow) {
     ::testing::InSequence seq;
 
     AssistiveWindowProperties shown_properties =
-        CreateVisibleUndoWindowProperties(u"teh", u"the");
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
 
@@ -752,7 +767,7 @@ TEST_F(AutocorrectManagerTest,
 
   // Show undo window.
   AssistiveWindowProperties shown_properties =
-      CreateVisibleUndoWindowProperties(u"teh", u"the");
+      CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler_,
               SetAssistiveWindowProperties(_, shown_properties, _));
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
@@ -780,7 +795,7 @@ TEST_F(AutocorrectManagerTest,
 
   // Show undo window.
   AssistiveWindowProperties shown_properties =
-      CreateVisibleUndoWindowProperties(u"teh", u"the");
+      CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler_,
               SetAssistiveWindowProperties(_, shown_properties, _));
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
@@ -817,7 +832,7 @@ TEST_F(AutocorrectManagerTest,
 
   // Show the undo window first time.
   AssistiveWindowProperties shown_properties =
-      CreateVisibleUndoWindowProperties(u"teh", u"the");
+      CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler_,
               SetAssistiveWindowProperties(_, shown_properties, _));
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
@@ -849,7 +864,7 @@ TEST_F(AutocorrectManagerTest, FocusChangeHidesUndoWindow) {
 
   // Show a window.
   AssistiveWindowProperties shown_properties =
-      CreateVisibleUndoWindowProperties(u"teh", u"the");
+      CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler_,
               SetAssistiveWindowProperties(_, shown_properties, _));
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
@@ -869,7 +884,7 @@ TEST_F(AutocorrectManagerTest, OnFocusRetriesHidingUndoWindow) {
 
   // Show undo window.
   AssistiveWindowProperties shown_properties =
-      CreateVisibleUndoWindowProperties(u"teh", u"the");
+      CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
   EXPECT_CALL(mock_suggestion_handler_,
               SetAssistiveWindowProperties(_, shown_properties, _));
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
@@ -897,7 +912,7 @@ TEST_F(AutocorrectManagerTest,
     ::testing::InSequence seq;
 
     AssistiveWindowProperties shown_properties =
-        CreateVisibleUndoWindowProperties(u"teh", u"the");
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
 
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
@@ -926,23 +941,56 @@ TEST_F(AutocorrectManagerTest,
     ::testing::InSequence seq;
 
     AssistiveWindowProperties shown_properties =
-        CreateVisibleUndoWindowProperties(u"teh", u"the");
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
+    ui::ime::AssistiveWindowButton undo_button =
+        CreateHighlightedUndoButton(u"teh");
+    ui::ime::AssistiveWindowButton learn_more_button =
+        CreateHighlightedLearnMoreButton();
 
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
 
-    ui::ime::AssistiveWindowButton undo_button =
-        CreateHighlightedUndoButton(u"teh");
     EXPECT_CALL(mock_suggestion_handler_,
                 SetButtonHighlighted(_, undo_button, true, _));
-
-    ui::ime::AssistiveWindowButton learn_more_button =
-        CreateHighlightedLearnMoreButton();
     EXPECT_CALL(mock_suggestion_handler_,
                 SetButtonHighlighted(_, learn_more_button, false, _));
   }
 
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
+}
+
+TEST_F(AutocorrectManagerTest,
+       PressingTabKeyTogglesHighlightedButtonWhenUndoWindowIsVisible) {
+  manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  {
+    ::testing::InSequence seq;
+
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
+    ui::ime::AssistiveWindowButton undo_button =
+        CreateHighlightedUndoButton(u"teh");
+    ui::ime::AssistiveWindowButton learn_more_button =
+        CreateHighlightedLearnMoreButton();
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, undo_button, true, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, learn_more_button, false, _));
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, undo_button, false, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, learn_more_button, true, _));
+  }
+
+  manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
   manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
 }
 
@@ -955,7 +1003,7 @@ TEST_F(AutocorrectManagerTest,
     ::testing::InSequence seq;
 
     AssistiveWindowProperties shown_properties =
-        CreateVisibleUndoWindowProperties(u"teh", u"the");
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
 
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
@@ -979,6 +1027,159 @@ TEST_F(AutocorrectManagerTest,
   manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
   manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ARROW_UP));
   manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ENTER));
+}
+
+TEST_F(AutocorrectManagerTest,
+       PressingEnterKeyHidesUndoWindowWhenLearnMoreButtonIsHighlighted) {
+  manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  {
+    ::testing::InSequence seq;
+
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
+    AssistiveWindowProperties hidden_properties =
+        CreateHiddenUndoWindowProperties();
+    ui::ime::AssistiveWindowButton undo_button =
+        CreateHighlightedUndoButton(u"teh");
+    ui::ime::AssistiveWindowButton learn_more_button =
+        CreateHighlightedLearnMoreButton();
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, undo_button, true, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, learn_more_button, false, _));
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, undo_button, false, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, learn_more_button, true, _));
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_, ClickButton(learn_more_button));
+  }
+
+  manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ARROW_UP));
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::ENTER));
+}
+
+TEST_F(AutocorrectManagerTest, LearnMoreButtonOnlyShown10Times) {
+  manager_.OnSurroundingTextChanged(u"the ", gfx::Range(4));
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  {
+    ::testing::InSequence seq;
+
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
+    AssistiveWindowProperties hidden_properties =
+        CreateHiddenUndoWindowProperties();
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, hidden_properties, _));
+
+    shown_properties = CreateVisibleUndoWindowProperties(u"teh", u"the");
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+  }
+  manager_.OnSurroundingTextChanged(u"the ", gfx::Range(1));
+
+  manager_.OnSurroundingTextChanged(u"the the ", gfx::Range(8));
+  manager_.HandleAutocorrect(gfx::Range(4, 7), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the ", gfx::Range(5));
+
+  manager_.OnSurroundingTextChanged(u"the the the ", gfx::Range(12));
+  manager_.HandleAutocorrect(gfx::Range(8, 11), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the the ", gfx::Range(9));
+
+  manager_.OnSurroundingTextChanged(u"the the the the ", gfx::Range(16));
+  manager_.HandleAutocorrect(gfx::Range(12, 15), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the the the ", gfx::Range(13));
+
+  manager_.OnSurroundingTextChanged(u"the the the the the ", gfx::Range(20));
+  manager_.HandleAutocorrect(gfx::Range(16, 19), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the the the the ", gfx::Range(17));
+
+  manager_.OnSurroundingTextChanged(u"the the the the the the ",
+                                    gfx::Range(24));
+  manager_.HandleAutocorrect(gfx::Range(20, 23), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the the the the the ",
+                                    gfx::Range(21));
+
+  manager_.OnSurroundingTextChanged(u"the the the the the the the ",
+                                    gfx::Range(28));
+  manager_.HandleAutocorrect(gfx::Range(24, 27), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the the the the the the ",
+                                    gfx::Range(25));
+
+  manager_.OnSurroundingTextChanged(u"the the the the the the the the ",
+                                    gfx::Range(32));
+  manager_.HandleAutocorrect(gfx::Range(28, 31), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the the the the the the the ",
+                                    gfx::Range(29));
+
+  manager_.OnSurroundingTextChanged(u"the the the the the the the the the ",
+                                    gfx::Range(36));
+  manager_.HandleAutocorrect(gfx::Range(32, 35), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the the the the the the the the ",
+                                    gfx::Range(33));
+
+  manager_.OnSurroundingTextChanged(u"the the the the the the the the the the ",
+                                    gfx::Range(40));
+  manager_.HandleAutocorrect(gfx::Range(36, 39), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(u"the the the the the the the the the the ",
+                                    gfx::Range(37));
+
+  manager_.OnSurroundingTextChanged(
+      u"the the the the the the the the the the the ", gfx::Range(44));
+  manager_.HandleAutocorrect(gfx::Range(40, 43), u"teh", u"the");
+  manager_.OnSurroundingTextChanged(
+      u"the the the the the the the the the the the ", gfx::Range(41));
 }
 
 TEST_F(AutocorrectManagerTest, UndoAutocorrectSingleWordInComposition) {
@@ -2508,7 +2709,7 @@ TEST_F(AutocorrectManagerTest, RecordRejectionForPkUndoWithKeyboard) {
     ::testing::InSequence seq;
 
     AssistiveWindowProperties shown_properties =
-        CreateVisibleUndoWindowProperties(u"teh", u"the");
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
 
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));
@@ -2743,7 +2944,7 @@ TEST_P(RejectMetric, RecordRejectionForTypingNoSelection) {
     ::testing::InSequence seq;
 
     AssistiveWindowProperties shown_properties =
-        CreateVisibleUndoWindowProperties(u"teh", u"the");
+        CreateVisibleUndoWindowWithLearnMoreButtonProperties(u"teh", u"the");
 
     EXPECT_CALL(mock_suggestion_handler_,
                 SetAssistiveWindowProperties(_, shown_properties, _));

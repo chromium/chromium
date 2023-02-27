@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/input_method/assistive_prefs.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/services/ime/constants.h"
@@ -268,10 +269,10 @@ void EmojiSuggester::ShowSuggestion(const std::string& text) {
   properties_.announce_string =
       l10n_util::GetStringUTF16(IDS_SUGGESTION_EMOJI_SUGGESTED);
   properties_.show_setting_link =
-      GetPrefValue(kEmojiSuggesterShowSettingCount) <
+      GetPrefValue(kEmojiSuggesterShowSettingCount, *profile_) <
       kEmojiSuggesterShowSettingMaxCount;
-  IncrementPrefValueTilCapped(kEmojiSuggesterShowSettingCount,
-                              kEmojiSuggesterShowSettingMaxCount);
+  IncrementPrefValueUntilCapped(kEmojiSuggesterShowSettingCount,
+                                kEmojiSuggesterShowSettingMaxCount, *profile_);
   ShowSuggestionWindow();
 
   buttons_.clear();
@@ -355,27 +356,6 @@ void EmojiSuggester::SetButtonHighlighted(
                                             highlighted, &error);
   if (!error.empty()) {
     LOG(ERROR) << "Failed to set button highlighted. " << error;
-  }
-}
-
-int EmojiSuggester::GetPrefValue(const std::string& pref_name) {
-  ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kAssistiveInputFeatureSettings);
-  auto value = update->FindInt(pref_name);
-  if (!value.has_value()) {
-    update->Set(pref_name, 0);
-    return 0;
-  }
-  return *value;
-}
-
-void EmojiSuggester::IncrementPrefValueTilCapped(const std::string& pref_name,
-                                                 int max_value) {
-  int value = GetPrefValue(pref_name);
-  if (value < max_value) {
-    ScopedDictPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kAssistiveInputFeatureSettings);
-    update->Set(pref_name, value + 1);
   }
 }
 

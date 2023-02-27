@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/input_method/assistive_suggester_prefs.h"
+#include "chrome/browser/ash/input_method/assistive_prefs.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -33,6 +35,28 @@ bool IsDiacriticsOnLongpressPrefEnabled(PrefService* pref_service,
   // If no preference has been set yet by the user then we can assume the
   // default preference as enabled.
   return diacritics_on_longpress_setting.value_or(true);
+}
+
+int GetPrefValue(const std::string& pref_name, Profile& profile) {
+  ScopedDictPrefUpdate update(profile.GetPrefs(),
+                              prefs::kAssistiveInputFeatureSettings);
+  auto value = update->FindInt(pref_name);
+  if (!value.has_value()) {
+    update->Set(pref_name, 0);
+    return 0;
+  }
+  return *value;
+}
+
+void IncrementPrefValueUntilCapped(const std::string& pref_name,
+                                   int max_value,
+                                   Profile& profile) {
+  int value = GetPrefValue(pref_name, profile);
+  if (value < max_value) {
+    ScopedDictPrefUpdate update(profile.GetPrefs(),
+                                prefs::kAssistiveInputFeatureSettings);
+    update->Set(pref_name, value + 1);
+  }
 }
 
 }  // namespace input_method
