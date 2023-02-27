@@ -35,6 +35,7 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -152,6 +153,13 @@ class HighEfficiencyDiscardPolicyInteractiveTest
   HighEfficiencyDiscardPolicyInteractiveTest() = default;
   ~HighEfficiencyDiscardPolicyInteractiveTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HighEfficiencyInteractiveTest::SetUpCommandLine(command_line);
+    // Some builders are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+  }
+
   auto PressKeyboard() {
     return Do(base::BindLambdaForTesting([=]() {
       ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_A, false,
@@ -220,9 +228,8 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
 
 // Check that a form in the background but was interacted by the user
 // won't be discarded
-// TODO(crbug.com/1415833): Re-enable this test
 IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
-                       DISABLED_TabWithFormNotDiscarded) {
+                       TabWithFormNotDiscarded) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputIsFocused);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kInputValueIsUpated);
   const DeepQuery input_text_box = {"#value"};
@@ -241,11 +248,6 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
   input_value_updated.test_function = "(el) => { return el.value === 'a'; }";
 
   RunTestSequence(
-      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
-                              "Some Linux window managers do not allow "
-                              "programmatically raising/activating windows. "
-                              "This skips the rest of the test."),
-      ActivateSurface(kBrowserViewElementId), FlushEvents(),
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("/form_search.html")),
 
@@ -254,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
 
       // Wait until the input text box is focused and simulate typing a letter
       ExecuteJsAt(kFirstTabContents, input_text_box,
-                  "(el) => { el.select(); }"),
+                  "(el) => { el.focus(); el.select(); }"),
       WaitForStateChange(kFirstTabContents, std::move(input_is_focused)),
       PressKeyboard(),
       WaitForStateChange(kFirstTabContents, std::move(input_value_updated)),
