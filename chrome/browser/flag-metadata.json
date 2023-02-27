@@ -5028,7 +5028,7 @@
   {
     "name": "ntp-modules-first-run-experience",
     "owners": [ "mahmadi", "pauladedeji", "tiborg" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 115
   },
   {
     "name": "ntp-modules-redesigned",
