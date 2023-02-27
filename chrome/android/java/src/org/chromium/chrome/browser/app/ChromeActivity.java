@@ -2529,7 +2529,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 Profile profile = getCurrentTabModel().getProfile();
                 RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
                         profile, currentTab.getUrl(), usingDesktopUserAgent);
-                currentTab.reload();
+                // Use TabUtils.switchUserAgent() instead of Tab.reload(). Because we need to reload
+                // with ReloadType::ORIGINAL_REQUEST_URL. See http://crbug/1418587 for details.
+                TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent,
+                        /* forcedByUser */ false,
+                        UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
                 RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
                         profile, this, getModalDialogManager());
                 TrackerFactory.getTrackerForProfile(profile).notifyEvent(
