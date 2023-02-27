@@ -414,6 +414,10 @@ group("gn_all") {
         "//chrome/browser/android/examples/partner_browser_customizations_provider:partner_browser_customizations_example_apk",
         "//content/shell/android:content_shell_test_apk",
       ]
+
+      if (android_sdk_release == "tprivacysandbox") {
+        deps += [ "//android_webview/tools/sdk_sandbox" ]
+      }
     }
 
     if (enable_chrome_android_internal) {

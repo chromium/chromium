@@ -1,0 +1,32 @@
+<!--
+ * Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+-->
+
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.sdk_sandbox.webview_client"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:label="@string/app_name"
+        android:debuggable="true">
+        <activity
+            android:name="org.chromium.sdk_sandbox.webview_client.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <uses-sdk-library android:name="org.chromium.sdk_sandbox.webview_sdk"
+            android:versionMajor="1"
+            android:certDigest="32:A2:FC:74:D7:31:10:58:59:E5:A8:5D:F1:6D:95:F1:02:D8:5B:22:09:9B:80:64:C5:D8:91:5C:61:DA:D1:E0" />
+    </application>
+</manifest>
