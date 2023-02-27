@@ -6075,24 +6075,9 @@
     "expiry_milestone": 95
   },
   {
-    "name": "reduce-user-agent",
-    "owners": [ "aarontag", "miketaylr"],
-    "expiry_milestone": 113
-  },
-  {
     "name": "reduce-user-agent-android-version-device-model",
     "owners": [ "miketaylr", "victortan"],
     "expiry_milestone": 116
-  },
-  {
-    "name": "reduce-user-agent-minor-version",
-    "owners": [ "abeyad", "victortan"],
-    "expiry_milestone": 113
-  },
-  {
-    "name": "reduce-user-agent-platform-oscpu",
-    "owners": [ "miketaylr", "victortan"],
-    "expiry_milestone": 113
   },
   {
     "name": "reengagement-notification",

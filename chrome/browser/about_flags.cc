@@ -7128,10 +7128,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFullUserAgentDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kFullUserAgent)},
 
-    {"reduce-user-agent", flag_descriptions::kReduceUserAgentName,
-     flag_descriptions::kReduceUserAgentDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kReduceUserAgent)},
-
 #if BUILDFLAG(IS_WIN)
     {"run-video-capture-service-in-browser",
      flag_descriptions::kRunVideoCaptureServiceInBrowserProcessName,
@@ -8576,16 +8572,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"reduce-accept-language", flag_descriptions::kReduceAcceptLanguageName,
      flag_descriptions::kReduceAcceptLanguageDescription, kOsAll,
      FEATURE_VALUE_TYPE(network::features::kReduceAcceptLanguage)},
-
-    {"reduce-user-agent-minor-version",
-     flag_descriptions::kReduceUserAgentMinorVersionName,
-     flag_descriptions::kReduceUserAgentMinorVersionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kReduceUserAgentMinorVersion)},
-
-    {"reduce-user-agent-platform-oscpu",
-     flag_descriptions::kReduceUserAgentPlatformOsCpuName,
-     flag_descriptions::kReduceUserAgentPlatformOsCpuDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kReduceUserAgentPlatformOsCpu)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"reduce-user-agent-android-version-device-model",

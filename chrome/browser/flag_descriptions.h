@@ -1482,9 +1482,6 @@ extern const char kReadLaterDescription[];
 extern const char kRecordWebAppDebugInfoName[];
 extern const char kRecordWebAppDebugInfoDescription[];
 
-extern const char kReduceUserAgentName[];
-extern const char kReduceUserAgentDescription[];
-
 extern const char kRestrictGamepadAccessName[];
 extern const char kRestrictGamepadAccessDescription[];
 
@@ -1947,12 +1944,6 @@ extern const char kDurableClientHintsCacheDescription[];
 
 extern const char kReduceAcceptLanguageName[];
 extern const char kReduceAcceptLanguageDescription[];
-
-extern const char kReduceUserAgentMinorVersionName[];
-extern const char kReduceUserAgentMinorVersionDescription[];
-
-extern const char kReduceUserAgentPlatformOsCpuName[];
-extern const char kReduceUserAgentPlatformOsCpuDescription[];
 
 extern const char kSkipServiceWorkerFetchHandlerName[];
 extern const char kSkipServiceWorkerFetchHandlerDescription[];

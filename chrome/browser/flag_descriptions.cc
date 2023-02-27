@@ -2638,12 +2638,6 @@ const char kReduceAcceptLanguageDescription[] =
     "Reduce the amount of information available in the Accept-Language request "
     "header. See https://github.com/Tanych/accept-language for more info.";
 
-const char kReduceUserAgentName[] = "Reduce User-Agent request header";
-const char kReduceUserAgentDescription[] =
-    "Reduce (formerly, \"freeze\") the amount of information available in "
-    "the User-Agent request header. "
-    "See https://www.chromium.org/updates/ua-reduction for more info.";
-
 const char kRestrictGamepadAccessName[] = "Restrict gamepad access";
 const char kRestrictGamepadAccessDescription[] =
     "Enables Permissions Policy and Secure Context restrictions on the Gamepad "
@@ -3400,20 +3394,6 @@ const char kPassthroughYuvRgbConversionDescription[] =
 const char kDurableClientHintsCacheName[] = "Persistent client hints";
 const char kDurableClientHintsCacheDescription[] =
     "Persist the client hints cache beyond browser restarts.";
-
-const char kReduceUserAgentMinorVersionName[] =
-    "Reduce the minor version in the User-Agent string";
-const char kReduceUserAgentMinorVersionDescription[] =
-    "Reduce the minor, build, and patch versions in the User-Agent string.  "
-    "The Chrome version in the User-Agent string will be reported as "
-    "Chrome/<major_version>.0.0.0.";
-
-const char kReduceUserAgentPlatformOsCpuName[] =
-    "Reduce the plaftform and oscpu in the desktop User-Agent string";
-const char kReduceUserAgentPlatformOsCpuDescription[] =
-    "Reduce the plaftform and oscpu in the desktop User-Agent string.  "
-    "The platform and oscpu in the User-Agent string will be reported as "
-    "<unifiedPlatform>";
 
 const char kSkipServiceWorkerFetchHandlerName[] =
     "Skip Service Worker Fetch Handler if skippable";
