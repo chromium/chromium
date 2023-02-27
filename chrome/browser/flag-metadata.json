@@ -6277,7 +6277,7 @@
   {
     "name" : "search-web-in-side-panel",
     "owners": [ "chrome-cros@google.com", "pengchaocai" ],
-    "expiry_milestone" : 113
+    "expiry_milestone" : 115
   },
   {
     "name": "send-tab-to-self-signin-promo",
