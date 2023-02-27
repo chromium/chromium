@@ -79,6 +79,11 @@ namespace smartCardProviderPrivate {
     ArrayBuffer atr;
   };
 
+  dictionary Timeout {
+    // If absent, it means "infinite" or "never timeout"
+    long? milliseconds;
+  };
+
   interface Events {
     // Browser requested a SCardEstablishContext call.
     // Extension must report the result to the browser by calling
@@ -102,7 +107,7 @@ namespace smartCardProviderPrivate {
     // reportGetStatusChangeResult.
     [maxListeners=1] static void onGetStatusChangeRequested(long requestId,
         long scardContext,
-        long timeout,
+        Timeout timeout,
         ReaderStateIn[] readerStates);
   };
 

@@ -29,7 +29,6 @@ mojom("mojom") {
     "screen_orientation.mojom",
     "screen_orientation_lock_types.mojom",
     "serial.mojom",
-    "smart_card.mojom",
     "time_zone_monitor.mojom",
     "vibration_manager.mojom",
     "wake_lock.mojom",
@@ -51,6 +50,10 @@ mojom("mojom") {
       "mtp_manager.mojom",
       "mtp_storage_info.mojom",
     ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "smart_card.mojom" ]
   }
 
   cpp_typemaps = [
