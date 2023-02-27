@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview;
 
-import org.chromium.components.digital_asset_links.VerificationResultStore;
+import org.chromium.components.content_relationship_verification.VerificationResultStore;
 
 import java.util.Collections;
 import java.util.HashSet;

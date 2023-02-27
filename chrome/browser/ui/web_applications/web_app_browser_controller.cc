@@ -267,14 +267,15 @@ void WebAppBrowserController::CheckDigitalAssetLinkRelationshipForAndroidApp(
 }
 
 void WebAppBrowserController::OnRelationshipCheckComplete(
-    digital_asset_links::RelationshipCheckResult result) {
+    content_relationship_verification::RelationshipCheckResult result) {
   bool should_show_cct = false;
   switch (result) {
-    case digital_asset_links::RelationshipCheckResult::kSuccess:
+    case content_relationship_verification::RelationshipCheckResult::kSuccess:
       should_show_cct = false;
       break;
-    case digital_asset_links::RelationshipCheckResult::kFailure:
-    case digital_asset_links::RelationshipCheckResult::kNoConnection:
+    case content_relationship_verification::RelationshipCheckResult::kFailure:
+    case content_relationship_verification::RelationshipCheckResult::
+        kNoConnection:
       should_show_cct = true;
       break;
   }
@@ -670,9 +671,9 @@ void WebAppBrowserController::OnReadIcon(IconPurpose purpose, SkBitmap bitmap) {
 void WebAppBrowserController::PerformDigitalAssetLinkVerification(
     Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
-  asset_link_handler_ =
-      std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
-          browser->profile()->GetURLLoaderFactory());
+  asset_link_handler_ = std::make_unique<
+      content_relationship_verification::DigitalAssetLinksHandler>(
+      browser->profile()->GetURLLoaderFactory());
   is_verified_ = absl::nullopt;
 #endif
 

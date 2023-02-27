@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/digital_asset_links/digital_asset_links_handler.h"
+#include "components/content_relationship_verification/digital_asset_links_handler.h"
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -72,7 +72,7 @@ const std::vector<std::string> kValidFingerprint{
 
 }  // namespace
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 namespace {
 
 class DigitalAssetLinksHandlerTest : public ::testing::Test {
@@ -369,4 +369,4 @@ TEST_F(DigitalAssetLinksHandlerTest, NegativeResponseMissingOneFingerprint) {
   EXPECT_EQ(result_, RelationshipCheckResult::kFailure);
 }
 
-}  // namespace digital_asset_links
+}  // namespace content_relationship_verification

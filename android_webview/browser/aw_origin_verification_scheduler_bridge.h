@@ -8,13 +8,13 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 
-#include "components/digital_asset_links/browser_url_loader_throttle.h"
+#include "components/content_relationship_verification/browser_url_loader_throttle.h"
 
 namespace android_webview {
 using OriginVerifierCallback = base::OnceCallback<void(bool /*verified*/)>;
 
 class AwOriginVerificationSchedulerBridge
-    : public digital_asset_links::BrowserURLLoaderThrottle::
+    : public content_relationship_verification::BrowserURLLoaderThrottle::
           OriginVerificationSchedulerBridge {
  public:
   static AwOriginVerificationSchedulerBridge* GetInstance();

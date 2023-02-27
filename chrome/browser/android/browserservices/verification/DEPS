@@ -5,7 +5,7 @@ include_rules = [
   "+chrome/browser/android/browserservices/metrics",
   "+chrome/browser/preferences/android/java/src/org/chromium/chrome/browser/preferences",
   "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles",
-  "+components/digital_asset_links/android/java/src/org/chromium/components/digital_asset_links",
+  "+components/content_relationship_verification/android/java/src/org/chromium/components/content_relationship_verification",
   "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
   "+components/externalauth/android/java/src/org/chromium/components/externalauth",
   "+content/public/android/java/src/org/chromium/content_public/browser",

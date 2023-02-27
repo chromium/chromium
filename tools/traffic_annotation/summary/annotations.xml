@@ -61,7 +61,7 @@ Refer to README.md for content description and update process.
  <item id="devtools_network_resource" added_in_milestone="62" content_hash_code="01f4a4af" os_list="linux,windows,chromeos" file_path="chrome/browser/devtools/devtools_ui_bindings.cc" />
  <item id="devtools_proxy_config" added_in_milestone="85" content_hash_code="01e83c36" os_list="linux,windows,chromeos,android" file_path="content/browser/devtools/protocol/target_handler.cc" />
  <item id="dial_url_fetcher" added_in_milestone="67" content_hash_code="07bd0650" os_list="linux,windows,chromeos" file_path="chrome/browser/media/router/discovery/dial/dial_url_fetcher.cc" />
- <item id="digital_asset_links" added_in_milestone="90" content_hash_code="00ced49e" os_list="linux,windows,chromeos,android" file_path="components/digital_asset_links/digital_asset_links_handler.cc" />
+ <item id="digital_asset_links" added_in_milestone="90" content_hash_code="00ced49e" os_list="linux,windows,chromeos,android" file_path="components/content_relationship_verification/digital_asset_links_handler.cc" />
  <item id="direct_sockets" added_in_milestone="88" content_hash_code="03dc0aad" os_list="linux,windows,chromeos" file_path="content/browser/direct_sockets/direct_sockets_service_impl.cc" />
  <item id="dns_over_https" added_in_milestone="66" content_hash_code="02b087b6" os_list="linux,windows,chromeos,android" file_path="net/dns/dns_transaction.cc" />
  <item id="dns_transaction" added_in_milestone="65" content_hash_code="07e14f9f" os_list="linux,windows,chromeos,android" file_path="net/dns/dns_transaction.cc" />

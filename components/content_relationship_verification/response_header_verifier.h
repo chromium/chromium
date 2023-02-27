@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DIGITAL_ASSET_LINKS_RESPONSE_HEADER_VERIFIER_H_
-#define COMPONENTS_DIGITAL_ASSET_LINKS_RESPONSE_HEADER_VERIFIER_H_
+#ifndef COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_RESPONSE_HEADER_VERIFIER_H_
+#define COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_RESPONSE_HEADER_VERIFIER_H_
 
 #include <string>
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 
 class ResponseHeaderVerifier {
  public:
@@ -18,6 +18,6 @@ class ResponseHeaderVerifier {
 };
 
 extern const char kEmbedderAncestorHeader[];
-}  // namespace digital_asset_links
+}  // namespace content_relationship_verification
 
-#endif  // COMPONENTS_DIGITAL_ASSET_LINKS_RESPONSE_HEADER_VERIFIER_H_
+#endif  // COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_RESPONSE_HEADER_VERIFIER_H_

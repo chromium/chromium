@@ -117,7 +117,7 @@ include_rules = [
   "+components/device_event_log",
   "+components/device_signals/core/browser",
   "+components/device_signals/core/common",
-  "+components/digital_asset_links",
+  "+components/content_relationship_verification",
   "+components/digital_goods",
   "+components/domain_reliability",
   "+components/dom_distiller/content/browser",

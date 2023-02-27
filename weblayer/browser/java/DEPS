@@ -6,7 +6,7 @@ include_rules = [
   "+components/content_capture/android",
   "+components/content_settings/android/java",
   "+components/crash/android/java",
-  "+components/digital_asset_links/android/java",
+  "+components/content_relationship_verification/android/java",
   "+components/external_intents",
   "+components/infobars/android",
   "+components/location/android/java/src/org/chromium/components/location",

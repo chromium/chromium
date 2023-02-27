@@ -8,7 +8,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "components/digital_asset_links/digital_asset_links_handler.h"
+#include "components/content_relationship_verification/digital_asset_links_handler.h"
 #include "components/installedapp/android/jni_headers/InstalledAppProviderImpl_jni.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -19,11 +19,13 @@
 namespace {
 
 void DidGetResult(
-    std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler> handler,
+    std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
+        handler,
     base::OnceCallback<void(bool)> callback,
-    digital_asset_links::RelationshipCheckResult result) {
+    content_relationship_verification::RelationshipCheckResult result) {
   std::move(callback).Run(
-      result == digital_asset_links::RelationshipCheckResult::kSuccess);
+      result ==
+      content_relationship_verification::RelationshipCheckResult::kSuccess);
 }
 
 }  // namespace
@@ -45,10 +47,10 @@ void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback));
 
-  auto handler =
-      std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
-          browser_context->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess());
+  auto handler = std::make_unique<
+      content_relationship_verification::DigitalAssetLinksHandler>(
+      browser_context->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
   auto* handler_ptr = handler.get();
 
   // |handler| is owned by the callback, so it will be valid until the execution

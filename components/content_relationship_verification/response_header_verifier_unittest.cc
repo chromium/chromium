@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/digital_asset_links/response_header_verifier.h"
+#include "components/content_relationship_verification/response_header_verifier.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 
 TEST(ResponseHeaderVerifier, VerifyEmptyHeader) {
   EXPECT_TRUE(ResponseHeaderVerifier::Verify("any.package.name", ""));
@@ -39,4 +39,4 @@ TEST(ResponseHeaderVerifier, VerifyListOfPackageNames) {
       ResponseHeaderVerifier::Verify("another.package", "*, a.package"));
 }
 
-}  // namespace digital_asset_links
+}  // namespace content_relationship_verification

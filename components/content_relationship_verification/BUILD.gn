@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("digital_asset_links") {
+source_set("content_relationship_verification") {
   sources = [
-    "digital_asset_links_constants.cc",
-    "digital_asset_links_constants.h",
+    "content_relationship_verification_constants.cc",
+    "content_relationship_verification_constants.h",
     "digital_asset_links_handler.cc",
     "digital_asset_links_handler.h",
     "response_header_verifier.cc",
@@ -28,7 +28,8 @@ source_set("digital_asset_links") {
       "origin_verifier.cc",
       "origin_verifier.h",
     ]
-    deps += [ "//components/digital_asset_links/android:jni_headers" ]
+    deps +=
+        [ "//components/content_relationship_verification/android:jni_headers" ]
   }
 }
 
@@ -41,7 +42,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":digital_asset_links",
+    ":content_relationship_verification",
     "//base",
     "//content/test:test_support",
     "//net",
@@ -56,7 +57,8 @@ if (is_android) {
 
   android_library("java") {
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
-    srcjar_deps = [ "//components/digital_asset_links:enums_srcjar" ]
+    srcjar_deps =
+        [ "//components/content_relationship_verification:enums_srcjar" ]
   }
 
   java_cpp_enum("enums_srcjar") {

@@ -11,9 +11,9 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.components.digital_asset_links.OriginVerificationScheduler;
-import org.chromium.components.digital_asset_links.OriginVerifier;
-import org.chromium.components.digital_asset_links.OriginVerifierHelper;
+import org.chromium.components.content_relationship_verification.OriginVerificationScheduler;
+import org.chromium.components.content_relationship_verification.OriginVerifier;
+import org.chromium.components.content_relationship_verification.OriginVerifierHelper;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Set;

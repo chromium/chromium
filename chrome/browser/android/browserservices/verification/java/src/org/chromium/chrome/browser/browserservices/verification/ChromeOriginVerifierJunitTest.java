@@ -27,11 +27,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.digital_asset_links.OriginVerifier;
-import org.chromium.components.digital_asset_links.OriginVerifier.OriginVerificationListener;
-import org.chromium.components.digital_asset_links.OriginVerifierJni;
-import org.chromium.components.digital_asset_links.OriginVerifierUnitTestSupport;
-import org.chromium.components.digital_asset_links.RelationshipCheckResult;
+import org.chromium.components.content_relationship_verification.OriginVerifier;
+import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
+import org.chromium.components.content_relationship_verification.OriginVerifierJni;
+import org.chromium.components.content_relationship_verification.OriginVerifierUnitTestSupport;
+import org.chromium.components.content_relationship_verification.RelationshipCheckResult;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 

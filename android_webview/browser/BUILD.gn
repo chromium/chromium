@@ -237,10 +237,10 @@ source_set("browser") {
     "//components/url_matcher",
 
     # Called via JNI in CrashpadMain
+    "//components/content_relationship_verification",
     "//components/crash/android:crashpad_main",
     "//components/crash/content/browser",
     "//components/crash/core/app",
-    "//components/digital_asset_links",
     "//components/embedder_support/android:web_contents_delegate",
     "//components/embedder_support/android/metrics",
     "//components/google/core/common",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/digital_asset_links/response_header_verifier.h"
+#include "components/content_relationship_verification/response_header_verifier.h"
 
 #include <stdio.h>
 
@@ -13,7 +13,7 @@ namespace {
 const char kNormalizedHeaderDelimiter[] = ",";
 }  // namespace
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 
 const char kEmbedderAncestorHeader[] = "X-Embedder-Ancestors";
 
@@ -46,4 +46,4 @@ bool ResponseHeaderVerifier::Verify(
   return false;
 }
 
-}  // namespace digital_asset_links
+}  // namespace content_relationship_verification

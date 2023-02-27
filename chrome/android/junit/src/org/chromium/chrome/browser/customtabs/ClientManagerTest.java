@@ -48,9 +48,9 @@ import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVeri
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierJni;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.digital_asset_links.OriginVerifier;
-import org.chromium.components.digital_asset_links.OriginVerifierJni;
-import org.chromium.components.digital_asset_links.OriginVerifierUnitTestSupport;
+import org.chromium.components.content_relationship_verification.OriginVerifier;
+import org.chromium.components.content_relationship_verification.OriginVerifierJni;
+import org.chromium.components.content_relationship_verification.OriginVerifierUnitTestSupport;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 

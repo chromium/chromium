@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/digital_asset_links/digital_asset_links_handler.h"
+#include "components/content_relationship_verification/digital_asset_links_handler.h"
 
 #include <vector>
 
@@ -137,7 +137,7 @@ void AddMessageToConsole(content::WebContents* web_contents,
 
 }  // namespace
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 
 const char kDigitalAssetLinksCheckResponseKeyLinked[] = "linked";
 
@@ -158,8 +158,9 @@ void DigitalAssetLinksHandler::OnURLLoadComplete(
     std::map<std::string, std::set<std::string>> target_values,
     std::unique_ptr<std::string> response_body) {
   int response_code = -1;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
 
   if (!response_body || response_code != net::HTTP_OK) {
     int net_error = url_loader_->NetError();
@@ -241,15 +242,17 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
         break;
       }
     }
-    if (failed_target_check)
+    if (failed_target_check) {
       continue;
+    }
 
     std::move(callback_).Run(RelationshipCheckResult::kSuccess);
     return;
   }
 
-  for (const auto& failure_reason : failures)
+  for (const auto& failure_reason : failures) {
     AddMessageToConsole(web_contents_.get(), failure_reason);
+  }
 
   std::move(callback_).Run(RelationshipCheckResult::kFailure);
 }
@@ -283,8 +286,9 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
     RelationshipCheckResultCallback callback) {
   GURL request_url = GetUrlForAssetLinks(web_domain);
 
-  if (!request_url.is_valid())
+  if (!request_url.is_valid()) {
     return false;
+  }
 
   // Resetting both the callback and SimpleURLLoader here to ensure
   // that any previous requests will never get a
@@ -338,4 +342,4 @@ bool DigitalAssetLinksHandler::CheckDigitalAssetLinkRelationship(
   return true;
 }
 
-}  // namespace digital_asset_links
+}  // namespace content_relationship_verification

@@ -21,7 +21,7 @@ include_rules = [
   "+components/content_settings/core/common",
   "+components/crash/content/browser",
   "+components/crash/core/common",
-  "+components/digital_asset_links",
+  "+components/content_relationship_verification",
   "+components/download/content/factory",
   "+components/download/content/public",
   "+components/download/public/background_service",

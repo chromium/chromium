@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DIGITAL_ASSET_LINKS_ORIGIN_VERIFIER_H_
-#define COMPONENTS_DIGITAL_ASSET_LINKS_ORIGIN_VERIFIER_H_
+#ifndef COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_ORIGIN_VERIFIER_H_
+#define COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_ORIGIN_VERIFIER_H_
 
 #include <memory>
 
@@ -13,10 +13,10 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 enum class RelationshipCheckResult;
 class DigitalAssetLinksHandler;
-}  // namespace digital_asset_links
+}  // namespace content_relationship_verification
 
 // JNI bridge for OriginVerifier.java
 class OriginVerifier {
@@ -53,13 +53,14 @@ class OriginVerifier {
 
  private:
   void OnRelationshipCheckComplete(
-      std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler> handler,
+      std::unique_ptr<
+          content_relationship_verification::DigitalAssetLinksHandler> handler,
       const std::string& origin,
-      digital_asset_links::RelationshipCheckResult result);
+      content_relationship_verification::RelationshipCheckResult result);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
 };
 
-#endif  // COMPONENTS_DIGITAL_ASSET_LINKS_ORIGIN_VERIFIER_H_
+#endif  // COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_ORIGIN_VERIFIER_H_

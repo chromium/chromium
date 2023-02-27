@@ -28,7 +28,7 @@
 #include "ui/base/models/image_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "components/digital_asset_links/digital_asset_links_handler.h"  // nogncheck
+#include "components/content_relationship_verification/digital_asset_links_handler.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -44,7 +44,7 @@ class SystemWebAppDelegate;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 class DigitalAssetLinksHandler;
 }
 
@@ -154,7 +154,7 @@ class WebAppBrowserController : public AppBrowserController,
       const std::string& package_name,
       const std::string& fingerprint);
   void OnRelationshipCheckComplete(
-      digital_asset_links::RelationshipCheckResult result);
+      content_relationship_verification::RelationshipCheckResult result);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -184,7 +184,7 @@ class WebAppBrowserController : public AppBrowserController,
   // Only used for web-only TWAs installed through the Play Store.
   absl::optional<bool> is_verified_;
 
-  std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler>
+  std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
       asset_link_handler_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

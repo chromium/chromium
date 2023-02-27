@@ -6,17 +6,17 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/digital_asset_links/OriginVerificationScheduler.java",
-    "java/src/org/chromium/components/digital_asset_links/OriginVerifier.java",
-    "java/src/org/chromium/components/digital_asset_links/OriginVerifierHelper.java",
-    "java/src/org/chromium/components/digital_asset_links/Relationship.java",
-    "java/src/org/chromium/components/digital_asset_links/VerificationResultStore.java",
+    "java/src/org/chromium/components/content_relationship_verification/OriginVerificationScheduler.java",
+    "java/src/org/chromium/components/content_relationship_verification/OriginVerifier.java",
+    "java/src/org/chromium/components/content_relationship_verification/OriginVerifierHelper.java",
+    "java/src/org/chromium/components/content_relationship_verification/Relationship.java",
+    "java/src/org/chromium/components/content_relationship_verification/VerificationResultStore.java",
   ]
   deps = [
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
-    "//components/digital_asset_links:java",
+    "//components/content_relationship_verification:java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -25,7 +25,7 @@ android_library("java") {
 }
 
 robolectric_library("junit_test_support") {
-  sources = [ "java/src/org/chromium/components/digital_asset_links/OriginVerifierUnitTestSupport.java" ]
+  sources = [ "java/src/org/chromium/components/content_relationship_verification/OriginVerifierUnitTestSupport.java" ]
   deps = [
     ":java",
     "//components/embedder_support/android:util_java",
@@ -35,7 +35,5 @@ robolectric_library("junit_test_support") {
 }
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/digital_asset_links/OriginVerifier.java",
-  ]
+  sources = [ "java/src/org/chromium/components/content_relationship_verification/OriginVerifier.java" ]
 }

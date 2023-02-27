@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/digital_asset_links/origin_verifier.h"
+#include "components/content_relationship_verification/origin_verifier.h"
 
 #include <memory>
 
@@ -10,8 +10,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "components/digital_asset_links/android/jni_headers/OriginVerifier_jni.h"
-#include "components/digital_asset_links/digital_asset_links_handler.h"
+#include "components/content_relationship_verification/android/jni_headers/OriginVerifier_jni.h"
+#include "components/content_relationship_verification/digital_asset_links_handler.h"
 #include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -25,7 +25,7 @@ using base::android::AppendJavaStringArrayToStringVector;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
-using digital_asset_links::RelationshipCheckResult;
+using content_relationship_verification::RelationshipCheckResult;
 
 OriginVerifier::OriginVerifier(
     JNIEnv* env,
@@ -49,8 +49,9 @@ bool OriginVerifier::VerifyOrigin(
     const JavaParamRef<jstring>& j_origin,
     const JavaParamRef<jstring>& j_relationship,
     const base::android::JavaRef<jobject>& jweb_contents) {
-  if (!j_package_name || !j_fingerprints || !j_origin || !j_relationship)
+  if (!j_package_name || !j_fingerprints || !j_origin || !j_relationship) {
     return false;
+  }
   raw_ptr<content::WebContents> web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   std::string package_name = ConvertJavaStringToUTF8(env, j_package_name);
@@ -61,9 +62,9 @@ bool OriginVerifier::VerifyOrigin(
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto asset_link_handler =
-      std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
-          url_loader_factory_, web_contents);
+  auto asset_link_handler = std::make_unique<
+      content_relationship_verification::DigitalAssetLinksHandler>(
+      url_loader_factory_, web_contents);
 
   auto* asset_link_handler_ptr = asset_link_handler.get();
 
@@ -76,7 +77,8 @@ bool OriginVerifier::VerifyOrigin(
 }
 
 void OriginVerifier::OnRelationshipCheckComplete(
-    std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler> handler,
+    std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
+        handler,
     const std::string& origin,
     RelationshipCheckResult result) {
   JNIEnv* env = base::android::AttachCurrentThread();

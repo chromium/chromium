@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/digital_asset_links/browser_url_loader_throttle.h"
+#include "components/content_relationship_verification/browser_url_loader_throttle.h"
 
 #include "base/android/build_info.h"
 #include "base/check_op.h"
@@ -10,8 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
-#include "components/digital_asset_links/digital_asset_links_constants.h"
-#include "components/digital_asset_links/response_header_verifier.h"
+#include "components/content_relationship_verification/content_relationship_verification_constants.h"
+#include "components/content_relationship_verification/response_header_verifier.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "net/log/net_log_event_type.h"
 #include "net/url_request/redirect_info.h"
@@ -19,7 +19,7 @@
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 
 BrowserURLLoaderThrottle::OriginVerificationSchedulerBridge::
     OriginVerificationSchedulerBridge() = default;
@@ -46,7 +46,7 @@ bool BrowserURLLoaderThrottle::VerifyHeader(
   std::string header_value;
   response_head.headers->GetNormalizedHeader(kEmbedderAncestorHeader,
                                              &header_value);
-  return digital_asset_links::ResponseHeaderVerifier::Verify(
+  return content_relationship_verification::ResponseHeaderVerifier::Verify(
       base::android::BuildInfo::GetInstance()->host_package_name(),
       header_value);
 }
@@ -105,7 +105,7 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(std::string url,
     delegate_->Resume();
     return;
   }
-  delegate_->CancelWithError(kNetErrorCodeForDigitalAssetLinks,
+  delegate_->CancelWithError(kNetErrorCodeForContentRelationshipVerification,
                              kCustomCancelReasonForURLLoader);
 }
 
@@ -113,4 +113,4 @@ const char* BrowserURLLoaderThrottle::NameForLoggingWillProcessResponse() {
   return "DigitalAssetLinksBrowserThrottle";
 }
 
-}  // namespace digital_asset_links
+}  // namespace content_relationship_verification

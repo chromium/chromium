@@ -1,6 +1,6 @@
 include_rules = [
   "+base",
-  "+components/digital_asset_links",
+  "+components/content_relationship_verification",
   "+components/embedder_support/android/browser_context",
   "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/browser_context/BrowserContextHandle.java",
   "+components/webapk/android/libs/client",

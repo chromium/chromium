@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
-#define COMPONENTS_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
+#ifndef COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_DIGITAL_ASSET_LINKS_HANDLER_H_
+#define COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_DIGITAL_ASSET_LINKS_HANDLER_H_
 
 #include <map>
 #include <set>
@@ -27,11 +27,12 @@ namespace url {
 class Origin;
 }  // namespace url
 
-namespace digital_asset_links {
+namespace content_relationship_verification {
 
 extern const char kDigitalAssetLinksCheckResponseKeyLinked[];
 
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.digital_asset_links
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.content_relationship_verification)
 enum class RelationshipCheckResult {
   kSuccess = 0,
   kFailure,
@@ -127,6 +128,6 @@ class DigitalAssetLinksHandler {
   base::WeakPtrFactory<DigitalAssetLinksHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace digital_asset_links
+}  // namespace content_relationship_verification
 
-#endif  // COMPONENTS_DIGITAL_ASSET_LINKS_DIGITAL_ASSET_LINKS_HANDLER_H_
+#endif  // COMPONENTS_CONTENT_RELATIONSHIP_VERIFICATION_DIGITAL_ASSET_LINKS_HANDLER_H_
