@@ -28,21 +28,17 @@ absl::optional<CGRect> ParseRect(const base::Value* value) {
     return absl::nullopt;
   }
 
-  const base::Value* xValue =
-      value->FindKeyOfType("x", base::Value::Type::DOUBLE);
-  const base::Value* yValue =
-      value->FindKeyOfType("y", base::Value::Type::DOUBLE);
-  const base::Value* widthValue =
-      value->FindKeyOfType("width", base::Value::Type::DOUBLE);
-  const base::Value* heightValue =
-      value->FindKeyOfType("height", base::Value::Type::DOUBLE);
+  const base::Value::Dict& dict = value->GetDict();
+  absl::optional<double> xValue = dict.FindDouble("x");
+  absl::optional<double> yValue = dict.FindDouble("y");
+  absl::optional<double> widthValue = dict.FindDouble("width");
+  absl::optional<double> heightValue = dict.FindDouble("height");
 
   if (!xValue || !yValue || !widthValue || !heightValue) {
     return absl::nullopt;
   }
 
-  return CGRectMake(xValue->GetDouble(), yValue->GetDouble(),
-                    widthValue->GetDouble(), heightValue->GetDouble());
+  return CGRectMake(*xValue, *yValue, *widthValue, *heightValue);
 }
 
 absl::optional<GURL> ParseURL(const std::string* url_value) {
