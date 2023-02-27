@@ -453,6 +453,10 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return;
   }
+  // Call this before RefreshFeed() to ensure some NTP state configs are reset
+  // before callbacks in repsonse to a feed refresh are called, ensuring the NTP
+  // returns to a state at the top of the surface upon refresh.
+  [self.NTPViewController resetStateUponReload];
   self.discoverFeedService->RefreshFeed(/*feed_visible=*/true);
   [self reloadContentSuggestions];
 }
