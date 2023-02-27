@@ -232,12 +232,10 @@ MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
   return state;
 }
 
-std::pair<MockDrmDevice::CrtcProperties&, MockDrmDevice::ConnectorProperties&>
-MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
+MockDrmDevice::ConnectorProperties&
+MockDrmDevice::MockDrmState::AddConnector() {
   uint32_t next_connector_id =
       GetNextId(connector_properties, kConnectorIdBase);
-  uint32_t next_crtc_id = GetNextId(crtc_properties, kCrtcIdBase);
-
   auto& connector_property = connector_properties.emplace_back();
   connector_property.id = next_connector_id;
   for (const auto& pair : kConnectorRequiredPropertyNames) {
@@ -246,6 +244,11 @@ MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
       property_names.emplace(pair.first, pair.second);
   }
 
+  return {connector_property};
+}
+
+MockDrmDevice::CrtcProperties& MockDrmDevice::MockDrmState::AddCrtc() {
+  uint32_t next_crtc_id = GetNextId(crtc_properties, kCrtcIdBase);
   auto& crtc_property = crtc_properties.emplace_back();
   crtc_property.id = next_crtc_id;
   for (const auto& pair : kCrtcRequiredPropertyNames) {
@@ -254,7 +257,12 @@ MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
       property_names.emplace(pair.first, pair.second);
   }
 
-  return {crtc_property, connector_property};
+  return {crtc_property};
+}
+
+std::pair<MockDrmDevice::CrtcProperties&, MockDrmDevice::ConnectorProperties&>
+MockDrmDevice::MockDrmState::AddCrtcAndConnector() {
+  return {AddCrtc(), AddConnector()};
 }
 
 MockDrmDevice::PlaneProperties& MockDrmDevice::MockDrmState::AddPlane(

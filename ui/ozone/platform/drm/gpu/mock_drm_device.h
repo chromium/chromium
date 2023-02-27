@@ -137,6 +137,8 @@ class MockDrmDevice : public DrmDevice {
         size_t planes_per_crtc,
         size_t movable_planes = 0u);
 
+    ConnectorProperties& AddConnector();
+    CrtcProperties& AddCrtc();
     std::pair<CrtcProperties&, ConnectorProperties&> AddCrtcAndConnector();
     PlaneProperties& AddPlane(uint32_t crtc_id, uint32_t type);
     PlaneProperties& AddPlane(const std::vector<uint32_t>& crtc_ids,
