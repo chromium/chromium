@@ -105,18 +105,18 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
         final List<ListItem> modelList = new ArrayList<>(pedalsCount);
 
         for (OmniboxPedal chip : omniboxPedalList) {
-            final var chipModel = new PropertyModel.Builder(ChipProperties.ALL_KEYS)
-                                          .with(ChipProperties.TEXT, chip.getHint())
-                                          .build();
-
-            // Apply changes manually to investigate bizarre CQ finding.
             final var chipIcon = mOmniboxPedalDelegate.getIcon(chip);
-            chipModel.set(ChipProperties.CONTENT_DESCRIPTION,
-                    mContext.getString(R.string.accessibility_omnibox_pedal, chip.getHint()));
-            chipModel.set(ChipProperties.ENABLED, true);
-            chipModel.set(ChipProperties.CLICK_HANDLER, m -> executeAction(chip, position));
-            chipModel.set(ChipProperties.ICON, chipIcon.iconRes);
-            chipModel.set(ChipProperties.APPLY_ICON_TINT, chipIcon.tintWithTextColor);
+            final var chipModel =
+                    new PropertyModel.Builder(ChipProperties.ALL_KEYS)
+                            .with(ChipProperties.TEXT, chip.getHint())
+                            .with(ChipProperties.CONTENT_DESCRIPTION,
+                                    mContext.getString(
+                                            R.string.accessibility_omnibox_pedal, chip.getHint()))
+                            .with(ChipProperties.ENABLED, true)
+                            .with(ChipProperties.CLICK_HANDLER, m -> executeAction(chip, position))
+                            .with(ChipProperties.ICON, chipIcon.iconRes)
+                            .with(ChipProperties.APPLY_ICON_TINT, chipIcon.tintWithTextColor)
+                            .build();
 
             modelList.add(
                     new ListItem(PedalSuggestionViewProperties.ViewType.PEDAL_VIEW, chipModel));
