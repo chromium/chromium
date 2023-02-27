@@ -517,20 +517,33 @@ void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
 class DeleteButtonAccessibilityDelegate
     : public PopupCellView::AccessibilityDelegate {
  public:
-  DeleteButtonAccessibilityDelegate() = default;
+  DeleteButtonAccessibilityDelegate(
+      base::WeakPtr<AutofillPopupController> controller,
+      int line_number);
   ~DeleteButtonAccessibilityDelegate() override = default;
 
   void GetAccessibleNodeData(bool is_selected,
                              ui::AXNodeData* node_data) const override;
+
+ private:
+  std::u16string voice_over_string_;
 };
+
+DeleteButtonAccessibilityDelegate::DeleteButtonAccessibilityDelegate(
+    base::WeakPtr<AutofillPopupController> controller,
+    int line_number) {
+  DCHECK(controller);
+  voice_over_string_ = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_A11Y_HINT,
+      GetVoiceOverStringFromSuggestion(
+          controller->GetSuggestionAt(line_number)));
+}
 
 void DeleteButtonAccessibilityDelegate::GetAccessibleNodeData(
     bool is_selected,
     ui::AXNodeData* node_data) const {
   node_data->role = ax::mojom::Role::kButton;
-  // TODO(crbug.com/1417187): Add voice over text of original suggestion here?
-  node_data->SetNameChecked(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
+  node_data->SetNameChecked(voice_over_string_);
 }
 
 }  // namespace
@@ -658,7 +671,8 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
     std::unique_ptr<PopupCellView> view =
         views::Builder<PopupCellView>()
             .SetAccessibilityDelegate(
-                std::make_unique<DeleteButtonAccessibilityDelegate>())
+                std::make_unique<DeleteButtonAccessibilityDelegate>(
+                    GetController(), GetLineNumber()))
             .Build();
 
     view->SetLayoutManager(std::make_unique<views::BoxLayout>(
