@@ -414,7 +414,8 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
 
   chrome.fileManagerPrivate.getFileTasks =
       (_entries: Entry[], _sourceUrls: string[],
-       callback: (tasks: chrome.fileManagerPrivate.ResultingTasks) => void) => {
+       callback: (tasks: chrome.fileManagerPrivate.ResultingTasks|undefined) =>
+           void) => {
         setTimeout(
             callback.bind(
                 null,

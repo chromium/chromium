@@ -507,7 +507,7 @@ export class RecentContentScanner extends ContentScanner {
   async scan(
       entriesCallback, successCallback, errorCallback,
       invalidateCache = false) {
-    /** @type {function(!Entry): boolean} */
+    /** @type {function(!FileEntry): boolean} */
     const isMatchQuery = (entry) =>
         entry.name.toLowerCase().indexOf(this.query_) >= 0;
     /**
@@ -515,7 +515,7 @@ export class RecentContentScanner extends ContentScanner {
      * some volumes. Before returning the recent entries, we need to check if
      * the entry's volume location is valid or not (crbug.com/1333385/#c17).
      */
-    /** @type {function(!Entry): boolean} */
+    /** @type {function(!FileEntry): boolean} */
     const isAllowedVolume = (entry) =>
         this.volumeManager_.getVolumeInfo(entry) !== null;
     chrome.fileManagerPrivate.getRecentFiles(
@@ -529,8 +529,7 @@ export class RecentContentScanner extends ContentScanner {
           }
           if (entries.length > 0) {
             entriesCallback(entries.filter(
-                entry =>
-                    isMatchQuery(assert(entry)) && isAllowedVolume(entry)));
+                entry => isMatchQuery(entry) && isAllowedVolume(entry)));
           }
           successCallback();
         });

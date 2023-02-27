@@ -757,8 +757,8 @@ void FileManagerPrivateInternalGetDriveQuotaMetadataFunction::
 
   quotaMetadata_.user_type =
       usage->user_type == drivefs::mojom::UserType::kUnmanaged
-          ? api::file_manager_private::UserType::USER_TYPE_UNMANAGED
-          : api::file_manager_private::UserType::USER_TYPE_ORGANIZATION;
+          ? api::file_manager_private::UserType::USER_TYPE_KUNMANAGED
+          : api::file_manager_private::UserType::USER_TYPE_KORGANIZATION;
   quotaMetadata_.used_bytes = static_cast<double>(usage->used_user_bytes);
   quotaMetadata_.total_bytes = static_cast<double>(usage->total_user_bytes);
   quotaMetadata_.organization_limit_exceeded =
