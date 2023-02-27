@@ -35,8 +35,7 @@ bool ZipString(const base::FilePath& filename,
   // another temporary file to receive the zip file in.
   if (!temp_dir.CreateUniqueTempDir())
     return false;
-  if (base::WriteFile(temp_dir.GetPath().Append(filename), data.c_str(),
-                      data.size()) == -1) {
+  if (!base::WriteFile(temp_dir.GetPath().Append(filename), data)) {
     return false;
   }
 
