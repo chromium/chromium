@@ -168,8 +168,8 @@ void GPU::OnRequestAdapterCallback(ScriptState* script_state,
   GPUAdapter* gpu_adapter = nullptr;
   switch (status) {
     case WGPURequestAdapterStatus_Success:
-      gpu_adapter = MakeGarbageCollected<GPUAdapter>(this, "Default", adapter,
-                                                     dawn_control_client_);
+      gpu_adapter =
+          MakeGarbageCollected<GPUAdapter>(this, adapter, dawn_control_client_);
       break;
 
     // Note: requestAdapter never rejects, but we print a console warning if
@@ -216,7 +216,6 @@ void GPU::RecordAdapterForIdentifiability(
 
   IdentifiableTokenBuilder output_builder;
   if (adapter) {
-    output_builder.AddToken(IdentifiabilityBenignStringToken(adapter->name()));
     for (const auto& feature : adapter->features()->FeatureNameSet()) {
       output_builder.AddToken(IdentifiabilityBenignStringToken(feature));
     }
