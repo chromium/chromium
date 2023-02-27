@@ -371,17 +371,18 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   ui::AXTreeID previous_active_tree_id = model_.active_tree_id();
   model_.SetActiveTreeId(tree_id);
   model_.SetActiveUkmSourceId(ukm_source_id);
-  // Unserialize all pending updates on the formerly active AXTree.
+  // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
   // distillation request.
 #if DCHECK_IS_ON()
   DCHECK(pending_updates_.empty() ||
          model_.pending_updates_bundle_id() == previous_active_tree_id);
 #endif
-  UnserializeUpdates(std::move(pending_updates_), previous_active_tree_id);
+  pending_updates_.clear();
 #if DCHECK_IS_ON()
   model_.SetPendingUpdatesBundleId(ui::AXTreeIDUnknown());
 #endif
+
   // When the UI first constructs, this function may be called before tree_id
   // has been added to trees_ in AccessibilityEventReceived. In that case, do
   // not distill.
@@ -389,6 +390,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
       base::Contains(trees_, model_.active_tree_id())) {
     Distill();
   }
+  OnAXTreeDestroyed(previous_active_tree_id);
 }
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {

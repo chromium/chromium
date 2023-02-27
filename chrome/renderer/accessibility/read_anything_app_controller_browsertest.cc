@@ -213,6 +213,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   size_t GetNumTrees() { return controller_->trees_.size(); }
 
+  bool HasTree(ui::AXTreeID tree_id) {
+    return base::Contains(controller_->trees_, tree_id);
+  }
+
   size_t GetNumPendingUpdates() { return controller_->pending_updates_.size(); }
 
   ui::AXTreeID tree_id_;
@@ -614,15 +618,11 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
     updates.push_back(update);
   }
   // Add the three updates separately since they have different tree IDs.
-  for (int i = 0; i < 3; i++) {
-    AccessibilityEventReceived({updates[i]});
-  }
-
-  OnAXTreeDistilled({1});
-
   // Check that changing the active tree ID changes the active tree which is
   // used when using a v8 getter.
   for (int i = 0; i < 3; i++) {
+    AccessibilityEventReceived({updates[i]});
+    OnAXTreeDistilled({1});
     EXPECT_CALL(*distiller_, Distill).Times(1);
     OnActiveAXTreeIDChanged(tree_ids[i]);
     EXPECT_EQ("Tree " + base::NumberToString(i), GetTextContent(1));
@@ -631,6 +631,44 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   // Changing the active tree ID to the same ID does nothing.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   OnActiveAXTreeIDChanged(tree_ids[2]);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_PreviousActiveTreeDestroyed) {
+  ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update_2;
+  SetUpdateTreeID(&update_2, tree_id_2);
+  update_2.root_id = 1;
+  update_2.nodes.resize(1);
+  update_2.nodes[0].id = 1;
+
+  ASSERT_EQ(1u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
+
+  // Add update 2.
+  AccessibilityEventReceived({update_2});
+  ASSERT_EQ(2u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
+  ASSERT_TRUE(HasTree(tree_id_2));
+  OnAXTreeDistilled({1});
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+
+  // Change the active tree id to the same id. Nothing happens.
+  OnActiveAXTreeIDChanged(tree_id_);
+  ASSERT_EQ(2u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
+  ASSERT_TRUE(HasTree(tree_id_2));
+
+  // Change the active tree id to tree id 2. The previously active tree id's
+  // tree is deleted.
+  OnActiveAXTreeIDChanged(tree_id_2);
+  ASSERT_EQ(1u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_2));
+
+  // Change the active tree id to the same id. The previously active tree id's
+  // tree is deleted.
+  OnActiveAXTreeIDChanged(tree_id_);
+  ASSERT_EQ(0u, GetNumTrees());
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDUnknown) {
@@ -663,18 +701,27 @@ TEST_F(ReadAnythingAppControllerTest, AddAndRemoveTrees) {
 
   // Start with 1 tree (the tree created in SetUp).
   ASSERT_EQ(1u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
 
   // Add the two trees.
   AccessibilityEventReceived({updates[0]});
   ASSERT_EQ(2u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
+  ASSERT_TRUE(HasTree(tree_ids[0]));
   AccessibilityEventReceived({updates[1]});
   ASSERT_EQ(3u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
+  ASSERT_TRUE(HasTree(tree_ids[0]));
+  ASSERT_TRUE(HasTree(tree_ids[1]));
 
   // Remove all of the trees.
   OnAXTreeDestroyed(tree_id_);
   ASSERT_EQ(2u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_ids[0]));
+  ASSERT_TRUE(HasTree(tree_ids[1]));
   OnAXTreeDestroyed(tree_ids[0]);
   ASSERT_EQ(1u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_ids[1]));
   OnAXTreeDestroyed(tree_ids[1]);
   ASSERT_EQ(0u, GetNumTrees());
 }
@@ -704,14 +751,21 @@ TEST_F(ReadAnythingAppControllerTest, OnAXTreeDestroyed_ChildTree) {
 
   // Start with 1 tree (the tree created in SetUp).
   ASSERT_EQ(1u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
   AccessibilityEventReceived({updates[0]});
   ASSERT_EQ(1u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
 
   // Add two trees.
   AccessibilityEventReceived({updates[1]});
   ASSERT_EQ(2u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
+  ASSERT_TRUE(HasTree(tree_ids[0]));
   AccessibilityEventReceived({updates[2]});
   ASSERT_EQ(3u, GetNumTrees());
+  ASSERT_TRUE(HasTree(tree_id_));
+  ASSERT_TRUE(HasTree(tree_ids[0]));
+  ASSERT_TRUE(HasTree(tree_ids[1]));
 
   // Remove the grandparent tree (tree_ids[0]. When it is removed, its
   // child (tree_ids[1]) and its child's child (tree_ids[2]) are both removed.
@@ -840,15 +894,11 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_EQ(2u, GetNumPendingUpdates());
   EXPECT_EQ("5", GetTextContent(1));
 
-  // Switching the active AXTreeID flushes the pending updates.
+  // Switching the active AXTreeID deletes the pending updates.
   ui::AXTreeID tree_id_2 = ui::AXTreeID::CreateNewAXTreeID();
   EXPECT_CALL(*distiller_, Distill).Times(0);
   OnActiveAXTreeIDChanged(tree_id_2);
   EXPECT_EQ(0u, GetNumPendingUpdates());
-
-  EXPECT_CALL(*distiller_, Distill).Times(1);
-  OnActiveAXTreeIDChanged(tree_id_);
-  EXPECT_EQ("567", GetTextContent(1));
 }
 
 TEST_F(ReadAnythingAppControllerTest,
