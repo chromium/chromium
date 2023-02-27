@@ -183,10 +183,12 @@ id<GREYMatcher> SearchBarScrim() {
 }
 
 // Returns the delete button on the deletion confirmation action sheet.
-- (id<GREYMatcher>)confirmDeleteAddressButton {
+- (id<GREYMatcher>)confirmButtonForNumberOfAddressesBeingDeleted:
+    (int)numberOfAddresses {
   return grey_allOf(
-      grey_accessibilityLabel(l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON)),
+      grey_accessibilityLabel(l10n_util::GetPluralNSStringF(
+          IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON,
+          numberOfAddresses)),
       grey_accessibilityTrait(UIAccessibilityTraitButton),
       grey_userInteractionEnabled(), nil);
 }
@@ -378,7 +380,8 @@ id<GREYMatcher> SearchBarScrim() {
                                           SettingsBottomToolbarDeleteButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:[self confirmDeleteAddressButton]]
+  [[EarlGrey selectElementWithMatcher:
+                 [self confirmButtonForNumberOfAddressesBeingDeleted:1]]
       performAction:grey_tap()];
   WaitForActivityOverlayToDisappear();
 
@@ -410,7 +413,8 @@ id<GREYMatcher> SearchBarScrim() {
                                        UIAccessibilityTraitNotEnabled)),
                                    nil)] performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:[self confirmDeleteAddressButton]]
+  [[EarlGrey selectElementWithMatcher:
+                 [self confirmButtonForNumberOfAddressesBeingDeleted:1]]
       performAction:grey_tap()];
   WaitForActivityOverlayToDisappear();
 
