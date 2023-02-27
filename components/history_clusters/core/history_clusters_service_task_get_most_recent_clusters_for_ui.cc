@@ -50,10 +50,6 @@ HistoryClustersServiceTaskGetMostRecentClustersForUI::
 
 void HistoryClustersServiceTaskGetMostRecentClustersForUI::Start(
     QueryClustersFilterParams filter_params) {
-  // TODO(b/259466296): Figure out what to do with unclustered visits that
-  //   happen before this experiment starts and were unclustered by previous
-  //   path.
-
   if (!continuation_params_.is_continuation) {
     continuation_params_.continuation_time = base::Time::Now();
   }
