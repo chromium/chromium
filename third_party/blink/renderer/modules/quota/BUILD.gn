@@ -6,14 +6,10 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("quota") {
   sources = [
-    "deprecated_storage_info.cc",
-    "deprecated_storage_info.h",
     "deprecated_storage_quota.cc",
     "deprecated_storage_quota.h",
     "dom_error.cc",
     "dom_error.h",
-    "dom_window_quota.cc",
-    "dom_window_quota.h",
     "navigator_storage_quota.cc",
     "navigator_storage_quota.h",
     "quota_utils.cc",
