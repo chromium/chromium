@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests stability of performance metrics list.\n`);
 
-  const model = SDK.targetManager.mainFrameTarget().model(SDK.PerformanceMetricsModel);
+  const model = SDK.targetManager.primaryPageTarget().model(SDK.PerformanceMetricsModel);
   await model.enable();
   let metrics = (await model.requestMetrics()).metrics;
 

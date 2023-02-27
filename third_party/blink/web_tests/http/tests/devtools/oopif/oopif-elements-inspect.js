@@ -14,7 +14,7 @@
 
   SDK.targetManager.observeTargets({
     targetAdded: async function(target) {
-      if (target === SDK.targetManager.rootTarget() || target === SDK.targetManager.mainFrameTarget())
+      if (target === SDK.targetManager.rootTarget() || target === SDK.targetManager.primaryPageTarget())
         return;
       let complete = false;
       target.pageAgent().setLifecycleEventsEnabled(true);

@@ -50,7 +50,7 @@
   }
 
   async function revealResourceWithDisplayName(name) {
-    var target = SDK.targetManager.mainFrameTarget();
+    var target = SDK.targetManager.primaryPageTarget();
     var model = target.model(SDK.ResourceTreeModel);
     var resource = null;
     for (var r of model.mainFrame.resources()) {

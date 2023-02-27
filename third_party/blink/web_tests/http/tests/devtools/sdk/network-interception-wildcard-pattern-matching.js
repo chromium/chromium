@@ -6,7 +6,7 @@
   TestRunner.addResult("Test to ensure the consistency of front-end patterns vs backend patterns for request interception.\n");
 
   // Backend supports wildcards, but front-end does not. This test is to ensure the basic stability with wildcard characters.
-  var urlPrefix = SDK.targetManager.mainFrameTarget().inspectedURL().replace(/\/[^\/]*$/, '');
+  var urlPrefix = SDK.targetManager.primaryPageTarget().inspectedURL().replace(/\/[^\/]*$/, '');
   var resourceURL = urlPrefix + '/bar.js';
   await checkPattern('**bar.js');
   await checkPattern(resourceURL);
