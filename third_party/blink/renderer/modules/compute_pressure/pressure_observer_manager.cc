@@ -192,8 +192,9 @@ void PressureObserverManager::EnsureServiceConnection() {
 bool PressureObserverManager::PassesPrivacyTest() const {
   LocalFrame* this_frame = GetSupplementable()->GetFrame();
   // 2. If associated document is not fully active, return false.
-  if (GetSupplementable()->IsContextDestroyed() || !this_frame)
+  if (GetSupplementable()->IsContextDestroyed() || !this_frame) {
     return false;
+  }
 
   // 4. If associated document is same-domain with initiators of active
   // Picture-in-Picture sessions, return true.
@@ -205,19 +206,27 @@ bool PressureObserverManager::PassesPrivacyTest() const {
   // can access to PressureRecord.
   auto& pip_controller =
       PictureInPictureControllerImpl::From(*(this_frame->GetDocument()));
-  if (pip_controller.PictureInPictureElement())
+  if (pip_controller.PictureInPictureElement()) {
     return true;
+  }
 
   // 5. If browsing context is capturing, return true.
-  if (this_frame->IsCapturingMedia())
+  if (this_frame->IsCapturingMedia()) {
     return true;
+  }
 
   // 7. If top-level browsing context does not have system focus, return false.
   DCHECK(this_frame->GetPage());
-  LocalFrame* focused_frame =
-      this_frame->GetPage()->GetFocusController().FocusedFrame();
-  if (!focused_frame || !focused_frame->IsOutermostMainFrame())
+  const auto& focus_controller = this_frame->GetPage()->GetFocusController();
+  if (!focus_controller.IsFocused()) {
     return false;
+  }
+
+  // 8. Let focused document be the currently focused area's node document.
+  const LocalFrame* focused_frame = focus_controller.FocusedFrame();
+  if (!focused_frame) {
+    return false;
+  }
 
   // 9. If origin is same origin-domain with focused document, return true.
   // 10. Otherwise, return false.
