@@ -13,7 +13,7 @@ namespace ash {
 // Version of AppLaunchSplashScreenHandler used for tests.
 class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
  public:
-  void SetDelegate(Delegate*) override {}
+  void SetDelegate(Delegate*) override;
   void Show(KioskAppManagerBase::App app_data) override;
   void Hide() override {}
   void UpdateAppLaunchState(AppLaunchState state) override;
@@ -26,11 +26,13 @@ class FakeAppLaunchSplashScreenHandler : public AppLaunchSplashScreenView {
 
   KioskAppLaunchError::Error GetErrorMessageType() const;
   void SetNetworkReady(bool ready);
+  void FinishNetworkConfig();
   AppLaunchState GetAppLaunchState() const;
   bool IsNetworkRequired() const;
   KioskAppManagerBase::App last_app_data() const { return last_app_data_; }
 
  private:
+  raw_ptr<Delegate> delegate_ = nullptr;
   KioskAppLaunchError::Error error_message_type_ =
       KioskAppLaunchError::Error::kNone;
   KioskAppManagerBase::App last_app_data_;

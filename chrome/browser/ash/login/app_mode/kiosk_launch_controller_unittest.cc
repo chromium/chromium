@@ -173,10 +173,7 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
 
   void DeleteSplashScreen() { controller_->OnDeletingSplashScreenView(); }
 
-  void SetOnline(bool online) {
-    view_->SetNetworkReady(online);
-    view_controls().OnNetworkStateChanged(online);
-  }
+  void SetOnline(bool online) { view_->SetNetworkReady(online); }
 
   void OnNetworkConfigRequested() { controller().OnNetworkConfigRequested(); }
 
@@ -415,7 +412,7 @@ TEST_F(KioskLaunchControllerTest, ConfigureNetworkDuringInstallation) {
       HasViewState(
           AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication));
 
-  view_controls().OnNetworkConfigFinished();
+  view().FinishNetworkConfig();
   EXPECT_THAT(
       view(),
       HasViewState(
