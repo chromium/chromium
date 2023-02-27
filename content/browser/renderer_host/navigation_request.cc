@@ -7960,6 +7960,19 @@ NavigationRequest::EnforceCOEP() {
 }
 
 bool NavigationRequest::CoopCoepSanityCheck() {
+  // Same-document navigations simply reuse the current document and do not use
+  // the PolicyContainer, which may contain erroneous information. For example
+  // in pushState/popState history navigations. See https://crbug.com/1413081.
+  if (IsSameDocument()) {
+    return true;
+  }
+
+  // Credentialless iframes allow frames to be crossOriginIsolated without ever
+  // setting COEP, so the below check does not apply.
+  if (is_credentialless_) {
+    return true;
+  }
+
   const PolicyContainerPolicies& policies =
       policy_container_builder_->FinalPolicies();
   // Use GetParentFrameOrOuterDocument() to respect the outer frame's COEP for
@@ -7976,8 +7989,7 @@ bool NavigationRequest::CoopCoepSanityCheck() {
   if (coop_value ==
           network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep &&
       !CompatibleWithCrossOriginIsolated(
-          policies.cross_origin_embedder_policy) &&
-      !is_credentialless_) {
+          policies.cross_origin_embedder_policy)) {
     NOTREACHED();
     base::debug::DumpWithoutCrashing();
     return false;

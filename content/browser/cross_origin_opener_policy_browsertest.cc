@@ -3734,6 +3734,44 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_NE(rph_id_3, rph_id_1);
 }
 
+// Smoke test for an iframe in a crossOriginIsolated page doing a same-document
+// history navigation. Added to prevent regression of https://crbug.com/1413081.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       SmokeTest_CoopCoepSameDocumentIframeHistoryNavigation) {
+  GURL main_page_url(
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-origin-opener-policy: same-origin&"
+                             "Cross-origin-embedder-policy: require-corp"));
+  GURL iframe_url(
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Cross-Origin-Embedder-Policy: require-corp&"
+                             "Cross-Origin-Resource-Policy: cross-origin"));
+
+  // Start with a cross-origin isolated document.
+  ASSERT_TRUE(NavigateToURL(shell(), main_page_url));
+
+  // Add an iframe that has the appropriate COEP and CORP headers.
+  ASSERT_TRUE(ExecJs(current_frame_host(), JsReplace(R"(
+    const frame = document.createElement('iframe');
+    frame.src = $1;
+    document.body.appendChild(frame);
+  )",
+                                                     iframe_url)));
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+
+  // Do a pushState/popState in the iframe. This will generate a same-document
+  // history navigation.
+  RenderFrameHostImpl* child_rfh =
+      current_frame_host()->child_at(0)->current_frame_host();
+  ASSERT_TRUE(ExecJs(child_rfh, "history.pushState({}, '', '');"));
+  ASSERT_TRUE(ExecJs(child_rfh, "history.go(-1)"));
+
+  // We should commit and gracefully finish loading.
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+}
+
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
 // context group when using window.open from an iframe, same-origin and
 // cross-origin.
