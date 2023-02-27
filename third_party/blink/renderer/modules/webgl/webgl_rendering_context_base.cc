@@ -1694,14 +1694,8 @@ bool WebGLRenderingContextBase::IsOriginTopLeft() const {
 }
 
 void WebGLRenderingContextBase::SetIsInHiddenPage(bool hidden) {
-  is_hidden_ = hidden;
   if (GetDrawingBuffer())
     GetDrawingBuffer()->SetIsInHiddenPage(hidden);
-
-  if (!hidden && isContextLost() && restore_allowed_ &&
-      auto_recovery_method_ == kAuto && !restore_timer_.IsActive()) {
-    restore_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
-  }
 }
 
 bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
@@ -8547,13 +8541,11 @@ void WebGLRenderingContextBase::DispatchContextLostEvent(TimerBase*) {
       WebGLContextEvent::Create(event_type_names::kWebglcontextlost, "");
   Host()->HostDispatchEvent(event);
   restore_allowed_ = event->defaultPrevented();
-  if (restore_allowed_ && !is_hidden_) {
-    if (auto_recovery_method_ == kAuto) {
-      // Defer the restore timer to give the context loss
-      // notifications time to propagate through the system: in
-      // particular, to the browser process.
-      restore_timer_.StartOneShot(kDurationBetweenRestoreAttempts, FROM_HERE);
-    }
+  if (restore_allowed_ && auto_recovery_method_ == kAuto) {
+    // Defer the restore timer to give the context loss
+    // notifications time to propagate through the system: in
+    // particular, to the browser process.
+    restore_timer_.StartOneShot(kDurationBetweenRestoreAttempts, FROM_HERE);
   }
 
   if (!restore_allowed_) {

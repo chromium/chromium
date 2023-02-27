@@ -847,7 +847,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   bool is_origin_top_left_ = false;
 
-  bool is_hidden_ = false;
   LostContextMode context_lost_mode_ = kNotLostContext;
   AutoRecoveryMethod auto_recovery_method_ = kManual;
   // Dispatches a context lost event once it is determined that one is needed.
