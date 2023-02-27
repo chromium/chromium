@@ -53,9 +53,7 @@ void RunAndQuit(base::RunLoop* run_loop, base::OnceClosure closure) {
 
 bool WriteStringToFile(const base::FilePath& file_path,
                        const std::string& content) {
-  int result = base::WriteFile(file_path, content.data(),
-                               static_cast<int>(content.size()));
-  return content.size() == static_cast<size_t>(result);
+  return base::WriteFile(file_path, content);
 }
 
 bool CreateFileOfSpecifiedSize(const base::FilePath& temp_dir,
