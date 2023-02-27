@@ -511,6 +511,8 @@ source_set("test_support") {
     "test/in_process_image_decoder.h",
     "test/mock_in_session_auth_token_provider.cc",
     "test/mock_in_session_auth_token_provider.h",
+    "test/mock_input_device_settings_controller.cc",
+    "test/mock_input_device_settings_controller.h",
     "test/mock_projector_client.cc",
     "test/mock_projector_client.h",
     "test/mock_projector_controller.cc",
