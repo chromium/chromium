@@ -3305,37 +3305,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(TabDragController::IsActive());
 }
 
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       OffsetForDraggingInTabletMode) {
-  AddTabsAndResetBrowser(browser(), 1);
-  // Moves the browser window slightly to ensure that the browser's restored
-  // bounds are different from the maximized bound's origin.
-  browser()->window()->SetBounds(browser()->window()->GetBounds() +
-                                 gfx::Vector2d(100, 50));
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->DisableTopControlsSlideForTesting();
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
-
-  DragWindowAndVerifyOffset(this, GetTabStripForBrowser(browser()), 1);
-  ASSERT_FALSE(TabDragController::IsActive());
-}
-
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       OffsetForDraggingRightSnappedWindowInTabletMode) {
-  BrowserView::GetBrowserViewForBrowser(browser())
-      ->DisableTopControlsSlideForTesting();
-  ash::ShellTestApi().SetTabletModeEnabledForTest(true);
-
-  // Right snap the browser window.
-  aura::Window* window = browser()->window()->GetNativeWindow();
-  ash::SplitViewTestApi().SnapWindow(
-      window, ash::SplitViewTestApi::SnapPosition::RIGHT);
-  EXPECT_NE(gfx::Point(), window->GetBoundsInScreen().origin());
-
-  DragWindowAndVerifyOffset(this, GetTabStripForBrowser(browser()), 0);
-  ASSERT_FALSE(TabDragController::IsActive());
-}
-
 namespace {
 
 void DragToOverviewWindowStep2(DetachToBrowserTabDragControllerTest* test,

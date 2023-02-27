@@ -1174,10 +1174,6 @@ void BrowserView::SetDisableRevealerDelayForTesting(bool disable) {
   g_disable_revealer_delay_for_testing = disable;
 }
 
-void BrowserView::DisableTopControlsSlideForTesting() {
-  top_controls_slide_controller_.reset();
-}
-
 void BrowserView::InitStatusBubble() {
   status_bubble_ = std::make_unique<StatusBubbleViews>(contents_web_view_);
   contents_web_view_->SetStatusBubble(status_bubble_.get());

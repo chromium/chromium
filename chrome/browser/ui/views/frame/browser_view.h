@@ -165,11 +165,6 @@ class BrowserView : public BrowserWindow,
 
   void SetDownloadShelfForTest(DownloadShelf* download_shelf);
 
-  // This suppresses the slide behaviors of top-controls and so the top controls
-  // will stay showing under any situation. This is only for testing behaviors
-  // of top controls which should be visible always.
-  void DisableTopControlsSlideForTesting();
-
   // Initializes (or re-initializes) the status bubble.  We try to only create
   // the bubble once and re-use it for the life of the browser, but certain
   // events (such as changing enabling/disabling Aero on Win) can force a need

@@ -18,10 +18,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/splitview/split_view_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_drag_delegate.h"
-#include "ash/wm/tablet_mode/tablet_mode_window_resizer.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
@@ -1132,93 +1129,6 @@ TEST_F(ClientControlledShellSurfaceTest, CloseWindowWhenDraggingTest) {
 
 namespace {
 
-class ClientControlledShellSurfaceDragTest : public test::ExoTestBase {
- public:
-  ClientControlledShellSurfaceDragTest() = default;
-
-  ClientControlledShellSurfaceDragTest(
-      const ClientControlledShellSurfaceDragTest&) = delete;
-  ClientControlledShellSurfaceDragTest& operator=(
-      const ClientControlledShellSurfaceDragTest&) = delete;
-
-  ~ClientControlledShellSurfaceDragTest() override = default;
-
-  // Sends a gesture scroll sequence to TabletModeAppWindowDragController.
-  void SendGestureEvents(aura::Window* window,
-                         const gfx::Point& location,
-                         bool fling = false,
-                         float velocity = 0.f) {
-    ash::WindowState* window_state = ash::WindowState::Get(window);
-    window_state->CreateDragDetails(gfx::PointF(0, 0), HTCLIENT,
-                                    ::wm::WINDOW_MOVE_SOURCE_TOUCH);
-    std::unique_ptr<ash::TabletModeWindowResizer> controller_ =
-        std::make_unique<ash::TabletModeWindowResizer>(
-            window_state,
-            std::make_unique<ash::TabletModeBrowserWindowDragDelegate>());
-    controller_->drag_delegate_for_testing()
-        ->set_drag_start_deadline_for_testing(base::Time::Now());
-    controller_->Drag(gfx::PointF(location), 0);
-    if (fling) {
-      ui::GestureEventDetails details =
-          ui::GestureEventDetails(ui::ET_SCROLL_FLING_START, 0, velocity);
-      ui::GestureEvent event =
-          ui::GestureEvent(location.x(), location.y(), ui::EF_NONE,
-                           base::TimeTicks::Now(), details);
-      ui::Event::DispatcherApi(&event).set_target(window);
-      controller_->FlingOrSwipe(&event);
-    } else {
-      controller_->CompleteDrag();
-    }
-    ash::WindowState::Get(window)->DeleteDragDetails();
-  }
-};
-
-}  // namespace
-
-// Test the functionalities of dragging a window from top in tablet mode.
-TEST_F(ClientControlledShellSurfaceDragTest, DragWindowFromTopInTabletMode) {
-  UpdateDisplay("800x600");
-  ash::Shell* shell = ash::Shell::Get();
-  shell->tablet_mode_controller()->SetEnabledForTest(true);
-
-  auto shell_surface =
-      exo::test::ShellSurfaceBuilder({800, 552})
-          .SetGeometry({0, 0, 800, 552})
-          .SetWindowState(chromeos::WindowStateType::kMaximized)
-          .BuildClientControlledShellSurface();
-  auto* surface = shell_surface->root_surface();
-
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-  ASSERT_TRUE(ash::WindowState::Get(window)->IsMaximized());
-  surface->SetFrame(SurfaceFrameType::AUTOHIDE);
-  surface->Commit();
-
-  // Drag the window by a small amount of distance will maximize the window
-  // again.
-  SendGestureEvents(window, gfx::Point(0, 10));
-  EXPECT_TRUE(ash::WindowState::Get(window)->IsMaximized());
-  EXPECT_FALSE(shell->overview_controller()->InOverviewSession());
-
-  // FLING the window not inisde preview area with large enough y veloicty
-  // (larger than kFlingToOverviewThreshold) will drop the window into overview.
-  SendGestureEvents(
-      window, gfx::Point(400, 10), /*fling=*/true,
-      ash::TabletModeWindowDragDelegate::kFlingToOverviewThreshold + 10.f);
-  ASSERT_TRUE(shell->overview_controller()->InOverviewSession());
-  EXPECT_TRUE(
-      shell->overview_controller()->overview_session()->IsWindowInOverview(
-          window));
-
-  // Drag the window long enough (pass one fourth of the screen vertical
-  // height) to snap the window to splitscreen.
-  shell->overview_controller()->EndOverview(ash::OverviewEndAction::kTests);
-  SendGestureEvents(window, gfx::Point(0, 210));
-  EXPECT_EQ(ash::WindowState::Get(window)->GetStateType(),
-            WindowStateType::kPrimarySnapped);
-}
-
-namespace {
-
 class TestClientControlledShellSurfaceDelegate
     : public test::ClientControlledShellSurfaceDelegate {
  public:
@@ -1451,8 +1361,9 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
     shell_surface->SetFrameButtons(visible_buttons, 0);
     const chromeos::CaptionButtonModel* model = container->model();
     for (auto not_visible : kAllButtons) {
-      if (not_visible != visible)
+      if (not_visible != visible) {
         EXPECT_FALSE(model->IsVisible(not_visible));
+      }
     }
     EXPECT_TRUE(model->IsVisible(visible));
     EXPECT_FALSE(model->IsEnabled(visible));
@@ -1464,8 +1375,9 @@ TEST_F(ClientControlledShellSurfaceTest, CaptionButtonModel) {
     shell_surface->SetFrameButtons(kAllButtonMask, enabled_buttons);
     const chromeos::CaptionButtonModel* model = container->model();
     for (auto not_enabled : kAllButtons) {
-      if (not_enabled != enabled)
+      if (not_enabled != enabled) {
         EXPECT_FALSE(model->IsEnabled(not_enabled));
+      }
     }
     EXPECT_TRUE(model->IsEnabled(enabled));
     EXPECT_TRUE(model->IsVisible(enabled));
@@ -1808,8 +1720,9 @@ TEST_F(ClientControlledShellSurfaceTest,
       // Set display id, bounds origin, bounds size at the same time via
       // SetBounds method.
       auto builder = exo::test::ShellSurfaceBuilder();
-      if (default_scale_cancellation)
+      if (default_scale_cancellation) {
         builder.EnableDefaultScaleCancellation();
+      }
       auto shell_surface =
           builder.SetNoCommit().BuildClientControlledShellSurface();
       auto* surface = shell_surface->root_surface();
@@ -1845,8 +1758,9 @@ TEST_F(ClientControlledShellSurfaceTest,
       const auto bounds_to_set =
           default_scale_cancellation ? bounds_dp : bounds_px_for_4x;
       auto builder = exo::test::ShellSurfaceBuilder();
-      if (default_scale_cancellation)
+      if (default_scale_cancellation) {
         builder.EnableDefaultScaleCancellation();
+      }
       auto shell_surface =
           builder.SetNoCommit().BuildClientControlledShellSurface();
       auto* surface = shell_surface->root_surface();
