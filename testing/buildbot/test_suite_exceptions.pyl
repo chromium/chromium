@@ -1579,16 +1579,6 @@
           ],
         },
       },
-      'lacros-arm-generic-chrome': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Ubuntu-18.04',
-            },
-          ],
-        },
-      },
       'lacros-arm-generic-chrome-skylab': {
         'swarming': {
           'dimension_sets': [
@@ -2761,9 +2751,6 @@
   },
   'lacros_all_tast_tests jacuzzi': {
     'modifications': {
-      'lacros-arm-generic-chrome': {
-        'experiment_percentage': 100,
-      },
       'lacros-arm-generic-rel': {
         'ci_only': True,
       },

@@ -237,24 +237,6 @@
         },
         'os_type': 'chromeos',
       },
-      'lacros-arm-generic-chrome': {
-        'additional_compile_targets': [
-          'chrome',
-          'linux_symbols',
-          'symupload',
-          'strip_lacros_files'
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-        ],
-        'test_suites': {
-          'gtest_tests': 'lacros_device_arm_tests',
-          'isolated_scripts': 'chrome_sizes',
-        },
-        'os_type': 'chromeos',
-      },
-      # TODO(crbug.com/1286898): Merge this to lacros-amd64-generic-chrome
-      # once it's proven to be stable and easy to debug.
       'lacros-arm-generic-chrome-skylab': {
         'additional_compile_targets': [
           'chrome',
@@ -267,21 +249,6 @@
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_arm',
-          'isolated_scripts': 'chrome_sizes',
-        },
-        'os_type': 'chromeos',
-      },
-      'lacros-arm64-generic-chrome': {
-        'additional_compile_targets': [
-          'chrome',
-          'linux_symbols',
-          'symupload',
-          'strip_lacros_files'
-        ],
-        'mixins': [
-          'chrome-swarming-pool',
-        ],
-        'test_suites': {
           'isolated_scripts': 'chrome_sizes',
         },
         'os_type': 'chromeos',
