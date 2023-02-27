@@ -33,6 +33,10 @@ bool SharingHubOmniboxEnabled(content::BrowserContext* context);
 // image editor before sharing.
 bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context);
 
+// Returns whether sharing is disabled altogether, in which case entry points
+// for sharing should be hidden.
+bool SharingIsDisabledByPolicy(content::BrowserContext* context);
+
 // Feature flag to enable the screenshots feature, currently accessed only
 // through the sharing hub.
 BASE_DECLARE_FEATURE(kDesktopScreenshots);

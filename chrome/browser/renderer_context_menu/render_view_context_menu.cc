@@ -72,6 +72,7 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -3360,8 +3361,15 @@ bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
 }
 
 bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
-  if (!GetBrowser())
+  if (!GetBrowser() || !GetProfile()) {
     return false;
+  }
+
+  if (sharing_hub::SharingIsDisabledByPolicy(GetProfile())) {
+    // If the sharing hub is disabled, clicking the QR code item (which tries to
+    // show the sharing hub) won't work.
+    return false;
+  }
 
   if (params_.media_type == ContextMenuDataMediaType::kImage) {
     return qrcode_generator::QRCodeGeneratorBubbleController::
