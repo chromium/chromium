@@ -103,6 +103,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     return class_type_ >= kLinearGradientClass &&
            class_type_ <= kConicGradientClass;
   }
+  bool IsImageSetOptionValue() const {
+    return class_type_ == kImageSetOptionClass;
+  }
   bool IsImageSetValue() const { return class_type_ == kImageSetClass; }
   bool IsImageValue() const { return class_type_ == kImageClass; }
   bool IsInheritedValue() const { return class_type_ == kInheritedClass; }
@@ -288,6 +291,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
     kKeyframeShorthandClass,
     kInitialColorValueClass,
+
+    kImageSetOptionClass,
 
     // List class types must appear after ValueListClass.
     kValueListClass,

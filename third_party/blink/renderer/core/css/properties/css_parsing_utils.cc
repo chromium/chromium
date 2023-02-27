@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
@@ -1463,7 +1464,7 @@ CSSPrimitiveValue* ConsumeTime(CSSParserTokenRange& range,
   return nullptr;
 }
 
-CSSPrimitiveValue* ConsumeResolution(CSSParserTokenRange& range) {
+CSSNumericLiteralValue* ConsumeResolution(CSSParserTokenRange& range) {
   const CSSParserToken& token = range.Peek();
 
   // Unlike the other types, calc() does not work with <resolution>.
@@ -3491,45 +3492,46 @@ static CSSValue* ConsumeImageSet(
         ConsumeGeneratedImagePolicy::kAllow) {
   CSSParserTokenRange range_copy = range;
   CSSParserTokenRange args = ConsumeFunction(range_copy);
+
   auto* image_set = MakeGarbageCollected<CSSImageSetValue>();
+
   do {
+    CSSValue* image = nullptr;
+
     AtomicString url_value =
         (RuntimeEnabledFeatures::CSSImageSetEnabled()
              ? ConsumeUrlOrStringAsStringView(args, context)
              : ConsumeUrlAsStringView(args, context))
             .ToAtomicString();
     if (!url_value.IsNull()) {
-      image_set->Append(*CreateCSSImageValueWithReferrer(url_value, context));
+      image = CreateCSSImageValueWithReferrer(url_value, context);
     } else {
       if (!RuntimeEnabledFeatures::CSSImageSetEnabled()) {
         return nullptr;
       }
 
-      CSSValue* gen_image = ConsumeGeneratedImage(args, context);
-      if (gen_image == nullptr) {
+      image = ConsumeGeneratedImage(args, context);
+      if (image == nullptr) {
         return nullptr;
       }
-
-      image_set->Append(*gen_image);
     }
 
-    if (args.Peek().GetType() != kDimensionToken &&
-        RuntimeEnabledFeatures::CSSImageSetEnabled()) {
-      image_set->Append(*CSSNumericLiteralValue::Create(
-          1.0, CSSPrimitiveValue::UnitType::kX));
-    } else {
+    CSSNumericLiteralValue* resolution = nullptr;
+    if (args.Peek().GetType() == kDimensionToken ||
+        !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
       if (args.Peek().GetUnitType() != CSSPrimitiveValue::UnitType::kX &&
           !RuntimeEnabledFeatures::CSSImageSetEnabled()) {
         return nullptr;
       }
 
-      const CSSPrimitiveValue* resolution = ConsumeResolution(args);
+      resolution = ConsumeResolution(args);
       if (resolution == nullptr || resolution->GetDoubleValue() <= 0.0) {
         return nullptr;
       }
-
-      image_set->Append(*resolution);
     }
+
+    image_set->Append(
+        *MakeGarbageCollected<CSSImageSetOptionValue>(image, resolution));
   } while (ConsumeCommaIncludingWhitespace(args));
 
   if (!args.AtEnd()) {
