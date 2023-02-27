@@ -6895,12 +6895,3 @@ crbug.com/1308826 fast/loader/reload-zero-byte-plugin.html [ Failure Pass Timeou
 # Temporarily disabled to roll change of error message in V8.
 # TODO(crbug.com/v8/13743): Re-enable tests after V8 roll.
 crbug.com/v8/13743 fast/forms/ValidityState-patternMismatch.html [ Failure Pass ]
-
-# To land rename CL in devtools repo
-crbug.com/1418045 http/tests/devtools/portals/portals-console.js [ Crash Failure Pass Timeout ]
-crbug.com/1418045 http/tests/devtools/portals/portals-elements-activate.js [ Crash Failure Pass Timeout ]
-crbug.com/1418045 http/tests/devtools/components/cookies-table.js [ Crash Failure Pass Timeout ]
-crbug.com/1418045 http/tests/devtools/oopif/oopif-elements-inspect.js [ Crash Failure Pass Timeout ]
-crbug.com/1418045 http/tests/devtools/network/request-name-path.js [ Crash Failure Pass Timeout ]
-crbug.com/1418045 http/tests/devtools/inspector-backend-commands.js [ Crash Failure Pass Timeout ]
-crbug.com/1418045 http/tests/devtools/sources/debugger-breakpoints/nodejs-set-breakpoint.js [ Crash Failure Pass Timeout ]
