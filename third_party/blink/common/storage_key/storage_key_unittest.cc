@@ -606,6 +606,11 @@ TEST_F(StorageKeyTest, DeserializeNonces) {
             false,
         },
         {
+            "https://example.com/^401^50^6",
+            absl::nullopt,
+            false,
+        },
+        {
             "https://example.com/^40^51^6",
             blink::StorageKey::Create(
                 url::Origin::Create(GURL("https://example.com/")),
@@ -614,11 +619,21 @@ TEST_F(StorageKeyTest, DeserializeNonces) {
             false,
         },
         {
+            "https://example.com/^400^51^6",
+            absl::nullopt,
+            false,
+        },
+        {
             "https://example.com/^41^51^6",
             blink::StorageKey::Create(
                 url::Origin::Create(GURL("https://example.com/")),
                 GetOpaqueSite(1ULL, 1ULL, ""),
                 mojom::AncestorChainBit::kCrossSite),
+            false,
+        },
+        {
+            "https://example.com/^41^501^6",
+            absl::nullopt,
             false,
         },
         {
@@ -634,6 +649,11 @@ TEST_F(StorageKeyTest, DeserializeNonces) {
             true,
         },
         {
+            "https://example.com/^101^20",
+            absl::nullopt,
+            true,
+        },
+        {
             "https://example.com/^10^21",
             blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(GURL("https://example.com/")),
@@ -641,10 +661,20 @@ TEST_F(StorageKeyTest, DeserializeNonces) {
             true,
         },
         {
+            "https://example.com/^100^21",
+            absl::nullopt,
+            true,
+        },
+        {
             "https://example.com/^11^21",
             blink::StorageKey::CreateWithNonce(
                 url::Origin::Create(GURL("https://example.com/")),
                 base::UnguessableToken::CreateForTesting(1ULL, 1ULL)),
+            true,
+        },
+        {
+            "https://example.com/^11^201",
+            absl::nullopt,
             true,
         },
     };

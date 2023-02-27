@@ -296,6 +296,12 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       if (!base::StringToUint64(low_digits, &nonce_low))
         return absl::nullopt;
 
+      // The key is corrupted if there are extra 0s in front of the nonce.
+      if (base::NumberToString(nonce_high) != high_digits ||
+          base::NumberToString(nonce_low) != low_digits) {
+        return absl::nullopt;
+      }
+
       nonce = base::UnguessableToken::Deserialize(nonce_high, nonce_low);
 
       if (!nonce.has_value()) {
@@ -360,6 +366,12 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       }
 
       if (!base::StringToUint64(low_digits, &nonce_low)) {
+        return absl::nullopt;
+      }
+
+      // The key is corrupted if there are extra 0s in front of the nonce.
+      if (base::NumberToString(nonce_high) != high_digits ||
+          base::NumberToString(nonce_low) != low_digits) {
         return absl::nullopt;
       }
 
