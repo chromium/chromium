@@ -17,8 +17,9 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: Disallow usage of the Developer Tools on extensions installed by enterprise
-    policy, allow usage of the Developer Tools in other contexts
+- caption: Disallow usage of the Developer Tools on apps and extensions
+    installed by enterprise policy, allow usage of the Developer Tools in other
+    contexts
   name: DeveloperToolsDisallowedForForceInstalledExtensions
   value: 0
 - caption: Allow usage of the Developer Tools

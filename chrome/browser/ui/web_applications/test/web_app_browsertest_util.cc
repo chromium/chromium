@@ -353,6 +353,23 @@ bool IsBrowserOpen(const Browser* test_browser) {
   return false;
 }
 
+absl::optional<AppId> ForceInstallWebApp(Profile* profile, GURL url) {
+  web_app::ExternalInstallOptions install_options(
+      url, web_app::mojom::UserDisplayMode::kStandalone,
+      web_app::ExternalInstallSource::kExternalPolicy);
+  auto result =
+      ExternallyManagedAppManagerInstall(profile, std::move(install_options));
+  EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
+  const auto& registrar =
+      WebAppProvider::GetForTest(profile)->registrar_unsafe();
+  absl::optional<web_app::AppId> policy_app_id =
+      registrar.LookupExternalAppId(url);
+  EXPECT_TRUE(policy_app_id.has_value());
+  EXPECT_TRUE(
+      registrar.GetAppById(policy_app_id.value())->IsPolicyInstalledApp());
+  return policy_app_id;
+}
+
 BrowserWaiter::BrowserWaiter(Browser* filter) : filter_(filter) {
   BrowserList::AddObserver(this);
 }

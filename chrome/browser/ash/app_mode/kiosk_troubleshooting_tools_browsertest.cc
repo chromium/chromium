@@ -30,11 +30,9 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
   KioskTroubleshootingToolsTest& operator=(
       const KioskTroubleshootingToolsTest&) = delete;
 
-  // TODO(b/269316430): once devtools window stops being created by default,
-  // fix this browser test.
-  void DisableDevTools() const {
+  void EnableDevTools() const {
     initial_browser()->profile()->GetPrefs()->SetInteger(
-        prefs::kDevToolsAvailability, static_cast<int>(kDisallowed));
+        prefs::kDevToolsAvailability, static_cast<int>(kAllowed));
   }
 
   void ExpectOpenDevTools() const {
@@ -66,6 +64,7 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
   initial_browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kKioskTroubleshootingToolsEnabled, true);
 
+  EnableDevTools();
   DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
                                                 /* is_docked= */ false);
   ExpectOpenDevTools();
@@ -78,11 +77,10 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
-                       DevToolsDefaultShowAndDisallowed) {
+                       DevToolsDisalloweddNoShow) {
   InitializeRegularOnlineKiosk();
   ExpectOnlyKioskAppOpen();
 
-  DisableDevTools();
   initial_browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kKioskTroubleshootingToolsEnabled, true);
 
@@ -95,10 +93,11 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
 }
 
 IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest,
-                       DevToolsDefaultTroubleshootingDisabled) {
+                       DevToolsTroubleshootingDisabled) {
   InitializeRegularOnlineKiosk();
   ExpectOnlyKioskAppOpen();
 
+  EnableDevTools();
   DevToolsWindowTesting::OpenDevToolsWindowSync(initial_browser(),
                                                 /* is_docked= */ false);
   ExpectOnlyKioskAppOpen();

@@ -647,16 +647,8 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
   ASSERT_FALSE(registrar().HasExternalApp(app_id));
 
   // Install policy app
-  ExternalInstallOptions install_options(
-      url, mojom::UserDisplayMode::kStandalone,
-      ExternalInstallSource::kExternalPolicy);
-  InstallApp(install_options);
-  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
-            result_code_.value());
-  absl::optional<AppId> policy_app_id = registrar().LookupExternalAppId(url);
-  ASSERT_TRUE(policy_app_id.has_value());
-  ASSERT_EQ(policy_app_id.value(), app_id);
-  ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
+  absl::optional<AppId> policy_app_id = ForceInstallWebApp(profile(), url);
+  ASSERT_EQ(policy_app_id, app_id);
 
   // Uninstall policy app
   std::vector<ExternalInstallOptions> desired_apps_install_options;
@@ -678,9 +670,7 @@ IN_PROC_BROWSER_TEST_P(ExternallyManagedBrowserTestWithPrefMigrationRead,
   ASSERT_FALSE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
 
   // Reinstall policy app
-  InstallApp(install_options);
-  ASSERT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
-            result_code_.value());
+  ForceInstallWebApp(profile(), url);
   ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
 }
 
