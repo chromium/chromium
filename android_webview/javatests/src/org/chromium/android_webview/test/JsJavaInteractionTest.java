@@ -24,6 +24,7 @@ import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
@@ -55,12 +56,16 @@ public class JsJavaInteractionTest {
             RESOURCE_PATH + "/post_message_with_ports.html";
     private static final String POST_MESSAGE_REPEAT_HTML =
             RESOURCE_PATH + "/post_message_repeat.html";
+    private static final String POST_MESSAGE_NULL_OR_UNDEFINED_HTML =
+            RESOURCE_PATH + "/post_message_null_or_undefined.html";
     private static final String POST_MESSAGE_REPLY_HTML =
             RESOURCE_PATH + "/post_message_receives_reply.html";
     private static final String POST_MESSAGE_ARRAYBUFFER_REPLY_HTML =
             RESOURCE_PATH + "/post_message_array_buffer_reply.html";
     private static final String POST_MESSAGE_ARRAYBUFFER_TITLE_HTML =
             RESOURCE_PATH + "/post_message_array_buffer_title.html";
+    private static final String POST_MESSAGE_ARRAYBUFFER_TRANSFER_HTML =
+            RESOURCE_PATH + "/post_message_array_buffer_transfer.html";
     private static final String FILE_URI = "file:///android_asset/asset_file.html";
     private static final String HELLO_WORLD_HTML = RESOURCE_PATH + "/hello_world.html";
 
@@ -80,26 +85,34 @@ public class JsJavaInteractionTest {
         private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
 
         public static class Data {
-            public String mMessage;
+            private MessagePayload mPayload;
             public Uri mSourceOrigin;
             public boolean mIsMainFrame;
             public JsReplyProxy mReplyProxy;
             public MessagePort[] mPorts;
 
-            public Data(String message, Uri sourceOrigin, boolean isMainFrame,
+            public Data(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
                     JsReplyProxy replyProxy, MessagePort[] ports) {
-                mMessage = message;
+                mPayload = payload;
                 mSourceOrigin = sourceOrigin;
                 mIsMainFrame = isMainFrame;
                 mReplyProxy = replyProxy;
                 mPorts = ports;
             }
+
+            public String getAsString() {
+                return mPayload.getAsString();
+            }
+
+            public byte[] getAsArrayBuffer() {
+                return mPayload.getAsArrayBuffer();
+            }
         }
 
         @Override
-        public void onPostMessage(String message, Uri sourceOrigin, boolean isMainFrame,
+        public void onPostMessage(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
                 JsReplyProxy replyProxy, MessagePort[] ports) {
-            mQueue.add(new Data(message, sourceOrigin, isMainFrame, replyProxy, ports));
+            mQueue.add(new Data(payload, sourceOrigin, isMainFrame, replyProxy, ports));
         }
 
         public Data waitForOnPostMessage() throws Exception {
@@ -133,7 +146,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
@@ -159,7 +172,7 @@ public class JsJavaInteractionTest {
         Assert.assertNotNull(data.mSourceOrigin);
         Assert.assertEquals("null", data.mSourceOrigin.toString());
 
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
@@ -178,7 +191,7 @@ public class JsJavaInteractionTest {
 
         final MessagePort[] ports = data.mPorts;
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertEquals(1, ports.length);
 
         // JavaScript code in the page will change the title to NEW_TITLE if postMessage on
@@ -204,7 +217,7 @@ public class JsJavaInteractionTest {
         for (int i = 0; i < MESSAGE_COUNT; ++i) {
             TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
             assertUrlHasOrigin(url, data.mSourceOrigin);
-            Assert.assertEquals(HELLO + ":" + i, data.mMessage);
+            Assert.assertEquals(HELLO + ":" + i, data.getAsString());
         }
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
@@ -227,7 +240,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(frameUrl, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertFalse(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
@@ -262,13 +275,13 @@ public class JsJavaInteractionTest {
         loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
 
         mActivityTestRule.executeJavaScriptAndWaitForResult(
                 mAwContents, mContentsClient, JS_OBJECT_NAME_2 + ".postMessage('" + HELLO + "');");
 
         TestWebMessageListener.Data data2 = mListener.waitForOnPostMessage();
-        Assert.assertEquals(HELLO, data2.mMessage);
+        Assert.assertEquals(HELLO, data2.getAsString());
     }
 
     @Test
@@ -323,7 +336,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertEquals(0, data.mPorts.length);
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
@@ -351,7 +364,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertEquals(0, data.mPorts.length);
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
@@ -376,7 +389,7 @@ public class JsJavaInteractionTest {
 
         // The iframe should have myObject injected.
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
 
@@ -395,7 +408,7 @@ public class JsJavaInteractionTest {
         loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
 
@@ -419,7 +432,7 @@ public class JsJavaInteractionTest {
         loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
 
@@ -704,21 +717,34 @@ public class JsJavaInteractionTest {
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testPostArrayBufferFeatureDisabled() throws Throwable {
+        final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+        final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_REPLY_HTML);
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        data.mReplyProxy.postMessage(new MessagePayload(content));
+        data = mListener.waitForOnPostMessage();
+        final String errorString = data.getAsString();
+        Assert.assertTrue(errorString.contains("Error"));
+    }
+
     private void verifyPostArrayBufferWorks(byte[] content) throws Exception {
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
         final String url = loadUrlFromPath(POST_MESSAGE_ARRAYBUFFER_REPLY_HTML);
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         data.mReplyProxy.postMessage(new MessagePayload(content));
         data = mListener.waitForOnPostMessage();
-        // TODO(crbug.com/1374142): Add support for ArrayBuffer message from
-        // JS to Java. Right now we only check length.
-        Assert.assertEquals(content.length, Integer.parseInt(data.mMessage));
+        Assert.assertArrayEquals(content, data.getAsArrayBuffer());
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @CommandLineFlags.Add({"enable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostArrayBufferWorks() throws Throwable {
         final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
         verifyPostArrayBufferWorks(content);
@@ -727,6 +753,7 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @CommandLineFlags.Add({"enable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostEmptyArrayBuffer() throws Throwable {
         final byte[] content = new byte[0];
         verifyPostArrayBufferWorks(content);
@@ -735,10 +762,46 @@ public class JsJavaInteractionTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @CommandLineFlags.Add({"enable-features=JsInjectionArrayBufferJsToBrowser"})
     public void testPostLargeArrayBuffer() throws Throwable {
         final byte[] content = new byte[500 * 1000]; // 500 Kib
         new Random(42).nextBytes(content);
         verifyPostArrayBufferWorks(content);
+    }
+
+    private void verifyPostNullOrUndefinedShouldThrowException() throws Throwable {
+        final byte[] content = (HELLO + "FromJava").getBytes(StandardCharsets.UTF_8);
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+        final String url = loadUrlFromPath(POST_MESSAGE_NULL_OR_UNDEFINED_HTML);
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        data.mReplyProxy.postMessage(new MessagePayload(content));
+
+        // Null
+        data = mListener.waitForOnPostMessage();
+        String errorString = data.getAsString();
+        Assert.assertTrue(errorString.contains("Error"));
+
+        // Undefined
+        data = mListener.waitForOnPostMessage();
+        errorString = data.getAsString();
+        Assert.assertTrue(errorString.contains("Error"));
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testPostNullOrUndefinedShouldThrowException() throws Throwable {
+        verifyPostNullOrUndefinedShouldThrowException();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @CommandLineFlags.Add({"enable-features=JsInjectionArrayBufferJsToBrowser"})
+    public void testPostNullOrUndefinedShouldThrowExceptionWithArrayBufferFeature()
+            throws Throwable {
+        verifyPostNullOrUndefinedShouldThrowException();
     }
 
     @Test
@@ -775,7 +838,7 @@ public class JsJavaInteractionTest {
                 JS_OBJECT_NAME_2 + ".postMessage('" + message + "');");
         TestWebMessageListener.Data data2 = webMessageListener2.waitForOnPostMessage();
 
-        Assert.assertEquals(message, data2.mMessage);
+        Assert.assertEquals(message, data2.getAsString());
 
         // Targeting myObject.
         data.mReplyProxy.postMessage(new MessagePayload(HELLO));
@@ -785,8 +848,8 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data replyData1 = mListener.waitForOnPostMessage();
         TestWebMessageListener.Data replyData2 = webMessageListener2.waitForOnPostMessage();
 
-        Assert.assertEquals("ack1" + HELLO, replyData1.mMessage);
-        Assert.assertEquals("ack2" + HELLO, replyData2.mMessage);
+        Assert.assertEquals("ack1" + HELLO, replyData1.getAsString());
+        Assert.assertEquals("ack2" + HELLO, replyData2.getAsString());
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
         Assert.assertTrue(webMessageListener2.hasNoMoreOnPostMessage());
@@ -860,8 +923,8 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data replyData1 = mListener.waitForOnPostMessage();
         TestWebMessageListener.Data replyData2 = mListener.waitForOnPostMessage();
 
-        Assert.assertEquals("ack1:1", replyData1.mMessage);
-        Assert.assertEquals("ack2:1", replyData2.mMessage);
+        Assert.assertEquals("ack1:1", replyData1.getAsString());
+        Assert.assertEquals("ack2:1", replyData2.getAsString());
 
         removeEventListener(
                 "listener2", JS_OBJECT_NAME, mActivityTestRule, mAwContents, mContentsClient);
@@ -871,7 +934,7 @@ public class JsJavaInteractionTest {
 
         // listener 1 should add message again.
         TestWebMessageListener.Data replyData3 = mListener.waitForOnPostMessage();
-        Assert.assertEquals("ack1:2", replyData3.mMessage);
+        Assert.assertEquals("ack1:2", replyData3.getAsString());
 
         // Should be no more messages.
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
@@ -914,7 +977,7 @@ public class JsJavaInteractionTest {
 
         Assert.assertEquals("null", data.mSourceOrigin.toString());
 
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
@@ -1021,7 +1084,7 @@ public class JsJavaInteractionTest {
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
 
         webServer.shutdown();
@@ -1083,7 +1146,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
@@ -1104,12 +1167,12 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO + "1", data.mMessage);
+        Assert.assertEquals(HELLO + "1", data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
         TestWebMessageListener.Data data2 = mListener.waitForOnPostMessage();
-        Assert.assertEquals(HELLO, data2.mMessage);
+        Assert.assertEquals(HELLO, data2.getAsString());
         Assert.assertTrue(data2.mIsMainFrame);
 
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
@@ -1131,7 +1194,7 @@ public class JsJavaInteractionTest {
             TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
             assertUrlHasOrigin(url, data.mSourceOrigin);
-            Assert.assertEquals(HELLO + Integer.toString(i), data.mMessage);
+            Assert.assertEquals(HELLO + Integer.toString(i), data.getAsString());
             Assert.assertTrue(data.mIsMainFrame);
             Assert.assertEquals(0, data.mPorts.length);
         }
@@ -1154,7 +1217,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO + "0", data.mMessage);
+        Assert.assertEquals(HELLO + "0", data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
@@ -1164,7 +1227,7 @@ public class JsJavaInteractionTest {
         for (int i = 0; i < 2; ++i) {
             TestWebMessageListener.Data data2 = mListener.waitForOnPostMessage();
 
-            Assert.assertEquals(HELLO + Integer.toString(i), data2.mMessage);
+            Assert.assertEquals(HELLO + Integer.toString(i), data2.getAsString());
             Assert.assertTrue(data2.mIsMainFrame);
         }
 
@@ -1248,7 +1311,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(frameUrl, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertFalse(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 
@@ -1276,7 +1339,7 @@ public class JsJavaInteractionTest {
             TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
             assertUrlHasOrigin(url, data.mSourceOrigin);
-            Assert.assertEquals(HELLO + Integer.toString(i), data.mMessage);
+            Assert.assertEquals(HELLO + Integer.toString(i), data.getAsString());
         }
 
         TestThreadUtils.runOnUiThreadBlocking(() -> handlers[0].remove());
@@ -1284,7 +1347,7 @@ public class JsJavaInteractionTest {
         loadUrlFromPath(HELLO_WORLD_HTML);
 
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
-        Assert.assertEquals(HELLO + "1", data.mMessage);
+        Assert.assertEquals(HELLO + "1", data.getAsString());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> handlers[1].remove());
         // Load the page again.
@@ -1308,7 +1371,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         assertUrlHasOrigin(url, data.mSourceOrigin);
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
 
         // Remove twice, the second time should take no effect.
         TestThreadUtils.runOnUiThreadBlocking(() -> handler.remove());
@@ -1340,7 +1403,7 @@ public class JsJavaInteractionTest {
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
 
         Assert.assertEquals("http://www.google.com", data.mSourceOrigin.toString());
-        Assert.assertEquals(HELLO, data.mMessage);
+        Assert.assertEquals(HELLO, data.getAsString());
         Assert.assertTrue(data.mIsMainFrame);
         Assert.assertEquals(0, data.mPorts.length);
 

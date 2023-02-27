@@ -5,9 +5,13 @@
   <script>
     myObject.onmessage = function (event) {
       try {
-        myObject.postMessage(event.data);
+        myObject.postMessage(null);
       } catch (e) {
-        // ArrayBuffer may not supported, echo error back.
+        myObject.postMessage(e.toString());
+      }
+      try {
+        myObject.postMessage(undefined);
+      } catch (e) {
         myObject.postMessage(e.toString());
       }
     };

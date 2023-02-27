@@ -11,6 +11,7 @@ import org.chromium.android_webview.JsReplyProxy;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.base.Log;
 import org.chromium.content_public.browser.MessagePayload;
+import org.chromium.content_public.browser.MessagePayloadType;
 import org.chromium.content_public.browser.MessagePort;
 import org.chromium.support_lib_boundary.WebMessageListenerBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
@@ -45,7 +46,7 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
     }
 
     @Override
-    public void onPostMessage(final String message, final Uri sourceOrigin,
+    public void onPostMessage(final MessagePayload payload, final Uri sourceOrigin,
             final boolean isMainFrame, final JsReplyProxy replyProxy, final MessagePort[] ports) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                     mSupportedFeatures, Features.WEB_MESSAGE_LISTENER)) {
@@ -53,9 +54,14 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
             return;
         }
 
+        // TODO(crbug.com/1374142): Add array buffer type support.
+        if (payload.getType() != MessagePayloadType.STRING) {
+            return;
+        }
+
         mImpl.onPostMessage(mWebView,
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebMessageAdapter(new MessagePayload(message), ports)),
+                        new SupportLibWebMessageAdapter(payload, ports)),
                 sourceOrigin, isMainFrame,
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                         new SupportLibJsReplyProxyAdapter(replyProxy)));

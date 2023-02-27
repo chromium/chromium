@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
 /**
@@ -25,9 +26,9 @@ public class WebMessageListenerHolder {
     }
 
     @CalledByNative
-    public void onPostMessage(String message, String sourceOrigin, boolean isMainFrame,
+    public void onPostMessage(MessagePayload payload, String sourceOrigin, boolean isMainFrame,
             MessagePort[] ports, JsReplyProxy replyProxy) {
-        mListener.onPostMessage(message, Uri.parse(sourceOrigin), isMainFrame, replyProxy, ports);
+        mListener.onPostMessage(payload, Uri.parse(sourceOrigin), isMainFrame, replyProxy, ports);
     }
 
     public WebMessageListener getListener() {

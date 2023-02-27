@@ -6,6 +6,7 @@ package org.chromium.android_webview;
 
 import android.net.Uri;
 
+import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
 /**
@@ -16,14 +17,14 @@ import org.chromium.content_public.browser.MessagePort;
 public interface WebMessageListener {
     /**
      * Receives postMessage information.
-     * @param message      The message from JavaScript.
+     * @param payload      The message payload from JavaScript.
      * @param sourceOrigin The origin of the frame where the message is from.
-     * @param isMainframe  If the message is from a main frame.
+     * @param isMainFrame  If the message is from a main frame.
      * @param jsReplyProxy Used for reply message to the injected JavaScript object.
      * @param ports        JavaScript code could post message with additional message ports. Receive
      *                     ports to establish new communication channels. Could be empty array but
      *                     won't be null.
      */
-    void onPostMessage(String message, Uri sourceOrigin, boolean isMainFrame,
+    void onPostMessage(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
             JsReplyProxy jsReplyProxy, MessagePort[] ports);
 }
