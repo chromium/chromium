@@ -5756,6 +5756,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "policy-logs-page-ios",
+    "owners": [ "esalma", "ftirelo" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "policy-merge-multi-source",
     "owners": [ "igorruvinov", "ydago", "pastarmovj" ],
     "expiry_milestone": 116

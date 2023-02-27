@@ -661,6 +661,10 @@ extern const char kPasswordNotesWithBackupDescription[];
 extern const char kPasswordReuseDetectionName[];
 extern const char kPasswordReuseDetectionDescription[];
 
+// Title and description for the flag to enable chrome://policy/logs on iOS
+extern const char kPolicyLogsPageIOSName[];
+extern const char kPolicyLogsPageIOSDescription[];
+
 // Title and description for the flag to have the Promos Manager use the FET as
 // its impression tracking system.
 extern const char kPromosManagerUsesFETName[];

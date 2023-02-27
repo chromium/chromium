@@ -745,6 +745,11 @@ const char kPasswordReuseDetectionDescription[] =
     "Displays warning when user types or pastes a saved password into a "
     "phishing website.";
 
+const char kPolicyLogsPageIOSName[] = "Policy Logs Page on IOS";
+const char kPolicyLogsPageIOSDescription[] =
+    "Enable the new chrome://policy/logs page containing logs for debugging "
+    "policy related issues on IOS.";
+
 const char kPromosManagerUsesFETName[] = "Promos Manager using FET";
 const char kPromosManagerUsesFETDescription[] =
     "Migrates the Promos Manager to use the Feature Engagement Tracker as its "
