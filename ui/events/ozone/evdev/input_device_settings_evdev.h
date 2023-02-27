@@ -7,6 +7,9 @@
 
 #include <vector>
 
+#include "base/component_export.h"
+#include "base/containers/flat_map.h"
+
 namespace ui {
 
 enum class DomCode;
@@ -48,15 +51,28 @@ struct PointingStickSettingsEvdev {
   int sensitivity = kDefaultSensitivity;
 };
 
-struct InputDeviceSettingsEvdev {
+struct COMPONENT_EXPORT(EVDEV) InputDeviceSettingsEvdev {
   InputDeviceSettingsEvdev();
   InputDeviceSettingsEvdev(const InputDeviceSettingsEvdev&);
   ~InputDeviceSettingsEvdev();
 
-  TouchpadSettingsEvdev touchpad_settings;
-  MouseSettingsEvdev mouse_settings;
-  PointingStickSettingsEvdev pointing_stick_settings;
+  TouchpadSettingsEvdev& GetTouchpadSettings();
+  TouchpadSettingsEvdev& GetTouchpadSettings(int device_id);
+  const TouchpadSettingsEvdev& GetTouchpadSettings() const;
+  const TouchpadSettingsEvdev& GetTouchpadSettings(int device_id) const;
 
+  MouseSettingsEvdev& GetMouseSettings();
+  MouseSettingsEvdev& GetMouseSettings(int device_id);
+  const MouseSettingsEvdev& GetMouseSettings() const;
+  const MouseSettingsEvdev& GetMouseSettings(int device_id) const;
+
+  PointingStickSettingsEvdev& GetPointingStickSettings();
+  PointingStickSettingsEvdev& GetPointingStickSettings(int device_id);
+  const PointingStickSettingsEvdev& GetPointingStickSettings() const;
+  const PointingStickSettingsEvdev& GetPointingStickSettings(
+      int device_id) const;
+
+  bool enable_per_device_settings = false;
   // Pausing of tap to click applies to all touchpad devices.
   bool tap_to_click_paused = false;
   // Three finger click applies to all touchpad devices.
@@ -67,6 +83,11 @@ struct InputDeviceSettingsEvdev {
   bool enable_touch_screens = true;
   bool enable_internal_keyboard_filter = false;
   std::vector<DomCode> internal_keyboard_allowed_keys;
+
+ private:
+  base::flat_map<int, TouchpadSettingsEvdev> touchpad_settings_;
+  base::flat_map<int, MouseSettingsEvdev> mouse_settings_;
+  base::flat_map<int, PointingStickSettingsEvdev> pointing_stick_settings_;
 };
 
 }  // namespace ui
