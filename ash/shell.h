@@ -16,9 +16,6 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/system_sounds_delegate.h"
-#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
-#include "ash/system/input_device_settings/input_device_tracker.h"
-#include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -150,11 +147,14 @@ class ColorEnhancementController;
 class HoldingSpaceController;
 class HumanPresenceOrientationController;
 class ImeControllerImpl;
+class InputDeviceSettingsControllerImpl;
+class InputDeviceTracker;
 class WebAuthNDialogControllerImpl;
 class KeyAccessibilityEnabler;
 class KeyboardBacklightColorController;
 class KeyboardBrightnessControlDelegate;
 class KeyboardControllerImpl;
+class KeyboardModifierMetricsRecorder;
 class LaserPointerController;
 class LocaleUpdateControllerImpl;
 class LockStateController;
