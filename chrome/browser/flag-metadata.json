@@ -7140,6 +7140,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "user-notes-side-panel",
+    "owners": [ "corising", "chrome-desktop-ui-sea" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "username-first-flow-fallback-crowdsourcing",
     "owners": [ "kolos", "shaikhitdin@google.com" ],
     "expiry_milestone": 116

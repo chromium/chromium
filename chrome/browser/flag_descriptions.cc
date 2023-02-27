@@ -3133,6 +3133,11 @@ const char kUseNAT64ForIPv4LiteralDescription[] =
     "Enables IPv4 to IPv6 address translation for IPv4 literals when chrome is "
     "on an IPv6 only network";
 
+const char kUserNotesSidePanelName[] = "User notes side panel";
+const char kUserNotesSidePanelDescription[] =
+    "Enables the user notes feature in the side panel. "
+    "Only works if Power bookmark backend is also enabled.";
+
 const char kUsernameFirstFlowFallbackCrowdsourcingName[] =
     "Username first flow fallback crowdsourcing";
 const char kUsernameFirstFlowFallbackCrowdsourcingDescription[] =

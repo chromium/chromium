@@ -58436,6 +58436,7 @@ from previous Chrome versions.
   <int value="-1876955850" label="EnablePciguardUi:enabled"/>
   <int value="-1876881908"
       label="disable-infobar-for-protected-media-identifier"/>
+  <int value="-1875836063" label="UserNotes:disabled"/>
   <int value="-1875383510" label="UseGoogleLocalNtp:disabled"/>
   <int value="-1875168316" label="UseMonitorColorSpace:disabled"/>
   <int value="-1874908826" label="enable-instant-search-clicks"/>
@@ -60768,6 +60769,7 @@ from previous Chrome versions.
       label="WebAuthenticationPasskeysUIExperiment:enabled"/>
   <int value="-582870536" label="BluetoothNextHandsfreeProfile:enabled"/>
   <int value="-582570706" label="PPAPISharedImagesSwapChain:disabled"/>
+  <int value="-582300629" label="UserNotes:enabled"/>
   <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
   <int value="-579656054" label="CCTResizableSideSheetForThirdParties:enabled"/>

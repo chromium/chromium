@@ -239,6 +239,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "components/user_notes/user_notes_features.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -9383,6 +9384,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"power-bookmark-backend", flag_descriptions::kPowerBookmarkBackendName,
      flag_descriptions::kPowerBookmarkBackendDescription, kOsAll,
      FEATURE_VALUE_TYPE(power_bookmarks::kPowerBookmarkBackend)},
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"user-notes-side-panel", flag_descriptions::kUserNotesSidePanelName,
+     flag_descriptions::kUserNotesSidePanelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(user_notes::kUserNotes)},
+#endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
