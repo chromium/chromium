@@ -220,9 +220,9 @@ const char kIsolatedAppCSP[] =
     "frame-src 'self' https:;"
     "connect-src 'self' https:;"
     "script-src 'self' 'wasm-unsafe-eval';"
-    "img-src 'self' data:;"
-    "media-src 'self' data:;"
-    "font-src 'self' data:;"
+    "img-src 'self' https: blob: data:;"
+    "media-src 'self' https: blob: data:;"
+    "font-src 'self' blob: data:;"
     "require-trusted-types-for 'script';";
 
 // Corresponds to the "NavigationURLScheme" histogram enumeration type in

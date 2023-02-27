@@ -1105,6 +1105,10 @@
 //content/test/data/media/bear_192kHz.wav
 //content/test/data/media/bear_3kHz.wav
 //content/test/data/media/bear_alaw.wav
+//content/test/data/media/bear_corp.flac
+//content/test/data/media/bear_corp.flac.mock-http-headers
+//content/test/data/media/bear_corp.webm
+//content/test/data/media/bear_corp.webm.mock-http-headers
 //content/test/data/media/bear_divx_mp3.avi
 //content/test/data/media/bear_gsm_ms.wav
 //content/test/data/media/bear_h264_aac.3gp
@@ -1553,6 +1557,8 @@
 //content/test/data/simple_links.html
 //content/test/data/simple_page.html
 //content/test/data/single_face.jpg
+//content/test/data/single_face_corp.jpg
+//content/test/data/single_face_corp.jpg.mock-http-headers
 //content/test/data/site_isolation/blank.html
 //content/test/data/site_isolation/comment_js.html
 //content/test/data/site_isolation/comment_valid.html
