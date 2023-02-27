@@ -23,11 +23,13 @@ All/PublicSessionWithTermsOfServiceOobeTest.*
 All/SAMLDeviceAttestationEnrolledTest.*
 All/SAMLDeviceAttestationTest.*
 All/SAMLEnrollmentTest.*
+All/SAMLLocalesTest.*
 All/SAMLPasswordAttributesTest.*
 All/SAMLPolicyTest.*
 All/SamlTestWithFeatures.*
 All/SmartPrivacyProtectionScreenTest.*
 All/SshWarningTest.*
+All/SsoProfileTest.*
 All/SyncConsentPolicyDisabledTest.*
 All/SyncConsentTestWithModesParams.*
 All/SyncConsentTestWithParams.*

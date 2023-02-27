@@ -1122,6 +1122,10 @@ class SAMLPolicyTest : public SamlTestBase {
 
  protected:
   policy::DevicePolicyCrosTestHelper test_helper_;
+  // TODO(b/270930387): refactor to do device policy updates through
+  // `device_state_` from `SamlTestBase` instead. Right now we have two ways to
+  // do device policy updates in this fixture and they are not interchangeable
+  // as they update different policy blobs.
   policy::DevicePolicyBuilder* device_policy_;
   NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   net::CookieList cookie_list_;
@@ -1758,6 +1762,58 @@ IN_PROC_BROWSER_TEST_F(SAMLLocalesTest, PropagatesToIdp) {
       saml_test_users::kFirstUserCorpExampleComEmail);
 
   SigninFrameJS().ExpectEQ("navigator.language", std::string(kLoginLocale));
+}
+
+// For tests relying on sso_profile in device policy blob which is responcible
+// for per-OU IdP configuration.
+class SsoProfileTest : public SamlTestBase {
+ public:
+  SsoProfileTest();
+
+  SsoProfileTest(const SsoProfileTest&) = delete;
+  SsoProfileTest& operator=(const SsoProfileTest&) = delete;
+
+  ~SsoProfileTest() override = default;
+};
+
+SsoProfileTest::SsoProfileTest() {
+  device_state_.SetState(
+      DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED);
+  std::unique_ptr<ScopedDevicePolicyUpdate> policy_update =
+      device_state_.RequestDevicePolicyUpdate();
+  // Set LoginAuthenticationBehavior policy to go directly to 3P IdP login page
+  em::ChromeDeviceSettingsProto& proto(*policy_update->policy_payload());
+  proto.mutable_login_authentication_behavior()
+      ->set_login_authentication_behavior(
+          em::LoginAuthenticationBehaviorProto_LoginBehavior_SAML_INTERSTITIAL);
+  // Set SSO Profile corresponding to `fake_saml_idp()`
+  policy_update->policy_data()->set_sso_profile(
+      fake_saml_idp()->GetIdpSsoProfile());
+}
+
+// Tests that we land on 3P IdP page corresponding to sso_profile from the
+// device policy blob during "add user" flow.
+IN_PROC_BROWSER_TEST_F(SsoProfileTest, AddNewUser) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  // Set wrong redirect url for domain-based saml redirection. This ensures that
+  // for test to finish successfully it should perform redirection based on sso
+  // profile.
+  const GURL wrong_redirect_url("https://wrong.com");
+  fake_gaia_.fake_gaia()->RegisterSamlDomainRedirectUrl(
+      fake_saml_idp()->GetIdpDomain(), wrong_redirect_url);
+
+  // Launch "add user" flow.
+  ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
+
+  SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
+  SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
+
+  SigninFrameJS().TapOn("Submit");
+  test::WaitForPrimaryUserSessionStart();
 }
 
 class SAMLPasswordAttributesTest : public SAMLPolicyTest,
