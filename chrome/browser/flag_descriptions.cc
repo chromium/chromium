@@ -4284,6 +4284,10 @@ const char kNtpDummyModulesDescription[] =
     "enabled.";
 #endif
 
+const char kNtpHistoryClustersModuleName[] = "NTP Journeys Module";
+const char kNtpHistoryClustersModuleDescription[] =
+    "Shows the Journeys module on the New Tab Page.";
+
 const char kNtpMiddleSlotPromoDismissalName[] =
     "NTP Middle Slot Promo Dismissal";
 const char kNtpMiddleSlotPromoDismissalDescription[] =

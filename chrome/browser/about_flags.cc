@@ -5754,6 +5754,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ntp_features::kNtpDummyModules)},
 #endif
 
+    {"ntp-journeys-module", flag_descriptions::kNtpHistoryClustersModuleName,
+     flag_descriptions::kNtpHistoryClustersModuleDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpHistoryClustersModule)},
+
     {"ntp-middle-slot-promo-dismissal",
      flag_descriptions::kNtpMiddleSlotPromoDismissalName,
      flag_descriptions::kNtpMiddleSlotPromoDismissalDescription, kOsDesktop,

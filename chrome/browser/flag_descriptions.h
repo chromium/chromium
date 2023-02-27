@@ -2456,6 +2456,9 @@ extern const char kNtpDummyModulesName[];
 extern const char kNtpDummyModulesDescription[];
 #endif
 
+extern const char kNtpHistoryClustersModuleName[];
+extern const char kNtpHistoryClustersModuleDescription[];
+
 extern const char kNtpMiddleSlotPromoDismissalName[];
 extern const char kNtpMiddleSlotPromoDismissalDescription[];
 
