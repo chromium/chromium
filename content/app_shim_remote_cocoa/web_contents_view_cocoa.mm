@@ -270,6 +270,10 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 - (void)draggingSession:(NSDraggingSession*)session
            endedAtPoint:(NSPoint)screenPoint
               operation:(NSDragOperation)operation {
+  if (!_host) {
+    return;
+  }
+
   // Reconstruct the screen point by removing the offset. It seems like the
   // underlying drag machinery is measuring from the corner of the dragged
   // image.
