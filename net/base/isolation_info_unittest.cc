@@ -179,10 +179,7 @@ TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfo) {
 
 // A 2.5-keyed NAK created with two identical opaque origins should be
 // same-site.
-// TODO(crbug.com/1419563): Disabled as it was causing consistent failures
-// across multiple builders
-TEST_P(IsolationInfoTest,
-       DISABLED_CreateNetworkAnonymizationKeyForIsolationInfoOpaque) {
+TEST_P(IsolationInfoTest, CreateNetworkAnonymizationKeyForIsolationInfoOpaque) {
   url::Origin opaque;
   IsolationInfo isolation_info = IsolationInfo::Create(
       IsolationInfo::RequestType::kMainFrame, opaque, opaque,
@@ -194,7 +191,7 @@ TEST_P(IsolationInfoTest,
   if (IsDoubleKeyAndCrossSiteBitNetworkAnonymizationKeyEnabled()) {
     EXPECT_FALSE(nak.GetIsCrossSite().value());
   } else {
-    EXPECT_DEATH_IF_SUPPORTED(nak.GetIsCrossSite(), "");
+    EXPECT_DCHECK_DEATH(nak.GetIsCrossSite());
   }
 
   url::Origin opaque2;
