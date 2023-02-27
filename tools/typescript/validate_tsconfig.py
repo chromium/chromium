@@ -38,14 +38,15 @@ _allowed_config_options = [
 
 # Allowed compilerOptions
 _allowed_compiler_options = [
-    'typeRoots',
-    'types',
+    'allowUmdGlobalAccess',
+    'lib',
+    'noPropertyAccessFromIndexSignature',
     'noUncheckedIndexedAccess',
     'noUnusedLocals',
-    'strictPropertyInitialization',
-    'noPropertyAccessFromIndexSignature',
-    'allowUmdGlobalAccess',
     'skipLibCheck',
+    'strictPropertyInitialization',
+    'typeRoots',
+    'types',
 ]
 
 
