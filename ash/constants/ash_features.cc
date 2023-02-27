@@ -1066,11 +1066,6 @@ BASE_FEATURE(kHandwritingLibraryDlc,
              "HandwritingLibraryDlc",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Background Page in the help app.
-BASE_FEATURE(kHelpAppBackgroundPage,
-             "HelpAppBackgroundPage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the Help App Discover tab notifications on non-stable
 // ChromeOS channels. Used for testing.
 BASE_FEATURE(kHelpAppDiscoverTabNotificationAllChannels,

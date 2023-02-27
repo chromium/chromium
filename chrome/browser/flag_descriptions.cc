@@ -5562,12 +5562,6 @@ const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
 
-const char kHelpAppBackgroundPageName[] = "Help App Background Page";
-const char kHelpAppBackgroundPageDescription[] =
-    "Enables the Background page in the help app. The background page is used "
-    "to initialize the Help App Launcher search index and show the Discover "
-    "tab notification.";
-
 const char kHelpAppLauncherSearchName[] = "Help App launcher search";
 const char kHelpAppLauncherSearchDescription[] =
     "Enables showing search results from the help app in the launcher.";

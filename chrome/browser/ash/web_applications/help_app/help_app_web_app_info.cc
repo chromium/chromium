@@ -93,13 +93,9 @@ std::vector<int> HelpAppSystemAppDelegate::GetAdditionalSearchTerms() const {
 
 absl::optional<SystemWebAppBackgroundTaskInfo>
 HelpAppSystemAppDelegate::GetTimerInfo() const {
-  if (base::FeatureList::IsEnabled(features::kHelpAppBackgroundPage)) {
-    return SystemWebAppBackgroundTaskInfo(absl::nullopt,
-                                          GURL("chrome://help-app/background"),
-                                          /*open_immediately=*/true);
-  } else {
-    return absl::nullopt;
-  }
+  return SystemWebAppBackgroundTaskInfo(absl::nullopt,
+                                        GURL("chrome://help-app/background"),
+                                        /*open_immediately=*/true);
 }
 
 std::unique_ptr<WebAppInstallInfo> HelpAppSystemAppDelegate::GetWebAppInfo()

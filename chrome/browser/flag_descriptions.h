@@ -3192,9 +3192,6 @@ extern const char kFullRestoreForLacrosDescription[];
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 
-extern const char kHelpAppBackgroundPageName[];
-extern const char kHelpAppBackgroundPageDescription[];
-
 extern const char kHelpAppLauncherSearchName[];
 extern const char kHelpAppLauncherSearchDescription[];
 
