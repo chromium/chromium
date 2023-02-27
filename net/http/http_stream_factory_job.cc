@@ -230,6 +230,17 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
   } else {
     DCHECK(!origin_url_.SchemeIsWSOrWSS());
   }
+
+  const NetLogWithSource* delegate_net_log = delegate_->GetNetLog();
+  if (delegate_net_log) {
+    net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB, [&] {
+      return NetLogHttpStreamJobParams(
+          delegate_net_log->source(), request_info_.url, origin_url_,
+          expect_spdy_, using_quic_, job_type_, priority_);
+    });
+    delegate_net_log->AddEventReferencingSource(
+        NetLogEventType::HTTP_STREAM_REQUEST_STARTED_JOB, net_log_.source());
+  }
 }
 
 HttpStreamFactory::Job::~Job() {
@@ -680,18 +691,6 @@ int HttpStreamFactory::Job::StartInternal() {
 }
 
 int HttpStreamFactory::Job::DoStart() {
-  const NetLogWithSource* net_log = delegate_->GetNetLog();
-
-  if (net_log) {
-    net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_JOB, [&] {
-      return NetLogHttpStreamJobParams(net_log->source(), request_info_.url,
-                                       origin_url_, expect_spdy_, using_quic_,
-                                       job_type_, priority_);
-    });
-    net_log->AddEventReferencingSource(
-        NetLogEventType::HTTP_STREAM_REQUEST_STARTED_JOB, net_log_.source());
-  }
-
   // Don't connect to restricted ports.
   if (!IsPortAllowedForScheme(destination_.port(),
                               request_info_.url.scheme_piece())) {
