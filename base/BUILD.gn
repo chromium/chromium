@@ -2026,7 +2026,6 @@ component("base") {
       "CoreFoundation.framework",
       "IOKit.framework",
       "OpenDirectory.framework",
-      "Security.framework",
     ]
   }
 
@@ -2071,6 +2070,7 @@ component("base") {
       "threading/platform_thread_mac.mm",
       "time/time_mac.mm",
     ]
+    frameworks += [ "Security.framework" ]
   }
 
   # Linux.

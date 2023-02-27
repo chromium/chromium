@@ -369,6 +369,8 @@ CF_CAST_DEFN(CGColor)
 CF_CAST_DEFN(CTFontDescriptor)
 CF_CAST_DEFN(CTRun)
 
+CF_CAST_DEFN(SecCertificate)
+
 #if BUILDFLAG(IS_IOS)
 CF_CAST_DEFN(CTFont)
 #else
@@ -407,7 +409,6 @@ CFCastStrict<CTFontRef>(const CFTypeRef& cf_val) {
 
 #if !BUILDFLAG(IS_IOS)
 CF_CAST_DEFN(SecAccessControl)
-CF_CAST_DEFN(SecCertificate)
 CF_CAST_DEFN(SecKey)
 CF_CAST_DEFN(SecPolicy)
 #endif
