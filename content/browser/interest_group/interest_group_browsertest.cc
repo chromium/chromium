@@ -7690,7 +7690,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     sellerTimeout: 200,
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
-    perBuyerCumulativeTimeouts: {$4: 130, $5: 140, '*': 160},
+    perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
     perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}}
   });
 })())",
@@ -7821,7 +7821,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     sellerTimeout: 200,
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
-    perBuyerCumulativeTimeouts: {$4: 130, $5: 140, '*': 160},
+    perBuyerCumulativeTimeouts: {$4: 13000, $5: 14000, '*': 16000},
     perBuyerPrioritySignals: {$4: {foo: 1}, '*': {BaR: -2}}
   });
 })())",
@@ -7999,7 +7999,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     sellerTimeout: 300,
     perBuyerSignals: maybePromise({$8: ["top-level buyer signals"]}),
     perBuyerTimeouts: maybePromise({$8: 110, '*': 150}),
-    perBuyerCumulativeTimeouts: maybePromise({$8: 111, '*': 151}),
+    perBuyerCumulativeTimeouts: maybePromise({$8: 11100, '*': 15100}),
     perBuyerPrioritySignals: {'*': {foo: 3}},
     componentAuctions: [{
       seller: $5,
@@ -8012,7 +8012,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       sellerTimeout: 200,
       perBuyerSignals: maybePromise({$8: ["component buyer signals"]}),
       perBuyerTimeouts: maybePromise({$8: 200}),
-      perBuyerCumulativeTimeouts: maybePromise({$8: 201}),
+      perBuyerCumulativeTimeouts: maybePromise({$8: 20100}),
       perBuyerPrioritySignals: {$8: {bar: 1}, '*': {BaZ: -2}},
     }],
   });
@@ -8671,13 +8671,13 @@ function validatePerBuyerCumulativeTimeouts(perBuyerCumulativeTimeouts) {
   let ok = 0;
   for (key in perBuyerCumulativeTimeouts) {
     if (key.startsWith("https://a.test") &&
-        perBuyerCumulativeTimeouts[key] === 70) {
+        perBuyerCumulativeTimeouts[key] === 7000) {
       ++ok;
     } else if (key === "https://c.test" &&
-        perBuyerCumulativeTimeouts[key] === 80) {
+        perBuyerCumulativeTimeouts[key] === 8000) {
       ++ok;
     } else if (key === '*' &&
-        perBuyerCumulativeTimeouts[key] === 76) {
+        perBuyerCumulativeTimeouts[key] === 7600) {
       ++ok;
     } else {
       throw 'Wrong key in perCumulativeBuyerTimeouts ' +
@@ -8733,7 +8733,7 @@ function validatePerBuyerCumulativeTimeouts(perBuyerCumulativeTimeouts) {
     }),
     perBuyerCumulativeTimeouts: new Promise((resolve, reject) => {
       setTimeout(
-          () => { resolve({$1: 70, 'https://c.test': 80, '*': 76}); }, 1)
+          () => { resolve({$1: 7000, 'https://c.test': 8000, '*': 7600}); }, 1)
     })
   });
 })())",

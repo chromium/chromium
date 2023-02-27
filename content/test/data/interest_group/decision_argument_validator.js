@@ -96,9 +96,9 @@ function validateAuctionConfig(auctionConfig) {
         JSON.stringify(auctionConfig.perBuyerTimeouts);
   }
 
-  if (auctionConfig.perBuyerCumulativeTimeouts[buyerAOrigin] !== 130 ||
-      auctionConfig.perBuyerCumulativeTimeouts[buyerBOrigin] !== 140 ||
-      auctionConfig.perBuyerCumulativeTimeouts['*'] !== 160) {
+  if (auctionConfig.perBuyerCumulativeTimeouts[buyerAOrigin] !== 13000 ||
+      auctionConfig.perBuyerCumulativeTimeouts[buyerBOrigin] !== 14000 ||
+      auctionConfig.perBuyerCumulativeTimeouts['*'] !== 16000) {
     throw 'Wrong perBuyerCumulativeTimeouts ' +
         JSON.stringify(auctionConfig.perBuyerCumulativeTimeouts);
   }

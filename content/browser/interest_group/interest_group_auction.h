@@ -779,7 +779,6 @@ class CONTENT_EXPORT InterestGroupAuction
                                    const url::Origin* owner,
                                    LeaderInfo& leader_info);
 
-  absl::optional<base::TimeDelta> PerBuyerTimeout(const BidState* state);
   absl::optional<base::TimeDelta> SellerTimeout();
 
   // If AllBidsScored() is true, completes the bidding and scoring phase.

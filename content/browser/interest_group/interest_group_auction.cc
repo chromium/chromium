@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iterator>
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -64,7 +65,7 @@ namespace content {
 
 namespace {
 
-constexpr base::TimeDelta kMaxTimeout = base::Milliseconds(500);
+constexpr base::TimeDelta kMaxPerBuyerTimeout = base::Milliseconds(500);
 
 // For group freshness metrics.
 constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
@@ -250,6 +251,47 @@ ReportBuyersConfigForPaBuyers(
     return absl::nullopt;
   }
   return it->second;
+}
+
+// Retrieves the timeout from `buyer_timeouts` associated with `buyer`, if any.
+// Used for both `buyer_timeouts` and `buyer_cumulative_timeouts`, stored in
+// AuctionConfigs. Callers should use PerBuyerTimeout() and
+// PerBuyerCumulativeTimeout() instead, since those apply the timeout limit,
+// when applicable.
+absl::optional<base::TimeDelta> PerBuyerTimeoutHelper(
+    const url::Origin& buyer,
+    const blink::AuctionConfig::MaybePromiseBuyerTimeouts& buyer_timeouts) {
+  DCHECK(!buyer_timeouts.is_promise());
+  const auto& per_buyer_timeouts = buyer_timeouts.value().per_buyer_timeouts;
+  if (per_buyer_timeouts.has_value()) {
+    auto it = per_buyer_timeouts->find(buyer);
+    if (it != per_buyer_timeouts->end()) {
+      return it->second;
+    }
+  }
+  const auto& all_buyers_timeout = buyer_timeouts.value().all_buyers_timeout;
+  if (all_buyers_timeout.has_value()) {
+    return all_buyers_timeout.value();
+  }
+  return absl::nullopt;
+}
+
+absl::optional<base::TimeDelta> PerBuyerTimeout(
+    const url::Origin& buyer,
+    const blink::AuctionConfig& auction_config) {
+  absl::optional<base::TimeDelta> out = PerBuyerTimeoutHelper(
+      buyer, auction_config.non_shared_params.buyer_timeouts);
+  if (!out) {
+    return out;
+  }
+  return std::min(*out, kMaxPerBuyerTimeout);
+}
+
+absl::optional<base::TimeDelta> PerBuyerCumulativeTimeout(
+    const url::Origin& buyer,
+    const blink::AuctionConfig& auction_config) {
+  return PerBuyerTimeoutHelper(
+      buyer, auction_config.non_shared_params.buyer_cumulative_timeouts);
 }
 
 }  // namespace
@@ -501,10 +543,9 @@ class InterestGroupAuction::BuyerHelper
         std::move(pa_requests), errors);
   }
 
-  // Closes all Mojo pipes and release all weak pointers.
+  // Closes all Mojo pipes, releases all weak pointers, and stops the timeout
+  // timer.
   void ClosePipes() {
-    // This is needed in addition to closing worklet pipes since the callbacks
-    // passed to Mojo pipes this class doesn't own aren't cancellable.
     weak_ptr_factory_.InvalidateWeakPtrs();
 
     for (auto& bid_state : bid_states_) {
@@ -513,6 +554,11 @@ class InterestGroupAuction::BuyerHelper
     // No need to clear `generate_bid_client_receiver_set_`, since
     // CloseBidStatePipes() should take care of that.
     DCHECK(generate_bid_client_receiver_set_.empty());
+
+    // Need to stop the timer - this is called on completion and on certain
+    // errors. Don't want the timer to trigger anything after there's been a
+    // failure already.
+    cumulative_buyer_timeout_timer_.Stop();
   }
 
   // Returns true if this buyer has any interest groups that will potentially
@@ -649,6 +695,18 @@ class InterestGroupAuction::BuyerHelper
   }
 
   void NotifyConfigPromisesResolved() {
+    DCHECK(auction_->config_promises_resolved_);
+
+    // If there are no outstanding bids, just do nothing. It's safest to exit
+    // early in the case that bidder worklet process crashed or failed to fetch
+    // the necessary script(s) before all config promises were resolved, rather
+    // than rely on everything handling that case correctly.
+    if (num_outstanding_bids_ == 0) {
+      return;
+    }
+
+    MaybeStartCumulativeTimeoutTimer();
+
     for (const auto& bid_state : bid_states_) {
       FinishGenerateBidIfReady(bid_state.get());
     }
@@ -701,13 +759,21 @@ class InterestGroupAuction::BuyerHelper
         AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
       // Ignore default error message in case of crash. Instead, use a more
       // specific one.
-      auction_->errors_.push_back(
-          base::StrCat({bid_state->bidder->interest_group.bidding_url->spec(),
-                        " crashed while trying to run generateBid()."}));
+      OnFatalError(
+          bid_state,
+          {base::StrCat({bid_state->bidder->interest_group.bidding_url->spec(),
+                         " crashed while trying to run generateBid()."})});
     } else {
-      auction_->errors_.insert(auction_->errors_.end(), errors.begin(),
-                               errors.end());
+      OnFatalError(bid_state, errors);
     }
+  }
+
+  // Called in the case of a fatal error that prevents the `bid_state` worklet
+  // from bidding.
+  void OnFatalError(BidState* bid_state, std::vector<std::string> errors) {
+    auction_->errors_.insert(auction_->errors_.end(),
+                             std::make_move_iterator(errors.begin()),
+                             std::make_move_iterator(errors.end()));
 
     // If waiting on bidding signals, the bidder needs to be removed in the same
     // way as if it had a new negative priority value, so reuse that logic. The
@@ -771,6 +837,13 @@ class InterestGroupAuction::BuyerHelper
   // Invoked whenever the AuctionWorkletManager has provided a BidderWorket
   // for the bidder identified by `bid_state`. Starts generating a bid.
   void OnBidderWorkletReceived(BidState* bid_state) {
+    if (!bidder_process_received_) {
+      // All bidder worklets are expected to be loaded in the same process, so
+      // as soon as any worklet has been received, can set this to true.
+      bidder_process_received_ = true;
+      MaybeStartCumulativeTimeoutTimer();
+    }
+
     const blink::InterestGroup& interest_group =
         bid_state->bidder->interest_group;
 
@@ -859,7 +932,7 @@ class InterestGroupAuction::BuyerHelper
         auction_->config_->non_shared_params.auction_signals.value(),
         GetPerBuyerSignals(*auction_->config_,
                            bid_state->bidder->interest_group.owner),
-        auction_->PerBuyerTimeout(bid_state),
+        PerBuyerTimeout(owner_, *auction_->config_),
         GetDirectFromSellerPerBuyerSignals(
             url_builder, bid_state->bidder->interest_group.owner),
         GetDirectFromSellerAuctionSignals(url_builder));
@@ -1125,7 +1198,76 @@ class InterestGroupAuction::BuyerHelper
     --num_outstanding_bids_;
     if (num_outstanding_bids_ == 0) {
       DCHECK_EQ(num_outstanding_bidding_signals_received_calls_, 0);
+      // Pipes should already be closed at this point, but the
+      // `cumulative_buyer_timeout_timer_` needs to be stopped if it's running,
+      // and it's safest to keep all logic to stop everything `this` may be
+      // doing in one place.
+      ClosePipes();
+
       auction_->OnBidSourceDone();
+    }
+  }
+
+  void MaybeStartCumulativeTimeoutTimer() {
+    // This should only be called when there are outstanding bids.
+    DCHECK_GT(num_outstanding_bids_, 0);
+
+    // Do nothing if still waiting on the seller to provide more of the
+    // AuctionConfig, or waiting on a process to be assigned (which would mean
+    // that this may be waiting behind other buyers).
+    if (!auction_->config_promises_resolved_ || !bidder_process_received_) {
+      return;
+    }
+
+    DCHECK(!cumulative_buyer_timeout_timer_.IsRunning());
+
+    // Get cumulative buyer timeout. Note that this must be done after the
+    // `config_promises_resolved_` check above.
+    absl::optional<base::TimeDelta> cumulative_buyer_timeout =
+        PerBuyerCumulativeTimeout(owner_, *auction_->config_);
+
+    // Nothing to do if there's no cumulative timeout.
+    if (!cumulative_buyer_timeout) {
+      return;
+    }
+
+    cumulative_buyer_timeout_timer_.Start(
+        FROM_HERE, *cumulative_buyer_timeout,
+        base::BindOnce(&BuyerHelper::OnTimeout, base::Unretained(this)));
+  }
+
+  // Called when the `cumulative_buyer_timeout_timer_` expires.
+  void OnTimeout() {
+    // If there are no outstanding bids, then the timer should not still be
+    // running.
+    DCHECK_GT(num_outstanding_bids_, 0);
+
+    // Assemble a list of interest groups that haven't bid yet - have to do
+    // this, since calling OnGenerateBidCompleteInternal() on the last
+    // incomplete bid may delete `this`, if it ends the auction.
+    std::list<BidState*> pending_bids;
+    for (auto& bid_state : bid_states_) {
+      if (!bid_state->worklet_handle) {
+        continue;
+      }
+      // Put the IGs that have received signals first, since cancelling the last
+      // bid that has not received signals could cause a bid that has received
+      // signals to start running Javascript.
+      if (bid_state->bidding_signals_received) {
+        pending_bids.push_front(bid_state.get());
+      } else {
+        pending_bids.push_back(bid_state.get());
+      }
+    }
+
+    for (auto* pending_bid : pending_bids) {
+      // Fail bids individually, with errors. This does potentially do extra
+      // work over just failing the entire auction directly, but ensures there's
+      // a single failure path, reducing the chance of future breakages.
+      OnFatalError(
+          pending_bid, /*errors=*/{base::StrCat(
+              {pending_bid->bidder->interest_group.bidding_url->spec(),
+               " perBuyerCumulativeTimeout exceeded during bid generation."})});
     }
   }
 
@@ -1255,6 +1397,17 @@ class InterestGroupAuction::BuyerHelper
   mojo::AssociatedReceiverSet<auction_worklet::mojom::GenerateBidClient,
                               BidState*>
       generate_bid_client_receiver_set_;
+
+  // Set to true once a single bidder worklet has been received (and thus, since
+  // all bidder worklets managed by a BuyerHelper use the same process, `this`
+  // is no longer blocked waiting on other bidders to complete).
+  bool bidder_process_received_ = false;
+
+  // Timer for applying the perBidderCumulativeTimeout, if one is applicable.
+  // Starts once `bidder_process_received_` and
+  // `auction_->config_promises_resolved_` are true, if
+  // `cumulative_buyer_timeout_` is not nullopt.
+  base::OneShotTimer cumulative_buyer_timeout_timer_;
 
   int num_outstanding_bidding_signals_received_calls_ = 0;
   int num_outstanding_bids_ = 0;
@@ -1620,8 +1773,6 @@ void InterestGroupAuction::NotifyComponentConfigPromisesResolved(uint32_t pos) {
 }
 
 void InterestGroupAuction::ClosePipes() {
-  // This is needed in addition to closing worklet pipes since the callbacks
-  // passed to Mojo pipes this class doesn't own aren't cancellable.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   score_ad_receivers_.Clear();
@@ -2753,28 +2904,10 @@ void InterestGroupAuction::OnNewHighestScoringOtherBid(
     leader_info.highest_scoring_other_bid = bid_value;
 }
 
-absl::optional<base::TimeDelta> InterestGroupAuction::PerBuyerTimeout(
-    const BidState* state) {
-  DCHECK(!config_->non_shared_params.buyer_timeouts.is_promise());
-  const auto& per_buyer_timeouts =
-      config_->non_shared_params.buyer_timeouts.value().per_buyer_timeouts;
-  if (per_buyer_timeouts.has_value()) {
-    auto it = per_buyer_timeouts->find(state->bidder->interest_group.owner);
-    if (it != per_buyer_timeouts->end()) {
-      return std::min(it->second, kMaxTimeout);
-    }
-  }
-  const auto& all_buyers_timeout =
-      config_->non_shared_params.buyer_timeouts.value().all_buyers_timeout;
-  if (all_buyers_timeout.has_value())
-    return std::min(all_buyers_timeout.value(), kMaxTimeout);
-  return absl::nullopt;
-}
-
 absl::optional<base::TimeDelta> InterestGroupAuction::SellerTimeout() {
   if (config_->non_shared_params.seller_timeout.has_value()) {
     return std::min(config_->non_shared_params.seller_timeout.value(),
-                    kMaxTimeout);
+                    kMaxPerBuyerTimeout);
   }
   return absl::nullopt;
 }

@@ -87,7 +87,7 @@ function validateAuctionConfig(auctionConfig) {
         JSON.stringify(auctionConfig.perBuyerTimeouts);
   }
 
-  if (auctionConfig.perBuyerCumulativeTimeouts[buyerOrigin] !== 201) {
+  if (auctionConfig.perBuyerCumulativeTimeouts[buyerOrigin] !== 20100) {
     throw 'Wrong perBuyerCumulativeTimeouts ' +
         JSON.stringify(auctionConfig.perBuyerCumulativeTimeouts);
   }

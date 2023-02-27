@@ -1298,8 +1298,9 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
       blink::AuctionConfig::BuyerTimeouts buyer_cumulative_timeouts;
       buyer_cumulative_timeouts.per_buyer_timeouts.emplace();
       buyer_cumulative_timeouts.per_buyer_timeouts.value()[kBidder1] =
-          base::Milliseconds(12345);
-      buyer_cumulative_timeouts.all_buyers_timeout = base::Milliseconds(23456);
+          kBidder1CumulativeTimeout;
+      buyer_cumulative_timeouts.all_buyers_timeout =
+          kAllBuyersCumulativeTimeout;
       return blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
           std::move(buyer_cumulative_timeouts));
     }
@@ -1668,11 +1669,16 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   // Starts the standard auction with the mock worklet service, and waits for
   // the service to receive the worklet construction calls.
-  void StartStandardAuctionWithMockService() {
+  //
+  // `num_expected_bidder_worklets` is the number of bidder worklets that are
+  // expected to be created.
+  void StartStandardAuctionWithMockService(
+      int num_expected_bidder_worklets = 2) {
     UseMockWorkletService();
     StartStandardAuction();
     mock_auction_process_manager_->WaitForWorklets(
-        /*num_bidders=*/2, /*num_sellers=*/1 + component_auctions_.size());
+        /*num_bidders=*/num_expected_bidder_worklets,
+        /*num_sellers=*/1 + component_auctions_.size());
   }
 
   // Runs an auction that exercises the extended private aggregation buyers
@@ -2028,12 +2034,20 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   const url::Origin kBidder1 = url::Origin::Create(kBidder1Url);
   const InterestGroupKey kBidder1Key{kBidder1, kBidder1Name};
   const GURL kBidder1TrustedSignalsUrl{"https://adplatform.com/signals1"};
+  const base::TimeDelta kBidder1CumulativeTimeout = base::Milliseconds(12345);
 
   const GURL kBidder2Url{"https://anotheradthing.com/bids.js"};
   const url::Origin kBidder2 = url::Origin::Create(kBidder2Url);
   const std::string kBidder2Name{"Another Ad Thing"};
   const InterestGroupKey kBidder2Key{kBidder2, kBidder2Name};
   const GURL kBidder2TrustedSignalsUrl{"https://anotheradthing.com/signals2"};
+
+  const base::TimeDelta kAllBuyersCumulativeTimeout = base::Milliseconds(23456);
+
+  // Timeout tests can wait until this amount before a timeout, make sure
+  // nothing has happened, and then wait this amount, and check the timeout
+  // happened.
+  const base::TimeDelta kTinyTime = base::Milliseconds(1);
 
   absl::optional<std::vector<url::Origin>> interest_group_buyers_ = {
       {kBidder1, kBidder2}};
@@ -8415,6 +8429,280 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOrigin) {
   ASSERT_TRUE(result_.winning_group_id);
   EXPECT_THAT(result_.report_urls,
               testing::ElementsAre(GURL("https://adplatform.com/metrics/5")));
+}
+
+// Test the case where the only bidder times out due to the
+// perBuyerCumulativeTimeouts.
+TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeouts) {
+  interest_group_buyers_ = {{kBidder1}};
+  StartStandardAuctionWithMockService(/*num_expected_bidder_worklets=*/1);
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+
+  task_environment()->FastForwardBy(kBidder1CumulativeTimeout - kTinyTime);
+  EXPECT_FALSE(auction_complete_);
+  task_environment()->FastForwardBy(kTinyTime);
+  EXPECT_TRUE(auction_complete_);
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(
+                  "https://adplatform.com/offers.js perBuyerCumulativeTimeout "
+                  "exceeded during bid generation."));
+  EXPECT_EQ(absl::nullopt, result_.winning_group_id);
+}
+
+// Test the case where the perBuyerCumulativeTimeout expires during the
+// scoreAd() call. The bid should not be timed out.
+TEST_F(AuctionRunnerTest,
+       PerBuyerCumulativeTimeoutsTimeoutPassesDuringScoreAd) {
+  interest_group_buyers_ = {{kBidder1}};
+  StartStandardAuctionWithMockService(/*num_expected_bidder_worklets=*/1);
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+
+  // The timeout isn't quite hit.
+  task_environment()->FastForwardBy(kBidder1CumulativeTimeout - kTinyTime);
+  EXPECT_FALSE(auction_complete_);
+
+  // Bid generation completes.
+  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/2,
+                                             GURL("https://ad1.com/"));
+
+  // More than the timeout time passes, but since the bid is being blocked on
+  // the seller, there should be no timeout.
+  task_environment()->FastForwardBy(2 * kBidder1CumulativeTimeout);
+  EXPECT_FALSE(auction_complete_);
+
+  // Score the ad.
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(2, score_ad_params.bid);
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
+
+  // Finish the auction.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback();
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  bidder1_worklet->WaitForReportWin();
+  bidder1_worklet->InvokeReportWinCallback();
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+}
+
+// Test the case where a pending promise delays the start of the
+// perBuyerCumulativeTimeout, but generating a bid still times out since
+// perBuyerCumulativeTimeout passes after promise resolution.
+TEST_F(AuctionRunnerTest,
+       PerBuyerCumulativeTimeoutsPromiseDelaysTimeoutButStillTimesOut) {
+  use_promise_for_buyer_cumulative_timeouts_ = true;
+  interest_group_buyers_ = {{kBidder1}};
+  StartStandardAuctionWithMockService(/*num_expected_bidder_worklets=*/1);
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+
+  // The timeout duration passes, but since the seller is being waited on, too,
+  // this doesn't count towards the timeout.
+  task_environment()->FastForwardBy(2 * kBidder1CumulativeTimeout);
+  EXPECT_FALSE(auction_complete_);
+
+  // Feed in perBuyerCumulativeTimeouts.
+  abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::
+          kPerBuyerCumulativeTimeouts,
+      MakeBuyerCumulativeTimeouts(/*use_promise=*/false).value());
+
+  // The timeout passes again, but this time, it counts towards the cumulative
+  // timeout.
+  task_environment()->FastForwardBy(kBidder1CumulativeTimeout - kTinyTime);
+  EXPECT_FALSE(auction_complete_);
+  task_environment()->FastForwardBy(kTinyTime);
+  EXPECT_TRUE(auction_complete_);
+
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(
+                  "https://adplatform.com/offers.js perBuyerCumulativeTimeout "
+                  "exceeded during bid generation."));
+  EXPECT_EQ(absl::nullopt, result_.winning_group_id);
+}
+
+// Test the case where a pending promise delays the start of the
+// perBuyerCumulativeTimeout, and a bid is ultimately generated successfully
+// because of the delayed promise resolution.
+TEST_F(AuctionRunnerTest,
+       PerBuyerCumulativeTimeoutsPromiseDelaysTimeoutAndNoTimeout) {
+  use_promise_for_buyer_cumulative_timeouts_ = true;
+  interest_group_buyers_ = {{kBidder1}};
+  StartStandardAuctionWithMockService(/*num_expected_bidder_worklets=*/1);
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+
+  // The timeout duration passes, but since the seller is being waited on, too,
+  // this doesn't count towards the timeout.
+  task_environment()->FastForwardBy(2 * kBidder1CumulativeTimeout);
+  EXPECT_FALSE(auction_complete_);
+
+  // Feed in perBuyerCumulativeTimeouts.
+  abortable_ad_auction_->ResolvedBuyerTimeoutsPromise(
+      blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+      blink::mojom::AuctionAdConfigBuyerTimeoutField::
+          kPerBuyerCumulativeTimeouts,
+      MakeBuyerCumulativeTimeouts(/*use_promise=*/false).value());
+
+  // The timeout doesn't quite pass after the promise is resolved.
+  task_environment()->FastForwardBy(kBidder1CumulativeTimeout - kTinyTime);
+  EXPECT_FALSE(auction_complete_);
+
+  // Bid generation completes.
+  bidder1_worklet->InvokeGenerateBidCallback(/*bid=*/2,
+                                             GURL("https://ad1.com/"));
+
+  // Score the ad.
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(2, score_ad_params.bid);
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt, /*pa_requests=*/{},
+          /*errors=*/{});
+
+  // Finish the auction.
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback();
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  bidder1_worklet->WaitForReportWin();
+  bidder1_worklet->InvokeReportWinCallback();
+  auction_run_loop_->Run();
+
+  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+}
+
+// Test that the cumulative timeout only starts once a process is assigned.
+TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeoutsWaitForProcess) {
+  // Create AuctionProcessManager in advance of starting the auction so can
+  // create worklets before the auction starts.
+  UseMockWorkletService();
+
+  // Fill up all bidding process slots.
+  std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>>
+      busy_processes;
+  for (size_t i = 0; i < AuctionProcessManager::kMaxBidderProcesses; ++i) {
+    busy_processes.push_back(
+        std::make_unique<AuctionProcessManager::ProcessHandle>());
+    url::Origin origin = url::Origin::Create(
+        GURL(base::StringPrintf("https://blocking.bidder.%zu.test", i)));
+    EXPECT_TRUE(auction_process_manager_->RequestWorkletService(
+        AuctionProcessManager::WorkletType::kBidder, origin,
+        scoped_refptr<SiteInstance>(), &*busy_processes.back(),
+        base::BindOnce(
+            []() { ADD_FAILURE() << "This should not be called"; })));
+  }
+  task_environment()->RunUntilIdle();
+
+  // Start a 1-bidder auction.
+  interest_group_buyers_ = {{kBidder1}};
+  StartStandardAuction();
+
+  // The timeout should not have started, since the bidder is still waiting on a
+  // process slot.
+  task_environment()->FastForwardBy(2 * kBidder1CumulativeTimeout);
+  EXPECT_FALSE(auction_complete_);
+
+  // Free up a process slot.
+  busy_processes.erase(busy_processes.begin());
+
+  // Wait for all worklet requests.
+  mock_auction_process_manager_->WaitForWorklets(/*num_bidders=*/1,
+                                                 /*num_sellers=*/1);
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+
+  // Wait for the timeout to pass again. This time, it should result in the
+  // bidder timing out.
+  task_environment()->FastForwardBy(kBidder1CumulativeTimeout - kTinyTime);
+  EXPECT_FALSE(auction_complete_);
+  task_environment()->FastForwardBy(kTinyTime);
+  EXPECT_TRUE(auction_complete_);
+
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(
+                  "https://adplatform.com/offers.js perBuyerCumulativeTimeout "
+                  "exceeded during bid generation."));
+  EXPECT_EQ(absl::nullopt, result_.winning_group_id);
+}
+
+// Test the case where the only bidder times out due to the
+// perBuyerCumulativeTimeout's "*" field.
+TEST_F(AuctionRunnerTest, PerBuyerCumulativeTimeoutsAllBuyersTimeout) {
+  interest_group_buyers_ = {{kBidder2}};
+  StartStandardAuctionWithMockService(/*num_expected_bidder_worklets=*/1);
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  task_environment()->FastForwardBy(kAllBuyersCumulativeTimeout - kTinyTime);
+  EXPECT_FALSE(auction_complete_);
+  task_environment()->FastForwardBy(kTinyTime);
+  EXPECT_TRUE(auction_complete_);
+  auction_run_loop_->Run();
+  EXPECT_THAT(result_.errors,
+              testing::UnorderedElementsAre(
+                  "https://anotheradthing.com/bids.js "
+                  "perBuyerCumulativeTimeout exceeded during bid generation."));
+  EXPECT_EQ(absl::nullopt, result_.winning_group_id);
 }
 
 // Auction with only one interest group participating. The priority calculated
