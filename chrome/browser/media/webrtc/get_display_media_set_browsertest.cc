@@ -138,7 +138,7 @@ class GetDisplayMediaSetBrowserTest : public WebRtcTestBase {
       // Each entry in this comma separated list corresponds to a screen
       // specification following the format defined in
       // |ManagedDisplayInfo::CreateFromSpec|.
-      // The used specficiation simulatoes screens with resolution 800x800
+      // The used specification simulates screens with resolution 800x800
       // at the host coordinates (screen_index * 800, 0).
       screens << screen_index * 640 << "+0-640x480,";
     }
