@@ -2023,6 +2023,11 @@
     "expiry_milestone": 111
   },
   {
+    "name": "enable-cros-ime-fst-decoder-params-update",
+    "owners": [ "hdchuong", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-cros-ime-mozc-proto",
     "owners": [ "essential-inputs-team@google.com" ],
     "expiry_milestone": 95

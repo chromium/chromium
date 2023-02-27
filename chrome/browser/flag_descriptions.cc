@@ -5606,6 +5606,11 @@ const char kImeAssistPersonalInfoName[] = "Enable assistive personal info";
 const char kImeAssistPersonalInfoDescription[] =
     "Enable auto-complete suggestions on personal infomation for native IME.";
 
+const char kImeFstDecoderParamsUpdateName[] =
+    "Enable FST Decoder parameters update";
+const char kImeFstDecoderParamsUpdateDescription[] =
+    "Enable updated parameters for the FST decoder.";
+
 const char kImeTrayHideVoiceButtonName[] =
     "Hides redudant voice button in IME tray";
 const char kImeTrayHideVoiceButtonDescription[] =

@@ -1175,6 +1175,11 @@ BASE_FEATURE(kVirtualKeyboardNewHeader,
 // features (e.g. auto-correct).
 BASE_FEATURE(kImeRuleConfig, "ImeRuleConfig", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, use the updated parameters for the decoder.
+BASE_FEATURE(kImeFstDecoderParamsUpdate,
+             "ImeFstDecoderParamsUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled use the updated US English IME language models.
 BASE_FEATURE(kImeUsEnglishModelUpdate,
              "ImeUsEnglishModelUpdate",

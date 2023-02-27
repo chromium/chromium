@@ -60933,6 +60933,7 @@ from previous Chrome versions.
   <int value="-491208379" label="ChromeTipsInMainMenuNewBadge:disabled"/>
   <int value="-491131428" label="OmniboxNewAnswerLayout:disabled"/>
   <int value="-490652941" label="WebViewZeroCopyVideo:enabled"/>
+  <int value="-489672760" label="ImeFstDecoderParamsUpdate:disabled"/>
   <int value="-488779992" label="blink-settings"/>
   <int value="-488744544" label="PromoBrowserCommands:disabled"/>
   <int value="-487294731" label="EnablePerfettoSystemTracing:disabled"/>
@@ -63674,6 +63675,7 @@ from previous Chrome versions.
   <int value="1090324500" label="EcheLauncher:enabled"/>
   <int value="1090377940" label="enable-quic-https"/>
   <int value="1090442943" label="SemanticColorDebugOverride:enabled"/>
+  <int value="1090937981" label="ImeFstDecoderParamsUpdate:enabled"/>
   <int value="1091157601" label="SearchNavigationPrefetch:enabled"/>
   <int value="1091520021" label="LauncherKeywordExtractionScoring:disabled"/>
   <int value="1091624595" label="BluetoothAdvertisementMonitoring:enabled"/>
