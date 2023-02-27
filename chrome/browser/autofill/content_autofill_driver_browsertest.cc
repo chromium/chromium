@@ -167,8 +167,10 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+// TODO(crbug.com/1419799): Reland crrev.com/c/4290434 when the
+// ChromeAutofillClient casting issue is resolved.
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
-                       SwitchTabAndHideAutofillPopup) {
+                       DISABLE_SwitchTabAndHideAutofillPopup) {
   EXPECT_CALL(*autofill_client_,
               HideAutofillPopup(PopupHidingReason::kTabGone));
 
