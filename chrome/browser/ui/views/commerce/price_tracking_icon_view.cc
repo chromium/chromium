@@ -38,6 +38,25 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+
+void AddIfNotBookmarkedToTheDefaultFolder(bookmarks::BookmarkModel* model,
+                                          content::WebContents* web_contents) {
+  GURL url;
+  std::u16string title;
+
+  if (chrome::GetURLAndTitleToBookmark(web_contents, &url, &title)) {
+    if (bookmarks::IsBookmarkedByUser(model, url)) {
+      return;
+    }
+
+    const bookmarks::BookmarkNode* other_node = model->other_node();
+    model->AddNewURL(other_node, other_node->children().size(), title, url);
+  }
+}
+
+}  // namespace
+
 PriceTrackingIconView::PriceTrackingIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     Delegate* delegate,
@@ -195,11 +214,7 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
   bool is_new_bookmark = existing_node == nullptr;
 
   if (enable) {
-    GURL url;
-    std::u16string title;
-    if (chrome::GetURLAndTitleToBookmark(GetWebContents(), &url, &title)) {
-      bookmarks::AddIfNotBookmarked(model, url, title);
-    }
+    AddIfNotBookmarkedToTheDefaultFolder(model, GetWebContents());
     base::RecordAction(
         base::UserMetricsAction("Commerce.PriceTracking.OmniboxChip.Tracked"));
     commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());

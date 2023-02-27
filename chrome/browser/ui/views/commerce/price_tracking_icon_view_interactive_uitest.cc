@@ -76,9 +76,6 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
         BookmarkModelFactory::GetForBrowserContext(browser()->profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-    bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTrackableUrl),
-                                  std::u16string());
-
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
@@ -144,6 +141,13 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
             kBookmarkStarViewElementId, context);
 
     return matched_view ? views::AsViewClass<StarView>(matched_view) : nullptr;
+  }
+
+  const std::u16string& GetDefaultFolderName() {
+    bookmarks::BookmarkModel* const model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+    const bookmarks::BookmarkNode* node = model->other_node();
+    return node->GetTitle();
   }
 
  protected:
@@ -249,6 +253,26 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                omnibox::kPriceTrackingEnabledFilledIcon.name);
   EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       CreateBookmarkOnPressIfNotExist) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble, false);
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  GURL url = GURL(kTrackableUrl);
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  EXPECT_FALSE(bookmarks::IsBookmarkedByUser(bookmark_model, url));
+
+  ClickPriceTrackingIconView();
+  EXPECT_TRUE(bookmarks::IsBookmarkedByUser(bookmark_model, url));
+
+  const bookmarks::BookmarkNode* node =
+      bookmark_model->GetMostRecentlyAddedUserNodeForURL(url);
+  EXPECT_EQ(node->parent()->GetTitle(), GetDefaultFolderName());
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,

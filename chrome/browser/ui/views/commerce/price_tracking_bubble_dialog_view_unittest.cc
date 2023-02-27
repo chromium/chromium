@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/strings/grit/components_strings.h"
@@ -68,15 +69,6 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
     return factories;
   }
 
-  void SetUpDependencies() {
-    bookmarks::BookmarkModel* bookmark_model =
-        BookmarkModelFactory::GetForBrowserContext(profile());
-    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
-
-    bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTestURL),
-                                  kTestBookmarkTitle);
-  }
-
   void CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type type) {
     SkBitmap bitmap;
     bitmap.allocN32Pixels(1, 1);
@@ -101,13 +93,13 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
     return bubble_coordinator_.get();
   }
 
-  const std::u16string& GetMostRecentlyModifiedUserBookmarkFolderName() {
-    bookmarks::BookmarkModel* const model =
-        BookmarkModelFactory::GetForBrowserContext(profile());
-    std::vector<const bookmarks::BookmarkNode*> nodes =
-        bookmarks::GetMostRecentlyModifiedUserFolders(model, 1);
-    return nodes[0]->GetTitle();
+ protected:
+  virtual void SetUpDependencies() {
+    bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
   }
+
+  bookmarks::BookmarkModel* bookmark_model_;
 
  private:
   views::UniqueWidgetPtr anchor_widget_;
@@ -117,7 +109,57 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
   base::MockCallback<base::OnceClosure> on_dialog_closing_callback_;
 };
 
-TEST_F(PriceTrackingBubbleDialogViewUnitTest, FUEBubble) {
+class PriceTrackingBubbleDialogViewLayoutUnitTest
+    : public PriceTrackingBubbleDialogViewUnitTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool BookmarkWasCreated() { return GetParam(); }
+
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    if (info.param) {
+      return "TrackBookmarkedPage";
+    } else {
+      return "TrackNonBookmarkedPage";
+    }
+  }
+
+  const std::u16string& GetFolderName() {
+    if (BookmarkWasCreated()) {
+      return bookmark_folder_name_;
+    } else {
+      return GetDefaultFolderName();
+    }
+  }
+
+ protected:
+  void SetUpDependencies() override {
+    PriceTrackingBubbleDialogViewUnitTest::SetUpDependencies();
+
+    EXPECT_FALSE(
+        bookmarks::IsBookmarkedByUser(bookmark_model_, GURL(kTestURL)));
+
+    if (BookmarkWasCreated()) {
+      auto* node = bookmarks::AddIfNotBookmarked(
+          bookmark_model_, GURL(kTestURL), kTestBookmarkTitle);
+      EXPECT_TRUE(
+          bookmarks::IsBookmarkedByUser(bookmark_model_, GURL(kTestURL)));
+      bookmark_folder_name_ = node->parent()->GetTitle();
+    }
+  }
+
+ private:
+  const std::u16string& GetDefaultFolderName() {
+    bookmarks::BookmarkModel* const model =
+        BookmarkModelFactory::GetForBrowserContext(profile());
+    const bookmarks::BookmarkNode* node = model->other_node();
+    return node->GetTitle();
+  }
+
+  std::u16string bookmark_folder_name_;
+};
+
+TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, FUEBubble) {
   CreateBubbleViewAndShow(
       PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 
@@ -132,7 +174,7 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, FUEBubble) {
   EXPECT_EQ(bubble->GetBodyLabelForTesting()->GetText(),
             l10n_util::GetStringFUTF16(
                 IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION_FIRST_RUN,
-                GetMostRecentlyModifiedUserBookmarkFolderName()));
+                GetFolderName()));
 
   EXPECT_EQ(
       bubble->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
@@ -142,7 +184,7 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, FUEBubble) {
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE_DIALOG_CANCEL_BUTTON));
 }
 
-TEST_F(PriceTrackingBubbleDialogViewUnitTest, NormalBubble) {
+TEST_P(PriceTrackingBubbleDialogViewLayoutUnitTest, NormalBubble) {
   CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 
   auto* bubble = BubbleCoordinator()->GetBubble();
@@ -152,10 +194,10 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, NormalBubble) {
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE_DIALOG_TITLE));
 
   EXPECT_TRUE(bubble->GetBodyLabelForTesting());
-  EXPECT_EQ(bubble->GetBodyLabelForTesting()->GetText(),
-            l10n_util::GetStringFUTF16(
-                IDS_OMNIBOX_TRACKING_PRICE_DIALOG_DESCRIPTION,
-                GetMostRecentlyModifiedUserBookmarkFolderName()));
+  EXPECT_EQ(
+      bubble->GetBodyLabelForTesting()->GetText(),
+      l10n_util::GetStringFUTF16(IDS_OMNIBOX_TRACKING_PRICE_DIALOG_DESCRIPTION,
+                                 GetFolderName()));
   EXPECT_TRUE(bubble->GetBodyLabelForTesting()->GetFirstLinkForTesting());
 
   EXPECT_EQ(bubble->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
@@ -166,7 +208,23 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, NormalBubble) {
                 IDS_OMNIBOX_TRACKING_PRICE_DIALOG_UNTRACK_BUTTON));
 }
 
-TEST_F(PriceTrackingBubbleDialogViewUnitTest, AcceptFUEBubble) {
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PriceTrackingBubbleDialogViewLayoutUnitTest,
+    ::testing::Values(true, false),
+    &PriceTrackingBubbleDialogViewLayoutUnitTest::DescribeParams);
+
+class PriceTrackingBubbleDialogViewActionUnitTest
+    : public PriceTrackingBubbleDialogViewUnitTest {
+ protected:
+  void SetUpDependencies() override {
+    PriceTrackingBubbleDialogViewUnitTest::SetUpDependencies();
+    bookmarks::AddIfNotBookmarked(bookmark_model_, GURL(kTestURL),
+                                  kTestBookmarkTitle);
+  }
+};
+
+TEST_F(PriceTrackingBubbleDialogViewActionUnitTest, AcceptFUEBubble) {
   CreateBubbleViewAndShow(
       PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
 
@@ -177,7 +235,7 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, AcceptFUEBubble) {
   bubble->Accept();
 }
 
-TEST_F(PriceTrackingBubbleDialogViewUnitTest, CancelNormalBubble) {
+TEST_F(PriceTrackingBubbleDialogViewActionUnitTest, CancelNormalBubble) {
   CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 
   auto* bubble = BubbleCoordinator()->GetBubble();
@@ -187,7 +245,8 @@ TEST_F(PriceTrackingBubbleDialogViewUnitTest, CancelNormalBubble) {
   bubble->Cancel();
 }
 
-TEST_F(PriceTrackingBubbleDialogViewUnitTest, ClickLinkInTheNormalBubble) {
+TEST_F(PriceTrackingBubbleDialogViewActionUnitTest,
+       ClickLinkInTheNormalBubble) {
   CreateBubbleViewAndShow(PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
 
   auto* bubble = BubbleCoordinator()->GetBubble();

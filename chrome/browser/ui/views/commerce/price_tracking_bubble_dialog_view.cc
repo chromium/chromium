@@ -21,13 +21,18 @@
 
 namespace {
 
-const std::u16string& GetMostRecentlyModifiedUserBookmarkFolderName(
-    Profile* profile) {
+const std::u16string& GetBookmarkParentNameOrDefault(Profile* profile,
+                                                     const GURL& url) {
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(profile);
-  const std::vector<const bookmarks::BookmarkNode*> nodes =
-      bookmarks::GetMostRecentlyModifiedUserFolders(model, 1);
-  return nodes[0]->GetTitle();
+
+  if (bookmarks::IsBookmarkedByUser(model, url)) {
+    const bookmarks::BookmarkNode* existing_node =
+        model->GetMostRecentlyAddedUserNodeForURL(url);
+    return existing_node->parent()->GetTitle();
+  }
+  const bookmarks::BookmarkNode* node = model->other_node();
+  return node->GetTitle();
 }
 
 std::unique_ptr<views::StyledLabel> CreateBodyLabel(std::u16string& body_text) {
@@ -59,7 +64,7 @@ PriceTrackingBubbleDialogView::PriceTrackingBubbleDialogView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  auto folder_name = GetMostRecentlyModifiedUserBookmarkFolderName(profile_);
+  auto folder_name = GetBookmarkParentNameOrDefault(profile_, url);
 
   if (type == PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE) {
     SetTitle(l10n_util::GetStringUTF16(
