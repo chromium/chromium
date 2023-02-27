@@ -76,10 +76,12 @@ class ASH_EXPORT PrivacyHubNotification {
   PrivacyHubNotification& operator=(PrivacyHubNotification&&) = delete;
   ~PrivacyHubNotification();
 
-  // Show the notification to the user for at least `kMinShowTime`. Calls to
-  // `Hide()` are delayed until this time has passed and the notification is
-  // hidden then. If more than one `message_ids_` exists will attempt to use
-  // the correct one for the number of apps accessing the `sensors_for_apps_`.
+  // Show the notification to the user for at least `kMinShowTime`. Every time
+  // `Show()` is called, the notification will pop up. For silent updates, use
+  // the `Update()` function. Calls to `Hide()` are delayed until `kMinShowTime`
+  // time has passed and the notification is hidden then. If more than one
+  // `message_ids_` exists will attempt to use the correct one for the number of
+  // apps accessing the `sensors_for_apps_`.
   void Show();
 
   // Hide the notification from the user if it has already been shown for at

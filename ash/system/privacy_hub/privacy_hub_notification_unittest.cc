@@ -126,6 +126,11 @@ class PrivacyHubNotificationTest : public AshTestBase {
     return sensor_delegate_;
   }
 
+  void WaitUntilPopupCloses() {
+    NotificationPopupWaiter waiter;
+    waiter.Wait();
+  }
+
  private:
   FakeSensorDisabledNotificationDelegate sensor_delegate_;
   PrivacyHubNotification notification_;
@@ -196,6 +201,35 @@ TEST_F(PrivacyHubNotificationTest, ShowAndHide) {
   EXPECT_FALSE(GetNotification());
 }
 
+TEST_F(PrivacyHubNotificationTest, ShowMultipleTimes) {
+  EXPECT_FALSE(GetNotification());
+
+  notification().Show();
+
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+
+  WaitUntilPopupCloses();
+
+  // The notification pop up should close by now. But the notification should
+  // stay in the message center.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+
+  notification().Show();
+
+  // The notification should pop up again after `Show()` is called.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_TRUE(GetPopupNotification());
+
+  WaitUntilPopupCloses();
+
+  // The notification pop up should close by now. But the notification should
+  // stay in the message center.
+  EXPECT_TRUE(GetNotification());
+  EXPECT_FALSE(GetPopupNotification());
+}
+
 TEST_F(PrivacyHubNotificationTest, UpdateNotification) {
   // No notification initially.
   EXPECT_FALSE(GetNotification());
@@ -206,8 +240,7 @@ TEST_F(PrivacyHubNotificationTest, UpdateNotification) {
   EXPECT_TRUE(GetPopupNotification());
 
   // Wait until pop up of the notification is closed.
-  NotificationPopupWaiter waiter;
-  waiter.Wait();
+  WaitUntilPopupCloses();
   // The notification pop up should close by now. But the notification should
   // stay in the message center.
   EXPECT_TRUE(GetNotification());

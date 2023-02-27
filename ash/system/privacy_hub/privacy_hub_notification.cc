@@ -19,6 +19,11 @@ void RemoveNotification(const std::string& id) {
                                                            /*by_user=*/false);
 }
 
+// Returns true if a notification with id `id` is in the message center.
+bool HasNotification(const std::string& id) {
+  return message_center::MessageCenter::Get()->FindNotificationById(id);
+}
+
 }  // namespace
 
 namespace ash {
@@ -79,23 +84,21 @@ PrivacyHubNotification::~PrivacyHubNotification() = default;
 
 void PrivacyHubNotification::Show() {
   if (remove_timer_.IsRunning()) {
-    // Calling `Show()` soon after calling `Hide()` for the same notification
-    // usually happens for two cases. In both the update should not be a silent
-    // update of just the text but instead resurface the notifiaction:
-    // 1. We're updating the app names in the notification and want to make the
-    // user aware that the app they just launched also tries to use a sensor
-    // that is currently disabled.
-    // 2. The user misclicked the app in the tray and closed the 'wrong' app
-    // again just to launch the right app a few seconds later. Both apps use
-    // the same sensor that is currently disabled.
     remove_timer_.Stop();
-    RemoveNotification(id_);
   }
 
   SetNotificationMessage();
+  if (HasNotification(id_)) {
+    // The notification is already in the message center. Update the content and
+    // pop it up again.
+    message_center::MessageCenter::Get()->UpdateNotification(
+        id_, builder_.BuildPtr());
+    message_center::MessageCenter::Get()->ResetSinglePopup(id_);
+  } else {
+    message_center::MessageCenter::Get()->AddNotification(builder_.BuildPtr());
+  }
 
-  message_center::MessageCenter::Get()->AddNotification(builder_.BuildPtr());
-  last_time_shown_ = last_time_shown_.value_or(base::Time::Now());
+  last_time_shown_ = base::Time::Now();
 }
 
 void PrivacyHubNotification::Hide() {
@@ -116,7 +119,7 @@ void PrivacyHubNotification::Hide() {
 }
 
 void PrivacyHubNotification::Update() {
-  if (message_center::MessageCenter::Get()->FindNotificationById(id_)) {
+  if (HasNotification(id_)) {
     SetNotificationMessage();
     message_center::MessageCenter::Get()->UpdateNotification(
         id_, builder_.BuildPtr());
