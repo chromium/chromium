@@ -742,8 +742,8 @@ class ExtensionActionRunnerWithUserHostControlsBrowserTest
 // is either 'on all sites' or 'on site'). Note that we don't check if extension
 // `WantsToRun` because on user-restricted sites, actions are blocked rather
 // than withheld.
-// TODO(crbug.com/1363781): Flaky on Win 7 and Mac 12.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1363781): Flaky on Mac 12.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_HandleUserSiteSettingModified_ExtensionHasAccess \
   DISABLED_HandleUserSiteSettingModified_ExtensionHasAccess
 #else
@@ -866,8 +866,8 @@ class ExtensionActionRunnerWithUserHostControlsAndPermittedSitesBrowserTest
 // is either 'on all sites' or 'on site'). Note that we don't check if extension
 // `WantsToRun` because on user-restricted sites, actions are blocked rather
 // than withheld.
-// TODO(crbug.com/1363781): Flaky on Win 7 and Mac 12.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1363781): Flaky on Mac 12.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_HandleUserSiteSettingModified_ExtensionHasAccess \
   DISABLED_HandleUserSiteSettingModified_ExtensionHasAccess
 #else
