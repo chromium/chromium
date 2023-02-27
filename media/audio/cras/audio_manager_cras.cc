@@ -208,7 +208,6 @@ AudioParameters AudioManagerCras::GetStreamParametersForSystem(
   // Rephrase the field aec_supported to properly reflect its meaning in this
   // context (since it currently signals whether an CrAS APM with tuned settings
   // is available).
-  // TODO(crbug.com/1307680): add unit tests and caching cras_util_ results.
   const bool tuned_system_apm_available = cras_util_->CrasGetAecSupported();
 
   // Don't use the system AEC if it is deactivated for this group ID. Also never

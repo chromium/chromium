@@ -184,6 +184,29 @@ CrasUtil::CrasUtil() = default;
 
 CrasUtil::~CrasUtil() = default;
 
+bool CrasUtil::CacheEffects() {
+  libcras_client* client = CrasConnect();
+  if (!client) {
+    LOG(ERROR) << "Failed to cache effects";
+    return false;
+  }
+  if (libcras_client_get_aec_supported(client, &aec_supported_) < 0) {
+    LOG(ERROR) << "Fail to query AEC supported";
+    aec_supported_ = false;
+  }
+  if (libcras_client_get_aec_group_id(client, &aec_group_id_) < 0) {
+    LOG(ERROR) << "Fail to query AEC group ID";
+    aec_group_id_ = -1;  // The default group ID is -1
+  }
+  if (libcras_client_get_default_output_buffer_size(
+          client, &default_output_buffer_size_) < 0) {
+    LOG(ERROR) << "Fail to query default output buffer size";
+    default_output_buffer_size_ = 0;
+  }
+  CrasDisconnect(&client);
+  return true;
+}
+
 std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
   std::vector<CrasDevice> devices;
 
@@ -236,42 +259,24 @@ std::vector<CrasDevice> CrasUtil::CrasGetAudioDevices(DeviceType type) {
 }
 
 int CrasUtil::CrasGetAecSupported() {
-  libcras_client* client = CrasConnect();
-  if (!client) {
-    return 0;
+  if (!cras_effects_cached_) {
+    cras_effects_cached_ = CacheEffects();
   }
-
-  int supported;
-  libcras_client_get_aec_supported(client, &supported);
-  CrasDisconnect(&client);
-
-  return supported;
+  return aec_supported_;
 }
 
 int CrasUtil::CrasGetAecGroupId() {
-  libcras_client* client = CrasConnect();
-  if (!client) {
-    return -1;
+  if (!cras_effects_cached_) {
+    cras_effects_cached_ = CacheEffects();
   }
-
-  int id;
-  int rc = libcras_client_get_aec_group_id(client, &id);
-  CrasDisconnect(&client);
-
-  return rc < 0 ? rc : id;
+  return aec_group_id_;
 }
 
 int CrasUtil::CrasGetDefaultOutputBufferSize() {
-  libcras_client* client = CrasConnect();
-  if (!client) {
-    return -1;
+  if (!cras_effects_cached_) {
+    cras_effects_cached_ = CacheEffects();
   }
-
-  int size;
-  int rc = libcras_client_get_default_output_buffer_size(client, &size);
-  CrasDisconnect(&client);
-
-  return rc < 0 ? rc : size;
+  return default_output_buffer_size_;
 }
 
 }  // namespace media
