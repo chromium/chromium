@@ -146,6 +146,50 @@ constexpr base::TimeDelta kWaitElementTimeout = base::Seconds(2);
       assertWithMatcher:grey_notVisible()];
 }
 
+// Tests that navigating to a page and restarting upon cold start, an NTP page
+// is opened with the Return to Recent Tab tile. Then, subsequently opening a
+// new tab removes the Return To Recent Tab tile from both the new tab's NTP and
+// the Start NTP.
+- (void)testOpeningNewTabRemovesReturnToRecenTabTile {
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL destinationUrl = self.testServer->GetURL("/pony.html");
+  [ChromeEarlGrey loadURL:destinationUrl];
+
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Give time for NTP to be fully loaded so all elements are accessible.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.5));
+  GREYAssertEqual([ChromeEarlGrey mainTabCount], 2,
+                  @"Two tabs were expected to be open");
+  // Assert NTP is visible by checking that the fake omnibox is here.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_RETURN_TO_RECENT_TAB_TITLE))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Assert that Return to Recent Tab has been removed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_RETURN_TO_RECENT_TAB_TITLE))]
+      assertWithMatcher:grey_notVisible()];
+
+  // Close current tab to go back to the previous Start NTP.
+  [ChromeEarlGrey closeCurrentTab];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_RETURN_TO_RECENT_TAB_TITLE))]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPLogo()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that the Return To Recent Tab tile is removed after opening the tab
 // grid (i.e. switching away from the Start Surface).
 - (void)testReturnToRecenTabTileRemovedAfterOpeningTabGrid {
