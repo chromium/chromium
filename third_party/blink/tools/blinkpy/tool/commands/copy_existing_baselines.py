@@ -144,7 +144,7 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
                 port.baseline_version_dir(),
                 self._file_name_for_expected_result(virtual_test_name, suffix))
 
-            if port.skips_test(test_name):
+            if port.skips_test(virtual_test_name):
                 self._log_skipped_test(port, virtual_test_name)
                 if self._tool.filesystem.exists(new_baseline):
                     self._tool.filesystem.remove(new_baseline)

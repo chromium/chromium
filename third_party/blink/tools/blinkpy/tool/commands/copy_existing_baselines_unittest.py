@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 import optparse
+from unittest import mock
 
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
 from blinkpy.tool.commands.copy_existing_baselines import CopyExistingBaselines
+from blinkpy.web_tests.port.base import VirtualTestSuite
 
 
 class TestCopyExistingBaselines(BaseTestCase):
@@ -295,6 +297,37 @@ class TestCopyExistingBaselines(BaseTestCase):
             self.tool.filesystem.exists(
                 self.baseline_path(
                     'platform/test-linux-trusty/failures/expected/image-expected.txt'
+                )))
+
+    def test_no_copy_skipped_virtual_test(self):
+        """Verify that a virtual test skipped for a platform is not copied."""
+        linux_only_suite = VirtualTestSuite(
+            prefix='linux-only',
+            platforms=['Linux'],
+            bases=['failures/expected/image.html'],
+            args=['--dummy-flag'])
+        self._write(
+            self.baseline_path(
+                'platform/test-win-win10/failures/expected/image-expected.txt'
+            ), 'original test-win-win10 result')
+
+        with mock.patch(
+                'blinkpy.web_tests.port.test.TestPort.virtual_test_suites',
+                return_value=[linux_only_suite]):
+            self.command.execute(
+                self.options(port_name='test-win-win10',
+                             test='failures/expected/image.html'), [],
+                self.tool)
+
+        self.assertEqual(
+            self._read(
+                self.baseline_path(
+                    'platform/test-linux-trusty/failures/expected/image-expected.txt'
+                )), 'original test-win-win10 result')
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'platform/test-win-win10/virtual/linux-only/failures/expected/image-expected.txt'
                 )))
 
     def test_port_for_primary_baseline(self):
