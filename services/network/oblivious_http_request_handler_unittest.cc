@@ -195,6 +195,14 @@ class TestObliviousHttpRequestHandler : public testing::Test {
 
   network::mojom::ObliviousHttpRequestPtr CreateRequest() {
     network::mojom::ObliviousHttpRequestPtr request =
+        CreateRequestWithoutBody();
+    request->request_body = network::mojom::ObliviousHttpRequestBody::New(
+        /*content=*/"test data", /*content_type=*/"application/testdata");
+    return request;
+  }
+
+  network::mojom::ObliviousHttpRequestPtr CreateRequestWithoutBody() {
+    network::mojom::ObliviousHttpRequestPtr request =
         network::mojom::ObliviousHttpRequest::New();
     request->relay_url = GURL(kRelayURL);
     request->key_config = CreateTestKeyConfig();
@@ -202,8 +210,6 @@ class TestObliviousHttpRequestHandler : public testing::Test {
     request->method = net::HttpRequestHeaders::kGetMethod;
     request->traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-    request->request_body = network::mojom::ObliviousHttpRequestBody::New(
-        /*content=*/"test data", /*content_type=*/"application/testdata");
     return request;
   }
 
@@ -228,6 +234,14 @@ TEST_F(TestObliviousHttpRequestHandler, TestDisconnect) {
   {
     TestOhttpClient client("", net::OK);
     handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
+    RespondToPendingRequest("");
+    client.WaitForCall();
+  }
+  // Empty body
+  {
+    TestOhttpClient client("", net::OK);
+    handler->StartRequest(CreateRequestWithoutBody(),
+                          client.CreatePendingRemote());
     RespondToPendingRequest("");
     client.WaitForCall();
   }

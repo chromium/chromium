@@ -104,8 +104,7 @@ class StatefulObliviousHttpClient {
 std::string CreateAndSerializeBhttpMessage(
     const GURL& request_url,
     const std::string& method,
-    absl::optional<std::string> content_type,
-    absl::optional<std::string> content_data,
+    mojom::ObliviousHttpRequestBodyPtr request_body,
     net::HttpRequestHeaders::HeaderVector headers) {
   std::string host_port = request_url.host();
   if (request_url.has_port()) {
@@ -119,13 +118,14 @@ std::string CreateAndSerializeBhttpMessage(
   // protections (according to the OHTTP spec).
   bhttp_request.AddHeaderField(
       {"Date", base::TimeFormatHTTP(base::Time::Now())});
-  if (content_data) {
-    DCHECK(content_type);
+  if (request_body && !request_body->content.empty()) {
+    DCHECK(!request_body->content_type.empty());
+    bhttp_request.AddHeaderField({net::HttpRequestHeaders::kContentType,
+                                  std::move(request_body->content_type)});
     bhttp_request.AddHeaderField(
-        {net::HttpRequestHeaders::kContentType, std::move(*content_type)});
-    bhttp_request.AddHeaderField({net::HttpRequestHeaders::kContentLength,
-                                  base::NumberToString(content_data->size())});
-    bhttp_request.set_body(std::move(*content_data));
+        {net::HttpRequestHeaders::kContentLength,
+         base::NumberToString(request_body->content.size())});
+    bhttp_request.set_body(std::move(request_body->content));
   }
   for (const auto& header : headers) {
     bhttp_request.AddHeaderField({header.key, header.value});
@@ -279,8 +279,7 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
 
   std::string bhttp_payload = CreateAndSerializeBhttpMessage(
       state->request->resource_url, state->request->method,
-      std::move(state->request->request_body->content_type),
-      std::move(state->request->request_body->content),
+      std::move(state->request->request_body),
       std::move(headers.value_or(net::HttpRequestHeaders()).GetHeaderVector()));
 
   state->net_log.AddEvent(
