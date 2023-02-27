@@ -476,7 +476,11 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
   // fragment of an OOF fragment is always simply the parent.
   if (!context.current_container.IsInFragmentationContext() ||
       (fragment && fragment->IsMonolithic())) {
-    context.current_container.fragment = fragment;
+    // Anonymous blocks are not allowed to be containing blocks, so we should
+    // skip over any such elements.
+    if (!fragment || !fragment->IsAnonymousBlock()) {
+      context.current_container.fragment = fragment;
+    }
   }
 
   if (!object.CanContainAbsolutePositionObjects())
