@@ -2262,16 +2262,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-enhanced-safe-browsing",
-    "owners": [ "ajuma", "joemerramos", "bling-flags@google.com"],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "enable-enhanced-safe-browsing-phase-2",
-    "owners": [ "ajuma", "joemerramos", "bling-flags@google.com"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "enable-enhanced-safe-browsing-settings-improvements",
     "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 114
