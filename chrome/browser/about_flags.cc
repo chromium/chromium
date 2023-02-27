@@ -1956,12 +1956,6 @@ const FeatureEntry::FeatureVariation kRelatedSearchesVariations[] = {
     {"from URL", &kRelatedSearchesUrl, 1, nullptr},
     {"from content", &kRelatedSearchesContent, 1, nullptr},
 };
-const FeatureEntry::FeatureParam kRelatedSearchesUiVerbose = {"verbosity", "v"};
-const FeatureEntry::FeatureParam kRelatedSearchesUiExtreme = {"verbosity", "x"};
-const FeatureEntry::FeatureVariation kRelatedSearchesUiVariations[] = {
-    {"verbose", &kRelatedSearchesUiVerbose, 1, nullptr},
-    {"extreme", &kRelatedSearchesUiExtreme, 1, nullptr},
-};
 
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith300Dp[] =
     {{"contextual_search_minimum_page_height_dp", "300"}};
@@ -3340,11 +3334,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearches,
                                     kRelatedSearchesVariations,
                                     "RelatedSearches")},
-    {"related-searches-ui", flag_descriptions::kRelatedSearchesUiName,
-     flag_descriptions::kRelatedSearchesUiDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearchesUi,
-                                    kRelatedSearchesUiVariations,
-                                    "RelatedSearchesUi")},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,

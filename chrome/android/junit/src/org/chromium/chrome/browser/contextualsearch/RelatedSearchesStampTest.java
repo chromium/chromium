@@ -15,8 +15,6 @@ import static org.junit.Assert.assertTrue;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,10 +49,6 @@ public class RelatedSearchesStampTest {
     private static final String RELATED_SEARCHES_DARK_LAUNCH = "d";
     private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
     private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";
-    private static final String RELATED_SEARCHES_VERBOSITY_PARAM = "verbosity";
-    private static final String RELATED_SEARCHES_VERBOSITY_DEFAULT = "";
-    private static final String RELATED_SEARCHES_VERBOSITY_VERBOSE = "v";
-    private static final String RELATED_SEARCHES_VERBOSITY_EXTREME = "x";
 
     /**
      * The stamps to use for various experiment configurations. Note that users still may need
@@ -87,7 +81,6 @@ public class RelatedSearchesStampTest {
      * Values to return from Shadows.
      * These must be static because the original and shadow methods are static.
      */
-    private static String sRelatedSearchesVerbosity;
     private static String sRelatedSearchesLanguageAllowlist;
     // These need to be Boolean instead of boolean so they can be static.
     private static Boolean sRelatedSearchesNeedsUrl;
@@ -105,14 +98,6 @@ public class RelatedSearchesStampTest {
      */
     @Implements(ChromeFeatureList.class)
     static class ShadowChromeFeatureList {
-        /** @see  {@link #setVerbosity} for how to define a return value for this function. */
-        @Implementation
-        protected static String getFieldTrialParamByFeature(String featureName, String paramName) {
-            assertThat(featureName, is(ChromeFeatureList.RELATED_SEARCHES_UI));
-            assertThat(paramName, is(RELATED_SEARCHES_VERBOSITY_PARAM));
-            return sRelatedSearchesVerbosity;
-        }
-
         @Implementation
         protected static boolean getFieldTrialParamByFeatureAsBoolean(
                 String featureName, String paramName, boolean defaultValue) {
@@ -187,16 +172,10 @@ public class RelatedSearchesStampTest {
 
     /** Resets all of the static return values for all our shadow classes. */
     private void resetShadows() {
-        sRelatedSearchesVerbosity = "";
         sRelatedSearchesLanguageAllowlist = "";
         sRelatedSearchesNeedsUrl = null;
         sRelatedSearchesNeedsContent = null;
         sRelatedSearchesExperimentConfigurationStamp = null;
-    }
-
-    /** Sets the verbosity character that our shadow should return (normally set in the config). */
-    private void setVerbosity(String verbosityCharacter) {
-        sRelatedSearchesVerbosity = verbosityCharacter;
     }
 
     /** Sets whether the user has allowed sending content (has done the opt-in). */
@@ -259,15 +238,6 @@ public class RelatedSearchesStampTest {
     }
 
     /**
-     * Sets a standard config setup for a particular Related Searches experiment arm.
-     * @param stampFromConfig The base stamp just as we expect it to be set in the experiment
-     *         config.
-     */
-    private void setStandardExperimentConfiguration(String stampFromConfig) {
-        setStandardExperimentConfiguration(stampFromConfig, RELATED_SEARCHES_VERBOSITY_DEFAULT);
-    }
-
-    /**
      * Sets a standard config setup for the default Related Searches launch configuration.
      */
     private void setStandardDefaultLaunchConfiguration() {
@@ -280,7 +250,7 @@ public class RelatedSearchesStampTest {
      *         config.
      */
     private void setStandardLaunchConfiguration(String stampFromConfig) {
-        setStandardExperimentConfiguration(stampFromConfig, RELATED_SEARCHES_VERBOSITY_DEFAULT);
+        setStandardExperimentConfiguration(stampFromConfig);
         clearLanguageAllowlist();
     }
 
@@ -288,14 +258,11 @@ public class RelatedSearchesStampTest {
      * Sets a standard config setup for a particular Related Searches experiment arm.
      * @param stampFromConfig The base stamp just as we expect it to be set in the experiment
      *         config.
-     * @param verbosity The verbosity param as we expect it to be set in the experiment config.
      */
-    private void setStandardExperimentConfiguration(
-            String stampFromConfig, @Nullable String verbosity) {
+    private void setStandardExperimentConfiguration(String stampFromConfig) {
         setStandardExperimentRequirements();
         setCanSendUrl(true);
         setCanSendContent(true);
-        setVerbosity(verbosity);
         setRelatedSearchesExperimentConfigurationStamp(stampFromConfig);
     }
 
@@ -465,38 +432,6 @@ public class RelatedSearchesStampTest {
         assertThat("A launch configuration with multiple languages is generating Related Searches "
                         + "when it should be language restricted for German!",
                 mStamp.getRelatedSearchesStamp(GERMAN), is(""));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetVerbosityVerbose() {
-        setStandardDefaultLaunchConfiguration();
-        setVerbosity(RELATED_SEARCHES_VERBOSITY_VERBOSE);
-        assertThat("The verbose variant is not working as expected for the default launch "
-                        + "configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(EXPECTED_DEFAULT_STAMP + RELATED_SEARCHES_VERBOSITY_VERBOSE));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetVerbosityExtreme() {
-        setStandardDefaultLaunchConfiguration();
-        setVerbosity(RELATED_SEARCHES_VERBOSITY_EXTREME);
-        assertThat("The verbose-extreme variant is not working as expected for the default launch "
-                        + "configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN),
-                is(EXPECTED_DEFAULT_STAMP + RELATED_SEARCHES_VERBOSITY_EXTREME));
-    }
-
-    @Test
-    @Feature({"RelatedSearches", "RelatedSearchesStamp"})
-    public void testGetVerbosityDefault() {
-        setStandardDefaultLaunchConfiguration();
-        setVerbosity("");
-        assertThat("The default setting for verbosity is not working as expected for the default "
-                        + "launch configuration!",
-                mStamp.getRelatedSearchesStamp(GERMAN), is(EXPECTED_DEFAULT_STAMP));
     }
 
     @Test

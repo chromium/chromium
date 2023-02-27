@@ -3910,13 +3910,6 @@ const char kRelatedSearchesDescription[] =
     "Enables requesting related searches suggestions. These will be requested "
     "but not shown unless the UI flag is also enabled.";
 
-const char kRelatedSearchesUiName[] =
-    "Forces showing of the Related Searches UI on Android";
-const char kRelatedSearchesUiDescription[] =
-    "Forces the Related Searches UI and underlying requests to be enabled "
-    "regardless of whether they are safe or useful. This requires the Related "
-    "Searches feature flag to also be enabled.";
-
 const char kRequestDesktopSiteAdditionsName[] =
     "Secondary settings for request desktop site on Android.";
 const char kRequestDesktopSiteAdditionsDescription[] =
