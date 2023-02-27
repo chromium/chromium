@@ -43,9 +43,9 @@ constexpr uint64_t kInternalMicId = 10060;
 
 // Histogram names.
 constexpr char kOutputMuteChangeHistogramName[] =
-    "ChromeOS.Settings.Device.Audio.OutputMuteStateChange";
+    "ChromeOS.CrosAudioConfig.OutputMuteStateChange";
 constexpr char kInputMuteChangeHistogramName[] =
-    "ChromeOS.Settings.Device.Audio.InputMuteStateChange";
+    "ChromeOS.CrosAudioConfig.InputMuteStateChange";
 
 struct AudioNodeInfo {
   bool is_input;

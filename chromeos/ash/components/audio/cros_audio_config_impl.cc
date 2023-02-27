@@ -18,9 +18,9 @@ constexpr char kStubInternalMicDisplayName[] = "Internal Mic";
 
 // Histogram names.
 constexpr char kOutputMuteChangeHistogramName[] =
-    "ChromeOS.Settings.Device.Audio.OutputMuteStateChange";
+    "ChromeOS.CrosAudioConfig.OutputMuteStateChange";
 constexpr char kInputMuteChangeHistogramName[] =
-    "ChromeOS.Settings.Device.Audio.InputMuteStateChange";
+    "ChromeOS.CrosAudioConfig.InputMuteStateChange";
 
 // Creates an inactive input device with default property configuration.
 AudioDevice CreateStubInternalMic() {
