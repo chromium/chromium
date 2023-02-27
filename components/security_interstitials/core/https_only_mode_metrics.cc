@@ -4,10 +4,16 @@
 
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 
-namespace security_interstitials {
-namespace https_only_mode {
+#include "base/metrics/histogram_functions.h"
+
+namespace security_interstitials::https_only_mode {
 
 const char kEventHistogram[] = "Security.HttpsFirstMode.NavigationEvent";
 
+// TODO(crbug.com/1394910): Rename these metrics now that they apply to both
+// HTTPS-First Mode and HTTPS Upgrades.
+void RecordHttpsFirstModeNavigation(Event event) {
+  base::UmaHistogramEnumeration(kEventHistogram, event);
 }
-}  // namespace security_interstitials
+
+}  // namespace security_interstitials::https_only_mode

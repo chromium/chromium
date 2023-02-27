@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
@@ -31,15 +30,6 @@ namespace {
 // Time that the throttle will wait before canceling the upgraded navigation and
 // showing the HTTPS-First Mode interstitial.
 base::TimeDelta g_fallback_delay = base::Seconds(3);
-
-// Helper to record an HTTPS-First Mode navigation event.
-// TODO(crbug.com/1394910): Rename these metrics now that they apply to both
-// HTTPS-First Mode and HTTPS Upgrades.
-void RecordHttpsFirstModeNavigation(
-    security_interstitials::https_only_mode::Event event) {
-  base::UmaHistogramEnumeration(
-      security_interstitials::https_only_mode::kEventHistogram, event);
-}
 
 }  // namespace
 

@@ -18,7 +18,6 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
-class PrefService;
 class Profile;
 
 // A class that attempts to intercept HTTP navigation requests and redirect them
@@ -47,7 +46,6 @@ class HttpsOnlyModeUpgradeInterceptor
       content::BrowserContext* browser_context,
       content::URLLoaderRequestInterceptor::LoaderCallback callback,
       Profile* profile,
-      PrefService* prefs,
       content::WebContents* web_contents,
       bool is_hsts_active_for_host);
 

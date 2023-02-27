@@ -50,10 +50,13 @@ using security_interstitials::https_only_mode::kEventHistogram;
 // vs. HTTPS-Upgrades. These get parameterized so the tests run under both
 // versions on their own as well as when both HTTPS Upgrades and HTTPS-First
 // Mode are enabled (to test any interactions between the two upgrade modes).
+// The code also needs to be able to run safely when v2 is enabled, but neither
+// HTTPS-First Mode nor HTTPS-Upgrades are enabled.
 enum class HttpsUpgradesTestType {
   kHttpsFirstModeOnly,
   kHttpsUpgradesOnly,
-  kBoth
+  kBoth,
+  kNeither
 };
 
 // Tests for the v2 implementation of HTTPS-First Mode.
@@ -65,7 +68,8 @@ class HttpsUpgradesBrowserTest
   ~HttpsUpgradesBrowserTest() override = default;
 
   void SetUp() override {
-    if (GetParam() != HttpsUpgradesTestType::kHttpsFirstModeOnly) {
+    if (GetParam() == HttpsUpgradesTestType::kHttpsUpgradesOnly ||
+        GetParam() == HttpsUpgradesTestType::kBoth) {
       feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kHttpsFirstModeV2,
                                 features::kHttpsUpgrades},
@@ -100,9 +104,9 @@ class HttpsUpgradesBrowserTest
     HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server()->port());
     HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server()->port());
 
-    // For the kHttpsUpgradesOnly test variant, don't enable the HTTPS-First
-    // Mode pref.
-    if (GetParam() == HttpsUpgradesTestType::kHttpsUpgradesOnly) {
+    // Only enable the HTTPS-First Mode pref when the test config calls for it.
+    if (GetParam() == HttpsUpgradesTestType::kHttpsUpgradesOnly ||
+        GetParam() == HttpsUpgradesTestType::kNeither) {
       SetPref(false);
     } else {
       SetPref(true);
@@ -159,7 +163,13 @@ class HttpsUpgradesBrowserTest
   // trigger (i.e., for fallback HTTP navigations when HTTPS-First Mode is
   // enabled).
   bool IsHttpInterstitialEnabled() const {
-    return GetParam() != HttpsUpgradesTestType::kHttpsUpgradesOnly;
+    return (GetParam() == HttpsUpgradesTestType::kHttpsFirstModeOnly ||
+            GetParam() == HttpsUpgradesTestType::kBoth);
+  }
+
+  // Whether the tests should run steps that assume HTTP upgrading will trigger.
+  bool IsHttpUpgradingEnabled() const {
+    return GetParam() != HttpsUpgradesTestType::kNeither;
   }
 
   net::EmbeddedTestServer* http_server() { return &http_server_; }
@@ -179,7 +189,8 @@ INSTANTIATE_TEST_SUITE_P(
     HttpsUpgradesBrowserTest,
     ::testing::Values(HttpsUpgradesTestType::kHttpsFirstModeOnly,
                       HttpsUpgradesTestType::kHttpsUpgradesOnly,
-                      HttpsUpgradesTestType::kBoth),
+                      HttpsUpgradesTestType::kBoth,
+                      HttpsUpgradesTestType::kNeither),
     // Map param to a human-readable string for better test output.
     [](testing::TestParamInfo<HttpsUpgradesTestType> input_type)
         -> std::string {
@@ -190,11 +201,14 @@ INSTANTIATE_TEST_SUITE_P(
           return "HttpsUpgradesOnly";
         case HttpsUpgradesTestType::kBoth:
           return "BothHttpsFirstModeAndHttpsUpgrades";
+        case HttpsUpgradesTestType::kNeither:
+          return "NeitherHttpsFirstModeNorHttpsUpgrades";
       }
     });
 
 // If the user navigates to an HTTP URL for a site that supports HTTPS, the
-// navigation should end up on the HTTPS version of the URL.
+// navigation should end up on the HTTPS version of the URL if upgrading is
+// enabled.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        UrlWithHttpScheme_ShouldUpgrade) {
   GURL http_url = http_server()->GetURL("foo.test", "/simple.html");
@@ -204,17 +218,29 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   // redirected to HTTPS.
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver nav_observer(contents, 1);
-  EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  if (IsHttpUpgradingEnabled()) {
+    EXPECT_FALSE(content::NavigateToURL(contents, http_url));
+  } else {
+    EXPECT_TRUE(content::NavigateToURL(contents, http_url));
+  }
   nav_observer.Wait();
 
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
   EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
 
-  // Verify that navigation event metrics were correctly recorded.
-  histograms()->ExpectTotalCount(kEventHistogram, 2);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded, 1);
+  if (IsHttpUpgradingEnabled()) {
+    EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+    histograms()->ExpectTotalCount(kEventHistogram, 2);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted,
+                                    1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded,
+                                    1);
+  } else {
+    EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
 }
 
 // If the user navigates to an HTTPS URL for a site that supports HTTPS, the
@@ -281,10 +307,18 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   }
 
   // Verify that navigation event metrics were correctly recorded.
-  histograms()->ExpectTotalCount(kEventHistogram, 3);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
+  if (IsHttpUpgradingEnabled()) {
+    histograms()->ExpectTotalCount(kEventHistogram, 3);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted,
+                                    1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError,
+                                    1);
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
 }
 
 // If the user triggers an HTTPS-Only Mode interstitial for a host and then
@@ -318,16 +352,28 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
   // Verify that navigation event metrics were correctly recorded.
-  histograms()->ExpectTotalCount(kEventHistogram, 3);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
+  if (IsHttpUpgradingEnabled()) {
+    histograms()->ExpectTotalCount(kEventHistogram, 3);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted,
+                                    1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError,
+                                    1);
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
 }
 
 // If the upgraded HTTPS URL is not available due to a net error, it should
 // trigger the HTTPS-Only Mode interstitial and offer fallback.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        NetErrorOnUpgrade_ShouldInterstitial) {
+  // This test is only interesting when HTTPS Upgrading occurs.
+  if (!IsHttpUpgradingEnabled()) {
+    return;
+  }
   GURL http_url = http_server()->GetURL("foo.test", "/close-socket");
   GURL https_url = https_server()->GetURL("foo.test", "/close-socket");
 
@@ -392,7 +438,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   }
 
   // Verify that navigation event metrics were recorded for the main frame.
-  histograms()->ExpectTotalCount(kEventHistogram, 3);
+  if (IsHttpUpgradingEnabled()) {
+    histograms()->ExpectTotalCount(kEventHistogram, 3);
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
 
   // Navigate the iframe to `iframe_url`. It should successfully navigate and
   // not get upgraded to HTTPS as the hostname is now in the allowlist.
@@ -402,7 +454,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   EXPECT_EQ(iframe_url, nav_observer.last_navigation_url());
 
   // Verify that no new navigation event metrics were recorded for the subframe.
-  histograms()->ExpectTotalCount(kEventHistogram, 3);
+  if (IsHttpUpgradingEnabled()) {
+    histograms()->ExpectTotalCount(kEventHistogram, 3);
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
 }
 
 // Tests that a navigation to the HTTP version of a site with an HTTPS version
@@ -463,7 +521,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, HttpPageHttpPost_NotUpgraded) {
   }
 
   // Verify that navigation event metrics were recorded for the initial page.
-  histograms()->ExpectTotalCount(kEventHistogram, 3);
+  if (IsHttpUpgradingEnabled()) {
+    histograms()->ExpectTotalCount(kEventHistogram, 3);
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
 
   // Submit the form and wait for the navigation to complete.
   content::TestNavigationObserver nav_observer(contents, 1);
@@ -477,7 +541,13 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, HttpPageHttpPost_NotUpgraded) {
 
   // Verify that no new navigation event metrics were recorded for the POST
   // navigation.
-  histograms()->ExpectTotalCount(kEventHistogram, 3);
+  if (IsHttpUpgradingEnabled()) {
+    histograms()->ExpectTotalCount(kEventHistogram, 3);
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
 }
 
 // Tests that if an HTTPS navigation redirects to HTTP on a different host, it
@@ -499,13 +569,22 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
   nav_observer.Wait();
   EXPECT_TRUE(nav_observer.last_navigation_succeeded());
 
-  EXPECT_TRUE(contents->GetLastCommittedURL().SchemeIs(url::kHttpsScheme));
-  EXPECT_EQ("bar.test", contents->GetLastCommittedURL().host());
-
   // Verify that navigation event metrics were correctly recorded.
-  histograms()->ExpectTotalCount(kEventHistogram, 2);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
-  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded, 1);
+  if (IsHttpUpgradingEnabled()) {
+    EXPECT_TRUE(contents->GetLastCommittedURL().SchemeIs(url::kHttpsScheme));
+    histograms()->ExpectTotalCount(kEventHistogram, 2);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted,
+                                    1);
+    histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded,
+                                    1);
+  } else {
+    EXPECT_TRUE(contents->GetLastCommittedURL().SchemeIs(url::kHttpScheme));
+    histograms()->ExpectTotalCount(kEventHistogram, 1);
+    histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+  }
+
+  EXPECT_EQ("bar.test", contents->GetLastCommittedURL().host());
 }
 
 // Tests that navigating to an HTTPS page that downgrades to HTTP on the same
@@ -629,6 +708,10 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // state).
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        HttpsUpgradeWithBrokenSSL_ShouldTriggerSSLInterstitial) {
+  // If HTTPS upgrading isn't enabled, skip over this test.
+  if (!IsHttpUpgradingEnabled()) {
+    return;
+  }
   // Set up a new test server instance so it can have a custom handler that
   // redirects to the HTTPS server.
   net::EmbeddedTestServer upgrading_server{net::EmbeddedTestServer::TYPE_HTTP};
@@ -915,8 +998,11 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, AllowlistEntryExpires) {
   }
 
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
-  EXPECT_TRUE(state->IsHttpAllowedForHost(
-      http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
+  if (IsHttpUpgradingEnabled()) {
+    EXPECT_TRUE(state->IsHttpAllowedForHost(
+        http_url.host(),
+        contents->GetPrimaryMainFrame()->GetStoragePartition()));
+  }
 
   // Simulate the clock advancing by eight days, which is past the expiration
   // point.
@@ -968,6 +1054,15 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, RevisitingBumpsExpiration) {
   }
 
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  // If upgrading isn't enabled, ensure the host wasn't allowlisted and exit.
+  if (!IsHttpUpgradingEnabled()) {
+    EXPECT_FALSE(state->IsHttpAllowedForHost(
+        http_url.host(),
+        contents->GetPrimaryMainFrame()->GetStoragePartition()));
+    return;
+  }
+
   EXPECT_TRUE(state->IsHttpAllowedForHost(
       http_url.host(), contents->GetPrimaryMainFrame()->GetStoragePartition()));
 
@@ -1126,6 +1221,10 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 // hostname pattern, and bare IP address cases.
 IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                        EnterpriseAllowlistDisablesUpgrades) {
+  // Skip this test when HTTPS Upgrading isn't enabled.
+  if (!IsHttpUpgradingEnabled()) {
+    return;
+  }
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

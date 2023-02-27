@@ -51023,6 +51023,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
   <int value="4" label="kUpgradeNetError">Upgrade failed due to net error</int>
   <int value="5" label="kUpgradeTimedOut">Upgrade failed due to timing out</int>
+  <int value="6" label="kPrerenderCancelled">
+    Prerender navigation cancelled
+  </int>
+  <int value="7" label="kUpgradeNotAttempted">
+    Upgrade not attempted because not enabled
+  </int>
 </enum>
 
 <enum name="HttpsImageCompressionInfoBarAction">

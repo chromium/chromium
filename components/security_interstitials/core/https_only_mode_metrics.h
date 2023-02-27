@@ -5,12 +5,13 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
 
-namespace security_interstitials {
-
-namespace https_only_mode {
+namespace security_interstitials::https_only_mode {
 
 extern const char kEventHistogram[];
 
+// Recorded by HTTPS-First Mode and HTTPS-Upgrade logic when a navigation is
+// upgraded, or is eligible to be upgraded but wasn't.
+//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class Event {
@@ -37,10 +38,16 @@ enum class Event {
   // A prerendered HTTP navigation was cancelled.
   kPrerenderCancelled = 6,
 
-  kMaxValue = kPrerenderCancelled,
+  // An upgrade would have been attempted but wasn't because neither HTTPS-First
+  // Mode nor HTTPS Upgrading were enabled.
+  kUpgradeNotAttempted = 7,
+
+  kMaxValue = kUpgradeNotAttempted,
 };
 
-}  // namespace https_only_mode
-}  // namespace security_interstitials
+// Helper to record an HTTPS-First Mode navigation event.
+void RecordHttpsFirstModeNavigation(Event event);
+
+}  // namespace security_interstitials::https_only_mode
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
