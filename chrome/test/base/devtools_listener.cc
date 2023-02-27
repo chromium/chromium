@@ -177,7 +177,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
 
   result->Set("result", std::move(entries));
   CHECK(base::JSONWriter::Write(*result, &coverage));
-  base::WriteFile(path, coverage.data(), coverage.size());
+  base::WriteFile(path, coverage);
 
   script_coverage_.clear();
   script_hash_map_.clear();
@@ -268,7 +268,7 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
         store.AppendASCII("scripts").AppendASCII(hash.append(".js.json"));
     CHECK(base::JSONWriter::Write(*params, &text));
     if (!base::PathExists(path))  // script de-duplication
-      base::WriteFile(path, text.data(), text.size());
+      base::WriteFile(path, text);
     value_.clear();
   }
 }

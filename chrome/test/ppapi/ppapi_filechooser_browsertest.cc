@@ -149,9 +149,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_Open_Success) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath existing_filename = temp_dir.GetPath().AppendASCII("foo");
-  ASSERT_EQ(
-      static_cast<int>(sizeof(kContents) - 1),
-      base::WriteFile(existing_filename, kContents, sizeof(kContents) - 1));
+  ASSERT_TRUE(base::WriteFile(existing_filename, kContents));
 
   PPAPITestSelectFileDialogFactory::SelectedFileInfoList file_info_list;
   file_info_list.push_back(
@@ -334,9 +332,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTestWithSBService,
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::FilePath existing_filename = temp_dir.GetPath().AppendASCII("foo");
-  ASSERT_EQ(
-      static_cast<int>(sizeof(kContents) - 1),
-      base::WriteFile(existing_filename, kContents, sizeof(kContents) - 1));
+  ASSERT_TRUE(base::WriteFile(existing_filename, kContents));
 
   safe_browsing_test_configuration_.default_result =
       safe_browsing::DownloadCheckResult::DANGEROUS;

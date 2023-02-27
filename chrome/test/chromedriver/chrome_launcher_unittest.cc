@@ -225,7 +225,7 @@ TEST(DesktopLauncher, ParseDevToolsActivePortFile_Success) {
   char data[] = "12345\nblahblah";
   base::FilePath temp_file =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("DevToolsActivePort"));
-  ASSERT_TRUE(base::WriteFile(temp_file, data, strlen(data)));
+  ASSERT_TRUE(base::WriteFile(temp_file, data));
   int port;
   ASSERT_TRUE(
       internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), &port).IsOk());
@@ -238,7 +238,7 @@ TEST(DesktopLauncher, ParseDevToolsActivePortFile_NoNewline) {
   char data[] = "12345";
   base::FilePath temp_file =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("DevToolsActivePort"));
-  ASSERT_TRUE(base::WriteFile(temp_file, data, strlen(data)));
+  ASSERT_TRUE(base::WriteFile(temp_file, data));
   int port = 1111;
   ASSERT_FALSE(
       internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), &port).IsOk());
@@ -251,7 +251,7 @@ TEST(DesktopLauncher, ParseDevToolsActivePortFile_NotNumber) {
   char data[] = "12345asdf\nblahblah";
   base::FilePath temp_file =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("DevToolsActivePort"));
-  ASSERT_TRUE(base::WriteFile(temp_file, data, strlen(data)));
+  ASSERT_TRUE(base::WriteFile(temp_file, data));
   int port;
   ASSERT_FALSE(
       internal::ParseDevToolsActivePortFile(temp_dir.GetPath(), &port).IsOk());
@@ -274,7 +274,7 @@ TEST(DesktopLauncher, RemoveOldDevToolsActivePortFile_Success) {
   base::FilePath temp_file =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("DevToolsActivePort"));
   char data[] = "12345asdf\nblahblah";
-  base::WriteFile(temp_file, data, strlen(data));
+  base::WriteFile(temp_file, data);
   ASSERT_TRUE(
       internal::RemoveOldDevToolsActivePortFile(temp_dir.GetPath()).IsOk());
   ASSERT_FALSE(base::PathExists(temp_file));

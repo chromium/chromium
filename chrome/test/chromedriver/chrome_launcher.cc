@@ -939,8 +939,7 @@ Status ProcessExtension(const std::string& extension,
   if (!temp_crx_dir.CreateUniqueTempDir())
     return Status(kUnknownError, "cannot create temp dir");
   base::FilePath extension_crx = temp_crx_dir.GetPath().AppendASCII("temp.crx");
-  int size = static_cast<int>(decoded_extension.length());
-  if (base::WriteFile(extension_crx, decoded_extension.c_str(), size) != size) {
+  if (!base::WriteFile(extension_crx, decoded_extension)) {
     return Status(kUnknownError, "cannot write file");
   }
 
@@ -1025,9 +1024,7 @@ Status ProcessExtension(const std::string& extension,
   } else {
     manifest->Set("key", public_key_base64);
     base::JSONWriter::Write(*manifest, &manifest_data);
-    if (base::WriteFile(
-            manifest_path, manifest_data.c_str(), manifest_data.size()) !=
-        static_cast<int>(manifest_data.size())) {
+    if (!base::WriteFile(manifest_path, manifest_data)) {
       return Status(kUnknownError, "cannot add 'key' to manifest");
     }
   }
@@ -1107,8 +1104,7 @@ Status WritePrefsFile(const std::string& template_string,
   base::JSONWriter::Write(*prefs, &prefs_str);
   VLOG(0) << "Populating " << path.BaseName().value()
           << " file: " << PrettyPrintValue(base::Value(prefs->Clone()));
-  if (static_cast<int>(prefs_str.length()) != base::WriteFile(
-          path, prefs_str.c_str(), prefs_str.length())) {
+  if (!base::WriteFile(path, prefs_str)) {
     return Status(kUnknownError, "failed to write prefs file");
   }
   return Status(kOk);
@@ -1155,8 +1151,7 @@ Status PrepareUserDataDir(const base::FilePath& user_data_dir,
 
   // Write empty "First Run" file, otherwise Chrome will wipe the default
   // profile that was written.
-  if (base::WriteFile(
-          user_data_dir.Append(chrome::kFirstRunSentinel), "", 0) != 0) {
+  if (!base::WriteFile(user_data_dir.Append(chrome::kFirstRunSentinel), "")) {
     return Status(kUnknownError, "failed to write first run file");
   }
   return Status(kOk);

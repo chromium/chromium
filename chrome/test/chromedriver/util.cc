@@ -104,9 +104,9 @@ Status UnzipArchive(const base::FilePath& unzip_dir,
     return Status(kUnknownError, "unable to create temp dir");
 
   base::FilePath archive = dir.GetPath().AppendASCII("temp.zip");
-  int length = bytes.length();
-  if (base::WriteFile(archive, bytes.c_str(), length) != length)
+  if (!base::WriteFile(archive, bytes)) {
     return Status(kUnknownError, "could not write file to temp dir");
+  }
 
   if (!zip::Unzip(archive, unzip_dir))
     return Status(kUnknownError, "could not unzip archive");
