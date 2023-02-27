@@ -4789,7 +4789,7 @@
   {
     "name": "messages-for-android-infrastructure",
     "owners": [ "lazzzis", "aishwaryarj" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "messages-for-android-offer-notification",
@@ -4809,7 +4809,7 @@
   {
     "name": "messages-for-android-pwa-install",
     "owners": [ "lazzzis", "aishwaryarj" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "messages-for-android-save-card",
