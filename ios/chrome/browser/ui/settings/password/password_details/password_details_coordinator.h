@@ -14,7 +14,6 @@ struct CredentialUIEntry;
 
 @protocol ApplicationCommands;
 class Browser;
-class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsCoordinatorDelegate;
 @class ReauthenticationModule;
 
@@ -29,7 +28,6 @@ class IOSChromePasswordCheckManager;
                               (const password_manager::CredentialUIEntry&)
                                   credential
                         reauthModule:(ReauthenticationModule*)reauthModule
-                passwordCheckManager:(IOSChromePasswordCheckManager*)manager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)
@@ -39,7 +37,6 @@ class IOSChromePasswordCheckManager;
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
                         reauthModule:(ReauthenticationModule*)reauthModule
-                passwordCheckManager:(IOSChromePasswordCheckManager*)manager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

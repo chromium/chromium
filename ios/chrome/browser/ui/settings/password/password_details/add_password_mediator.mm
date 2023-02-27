@@ -85,6 +85,10 @@ bool CheckForDuplicates(
             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
                      prefService:(PrefService*)prefService
                      syncService:(syncer::SyncService*)syncService {
+  DCHECK(delegate);
+  DCHECK(manager);
+  DCHECK(prefService);
+  DCHECK(syncService);
   self = [super init];
   if (self) {
     _delegate = delegate;

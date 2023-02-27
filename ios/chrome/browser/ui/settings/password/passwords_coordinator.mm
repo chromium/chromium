@@ -134,7 +134,8 @@
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   self.mediator = [[PasswordsMediator alloc]
-      initWithPasswordCheckManager:[self passwordCheckManager]
+      initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                       GetForBrowserState(browserState)
                   syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
                                        browserState)
                      faviconLoader:faviconLoader
@@ -203,8 +204,7 @@
   DCHECK(!self.passwordIssuesCoordinator);
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser
-                  passwordCheckManager:[self passwordCheckManager].get()];
+                               browser:self.browser];
   self.passwordIssuesCoordinator.delegate = self;
   self.passwordIssuesCoordinator.reauthModule = self.reauthModule;
   [self.passwordIssuesCoordinator start];
@@ -217,8 +217,7 @@
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
                             credential:credential
-                          reauthModule:self.reauthModule
-                  passwordCheckManager:[self passwordCheckManager].get()];
+                          reauthModule:self.reauthModule];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }
@@ -230,8 +229,7 @@
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
                        affiliatedGroup:affiliatedGroup
-                          reauthModule:self.reauthModule
-                  passwordCheckManager:[self passwordCheckManager].get()];
+                          reauthModule:self.reauthModule];
   self.passwordDetailsCoordinator.delegate = self;
   [self.passwordDetailsCoordinator start];
 }
@@ -241,8 +239,7 @@
   self.addPasswordCoordinator = [[AddPasswordCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                    reauthModule:self.reauthModule
-            passwordCheckManager:[self passwordCheckManager].get()];
+                    reauthModule:self.reauthModule];
   self.addPasswordCoordinator.delegate = self;
   [self.addPasswordCoordinator start];
 }
@@ -381,13 +378,6 @@
   [self.passwordSettingsCoordinator stop];
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
-}
-
-#pragma mark Private
-
-- (scoped_refptr<IOSChromePasswordCheckManager>)passwordCheckManager {
-  return IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
 }
 
 @end

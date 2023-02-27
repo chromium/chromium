@@ -5,11 +5,14 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 
 #import "base/mac/foundation_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -30,13 +33,9 @@
 #error "This file requires ARC support."
 #endif
 
-@interface AddPasswordCoordinator () <
-    AddPasswordHandler,
-    AddPasswordMediatorDelegate,
-    UIAdaptivePresentationControllerDelegate> {
-  // Manager responsible for getting existing password profiles.
-  IOSChromePasswordCheckManager* _manager;
-}
+@interface AddPasswordCoordinator () <AddPasswordHandler,
+                                      AddPasswordMediatorDelegate,
+                                      UIAdaptivePresentationControllerDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) AddPasswordViewController* viewController;
@@ -60,15 +59,12 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                              reauthModule:(ReauthenticationModule*)reauthModule
-                      passwordCheckManager:
-                          (IOSChromePasswordCheckManager*)manager {
+                              reauthModule:
+                                  (ReauthenticationModule*)reauthModule {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     DCHECK(viewController);
-    DCHECK(manager);
     DCHECK(reauthModule);
-    _manager = manager;
     _reauthenticationModule = reauthModule;
     _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
         browser->GetCommandDispatcher());
@@ -82,7 +78,9 @@
 
   self.mediator = [[AddPasswordMediator alloc]
           initWithDelegate:self
-      passwordCheckManager:_manager
+      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                               GetForBrowserState(browserState)
+                                   .get()
                prefService:browserState->GetPrefs()
                syncService:SyncServiceFactory::GetForBrowserState(
                                browserState)];

@@ -6,9 +6,12 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -28,10 +31,7 @@
 #endif
 
 @interface PasswordIssuesCoordinator () <PasswordDetailsCoordinatorDelegate,
-                                         PasswordIssuesPresenter> {
-  // Password check manager to power mediator.
-  raw_ptr<IOSChromePasswordCheckManager> _manager;
-}
+                                         PasswordIssuesPresenter>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) PasswordIssuesTableViewController* viewController;
@@ -50,14 +50,11 @@
 
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                            passwordCheckManager:
-                                (IOSChromePasswordCheckManager*)manager {
+                                         browser:(Browser*)browser {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     _baseNavigationController = navigationController;
-    _manager = manager;
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                      ApplicationCommands);
   }
@@ -66,19 +63,15 @@
 
 - (void)start {
   [super start];
-  // To start, a password check manager should be ready.
-  DCHECK(_manager);
-
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-
-  self.mediator =
-      [[PasswordIssuesMediator alloc] initWithPasswordCheckManager:_manager
-                                                     faviconLoader:faviconLoader
-                                                       syncService:syncService];
+  self.mediator = [[PasswordIssuesMediator alloc]
+      initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
+                                       GetForBrowserState(browserState)
+                                           .get()
+                     faviconLoader:IOSChromeFaviconLoaderFactory::
+                                       GetForBrowserState(browserState)
+                       syncService:SyncServiceFactory::GetForBrowserState(
+                                       browserState)];
 
   PasswordIssuesTableViewController* passwordIssuesTableViewController =
       [[PasswordIssuesTableViewController alloc]
@@ -122,8 +115,7 @@
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
                             credential:password.credential
-                          reauthModule:self.reauthModule
-                  passwordCheckManager:_manager];
+                          reauthModule:self.reauthModule];
   self.passwordDetails.delegate = self;
   [self.passwordDetails start];
 }

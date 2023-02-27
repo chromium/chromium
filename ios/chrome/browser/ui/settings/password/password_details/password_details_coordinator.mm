@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/mac/foundation_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
@@ -18,6 +19,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
+#import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -46,9 +49,6 @@
 @interface PasswordDetailsCoordinator () <PasswordDetailsHandler> {
   password_manager::AffiliatedGroup _affiliatedGroup;
   password_manager::CredentialUIEntry _credential;
-
-  // Manager responsible for password check feature.
-  IOSChromePasswordCheckManager* _manager;
 
   // The handler used for CredentialProviderPromoCommands.
   id<CredentialProviderPromoCommands> _credentialProviderPromoHandler;
@@ -83,17 +83,14 @@
                           credential:
                               (const password_manager::CredentialUIEntry&)
                                   credential
-                        reauthModule:(ReauthenticationModule*)reauthModule
-                passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+                        reauthModule:(ReauthenticationModule*)reauthModule {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     DCHECK(navigationController);
-    DCHECK(manager);
 
     _baseNavigationController = navigationController;
     _credential = credential;
-    _manager = manager;
     _reauthenticationModule = reauthModule;
     if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
       _credentialProviderPromoHandler = HandlerForProtocol(
@@ -109,17 +106,14 @@
                              browser:(Browser*)browser
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
-                        reauthModule:(ReauthenticationModule*)reauthModule
-                passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+                        reauthModule:(ReauthenticationModule*)reauthModule {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
     DCHECK(navigationController);
-    DCHECK(manager);
 
     _baseNavigationController = navigationController;
     _affiliatedGroup = affiliatedGroup;
-    _manager = manager;
     _reauthenticationModule = reauthModule;
     if (IsCredentialProviderExtensionPromoEnabledOnPasswordCopied()) {
       _credentialProviderPromoHandler = HandlerForProtocol(
@@ -145,9 +139,13 @@
     credentials.push_back(_credential);
   }
 
-  self.mediator = [[PasswordDetailsMediator alloc] initWithPasswords:credentials
-                                                         displayName:displayName
-                                                passwordCheckManager:_manager];
+  self.mediator = [[PasswordDetailsMediator alloc]
+         initWithPasswords:credentials
+               displayName:displayName
+      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                               GetForBrowserState(
+                                   self.browser->GetBrowserState())
+                                   .get()];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;

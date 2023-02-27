@@ -166,14 +166,9 @@
 #pragma mark - SafetyCheckNavigationCommands
 
 - (void)showPasswordIssuesPage {
-  IOSChromePasswordCheckManager* passwordCheckManager =
-      IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState())
-          .get();
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser
-                  passwordCheckManager:passwordCheckManager];
+                               browser:self.browser];
   self.passwordIssuesCoordinator.delegate = self;
   self.passwordIssuesCoordinator.reauthModule = nil;
   [self.passwordIssuesCoordinator start];

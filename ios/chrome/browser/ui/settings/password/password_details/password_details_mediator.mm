@@ -63,45 +63,48 @@ using base::SysNSStringToUTF16;
                         credentials
                       displayName:(NSString*)displayName
              passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+  DCHECK(manager);
+  DCHECK(!credentials.empty());
+
   self = [super init];
-  if (self) {
-    _manager = manager;
-    _credentials = credentials;
-    _displayName = displayName;
-    _passwordCheckObserver =
-        std::make_unique<PasswordCheckObserverBridge>(self, manager);
-    DCHECK(!_credentials.empty());
+  if (!self) {
+    return nil;
+  }
 
-    // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
-    // available in SavedPasswordsPresenter.
-    _usernamesWithSameDomainDict = [[NSMutableDictionary alloc] init];
-    NSMutableSet<NSString*>* signonRealms = [[NSMutableSet alloc] init];
-    auto savedCredentials =
-        manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
+  _manager = manager;
+  _credentials = credentials;
+  _displayName = displayName;
+  _passwordCheckObserver =
+      std::make_unique<PasswordCheckObserverBridge>(self, manager);
 
-    // Store all usernames by domain.
-    for (const auto& credential : _credentials) {
-      [signonRealms
-          addObject:[NSString
-                        stringWithCString:credential.GetFirstSignonRealm()
-                                              .c_str()
-                                 encoding:[NSString defaultCStringEncoding]]];
-    }
-    for (const auto& cred : savedCredentials) {
-      NSString* signonRealm =
-          [NSString stringWithCString:cred.GetFirstSignonRealm().c_str()
-                             encoding:[NSString defaultCStringEncoding]];
-      if ([signonRealms containsObject:signonRealm]) {
-        NSMutableSet* set =
-            [_usernamesWithSameDomainDict objectForKey:signonRealm];
-        if (!set) {
-          set = [[NSMutableSet alloc] init];
-          [set addObject:base::SysUTF16ToNSString(cred.username)];
-          [_usernamesWithSameDomainDict setObject:set forKey:signonRealm];
+  // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
+  // available in SavedPasswordsPresenter.
+  _usernamesWithSameDomainDict = [[NSMutableDictionary alloc] init];
+  NSMutableSet<NSString*>* signonRealms = [[NSMutableSet alloc] init];
+  auto savedCredentials =
+      manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
 
-        } else {
-          [set addObject:base::SysUTF16ToNSString(cred.username)];
-        }
+  // Store all usernames by domain.
+  for (const auto& credential : _credentials) {
+    [signonRealms
+        addObject:[NSString
+                      stringWithCString:credential.GetFirstSignonRealm().c_str()
+                               encoding:[NSString defaultCStringEncoding]]];
+  }
+  for (const auto& cred : savedCredentials) {
+    NSString* signonRealm =
+        [NSString stringWithCString:cred.GetFirstSignonRealm().c_str()
+                           encoding:[NSString defaultCStringEncoding]];
+    if ([signonRealms containsObject:signonRealm]) {
+      NSMutableSet* set =
+          [_usernamesWithSameDomainDict objectForKey:signonRealm];
+      if (!set) {
+        set = [[NSMutableSet alloc] init];
+        [set addObject:base::SysUTF16ToNSString(cred.username)];
+        [_usernamesWithSameDomainDict setObject:set forKey:signonRealm];
+
+      } else {
+        [set addObject:base::SysUTF16ToNSString(cred.username)];
       }
     }
   }

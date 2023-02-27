@@ -9,7 +9,6 @@
 
 @protocol ApplicationCommands;
 class Browser;
-class IOSChromePasswordCheckManager;
 @class PasswordIssuesCoordinator;
 @class ReauthenticationModule;
 
@@ -28,8 +27,6 @@ class IOSChromePasswordCheckManager;
 - (instancetype)initWithBaseNavigationController:
                     (UINavigationController*)navigationController
                                          browser:(Browser*)browser
-                            passwordCheckManager:
-                                (IOSChromePasswordCheckManager*)manager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

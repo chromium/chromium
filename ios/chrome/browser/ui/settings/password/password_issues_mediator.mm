@@ -57,6 +57,10 @@
                     (IOSChromePasswordCheckManager*)manager
                                faviconLoader:(FaviconLoader*)faviconLoader
                                  syncService:(syncer::SyncService*)syncService {
+  DCHECK(manager);
+  DCHECK(syncService);
+  // `faviconLoader` might be null in tests.
+
   self = [super init];
   if (self) {
     _syncService = syncService;
