@@ -30,6 +30,8 @@
 
 namespace ui {
 
+using ResolutionAndRefreshRate = std::pair<gfx::Size, uint32_t>;
+
 template <class Object>
 Object* DrmAllocator(size_t num_of_objects = 1) {
   return static_cast<Object*>(drmMalloc(num_of_objects * sizeof(Object)));
@@ -40,10 +42,12 @@ constexpr uint32_t kPlaneOffset = 100;
 constexpr uint32_t kCrtcIdBase = 200;
 constexpr uint32_t kConnectorIdBase = 300;
 constexpr uint32_t kInFormatsBlobIdBase = 400;
+constexpr uint32_t kEncoderIdBase = 500;
 
 // Required Connector Property IDs:
 constexpr uint32_t kCrtcIdPropId = 1000;
 constexpr uint32_t kLinkStatusPropId = 1001;
+constexpr uint32_t kEdidBlobPropId = 1002;
 
 // Required CRTC Property IDs:
 constexpr uint32_t kActivePropId = 2000;
@@ -78,6 +82,9 @@ constexpr uint32_t kInFormatsPropId = 5001;
 constexpr uint32_t kPlaneCtmId = 5002;
 constexpr uint32_t kRotationPropId = 5003;
 
+// Blob IDs:
+constexpr uint32_t kBaseBlobId = 6000;
+
 // The real DrmDevice makes actual DRM calls which we can't use in unit tests.
 class MockDrmDevice : public DrmDevice {
  public:
@@ -97,8 +104,21 @@ class MockDrmDevice : public DrmDevice {
     ~ConnectorProperties();
 
     uint32_t id;
+    bool connection;
+    std::vector<ResolutionAndRefreshRate> modes;
+    std::vector<uint32_t> encoders;
+    std::vector<uint8_t> edid_blob;
 
     std::vector<DrmWrapper::Property> properties;
+  };
+
+  struct EncoderProperties {
+    EncoderProperties();
+    EncoderProperties(const EncoderProperties&);
+    ~EncoderProperties();
+
+    uint32_t id;
+    uint32_t possible_crtcs;
   };
 
   struct PlaneProperties {
@@ -138,6 +158,7 @@ class MockDrmDevice : public DrmDevice {
         size_t movable_planes = 0u);
 
     ConnectorProperties& AddConnector();
+    EncoderProperties& AddEncoder();
     CrtcProperties& AddCrtc();
     std::pair<CrtcProperties&, ConnectorProperties&> AddCrtcAndConnector();
     PlaneProperties& AddPlane(uint32_t crtc_id, uint32_t type);
@@ -146,7 +167,9 @@ class MockDrmDevice : public DrmDevice {
 
     std::vector<CrtcProperties> crtc_properties;
     std::vector<ConnectorProperties> connector_properties;
+    std::vector<EncoderProperties> encoder_properties;
     std::vector<PlaneProperties> plane_properties;
+    std::vector<DrmWrapper::Property> blobs;
     std::map<uint32_t, std::string> property_names;
   };
 
@@ -210,8 +233,12 @@ class MockDrmDevice : public DrmDevice {
     return it != crtc_cursor_map_.end() ? it->second : 0;
   }
 
-  void InitializeState(const MockDrmState& state, bool use_atomic);
-  bool InitializeStateWithResult(const MockDrmState& state, bool use_atomic);
+  void InitializeState(MockDrmState& state, bool use_atomic);
+  bool InitializeStateWithResult(MockDrmState& state, bool use_atomic);
+
+  // Sets EDID blobs as property blobs so they can be fetched when needed via
+  // GetPropertyBlob().
+  void MaybeSetEdidBlobsForConnectors(MockDrmState& state);
 
   void UpdateStateBesidesPlaneManager(const MockDrmState& state);
 
@@ -258,6 +285,7 @@ class MockDrmDevice : public DrmDevice {
                const drmModeModeInfo& mode) override;
   bool DisableCrtc(uint32_t crtc_id) override;
   ScopedDrmConnectorPtr GetConnector(uint32_t connector_id) const override;
+  ScopedDrmEncoderPtr GetEncoder(uint32_t encoder_id) const override;
   bool AddFramebuffer2(uint32_t width,
                        uint32_t height,
                        uint32_t format,
