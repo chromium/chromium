@@ -399,7 +399,9 @@ def main():
   if args.cloud_policy_proto_path:
     GenerateFile(args.cloud_policy_proto_path, _WriteCloudPolicyProtobuf)
   if args.chrome_settings_proto_path:
-    GenerateFile(args.chrome_settings_proto_path, _WriteChromeSettingsProtobuf)
+    GenerateFile(args.chrome_settings_proto_path,
+                 _WriteChromeSettingsProtobuf,
+                 sorted=True)
 
   if target_platform == 'android' and args.app_restrictions_path:
     GenerateFile(args.app_restrictions_path, _WriteAppRestrictions, xml=True)
