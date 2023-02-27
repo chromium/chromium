@@ -34,7 +34,7 @@ import {Route} from '../router.js';
 import {getTemplate} from './audio_and_captions_page.html.js';
 import {AudioAndCaptionsPageBrowserProxy, AudioAndCaptionsPageBrowserProxyImpl} from './audio_and_captions_page_browser_proxy.js';
 
-interface SettingsAudioAndCaptionsPageElement {
+export interface SettingsAudioAndCaptionsPageElement {
   $: {
     startupSoundEnabled: CrToggleElement,
   };
@@ -43,7 +43,7 @@ interface SettingsAudioAndCaptionsPageElement {
 const SettingsAudioAndCaptionsPageElementBase = DeepLinkingMixin(
     RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsAudioAndCaptionsPageElement extends
+export class SettingsAudioAndCaptionsPageElement extends
     SettingsAudioAndCaptionsPageElementBase {
   static get is() {
     return 'settings-audio-and-captions-page';

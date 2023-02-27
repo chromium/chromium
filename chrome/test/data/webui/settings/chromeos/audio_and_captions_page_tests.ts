@@ -4,43 +4,40 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
+import {SettingsAudioAndCaptionsPageElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
-suite('AudioAndCaptionsPageTests', function() {
-  let page = null;
+suite('<settings-audio-and-captions-page>', () => {
+  let page: SettingsAudioAndCaptionsPageElement|null = null;
 
   function initPage() {
     page = document.createElement('settings-audio-and-captions-page');
     document.body.appendChild(page);
+    flush();
   }
 
-  setup(function() {
-    PolymerTest.clearBody();
+  setup(() => {
     Router.getInstance().navigateTo(routes.A11Y_AUDIO_AND_CAPTIONS);
   });
 
-  teardown(function() {
-    if (page) {
-      page.remove();
-    }
+  teardown(() => {
+    page!.remove();
+    page = null;
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('no subpages are available in kiosk mode', function() {
+  test('no subpages are available in kiosk mode', () => {
     loadTimeData.overrideValues({
       isKioskModeActive: true,
       showTabletModeShelfNavigationButtonsSettings: true,
     });
     initPage();
-    flush();
 
-    const subpageLinks = page.root.querySelectorAll('cr-link-row');
+    const subpageLinks = page!.shadowRoot!.querySelectorAll('cr-link-row');
     subpageLinks.forEach(subpageLink => assertFalse(isVisible(subpageLink)));
   });
 });
