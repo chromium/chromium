@@ -24,7 +24,9 @@ class StubUploadList : public UploadList {
 
  protected:
   ~StubUploadList() override = default;
-  std::vector<UploadInfo> LoadUploadList() override { return {}; }
+  std::vector<std::unique_ptr<UploadInfo>> LoadUploadList() override {
+    return {};
+  }
 
   void ClearUploadList(const base::Time& begin,
                        const base::Time& end) override {}

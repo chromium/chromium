@@ -57,14 +57,14 @@ bool CrashUploadListAndroid::DidBrowserCrashRecently() {
   return Java_MinidumpUploadServiceImpl_didBrowserCrashRecently(env);
 }
 
-std::vector<UploadList::UploadInfo> CrashUploadListAndroid::LoadUploadList() {
-  std::vector<UploadInfo> uploads;
+std::vector<std::unique_ptr<UploadList::UploadInfo>>
+CrashUploadListAndroid::LoadUploadList() {
+  std::vector<std::unique_ptr<UploadInfo>> uploads;
   LoadUnsuccessfulUploadList(&uploads);
 
-  std::vector<UploadInfo> complete_uploads =
-      TextLogUploadList::LoadUploadList();
-  for (auto info : complete_uploads) {
-    uploads.push_back(info);
+  auto complete_uploads = TextLogUploadList::LoadUploadList();
+  for (auto& info : complete_uploads) {
+    uploads.push_back(std::move(info));
   }
   return uploads;
 }
@@ -77,7 +77,7 @@ void CrashUploadListAndroid::RequestSingleUpload(const std::string& local_id) {
 }
 
 void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
-    std::vector<UploadInfo>* uploads) {
+    std::vector<std::unique_ptr<UploadInfo>>* uploads) {
   const char pending_uploads[] = ".dmp";
   const char skipped_uploads[] = ".skipped";
   const char manually_forced_uploads[] = ".forced";
@@ -136,8 +136,7 @@ void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
     RecordUnsuccessfulUploadListState(
         UnsuccessfulUploadListState::ADDING_AN_UPLOAD_ENTRY);
     id = id.substr(pos + 1);
-    UploadList::UploadInfo upload(id, info.creation_time, upload_state,
-                                  ui::FormatBytes(file_size));
-    uploads->push_back(upload);
+    uploads->push_back(std::make_unique<UploadList::UploadInfo>(
+        id, info.creation_time, upload_state, ui::FormatBytes(file_size)));
   }
 }

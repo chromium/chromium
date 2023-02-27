@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -95,13 +96,15 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
   // Populates |uploads| with the |max_count| most recent uploads,
   // in reverse chronological order.
   // Must be called only after a Load() callback has been received.
-  void GetUploads(size_t max_count, std::vector<UploadInfo>* uploads);
+  // TODO(b/b:264307614): Pass back |UploadInfo| pointers to work with
+  // |UploadInfo|'s children.
+  void GetUploads(size_t max_count, std::vector<UploadInfo>* uploads) const;
 
  protected:
   virtual ~UploadList();
 
   // Reads the upload log and stores the entries in |uploads|.
-  virtual std::vector<UploadInfo> LoadUploadList() = 0;
+  virtual std::vector<std::unique_ptr<UploadInfo>> LoadUploadList() = 0;
 
   // Clears data within the given time range. See Clear.
   virtual void ClearUploadList(const base::Time& begin,
@@ -118,7 +121,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
   // When LoadUploadList() finishes, the results are reported in |uploads|
   // and the |load_callback_| is run.
-  void OnLoadComplete(const std::vector<UploadInfo>& uploads);
+  void OnLoadComplete(std::vector<std::unique_ptr<UploadInfo>> uploads);
 
   // Called when ClearUploadList() finishes.
   void OnClearComplete();
@@ -130,7 +133,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
   base::OnceClosure load_callback_;
   base::OnceClosure clear_callback_;
 
-  std::vector<UploadInfo> uploads_;
+  std::vector<std::unique_ptr<UploadInfo>> uploads_;
 };
 
 #endif  // COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_H_

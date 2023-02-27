@@ -32,11 +32,13 @@ class CrashUploadListAndroid : public TextLogUploadList {
  protected:
   ~CrashUploadListAndroid() override;
 
-  std::vector<UploadInfo> LoadUploadList() override;
+  std::vector<std::unique_ptr<UploadList::UploadInfo>> LoadUploadList()
+      override;
   void RequestSingleUpload(const std::string& local_id) override;
 
  private:
-  void LoadUnsuccessfulUploadList(std::vector<UploadInfo>* uploads);
+  void LoadUnsuccessfulUploadList(
+      std::vector<std::unique_ptr<UploadInfo>>* uploads);
 };
 
 #endif  // CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_ANDROID_H_

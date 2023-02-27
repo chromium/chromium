@@ -20,7 +20,8 @@ class CrashUploadListFuchsia : public UploadList {
  protected:
   ~CrashUploadListFuchsia() override;
 
-  std::vector<UploadInfo> LoadUploadList() override;
+  std::vector<std::unique_ptr<UploadList::UploadInfo>> LoadUploadList()
+      override;
   void ClearUploadList(const base::Time& begin, const base::Time& end) override;
   void RequestSingleUpload(const std::string& local_id) override;
 

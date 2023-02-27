@@ -35,16 +35,17 @@ CrashUploadListCrashpad::CrashUploadListCrashpad() = default;
 
 CrashUploadListCrashpad::~CrashUploadListCrashpad() = default;
 
-std::vector<UploadList::UploadInfo> CrashUploadListCrashpad::LoadUploadList() {
+std::vector<std::unique_ptr<UploadList::UploadInfo>>
+CrashUploadListCrashpad::LoadUploadList() {
   std::vector<crash_reporter::Report> reports;
   crash_reporter::GetReports(&reports);
 
-  std::vector<UploadInfo> uploads;
+  std::vector<std::unique_ptr<UploadInfo>> uploads;
   for (const crash_reporter::Report& report : reports) {
-    uploads.push_back(
-        UploadInfo(report.remote_id, base::Time::FromTimeT(report.upload_time),
-                   report.local_id, base::Time::FromTimeT(report.capture_time),
-                   ReportUploadStateToUploadInfoState(report.state)));
+    uploads.push_back(std::make_unique<UploadInfo>(
+        report.remote_id, base::Time::FromTimeT(report.upload_time),
+        report.local_id, base::Time::FromTimeT(report.capture_time),
+        ReportUploadStateToUploadInfoState(report.state)));
   }
   return uploads;
 }
