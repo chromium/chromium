@@ -69,6 +69,18 @@
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style
                  enabled:(BOOL)enabled {
+  [self addItemWithTitle:title
+                  action:actionBlock
+                   style:style
+               preferred:NO
+                 enabled:YES];
+}
+
+- (void)addItemWithTitle:(NSString*)title
+                  action:(ProceduralBlock)actionBlock
+                   style:(UIAlertActionStyle)style
+               preferred:(BOOL)preferred
+                 enabled:(BOOL)enabled {
   if (self.visible ||
       (style == UIAlertActionStyleCancel && self.cancelButtonAdded)) {
     return;
@@ -93,6 +105,10 @@
   alertAction.enabled = enabled;
 
   [self.alertController addAction:alertAction];
+  if (preferred) {
+    DCHECK(![self.alertController preferredAction]);
+    [self.alertController setPreferredAction:alertAction];
+  }
 }
 
 - (void)executeCancelHandler {

@@ -184,7 +184,8 @@ void ReportErrorOutcome(PartialTranslateError error, bool went_full) {
                  action:^{
                    ReportErrorOutcome(error, false);
                  }
-                  style:UIAlertActionStyleCancel];
+                  style:UIAlertActionStyleCancel
+              preferred:NO];
   EditMenuAlertDelegateAction* translateAction = [[EditMenuAlertDelegateAction
       alloc]
       initWithTitle:l10n_util::GetNSString(
@@ -193,7 +194,8 @@ void ReportErrorOutcome(PartialTranslateError error, bool went_full) {
                ReportErrorOutcome(error, true);
                [weakSelf triggerFullTranslate];
              }
-              style:UIAlertActionStyleDefault];
+              style:UIAlertActionStyleDefault
+          preferred:YES];
 
   [self.alertDelegate
       showAlertWithTitle:

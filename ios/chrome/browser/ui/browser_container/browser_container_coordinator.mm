@@ -201,7 +201,9 @@
   for (EditMenuAlertDelegateAction* action in actions) {
     [self.alertCoordinator addItemWithTitle:action.title
                                      action:action.action
-                                      style:action.style];
+                                      style:action.style
+                                  preferred:action.preferred
+                                    enabled:YES];
   }
   [self.alertCoordinator start];
 }

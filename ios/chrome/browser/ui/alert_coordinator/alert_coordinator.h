@@ -48,7 +48,14 @@
 // Adds an item at the end of the menu. It does nothing if `visible` is true or
 // if trying to add an item with a UIAlertActionStyleCancel while
 // `cancelButtonAdded` is true. If `enabled` is NO, the action appears dimmed
-// and non-interactable.
+// and non-interactable. If `preferred` is YES, the action will be in bold
+// letters. Only one item can be preferred.
+- (void)addItemWithTitle:(NSString*)title
+                  action:(ProceduralBlock)actionBlock
+                   style:(UIAlertActionStyle)style
+               preferred:(BOOL)preferred
+                 enabled:(BOOL)enabled;
+// Shorthand for the above method, with `preferred` = NO.
 - (void)addItemWithTitle:(NSString*)title
                   action:(ProceduralBlock)actionBlock
                    style:(UIAlertActionStyle)style

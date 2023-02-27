@@ -13,7 +13,7 @@
 - (instancetype)initWithTitle:(NSString*)title
                        action:(ProceduralBlock)action
                         style:(UIAlertActionStyle)style
-    NS_DESIGNATED_INITIALIZER;
+                    preferred:(BOOL)preferred NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The title of the action.
@@ -24,6 +24,9 @@
 
 // The style of the button.
 @property(nonatomic, assign, readonly) UIAlertActionStyle style;
+
+// Whether this is the preferred action.
+@property(nonatomic, assign, readonly) BOOL preferred;
 @end
 
 // Protocol to provide alert presenter to edit menu handlers.

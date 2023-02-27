@@ -11,12 +11,14 @@
 @implementation EditMenuAlertDelegateAction
 - (instancetype)initWithTitle:(NSString*)title
                        action:(ProceduralBlock)action
-                        style:(UIAlertActionStyle)style {
+                        style:(UIAlertActionStyle)style
+                    preferred:(BOOL)preferred {
   self = [super init];
   if (self) {
     _title = [title copy];
     _action = action;
     _style = style;
+    _preferred = preferred;
   }
   return self;
 }
