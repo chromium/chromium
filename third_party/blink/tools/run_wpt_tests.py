@@ -927,10 +927,10 @@ class ChromeAndroidBase(Product):
                                 'if using only emulators.')
 
             self.provision_devices(devices)
+            self.update_options()
             yield
 
     def update_options(self):
-        super().update_options()
         self._options.device_serial.extend(sorted(self.devices))
         self._options.package_name = (self._options.package_name
                                       or self.get_browser_package_name())
