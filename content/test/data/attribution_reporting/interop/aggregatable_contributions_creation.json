@@ -18,7 +18,8 @@
               "aggregation_keys": {
                 "a": "0x1",
                 "b": "0x2",
-                "c": "0x4"
+                "c": "0x4",
+                "A": "0xffffffffffffffffffffffffffffffff"
               },
               "filter_data": {
                 "product": ["123", "456"],
@@ -66,11 +67,16 @@
                     "source_type": ["navigation"],
                     "campaign": ["example"]
                   }
+                },
+                {
+                  "source_keys": ["A"],
+                  "key_piece": "0xffffffffffffffffffffffffffffffff"
                 }
               ],
               "aggregatable_values": {
                 "a": 123,
-                "b": 456
+                "b": 456,
+                "A": 999
               }
             }
           }
@@ -213,6 +219,26 @@
             }
           }
         }]
+      },
+      // Should result in an aggregatable report with the key pieces defined in
+      // the source.
+      {
+        "timestamp": "1643235579000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "aggregatable_values": {
+                "a": 666,
+                "A": 333
+              }
+            }
+          }
+        }]
       }
     ]
   },
@@ -222,6 +248,10 @@
         "payload": {
           "attribution_destination": "https://destination.test",
           "histograms": [
+            {
+              "key": "0xffffffffffffffffffffffffffffffff",
+              "value": 999
+            },
             {
               "key": "0x11",
               "value": 123
@@ -268,6 +298,20 @@
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "1643239176000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "histograms": [ {
+             "key": "0xffffffffffffffffffffffffffffffff",
+             "value": 333
+          }, {
+             "key": "0x1",
+             "value": 666
+          } ]
+       },
+       "report_time": "1643239179000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution"
       }
     ],
     "verbose_debug_reports": [
