@@ -730,10 +730,14 @@
     },
 
     'chromium.rust': {
-      'android-rust-arm-dbg': 'debug_bot_rust_android_arm_reclient',
-      'android-rust-arm-rel': 'release_rust_android_arm_reclient',
-      'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64_reclient',
-      'linux-rust-x64-rel': 'release_rust_linux_x64_reclient',
+      'android-rust-arm32-rel': 'release_rust_android_arm32_reclient',
+      'android-rust-arm64-dbg': 'debug_bot_rust_android_arm64_reclient',
+      'android-rust-arm64-rel': 'release_rust_android_arm64_reclient',
+      'linux-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
+      'linux-rust-x64-rel': 'release_rust_desktop_x64_reclient',
+      'mac-rust-x64-rel': 'release_rust_desktop_x64_reclient',
+      'win-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
+      'win-rust-x64-rel': 'release_rust_desktop_x64_reclient',
     },
 
     'chromium.swangle': {
@@ -1324,11 +1328,15 @@
     },
 
     'tryserver.chromium.rust': {
-      'android-rust-arm-dbg': 'debug_bot_rust_android_arm_reclient',
-      'android-rust-arm-rel': 'release_rust_android_arm_reclient',
-      'linux-rust-x64-dbg': 'debug_bot_rust_linux_x64_reclient',
-      'linux-rust-x64-rel': 'release_rust_linux_x64_reclient',
+      'android-rust-arm32-rel': 'release_rust_android_arm32_reclient',
+      'android-rust-arm64-dbg': 'debug_bot_rust_android_arm64_reclient',
+      'android-rust-arm64-rel': 'release_rust_android_arm64_reclient',
+      'linux-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
+      'linux-rust-x64-rel': 'release_rust_desktop_x64_reclient',
       'linux-rust-x64-rel-android-toolchain': 'release_rust_linux_x64_android_toolchain_reclient',
+      'mac-rust-x64-rel': 'release_rust_desktop_x64_reclient',
+      'win-rust-x64-dbg': 'debug_bot_rust_desktop_x64_reclient',
+      'win-rust-x64-rel': 'release_rust_desktop_x64_reclient',
     },
 
     'tryserver.chromium.swangle': {
@@ -2473,11 +2481,11 @@
       'debug_bot_reclient',
     ],
 
-    'debug_bot_rust_android_arm_reclient': [
-      'debug_bot_reclient', 'enable_rust', 'android', 'arm',
+    'debug_bot_rust_android_arm64_reclient': [
+      'debug_bot_reclient', 'enable_rust', 'android', 'arm64',
     ],
 
-    'debug_bot_rust_linux_x64_reclient': [
+    'debug_bot_rust_desktop_x64_reclient': [
       'debug_bot_reclient', 'enable_rust', 'x64',
     ],
 
@@ -3458,16 +3466,19 @@
       'release', 'official_optimize_reclient', 'fuchsia', 'arm64', 'cast_receiver_size_optimized',
     ],
 
-    'release_rust_android_arm_reclient': [
+    'release_rust_android_arm32_reclient': [
       'release_trybot_minimal_symbols_reclient', 'enable_rust', 'android', 'arm',
+    ],
+    'release_rust_android_arm64_reclient': [
+      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'android', 'arm64',
+    ],
+
+    'release_rust_desktop_x64_reclient': [
+      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'x64',
     ],
 
     'release_rust_linux_x64_android_toolchain_reclient': [
       'release_trybot_minimal_symbols_reclient', 'enable_rust', 'use_android_rust_toolchain', 'x64',
-    ],
-
-    'release_rust_linux_x64_reclient': [
-      'release_trybot_minimal_symbols_reclient', 'enable_rust', 'x64',
     ],
 
     'release_trybot': [

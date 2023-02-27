@@ -5540,7 +5540,7 @@
     'name': 'chromium.rust',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'android-rust-arm-dbg': {
+      'android-rust-arm32-rel': {
         'additional_compile_targets': [
           'mojo_rust',
           'rust_build_tests',
@@ -5553,7 +5553,20 @@
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
         },
       },
-      'android-rust-arm-rel': {
+      'android-rust-arm64-dbg': {
+        'additional_compile_targets': [
+          'mojo_rust',
+          'rust_build_tests',
+        ],
+        'mixins': [ 'pie_fleet' ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          # Currently `can_build_rust_unit_tests` is false on Android (because
+          # we need to construct an APK instead of compile an exe).
+          # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
+        },
+      },
+      'android-rust-arm64-rel': {
         'additional_compile_targets': [
           'mojo_rust',
           'rust_build_tests',
@@ -5611,7 +5624,58 @@
           'isolated_scripts': 'rust_native_tests',
         },
       },
-
+      'mac-rust-x64-rel' : {
+        'additional_compile_targets': [
+          'gnrt_unittests',
+          'mojo_rust',
+          'mojo_rust_tests',
+          'rust_build_tests',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_12_x64',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_14_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          'isolated_scripts': 'rust_native_tests',
+        },
+      },
+      'win-rust-x64-dbg' : {
+        'additional_compile_targets': [
+          'gnrt_unittests',
+          'mojo_rust',
+          'mojo_rust_tests',
+          'rust_build_tests',
+        ],
+        'mixins': [
+          'win10-any',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          'isolated_scripts': 'rust_native_tests',
+        },
+      },
+      'win-rust-x64-rel' : {
+        'additional_compile_targets': [
+          'gnrt_unittests',
+          'mojo_rust',
+          'mojo_rust_tests',
+          'rust_build_tests',
+        ],
+        'mixins': [
+          'win10-any',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          'isolated_scripts': 'rust_native_tests',
+        },
+      },
     },
   },
   {

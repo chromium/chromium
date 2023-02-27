@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-rust-arm-dbg",
+              "builder": "android-rust-arm32-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -19,7 +19,7 @@
                 "apply_configs": [
                   "android"
                 ],
-                "build_config": "Debug",
+                "build_config": "Release",
                 "config": "android",
                 "target_arch": "arm",
                 "target_bits": 32,
@@ -39,7 +39,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-rust-arm-dbg",
+          "builder": "android-rust-arm32-rel",
           "project": "chromium"
         }
       ]

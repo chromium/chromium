@@ -74,11 +74,20 @@ Cq-Include-Trybots: chrome/try:iphone-device,ipad-device
 Cq-Include-Trybots: chrome/try:linux-chromeos-chrome
 Cq-Include-Trybots: chrome/try:win-chrome,win64-chrome,linux-chrome,mac-chrome
 Cq-Include-Trybots: chrome/try:linux-pgo,mac-pgo,win32-pgo,win64-pgo
-Cq-Include-Trybots: luci.chromium.try:android-rust-arm-dbg
-Cq-Include-Trybots: luci.chromium.try:android-rust-arm-rel
+'''
+
+RUST_BOTS = \
+'''
+Cq-Include-Trybots: luci.chromium.try:android-rust-arm32-rel
 Cq-Include-Trybots: luci.chromium.try:linux-rust-x64-dbg
 Cq-Include-Trybots: luci.chromium.try:linux-rust-x64-rel
 '''
+# TODO: Add more Rust bots as they are ready:
+# Cq-Include-Trybots: luci.chromium.try:android-rust-arm64-dbg
+# Cq-Include-Trybots: luci.chromium.try:android-rust-arm64-rel
+# Cq-Include-Trybots: luci.chromium.try:win-rust-x64-dbg
+# Cq-Include-Trybots: luci.chromium.try:win-rust-x64-rel
+# Cq-Include-Trybots: luci.chromium.try:mac-rust-x64-rel
 
 is_win = sys.platform.startswith('win32')
 
@@ -347,6 +356,8 @@ def main():
   body = f'{clang_change_log}{rust_change_log}Ran: {cmd}'
 
   commit_message = f'{title}\n\n{body}\n{COMMIT_FOOTER}'
+  if args.roll_rust:
+    commit_message += f'{RUST_BOTS}'
 
   Git('add',
       CLANG_UPDATE_PY_PATH,

@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-rust-arm-rel",
+              "builder": "android-rust-arm64-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -22,7 +22,7 @@
                 "build_config": "Release",
                 "config": "android",
                 "target_arch": "arm",
-                "target_bits": 32,
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -39,15 +39,21 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-rust-arm-rel",
+          "builder": "android-rust-arm64-rel",
           "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-rust-arm64-rel",
+          "group": "tryserver.chromium.rust"
         }
       ]
     }
   },
   "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "jobs": 150,
+    "instance": "rbe-chromium-trusted",
+    "jobs": 250,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -57,6 +63,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "tryserver.chromium.rust",
-  "recipe": "chromium_trybot"
+  "builder_group": "chromium.rust",
+  "recipe": "chromium"
 }
