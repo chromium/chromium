@@ -15,8 +15,7 @@ class SyncService;
 
 class PrefService;
 
-namespace password_manager {
-namespace features_util {
+namespace password_manager::features_util {
 
 // Note on password-account-storage methods on desktop vs mobile:
 // On desktop, there is an explicit per-user opt-in, and various associated
@@ -25,6 +24,14 @@ namespace features_util {
 // As a consequence, all the corresponding setters (opting in/out, setting the
 // default store, etc) only exist on desktop. The getters exist on mobile too,
 // but have different (usually simpler) implementation.
+// Accordingly, the implementation is split up into *_common.cc, *_desktop.cc,
+// and *_mobile.cc files.
+
+// Internal helpers, not meant to be used directly:
+namespace internal {
+bool CanAccountStorageBeEnabled(const syncer::SyncService* sync_service);
+bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service);
+}  // namespace internal
 
 // Whether the current signed-in user (aka unconsented primary account) has
 // opted in to use the Google account storage for passwords (as opposed to
@@ -170,8 +177,6 @@ int GetMoveOfferedToNonOptedInUserCount(
     const syncer::SyncService* sync_service);
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-}  // namespace features_util
-
-}  // namespace password_manager
+}  // namespace password_manager::features_util
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_FEATURES_UTIL_H_

@@ -179,8 +179,8 @@ static_library("browser") {
     "password_manager_constants.cc",
     "password_manager_constants.h",
     "password_manager_driver.h",
-    "password_manager_features_util.cc",
     "password_manager_features_util.h",
+    "password_manager_features_util_common.cc",
     "password_manager_interface.h",
     "password_manager_metrics_recorder.cc",
     "password_manager_metrics_recorder.h",
@@ -347,6 +347,12 @@ static_library("browser") {
     "//ui/gfx/range",
     "//url",
   ]
+
+  if (!is_android && !is_ios) {
+    sources += [ "password_manager_features_util_desktop.cc" ]
+  } else {
+    sources += [ "password_manager_features_util_mobile.cc" ]
+  }
 
   if (is_android) {
     sources += [

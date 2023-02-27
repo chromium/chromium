@@ -11,84 +11,22 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/sync_service.h"
-#include "components/sync/driver/sync_user_settings.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 using autofill::GaiaIdHash;
 using password_manager::metrics_util::PasswordAccountStorageUsageLevel;
 using password_manager::metrics_util::PasswordAccountStorageUserState;
 
-namespace password_manager {
-namespace features_util {
+namespace password_manager::features_util {
+
 namespace {
 
-// Returns whether the account-scoped password storage can be enabled in
-// principle for the current profile. This is constant for a given profile
-// (until browser restart).
-bool CanAccountStorageBeEnabled(const syncer::SyncService* sync_service) {
-  if (!base::FeatureList::IsEnabled(features::kEnablePasswordsAccountStorage)) {
-    return false;
-  }
-
-  // |sync_service| is null in incognito mode, or if --disable-sync was
-  // specified on the command-line.
-  if (!sync_service)
-    return false;
-
-  // The account-scoped password storage does not work with LocalSync aka
-  // roaming profiles.
-  if (sync_service->IsLocalSyncEnabled())
-    return false;
-
-  return true;
-}
-
-// Whether the currently signed-in user (if any) is eligible for using the
-// account-scoped password storage. This is the case if:
-// - The account storage can be enabled in principle.
-// - Sync-the-feature is NOT enabled (if it is, there's only a single combined
-//   storage).
-// - Sync-the-transport is enabled (i.e. there's a signed-in user, Sync is not
-//   disabled by policy, etc).
-// - Desktop-only: There is no custom passphrase (because Sync transport offers
-//   no way to enter the passphrase yet). Note that checking this requires the
-//   SyncEngine to be initialized.
-bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service) {
-  if (!CanAccountStorageBeEnabled(sync_service)) {
-    return false;
-  }
-  DCHECK(sync_service);
-  if (sync_service->IsSyncFeatureEnabled()) {
-    return false;
-  }
-  switch (sync_service->GetTransportState()) {
-    case syncer::SyncService::TransportState::DISABLED:
-    case syncer::SyncService::TransportState::PAUSED:
-      return false;
-    case syncer::SyncService::TransportState::START_DEFERRED:
-    case syncer::SyncService::TransportState::INITIALIZING:
-    case syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION:
-    case syncer::SyncService::TransportState::CONFIGURING:
-    case syncer::SyncService::TransportState::ACTIVE:
-      break;
-  }
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  if (!sync_service->IsEngineInitialized() ||
-      sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
-    return false;
-  }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  return true;
-}
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 PasswordForm::Store PasswordStoreFromInt(int value) {
   switch (value) {
     case static_cast<int>(PasswordForm::Store::kProfileStore):
@@ -131,25 +69,29 @@ class AccountStorageSettingsReader {
   }
 
   bool IsOptedIn() {
-    if (!account_settings_)
+    if (!account_settings_) {
       return false;
+    }
     return account_settings_->FindBool(kAccountStorageOptedInKey)
         .value_or(false);
   }
 
   PasswordForm::Store GetDefaultStore() const {
-    if (!account_settings_)
+    if (!account_settings_) {
       return PasswordForm::Store::kNotSet;
+    }
     absl::optional<int> value =
         account_settings_->FindInt(kAccountStorageDefaultStoreKey);
-    if (!value)
+    if (!value) {
       return PasswordForm::Store::kNotSet;
+    }
     return PasswordStoreFromInt(*value);
   }
 
   int GetMoveOfferedToNonOptedInUserCount() const {
-    if (!account_settings_)
+    if (!account_settings_) {
       return 0;
+    }
     return account_settings_->FindInt(kMoveToAccountStoreOfferedCountKey)
         .value_or(0);
   }
@@ -199,14 +141,13 @@ class ScopedAccountStorageSettingsUpdate {
   ScopedDictPrefUpdate update_;
   const std::string account_hash_;
 };
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 bool IsOptedInForAccountStorage(const PrefService* pref_service,
                                 const syncer::SyncService* sync_service) {
   DCHECK(pref_service);
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // If the account storage can't be enabled (e.g. because the feature flag was
   // turned off), then don't consider the user opted in, even if the pref is
   // set.
@@ -215,40 +156,28 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
   //    opted in before turning on Sync, and
   // b) eligibility requires IsEngineInitialized() (i.e. will be false for a
   //    few seconds after browser startup).
-  if (!CanAccountStorageBeEnabled(sync_service))
+  if (!internal::CanAccountStorageBeEnabled(sync_service)) {
     return false;
+  }
 
   // If there's no signed-in account, there can be no opt-in.
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty())
+  if (gaia_id.empty()) {
     return false;
+  }
 
   return AccountStorageSettingsReader(pref_service,
                                       GaiaIdHash::FromGaiaId(gaia_id))
       .IsOptedIn();
-#else
-  // On Android and iOS, there is no explicit opt-in - this is handled through
-  // Sync's selected data types instead.
-  // TODO(crbug.com/1392699): Do we need to handle the explicit-passphrase case?
-  // Plumb the IsTrackingMetadata() bit here (or into IsUserEligible)?
-  return IsUserEligibleForAccountStorage(sync_service) &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kPasswords);
-#endif
 }
 
 bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
                                    const syncer::SyncService* sync_service) {
   DCHECK(pref_service);
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Show the opt-in if the user is eligible, but not yet opted in.
-  return IsUserEligibleForAccountStorage(sync_service) &&
+  return internal::IsUserEligibleForAccountStorage(sync_service) &&
          !IsOptedInForAccountStorage(pref_service, sync_service);
-#else
-  // On Android and iOS, there is no opt-in promo.
-  return false;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
@@ -256,9 +185,8 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
                                       const GURL& current_page_url) {
   DCHECK(pref_service);
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   // Checks that the sync_service is not null and the feature is enabled.
-  if (!CanAccountStorageBeEnabled(sync_service)) {
+  if (!internal::CanAccountStorageBeEnabled(sync_service)) {
     return false;  // Opt-in wouldn't work here, so don't show the re-signin.
   }
 
@@ -281,19 +209,6 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
             .FindBool(kAccountStorageOptedInKey)
             .value_or(false);
       });
-#else
-  // On Android and iOS, there is no re-signin promo.
-  return false;
-#endif
-}
-
-bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service) {
-  // `sync_service` is null in incognito mode, or if --disable-sync was
-  // specified on the command-line.
-  return sync_service && !sync_service->IsSyncFeatureEnabled() &&
-         (IsOptedInForAccountStorage(pref_service, sync_service) ||
-          IsUserEligibleForAccountStorage(sync_service));
 }
 
 PasswordForm::Store GetDefaultPasswordStore(
@@ -301,11 +216,10 @@ PasswordForm::Store GetDefaultPasswordStore(
     const syncer::SyncService* sync_service) {
   DCHECK(pref_service);
 
-  if (!IsUserEligibleForAccountStorage(sync_service)) {
+  if (!internal::IsUserEligibleForAccountStorage(sync_service)) {
     return PasswordForm::Store::kProfileStore;
   }
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   std::string gaia_id = sync_service->GetAccountInfo().gaia;
   if (gaia_id.empty()) {
     return PasswordForm::Store::kProfileStore;
@@ -329,16 +243,10 @@ PasswordForm::Store GetDefaultPasswordStore(
                                  : PasswordForm::Store::kAccountStore;
   }
   return default_store;
-#else
-  return IsOptedInForAccountStorage(pref_service, sync_service)
-             ? PasswordForm::Store::kAccountStore
-             : PasswordForm::Store::kProfileStore;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
                                const syncer::SyncService* sync_service) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   DCHECK(pref_service);
 
   if (!sync_service) {
@@ -355,73 +263,8 @@ bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
                                    GaiaIdHash::FromGaiaId(gaia_id))
           .GetDefaultStore();
   return default_store != PasswordForm::Store::kNotSet;
-#else
-  // The default store is never explicitly set on Android or iOS.
-  return false;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
-PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-  // The SyncService can be null in incognito, or due to a commandline flag. In
-  // those cases, simply consider the user as signed out.
-  if (!sync_service) {
-    return PasswordAccountStorageUserState::kSignedOutUser;
-  }
-
-  if (sync_service->IsSyncFeatureEnabled()) {
-    return PasswordAccountStorageUserState::kSyncUser;
-  }
-
-  if (sync_service->HasDisableReason(
-          syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
-    // Signed out. Check if any account storage opt-in exists.
-    return ShouldShowAccountStorageReSignin(pref_service, sync_service, GURL())
-               ? PasswordAccountStorageUserState::kSignedOutAccountStoreUser
-               : PasswordAccountStorageUserState::kSignedOutUser;
-  }
-
-  bool saving_locally = IsDefaultPasswordStoreSet(pref_service, sync_service) &&
-                        GetDefaultPasswordStore(pref_service, sync_service) ==
-                            PasswordForm::Store::kProfileStore;
-
-  // Signed in. Check for account storage opt-in.
-  if (IsOptedInForAccountStorage(pref_service, sync_service)) {
-    // Signed in and opted in. Check default storage location.
-    return saving_locally
-               ? PasswordAccountStorageUserState::
-                     kSignedInAccountStoreUserSavingLocally
-               : PasswordAccountStorageUserState::kSignedInAccountStoreUser;
-  }
-
-  // Signed in but not opted in. Check default storage location.
-  return saving_locally
-             ? PasswordAccountStorageUserState::kSignedInUserSavingLocally
-             : PasswordAccountStorageUserState::kSignedInUser;
-}
-
-PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  using UserState = PasswordAccountStorageUserState;
-  using UsageLevel = PasswordAccountStorageUsageLevel;
-  switch (ComputePasswordAccountStorageUserState(pref_service, sync_service)) {
-    case UserState::kSignedOutUser:
-    case UserState::kSignedOutAccountStoreUser:
-    case UserState::kSignedInUser:
-    case UserState::kSignedInUserSavingLocally:
-      return UsageLevel::kNotUsingAccountStorage;
-    case UserState::kSignedInAccountStoreUser:
-    case UserState::kSignedInAccountStoreUserSavingLocally:
-      return UsageLevel::kUsingAccountStorage;
-    case UserState::kSyncUser:
-      return UsageLevel::kSyncing;
-  }
-}
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 void OptInToAccountStorage(PrefService* pref_service,
                            const syncer::SyncService* sync_service) {
   DCHECK(pref_service);
@@ -517,11 +360,13 @@ void KeepAccountStorageSettingsOnlyForUsers(
                               prefs::kAccountStoragePerAccountSettings);
   std::vector<std::string> keys_to_remove;
   for (auto kv : *update) {
-    if (!hashes_to_keep.contains(kv.first))
+    if (!hashes_to_keep.contains(kv.first)) {
       keys_to_remove.push_back(kv.first);
+    }
   }
-  for (const std::string& key_to_remove : keys_to_remove)
+  for (const std::string& key_to_remove : keys_to_remove) {
     update->Remove(key_to_remove);
+  }
 }
 
 void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service) {
@@ -556,7 +401,9 @@ int GetMoveOfferedToNonOptedInUserCount(
   DCHECK(!reader.IsOptedIn());
   return reader.GetMoveOfferedToNonOptedInUserCount();
 }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-}  // namespace features_util
-}  // namespace password_manager
+// Note: See also password_manager_features_util_common.cc for shared
+// (cross-platform) and password_manager_features_util_mobile.cc for
+// mobile-specific implementations.
+
+}  // namespace password_manager::features_util
