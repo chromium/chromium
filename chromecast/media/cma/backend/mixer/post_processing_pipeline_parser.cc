@@ -33,12 +33,11 @@ void SplitPipeline(const base::Value::List& processors_list,
                    base::Value::List& prerender_pipeline,
                    base::Value::List& postrender_pipeline) {
   bool has_render = false;
-  for (const base::Value& processor_description_dict : processors_list) {
-    DCHECK(processor_description_dict.is_dict());
-    std::string processor_name;
-    const base::Value* name_val = processor_description_dict.FindKeyOfType(
-        kNameKey, base::Value::Type::STRING);
-    if (name_val && name_val->GetString() == kRenderNameTag) {
+  for (const base::Value& processor_description_value : processors_list) {
+    DCHECK(processor_description_value.is_dict());
+    const std::string* name =
+        processor_description_value.GetDict().FindString(kNameKey);
+    if (name && *name == kRenderNameTag) {
       has_render = true;
       break;
     }
@@ -47,9 +46,9 @@ void SplitPipeline(const base::Value::List& processors_list,
   bool is_prerender = has_render;
 
   for (const base::Value& processor_description_dict : processors_list) {
-    const base::Value* name_val = processor_description_dict.FindKeyOfType(
-        kNameKey, base::Value::Type::STRING);
-    if (name_val && name_val->GetString() == kRenderNameTag) {
+    const std::string* name =
+        processor_description_dict.GetDict().FindString(kNameKey);
+    if (name && *name == kRenderNameTag) {
       is_prerender = false;
       continue;
     }
@@ -172,9 +171,9 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetLinearizePipeline() {
 
 StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
     const std::string& key) {
-  const base::Value* stream_dict =
+  const base::Value* stream_value =
       postprocessor_config_ ? postprocessor_config_->FindPath(key) : nullptr;
-  if (!postprocessor_config_ || !stream_dict) {
+  if (!postprocessor_config_ || !stream_value) {
     LOG(WARNING) << "No post-processor description found for \"" << key
                  << "\" in " << file_path_ << ". Using passthrough.";
     return StreamPipelineDescriptor(base::Value(base::Value::Type::LIST),
@@ -182,24 +181,29 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
                                     nullptr, absl::nullopt, nullptr);
   }
 
+  const base::Value::Dict& stream_dict = stream_value->GetDict();
   const base::Value::List* processors_list =
-      stream_dict->GetDict().FindList(kProcessorsKey);
+      stream_dict.FindList(kProcessorsKey);
   CHECK(processors_list);
 
   base::Value::List prerender_pipeline;
   base::Value::List postrender_pipeline;
   SplitPipeline(*processors_list, prerender_pipeline, postrender_pipeline);
 
-  const base::Value* streams_list =
-      stream_dict->FindKeyOfType(kStreamsKey, base::Value::Type::LIST);
+  const base::Value* streams_list = stream_dict.Find(kStreamsKey);
+  if (streams_list && !streams_list->is_list()) {
+    streams_list = nullptr;
+  }
 
-  const base::Value* volume_limits =
-      stream_dict->FindKeyOfType(kVolumeLimitsKey, base::Value::Type::DICT);
+  const base::Value* volume_limits = stream_dict.Find(kVolumeLimitsKey);
+  if (volume_limits && !volume_limits->is_dict()) {
+    volume_limits = nullptr;
+  }
 
   return StreamPipelineDescriptor(
       base::Value(std::move(prerender_pipeline)),
       base::Value(std::move(postrender_pipeline)), streams_list,
-      stream_dict->FindIntKey(kNumInputChannelsKey), volume_limits);
+      stream_dict.FindInt(kNumInputChannelsKey), volume_limits);
 }
 
 base::FilePath PostProcessingPipelineParser::GetFilePath() const {
