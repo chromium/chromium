@@ -698,6 +698,8 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     [_emptyCollectionViewLabel.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
   ]];
+
+  [self updateEmptyCollectionViewLabelVisibility];
 }
 
 // Configures `cell`'s identifier and title synchronously, favicon and snapshot
