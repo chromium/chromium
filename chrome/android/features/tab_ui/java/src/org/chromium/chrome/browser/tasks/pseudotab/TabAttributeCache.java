@@ -121,17 +121,20 @@ public class TabAttributeCache {
             public void onTabStateInitialized() {
                 // TODO(wychen): after this cache is enabled by default, we only need to populate it
                 //  once.
-                getSharedPreferences().edit().clear().apply();
+                SharedPreferences.Editor editor = getSharedPreferences().edit();
+                editor.clear();
                 TabModelFilter filter =
                         mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
                 for (int i = 0; i < filter.getCount(); i++) {
                     Tab tab = filter.getTabAt(i);
-                    cacheUrl(tab.getId(), tab.getUrl());
-                    cacheTitle(tab.getId(), tab.getTitle());
-                    cacheRootId(tab.getId(), CriticalPersistedTabData.from(tab).getRootId());
-                    cacheTimestampMillis(
-                            tab.getId(), CriticalPersistedTabData.from(tab).getTimestampMillis());
+                    int id = tab.getId();
+                    editor.putString(getUrlKey(id), tab.getUrl().serialize());
+                    editor.putString(getTitleKey(id), tab.getTitle());
+                    CriticalPersistedTabData tabData = CriticalPersistedTabData.from(tab);
+                    editor.putInt(getRootIdKey(id), tabData.getRootId());
+                    editor.putLong(getTimestampMillisKey(id), tabData.getTimestampMillis());
                 }
+                editor.apply();
                 Tab currentTab = mTabModelSelector.getCurrentTab();
                 if (currentTab != null) cacheLastSearchTerm(currentTab);
                 filter.addObserver(mTabModelObserver);
