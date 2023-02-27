@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/task/task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/resources/resource_manager.h"

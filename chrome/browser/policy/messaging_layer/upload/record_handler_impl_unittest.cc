@@ -17,6 +17,8 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
@@ -107,8 +109,10 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
  protected:
   void SetUp() override {
     handler_ = std::make_unique<RecordHandlerImpl>(
-        sequenced_task_runner_, std::make_unique<MockFileUploadDelegate>(),
-        base::MakeRefCounted<test::TestStorageModule>());
+        sequenced_task_runner_, std::make_unique<MockFileUploadDelegate>());
+    test_storage_ = base::MakeRefCounted<test::TestStorageModule>();
+    test_reporting_ = ReportingClient::TestEnvironment::CreateWithStorageModule(
+        test_storage_);
 
     memory_resource_ =
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
@@ -116,6 +120,8 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
 
   void TearDown() override {
     handler_.reset();
+    test_reporting_.reset();
+    test_storage_.reset();
     EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
@@ -128,6 +134,9 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
       base::ThreadPool::CreateSequencedTaskRunner({});
 
   ReportingServerConnector::TestEnvironment test_env_;
+
+  scoped_refptr<test::TestStorageModule> test_storage_;
+  std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
 
   std::unique_ptr<RecordHandlerImpl> handler_;
 

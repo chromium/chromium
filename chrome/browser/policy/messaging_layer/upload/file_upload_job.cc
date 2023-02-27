@@ -318,6 +318,11 @@ void FileUploadJob::DoneFinalize(
                                  access_parameters.size());
 }
 
+bool FileUploadJob::in_action() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
+  return in_action_;
+}
+
 const UploadSettings& FileUploadJob::settings() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   return settings_;

@@ -50,8 +50,7 @@ UploadClient::UploadClient()
     : sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       handler_(std::make_unique<RecordHandlerImpl>(
           sequenced_task_runner_,
-          std::make_unique<FileUploadDelegate>(),
-          ReportQueueProvider::GetInstance()->storage())) {}
+          std::make_unique<FileUploadDelegate>())) {}
 
 UploadClient::~UploadClient() = default;
 

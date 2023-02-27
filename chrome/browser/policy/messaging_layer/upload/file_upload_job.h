@@ -154,6 +154,7 @@ class FileUploadJob {
   void Finalize(base::OnceClosure done_cb = base::DoNothing());
 
   // Accessors.
+  bool in_action() const;
   const UploadSettings& settings() const;
   const UploadTracker& tracker() const;
   base::WeakPtr<FileUploadJob> GetWeakPtr();

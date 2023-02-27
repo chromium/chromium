@@ -77,10 +77,13 @@ absl::optional<Priority> GetPriorityProtoFromSequenceInformationValue(
   return priority;
 }
 
-// Reposts updated copy of LOG_UPLOAD event. Called back once the FileUploadJob
-// is located/created.
+// Called once the FileUploadJob is located/created and processed by RunJob.
+// Calling `done_cb` with OK will allow the uploader to include the current
+// event, so before that if we intend to proceed with the job, the new event
+// needs to be posted.
+// Calling `done_cb` with any other status stops the upload before the current
+// event, so no new event should be posted in this case.
 void RepostLogUploadEvent(base::WeakPtr<FileUploadJob> job,
-                          scoped_refptr<StorageModuleInterface> storage,
                           Priority priority,
                           Record record_copy,
                           ::ash::reporting::LogUploadEvent log_upload_event,
@@ -92,7 +95,7 @@ void RepostLogUploadEvent(base::WeakPtr<FileUploadJob> job,
         Status(error::DATA_LOSS, "Upload Job has been removed"));
     return;
   }
-  // Job is still around.
+  // Job is still around. Update the new event with its status.
   if (job->tracker().access_parameters().empty() &&
       !job->tracker().has_status()) {
     // The job is in progress (not succeeded and not failed),
@@ -113,7 +116,8 @@ void RepostLogUploadEvent(base::WeakPtr<FileUploadJob> job,
   }
   // Repost the copy event, and if succeeded, `done_cb` will allow the current
   // event to be uploaded.
-  storage->AddRecord(priority, std::move(record_copy), std::move(done_cb));
+  RecordHandlerImpl::AddRecordToStorage(priority, std::move(record_copy),
+                                        std::move(done_cb));
 }
 
 // FileUploadJob progresses based on the last recorded state.
@@ -167,13 +171,14 @@ void RunJob(FileUploadJob* job,
 
 // Processes LOG_UPLOAD event.
 void ProcessFileUpload(FileUploadJob::Delegate* delegate,
-                       scoped_refptr<StorageModuleInterface> storage,
                        Priority priority,
                        Record record_copy,
                        base::OnceCallback<void(Status)> done_cb) {
   // Here we need to determine which events we got. It would be better to
   // use protobuf reflection and detect upload_settings presence in the event,
   // but protobuf_lite library included in Chrome does not expose reflection.
+  // `done_cb` called with OK causes the event to upload and then uploader picks
+  // up the next event. Any other status stops the upload before the event.
   switch (record_copy.destination()) {
     case LOG_UPLOAD: {
       // Parse `record_copy.data()` string into the event.
@@ -186,6 +191,14 @@ void ProcessFileUpload(FileUploadJob::Delegate* delegate,
         std::move(done_cb).Run(Status::StatusOK());
         return;
       }
+      if (log_upload_event.has_upload_tracker() &&
+          (!log_upload_event.upload_tracker().access_parameters().empty() ||
+           log_upload_event.upload_tracker().has_status())) {
+        // The event already reports job as completed (succeeded or failed),
+        // upload it with no further processing.
+        std::move(done_cb).Run(Status::StatusOK());
+        return;
+      }
       // Check whether this upload is already being processed, based on the
       // whole `upload_settings` (including retry count).
       const auto settings = log_upload_event.upload_settings();
@@ -195,7 +208,6 @@ void ProcessFileUpload(FileUploadJob::Delegate* delegate,
           base::BindOnce(
               [](Priority priority, Record record,
                  ::ash::reporting::LogUploadEvent log_upload_event,
-                 scoped_refptr<StorageModuleInterface> storage,
                  base::OnceCallback<void(Status)> done_cb,
                  StatusOr<FileUploadJob*> job_or_error) {
                 if (!job_or_error.ok()) {
@@ -207,12 +219,38 @@ void ProcessFileUpload(FileUploadJob::Delegate* delegate,
                 }
                 // Job has been located or created.
                 auto* const job = job_or_error.ValueOrDie();
-                // Prepare a callback that will repost event with updates based
-                // on the job status, if it is still available. It will be
-                // invoked on the sequenced_task_runner of the job manager,
-                // so we can use weak pointer there.
+                if (job->in_action()) {
+                  // The job already executes, the event we are dealing with
+                  // is likely the one that caused this, do not upload it
+                  // (otherwise we would lose track of the job if the device
+                  // restarts).
+                  std::move(done_cb).Run(
+                      Status(error::ALREADY_EXISTS, "Duplicate event"));
+                  return;
+                }
+                if (job->tracker().has_status()) {
+                  // The job already failed before.
+                  // Upload the event as is.
+                  std::move(done_cb).Run(Status::StatusOK());
+                  return;
+                }
+                if (!job->tracker().access_parameters().empty()) {
+                  // Job complete, nothing left to do.
+                  // Upload the event as is.
+                  std::move(done_cb).Run(Status::StatusOK());
+                  return;
+                }
+
+                // Prepare a callback that will either
+                // 1) repost event with updates based on the job status,
+                //    if the job is still available, and allow the current event
+                //    to proceed,
+                // or
+                // 2) stop uploading before the current event.
+                // The callback will be invoked on the sequenced_task_runner of
+                // the job manager, so we can use weak pointer there.
                 auto processed_cb = base::BindOnce(
-                    &RepostLogUploadEvent, job->GetWeakPtr(), storage, priority,
+                    &RepostLogUploadEvent, job->GetWeakPtr(), priority,
                     std::move(record), log_upload_event,  // Copy, not move!
                     std::move(done_cb));
                 // Run the next step.
@@ -220,7 +258,7 @@ void ProcessFileUpload(FileUploadJob::Delegate* delegate,
                        std::move(processed_cb));
               },
               priority, std::move(record_copy), std::move(log_upload_event),
-              storage, std::move(done_cb)));
+              std::move(done_cb)));
       break;
     }
     default:
@@ -238,7 +276,6 @@ class RecordHandlerImpl::ReportUploader
  public:
   ReportUploader(
       FileUploadJob::Delegate* delegate,
-      scoped_refptr<StorageModuleInterface> storage,
       bool need_encryption_key,
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
@@ -278,8 +315,6 @@ class RecordHandlerImpl::ReportUploader
 
   const raw_ptr<FileUploadJob::Delegate> delegate_;
 
-  const scoped_refptr<StorageModuleInterface> storage_;
-
   bool need_encryption_key_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<EncryptedRecord> records_ GUARDED_BY_CONTEXT(sequence_checker_);
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -303,7 +338,6 @@ class RecordHandlerImpl::ReportUploader
 
 RecordHandlerImpl::ReportUploader::ReportUploader(
     FileUploadJob::Delegate* delegate,
-    scoped_refptr<StorageModuleInterface> storage,
     bool need_encryption_key,
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
@@ -313,7 +347,6 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
       delegate_(delegate),
-      storage_(storage),
       need_encryption_key_(need_encryption_key),
       records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
@@ -359,11 +392,12 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
   while (next_record < records_.size()) {
     auto& record = records_.at(next_record++);
     if (!record.has_record_copy()) {
-      // Regular event, add it and proceed.
+      // Regular event, add it for upload and proceed.
       request_builder_->AddRecord(std::move(record), scoped_reservation_);
       continue;
     }
-    // Upload event, attempt to asynchronously process it.
+    // Asynchronously process event, add it for upload and proceed if
+    // successful.
     const auto priority = record.sequence_information().priority();
     auto record_copy = std::move(*record.mutable_record_copy());
     record.clear_record_copy();
@@ -389,8 +423,7 @@ void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
         base::BindOnce(&ProcessFileUpload, base::Unretained(delegate_.get()),
-                       storage_, priority, std::move(record_copy),
-                       std::move(resume_cb)));
+                       priority, std::move(record_copy), std::move(resume_cb)));
     return;  // We will resume on `resume_cb`
   }
 
@@ -662,11 +695,9 @@ RecordHandlerImpl::ReportUploader::SequenceInformationValueToProto(
 
 RecordHandlerImpl::RecordHandlerImpl(
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
-    std::unique_ptr<FileUploadJob::Delegate> delegate,
-    scoped_refptr<StorageModuleInterface> storage)
+    std::unique_ptr<FileUploadJob::Delegate> delegate)
     : sequenced_task_runner_(sequenced_task_runner),
-      delegate_(std::move(delegate)),
-      storage_(storage) {}
+      delegate_(std::move(delegate)) {}
 
 RecordHandlerImpl::~RecordHandlerImpl() = default;
 
@@ -677,9 +708,28 @@ void RecordHandlerImpl::HandleRecords(
     CompletionCallback upload_complete_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   Start<RecordHandlerImpl::ReportUploader>(
-      delegate_.get(), storage_, need_encryption_key, std::move(records),
+      delegate_.get(), need_encryption_key, std::move(records),
       std::move(scoped_reservation), std::move(upload_complete_cb),
       std::move(encryption_key_attached_cb), sequenced_task_runner_);
 }
 
+// static
+void RecordHandlerImpl::AddRecordToStorage(
+    Priority priority,
+    Record record_copy,
+    base::OnceCallback<void(Status)> done_cb) {
+  ReportingClient::GetInstance()->sequenced_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](Priority priority, Record record_copy,
+                        base::OnceCallback<void(Status)> done_cb) {
+                       // We can only get to here from upload, which originates
+                       // from Storage Module, so `storage()` below cannot be
+                       // null.
+                       DCHECK(ReportingClient::GetInstance()->storage());
+                       ReportingClient::GetInstance()->storage()->AddRecord(
+                           priority, std::move(record_copy),
+                           std::move(done_cb));
+                     },
+                     priority, std::move(record_copy), std::move(done_cb)));
+}
 }  // namespace reporting
