@@ -4018,7 +4018,7 @@
   {
     "name": "full-user-agent",
     "owners": [ "victortan", "abeyad"],
-    "expiry_milestone": 113
+    "expiry_milestone": 115
   },
   {
     "name": "fullscreen-promos-manager",
