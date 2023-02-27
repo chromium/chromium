@@ -75,10 +75,9 @@ public class AutofillPopup extends DropdownPopupWindow
      * Filters the Autofill suggestions to the ones that we support and shows the popup.
      * @param suggestions Autofill suggestion data.
      * @param isRtl @code true if right-to-left text.
-     * @param isRefresh Whether or not refreshed visual style should be used.
      */
     @SuppressLint("InlinedApi")
-    public void filterAndShow(AutofillSuggestion[] suggestions, boolean isRtl, boolean isRefresh) {
+    public void filterAndShow(AutofillSuggestion[] suggestions, boolean isRtl) {
         mSuggestions = new ArrayList<AutofillSuggestion>(Arrays.asList(suggestions));
         // Remove the AutofillSuggestions with IDs that are not supported by Android
         List<DropdownItem> cleanedData = new ArrayList<>();
@@ -92,7 +91,7 @@ public class AutofillPopup extends DropdownPopupWindow
             }
         }
 
-        setAdapter(new AutofillDropdownAdapter(mContext, cleanedData, separators, isRefresh));
+        setAdapter(new AutofillDropdownAdapter(mContext, cleanedData, separators));
         setRtl(isRtl);
         show();
         getListView().setOnItemLongClickListener(this);

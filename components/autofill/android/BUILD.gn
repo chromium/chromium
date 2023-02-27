@@ -58,7 +58,6 @@ android_resources("autofill_payments_java_resources") {
 android_resources("autofill_java_resources") {
   sources = [
     "java/res/layout/autofill_dropdown_item.xml",
-    "java/res/layout/autofill_dropdown_item_refresh.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]

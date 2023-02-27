@@ -65,8 +65,7 @@ public class AutofillUnitTest {
 
             mAutofillPopup = new AutofillPopup(
                     sActivityTestRule.getActivity(), anchorView, mMockAutofillCallback, null);
-            mAutofillPopup.filterAndShow(
-                    new AutofillSuggestion[0], /* isRtl= */ false, /* isRefresh= */ false);
+            mAutofillPopup.filterAndShow(new AutofillSuggestion[0], /* isRtl= */ false);
         });
     }
 
@@ -129,9 +128,7 @@ public class AutofillUnitTest {
 
     public void openAutofillPopupAndWaitUntilReady(final AutofillSuggestion[] suggestions) {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mAutofillPopup.filterAndShow(
-                                suggestions, /* isRtl= */ false, /* isRefresh= */ false));
+                () -> mAutofillPopup.filterAndShow(suggestions, /* isRtl= */ false));
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(
                     mAutofillPopup.getListView().getChildCount(), Matchers.greaterThan(0));
