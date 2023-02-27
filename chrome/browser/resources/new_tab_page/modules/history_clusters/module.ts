@@ -14,6 +14,17 @@ import {ModuleDescriptor} from '../module_descriptor.js';
 import {HistoryClustersProxyImpl} from './history_clusters_proxy.js';
 import {getTemplate} from './module.html.js';
 
+export const LAYOUT_1_3_MIN_IMAGE_VISITS = 2;
+export const LAYOUT_2_IMAGE_VISITS = 1;
+export const LAYOUT_2_MIN_VISITS = 3;
+export const LAYOUT_3_MIN_VISITS = 4;
+
+export enum HistoryClusterLayoutType {
+  LAYOUT_1 = 'layout_1',  // 2 image visits
+  LAYOUT_2 = 'layout_2',  // 1 image visit & 2 non-image visits
+  LAYOUT_3 = 'layout_3',  // 2 image visits & 2 non-image visits
+}
+
 // TODO:(crbug.com/1410808): Add module UI logic.
 export class HistoryClustersModuleElement extends I18nMixin
 (PolymerElement) {
@@ -27,18 +38,24 @@ export class HistoryClustersModuleElement extends I18nMixin
 
   static get properties() {
     return {
+      layoutType: String,
       /** The cluster displayed by this element. */
       cluster: Object,
     };
   }
 
   cluster: Cluster;
+  layoutType: HistoryClusterLayoutType;
+
+  private isLayout_(type: HistoryClusterLayoutType): boolean {
+    return type === this.layoutType;
+  }
 }
 
 customElements.define(
     HistoryClustersModuleElement.is, HistoryClustersModuleElement);
 
-async function createElement(): Promise<HTMLElement|null> {
+async function createElement(): Promise<HistoryClustersModuleElement|null> {
   const data =
       await HistoryClustersProxyImpl.getInstance().handler.getCluster();
   if (!data.cluster) {
@@ -47,6 +64,37 @@ async function createElement(): Promise<HTMLElement|null> {
 
   const element = new HistoryClustersModuleElement();
   element.cluster = data.cluster!;
+
+  const visits = element.cluster.visits;
+  // Count number of visits with images.
+  const imageCount = visits
+                         .filter((visit) => {
+                           return !!visit.imageUrl;
+                         })
+                         .length;
+  // Subtract the SRP from the visit count.
+  // The SRP is a visit that is included to be used in the module header
+  // and for opening the cluster in tab group.
+  const visitCount = visits.length - 1;
+
+  // Calculate which layout to use.
+  if (imageCount >= LAYOUT_1_3_MIN_IMAGE_VISITS) {
+    // Layout 1 and 3 require the same number of images.
+    // Decide which one to use by checking if there are enough total
+    // visits for layout 3.
+    if (visitCount >= LAYOUT_3_MIN_VISITS) {
+      element.layoutType = HistoryClusterLayoutType.LAYOUT_3;
+    } else {
+      element.layoutType = HistoryClusterLayoutType.LAYOUT_1;
+    }
+  } else if (imageCount === LAYOUT_2_IMAGE_VISITS &&
+      visitCount >= LAYOUT_2_MIN_VISITS) {
+    element.layoutType = HistoryClusterLayoutType.LAYOUT_2;
+  } else {
+    // If the data doesn't fit any layout, don't show the module.
+    return null;
+  }
+
   return element;
 }
 

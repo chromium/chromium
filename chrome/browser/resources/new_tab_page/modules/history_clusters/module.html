@@ -21,4 +21,13 @@
   <ntp-history-clusters-tile id="main-tile" large-format
                              visit="[[cluster.visits.0]]">
   </ntp-history-clusters-tile>
+  <template is="dom-if" if="[[isLayout_('layout_1', layoutType)]]" restamp>
+    <div id="layout1" class="layout">Layout 1</div>
+  </template>
+  <template is="dom-if" if="[[isLayout_('layout_2', layoutType)]]" restamp>
+    <div id="layout2" class="layout">Layout 2</div>
+  </template>
+  <template is="dom-if" if="[[isLayout_('layout_3', layoutType)]]" restamp>
+    <div id="layout3" class="layout">Layout 3</div>
+  </template>
 </div>
