@@ -848,9 +848,9 @@ TEST(SchemaTest, Validate) {
     base::Value::List& root_list = root.GetList();
 
     // Unknown property.
-    base::Value dict_value(base::Value::Type::DICT);
-    dict_value.SetBoolKey("three", true);
-    root_list.Append(std::move(dict_value));
+    base::Value::Dict dict1;
+    dict1.Set("three", true);
+    root_list.Append(std::move(dict1));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,
@@ -861,9 +861,9 @@ TEST(SchemaTest, Validate) {
     root_list.erase(root_list.end() - 1);
 
     // Invalid property.
-    dict_value = base::Value(base::Value::Type::DICT);
-    dict_value.SetBoolKey("two", true);
-    root_list.Append(std::move(dict_value));
+    base::Value::Dict dict2;
+    dict2.Set("two", true);
+    root_list.Append(std::move(dict2));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, false);
     TestSchemaValidation(subschema, root,
@@ -1410,7 +1410,7 @@ TEST(SchemaTest, SchemaNodeNoSensitiveValues) {
   EXPECT_FALSE(foo.IsSensitiveValue());
 
   base::Value value(base::Value::Type::DICT);
-  value.SetKey("foo", base::Value(true));
+  value.GetDict().Set("foo", true);
 
   base::Value expected_value = value.Clone();
   schema.MaskSensitiveValues(&value);
