@@ -5,7 +5,10 @@
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -390,6 +393,43 @@ TEST_F(DownloadBubbleUIControllerTest, ListIsRecent) {
   EXPECT_EQ(models.size(), sorted_ids.size());
   for (unsigned long i = 0; i < models.size(); i++) {
     EXPECT_EQ(models[i]->GetContentId().id, sorted_ids[i]);
+  }
+}
+
+// Tests that the list is limited to kMaxDownloadsToShow items, and that they
+// are the most recent kMaxDownloadsToShow items.
+TEST_F(DownloadBubbleUIControllerTest, ListIsCappedAndMostRecent) {
+  const size_t kMaxDownloadsToShow = 100;
+  const size_t kNumDownloads = kMaxDownloadsToShow + 1;
+  const base::Time kFirstStartTime =
+      base::Time::Now() - base::Seconds(kNumDownloads);
+  // Create 101 downloads in chronological order, such that the first 100 are
+  // *not* the 100 most recent. Note that DownloadManager does not guarantee
+  // any order on the items returned from GetAllDownloads(). We still want to
+  // ensure that the most recent ones are returned.
+  for (size_t i = 0; i < kNumDownloads; ++i) {
+    std::string id = base::NumberToString(i);
+    InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                     download::DownloadItem::IN_PROGRESS, id,
+                     /*is_transient=*/false,
+                     kFirstStartTime + base::Seconds(i));
+  }
+
+  std::vector<DownloadUIModelPtr> partial_view_models =
+      controller().GetPartialView();
+  EXPECT_EQ(partial_view_models.size(), kMaxDownloadsToShow);
+  for (const DownloadUIModelPtr& model : partial_view_models) {
+    // Expect the oldest download, which started at kFirstStartTime, to be the 1
+    // excluded, despite being the first returned from GetAllDownloads().
+    EXPECT_GT(model->GetStartTime(), kFirstStartTime);
+  }
+
+  std::vector<DownloadUIModelPtr> main_view_models = controller().GetMainView();
+  EXPECT_EQ(main_view_models.size(), kMaxDownloadsToShow);
+  for (const DownloadUIModelPtr& model : main_view_models) {
+    // Expect the oldest download, which started at kFirstStartTime, to be the 1
+    // excluded, despite being the first returned from GetAllDownloads().
+    EXPECT_GT(model->GetStartTime(), kFirstStartTime);
   }
 }
 
