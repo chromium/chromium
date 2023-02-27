@@ -207,8 +207,6 @@
 #include "chromeos/ash/components/timezone/timezone_provider.h"
 #include "chromeos/ash/components/timezone/timezone_request.h"
 #include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
-#include "components/crash/core/app/breakpad_linux.h"
-#include "components/crash/core/app/crashpad.h"
 #include "components/metrics/structured/neutrino_logging.h"
 #include "components/metrics/structured/neutrino_logging_util.h"
 #include "components/prefs/pref_registry_simple.h"
