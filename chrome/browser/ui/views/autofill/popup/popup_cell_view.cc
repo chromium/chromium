@@ -99,18 +99,37 @@ bool PopupCellView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void PopupCellView::OnMouseEntered(const ui::MouseEvent& event) {
+  // `OnMouseEntered()` does not imply that the mouse had been outside of the
+  // item's bounds before: `OnMouseEntered()` fires if the mouse moves just
+  // a little bit on the item. We don't want to show a preview in such a case.
+  if (!mouse_observed_outside_item_bounds_) {
+    return;
+  }
+
   if (on_entered_callback_) {
     on_entered_callback_.Run();
   }
 }
 
 void PopupCellView::OnMouseExited(const ui::MouseEvent& event) {
+  // `OnMouseExited()` does not imply that the mouse has left the item's screen
+  // bounds: `OnMouseExited()` fires (on Windows, at least) when another popup
+  // overlays this item and the mouse is above the new popup
+  // (crbug.com/1287364).
+  mouse_observed_outside_item_bounds_ |= !IsMouseInsideItemBounds();
+
   if (on_exited_callback_) {
     on_exited_callback_.Run();
   }
 }
 
 void PopupCellView::OnMouseReleased(const ui::MouseEvent& event) {
+  // Ignore mouse clicks unless the user made the explicit choice to selected
+  // the current item.
+  if (!mouse_observed_outside_item_bounds_) {
+    return;
+  }
+
   if (on_accepted_callback_ && event.IsOnlyLeftMouseButton() &&
       HitTestPoint(event.location())) {
     on_accepted_callback_.Run();
@@ -152,6 +171,11 @@ void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (a11y_delegate_) {
     a11y_delegate_->GetAccessibleNodeData(GetSelected(), node_data);
   }
+}
+
+void PopupCellView::OnPaint(gfx::Canvas* canvas) {
+  views::View::OnPaint(canvas);
+  mouse_observed_outside_item_bounds_ |= !IsMouseInsideItemBounds();
 }
 
 void PopupCellView::RefreshStyle() {

@@ -230,4 +230,30 @@ TEST_F(PopupCellViewTest, GestureEvents) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
+TEST_F(PopupCellViewTest, IgnoreClickIfMouseWasNotOutsideBefore) {
+  std::unique_ptr<PopupCellView> cell =
+      views::Builder<PopupCellView>()
+          .SetAccessibilityDelegate(
+              std::make_unique<TestAccessibilityDelegate>())
+          .Build();
+  views::Label* label =
+      cell->AddChildView(std::make_unique<views::Label>(u"Label text"));
+  ShowView(std::move(cell));
+
+  StrictMock<base::MockCallback<base::RepeatingClosure>> accept_callback;
+
+  view().SetOnAcceptedCallback(accept_callback.Get());
+  generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
+  Paint();
+  // No OnAccept callback is run.
+  generator().ClickLeftButton();
+
+  generator().MoveMouseTo(kOutOfBounds);
+  Paint();
+  generator().MoveMouseTo(label->GetBoundsInScreen().CenterPoint());
+  // If the mouse has been outside before, the accept click is passed through.
+  EXPECT_CALL(accept_callback, Run);
+  generator().ClickLeftButton();
+}
+
 }  // namespace autofill
