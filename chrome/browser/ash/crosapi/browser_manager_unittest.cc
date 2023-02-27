@@ -23,6 +23,7 @@
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -79,8 +80,9 @@ class BrowserManagerFake : public BrowserManager {
 
   void SimulateLacrosTermination() {
     SetStatePublic(State::TERMINATING);
-    if (browser_service_.has_value())
+    if (browser_service_.has_value()) {
       OnBrowserServiceDisconnected(*crosapi_id_, browser_service_->mojo_id);
+    }
     OnLacrosChromeTerminated();
   }
 
@@ -192,15 +194,57 @@ class BrowserManagerTest : public testing::Test {
     crosapi::browser_util::ClearLacrosAvailabilityCacheForTest();
   }
 
-  void AddRegularUser(const std::string& email) {
+  enum class UserType {
+    kRegularUser = 0,
+    kWebKiosk = 1,
+    kChromeAppKiosk = 2,
+    kMaxValue = kChromeAppKiosk,
+  };
+
+  void AddUser(UserType user_type) {
+    const std::string email = "user@test.com";
     AccountId account_id = AccountId::FromUserEmail(email);
-    const User* user = fake_user_manager_->AddUser(account_id);
+
+    User* user;
+    switch (user_type) {
+      case UserType::kRegularUser:
+        user = fake_user_manager_->AddUser(account_id);
+        break;
+      case UserType::kWebKiosk:
+        user = fake_user_manager_->AddWebKioskAppUser(account_id);
+        break;
+      case UserType::kChromeAppKiosk:
+        user = fake_user_manager_->AddKioskAppUser(account_id);
+        break;
+    }
+
     fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
                                      /*browser_restart=*/false,
                                      /*is_child=*/false);
     fake_user_manager_->SimulateUserProfileLoad(account_id);
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, &testing_profile_);
+
+    browser_util::SetProfileMigrationCompletedForUser(
+        local_state_.Get(),
+        ash::ProfileHelper::Get()
+            ->GetUserByProfile(&testing_profile_)
+            ->username_hash(),
+        browser_util::MigrationMode::kCopy);
+
+    EXPECT_TRUE(browser_util::IsLacrosEnabled());
+    EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
+  }
+
+  void ExpectCallingLoad(browser_util::LacrosSelection load_selection =
+                             browser_util::LacrosSelection::kRootfs,
+                         const std::string& lacros_path = "/run/lacros") {
+    EXPECT_CALL(*browser_loader_, Load(_))
+        .WillOnce([load_selection, lacros_path](
+                      BrowserLoader::LoadCompletionCallback callback) {
+          std::move(callback).Run(base::FilePath(lacros_path), load_selection,
+                                  base::Version());
+        });
   }
 
  protected:
@@ -227,27 +271,14 @@ class BrowserManagerTest : public testing::Test {
 };
 
 TEST_F(BrowserManagerTest, LacrosKeepAlive) {
-  AddRegularUser("user@test.com");
-  browser_util::SetProfileMigrationCompletedForUser(
-      local_state_.Get(),
-      ash::ProfileHelper::Get()
-          ->GetUserByProfile(&testing_profile_)
-          ->username_hash(),
-      browser_util::MigrationMode::kCopy);
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
+  AddUser(UserType::kRegularUser);
 
   using State = BrowserManagerFake::State;
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
   // Attempt to mount the Lacros image. Will not start as it does not meet the
   // automatic start criteria.
-  EXPECT_CALL(*browser_loader_, Load(_))
-      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
-        std::move(callback).Run(base::FilePath("/run/lacros"),
-                                browser_util::LacrosSelection::kRootfs,
-                                base::Version());
-      });
+  ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
@@ -274,22 +305,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
 }
 
 TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
-  AddRegularUser("user@test.com");
-  browser_util::SetProfileMigrationCompletedForUser(
-      local_state_.Get(),
-      ash::ProfileHelper::Get()
-          ->GetUserByProfile(&testing_profile_)
-          ->username_hash(),
-      browser_util::MigrationMode::kCopy);
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
-
-  EXPECT_CALL(*browser_loader_, Load(_))
-      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
-        std::move(callback).Run(base::FilePath("/run/lacros"),
-                                browser_util::LacrosSelection::kRootfs,
-                                base::Version());
-      });
+  AddUser(UserType::kRegularUser);
+  ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
   using State = BrowserManagerFake::State;
@@ -305,12 +322,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
   std::unique_ptr<BrowserManager::ScopedKeepAlive> keep_alive =
       fake_browser_manager_->KeepAlive(BrowserManager::Feature::kTestOnly);
 
-  EXPECT_CALL(*browser_loader_, Load(_))
-      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
-        std::move(callback).Run(base::FilePath(kSampleLacrosPath),
-                                browser_util::LacrosSelection::kStateful,
-                                base::Version());
-      });
+  ExpectCallingLoad(browser_util::LacrosSelection::kStateful,
+                    kSampleLacrosPath);
 
   // On simulated termination, KeepAlive restarts Lacros. Since there is an
   // update, it should first load the updated image.
@@ -320,22 +333,8 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
 }
 
 TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
-  AddRegularUser("user@test.com");
-  browser_util::SetProfileMigrationCompletedForUser(
-      local_state_.Get(),
-      ash::ProfileHelper::Get()
-          ->GetUserByProfile(&testing_profile_)
-          ->username_hash(),
-      browser_util::MigrationMode::kCopy);
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
-
-  EXPECT_CALL(*browser_loader_, Load(_))
-      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
-        std::move(callback).Run(base::FilePath("/run/lacros"),
-                                browser_util::LacrosSelection::kRootfs,
-                                base::Version());
-      });
+  AddUser(UserType::kRegularUser);
+  ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
 
   // Set the state of the browser manager as stopped, which would match the
@@ -360,28 +359,14 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
 
 TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
   EXPECT_CALL(mock_browser_service_, UpdateKeepAlive(_)).Times(0);
-
-  AddRegularUser("user@test.com");
-  browser_util::SetProfileMigrationCompletedForUser(
-      local_state_.Get(),
-      ash::ProfileHelper::Get()
-          ->GetUserByProfile(&testing_profile_)
-          ->username_hash(),
-      browser_util::MigrationMode::kCopy);
-  EXPECT_TRUE(browser_util::IsLacrosEnabled());
-  EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
+  AddUser(UserType::kRegularUser);
 
   using State = BrowserManagerFake::State;
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
   // Attempt to mount the Lacros image. Will not start as it does not meet the
   // automatic start criteria.
-  EXPECT_CALL(*browser_loader_, Load(_))
-      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
-        std::move(callback).Run(base::FilePath("/run/lacros"),
-                                browser_util::LacrosSelection::kRootfs,
-                                base::Version());
-      });
+  ExpectCallingLoad();
   fake_browser_manager_->InitializeAndStartIfNeeded();
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
@@ -429,6 +414,30 @@ TEST_F(BrowserManagerTest, LacrosKeepAliveDoesNotBlockRestart) {
   fake_browser_manager_->set_relaunch_requested_for_testing(false);
   fake_browser_manager_->SimulateLacrosTermination();
   EXPECT_EQ(fake_browser_manager_->start_count(), 4);
+}
+
+// In the Kiosk session, the Lacros window is created during the kiosk launch,
+// no need to create a new window in this case.
+TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInChromeAppKiosk) {
+  AddUser(UserType::kChromeAppKiosk);
+  ExpectCallingLoad();
+
+  fake_browser_manager_->InitializeAndStartIfNeeded();
+
+  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _)).Times(0);
+
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
+}
+
+TEST_F(BrowserManagerTest, DoNotOpenNewLacrosWindowInWebKiosk) {
+  AddUser(UserType::kWebKiosk);
+  ExpectCallingLoad();
+
+  fake_browser_manager_->InitializeAndStartIfNeeded();
+
+  EXPECT_CALL(mock_browser_service_, NewWindow(_, _, _, _)).Times(0);
+
+  fake_browser_manager_->SimulateLacrosStart(&mock_browser_service_);
 }
 
 }  // namespace crosapi
