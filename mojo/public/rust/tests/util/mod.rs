@@ -13,20 +13,21 @@ use std::ptr;
 use std::slice;
 use std::vec::Vec;
 
-/// This macro sets up tests by adding in Mojo embedder
-/// initialization.
-macro_rules! tests {
-    { $( $( #[ $attr:meta ] )* fn $i:ident() $b:block)* } => {
+/// This macro sets up tests by adding in Mojo embedder initialization.
+///
+/// Note: this macro is quite delicate because of rustmt's inconsistent handling
+/// of macro invocations. Slight changes to macro syntax can make rustfmt ignore
+/// the inside of an invocation, which is not what we want.
+macro_rules! mojo_test {
+    {$i: ident, $(#[$attr:meta])* $b:block} => {
+        #[test]
         $(
-            #[test]
-            $(
-            #[ $attr ]
-            )*
-            fn $i() {
-                $crate::util::init();
-                $b
-            }
+        #[ $attr ]
         )*
+        fn $i() {
+            $crate::util::init();
+            $b
+        }
     }
 }
 

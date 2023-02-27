@@ -24,31 +24,29 @@ use crate::util::mojom_validation::*;
 ///      error.
 macro_rules! validation_tests {
     ($($name:ident => $req_type:ident;)*) => {
-        tests! {
-            $(
-            fn $name() {
-                let data = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
+        $(
+        mojo_test!($name, {
+            let data = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
+                                            stringify!($name),
+                                            ".data"));
+            let expected = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
                                                 stringify!($name),
-                                                ".data"));
-                let expected = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
-                                                    stringify!($name),
-                                                    ".expected")).trim();
-                match util::parse_validation_test(data) {
-                    Ok((data, num_handles)) => {
-                        let mut mock_handles = Vec::with_capacity(num_handles);
-                        for _ in 0..num_handles {
-                            mock_handles.push(unsafe { system::acquire(0) });
-                        }
-                        match $req_type::decode_message(data, mock_handles) {
-                            Ok(_) => panic!("Should not be valid!"),
-                            Err(err) => assert_eq!(err.as_str(), expected),
-                        }
-                    },
-                    Err(msg) => panic!("Error: {}", msg),
-                }
+                                                ".expected")).trim();
+            match util::parse_validation_test(data) {
+                Ok((data, num_handles)) => {
+                    let mut mock_handles = Vec::with_capacity(num_handles);
+                    for _ in 0..num_handles {
+                        mock_handles.push(unsafe { system::acquire(0) });
+                    }
+                    match $req_type::decode_message(data, mock_handles) {
+                        Ok(_) => panic!("Should not be valid!"),
+                        Err(err) => assert_eq!(err.as_str(), expected),
+                    }
+                },
+                Err(msg) => panic!("Error: {}", msg),
             }
-            )*
-        }
+        });
+        )*
     }
 }
 

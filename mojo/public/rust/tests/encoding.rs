@@ -39,43 +39,41 @@ use crate::util::mojom_validation::*;
 /// output, and decoding that once again.
 macro_rules! encoding_tests {
     ($($name:ident { MessageHeader => $header_cls:expr, $req_type:ident => $cls:expr } )*) => {
-        tests! {
-            $(
-            fn $name() {
-                let data = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
-                                                stringify!($name),
-                                                ".data"));
-                match util::parse_validation_test(data) {
-                    Ok((mut data, num_handles)) => {
-                        let mut mock_handles = Vec::with_capacity(num_handles);
-                        for _ in 0..num_handles {
-                            mock_handles.push(unsafe { system::acquire(0) });
-                        }
-                        println!("{}: Decoding header", stringify!($name));
-                        let header = MessageHeader::deserialize(&mut data[..], Vec::new()).expect("Should not error");
-                        let ctxt: Context = Default::default();
-                        let header_size = header.serialized_size(&ctxt);
-                        let header_cls = $header_cls;
-                        println!("{}: Verifying decoded header", stringify!($name));
-                        header_cls(header);
-                        let payload_buffer = &mut data[header_size..];
-                        let cls = $cls;
-                        println!("{}: Decoding payload", stringify!($name));
-                        let decoded_payload = $req_type::deserialize(payload_buffer, mock_handles).expect("Should not error");
-                        println!("{}: Verifying decoded payload", stringify!($name));
-                        cls(&decoded_payload);
-                        println!("{}: Re-encoding payload", stringify!($name));
-                        let (mut encoded_payload, handles) = decoded_payload.auto_serialize();
-                        println!("{}: Decoding payload again", stringify!($name));
-                        let redecoded_payload = $req_type::deserialize(&mut encoded_payload[..], handles).expect("Should not error");
-                        println!("{}: Verifying decoded payload again", stringify!($name));
-                        cls(&redecoded_payload);
-                    },
-                    Err(msg) => panic!("Error: {}", msg),
-                }
+        $(
+        mojo_test!($name, {
+            let data = include_str!(concat!("../../interfaces/bindings/tests/data/validation/",
+                                            stringify!($name),
+                                            ".data"));
+            match util::parse_validation_test(data) {
+                Ok((mut data, num_handles)) => {
+                    let mut mock_handles = Vec::with_capacity(num_handles);
+                    for _ in 0..num_handles {
+                        mock_handles.push(unsafe { system::acquire(0) });
+                    }
+                    println!("{}: Decoding header", stringify!($name));
+                    let header = MessageHeader::deserialize(&mut data[..], Vec::new()).expect("Should not error");
+                    let ctxt: Context = Default::default();
+                    let header_size = header.serialized_size(&ctxt);
+                    let header_cls = $header_cls;
+                    println!("{}: Verifying decoded header", stringify!($name));
+                    header_cls(header);
+                    let payload_buffer = &mut data[header_size..];
+                    let cls = $cls;
+                    println!("{}: Decoding payload", stringify!($name));
+                    let decoded_payload = $req_type::deserialize(payload_buffer, mock_handles).expect("Should not error");
+                    println!("{}: Verifying decoded payload", stringify!($name));
+                    cls(&decoded_payload);
+                    println!("{}: Re-encoding payload", stringify!($name));
+                    let (mut encoded_payload, handles) = decoded_payload.auto_serialize();
+                    println!("{}: Decoding payload again", stringify!($name));
+                    let redecoded_payload = $req_type::deserialize(&mut encoded_payload[..], handles).expect("Should not error");
+                    println!("{}: Verifying decoded payload again", stringify!($name));
+                    cls(&redecoded_payload);
+                },
+                Err(msg) => panic!("Error: {}", msg),
             }
-            )*
-        }
+        });
+        )*
     }
 }
 

@@ -57,40 +57,37 @@ impl<T: MojomEncodable> MojomEncodable for StructA<T> {
 
 impl<T: MojomEncodable> MojomStruct for StructA<T> {}
 
-tests! {
-    // Fixed size arrays have complex and unsafe semantics to ensure
-    // there are no memory leaks. We test this behavior here to make
-    // sure memory isn't becoming corrupted.
-    fn regression_fixed_size_array_error_propagates_safely() {
-        let handle1 = unsafe { system::acquire(0) };
-        let handle2 = unsafe { system::acquire(0) };
-        let handle3 = unsafe { system::acquire(0) };
-        let val = StructA {
-            param0: [handle1, handle2, handle3],
-        };
-        let (mut buffer, mut handles) = val.auto_serialize();
-        handles.truncate(1);
-        let new_val = <StructA<UntypedHandle>>::deserialize(&mut buffer[..], handles);
-        match new_val {
-            Ok(_) => panic!("Value should not be okay!"),
-            Err(err) => assert_eq!(err, ValidationError::IllegalHandle),
-        }
+// Fixed size arrays have complex and unsafe semantics to ensure
+// there are no memory leaks. We test this behavior here to make
+// sure memory isn't becoming corrupted.
+mojo_test!(regression_fixed_size_array_error_propagates_safely, {
+    let handle1 = unsafe { system::acquire(0) };
+    let handle2 = unsafe { system::acquire(0) };
+    let handle3 = unsafe { system::acquire(0) };
+    let val = StructA { param0: [handle1, handle2, handle3] };
+    let (mut buffer, mut handles) = val.auto_serialize();
+    handles.truncate(1);
+    let new_val = <StructA<UntypedHandle>>::deserialize(&mut buffer[..], handles);
+    match new_val {
+        Ok(_) => panic!("Value should not be okay!"),
+        Err(err) => assert_eq!(err, ValidationError::IllegalHandle),
     }
+});
 
-    // Same as the above test, but verifies that drop() is called.
-    // For the only handle that should drop, we make the handle some
-    // random number which is potentially a valid handle. When on
-    // drop() we try to close it, we should panic.
-    #[should_panic]
+// Same as the above test, but verifies that drop() is called.
+// For the only handle that should drop, we make the handle some
+// random number which is potentially a valid handle. When on
+// drop() we try to close it, we should panic.
+mojo_test!(
+    regression_fixed_size_array_verify_drop,
     // Ignore this test, it panics while panicking
     #[ignore]
-    fn regression_fixed_size_array_verify_drop() {
+    #[should_panic]
+    {
         let handle1 = unsafe { system::acquire(42) };
         let handle2 = unsafe { system::acquire(0) };
         let handle3 = unsafe { system::acquire(0) };
-        let val = StructA {
-            param0: [handle1, handle2, handle3],
-        };
+        let val = StructA { param0: [handle1, handle2, handle3] };
         let (mut buffer, mut handles) = val.auto_serialize();
         handles.truncate(1);
         let new_val = <StructA<UntypedHandle>>::deserialize(&mut buffer[..], handles);
@@ -99,4 +96,4 @@ tests! {
             Err(err) => assert_eq!(err, ValidationError::IllegalHandle),
         }
     }
-}
+);

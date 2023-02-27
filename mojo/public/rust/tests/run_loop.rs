@@ -243,209 +243,263 @@ impl Handler for NestedTasks {
     }
 }
 
-tests! {
-    // Verifies that after adding and removing, we can run, exit and be
-    // left in a consistent state.
-    fn add_remove() {
-        run_loop::with_current(|runloop| {
-            let (endpt0, endpt1) = message_pipe::create().unwrap();
-            let token0 = runloop.register(&endpt0, HandleSignals::WRITABLE, 0, HandlerExpectReady {});
-            let token1 = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerExpectReady {});
-            runloop.deregister(token1);
-            runloop.deregister(token0);
-            runloop.run();
-        })
-    }
+// Verifies that after adding and removing, we can run, exit and be left in a
+// consistent state.
+mojo_test!(add_remove, {
+    run_loop::with_current(|runloop| {
+        let (endpt0, endpt1) = message_pipe::create().unwrap();
+        let token0 = runloop.register(&endpt0, HandleSignals::WRITABLE, 0, HandlerExpectReady {});
+        let token1 = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerExpectReady {});
+        runloop.deregister(token1);
+        runloop.deregister(token0);
+        runloop.run();
+    })
+});
 
-    // Verifies that generated tokens are unique.
-    fn tokens() {
-        let mut vec = Vec::new();
-        run_loop::with_current(|runloop| {
-            for _ in 0..10 {
-                let (_endpt0, endpt1) = message_pipe::create().unwrap();
-                vec.push(runloop.register(&endpt1, HandleSignals::empty(), 0, HandlerExpectReady {}));
-            }
-            for i in 0..10 {
-                for j in 0..10 {
-                    if i != j {
-                        assert!(vec[i] != vec[j]);
-                    }
+// Verifies that generated tokens are unique.
+mojo_test!(tokens, {
+    let mut vec = Vec::new();
+    run_loop::with_current(|runloop| {
+        for _ in 0..10 {
+            let (_endpt0, endpt1) = message_pipe::create().unwrap();
+            vec.push(runloop.register(&endpt1, HandleSignals::empty(), 0, HandlerExpectReady {}));
+        }
+        for i in 0..10 {
+            for j in 0..10 {
+                if i != j {
+                    assert!(vec[i] != vec[j]);
                 }
             }
-        });
-    }
+        }
+    });
+});
 
-    // Verifies that the handler's "on_ready" function is called.
-    fn notify_results() {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerExpectReady {});
-            runloop.run();
-        });
-    }
+// Verifies that the handler's "on_ready" function is called.
+mojo_test!(notify_results, {
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    run_loop::with_current(|runloop| {
+        let _ = runloop.register(
+            &endpt1,
+            HandleSignals::WRITABLE,
+            MOJO_INDEFINITE,
+            HandlerExpectReady {},
+        );
+        runloop.run();
+    });
+});
 
-    // Verifies that the handler's "on_error" function is called.
-    fn notify_error() {
-        // Drop the first endpoint immediately
-        let (_, endpt1) = message_pipe::create().unwrap();
-        run_loop::with_current(|runloop| {
-            let was_called = Rc::new(Cell::new(false));
-            let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0,
-                HandlerExpectError {
-                    was_called: was_called.clone(),
-            });
-            runloop.run();
-            assert!(was_called.get(), "on_error was not called");
-        });
-    }
+// Verifies that the handler's "on_error" function is called.
+mojo_test!(notify_error, {
+    // Drop the first endpoint immediately
+    let (_, endpt1) = message_pipe::create().unwrap();
+    run_loop::with_current(|runloop| {
+        let was_called = Rc::new(Cell::new(false));
+        let _ = runloop.register(
+            &endpt1,
+            HandleSignals::READABLE,
+            0,
+            HandlerExpectError { was_called: was_called.clone() },
+        );
+        runloop.run();
+        assert!(was_called.get(), "on_error was not called");
+    });
+});
 
-    // Verifies that the handler's "on_ready" function is called which only
-    // quits.
-    fn notify_ready_quit() {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerQuit {});
-            runloop.run();
-        });
-    }
+// Verifies that the handler's "on_ready" function is called which only quits.
+mojo_test!(notify_ready_quit, {
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    run_loop::with_current(|runloop| {
+        let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerQuit {});
+        runloop.run();
+    });
+});
 
-    // Tests more complex behavior, i.e. the interaction between two handlers.
-    fn register_deregister() {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerRegister {});
-            runloop.run();
-        });
-    }
+// Tests more complex behavior, i.e. the interaction between two handlers.
+mojo_test!(register_deregister, {
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    run_loop::with_current(|runloop| {
+        let _ =
+            runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerRegister {});
+        runloop.run();
+    });
+});
 
-    // Tests reregistering.
+// Tests reregistering.
+mojo_test!(
+    reregister,
     #[ignore]
-    fn reregister() {
+    {
         let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerReregister { count: 0 });
+            let _ = runloop.register(
+                &endpt1,
+                HandleSignals::READABLE,
+                0,
+                HandlerReregister { count: 0 },
+            );
             runloop.run();
         });
     }
+);
 
-    // Tests nesting run loops by having a handler create a new one.
+// Tests nesting run loops by having a handler create a new one.
+mojo_test!(
+    nesting,
     #[ignore]
-    fn nesting() {
+    {
         let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerNesting { count: 0 });
+            let _ =
+                runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerNesting { count: 0 });
             runloop.run();
         });
     }
+);
 
-    // Tests to make sure nesting with the SAME runloop fails.
+// Tests to make sure nesting with the SAME runloop fails.
+mojo_test!(
+    bad_nesting,
     #[should_panic]
     #[ignore]
-    fn bad_nesting() {
+    {
         let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
             let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerBadNesting {});
             runloop.run();
         });
     }
+);
 
-    // Tests adding a simple task that adds a handler.
-    fn simple_task() {
-        run_loop::with_current(|runloop| {
-            let was_called = Rc::new(Cell::new(false));
-            // The inner closure cannot take `was_called` by reference since we
-            // cannot prove it lives long enough to the borrow checker. It must
-            // be cloned first.
-            let was_called_clone = was_called.clone();
-            let (_, endpt1) = message_pipe::create().unwrap();
-            // If `endpt1` is moved into the task closure, it is dropped at the
-            // end of its call. This means we won't get the signal we're looking
-            // for: we'll just get a notification that the handle was closed.
-            // Make it live longer by wrapping it in an Rc.
-            let endpt1 = Rc::new(endpt1);
-            let endpt1_clone = endpt1.clone();
-            let _ = runloop.post_task(move |runloop: &mut RunLoop| {
-                let _ = runloop.register(&*endpt1_clone, HandleSignals::READABLE, 0,
-                    HandlerExpectError {
-                        was_called: was_called_clone,
-                    });
-            }, 0).unwrap();
-            runloop.run();
+// Tests adding a simple task that adds a handler.
+mojo_test!(simple_task, {
+    run_loop::with_current(|runloop| {
+        let was_called = Rc::new(Cell::new(false));
+        // The inner closure cannot take `was_called` by reference since we
+        // cannot prove it lives long enough to the borrow checker. It must be
+        // cloned first.
+        let was_called_clone = was_called.clone();
+        let (_, endpt1) = message_pipe::create().unwrap();
+        // If `endpt1` is moved into the task closure, it is dropped at the
+        // end of its call. This means we won't get the signal we're looking
+        // for: we'll just get a notification that the handle was closed.
+        // Make it live longer by wrapping it in an Rc.
+        let endpt1 = Rc::new(endpt1);
+        let endpt1_clone = endpt1.clone();
+        let _ = runloop
+            .post_task(
+                move |runloop: &mut RunLoop| {
+                    let _ = runloop.register(
+                        &*endpt1_clone,
+                        HandleSignals::READABLE,
+                        0,
+                        HandlerExpectError { was_called: was_called_clone },
+                    );
+                },
+                0,
+            )
+            .unwrap();
+        runloop.run();
 
-            // Ensure we got the `on_error` call for the unsatisfiable signal.
-            assert!(was_called.get(), "on_error was not called");
-        });
-    }
+        // Ensure we got the `on_error` call for the unsatisfiable signal.
+        assert!(was_called.get(), "on_error was not called");
+    });
+});
 
-    // Tests using a handler that adds a bunch of tasks.
-    fn handler_tasks() {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        let r = Rc::new(Cell::new(0));
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerTasks { count: r.clone() });
-            runloop.run();
-            assert!((*r).get() >= 11);
-        });
-    }
+// Tests using a handler that adds a bunch of tasks.
+mojo_test!(handler_tasks, {
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    let r = Rc::new(Cell::new(0));
+    run_loop::with_current(|runloop| {
+        let _ = runloop.register(
+            &endpt1,
+            HandleSignals::WRITABLE,
+            0,
+            HandlerTasks { count: r.clone() },
+        );
+        runloop.run();
+        assert!((*r).get() >= 11);
+    });
+});
 
-    // Tests using a handler that adds a bunch of tasks.
-    fn nested_tasks() {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        let r = Rc::new(Cell::new(0));
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, NestedTasks { count: r.clone(), quitter: false });
-            runloop.run();
-            assert!((*r).get() >= 10);
-        });
-    }
+// Tests using a handler that adds a bunch of tasks.
+mojo_test!(nested_tasks, {
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    let r = Rc::new(Cell::new(0));
+    run_loop::with_current(|runloop| {
+        let _ = runloop.register(
+            &endpt1,
+            HandleSignals::WRITABLE,
+            0,
+            NestedTasks { count: r.clone(), quitter: false },
+        );
+        runloop.run();
+        assert!((*r).get() >= 10);
+    });
+});
 
-    // Tests using a handler that adds a bunch of tasks.
-    //
-    // This test is disabled because it posts tasks which call `RunLoop::quit`,
-    // some of which get left on the `RunLoop` after the test ends. These
-    // interfere with later tests on the same thread.
+// Tests using a handler that adds a bunch of tasks.
+//
+// This test is disabled because it posts tasks which call `RunLoop::quit`, some
+// of which get left on the `RunLoop` after the test ends. These interfere with
+// later tests on the same thread.
+mojo_test!(
+    nested_tasks_quit,
     #[ignore]
-    fn nested_tasks_quit() {
+    {
         let (_endpt0, endpt1) = message_pipe::create().unwrap();
         let r = Rc::new(Cell::new(0));
         run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, NestedTasks { count: r.clone(), quitter: true });
+            let _ = runloop.register(
+                &endpt1,
+                HandleSignals::WRITABLE,
+                0,
+                NestedTasks { count: r.clone(), quitter: true },
+            );
             runloop.run();
             assert!((*r).get() >= 10);
         });
     }
+);
 
-    fn close_handle() {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerQuit {});
-            drop(endpt1);
-            runloop.run();
-        })
-    }
+mojo_test!(close_handle, {
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    run_loop::with_current(|runloop| {
+        let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerQuit {});
+        drop(endpt1);
+        runloop.run();
+    })
+});
 
-    // Tests that `RunLoop::run` will run posted tasks even if there's no
-    // handles to wait on.
-    fn post_tasks_without_handles() {
-        let outer_called = Rc::new(Cell::new(false));
-        let outer_called_clone = outer_called.clone();
-        let inner_called = Rc::new(Cell::new(false));
-        let inner_called_clone = inner_called.clone();
+// Tests that `RunLoop::run` will run posted tasks even if there's no handles to
+// wait on.
+mojo_test!(post_tasks_without_handles, {
+    let outer_called = Rc::new(Cell::new(false));
+    let outer_called_clone = outer_called.clone();
+    let inner_called = Rc::new(Cell::new(false));
+    let inner_called_clone = inner_called.clone();
 
-        run_loop::with_current(move |runloop| {
-            // Post a task, and then post another task from within the first.
-            // This is to check RunLoop will run all the tasks it can before
-            // quitting.
-            runloop.post_task(move |runloop| {
-                outer_called_clone.set(true);
-                runloop.post_task(move |_| {
-                    inner_called_clone.set(true);
-                }, 0).unwrap();
-            }, 0).unwrap();
-            runloop.run();
-        });
+    run_loop::with_current(move |runloop| {
+        // Post a task, and then post another task from within the first. This
+        // is to check RunLoop will run all the tasks it can before quitting.
+        runloop
+            .post_task(
+                move |runloop| {
+                    outer_called_clone.set(true);
+                    runloop
+                        .post_task(
+                            move |_| {
+                                inner_called_clone.set(true);
+                            },
+                            0,
+                        )
+                        .unwrap();
+                },
+                0,
+            )
+            .unwrap();
+        runloop.run();
+    });
 
-        assert!(outer_called.get());
-        assert!(inner_called.get());
-    }
-}
+    assert!(outer_called.get());
+    assert!(inner_called.get());
+});
