@@ -13,11 +13,13 @@ InputDeviceSettingsEvdev::InputDeviceSettingsEvdev() {
   touch_event_logging_enabled =
       base::FeatureList::IsEnabled(ui::kEnableInputEventLogging);
 }
-
 InputDeviceSettingsEvdev::InputDeviceSettingsEvdev(
-    const InputDeviceSettingsEvdev& other) = default;
+    const InputDeviceSettingsEvdev& input_device_settings) = default;
+InputDeviceSettingsEvdev::~InputDeviceSettingsEvdev() = default;
 
-InputDeviceSettingsEvdev::~InputDeviceSettingsEvdev() {
-}
+TouchpadSettingsEvdev::TouchpadSettingsEvdev() = default;
+TouchpadSettingsEvdev::TouchpadSettingsEvdev(
+    const TouchpadSettingsEvdev& touchpad_settings) = default;
+TouchpadSettingsEvdev::~TouchpadSettingsEvdev() = default;
 
 }  // namespace ui

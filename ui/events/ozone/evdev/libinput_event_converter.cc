@@ -111,9 +111,9 @@ LibInputEventConverter::LibInputDevice::~LibInputDevice() {
 
 void LibInputEventConverter::LibInputDevice::ApplySettings(
     const InputDeviceSettingsEvdev& settings) const {
-  SetNaturalScrollEnabled(settings.natural_scroll_enabled);
-  SetSensitivity(settings.touchpad_sensitivity);
-  SetTapToClickEnabled(settings.tap_to_click_enabled);
+  SetNaturalScrollEnabled(settings.touchpad_settings.natural_scroll_enabled);
+  SetSensitivity(settings.touchpad_settings.sensitivity);
+  SetTapToClickEnabled(settings.touchpad_settings.tap_to_click_enabled);
 }
 
 // Get a comma-separated string of the device's capabilities

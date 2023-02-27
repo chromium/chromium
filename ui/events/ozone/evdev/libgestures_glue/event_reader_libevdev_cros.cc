@@ -140,9 +140,9 @@ void EventReaderLibevdevCros::ApplyDeviceSettings(
   if (haptic_touchpad_handler_) {
     haptic_touchpad_handler_->SetClickStrength(
         static_cast<HapticTouchpadEffectStrength>(
-            settings.touchpad_haptic_click_sensitivity));
+            settings.touchpad_settings.haptic_click_sensitivity));
   }
-  haptic_feedback_enabled_ = settings.touchpad_haptic_feedback_enabled;
+  haptic_feedback_enabled_ = settings.touchpad_settings.haptic_feedback_enabled;
 }
 
 bool EventReaderLibevdevCros::HasCapsLockLed() const {

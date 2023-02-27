@@ -13,21 +13,24 @@ TEST(InputControllerEvdevTest, AccelerationSuspension) {
   controller.SetMouseAcceleration(true);
   controller.SetPointingStickAcceleration(true);
 
-  EXPECT_TRUE(controller.input_device_settings_.mouse_acceleration_enabled);
   EXPECT_TRUE(
-      controller.input_device_settings_.pointing_stick_acceleration_enabled);
+      controller.input_device_settings_.mouse_settings.acceleration_enabled);
+  EXPECT_TRUE(controller.input_device_settings_.pointing_stick_settings
+                  .acceleration_enabled);
 
   // Suspending should disable the acceleration temporarily.
   controller.SuspendMouseAcceleration();
-  EXPECT_FALSE(controller.input_device_settings_.mouse_acceleration_enabled);
   EXPECT_FALSE(
-      controller.input_device_settings_.pointing_stick_acceleration_enabled);
+      controller.input_device_settings_.mouse_settings.acceleration_enabled);
+  EXPECT_FALSE(controller.input_device_settings_.pointing_stick_settings
+                   .acceleration_enabled);
 
   // Resuming should enable it again.
   controller.EndMouseAccelerationSuspension();
-  EXPECT_TRUE(controller.input_device_settings_.mouse_acceleration_enabled);
   EXPECT_TRUE(
-      controller.input_device_settings_.pointing_stick_acceleration_enabled);
+      controller.input_device_settings_.mouse_settings.acceleration_enabled);
+  EXPECT_TRUE(controller.input_device_settings_.pointing_stick_settings
+                  .acceleration_enabled);
 }
 
 TEST(InputControllerEvdevTest, AccelerationChangeDuringSuspension) {
@@ -37,24 +40,27 @@ TEST(InputControllerEvdevTest, AccelerationChangeDuringSuspension) {
 
   // Suspending should disable the acceleration temporarily.
   controller.SuspendMouseAcceleration();
-  EXPECT_FALSE(controller.input_device_settings_.mouse_acceleration_enabled);
   EXPECT_FALSE(
-      controller.input_device_settings_.pointing_stick_acceleration_enabled);
+      controller.input_device_settings_.mouse_settings.acceleration_enabled);
+  EXPECT_FALSE(controller.input_device_settings_.pointing_stick_settings
+                   .acceleration_enabled);
 
   // Settings changes while suspended should not take effect immediately...
   controller.SetMouseAcceleration(true);
   controller.SetPointingStickAcceleration(true);
-  EXPECT_FALSE(controller.input_device_settings_.mouse_acceleration_enabled);
   EXPECT_FALSE(
-      controller.input_device_settings_.pointing_stick_acceleration_enabled);
+      controller.input_device_settings_.mouse_settings.acceleration_enabled);
+  EXPECT_FALSE(controller.input_device_settings_.pointing_stick_settings
+                   .acceleration_enabled);
 
   // ...instead being applied when the suspension ends.
   controller.SetMouseAcceleration(false);
   controller.SetPointingStickAcceleration(false);
   controller.EndMouseAccelerationSuspension();
-  EXPECT_FALSE(controller.input_device_settings_.mouse_acceleration_enabled);
   EXPECT_FALSE(
-      controller.input_device_settings_.pointing_stick_acceleration_enabled);
+      controller.input_device_settings_.mouse_settings.acceleration_enabled);
+  EXPECT_FALSE(controller.input_device_settings_.pointing_stick_settings
+                   .acceleration_enabled);
 }
 
 }  // namespace ui

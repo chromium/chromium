@@ -300,38 +300,45 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
 
   SetIntPropertyForOneType(
       DT_TOUCHPAD, "Haptic Button Sensitivity",
-      input_device_settings_.touchpad_haptic_click_sensitivity);
-  SetIntPropertyForOneType(DT_TOUCHPAD, "Pointer Sensitivity",
-                           input_device_settings_.touchpad_sensitivity);
-  SetIntPropertyForOneType(DT_TOUCHPAD, "Scroll Sensitivity",
-                           input_device_settings_.touchpad_scroll_sensitivity);
+      input_device_settings_.touchpad_settings.haptic_click_sensitivity);
+  SetIntPropertyForOneType(
+      DT_TOUCHPAD, "Pointer Sensitivity",
+      input_device_settings_.touchpad_settings.sensitivity);
+  SetIntPropertyForOneType(
+      DT_TOUCHPAD, "Scroll Sensitivity",
+      input_device_settings_.touchpad_settings.scroll_sensitivity);
   SetBoolPropertyForOneType(
       DT_TOUCHPAD, "Pointer Acceleration",
-      input_device_settings_.touchpad_acceleration_enabled);
+      input_device_settings_.touchpad_settings.acceleration_enabled);
   SetBoolPropertyForOneType(
       DT_TOUCHPAD, "Scroll Acceleration",
-      input_device_settings_.touchpad_scroll_acceleration_enabled);
+      input_device_settings_.touchpad_settings.scroll_acceleration_enabled);
 
-  SetBoolPropertyForOneType(DT_TOUCHPAD, "Tap Enable",
-                            input_device_settings_.tap_to_click_enabled);
+  SetBoolPropertyForOneType(
+      DT_TOUCHPAD, "Tap Enable",
+      input_device_settings_.touchpad_settings.tap_to_click_enabled);
   SetBoolPropertyForOneType(DT_TOUCHPAD, "T5R2 Three Finger Click Enable",
                             input_device_settings_.three_finger_click_enabled);
-  SetBoolPropertyForOneType(DT_TOUCHPAD, "Tap Drag Enable",
-                            input_device_settings_.tap_dragging_enabled);
+  SetBoolPropertyForOneType(
+      DT_TOUCHPAD, "Tap Drag Enable",
+      input_device_settings_.touchpad_settings.tap_dragging_enabled);
 
-  SetBoolPropertyForOneType(DT_MULTITOUCH, "Australian Scrolling",
-                            input_device_settings_.natural_scroll_enabled);
+  SetBoolPropertyForOneType(
+      DT_MULTITOUCH, "Australian Scrolling",
+      input_device_settings_.touchpad_settings.natural_scroll_enabled);
 
   SetIntPropertyForOneType(DT_MOUSE, "Pointer Sensitivity",
-                           input_device_settings_.mouse_sensitivity);
-  SetBoolPropertyForOneType(DT_MOUSE, "Pointer Acceleration",
-                            input_device_settings_.mouse_acceleration_enabled);
+                           input_device_settings_.mouse_settings.sensitivity);
+  SetBoolPropertyForOneType(
+      DT_MOUSE, "Pointer Acceleration",
+      input_device_settings_.mouse_settings.acceleration_enabled);
   ApplyRelativePointingDeviceSettings(DT_MOUSE);
-  SetIntPropertyForOneType(DT_POINTING_STICK, "Pointer Sensitivity",
-                           input_device_settings_.pointing_stick_sensitivity);
+  SetIntPropertyForOneType(
+      DT_POINTING_STICK, "Pointer Sensitivity",
+      input_device_settings_.pointing_stick_settings.sensitivity);
   SetBoolPropertyForOneType(
       DT_POINTING_STICK, "Pointer Acceleration",
-      input_device_settings_.pointing_stick_acceleration_enabled);
+      input_device_settings_.pointing_stick_settings.acceleration_enabled);
   ApplyRelativePointingDeviceSettings(DT_POINTING_STICK);
 
   SetBoolPropertyForOneType(DT_TOUCHPAD, "Tap Paused",
@@ -372,14 +379,15 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
 
 void InputDeviceFactoryEvdev::ApplyRelativePointingDeviceSettings(
     EventDeviceType type) {
-  SetIntPropertyForOneType(type, "Mouse Scroll Sensitivity",
-                           input_device_settings_.mouse_scroll_sensitivity);
+  SetIntPropertyForOneType(
+      type, "Mouse Scroll Sensitivity",
+      input_device_settings_.mouse_settings.scroll_sensitivity);
   SetBoolPropertyForOneType(
       type, "Mouse Scroll Acceleration",
-      input_device_settings_.mouse_scroll_acceleration_enabled);
+      input_device_settings_.mouse_settings.scroll_acceleration_enabled);
   SetBoolPropertyForOneType(
       type, "Mouse Reverse Scrolling",
-      input_device_settings_.mouse_reverse_scroll_enabled);
+      input_device_settings_.mouse_settings.reverse_scroll_enabled);
   SetBoolPropertyForOneType(type, "Mouse High Resolution Scrolling", true);
   SetBoolPropertyForOneType(type, "Output Mouse Wheel Gestures", true);
 }

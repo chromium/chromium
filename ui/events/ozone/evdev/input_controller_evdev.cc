@@ -154,27 +154,27 @@ void InputControllerEvdev::SetInternalKeyboardFilter(
 }
 
 void InputControllerEvdev::SetTouchpadSensitivity(int value) {
-  input_device_settings_.touchpad_sensitivity = value;
+  input_device_settings_.touchpad_settings.sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetTouchpadScrollSensitivity(int value) {
-  input_device_settings_.touchpad_scroll_sensitivity = value;
+  input_device_settings_.touchpad_settings.scroll_sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetTouchpadHapticFeedback(bool enabled) {
-  input_device_settings_.touchpad_haptic_feedback_enabled = enabled;
+  input_device_settings_.touchpad_settings.haptic_feedback_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetTouchpadHapticClickSensitivity(int value) {
-  input_device_settings_.touchpad_haptic_click_sensitivity = value;
+  input_device_settings_.touchpad_settings.haptic_click_sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetTapToClick(bool enabled) {
-  input_device_settings_.tap_to_click_enabled = enabled;
+  input_device_settings_.touchpad_settings.tap_to_click_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
@@ -184,27 +184,27 @@ void InputControllerEvdev::SetThreeFingerClick(bool enabled) {
 }
 
 void InputControllerEvdev::SetTapDragging(bool enabled) {
-  input_device_settings_.tap_dragging_enabled = enabled;
+  input_device_settings_.touchpad_settings.tap_dragging_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetNaturalScroll(bool enabled) {
-  input_device_settings_.natural_scroll_enabled = enabled;
+  input_device_settings_.touchpad_settings.natural_scroll_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetMouseSensitivity(int value) {
-  input_device_settings_.mouse_sensitivity = value;
+  input_device_settings_.mouse_settings.sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetMouseScrollSensitivity(int value) {
-  input_device_settings_.mouse_scroll_sensitivity = value;
+  input_device_settings_.mouse_settings.scroll_sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetPointingStickSensitivity(int value) {
-  input_device_settings_.pointing_stick_sensitivity = value;
+  input_device_settings_.pointing_stick_settings.sensitivity = value;
   ScheduleUpdateDeviceSettings();
 }
 
@@ -213,7 +213,7 @@ void InputControllerEvdev::SetPointingStickAcceleration(bool enabled) {
     stored_acceleration_settings_->pointing_stick = enabled;
     return;
   }
-  input_device_settings_.pointing_stick_acceleration_enabled = enabled;
+  input_device_settings_.pointing_stick_settings.acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
@@ -238,7 +238,7 @@ void InputControllerEvdev::SetPointingStickPrimaryButtonRight(bool right) {
 }
 
 void InputControllerEvdev::SetMouseReverseScroll(bool enabled) {
-  input_device_settings_.mouse_reverse_scroll_enabled = enabled;
+  input_device_settings_.mouse_settings.reverse_scroll_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
@@ -247,7 +247,7 @@ void InputControllerEvdev::SetMouseAcceleration(bool enabled) {
     stored_acceleration_settings_->mouse = enabled;
     return;
   }
-  input_device_settings_.mouse_acceleration_enabled = enabled;
+  input_device_settings_.mouse_settings.acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
@@ -257,11 +257,11 @@ void InputControllerEvdev::SuspendMouseAcceleration() {
   stored_acceleration_settings_ =
       std::make_unique<StoredAccelerationSettings>();
   stored_acceleration_settings_->mouse =
-      input_device_settings_.mouse_acceleration_enabled;
+      input_device_settings_.mouse_settings.acceleration_enabled;
   stored_acceleration_settings_->pointing_stick =
-      input_device_settings_.pointing_stick_acceleration_enabled;
-  input_device_settings_.mouse_acceleration_enabled = false;
-  input_device_settings_.pointing_stick_acceleration_enabled = false;
+      input_device_settings_.pointing_stick_settings.acceleration_enabled;
+  input_device_settings_.mouse_settings.acceleration_enabled = false;
+  input_device_settings_.pointing_stick_settings.acceleration_enabled = false;
   ScheduleUpdateDeviceSettings();
 }
 
@@ -272,17 +272,18 @@ void InputControllerEvdev::EndMouseAccelerationSuspension() {
 }
 
 void InputControllerEvdev::SetMouseScrollAcceleration(bool enabled) {
-  input_device_settings_.mouse_scroll_acceleration_enabled = enabled;
+  input_device_settings_.mouse_settings.scroll_acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetTouchpadAcceleration(bool enabled) {
-  input_device_settings_.touchpad_acceleration_enabled = enabled;
+  input_device_settings_.touchpad_settings.acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
 }
 
 void InputControllerEvdev::SetTouchpadScrollAcceleration(bool enabled) {
-  input_device_settings_.touchpad_scroll_acceleration_enabled = enabled;
+  input_device_settings_.touchpad_settings.scroll_acceleration_enabled =
+      enabled;
   ScheduleUpdateDeviceSettings();
 }
 
