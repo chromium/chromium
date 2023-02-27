@@ -143,7 +143,6 @@ export namespace CommonDataTypes {
     type: 'undefined';
   };
 
-  //
   // NullValue = {
   //   type: "null",
   // }
@@ -163,7 +162,6 @@ export namespace CommonDataTypes {
   // SpecialNumber = "NaN" / "-0" / "Infinity" / "-Infinity";
   export type SpecialNumber = 'NaN' | '-0' | 'Infinity' | '-Infinity';
 
-  //
   // NumberValue = {
   //   type: "number",
   //   value: number / SpecialNumber,
@@ -422,13 +420,13 @@ export namespace Script {
   export type ScriptResultSuccess = {
     type: 'success';
     result: CommonDataTypes.RemoteValue;
-    realm: string;
+    realm: Realm;
   };
 
   export type ScriptResultException = {
     exceptionDetails: ExceptionDetails;
     type: 'exception';
-    realm: string;
+    realm: Realm;
   };
 
   export type ExceptionDetails = {
@@ -528,10 +526,9 @@ export namespace Script {
 
   // RealmTarget = {realm: Realm};
   export type RealmTarget = {
-    realm: string;
+    realm: Realm;
   };
 
-  //
   // Target = (
   //   RealmTarget //
   //   ContextTarget

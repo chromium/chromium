@@ -60,7 +60,6 @@ export namespace CommonDataTypes {
   // }
   const UndefinedValueSchema = zod.object({type: zod.literal('undefined')});
 
-  //
   // NullValue = {
   //   type: "null",
   // }
@@ -78,7 +77,6 @@ export namespace CommonDataTypes {
   // SpecialNumber = "NaN" / "-0" / "Infinity" / "-Infinity";
   const SpecialNumberSchema = zod.enum(['NaN', '-0', 'Infinity', '-Infinity']);
 
-  //
   // NumberValue = {
   //   type: "number",
   //   value: number / SpecialNumber,
@@ -162,7 +160,6 @@ export namespace CommonDataTypes {
 
   // ListLocalValue = [*LocalValue];
   const ListLocalValueSchema = zod.array(LocalOrRemoteValueSchema);
-  export type ListLocalValue = zod.infer<typeof ListLocalValueSchema>;
 
   // ArrayLocalValue = {
   //   type: "array",
@@ -193,7 +190,6 @@ export namespace CommonDataTypes {
       LocalOrRemoteValueSchema,
     ])
   );
-  export type MappingLocalValue = zod.infer<typeof MappingLocalValueSchema>;
 
   // MapLocalValue = {
   //   type: "map",
@@ -380,13 +376,13 @@ export namespace Script {
   export type ScriptResultSuccess = {
     type: 'success';
     result: CommonDataTypes.RemoteValue;
-    realm: string;
+    realm: Realm;
   };
 
   export type ScriptResultException = {
     exceptionDetails: ExceptionDetails;
     type: 'exception';
-    realm: string;
+    realm: Realm;
   };
 
   export type ExceptionDetails = {
@@ -490,14 +486,12 @@ export namespace Script {
     context: CommonDataTypes.BrowsingContextSchema,
     sandbox: zod.string().optional(),
   });
-  export type ContextTarget = zod.infer<typeof ContextTargetSchema>;
 
   // RealmTarget = {realm: Realm};
   const RealmTargetSchema = zod.object({
     realm: zod.string().min(1),
   });
 
-  //
   // Target = (
   //   RealmTarget //
   //   ContextTarget
@@ -505,10 +499,8 @@ export namespace Script {
   // Order is important, as `parse` is processed in the same order.
   // `RealmTargetSchema` has higher priority.
   const TargetSchema = zod.union([RealmTargetSchema, ContextTargetSchema]);
-  export type Target = zod.infer<typeof TargetSchema>;
 
   const OwnershipModelSchema = zod.enum(['root', 'none']);
-  export type OwnershipModel = zod.infer<typeof OwnershipModelSchema>;
 
   // ScriptEvaluateParameters = {
   //   expression: text;
@@ -522,7 +514,6 @@ export namespace Script {
     target: TargetSchema,
     resultOwnership: OwnershipModelSchema.optional(),
   });
-
   export type EvaluateParameters = zod.infer<typeof EvaluateParametersSchema>;
 
   export function parseEvaluateParams(params: unknown): EvaluateParameters {
@@ -561,7 +552,6 @@ export namespace Script {
     CommonDataTypes.SharedReferenceSchema,
     CommonDataTypes.LocalValueSchema,
   ]);
-  export type ArgumentValue = zod.infer<typeof ArgumentValueSchema>;
 
   const ScriptCallFunctionParametersSchema = zod.object({
     functionDeclaration: zod.string(),
@@ -659,7 +649,6 @@ export namespace BrowsingContext {
   };
 
   const ReadinessStateSchema = zod.enum(['none', 'interactive', 'complete']);
-  export type ReadinessState = zod.infer<typeof ReadinessStateSchema>;
 
   // BrowsingContextNavigateParameters = {
   //   context: BrowsingContext,
@@ -896,10 +885,6 @@ export namespace Session {
     CDP.AllEvents,
     CDP.EventNames.EventReceivedEvent,
   ]);
-
-  export type SubscribeParametersEvent = zod.infer<
-    typeof SubscribeParametersEventSchema
-  >;
 
   // SessionSubscribeParameters = {
   //   events: [*text],
