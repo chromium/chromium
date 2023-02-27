@@ -102,6 +102,10 @@ bool WebClient::EnableLongPressUIContextMenu() const {
   return false;
 }
 
+bool WebClient::EnableWebInspector() const {
+  return false;
+}
+
 bool WebClient::RestoreSessionFromCache(web::WebState* web_state) const {
   return false;
 }
