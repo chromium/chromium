@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
+#include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
@@ -928,6 +929,74 @@ TEST_P(RenderFrameHostImplThirdPartyStorageTest,
     EXPECT_EQ(blink::StorageKey(url::Origin::Create(child_url)),
               child_frame->storage_key());
   }
+}
+
+namespace {
+
+class MockWebContentsDelegate : public WebContentsDelegate {
+ public:
+  MOCK_METHOD(void, CloseContents, (WebContents*));
+};
+
+}  // namespace
+
+// Ensure that a close request from the renderer process is ignored if a
+// navigation causes a different RenderFrameHost to commit first. See
+// https://crbug.com/1406023.
+TEST_F(RenderFrameHostImplTest,
+       RendererInitiatedCloseIsCancelledIfPageIsntPrimary) {
+  MockWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  RenderFrameHostImpl* rfh = main_test_rfh();
+  EXPECT_CALL(delegate, CloseContents(contents())).Times(0);
+
+  // Have the renderer request to close the page.
+  rfh->ClosePage(RenderFrameHostImpl::ClosePageSource::kRenderer);
+
+  // The close timeout should be running.
+  EXPECT_TRUE(rfh->close_timeout_ && rfh->close_timeout_->IsRunning());
+
+  // Simulate the rfh going into the back-forward cache before the close timeout
+  // fires.
+  rfh->lifecycle_state_ =
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache;
+
+  // Simulate the close timer firing.
+  rfh->ClosePageTimeout(RenderFrameHostImpl::ClosePageSource::kRenderer);
+
+  // The page should not close since it's no longer the primary page.
+  testing::Mock::VerifyAndClearExpectations(&delegate);
+}
+
+// Ensure that a close request from the browser process cannot be ignored even
+// if a navigation causes a different RenderFrameHost to commit first. See
+// https://crbug.com/1406023.
+TEST_F(RenderFrameHostImplTest,
+       BrowserInitiatedCloseIsNotCancelledIfPageIsntPrimary) {
+  MockWebContentsDelegate delegate;
+  contents()->SetDelegate(&delegate);
+
+  RenderFrameHostImpl* rfh = main_test_rfh();
+  EXPECT_CALL(delegate, CloseContents(contents()));
+
+  // Have the browser request to close the page.
+  rfh->ClosePage(RenderFrameHostImpl::ClosePageSource::kBrowser);
+
+  // The close timeout should be running.
+  EXPECT_TRUE(rfh->close_timeout_ && rfh->close_timeout_->IsRunning());
+
+  // Simulate the rfh going into the back-forward cache before the close timeout
+  // fires.
+  rfh->lifecycle_state_ =
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache;
+
+  // Simulate the close timer firing.
+  rfh->ClosePageTimeout(RenderFrameHostImpl::ClosePageSource::kBrowser);
+
+  // The page should close regardless of it not being primary since the browser
+  // requested it.
+  testing::Mock::VerifyAndClearExpectations(&delegate);
 }
 
 }  // namespace content

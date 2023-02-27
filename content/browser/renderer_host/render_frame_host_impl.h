@@ -2776,10 +2776,18 @@ class CONTENT_EXPORT RenderFrameHostImpl
     user_activation_state_.Activate(notification_type);
   }
 
+  // Parameter for `ClosePage()` that indicates whether the request comes from
+  // the browser or the renderer. This is used to determine whether navigation
+  // should prevent the page from closing, since navigations should not prevent
+  // the page from closing if the browser is trying to close the page.
+  enum class ClosePageSource { kRenderer, kBrowser };
+
   // Tells the renderer process to run the page's unload handler.
   // A completion callback is invoked by the renderer when the handler
-  // execution completes.
-  void ClosePage();
+  // execution completes. The `source` parameter indicates whether this request
+  // comes from the browser or the renderer. If the request comes from the
+  // renderer, then it may be ignored if a different document commits first.
+  void ClosePage(ClosePageSource source);
 
   // When true, indicates that the unload handlers have already executed (e.g.,
   // after receiving a ClosePage ACK) or that they should be ignored. This is
@@ -2964,6 +2972,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessSSLBrowserTest,
                            UnloadHandlersArePowerfulGrandChild);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest, ExpectedMainWorldOrigin);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplTest,
+                           RendererInitiatedCloseIsCancelledIfPageIsntPrimary);
+  FRIEND_TEST_ALL_PREFIXES(
+      RenderFrameHostImplTest,
+      BrowserInitiatedCloseIsNotCancelledIfPageIsntPrimary);
   FRIEND_TEST_ALL_PREFIXES(DocumentUserDataTest, CheckInPendingDeletionState);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest,
@@ -3736,12 +3749,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Close the page ignoring whether it has unload events registered. This is
   // called either (1) when the unload events have already run in the renderer
   // and the ACK is received, or (2) when a timeout for running those events
-  // has expired.
-  void ClosePageIgnoringUnloadEvents();
+  // has expired. The `source` parameter indicates whether this request comes
+  // from the browser or the renderer. If the request comes from the renderer,
+  // then it may be ignored if a different document commits first.
+  void ClosePageIgnoringUnloadEvents(ClosePageSource source);
 
   // Called when this frame's page has started closing via ClosePage(), and the
-  // timer for running unload events has expired.
-  void ClosePageTimeout();
+  // timer for running unload events has expired. The `source` parameter
+  // indicates whether this request comes from the browser or the renderer. If
+  // the request comes from the renderer, then it may be ignored if a different
+  // document commits first.
+  void ClosePageTimeout(ClosePageSource source);
 
   // The RenderViewHost that this RenderFrameHost is associated with.
   //

@@ -1547,14 +1547,6 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       base::BindRepeating(&RenderFrameHostImpl::BeforeUnloadTimeout,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  // Only main frames have the ability to close the whole page, so we don't
-  // need this timer for subframes.
-  if (is_main_frame()) {
-    close_timeout_ = std::make_unique<TimeoutMonitor>(
-        base::BindRepeating(&RenderFrameHostImpl::ClosePageTimeout,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
-
   // Local roots are:
   // - main frames; or
   // - subframes that use a proxy to talk to their parent.
@@ -5401,48 +5393,58 @@ void RenderFrameHostImpl::RequestClose() {
 
   // If the renderer is telling us to close, it has already run the unload
   // events, and we can take the fast path.
-  ClosePageIgnoringUnloadEvents();
+  ClosePageIgnoringUnloadEvents(ClosePageSource::kRenderer);
 }
 
-void RenderFrameHostImpl::ClosePage() {
+void RenderFrameHostImpl::ClosePage(ClosePageSource source) {
   // This path is taken when tab/window close is initiated by either the
   // browser process or via a window.close() call through a proxy. In both
   // cases, we need to tell the main frame's renderer process to run unload
   // handlers and prepare for page close.
   //
   // This should only be called on outermost main frames. If this
-  // RenderFrameHost is no longer a primary main frame (e.g., if it was placed
-  // into back-forward cache just before getting here), we should
-  // not close the active tab, so return early in that case.
+  // into back-forward cache or became pending deletion just before getting
+  // here), we should not close the active tab if the request to close came from
+  // the renderer, so return early in that case. We proceed with closing
+  // regardless if the request came from the browser so that renderers can't
+  // avoid closing via navigation.
   DCHECK(IsOutermostMainFrame());
-  if (!IsInPrimaryMainFrame()) {
+  if (!IsInPrimaryMainFrame() && source == ClosePageSource::kRenderer) {
     return;
   }
 
   page_close_state_ = PageCloseState::kRunningUnloadHandlers;
 
   if (IsRenderFrameLive() && !IsPageReadyToBeClosed()) {
+    close_timeout_ = std::make_unique<TimeoutMonitor>(
+        base::BindRepeating(&RenderFrameHostImpl::ClosePageTimeout,
+                            weak_ptr_factory_.GetWeakPtr(), source));
     close_timeout_->Start(kUnloadTimeout);
 
     GetAssociatedLocalMainFrame()->ClosePage(
         base::BindOnce(&RenderFrameHostImpl::ClosePageIgnoringUnloadEvents,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), source));
   } else {
     // This RenderFrameHost doesn't have a live renderer (or has already run
     // unload handlers), so just skip the close event and close the page.
-    ClosePageIgnoringUnloadEvents();
+    ClosePageIgnoringUnloadEvents(source);
   }
 }
 
-void RenderFrameHostImpl::ClosePageIgnoringUnloadEvents() {
-  close_timeout_->Stop();
+void RenderFrameHostImpl::ClosePageIgnoringUnloadEvents(
+    ClosePageSource source) {
+  if (close_timeout_) {
+    close_timeout_->Stop();
+    close_timeout_.reset();
+  }
 
   // If this RenderFrameHost is no longer the primary main frame (e.g., if it
   // was replaced by another frame while waiting for the ClosePage ACK or
-  // timeout), there's no need to close the active tab.
-  //
-  // TODO(crbug.com/1406023): This behavior may need to change.
-  if (!IsInPrimaryMainFrame()) {
+  // timeout), there's no need to close the active tab if the request to close
+  // came from the renderer, so return early in that case. We proceed with
+  // closing regardless if the request came from the browser so that renderers
+  // can't avoid closing via navigation.
+  if (!IsInPrimaryMainFrame() && source == ClosePageSource::kRenderer) {
     page_close_state_ = PageCloseState::kNotClosing;
     return;
   }
@@ -5460,12 +5462,12 @@ bool RenderFrameHostImpl::IsPageReadyToBeClosed() {
          delegate_->IsJavaScriptDialogShowing() || BeforeUnloadTimedOut();
 }
 
-void RenderFrameHostImpl::ClosePageTimeout() {
+void RenderFrameHostImpl::ClosePageTimeout(ClosePageSource source) {
   if (delegate_->ShouldIgnoreUnresponsiveRenderer()) {
     return;
   }
 
-  ClosePageIgnoringUnloadEvents();
+  ClosePageIgnoringUnloadEvents(source);
 }
 
 void RenderFrameHostImpl::ShowCreatedWindow(

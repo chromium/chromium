@@ -631,7 +631,7 @@ void RenderFrameProxyHost::RouteCloseEvent() {
   // We receive this from a WebViewImpl when it receives a request to close
   // the window containing the active RenderFrameHost.
   if (GetSiteInstance()->IsRelatedSiteInstance(rfh->GetSiteInstance())) {
-    rfh->ClosePage();
+    rfh->ClosePage(RenderFrameHostImpl::ClosePageSource::kRenderer);
   }
 }
 

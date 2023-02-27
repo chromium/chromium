@@ -569,11 +569,16 @@ void RenderFrameHostManager::BeforeUnloadCompleted(
     // If we're about to close the tab and there's a speculative RFH, cancel it.
     // Otherwise, if the navigation in the speculative RFH completes before the
     // close in the current RFH, we'll lose the tab close.
+    // TODO(https://crbug.com/1406023): This condition may no longer be needed.
     if (speculative_render_frame_host_) {
       DiscardSpeculativeRFH(NavigationDiscardReason::kWillRemoveFrame);
     }
 
-    render_frame_host_->ClosePage();
+    // TODO(https://crbug.com/1406023): This is not always browser-initiated, so
+    // we should track whether the close is browser or renderer-initiated and
+    // use that here.
+    render_frame_host_->ClosePage(
+        RenderFrameHostImpl::ClosePageSource::kBrowser);
   }
 }
 
