@@ -852,8 +852,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.GetInputStartTime(), request.HrefTranslate().GetString(),
       request.Impression(), request.GetInitiatorFrameToken(),
       request.TakeSourceLocation(),
-      request.TakeInitiatorPolicyContainerKeepAliveHandle(),
-      request.IsContainerInitiated());
+      request.TakeInitiatorPolicyContainerKeepAliveHandle());
 }
 
 static void FillStaticResponseIfNeeded(WebNavigationParams* params,

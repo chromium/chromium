@@ -63,6 +63,10 @@ void FakeRemoteFrame::SetPageFocus(bool is_focused) {}
 
 void FakeRemoteFrame::RenderFallbackContent() {}
 
+void FakeRemoteFrame::RenderFallbackContentWithResourceTiming(
+    blink::mojom::ResourceTimingInfoPtr,
+    const std::string& server_timing_value) {}
+
 void FakeRemoteFrame::AddResourceTimingFromChild(
     blink::mojom::ResourceTimingInfoPtr timing) {}
 

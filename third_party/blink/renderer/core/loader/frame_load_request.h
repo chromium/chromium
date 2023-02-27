@@ -84,10 +84,6 @@ struct CORE_EXPORT FrameLoadRequest {
     return client_navigation_reason_;
   }
 
-  void SetIsContainerInitiated(bool value) { is_container_initiated_ = value; }
-
-  bool IsContainerInitiated() const { return is_container_initiated_; }
-
   NavigationPolicy GetNavigationPolicy() const { return navigation_policy_; }
   void SetNavigationPolicy(NavigationPolicy navigation_policy) {
     navigation_policy_ = navigation_policy;
@@ -244,10 +240,6 @@ struct CORE_EXPORT FrameLoadRequest {
 
   mojom::blink::ForceHistoryPush force_history_push_ =
       mojom::blink::ForceHistoryPush::kNo;
-
-  // Only container-initiated navigations (e.g. iframe change src) report a
-  // resource timing entry to the parent.
-  bool is_container_initiated_ = false;
 };
 
 }  // namespace blink

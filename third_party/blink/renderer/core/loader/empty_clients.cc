@@ -121,8 +121,7 @@ void EmptyLocalFrameClient::BeginNavigation(
     const absl::optional<Impression>&,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation>,
-    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>,
-    bool is_container_initiated) {}
+    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>) {}
 
 void EmptyLocalFrameClient::DispatchWillSendSubmitEvent(HTMLFormElement*) {}
 

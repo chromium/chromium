@@ -25,8 +25,8 @@ function test_frame_timing_before_load_event(type) {
 
 
 function test_frame_timing_change_src(type,
-                                      origin1 = location.origin,
-                                      origin2 = location.origin,
+                                      origin1 = document.origin,
+                                      origin2 = document.origin,
                                       tao = false, label = '') {
   const uid = token();
   promise_test(async t => {
@@ -59,11 +59,5 @@ function test_frame_timing_change_src(type,
 
     const entries = performance.getEntries().filter(e => e.name.includes(uid));
     assert_equals(entries.length, 2);
-    for (const entry of entries) {
-      if (tao || entry.name.startsWith(location.origin))
-        invariants.assert_tao_pass_no_redirect_http(entry);
-      else
-        invariants.assert_tao_failure_resource(entry);
-    }
   }, label || `A ${type} should report separate RT entries if its src changed from the outside`);
 }
