@@ -105,8 +105,7 @@ bool WriteLocalEncryptedTrustedVaultFile(
   if (!OSCrypt::EncryptString(proto.SerializeAsString(), &encrypted_content)) {
     return false;
   }
-  return base::WriteFile(path, encrypted_content.c_str(),
-                         encrypted_content.size()) != -1;
+  return base::WriteFile(path, encrypted_content);
 }
 
 sync_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
