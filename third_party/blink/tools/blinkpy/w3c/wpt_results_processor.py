@@ -594,7 +594,6 @@ class WPTResultsProcessor:
              stale expectations by default.
            * 'known_intermittent': When omitted, no intermittent statuses are
               expected.
-           * 'duration': Time taken to run the test.
 
         See Also:
             https://github.com/web-platform-tests/wpt/blob/131b8a541ba98afcef35ae757e4fb2f805714230/tools/wptrunner/wptrunner/metadata.py#L439-L450
@@ -603,6 +602,9 @@ class WPTResultsProcessor:
         compact_results = []
         for result in results:
             compact_result = {'status': result['status']}
+            duration = result.get('duration')
+            if duration:
+                compact_result['duration'] = duration
             expected = result.get('expected')
             if expected and expected != result['status']:
                 compact_result['expected'] = expected

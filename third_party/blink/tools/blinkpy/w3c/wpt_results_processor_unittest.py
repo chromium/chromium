@@ -992,5 +992,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
             }],
             'status':
             'OK',
+            'duration':
+            1000,
             'known_intermittent': ['CRASH'],
         }])
