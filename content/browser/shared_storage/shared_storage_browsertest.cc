@@ -2962,7 +2962,6 @@ class SharedStorageFencedFrameInteractionBrowserTestBase
                                         },
                                     },
                                     target));
-    ;
   }
 
  private:
