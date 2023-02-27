@@ -856,6 +856,11 @@ extern const char kWaitThresholdMillisecondsForCapabilitiesApiDescription[];
 extern const char kWalletServiceUseSandboxName[];
 extern const char kWalletServiceUseSandboxDescription[];
 
+// Title and description for the flag to control whether to send discover
+// feedback to a new product destination
+extern const char kWebFeedFeedbackRerouteName[];
+extern const char kWebFeedFeedbackRerouteDescription[];
+
 // Title and description for the flag to tie the default text zoom level to
 // the dynamic type setting.
 extern const char kWebPageDefaultZoomFromDynamicTypeName[];

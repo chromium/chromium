@@ -1398,6 +1398,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableBookmarksAccountStorageDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(bookmarks::kEnableBookmarksAccountStorage)},
+    {"web-feed-feedback-reroute",
+     flag_descriptions::kWebFeedFeedbackRerouteName,
+     flag_descriptions::kWebFeedFeedbackRerouteDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kWebFeedFeedbackReroute)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
