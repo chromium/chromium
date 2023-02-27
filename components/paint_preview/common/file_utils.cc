@@ -18,7 +18,7 @@ bool WriteProtoToFile(const base::FilePath& file_path,
   std::string proto_str;
   if (!proto.SerializeToString(&proto_str))
     return false;
-  return base::WriteFile(file_path, proto_str.data(), proto_str.size()) > 0;
+  return base::WriteFile(file_path, proto_str);
 }
 
 std::unique_ptr<PaintPreviewProto> ReadProtoFromFile(
