@@ -408,7 +408,8 @@ class FirstRunServiceCohortBrowserTest : public FirstRunServiceBrowserTest {
 
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
-            {kForYouFreStudy, {{"group_name", kStudyTestGroupName1}}},
+            {kForYouFreSyntheticTrialRegistration,
+             {{"group_name", kStudyTestGroupName1}}},
             {kForYouFre, {}},
         },
         {});
