@@ -133,7 +133,7 @@ void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
 
 // Contains the testing details for a single pref affected by one or multiple
 // policies. This is part of the data loaded from
-// chrome/test/data/policy/policy_test_cases.json.
+// components/policy/test/data/policy_test_cases.json.
 class PrefTestCase {
  public:
   PrefTestCase(const std::string& name, const base::Value::Dict& settings) {
@@ -192,7 +192,8 @@ class PrefTestCase {
 };
 
 // Contains the testing details for a single pref affected by a policy. This is
-// part of the data loaded from chrome/test/data/policy/policy_test_cases.json.
+// part of the data loaded from
+// components/policy/test/data/policy_test_cases.json.
 class PolicyPrefMappingTest {
  public:
   explicit PolicyPrefMappingTest(const base::Value::Dict& mapping) {
@@ -272,7 +273,7 @@ bool CheckRequiredBuildFlagsSupported(const PolicyPrefMappingTest* test) {
 }
 
 // Contains the testing details for a single policy. This is part of the data
-// loaded from chrome/test/data/policy/policy_test_cases.json.
+// loaded from components/policy/test/data/policy_test_cases.json.
 class PolicyTestCase {
  public:
   PolicyTestCase(const std::string& name, const base::Value::Dict& test_case)
@@ -517,7 +518,7 @@ void VerifyAllPoliciesHaveATestCase(const base::FilePath& test_case_path) {
   // Verifies that all known policies have a test case in the JSON file.
   // This test fails when a policy is added to
   // components/policy/resources/policy_templates.json but a test case is not
-  // added to chrome/test/data/policy/policy_test_cases.json.
+  // added to components/policy/test/data/policy_test_cases.json.
   Schema chrome_schema = Schema::Wrap(GetChromeSchemaData());
   ASSERT_TRUE(chrome_schema.valid());
 

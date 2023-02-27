@@ -16060,7 +16060,7 @@
               "renewal_period_seconds": 2592000,
               "policy_version": "some_hash",
               "enable_remote_attestation_check": true,
-	      "protocol_version": 2
+              "protocol_version": 2
             }
           ]
         },
@@ -16074,7 +16074,7 @@
                 "renewal_period_seconds": 2592000,
                 "policy_version": "some_hash",
                 "enable_remote_attestation_check": true,
-	        "protocol_version": 2
+                "protocol_version": 2
               }
             ]
           }
@@ -16137,7 +16137,7 @@
               "renewal_period_seconds": 2592000,
               "policy_version": "some_hash",
               "enable_remote_attestation_check": true,
-	      "protocol_version": 2
+              "protocol_version": 2
             }
           ]
         },
@@ -16151,7 +16151,7 @@
                 "renewal_period_seconds": 2592000,
                 "policy_version": "some_hash",
                 "enable_remote_attestation_check": true,
-	        "protocol_version": 2
+                "protocol_version": 2
               }
             ]
           }
