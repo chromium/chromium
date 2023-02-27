@@ -1079,7 +1079,7 @@ BASE_FEATURE(kSecurePaymentConfirmationDebug,
 // https://crbug.com/1356224 .
 BASE_FEATURE(kSecurePaymentConfirmationRemoveRpField,
              "SecurePaymentConfirmationRemoveRpField",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Make sendBeacon throw for a Blob with a non simple type.
 BASE_FEATURE(kSendBeaconThrowForBlobWithNonSimpleType,
