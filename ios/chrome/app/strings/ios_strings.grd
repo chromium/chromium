@@ -2331,7 +2331,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_CELL_NEW_FEATURE_BADGE" desc="Title and accessibility label of the badge displayed on a tools menu item when it represents a new feature [Length: 20em]" meaning="A badge with this title is displayed informing the user that this feature that is new to them.">
         New
       </message>
-      <message name="IDS_IOS_NEW_LABEL_FEATURE_BADGE" desc="Character representing the word new displayed inside the badge to represent a new features [iOS only]">
+      <message name="IDS_IOS_NEW_LABEL_FEATURE_BADGE" desc="Character representing the word new displayed inside the badge to represent a new features [CHAR_LIMIT=1][iOS only]" meaning="A badge with a character representing the word new is displayed to inform users that a feature a new. [CHAR_LIMIT=1][iOS only]">
         N
       </message>
       <message name="IDS_IOS_TOOLS_MENU_DOWNLOADS" desc="The iOS menu item for opening the downloads folder [iOS only]" meaning="[Length: unlimited]">
