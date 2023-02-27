@@ -183,7 +183,7 @@ BASE_FEATURE(kCommerceHintAndroid,
 
 BASE_FEATURE(kMerchantWidePromotion,
              "MerchantWidePromotion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCodeBasedRBD, "CodeBasedRBD", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -298,7 +298,7 @@ const char kCommerceHintAndroidHeuristicsImprovementParam[] =
 const char kReadyToFetchMerchantWidePromotionParam[] = "ready-to-fetch";
 const base::FeatureParam<bool> kReadyToFetchMerchantWidePromotion{
     &commerce::kMerchantWidePromotion, kReadyToFetchMerchantWidePromotionParam,
-    false};
+    true};
 
 const char kCodeBasedRuleDiscountParam[] = "code-based-rbd";
 const base::FeatureParam<bool> kCodeBasedRuleDiscount{
