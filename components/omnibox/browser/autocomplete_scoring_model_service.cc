@@ -26,6 +26,7 @@ AutocompleteScoringModelService::AutocompleteScoringModelService(
     url_scoring_model_handler_ =
         std::make_unique<AutocompleteScoringModelHandler>(
             model_provider, model_executor_task_runner_.get(),
+            std::make_unique<AutocompleteScoringModelExecutor>(),
             optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
             /*model_metadata=*/absl::nullopt);
   }
@@ -34,12 +35,21 @@ AutocompleteScoringModelService::AutocompleteScoringModelService(
 AutocompleteScoringModelService::~AutocompleteScoringModelService() = default;
 
 void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
-    AutocompleteScoringModelExecutor::ModelInput input_signals,
+    const metrics::OmniboxEventProto::Suggestion::ScoringSignals&
+        scoring_signals,
     base::OnceCallback<void(
         const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&)>
         scoring_callback) {
-  if (url_scoring_model_handler_ != nullptr) {
-    url_scoring_model_handler_->ExecuteModelWithInput(
-        std::move(scoring_callback), input_signals);
+  if (!url_scoring_model_handler_) {
+    return;
   }
+
+  absl::optional<std::vector<float>> input_signals =
+      url_scoring_model_handler_->GetModelInput(scoring_signals);
+  if (!input_signals) {
+    return;
+  }
+
+  url_scoring_model_handler_->ExecuteModelWithInput(std::move(scoring_callback),
+                                                    *input_signals);
 }

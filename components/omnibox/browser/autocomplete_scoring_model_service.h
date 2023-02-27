@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_scoring_model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // Autocomplete scoring service using machine learning models via
 // OptimizationGuide's model handler.
@@ -32,7 +33,8 @@ class AutocompleteScoringModelService : public KeyedService {
 
   // Scores an autocomplete URL match with scoring signals.
   void ScoreAutocompleteUrlMatch(
-      AutocompleteScoringModelExecutor::ModelInput input_signals,
+      const metrics::OmniboxEventProto::Suggestion::ScoringSignals&
+          scoring_signals,
       base::OnceCallback<void(
           const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&)>
           scoring_callback);

@@ -25,8 +25,8 @@ enum ScoringSignalType {
   SCORING_SIGNAL_TYPE_TOTAL_PATH_MATCH_LENGTH = 10;
   SCORING_SIGNAL_TYPE_TOTAL_QUERY_OR_REF_MATCH_LENGTH = 11;
   SCORING_SIGNAL_TYPE_TOTAL_TITLE_MATCH_LENGTH = 12;
-  SCORING_SIGNAL_TYPE_TITLE_MATCH_RATIO = 13;
-  SCORING_SIGNAL_TYPE_URL_MATCH_RATIO = 14;
+  SCORING_SIGNAL_TYPE_NUM_INPUT_TERMS_MATCHED_BY_TITLE = 13;
+  SCORING_SIGNAL_TYPE_NUM_INPUT_TERMS_MATCHED_BY_URL = 14;
   SCORING_SIGNAL_TYPE_ALLOWED_TO_BE_DEFAULT_MATCH = 15;
   SCORING_SIGNAL_TYPE_HAS_NON_SCHEME_WWW_MATCH = 16;
   SCORING_SIGNAL_TYPE_TOTAL_BOOKMARK_TITLE_MATCH_LENGTH = 17;
@@ -41,7 +41,7 @@ enum ScoringSignalType {
 enum ScoringSignalTransformation {
   // No transformation.
   SCORING_SIGNAL_TRANSFORMATION_UNKNOWN = 0;
-  // log2(x).
+  // log2(1+x).
   SCORING_SIGNAL_TRANSFORMATION_LOG_2 = 1;
 }
 
@@ -53,6 +53,10 @@ message ScoringSignalSpec {
   optional float missing_value = 2;
   // Transformation to apply to this signal.
   optional ScoringSignalTransformation transformation = 3;
+  // Minimum value of valid signals.
+  optional float min_value = 4;
+  // Maximum value of valid signals.
+  optional float max_value = 5;
 }
 
 // The message contains a set of params to run a specific autocomplete scoring
