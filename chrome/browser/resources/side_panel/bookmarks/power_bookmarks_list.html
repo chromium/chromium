@@ -13,7 +13,7 @@
 
   cr-icon-button {
     --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 20px;
+    --cr-icon-button-size: 24px;
     margin: 0;
   }
 
@@ -80,6 +80,10 @@
 
   sp-heading {
     margin: 8px 14px;
+  }
+
+  :host-context([chrome-refresh-2023]) sp-heading {
+    margin: 8px 16px;
   }
 
   .icon-button-row {
@@ -149,12 +153,15 @@
             activeFolderPath_.*, editing_)]]">
       <h1 slot="heading">[[getActiveFolderLabel_(activeFolderPath_.*)]]</h1>
 
-      <cr-button slot="buttons" class="sort-menu-button"
-          aria-label="$i18n{sortMenuA11yLabel}"
-          on-click="onShowSortMenuClicked_">
+      <div aria-hidden="true" slot="metadata">
         [[getSortLabel_(activeSortIndex_)]]
-        <iron-icon icon="sp:filter-list"></iron-icon>
-      </cr-button>
+      </div>
+      <cr-icon-button slot="buttons" class="sort-menu-button"
+          iron-icon="sp:filter-list"
+          aria-label="$i18n{sortMenuA11yLabel}"
+          aria-description="[[getSortLabel_(activeSortIndex_)]]"
+          on-click="onShowSortMenuClicked_">
+      </cr-icon-button>
       <cr-icon-button slot="buttons" iron-icon="bookmarks:create-new-folder"
           disabled="[[editing_]]"
           aria-label="$i18n{createNewFolderA11yLabel}"

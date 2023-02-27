@@ -16,10 +16,12 @@
 
   #backButton,
   ::slotted(cr-icon-button[slot=buttons]) {
-    --cr-icon-button-margin-start: -2px;
-    --cr-icon-button-margin-end: -2px;
     --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 20px;
+    --cr-icon-button-size: 24px;
+  }
+
+  #backButton {
+    margin: 0 -4px;
   }
 
   :host-context([chrome-refresh-2023]) #backButton {
@@ -70,35 +72,22 @@
     font-weight: 400;
     line-height: 20px;
     overflow: hidden;
+    padding-inline-end: 4px;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   :host-context([chrome-refresh-2023]) ::slotted([slot=metadata]) {
     line-height: 16px;
-    padding-inline-end: 4px;
   }
 
   #suffixButtons {
     align-items: center;
-    display: flex;
+    display: grid;
     gap: 8px;
-  }
-
-  ::slotted(cr-button[slot=buttons]) {
-    --hover-bg-color: var(--cr-hover-background-color);
-    --ripple-opacity: 0;
-    border: none;
-    color: var(--cr-secondary-text-color);
-    font-weight: 400;
-    gap: 4px;
-    height: 20px;
-    padding: 0;
-  }
-
-  ::slotted(cr-button[slot=buttons]:active) {
-    background-color: var(--cr-active-background-color);
-    box-shadow: none;
+    grid-auto-columns: 16px;
+    grid-auto-flow: column;
+    justify-items: center;
   }
 </style>
 
