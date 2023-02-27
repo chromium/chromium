@@ -12,6 +12,7 @@
 #include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
@@ -230,6 +231,11 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     storage_key = GetStorageKeyFromWorkerHost(new_origin);
   }
   if (!storage_key.has_value()) {
+    // If we're in this case then we couldn't get the StorageKey from the RFH,
+    // which means we also can't get the storage partitioning status from
+    // RuntimeFeatureState(Read)Context. Using
+    // CreateFromOriginAndIsolationInfo() will create a key based on
+    // net::features::kThirdPartyStoragePartitioning state.
     storage_key = blink::StorageKey::CreateFromOriginAndIsolationInfo(
         new_origin, isolation_info_);
   }
@@ -362,7 +368,20 @@ ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromRenderFrameHost(
   RenderFrameHostImpl* frame_host = frame_tree_node->current_frame_host();
   if (!frame_host)
     return absl::nullopt;
-  return frame_host->CalculateStorageKey(origin, nonce);
+
+  // Determine if we should allow partitioned StorageKeys.
+  //
+  // If this is a main frame navigation then the value of
+  // third_party_storage_partitioning_enabled is irrelevant because main frames
+  // are always first-party by definition. If this is a subframe navigation
+  // then the main frame will have the correct value.
+  bool third_party_storage_partitioning_enabled = false;
+  if (!frame_host->is_main_frame()) {
+    third_party_storage_partitioning_enabled =
+        frame_host->IsMainFrameThirdPartyStoragePartitioningEnabled();
+  }
+  return frame_host->CalculateStorageKey(
+      origin, nonce, third_party_storage_partitioning_enabled);
 }
 
 absl::optional<blink::StorageKey>

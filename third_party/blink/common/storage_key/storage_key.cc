@@ -140,7 +140,8 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
     }
 
     return StorageKey(key_origin, key_top_level_site, nullptr,
-                      blink::mojom::AncestorChainBit::kSameSite);
+                      blink::mojom::AncestorChainBit::kSameSite,
+                      /*third_party_partitioning_allowed=*/false);
   }
 
   if (!ValidSeparatorWithData(in, pos_first_caret))
@@ -199,8 +200,15 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The ancestor chain bit must be CrossSite as that's an invariant
       // when the origin and top level site don't match.
+      // TODO(crbug.com/1199077): Deserialize should always be able to make 3p
+      // keys and shouldn't depend on the state of partitioning (because we
+      // don't want to inadvertently turn two 3p keys into the same 1p key).
+      // Unfortunately, some tests (and potentially code) depend on this. Here,
+      // and below, should be changed to true and the dependencies on this
+      // behavior should be removed.
       return StorageKey(key_origin, key_top_level_site, nullptr,
-                        blink::mojom::AncestorChainBit::kCrossSite);
+                        blink::mojom::AncestorChainBit::kCrossSite,
+                        IsThirdPartyStoragePartitioningEnabled());
     }
     case EncodedAttribute::kAncestorChainBit: {
       // Same-Origin kCrossSite keys cannot be read if partitioning is off.
@@ -248,7 +256,8 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // This format indicates the top level site matches the origin.
       return StorageKey(key_origin, net::SchemefulSite(key_origin), nullptr,
-                        ancestor_chain_bit);
+                        ancestor_chain_bit,
+                        IsThirdPartyStoragePartitioningEnabled());
     }
     case EncodedAttribute::kNonceHigh: {
       // A nonce is serialized and has only two encoded attributes.
@@ -310,9 +319,12 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // This constructor makes a copy of the nonce, so getting the raw pointer
       // is safe.
+      // Note: The partitioning allowed value is irrelevant with a nonce,
+      // `false` was chosen arbitrarily.
       return StorageKey(key_origin, net::SchemefulSite(key_origin),
                         &nonce.value(),
-                        blink::mojom::AncestorChainBit::kCrossSite);
+                        blink::mojom::AncestorChainBit::kCrossSite,
+                        /*third_party_partitioning_allowed=*/false);
     }
     case EncodedAttribute::kTopLevelSiteOpaqueNonceHigh: {
       // An opaque `top_level_site` is serialized.
@@ -417,7 +429,8 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
           key_origin,
           net::SchemefulSite(url::Origin(url::Origin::Nonce(site_nonce.value()),
                                          tuple_precursor)),
-          nullptr, blink::mojom::AncestorChainBit::kCrossSite);
+          nullptr, blink::mojom::AncestorChainBit::kCrossSite,
+          IsThirdPartyStoragePartitioningEnabled());
     }
     default: {
       // Malformed input case. We saw a separator that we don't understand
@@ -436,7 +449,8 @@ absl::optional<StorageKey> StorageKey::DeserializeForLocalStorage(
   if (!maybe_origin.opaque()) {
     if (maybe_origin.Serialize() == in) {
       return StorageKey(maybe_origin, net::SchemefulSite(maybe_origin), nullptr,
-                        blink::mojom::AncestorChainBit::kSameSite);
+                        blink::mojom::AncestorChainBit::kSameSite,
+                        /*third_party_partitioning_allowed=*/false);
     } else if (maybe_origin.GetURL().spec() == in) {
       // This first party key was passed in with a trailing slash. This is
       // required in Deserialize() but improper for DeserializeForLocalStorage()
@@ -491,9 +505,9 @@ bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
 // static
 StorageKey StorageKey::CreateFirstParty(const url::Origin& origin) {
   return StorageKey(origin, net::SchemefulSite(origin), nullptr,
-                    origin.opaque()
-                        ? blink::mojom::AncestorChainBit::kCrossSite
-                        : blink::mojom::AncestorChainBit::kSameSite);
+                    origin.opaque() ? blink::mojom::AncestorChainBit::kCrossSite
+                                    : blink::mojom::AncestorChainBit::kSameSite,
+                    /*third_party_partitioning_allowed=*/false);
 }
 
 // static
@@ -501,16 +515,20 @@ StorageKey StorageKey::CreateWithNonce(const url::Origin& origin,
                                        const base::UnguessableToken& nonce) {
   // The AncestorChainBit is not applicable to StorageKeys with a non-empty
   // nonce, so they are initialized to be kCrossSite.
+  // Note: The partitioning allowed value is irrelevant with a nonce, `false`
+  // was chosen arbitrarily.
   return StorageKey(origin, net::SchemefulSite(origin), &nonce,
-                    blink::mojom::AncestorChainBit::kCrossSite);
+                    blink::mojom::AncestorChainBit::kCrossSite,
+                    /*third_party_partitioning_allowed=*/false);
 }
 
 // static
-StorageKey StorageKey::Create(
-    const url::Origin& origin,
-    const net::SchemefulSite& top_level_site,
-    blink::mojom::AncestorChainBit ancestor_chain_bit) {
-  return StorageKey(origin, top_level_site, nullptr, ancestor_chain_bit);
+StorageKey StorageKey::Create(const url::Origin& origin,
+                              const net::SchemefulSite& top_level_site,
+                              blink::mojom::AncestorChainBit ancestor_chain_bit,
+                              bool third_party_partitioning_allowed) {
+  return StorageKey(origin, top_level_site, nullptr, ancestor_chain_bit,
+                    third_party_partitioning_allowed);
 }
 
 // static
@@ -534,7 +552,8 @@ StorageKey StorageKey::CreateFromOriginAndIsolationInfo(
       !isolation_info.site_for_cookies().IsNull()) {
     ancestor_chain_bit = blink::mojom::AncestorChainBit::kSameSite;
   }
-  return Create(origin, top_level_site, ancestor_chain_bit);
+  return Create(origin, top_level_site, ancestor_chain_bit,
+                IsThirdPartyStoragePartitioningEnabled());
 }
 
 StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {
@@ -588,15 +607,15 @@ StorageKey StorageKey::WithOrigin(const url::Origin& origin) const {
 StorageKey::StorageKey(const url::Origin& origin,
                        const net::SchemefulSite& top_level_site,
                        const base::UnguessableToken* nonce,
-                       blink::mojom::AncestorChainBit ancestor_chain_bit)
+                       blink::mojom::AncestorChainBit ancestor_chain_bit,
+                       bool third_party_partitioning_allowed)
     : origin_(origin),
-      top_level_site_(IsThirdPartyStoragePartitioningEnabled()
+      top_level_site_(third_party_partitioning_allowed
                           ? top_level_site
                           : net::SchemefulSite(origin)),
       top_level_site_if_third_party_enabled_(top_level_site),
       nonce_(base::OptionalFromPtr(nonce)),
-      ancestor_chain_bit_(IsThirdPartyStoragePartitioningEnabled()
-                              ? ancestor_chain_bit
+      ancestor_chain_bit_(third_party_partitioning_allowed ? ancestor_chain_bit
                           : (nonce || origin.opaque())
                               ? blink::mojom::AncestorChainBit::kCrossSite
                               : blink::mojom::AncestorChainBit::kSameSite),

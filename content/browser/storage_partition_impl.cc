@@ -3151,7 +3151,21 @@ absl::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
   RenderFrameHostImpl* frame_host = node->current_frame_host();
   if (!frame_host)
     return absl::nullopt;
-  return frame_host->CalculateStorageKey(origin, nonce);
+
+  // Determine if we should allow partitioned StorageKeys.
+  //
+  // If this is a main frame navigation then the value of
+  // third_party_storage_partitioning_enabled is irrelevant because main frames
+  // are always first-party by definition. If this is a subframe navigation
+  // then the main frame will have the correct value.
+  bool third_party_storage_partitioning_enabled = false;
+  if (!frame_host->is_main_frame()) {
+    third_party_storage_partitioning_enabled =
+        frame_host->IsMainFrameThirdPartyStoragePartitioningEnabled();
+  }
+
+  return frame_host->CalculateStorageKey(
+      origin, nonce, third_party_storage_partitioning_enabled);
 }
 
 StoragePartitionImpl::URLLoaderNetworkContext::URLLoaderNetworkContext(

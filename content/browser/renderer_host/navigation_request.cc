@@ -78,6 +78,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
@@ -1456,13 +1457,21 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   } else {
     // Otherwise we need to derive the top_level_site and ancestor_chain_bit.
     net::SchemefulSite top_level_site(top_level_origin);
+
+    blink::mojom::AncestorChainBit ancestor_chain_bit =
+        blink::mojom::AncestorChainBit::kSameSite;
+    if (render_frame_host->ComputeSiteForCookies().IsNull() ||
+        net::SchemefulSite(origin) != top_level_site ||
+        !top_level_site.opaque() || origin.opaque()) {
+      ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
+    }
+
+    // Because this is a synchronous commit from the renderer the RFH won't
+    // change meaning we can always query the main frame RFH for the status of
+    // storage partitioning.
     navigation_request->commit_params_->storage_key = blink::StorageKey::Create(
-        origin, top_level_site,
-        render_frame_host->ComputeSiteForCookies().IsNull() ||
-                net::SchemefulSite(origin) != top_level_site ||
-                origin.opaque() || top_level_site.opaque()
-            ? blink::mojom::AncestorChainBit::kCrossSite
-            : blink::mojom::AncestorChainBit::kSameSite);
+        origin, top_level_site, ancestor_chain_bit,
+        render_frame_host->IsMainFrameThirdPartyStoragePartitioningEnabled());
   }
   navigation_request->commit_params_->session_storage_key =
       frame_tree_node->frame_tree().GetSessionStorageKey(
@@ -5274,8 +5283,22 @@ void NavigationRequest::CommitNavigation() {
   absl::optional<base::UnguessableToken> nonce =
       render_frame_host_->ComputeNonce(is_credentialless(),
                                        ComputeFencedFrameNonce());
+
+  // Determine if we should allow partitioned StorageKeys.
+  //
+  // If this is a main frame navigation then the value of
+  // third_party_storage_partitioning_enabled is irrelevant because main frames
+  // are always first-party by definition. If this is a subframe navigation
+  // then the main frame will have the correct value.
+  bool third_party_storage_partitioning_enabled = false;
+  if (!IsInMainFrame()) {
+    third_party_storage_partitioning_enabled =
+        GetRenderFrameHost()->IsMainFrameThirdPartyStoragePartitioningEnabled();
+  }
+
   commit_params_->storage_key = render_frame_host_->CalculateStorageKey(
-      GetOriginToCommit().value(), base::OptionalToPtr(nonce));
+      GetOriginToCommit().value(), base::OptionalToPtr(nonce),
+      third_party_storage_partitioning_enabled);
   commit_params_->session_storage_key =
       frame_tree_node()->frame_tree().GetSessionStorageKey(
           commit_params_->storage_key);

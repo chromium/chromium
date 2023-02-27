@@ -185,6 +185,7 @@
 namespace blink {
 class AssociatedInterfaceRegistry;
 class DocumentPolicy;
+class RuntimeFeatureStateReadContext;
 struct FramePolicy;
 struct TransferableMessage;
 struct UntrustworthyContextMenuParams;
@@ -2664,12 +2665,19 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // opaque origin instead).
   void SetOriginDependentStateOfNewFrame(RenderFrameHostImpl* creator_frame);
 
+  // Returns the value of `this`'s main frame's
+  // RuntimeFeatureStateReadContext::IsThirdPartyStoragePartitioningEnabled()
+  bool IsMainFrameThirdPartyStoragePartitioningEnabled();
+
   // Calculates the storage key for this RenderFrameHostImpl using the passed
-  // `new_rfh_origin`, and `nonce` and calculating the storage key's
-  // top_level_site` and `ancestor_bit` parameters. This takes into account
-  // possible host permissions of the top_level RenderFrameHostImpl.
-  blink::StorageKey CalculateStorageKey(const url::Origin& new_rfh_origin,
-                                        const base::UnguessableToken* nonce);
+  // `new_rfh_origin`, and `nonce`, and
+  // `is_third_party_storage_partitioning_allowed` and deriving the storage
+  // key's top_level_site` and `ancestor_bit` parameters. This takes into
+  // account possible host permissions of the top_level RenderFrameHostImpl.
+  blink::StorageKey CalculateStorageKey(
+      const url::Origin& new_rfh_origin,
+      const base::UnguessableToken* nonce,
+      bool is_third_party_storage_partitioning_allowed);
 
   // Returns the BrowsingContextState associated with this RenderFrameHostImpl.
   // See class comments in BrowsingContextState for a more detailed description.
