@@ -313,6 +313,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Load() {
   // session restore is handled by LifecycleManager.
   web_contents()->GetController().SetNeedsReload();
   web_contents()->GetController().LoadIfNecessary();
+  web_contents()->Focus();
   return true;
 }
 
