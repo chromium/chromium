@@ -1680,7 +1680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FieldPrediction.PhoneNumberGrammarUsage"
-    units="Index" expires_after="2023-03-01">
+    units="Index" expires_after="2023-12-31">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
