@@ -11,6 +11,7 @@ BASE_FEATURE(kDefaultBrowserBlueDotPromo,
 constexpr base::FeatureParam<BlueDotPromoUserGroup>::Option
     kBlueDotPromoUserGroupOptions[] = {
         {BlueDotPromoUserGroup::kAllDBPromosDisabled, "all-db-promos-disabled"},
+        {BlueDotPromoUserGroup::kAllDBPromosEnabled, "all-db-promos-enabled"},
         {BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled,
          "only-blue-dot-promo-enabled"}};
 
