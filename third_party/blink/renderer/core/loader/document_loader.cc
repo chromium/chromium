@@ -826,7 +826,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       DCHECK(frame_->DomWindow());
       SoftNavigationHeuristics* heuristics =
           SoftNavigationHeuristics::From(*frame_->DomWindow());
-      heuristics->SetBackForwardNavigationURL(script_state, new_url);
+      heuristics->SetAsyncSoftNavigationURL(script_state, new_url);
     }
   }
   SinglePageAppNavigationType single_page_app_navigation_type =

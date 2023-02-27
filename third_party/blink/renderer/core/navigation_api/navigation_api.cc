@@ -858,18 +858,6 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     transition_ = MakeGarbageCollected<NavigationTransition>(
         script_state, navigation_type, currentEntry());
     navigate_event->DoCommit();
-
-    // This is considered a soft navigation URL change at this point, when the
-    // user visible URL change happens, and before the interception handler
-    // runs. We're skipping the descendant check because the the URL change
-    // doesn't happen in a JS task, and we know this URL change is related to
-    // the user initiated click event from the fact that
-    // `soft_navigation_scope` is not nullptr.
-    if (soft_navigation_scope) {
-      soft_navigation_heuristics->SawURLChange(script_state,
-                                               /*url=*/params->url,
-                                               /*skip_descendant_check=*/true);
-    }
   }
 
   if (navigate_event->HasNavigationActions() ||

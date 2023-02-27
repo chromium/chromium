@@ -156,7 +156,7 @@ void SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
 
-void SoftNavigationHeuristics::SetBackForwardNavigationURL(
+void SoftNavigationHeuristics::SetAsyncSoftNavigationURL(
     ScriptState* script_state,
     const String& url) {
   if (!url_.empty()) {
@@ -178,11 +178,12 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   }
   LocalDOMWindow* window = frame->DomWindow();
   DCHECK(window);
-  // In case of a Soft Navigation using `history.back()`, `history.forward()` or
-  // `history.go()`, `SawURLChange` was called with an empty URL. If that's the
-  // case, don't report the Soft Navigation just yet, and wait for
-  // `SetBackForwardNavigationURL` to be called with the correct URL (which the
-  // renderer only knows about asynchronously).
+  // In case of a Soft Navigation where the url does not change immediately,
+  //`SawURLChange` was called with an empty URL. If that's the case, don't
+  // report the Soft Navigation just yet, and wait for
+  // `SetAsyncSoftNavigationURL` to be called with the correct URL (in the case
+  // of traversals, the renderer only knows about the correct URL asynchronously
+  // anyway).
   if (url_.empty()) {
     ResetPaintsIfNeeded(frame, window);
     return;
