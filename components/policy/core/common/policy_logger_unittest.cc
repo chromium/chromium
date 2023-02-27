@@ -25,8 +25,13 @@ void AddLogs(const std::string& message, PolicyLogger* policy_logger) {
 
 TEST(PolicyLoggerTest, PolicyLoggingEnabled) {
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_ANDROID)
   scoped_feature_list_.InitWithFeatureState(
       policy::features::kPolicyLogsPageAndroid, true);
+#elif BUILDFLAG(IS_IOS)
+  scoped_feature_list_.InitWithFeatureState(
+      policy::features::kPolicyLogsPageIOS, true);
+#endif
 
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 
@@ -42,8 +47,13 @@ TEST(PolicyLoggerTest, PolicyLoggingEnabled) {
 
 TEST(PolicyLoggerTest, PolicyLoggingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list_;
+#if BUILDFLAG(IS_ANDROID)
   scoped_feature_list_.InitWithFeatureState(
       policy::features::kPolicyLogsPageAndroid, false);
+#elif BUILDFLAG(IS_IOS)
+  scoped_feature_list_.InitWithFeatureState(
+      policy::features::kPolicyLogsPageIOS, false);
+#endif
 
   PolicyLogger* policy_logger = policy::PolicyLogger::GetInstance();
 

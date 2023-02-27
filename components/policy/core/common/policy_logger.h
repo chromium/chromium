@@ -20,7 +20,7 @@
 // messages logged with DLOG are still important to be seen on the
 // chrome://policy/logs page in release mode. The DLOG call in StreamLog() will
 // do the check as usual for command line logging.
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #define LOG_POLICY(log_severity, log_source)                                  \
   LOG_POLICY_##log_severity(::policy::PolicyLogger::LogHelper::LogType::kLog, \
                             log_source)

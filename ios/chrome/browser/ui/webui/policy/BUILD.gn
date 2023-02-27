@@ -22,6 +22,7 @@ source_set("policy") {
     "//components/prefs",
     "//components/strings",
     "//components/version_info",
+    "//components/version_ui",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",

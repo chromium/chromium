@@ -188,6 +188,8 @@ base::Value::List PolicyLogger::GetAsList() const {
 bool PolicyLogger::IsPolicyLoggingEnabled() const {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageAndroid);
+#elif BUILDFLAG(IS_IOS)
+  return base::FeatureList::IsEnabled(policy::features::kPolicyLogsPageIOS);
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)

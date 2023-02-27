@@ -73,6 +73,10 @@ class PolicyUIHandler : public web::WebUIIOSMessageHandler,
   // Called to handle the "uploadReport" WebUI message.
   void HandleUploadReport(const base::Value::List& args);
 
+  // Called to handle the "getPolicyLogs" WebUI message from
+  // chrome://policy/logs.
+  void HandleGetPolicyLogs(const base::Value::List& args);
+
   // Send information about the current policy values to the UI. For each policy
   // whose value has been set, dictionaries containing the value and additional
   // metadata are sent.
