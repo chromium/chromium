@@ -82,14 +82,6 @@ BASE_FEATURE(kAutofillInferCountryCallingCode,
              "AutofillInferCountryCallingCode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, complementing the country happens before setting the phone number
-// on profile import. This way, the variation country code takes precedence over
-// the app locale.
-// TODO(crbug.com/1295721): Cleanup when launched.
-BASE_FEATURE(kAutofillComplementCountryEarly,
-             "AutofillComplementCountryEarly",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, label inference considers strings entirely made up of  '(', ')'
 // and '-' as valid labels.
 // TODO(crbug.com/1311937): Cleanup when launched.

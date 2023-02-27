@@ -586,13 +586,9 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
   // country or the app locale. For the `variation_country_code` to take
   // precedence over the app locale, country code complemention needs to happen
   // before `SetPhoneNumber()`.
-  bool complement_country_early =
-      base::FeatureList::IsEnabled(features::kAutofillComplementCountryEarly);
-  if (complement_country_early) {
-    import_metadata.did_complement_country =
-        should_complement_country &&
-        ComplementCountry(candidate_profile, predicted_country_code);
-  }
+  import_metadata.did_complement_country =
+      should_complement_country &&
+      ComplementCountry(candidate_profile, predicted_country_code);
 
   if (!SetPhoneNumber(candidate_profile, combined_phone)) {
     candidate_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
@@ -627,12 +623,6 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     predicted_country_code =
         GetPredictedCountryCode(candidate_profile, variation_country_code,
                                 app_locale_, /*import_log_buffer=*/nullptr);
-  }
-
-  if (!complement_country_early) {
-    import_metadata.did_complement_country =
-        should_complement_country &&
-        ComplementCountry(candidate_profile, predicted_country_code);
   }
 
   // This relies on the profile's country code and must be done strictly after

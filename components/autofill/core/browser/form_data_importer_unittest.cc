@@ -840,10 +840,10 @@ TEST_P(FormDataImporterTest, ComplementCountry) {
   ImportWithCountry("", {kDefaultGermanProfile});
 }
 
-// Tests that by complementing the country before setting the phone number,
-// the variation country code is preferred over the app locale while parsing
-// nationally formatted phone numbers.
-TEST_P(FormDataImporterTest, ComplementCountryEarly) {
+// Tests that the country is complemented before parsing the phone number. This
+// is important, since the phone number validation relies on the profile's
+// country for nationally formatted numbers.
+TEST_P(FormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
   // This is a nationally formatted German phone number, which libphonenumber
   // doesn't parse under the "US" region.
   const char* kNationalNumber = "01578 7912345";
@@ -865,38 +865,16 @@ TEST_P(FormDataImporterTest, ComplementCountryEarly) {
   // imported country will have country = "DE" assigned.
   autofill_client_->SetVariationConfigCountryCode("DE");
 
-  {
-    base::test::ScopedFeatureList complement_country_early_feature;
-    complement_country_early_feature.InitAndDisableFeature(
-        features::kAutofillComplementCountryEarly);
-
-    // Without the feature, the phone number parsing logic defaults to the
-    // "en_US" locale. Thus, parsing fails and the phone number is removed.
-    base::HistogramTester histogram_tester;
-    expected_profile.ClearFields({PHONE_HOME_WHOLE_NUMBER});
-    ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                               {expected_profile});
-    EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
-                testing::UnorderedElementsAre(base::Bucket(false, 1)));
-  }
-
-  {
-    base::test::ScopedFeatureList complement_country_early_feature;
-    complement_country_early_feature.InitAndEnableFeature(
-        features::kAutofillComplementCountryEarly);
-
-    // With the feature enabled, the country complemention happens first. Thus,
-    // at the time the number is parsed, we correctly apply the German rules.
-    base::HistogramTester histogram_tester;
-    // The `expected_profile` can successfully parse the number, as the
-    // profile's country is "DE".
-    EXPECT_TRUE(expected_profile.SetInfo(
-        PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(kNationalNumber), kLocale));
-    ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                               {expected_profile});
-    EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
-                testing::UnorderedElementsAre(base::Bucket(true, 1)));
-  }
+  // Country complemention happens before parsing the phone number. Thus, at the
+  // time the number is parsed, we correctly apply the German rules.
+  base::HistogramTester histogram_tester;
+  // The `expected_profile` can successfully parse the number, as the
+  // profile's country is "DE".
+  EXPECT_TRUE(expected_profile.SetInfo(
+      PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(kNationalNumber), kLocale));
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
+  histogram_tester.ExpectUniqueSample(kHistogramName, true, 1);
 }
 
 // Tests how invalid countries in submitted forms are treated depending on
@@ -4207,10 +4185,8 @@ TEST_P(FormDataImporterTest, MultiStepImport) {
 
 // Tests that a complemented country is discarded in favour of an observed one.
 TEST_P(FormDataImporterTest, MultiStepImport_ComplementCountryEarly) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kAutofillEnableMultiStepImports,
-                             features::kAutofillComplementCountryEarly},
-                            {});
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(features::kAutofillEnableMultiStepImports);
 
   // Import a profile fragment with country information.
   TypeValuePairs type_value_pairs =

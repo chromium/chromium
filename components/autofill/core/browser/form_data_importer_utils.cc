@@ -244,22 +244,14 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
   auto candidate = multistep_candidates_.begin();
   AutofillProfile completed_profile = profile;
   ProfileImportMetadata completed_metadata = import_metadata;
-  // If `complement_country_early` is enabled, merging might fail due to an
-  // incorrectly complemented country in one of the merge candidates.
-  // Without the feature, the country complement logic has not happened yet.
-  bool complement_country_early =
-      base::FeatureList::IsEnabled(features::kAutofillComplementCountryEarly);
-  DCHECK(complement_country_early ||
-         !completed_metadata.did_complement_country);
-  while (candidate != multistep_candidates_.end()) {
-    if (!comparator_.AreMergeable(completed_profile, candidate->profile) &&
-        (!complement_country_early ||
-         !MergeableByRemovingIncorrectlyComplementedCountry(
-             completed_profile, completed_metadata.did_complement_country,
-             candidate->profile,
-             candidate->import_metadata.did_complement_country))) {
-      break;
-    }
+  // Merging might fail due to an incorrectly complemented country in one of the
+  // merge candidates. In this case, try removing the complemented country.
+  while (candidate != multistep_candidates_.end() &&
+         (comparator_.AreMergeable(completed_profile, candidate->profile) ||
+          MergeableByRemovingIncorrectlyComplementedCountry(
+              completed_profile, completed_metadata.did_complement_country,
+              candidate->profile,
+              candidate->import_metadata.did_complement_country))) {
     completed_profile.MergeDataFrom(candidate->profile, app_locale_);
     MergeImportMetadata(candidate->import_metadata, completed_metadata);
     candidate++;
