@@ -84,4 +84,21 @@
     Updating Android System
     Starting your app may take longer than usual.
   </message>
+
+  <!-- ARC Passpoint approval dialog -->
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_TITLE" desc="Dialog title that asks user to allow an app to set up WiFi networks through Passpoint">
+    Allow the <ph name="APP_NAME">$1<ex>OpenRoaming</ex></ph> app to set up WiFi networks?
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_BODY" desc="Dialog body that asks user to allow an app to set up WiFi networks through Passpoint.">
+    This app is requesting permission to set up new WiFi networks. After setup, your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will automatically connect to participating WiFi networks. <ph name="LEARN_MORE">$2<ex>Learn more</ex></ph>
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_LEARN_MORE_LABEL" desc="The label for the link that leads to a help support article to learn more about Passpoint.">
+    Learn more
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_ALLOW_BUTTON" desc="The label for the buton for user to allow an app to set up WiFi networks through Passpoint.">
+    Allow
+  </message>
+  <message name="IDS_ASH_ARC_PASSPOINT_APP_APPROVAL_DONT_ALLOW_BUTTON" desc="The label for the buton for user to disallow an app to set up WiFi networks through Passpoint.">
+    Don't allow
+  </message>
 </grit-part>

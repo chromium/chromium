@@ -13,6 +13,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/net/arc_net_utils.h"
 #include "ash/components/arc/net/cert_manager.h"
+#include "ash/components/arc/net/passpoint_dialog_view.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
@@ -39,6 +40,7 @@
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "dbus/object_path.h"
@@ -217,6 +219,15 @@ void StopLohsFailureCallback(const std::string& error_name,
                              const std::string& error_message) {
   NET_LOG(ERROR) << "StopLohsFailureCallback, error:" << error_name
                  << ", message: " << error_message;
+}
+
+aura::Window* GetActiveWindow() {
+  const exo::WMHelper* wm_helper =
+      exo::WMHelper::HasInstance() ? exo::WMHelper::GetInstance() : nullptr;
+  if (!wm_helper) {
+    return nullptr;
+  }
+  return wm_helper->GetActiveWindow();
 }
 
 }  // namespace
@@ -988,9 +999,15 @@ void ArcNetHostImpl::AddPasspointCredentials(
 void ArcNetHostImpl::RequestPasspointAppApproval(
     mojom::PasspointApprovalRequestPtr request,
     RequestPasspointAppApprovalCallback callback) {
-  // TODO(b/266151265): Start a dialog for Passpoint approval.
-  std::move(callback).Run(
-      mojom::PasspointApprovalResponse::New(/*allow=*/false));
+  aura::Window* window = GetActiveWindow();
+  if (!window) {
+    NET_LOG(ERROR) << "Failed to get active window";
+    std::move(callback).Run(
+        mojom::PasspointApprovalResponse::New(/*allow=*/false));
+    return;
+  }
+  // TODO(b/266151265): Get app name and check window.
+  PasspointDialogView::Show(window, /*app_name=*/"", std::move(callback));
 }
 
 void ArcNetHostImpl::AddPasspointCredentialsWithProperties(
