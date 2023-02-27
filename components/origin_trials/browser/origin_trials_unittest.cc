@@ -24,9 +24,14 @@ namespace {
 
 const char kPersistentTrialName[] = "FrobulatePersistent";
 const char kNonPersistentTrialName[] = "Frobulate";
+const char kPersistentExpiryPeriodTrialName[] =
+    "FrobulatePersistentExpiryGracePeriod";
+const char kPersistentThirdPartyDeprecationTrialName[] =
+    "FrobulatePersistentThirdPartyDeprecation";
 const char kInvalidTrialName[] = "InvalidTrial";
 const char kTrialEnabledOriginA[] = "https://enabled.example.com";
 const char kTrialEnabledOriginB[] = "https://enabled.alternate.com";
+const char kThirdPartyTrialEnabledOrigin[] = "https://enabled.thirdparty.com";
 
 // A dummy value that hasn't been explicitly disabled
 const char kDummyTokenSignature[] = "";
@@ -77,6 +82,42 @@ const char kFrobulateManualCompletionToken[] =
     "lnaW4iOiAiaHR0cHM6Ly9lbmFibGVkLmV4YW1wbGUuY29tOjQ0MyIsICJmZWF0dXJlIjogIkZy"
     "b2J1bGF0ZVBlcnNpc3RlbnRFeHBpcnlHcmFjZVBlcmlvZCIsICJleHBpcnkiOiAyMDAwMDAwMD"
     "AwfQ==";
+
+// Valid header token for FrobulatePersistentExpiryGracePeriod
+// generated with
+// tools/origin_trials/generate_token.py enabled.example.com
+// FrobulatePersistentExpiryGracePeriod
+// --expire-timestamp=2000000000
+const char kFrobulatePersistentExpiryGracePeriodToken[] =
+    "A4TCodS8fnQFVyShubc4TKr+"
+    "Ss6br97EBk4Kh1bQiskjJHwHXKjhxMjwviiL60RD4byiVF3D9UmoPdXcz7Kg8w8AAAB2eyJvcm"
+    "lnaW4iOiAiaHR0cHM6Ly9lbmFibGVkLmV4YW1wbGUuY29tOjQ0MyIsICJmZWF0dXJlIjogIkZy"
+    "b2J1bGF0ZVBlcnNpc3RlbnRFeHBpcnlHcmFjZVBlcmlvZCIsICJleHBpcnkiOiAyMDAwMDAwMD"
+    "AwfQ==";
+
+// Valid third-party token for FrobulatePersistent
+// generated with
+// tools/origin_trials/generate_token.py enabled.thirdparty.com
+// FrobulatePersistent --expire-timestamp=2000000000 --is-third-party
+const char kFrobulatePersistentThirdPartyToken[] =
+    "A0k800P9maNhwX47OMx4NJk1cxcfwvudfdr4Vq12DLVLMqDlnOGxGJvxH4SkY2UUGmIt4SCuec"
+    "zRqRHI81k9/"
+    "w0AAAB+"
+    "eyJvcmlnaW4iOiAiaHR0cHM6Ly9lbmFibGVkLnRoaXJkcGFydHkuY29tOjQ0MyIsICJmZWF0dX"
+    "JlIjogIkZyb2J1bGF0ZVBlcnNpc3RlbnQiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzVGhp"
+    "cmRQYXJ0eSI6IHRydWV9";
+
+// Valid token for FrobulatePersistentThirdPartyDeprecation
+// generated with
+// tools/origin_trials/generate_token.py enabled.thirdparty.com
+// FrobulatePersistentThirdPartyDeprecation --expire-timestamp=2000000000
+// --is-third-party
+const char kFrobulatePersistentThirdPartyDeprecationToken[] =
+    "Az+ztSNd9o+3cmaiCk7QgSU5/2jSa1qiNKsoJOOxvMVxf/"
+    "8xPWsKraWc0US05bYHmTAIdzZAxh1DMMRhMir5yg4AAACTeyJvcmlnaW4iOiAiaHR0cHM6Ly9l"
+    "bmFibGVkLnRoaXJkcGFydHkuY29tOjQ0MyIsICJmZWF0dXJlIjogIkZyb2J1bGF0ZVBlcnNpc3"
+    "RlbnRUaGlyZFBhcnR5RGVwcmVjYXRpb24iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMCwgImlzVGhp"
+    "cmRQYXJ0eSI6IHRydWV9";
 
 class OpenScopedTestOriginTrialPolicy
     : public blink::ScopedTestOriginTrialPolicy {
@@ -232,6 +273,55 @@ TEST_F(OriginTrialsTest, TrialDoesNotEnableOtherFeatures) {
 
   EXPECT_FALSE(IsTrialPersistedForOrigin(trial_enabled_origin_,
                                          kNonPersistentTrialName, kValidTime));
+}
+
+TEST_F(OriginTrialsTest, TokensCanBeAppended) {
+  std::vector<std::string> tokens = {kFrobulatePersistentToken};
+  PersistTrialsFromTokens(trial_enabled_origin_, tokens, kValidTime);
+
+  EXPECT_TRUE(IsTrialPersistedForOrigin(trial_enabled_origin_,
+                                        kPersistentTrialName, kValidTime));
+  EXPECT_FALSE(IsTrialPersistedForOrigin(
+      trial_enabled_origin_, kPersistentExpiryPeriodTrialName, kValidTime));
+
+  // Append an additional token for the same origin
+  std::vector<std::string> additional_tokens = {
+      kFrobulatePersistentExpiryGracePeriodToken};
+  origin_trials_.PersistAdditionalTrialsFromTokens(
+      trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_,
+      /*script_origins=*/{}, additional_tokens, kValidTime);
+  // Check that both trials are now enabled
+  EXPECT_TRUE(IsTrialPersistedForOrigin(trial_enabled_origin_,
+                                        kPersistentTrialName, kValidTime));
+  EXPECT_TRUE(IsTrialPersistedForOrigin(
+      trial_enabled_origin_, kPersistentExpiryPeriodTrialName, kValidTime));
+}
+
+TEST_F(OriginTrialsTest, ThirdPartyTokensCanBeAppendedOnlyIfDeprecation) {
+  // TODO(crbug.com/1418340): Change test when all 3P tokens are supported.
+  // Append third-party tokens.
+  std::vector<std::string> third_party_tokens = {
+      kFrobulatePersistentThirdPartyToken,
+      kFrobulatePersistentThirdPartyDeprecationToken};
+  url::Origin script_origin =
+      url::Origin::Create(GURL(kThirdPartyTrialEnabledOrigin));
+  std::vector<url::Origin> script_origins = {script_origin};
+
+  origin_trials_.PersistAdditionalTrialsFromTokens(
+      trial_enabled_origin_, /*partition_origin=*/trial_enabled_origin_,
+      script_origins, third_party_tokens, kValidTime);
+
+  // The FrobulatePersistent should not be persisted, as it is not a deprecation
+  // token.
+  EXPECT_FALSE(origin_trials_.IsTrialPersistedForOrigin(
+      script_origin, /*partition_origin=*/trial_enabled_origin_,
+      kPersistentTrialName, kValidTime));
+
+  // FrobulatePersistentThirdPartyDeprecation is a deprecation trial, and should
+  // be enabled.
+  EXPECT_TRUE(origin_trials_.IsTrialPersistedForOrigin(
+      script_origin, /*partition_origin=*/trial_enabled_origin_,
+      kPersistentThirdPartyDeprecationTrialName, kValidTime));
 }
 
 // Check that a stored trial name is not returned if that trial is no longer

@@ -47,6 +47,21 @@ class CONTENT_EXPORT OriginTrialsControllerDelegate {
       const base::span<const std::string> header_tokens,
       const base::Time current_time) = 0;
 
+  // Appends all enabled and persistable |tokens| to the set of already enabled
+  // trials for |origin|. By passing |script_origins|, this method can be used
+  // to append third-party origin trials as well. If a token in |tokens| is a
+  // third-party origin trial token, and the corresponding origin is present in
+  // |script_tokens|, then the trial will be enabled for the origin stored in
+  // the token itself, rather than any origin found in |script_origins|. This
+  // limitation means that subdomain matching does not work for third-party
+  // origin trial tokens using this method.
+  virtual void PersistAdditionalTrialsFromTokens(
+      const url::Origin& origin,
+      const url::Origin& partition_origin,
+      base::span<const url::Origin> script_origins,
+      const base::span<const std::string> tokens,
+      const base::Time current_time) = 0;
+
   // Returns |true| if |trial_name| has been persisted for |origin|,
   // partitioned by |partition_origin| and is still valid. This method should
   // be used by origin trial owners to check if the feature under trial should

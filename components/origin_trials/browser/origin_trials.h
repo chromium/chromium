@@ -52,6 +52,12 @@ class OriginTrials : public KeyedService,
       const url::Origin& partition_origin,
       const base::span<const std::string> header_tokens,
       const base::Time current_time) override;
+  void PersistAdditionalTrialsFromTokens(
+      const url::Origin& origin,
+      const url::Origin& partition_origin,
+      base::span<const url::Origin> script_origins,
+      const base::span<const std::string> header_tokens,
+      const base::Time current_time) override;
   bool IsTrialPersistedForOrigin(const url::Origin& origin,
                                  const url::Origin& partition_origin,
                                  const base::StringPiece trial_name,
@@ -67,6 +73,13 @@ class OriginTrials : public KeyedService,
   std::unique_ptr<OriginTrialsPersistenceProvider> persistence_provider_;
   std::unique_ptr<blink::TrialTokenValidator> trial_token_validator_;
 
+  void PersistTokensInternal(const url::Origin& origin,
+                             const url::Origin& partition_origin,
+                             base::span<const url::Origin> script_origins,
+                             const base::span<const std::string> header_tokens,
+                             const base::Time current_time,
+                             bool append_only);
+
   // Helper to return the still-valid persisted trials, with an optional
   // |trial_name_match| which can be passed to ensure we only validate
   // and return the trial if it matches the passed name.
@@ -78,12 +91,14 @@ class OriginTrials : public KeyedService,
       const base::Time current_time,
       const absl::optional<const base::StringPiece> trial_name_match) const;
 
-  // Update the passed |token_set| with the new tokens, partitioned by
-  // |partition_site|. Performs the update directly on the passed |token_set|.
-  static void UpdatePersistedTokenSet(
-      base::flat_set<PersistedTrialToken>& token_set,
-      std::vector<blink::TrialToken> new_tokens,
-      std::string partition_site);
+  // Update the stored tokens for |origin| with the |new_tokens|, partitioned by
+  // |partition_site|.
+  // Will clean any tokens not found in |new_tokens| unless |append_only| is set
+  // to true.
+  void UpdatePersistedTokenSet(const url::Origin& origin,
+                               base::span<const blink::TrialToken> new_tokens,
+                               const std::string& partition_site,
+                               bool append_only);
 
   // Get the 'site' used as the partitioning key for trial tokens.
   //

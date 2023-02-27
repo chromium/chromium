@@ -2340,6 +2340,16 @@
       name: "OriginTrialsSampleAPIPersistentFeature",
       base_feature: "none",
       origin_trial_feature_name: "FrobulatePersistent",
+      origin_trial_allows_third_party: true,
+    },
+    // As above. Do not change this flag to stable, as it exists solely to
+    // generate code used by the origin trials sample API implementation.
+    {
+      name: "OriginTrialsSampleAPIPersistentThirdPartyDeprecationFeature",
+      base_feature: "none",
+      origin_trial_feature_name: "FrobulatePersistentThirdPartyDeprecation",
+      origin_trial_allows_third_party: true,
+      origin_trial_type: "deprecation",
     },
     // As above. Do not change this flag to stable, as it exists solely to
     // generate code used by the origin trials sample API implementation.

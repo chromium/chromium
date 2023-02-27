@@ -121,9 +121,10 @@ void CriticalOriginTrialsThrottle::MaybeRestartWithTrials(
   if (needs_restart) {
     // Persist the trials that were set, so we can try again.
     url::Origin partition_origin = top_frame_origin_.value_or(request_origin);
-    origin_trials_delegate_->PersistTrialsFromTokens(
-        request_origin, partition_origin, origin_trial_tokens,
-        base::Time::Now());
+    // Add the new tokens to the set of persisted trials
+    origin_trials_delegate_->PersistAdditionalTrialsFromTokens(
+        request_origin, partition_origin, /*script_origins=*/{},
+        origin_trial_tokens, base::Time::Now());
     restarted_origins_.insert(request_origin);
     delegate_->RestartWithURLResetAndFlags(0);
   }

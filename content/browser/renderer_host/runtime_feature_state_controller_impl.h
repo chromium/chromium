@@ -12,13 +12,20 @@
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
 
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state_controller.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
 // Implementation of mojo RuntimeFeatureStateController.
-// This class handles API requests from the renderer process, performing
-// security checks before updating a RenderFrameHost's
+//
+// This class handles API requests from the renderer process concerning runtime
+// features that are enabled dynamically, most commonly from Origin Trials.
+// The class will perform security checks before updating a RenderFrameHost's
 // RuntimeFeatureStateReadContext with the validated feature state we receive.
+// It will also accept persistent origin trial tokens provided through meta
+// http-equiv tags, and will add them to the set of tokens for the owning
+// origin.
+//
 // An instance of this class is owned by the RenderFrameHostImpl. It is
 // instantiated on-demand via the BrowserInterfaceBroker once the renderer
 // creates and binds a remote instance.
@@ -39,6 +46,9 @@ class RuntimeFeatureStateControllerImpl
       base::flat_map<::blink::mojom::RuntimeFeatureState,
                      ::blink::mojom::FeatureValuePtr> modified_features)
       override;
+  void EnablePersistentTrial(
+      const std::string& token,
+      const std::vector<url::Origin>& script_origins) override;
 
  private:
   mojo::Receiver<blink::mojom::RuntimeFeatureStateController> receiver_;

@@ -172,7 +172,8 @@ OriginTrialTokenResult::OriginTrialTokenResult(
 
 OriginTrialContext::OriginTrialContext(ExecutionContext* context)
     : trial_token_validator_(std::make_unique<TrialTokenValidator>()),
-      context_(context) {}
+      context_(context),
+      runtime_feature_state_controller_remote_(context_) {}
 
 void OriginTrialContext::SetTrialTokenValidatorForTesting(
     std::unique_ptr<TrialTokenValidator> validator) {
@@ -665,6 +666,12 @@ bool OriginTrialContext::EnableTrialFromToken(
         feature_to_tokens_.Set(feature, mapped_tokens);
       }
     }
+
+    // The browser will make its own decision on whether to enable any features
+    // based on this token, so now that it's been confirmed that it is valid,
+    // we should send it even if it didn't enable any features in Blink.
+    SendTokenToBrowser(origin_info, *token_result.ParsedToken(), token,
+                       script_origins);
   }
 
   RecordTokenValidationResultHistogram(token_result.Status());
@@ -704,6 +711,7 @@ void OriginTrialContext::CacheToken(const String& raw_token,
 
 void OriginTrialContext::Trace(Visitor* visitor) const {
   visitor->Trace(context_);
+  visitor->Trace(runtime_feature_state_controller_remote_);
 }
 
 const SecurityOrigin* OriginTrialContext::GetSecurityOrigin() {
@@ -741,4 +749,38 @@ bool OriginTrialContext::IsSecureContext() {
 OriginTrialContext::OriginInfo OriginTrialContext::GetCurrentOriginInfo() {
   return {.origin = GetSecurityOrigin(), .is_secure = IsSecureContext()};
 }
+
+void OriginTrialContext::SendTokenToBrowser(
+    const OriginInfo& origin_info,
+    const TrialToken& parsed_token,
+    const String& raw_token,
+    const Vector<OriginInfo>* script_origin_info) {
+  // Passing activated origin trial tokens is only supported for windows.
+  if (!context_->IsWindow()) {
+    return;
+  }
+
+  if (!origin_trials::IsTrialPersistentToNextResponse(
+          parsed_token.feature_name())) {
+    return;
+  }
+
+  Vector<scoped_refptr<const blink::SecurityOrigin>> script_origins;
+  if (script_origin_info) {
+    for (const OriginInfo& script_origin : *script_origin_info) {
+      script_origins.push_back(script_origin.origin);
+    }
+  }
+  if (!runtime_feature_state_controller_remote_.is_bound()) {
+    // TODO(crbug.com/1418341): Reuse binding owned by
+    // RuntimeFeatureStateOverrideContext once that class correctly connects to
+    // the frame and not the process.
+    context_->GetBrowserInterfaceBroker().GetInterface(
+        runtime_feature_state_controller_remote_.BindNewPipeAndPassReceiver(
+            context_->GetTaskRunner(TaskType::kInternalDefault)));
+  }
+  runtime_feature_state_controller_remote_->EnablePersistentTrial(
+      raw_token, std::move(script_origins));
+}
+
 }  // namespace blink
