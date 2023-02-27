@@ -92,6 +92,7 @@ source_set("core") {
     "crw_navigation_item_holder.mm",
     "navigation_context_impl.h",
     "navigation_context_impl.mm",
+    "navigation_initiation_type.h",
     "navigation_item_impl.h",
     "navigation_item_impl.mm",
     "navigation_manager_delegate.h",
