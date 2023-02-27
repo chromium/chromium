@@ -1587,13 +1587,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       } else if (shift) {
         disposition = WindowOpenDisposition::NEW_WINDOW;
       }
-      if (model()->PopupIsOpen() &&
-          model()->TriggerPopupSelectionAction(
-              model()->GetPopupSelection(), event.time_stamp(), disposition)) {
-        return true;
-      } else {
-        model()->AcceptInput(disposition, event.time_stamp());
-      }
+      model()->OpenSelection(model()->GetPopupSelection(), event.time_stamp(),
+                             disposition);
       return true;
     }
     case ui::VKEY_ESCAPE:
@@ -1699,10 +1694,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
       if (model()->PopupIsOpen()) {
         OmniboxPopupSelection selection = model()->GetPopupSelection();
         if (selection.IsButtonFocused() && !control && !alt && !shift) {
-          if (model()->TriggerPopupSelectionAction(selection,
-                                                   event.time_stamp())) {
-            return true;
-          }
+          model()->OpenSelection(selection, event.time_stamp());
+          return true;
         }
       }
       break;

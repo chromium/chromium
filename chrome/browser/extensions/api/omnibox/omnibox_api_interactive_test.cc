@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, OnInputEntered) {
     AutocompleteInput input(input_string, metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile()));
     autocomplete_controller->Start(input);
-    omnibox_view->model()->AcceptInput(disposition);
+    omnibox_view->model()->OpenSelection(base::TimeTicks(), disposition);
     WaitForAutocompleteDone(browser());
   };
 
@@ -426,14 +426,17 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, IncognitoSplitMode) {
                             metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile()));
     GetAutocompleteController()->Start(input);
-    GetLocationBar(browser())->AcceptInput();
+    GetLocationBar(browser())->GetOmniboxView()->model()->OpenSelection();
   }
   {
     AutocompleteInput input(
         u"alpha word incognito", metrics::OmniboxEventProto::NTP,
         ChromeAutocompleteSchemeClassifier(incognito_profile));
     incognito_controller->Start(input);
-    GetLocationBar(incognito_browser)->AcceptInput();
+    GetLocationBar(incognito_browser)
+        ->GetOmniboxView()
+        ->model()
+        ->OpenSelection();
   }
 
   EXPECT_TRUE(on_the_record_listener.WaitUntilSatisfied());
@@ -478,7 +481,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiBackgroundPageTest, MAYBE_PopupStaysClosed) {
   AutocompleteInput input(u"kw command", metrics::OmniboxEventProto::NTP,
                           ChromeAutocompleteSchemeClassifier(profile()));
   autocomplete_controller->Start(input);
-  location_bar->AcceptInput();
+  location_bar->GetOmniboxView()->model()->OpenSelection();
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(autocomplete_controller->done());
   // This checks that the keyword provider (via javascript)

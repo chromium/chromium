@@ -456,11 +456,10 @@ void WaitForAutocompleteDone(Browser* browser) {
 void SendToOmniboxAndSubmit(Browser* browser,
                             const std::string& input,
                             base::TimeTicks match_selection_timestamp) {
-  LocationBar* location_bar = browser->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
+  OmniboxView* omnibox = browser->window()->GetLocationBar()->GetOmniboxView();
   omnibox->model()->OnSetFocus(/*control_down=*/false);
   omnibox->SetUserText(base::ASCIIToUTF16(input));
-  location_bar->AcceptInput(match_selection_timestamp);
+  omnibox->model()->OpenSelection(match_selection_timestamp);
 
   WaitForAutocompleteDone(browser);
 }

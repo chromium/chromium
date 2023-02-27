@@ -70,7 +70,12 @@ class InstantExtendedTest : public InProcessBrowserTest,
   void PressEnterAndWaitForLoadStop() {
     content::TestNavigationObserver observer(
         browser()->tab_strip_model()->GetActiveWebContents());
-    browser()->window()->GetLocationBar()->AcceptInput();
+    browser()
+        ->window()
+        ->GetLocationBar()
+        ->GetOmniboxView()
+        ->model()
+        ->OpenSelection();
     observer.Wait();
   }
 

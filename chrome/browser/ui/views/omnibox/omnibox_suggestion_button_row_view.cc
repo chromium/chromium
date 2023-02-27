@@ -352,8 +352,7 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
   } else {
     WindowOpenDisposition disposition =
         ui::DispositionFromEventFlags(event.flags());
-    model_->TriggerPopupSelectionAction(selection, event.time_stamp(),
-                                        disposition);
+    model_->OpenSelection(selection, event.time_stamp(), disposition);
   }
 }
 

@@ -251,6 +251,19 @@ class OmniboxEditModel {
                  size_t index,
                  base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
+  // Opens given selection. Most kinds of selection invoke an action or
+  // otherwise call `OpenMatch`, but some may `AcceptInput`.
+  void OpenSelection(
+      OmniboxPopupSelection selection,
+      base::TimeTicks timestamp = base::TimeTicks(),
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+
+  // A simplified version of OpenSelection that opens the model's current
+  // selection.
+  void OpenSelection(
+      base::TimeTicks timestamp = base::TimeTicks(),
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+
   OmniboxFocusState focus_state() const { return focus_state_; }
   bool has_focus() const { return focus_state_ != OMNIBOX_FOCUS_NONE; }
 
@@ -463,18 +476,6 @@ class OmniboxEditModel {
   // the match in |selection.line|. This is the source-of-truth the UI code
   // should query to decide whether or not to draw the control.
   bool IsPopupControlPresentOnMatch(OmniboxPopupSelection selection) const;
-
-  // On popup, triggers the action on |selection| (usually an auxiliary button).
-  // If the popup model supports the action and performs it, this returns true.
-  // This can't handle all actions currently, and returns false in those cases.
-  // The timestamp parameter is currently only used by FOCUSED_BUTTON_TAB_SWITCH
-  // and FOCUSED_BUTTON_ACTION, so is set by default for other use cases.
-  // The `disposition` can be used to respect keyboard state for opening
-  // actions in background tabs, new windows, etc.
-  bool TriggerPopupSelectionAction(
-      OmniboxPopupSelection selection,
-      base::TimeTicks timestamp = base::TimeTicks(),
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
 
   // From popup, tries to erase the suggestion at |line|. This should determine
   // if the item at |line| can be removed from history, and if so, remove it

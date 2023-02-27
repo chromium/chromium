@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
@@ -129,7 +130,7 @@ class OmniboxRowView::HeaderView : public views::View {
     return true;
   }
   void OnMouseReleased(const ui::MouseEvent& event) override {
-    row_view_->model_->TriggerPopupSelectionAction(GetHeaderSelection());
+    row_view_->model_->OpenSelection(GetHeaderSelection(), event.time_stamp());
   }
   void OnMouseEntered(const ui::MouseEvent& event) override { UpdateUI(); }
   void OnMouseExited(const ui::MouseEvent& event) override { UpdateUI(); }
@@ -208,7 +209,7 @@ class OmniboxRowView::HeaderView : public views::View {
 
  private:
   void HeaderToggleButtonPressed() {
-    row_view_->model_->TriggerPopupSelectionAction(GetHeaderSelection());
+    row_view_->model_->OpenSelection(GetHeaderSelection(), base::TimeTicks());
     // The PrefChangeRegistrar will update the actual button toggle state.
   }
 

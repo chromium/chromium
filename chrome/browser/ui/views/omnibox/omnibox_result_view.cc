@@ -416,8 +416,8 @@ void OmniboxResultView::SetRichSuggestionImage(const gfx::ImageSkia& image) {
 
 void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
-  model_->TriggerPopupSelectionAction(
-      OmniboxPopupSelection(model_index_, state), event.time_stamp());
+  model_->OpenSelection(OmniboxPopupSelection(model_index_, state),
+                        event.time_stamp());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

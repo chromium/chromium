@@ -1098,15 +1098,6 @@ base::TimeTicks LocationBarView::GetMatchSelectionTimestamp() const {
   return match_selection_timestamp();
 }
 
-void LocationBarView::AcceptInput() {
-  AcceptInput(base::TimeTicks());
-}
-
-void LocationBarView::AcceptInput(base::TimeTicks match_selection_timestamp) {
-  omnibox_view_->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB,
-                                      match_selection_timestamp);
-}
-
 void LocationBarView::FocusSearch() {
   // This is called by keyboard accelerator, so it's user-initiated.
   omnibox_view_->SetFocus(/*is_user_initiated=*/true);
