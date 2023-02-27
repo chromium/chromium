@@ -178,7 +178,7 @@ def CheckJson(input_api, output_api):
       # Intentionally invalid JSON file.
       continue
     try:
-      input_api.json.load(open(filename))
+      input_api.json.load(open(filename, encoding='utf-8'))
     except ValueError:
       return [output_api.PresubmitError('Error parsing JSON in %s!' % filename)]
   return []
