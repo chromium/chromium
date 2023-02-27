@@ -26,7 +26,6 @@
 #include "ash/login/ui/pin_keyboard_animation.h"
 #include "ash/login/ui/pin_request_view.h"
 #include "ash/login/ui/smart_lock_auth_factor_model.h"
-#include "ash/login/ui/system_label_button.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -36,6 +35,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/time_of_day.h"
@@ -1094,7 +1094,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       gfx::Insets::TLBR(kPinPasswordToggleButtonPaddingTop, 0,
                         kPinPasswordToggleButtonPaddingBottom, 0)));
   pin_password_toggle_ =
-      toggle_container->AddChildView(std::make_unique<SystemLabelButton>(
+      toggle_container->AddChildView(std::make_unique<PillButton>(
           base::BindRepeating(&LoginAuthUserView::OnSwitchButtonClicked,
                               base::Unretained(this)),
           GetPinPasswordToggleText()));
@@ -1127,7 +1127,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
         l10n_util::GetStringUTF16(IDS_ASH_LOCK_SCREEN_VERIFY_ACCOUNT_MESSAGE);
   }
 
-  auto online_sign_in_button = std::make_unique<SystemLabelButton>(
+  auto online_sign_in_button = std::make_unique<PillButton>(
       base::BindRepeating(&LoginAuthUserView::OnOnlineSignInMessageTap,
                           base::Unretained(this)),
       button_message);

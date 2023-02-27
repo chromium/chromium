@@ -769,8 +769,6 @@ component("ash") {
     "login/ui/scrollable_users_list_view.h",
     "login/ui/smart_lock_auth_factor_model.cc",
     "login/ui/smart_lock_auth_factor_model.h",
-    "login/ui/system_label_button.cc",
-    "login/ui/system_label_button.h",
     "login/ui/user_switch_flip_animation.cc",
     "login/ui/user_switch_flip_animation.h",
     "login/ui/views_utils.cc",

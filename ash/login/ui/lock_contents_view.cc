@@ -30,7 +30,6 @@
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/note_action_launch_button.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
-#include "ash/login/ui/system_label_button.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/metrics/user_metrics_recorder.h"
@@ -49,6 +48,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/power/power_button_controller.h"
@@ -2454,10 +2454,10 @@ void LockContentsView::ShowAuthErrorMessage() {
   MakeSectionBold(label.get(), error_text, bold_start, bold_length);
   label->SetAutoColorReadabilityEnabled(false);
 
-  auto learn_more_button = std::make_unique<SystemLabelButton>(
+  auto learn_more_button = std::make_unique<PillButton>(
       base::BindRepeating(&LockContentsView::LearnMoreButtonPressed,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE), /*multiline=*/true);
+      l10n_util::GetStringUTF16(IDS_ASH_LEARN_MORE));
 
   auto container = std::make_unique<NonAccessibleView>(kAuthErrorContainerName);
   auto* container_layout =
@@ -2475,11 +2475,10 @@ void LockContentsView::ShowAuthErrorMessage() {
     if (screen_type_ == LockScreen::ScreenType::kLogin &&
         Shell::Get()->session_controller()->GetSessionState() !=
             session_manager::SessionState::LOGIN_SECONDARY) {
-      auto recover_user_button = std::make_unique<SystemLabelButton>(
+      auto recover_user_button = std::make_unique<PillButton>(
           base::BindRepeating(&LockContentsView::RecoverUserButtonPressed,
                               base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON),
-          /*multiline=*/true);
+          l10n_util::GetStringUTF16(IDS_ASH_LOGIN_RECOVER_USER_BUTTON));
 
       container->AddChildView(std::move(recover_user_button));
     }
