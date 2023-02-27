@@ -105,7 +105,7 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_SupportedCountry) {
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_AuthError) {
-  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
+  sync_service_.SetPersistentAuthError();
   EXPECT_FALSE(IsCreditCardUploadEnabled(AutofillSyncSigninState::kSyncPaused));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",

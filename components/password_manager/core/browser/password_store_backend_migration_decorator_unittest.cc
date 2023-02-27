@@ -533,7 +533,7 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   InitSyncService(/*is_password_sync_enabled=*/true);
   sync_service().GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false, /*types=*/{});
-  sync_service().SetPersistentAuthErrorOtherThanWebSignout();
+  sync_service().SetPersistentAuthError();
 
   // Reenrolling migration attempt should not happen, logins should not be
   // retrieved.

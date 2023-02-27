@@ -147,7 +147,7 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
 
   // On a persistent error, uploading is not considered active anymore (even
   // though Sync may still be considered active).
-  service.SetPersistentAuthErrorOtherThanWebSignout();
+  service.SetPersistentAuthError();
 
   EXPECT_EQ(UploadState::NOT_ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));

@@ -40,10 +40,7 @@ class TestSyncService : public SyncService {
 
   // Setters to mimic common auth error scenarios. Note that these functions
   // may change the transport state, as returned by GetTransportState().
-  // TODO(crbug.com/1156584): Unify the two below once all persistent auth
-  // errors are treated equally.
-  void SetPersistentAuthErrorOtherThanWebSignout();
-  void SetPersistentAuthErrorWithWebSignout();
+  void SetPersistentAuthError();
   void ClearAuthError();
 
   void SetFirstSetupComplete(bool first_setup_complete);
@@ -132,7 +129,6 @@ class TestSyncService : public SyncService {
   CoreAccountInfo account_info_;
   bool has_sync_consent_ = true;
   bool setup_in_progress_ = false;
-  GoogleServiceAuthError auth_error_;
 
   ModelTypeSet failed_data_types_;
 

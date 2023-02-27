@@ -4934,7 +4934,7 @@ TEST_F(PersonalDataManagerTest, OnSyncServiceInitialized_NotActiveSyncService) {
 
   // Call OnSyncServiceInitialized with a sync service in auth error.
   syncer::TestSyncService sync_service;
-  sync_service.SetPersistentAuthErrorOtherThanWebSignout();
+  sync_service.SetPersistentAuthError();
   personal_data_->OnSyncServiceInitialized(&sync_service);
   WaitForOnPersonalDataChanged();
 

@@ -420,13 +420,8 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
   EXPECT_EQ(password_manager::SyncState::kSyncingNormalEncryption,
             client->GetPasswordSyncState());
 
-  // Sync paused due to a persistent auth error other than web signout.
-  sync_service_->SetPersistentAuthErrorOtherThanWebSignout();
-  EXPECT_EQ(password_manager::SyncState::kNotSyncing,
-            client->GetPasswordSyncState());
-
-  // Sync paused due to web signout.
-  sync_service_->SetPersistentAuthErrorWithWebSignout();
+  // Sync paused due to a persistent auth error.
+  sync_service_->SetPersistentAuthError();
   EXPECT_EQ(password_manager::SyncState::kNotSyncing,
             client->GetPasswordSyncState());
 
