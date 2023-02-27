@@ -43,6 +43,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   std::vector<mojom::TouchpadPtr> GetConnectedTouchpads() override;
   std::vector<mojom::MousePtr> GetConnectedMice() override;
   std::vector<mojom::PointingStickPtr> GetConnectedPointingSticks() override;
+  const mojom::KeyboardSettings* GetKeyboardSettings(DeviceId id) override;
+  const mojom::MouseSettings* GetMouseSettings(DeviceId id) override;
+  const mojom::TouchpadSettings* GetTouchpadSettings(DeviceId id) override;
+  const mojom::PointingStickSettings* GetPointingStickSettings(
+      DeviceId id) override;
   void SetKeyboardSettings(DeviceId id,
                            const mojom::KeyboardSettings& settings) override;
   void AddObserver(Observer* observer) override;

@@ -70,7 +70,21 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
       override {
     return CloneMojomVector(pointing_sticks_);
   }
-
+  const ::ash::mojom::KeyboardSettings* GetKeyboardSettings(
+      DeviceId id) override {
+    return nullptr;
+  }
+  const ::ash::mojom::TouchpadSettings* GetTouchpadSettings(
+      DeviceId id) override {
+    return nullptr;
+  }
+  const ::ash::mojom::MouseSettings* GetMouseSettings(DeviceId id) override {
+    return nullptr;
+  }
+  const ::ash::mojom::PointingStickSettings* GetPointingStickSettings(
+      DeviceId id) override {
+    return nullptr;
+  }
   void SetKeyboardSettings(
       DeviceId id,
       const ::ash::mojom::KeyboardSettings& settings) override {}

@@ -52,6 +52,20 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   // Returns a list of currently connected pointing sticks and their settings.
   virtual std::vector<mojom::PointingStickPtr> GetConnectedPointingSticks() = 0;
 
+  // Returns the settings of the keyboard with a device id of `id` or nullptr if
+  // no such device exists.
+  virtual const mojom::KeyboardSettings* GetKeyboardSettings(DeviceId id) = 0;
+  // Returns the settings of the touchpad with a device id of `id` or nullptr if
+  // no such device exists.
+  virtual const mojom::TouchpadSettings* GetTouchpadSettings(DeviceId id) = 0;
+  // Returns the settings of the mouse with a device id of `id` or nullptr if
+  // no such device exists.
+  virtual const mojom::MouseSettings* GetMouseSettings(DeviceId id) = 0;
+  // Returns the settings of the pointing stick with a device id of `id` or
+  // nullptr if no such device exists.
+  virtual const mojom::PointingStickSettings* GetPointingStickSettings(
+      DeviceId id) = 0;
+
   // Configure the settings for keyboard of |id| with the provided |settings|.
   virtual void SetKeyboardSettings(DeviceId id,
                                    const mojom::KeyboardSettings& settings) = 0;

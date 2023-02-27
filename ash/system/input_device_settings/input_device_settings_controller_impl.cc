@@ -124,6 +124,42 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   // TODO(michaelcheco): Initialize settings and notify observers.
 }
 
+const mojom::KeyboardSettings*
+InputDeviceSettingsControllerImpl::GetKeyboardSettings(DeviceId id) {
+  auto iter = keyboards_.find(id);
+  if (iter == keyboards_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
+}
+
+const mojom::MouseSettings* InputDeviceSettingsControllerImpl::GetMouseSettings(
+    DeviceId id) {
+  auto iter = mice_.find(id);
+  if (iter == mice_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
+}
+
+const mojom::TouchpadSettings*
+InputDeviceSettingsControllerImpl::GetTouchpadSettings(DeviceId id) {
+  auto iter = touchpads_.find(id);
+  if (iter == touchpads_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
+}
+
+const mojom::PointingStickSettings*
+InputDeviceSettingsControllerImpl::GetPointingStickSettings(DeviceId id) {
+  auto iter = pointing_sticks_.find(id);
+  if (iter == pointing_sticks_.end()) {
+    return nullptr;
+  }
+  return iter->second->settings.get();
+}
+
 std::vector<mojom::KeyboardPtr>
 InputDeviceSettingsControllerImpl::GetConnectedKeyboards() {
   std::vector<mojom::KeyboardPtr> keyboard_vector;
