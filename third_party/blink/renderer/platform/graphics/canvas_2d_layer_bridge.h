@@ -143,6 +143,7 @@ class PLATFORM_EXPORT HibernationHandler {
       std::unique_ptr<HibernationHandler::BackgroundTaskParams> params,
       sk_sp<SkData> encoded);
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner() const;
+  static size_t ImageMemorySize(const SkImage& image);
 
   // Incremented each time the canvas is hibernated.
   uint64_t epoch_ = 0;

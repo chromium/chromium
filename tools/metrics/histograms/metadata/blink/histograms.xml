@@ -164,6 +164,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Canvas.2DLayerBridge.Compression.DecompressionTime"
+    units="ms" expires_after="2023-08-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <summary>
+    When a compressed hibernated 2D canvas snapshot is decompressed, duration in
+    ms. Reported each time a canvas snapshot is decompressed.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Canvas.2DLayerBridge.Compression.Ratio" units="%"
+    expires_after="2023-08-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <summary>
+    When a hibernated 2D canvas snapshot is compressed, the compression ratio
+    achieved. Reported each time a canvas snapshot is compressed.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Canvas.2DLayerBridge.Compression.SnapshotSizeKb"
+    units="KB" expires_after="2023-08-08">
+  <owner>lizeb@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <summary>
+    When a hibernated 2D canvas snapshot is compressed, the size before
+    compression. Reported each time a canvas snapshot is compressed.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Canvas.2DLayerBridge.WillReadFrequently"
     enum="BooleanWillReadFrequently" expires_after="2024-04-01">
   <owner>aaronhk@chromium.org</owner>

@@ -99,7 +99,7 @@ void HibernationHandler::TakeHibernationImage(sk_sp<SkImage>&& image) {
   HibernatedCanvasMemoryDumpProvider::GetInstance().Register(this);
 
   // Don't bother compressing very small canvases.
-  if (original_memory_size() < 16 * 1024 ||
+  if (ImageMemorySize(*image) < 16 * 1024 ||
       !base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
     return;
   }
@@ -187,6 +187,15 @@ void HibernationHandler::Encode(
   sk_sp<SkData> encoded =
       params->image->encodeToData(SkEncodedImageFormat::kPNG, 100);
 
+  size_t original_memory_size = ImageMemorySize(*params->image);
+  int compression_ratio_percentage = static_cast<int>(
+      (static_cast<size_t>(100) * encoded->size()) / original_memory_size);
+  UMA_HISTOGRAM_PERCENTAGE("Blink.Canvas.2DLayerBridge.Compression.Ratio",
+                           compression_ratio_percentage);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Blink.Canvas.2DLayerBridge.Compression.SnapshotSizeKb",
+      static_cast<int>(original_memory_size / 1024), 10, 500000, 50);
+
   auto* reply_task_runner = params->reply_task_runner.get();
   reply_task_runner->PostTask(
       FROM_HERE,
@@ -205,8 +214,15 @@ sk_sp<SkImage> HibernationHandler::GetImage() {
   DCHECK(
       base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
 
+  base::TimeTicks before = base::TimeTicks::Now();
   // Note: not discarding the encoded image.
-  return SkImage::MakeFromEncoded(encoded_)->makeRasterImage();
+  auto image = SkImage::MakeFromEncoded(encoded_)->makeRasterImage();
+  base::TimeTicks after = base::TimeTicks::Now();
+  UMA_HISTOGRAM_TIMES(
+      "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime",
+      after - before);
+  return image;
+  ;
 }
 
 void HibernationHandler::Clear() {
@@ -224,6 +240,12 @@ size_t HibernationHandler::memory_size() const {
   } else {
     return original_memory_size();
   }
+}
+
+// static
+size_t HibernationHandler::ImageMemorySize(const SkImage& image) {
+  return static_cast<size_t>(image.height()) * image.width() *
+         image.imageInfo().bytesPerPixel();
 }
 
 size_t HibernationHandler::original_memory_size() const {

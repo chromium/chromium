@@ -35,6 +35,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -1120,6 +1121,7 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerSimpleTest) {
       {features::kCanvas2DHibernation,
        features::kCanvasCompressHibernatedImage},
       {});
+  base::HistogramTester histogram_tester;
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
@@ -1152,8 +1154,18 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationHandlerSimpleTest) {
   EXPECT_LT(handler.memory_size(), uncompressed_size);
   EXPECT_EQ(handler.original_memory_size(), uncompressed_size);
 
+  histogram_tester.ExpectTotalCount(
+      "Blink.Canvas.2DLayerBridge.Compression.Ratio", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Canvas.2DLayerBridge.Compression.SnapshotSizeKb",
+      uncompressed_size / 1024, 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime", 0);
+
   SetIsInHiddenPage(bridge.get(), platform, false);
   EXPECT_FALSE(handler.is_encoded());
+  histogram_tester.ExpectTotalCount(
+      "Blink.Canvas.2DLayerBridge.Compression.DecompressionTime", 1);
 
   EXPECT_TRUE(bridge->IsAccelerated());
   EXPECT_FALSE(bridge->IsHibernating());
