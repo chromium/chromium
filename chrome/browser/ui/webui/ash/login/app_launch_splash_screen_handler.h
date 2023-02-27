@@ -31,9 +31,6 @@ class AppLaunchSplashScreenView {
     // Invoked when network state is changed. `online` is true if the device
     // is connected to the Internet.
     virtual void OnNetworkStateChanged(bool online) {}
-
-    // Invoked when the splash screen view is being deleted.
-    virtual void OnDeletingSplashScreenView() {}
   };
 
   enum class AppLaunchState {

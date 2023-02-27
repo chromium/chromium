@@ -171,8 +171,6 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     task_environment()->FastForwardBy(kDefaultKioskSplashScreenMinTime);
   }
 
-  void DeleteSplashScreen() { controller_->OnDeletingSplashScreenView(); }
-
   void SetOnline(bool online) { view_->SetNetworkReady(online); }
 
   void OnNetworkConfigRequested() { controller().OnNetworkConfigRequested(); }

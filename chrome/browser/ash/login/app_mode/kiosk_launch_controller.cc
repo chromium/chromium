@@ -404,12 +404,6 @@ void KioskLaunchController::OnCancelAppLaunch() {
   chrome::AttemptUserExit();
 }
 
-void KioskLaunchController::OnDeletingSplashScreenView() {
-  splash_screen_view_ = nullptr;
-  RecordKioskLaunchDuration(kiosk_app_id_.type,
-                            base::Time::Now() - launcher_start_time_);
-}
-
 KioskAppManagerBase::App KioskLaunchController::GetAppData() {
   DCHECK(kiosk_app_id_.account_id.has_value());
   switch (kiosk_app_id_.type) {
@@ -452,6 +446,7 @@ void KioskLaunchController::CleanUp() {
   network_wait_timer_.Stop();
   splash_wait_timer_.Stop();
 
+  splash_screen_view_ = nullptr;
   force_install_observer_.reset();
 
   kiosk_profile_loader_.reset();
@@ -459,6 +454,9 @@ void KioskLaunchController::CleanUp() {
   if (host_) {
     host_->Finalize(base::OnceClosure());
   }
+  RecordKioskLaunchDuration(kiosk_app_id_.type,
+                            base::Time::Now() - launcher_start_time_);
+
   // Make sure that any kiosk launch errors get written to disk before we kill
   // the browser.
   g_browser_process->local_state()->CommitPendingWrite();

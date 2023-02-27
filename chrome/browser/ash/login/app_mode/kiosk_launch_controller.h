@@ -170,7 +170,6 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
   // `AppLaunchSplashScreenView::Delegate`
   void OnConfigureNetwork() override;
-  void OnDeletingSplashScreenView() override;
   void OnNetworkConfigFinished() override;
   void OnNetworkStateChanged(bool online) override;
 
