@@ -25,6 +25,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -3605,11 +3606,10 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
       ShellUtil::GetFileHandlerProgIdsForAppId(prog_id);
 
   base::win::RegKey key;
-  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
   for (const auto& file_handler_prog_id : file_handler_prog_ids) {
     const std::vector<std::wstring> supported_file_extensions =
         GetFileExtensionsForProgId(file_handler_prog_id);
-    std::wstring extension = converter.from_bytes("." + file_extension_str);
+    std::wstring extension = base::UTF8ToWide("." + file_extension_str);
     if (base::Contains(supported_file_extensions, extension)) {
       const std::wstring reg_key = std::wstring(ShellUtil::kRegClasses) +
                                    base::FilePath::kSeparators[0] + extension +

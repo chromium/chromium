@@ -2266,9 +2266,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler,
     const std::vector<std::wstring> file_extensions =
         GetFileExtensionsForProgId(file_handler_prog_id);
     for (const auto& file_extension : file_extensions) {
-      std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-      const std::string extension =
-          converter.to_bytes(file_extension.substr(1));
+      const std::string extension = base::WideToUTF8(file_extension.substr(1));
       EXPECT_TRUE(base::Contains(expected_extensions, extension))
           << "Missing file extension: " << extension;
       const std::wstring reg_key =

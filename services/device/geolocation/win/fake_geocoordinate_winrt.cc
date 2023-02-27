@@ -19,11 +19,30 @@ FakeGeocoordinateData::FakeGeocoordinateData() = default;
 FakeGeocoordinateData::FakeGeocoordinateData(const FakeGeocoordinateData& obj) =
     default;
 
+FakeGeopoint::FakeGeopoint(const FakeGeocoordinateData& position_data)
+    : position_data_(position_data) {}
+
+FakeGeopoint::~FakeGeopoint() = default;
+
+IFACEMETHODIMP FakeGeopoint::get_Position(
+    ABI::Windows::Devices::Geolocation::BasicGeoposition* value) {
+  value->Latitude = position_data_.latitude;
+  value->Longitude = position_data_.longitude;
+  value->Altitude = position_data_.altitude.value_or(0.0);
+  return S_OK;
+}
+
 FakeGeocoordinate::FakeGeocoordinate(
     std::unique_ptr<FakeGeocoordinateData> position_data)
     : position_data_(std::move(position_data)) {}
 
 FakeGeocoordinate::~FakeGeocoordinate() = default;
+
+IFACEMETHODIMP FakeGeocoordinate::get_Point(
+    ABI::Windows::Devices::Geolocation::IGeopoint** value) {
+  *value = Make<FakeGeopoint>(*position_data_).Detach();
+  return S_OK;
+}
 
 IFACEMETHODIMP FakeGeocoordinate::get_Latitude(DOUBLE* value) {
   *value = position_data_->latitude;

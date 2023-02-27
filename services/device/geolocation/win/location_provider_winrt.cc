@@ -27,9 +27,12 @@ using ABI::Windows::Devices::Enumeration::DeviceAccessStatus;
 using ABI::Windows::Devices::Enumeration::DeviceClass;
 using ABI::Windows::Devices::Enumeration::IDeviceAccessInformation;
 using ABI::Windows::Devices::Enumeration::IDeviceAccessInformationStatics;
+using ABI::Windows::Devices::Geolocation::BasicGeoposition;
 using ABI::Windows::Devices::Geolocation::Geolocator;
 using ABI::Windows::Devices::Geolocation::IGeocoordinate;
+using ABI::Windows::Devices::Geolocation::IGeocoordinateWithPoint;
 using ABI::Windows::Devices::Geolocation::IGeolocator;
+using ABI::Windows::Devices::Geolocation::IGeopoint;
 using ABI::Windows::Devices::Geolocation::IGeoposition;
 using ABI::Windows::Devices::Geolocation::IPositionChangedEventArgs;
 using ABI::Windows::Devices::Geolocation::IStatusChangedEventArgs;
@@ -111,6 +114,29 @@ bool IsSystemLocationSettingEnabled() {
 
   return !(status == DeviceAccessStatus::DeviceAccessStatus_DeniedBySystem ||
            status == DeviceAccessStatus::DeviceAccessStatus_DeniedByUser);
+}
+
+absl::optional<BasicGeoposition> GetPositionFromCoordinate(
+    const ComPtr<IGeocoordinate>& coordinate) {
+  ComPtr<IGeocoordinateWithPoint> coordinate_with_point = nullptr;
+  const HRESULT query_result = coordinate.As(&coordinate_with_point);
+  if (FAILED(query_result) || !coordinate_with_point) {
+    return absl::nullopt;
+  }
+
+  ComPtr<IGeopoint> point = nullptr;
+  const HRESULT point_result = coordinate_with_point->get_Point(&point);
+  if (FAILED(point_result) || !point) {
+    return absl::nullopt;
+  }
+
+  BasicGeoposition position;
+  const HRESULT position_result = point->get_Position(&position);
+  if (FAILED(position_result)) {
+    return absl::nullopt;
+  }
+
+  return position;
 }
 
 }  // namespace
@@ -408,19 +434,21 @@ void LocationProviderWinrt::PopulateLocationData(
     return;
   }
 
-  location_data->latitude = GetOptionalDouble([&](DOUBLE* value) -> HRESULT {
-                              return coordinate->get_Latitude(value);
-                            }).value_or(device::mojom::kBadLatitudeLongitude);
-  location_data->longitude = GetOptionalDouble([&](DOUBLE* value) -> HRESULT {
-                               return coordinate->get_Longitude(value);
-                             }).value_or(device::mojom::kBadLatitudeLongitude);
+  const absl::optional<BasicGeoposition> position =
+      GetPositionFromCoordinate(coordinate);
+  if (position) {
+    location_data->latitude = position->Latitude;
+    location_data->longitude = position->Longitude;
+    location_data->altitude = position->Altitude;
+  } else {
+    location_data->latitude = device::mojom::kBadLatitudeLongitude;
+    location_data->longitude = device::mojom::kBadLatitudeLongitude;
+    location_data->altitude = device::mojom::kBadAltitude;
+  }
+
   location_data->accuracy = GetOptionalDouble([&](DOUBLE* value) -> HRESULT {
                               return coordinate->get_Accuracy(value);
                             }).value_or(device::mojom::kBadAccuracy);
-  location_data->altitude =
-      GetReferenceOptionalDouble([&](IReference<DOUBLE>** value) -> HRESULT {
-        return coordinate->get_Altitude(value);
-      }).value_or(device::mojom::kBadAltitude);
   location_data->altitude_accuracy =
       GetReferenceOptionalDouble([&](IReference<DOUBLE>** value) -> HRESULT {
         return coordinate->get_AltitudeAccuracy(value);
@@ -434,6 +462,11 @@ void LocationProviderWinrt::PopulateLocationData(
         return coordinate->get_Speed(value);
       }).value_or(device::mojom::kBadSpeed);
   location_data->timestamp = base::Time::Now();
+
+  // Overwrite the altitude if the accuracy is known to be bad.
+  if (location_data->altitude_accuracy == device::mojom::kBadAccuracy) {
+    location_data->altitude = device::mojom::kBadAltitude;
+  }
 }
 
 HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {

@@ -57,6 +57,7 @@
 #include "base/containers/flat_set.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/shortcut.h"
@@ -209,13 +210,11 @@ bool OsIntegrationTestOverride::IsFileExtensionHandled(
   const std::wstring prog_id = GetProgIdForApp(profile->GetPath(), app_id);
   const std::vector<std::wstring> file_handler_prog_ids =
       ShellUtil::GetFileHandlerProgIdsForAppId(prog_id);
-
+  const std::wstring extension = base::UTF8ToWide(file_extension);
   base::win::RegKey key;
-  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
   for (const auto& file_handler_prog_id : file_handler_prog_ids) {
     const std::vector<std::wstring> supported_file_extensions =
         GetFileExtensionsForProgId(file_handler_prog_id);
-    std::wstring extension = converter.from_bytes(file_extension);
     if (base::Contains(supported_file_extensions, extension)) {
       const std::wstring reg_key = std::wstring(ShellUtil::kRegClasses) +
                                    base::FilePath::kSeparators[0] + extension +
@@ -319,13 +318,14 @@ base::FilePath OsIntegrationTestOverride::GetShortcutPath(
     const AppId& app_id,
     const std::string& app_name) {
 #if BUILDFLAG(IS_WIN)
-  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
   base::FileEnumerator enumerator(shortcut_dir, false,
                                   base::FileEnumerator::FILES);
   while (!enumerator.Next().empty()) {
-    std::wstring shortcut_filename = enumerator.GetInfo().GetName().value();
-    if (re2::RE2::FullMatch(converter.to_bytes(shortcut_filename),
-                            app_name + "(.*).lnk")) {
+    const std::wstring shortcut_filename =
+        enumerator.GetInfo().GetName().value();
+    const std::string narrowed_filename =
+        base::WideToUTF8(enumerator.GetInfo().GetName().value());
+    if (re2::RE2::FullMatch(narrowed_filename, app_name + "(.*).lnk")) {
       base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
       if (GetShortcutProfile(shortcut_path) == profile->GetBaseName()) {
         return shortcut_path;
