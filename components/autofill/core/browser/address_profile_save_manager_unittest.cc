@@ -28,8 +28,8 @@ namespace {
 
 using UkmAddressProfileImportType =
     ukm::builders::Autofill_AddressProfileImport;
-
 using UserDecision = AutofillClient::SaveAddressProfileOfferUserDecision;
+using autofill_metrics::SettingsVisibleFieldTypeForMetrics;
 
 // Names of histrogram used for metric collection.
 constexpr char kProfileImportTypeHistogram[] =

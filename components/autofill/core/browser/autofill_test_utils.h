@@ -268,8 +268,9 @@ AutofillProfile GetServerProfile();
 AutofillProfile GetServerProfile2();
 
 // Sets the `profile`s source and initial creator to match `category`.
-void SetProfileCategory(AutofillProfile& profile,
-                        AutofillProfileSourceCategory category);
+void SetProfileCategory(
+    AutofillProfile& profile,
+    autofill_metrics::AutofillProfileSourceCategory category);
 
 // Returns an IBAN full of dummy info.
 IBAN GetIBAN();

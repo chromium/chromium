@@ -9,7 +9,7 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 
-namespace autofill {
+namespace autofill::autofill_metrics {
 
 using FieldFillingStatus = AutofillMetrics::FieldFillingStatus;
 
@@ -145,4 +145,4 @@ SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
   }
 }
 
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics

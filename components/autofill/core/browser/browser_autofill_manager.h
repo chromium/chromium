@@ -701,7 +701,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Returns an appropriate EventFormLogger for the given |field_type_group|.
   // May return nullptr.
-  FormEventLoggerBase* GetEventFormLogger(
+  autofill_metrics::FormEventLoggerBase* GetEventFormLogger(
       FieldTypeGroup field_type_group) const;
 
   void SetDataList(const std::vector<std::u16string>& values,
@@ -739,8 +739,10 @@ class BrowserAutofillManager : public AutofillManager,
   std::unique_ptr<SingleFieldFormFillRouter> single_field_form_fill_router_;
 
   // Utilities for logging form events.
-  std::unique_ptr<AddressFormEventLogger> address_form_event_logger_;
-  std::unique_ptr<CreditCardFormEventLogger> credit_card_form_event_logger_;
+  std::unique_ptr<autofill_metrics::AddressFormEventLogger>
+      address_form_event_logger_;
+  std::unique_ptr<autofill_metrics::CreditCardFormEventLogger>
+      credit_card_form_event_logger_;
 
   // Have we logged whether Autofill is enabled for this page load?
   bool has_logged_autofill_enabled_ = false;

@@ -18,7 +18,7 @@
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 
-namespace autofill {
+namespace autofill::autofill_metrics {
 
 AddressFormEventLogger::AddressFormEventLogger(
     bool is_in_any_main_frame,
@@ -164,4 +164,4 @@ void AddressFormEventLogger::RecordFillingCorrectness(LogBuffer& logs) const {
                             !has_logged_edited_autofilled_field_);
 }
 
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics

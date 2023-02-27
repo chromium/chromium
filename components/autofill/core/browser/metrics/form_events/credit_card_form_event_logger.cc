@@ -23,7 +23,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-namespace autofill {
+namespace autofill::autofill_metrics {
 
 CreditCardFormEventLogger::CreditCardFormEventLogger(
     bool is_in_any_main_frame,
@@ -391,4 +391,4 @@ bool CreditCardFormEventLogger::DoSuggestionsIncludeVirtualCard() {
   return base::ranges::any_of(suggestions_, is_virtual_card);
 }
 
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics

@@ -1047,8 +1047,8 @@ void FormStructure::LogQualityMetrics(
 
   // Tracks how many fields are filled, unfilled or corrected for the address
   // and credit card forms.
-  FormGroupFillingStats address_field_stats;
-  FormGroupFillingStats cc_field_stats;
+  autofill_metrics::FormGroupFillingStats address_field_stats;
+  autofill_metrics::FormGroupFillingStats cc_field_stats;
 
   // Count the number of filled (and corrected) fields which used to not get a
   // type prediction due to autocomplete=unrecognized. Note that credit card
@@ -1136,12 +1136,13 @@ void FormStructure::LogQualityMetrics(
 
       if (is_address_form_field || credit_card_form_field) {
         // Address and credit cards fields are mutually exclusive.
-        FormGroupFillingStats& group_stats =
+        autofill_metrics::FormGroupFillingStats& group_stats =
             is_address_form_field ? address_field_stats : cc_field_stats;
 
         // Get the filling status of this field and add it to the form group
         // counter.
-        group_stats.AddFieldFillingStatus(GetFieldFillingStatus(*field));
+        group_stats.AddFieldFillingStatus(
+            autofill_metrics::GetFieldFillingStatus(*field));
       }
     }
 

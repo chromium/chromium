@@ -8711,10 +8711,12 @@ TEST_F(BrowserAutofillManagerTest,
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness.Address",
                                      AutofillMetrics::SUGGESTIONS_SHOWN_ONCE,
                                      1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // No Autocomplete or credit cards logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -8748,10 +8750,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_AddressOnly) {
   browser_autofill_manager_->DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
 
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.AddressOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.AddressOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.AddressOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.AddressOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -8793,10 +8797,12 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_->DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
 
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.AddressOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.AddressOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.AddressOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.AddressOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -8836,10 +8842,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_ContactOnly) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.ContactOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.ContactOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.ContactOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.ContactOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -8882,10 +8890,12 @@ TEST_F(BrowserAutofillManagerTest,
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.ContactOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.ContactOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.ContactOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.ContactOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -8928,10 +8938,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_PhoneOnly) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.PhoneOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.PhoneOnly",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.PhoneOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.PhoneOnly",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -8971,10 +8983,12 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_LogByType_Other) {
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidShowSuggestions(
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.Other",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address.Other",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.Other",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address.Other",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9019,16 +9033,16 @@ TEST_F(BrowserAutofillManagerTest,
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmail",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmail",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9070,16 +9084,16 @@ TEST_F(BrowserAutofillManagerTest,
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmail",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmail",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9123,16 +9137,16 @@ TEST_F(BrowserAutofillManagerTest,
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusPhone",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusPhone",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9174,16 +9188,16 @@ TEST_F(BrowserAutofillManagerTest,
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusPhone",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusPhone",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9229,16 +9243,16 @@ TEST_F(BrowserAutofillManagerTest,
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmailPlusPhone",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmailPlusPhone",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9279,16 +9293,16 @@ TEST_F(BrowserAutofillManagerTest,
       /*has_autofill_suggestions=*/true, form, form.fields[0]);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmailPlusPhone",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusEmailPlusPhone",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
   histogram_tester.ExpectBucketCount(
       "Autofill.FormEvents.Address.AddressPlusContact",
-      FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // Logging is not done for other types of address forms.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9319,10 +9333,12 @@ TEST_F(BrowserAutofillManagerTest,
   histogram_tester.ExpectBucketCount("Autofill.UserHappiness.CreditCard",
                                      AutofillMetrics::SUGGESTIONS_SHOWN_ONCE,
                                      1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN, 1);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                     FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard",
+      autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 1);
 
   // No Autocomplete or address logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9338,8 +9354,9 @@ TEST_F(BrowserAutofillManagerTest,
 
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidSuppressPopup(form, form.fields[0]);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.Address",
-                                     FORM_EVENT_POPUP_SUPPRESSED, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.Address",
+      autofill_metrics::FORM_EVENT_POPUP_SUPPRESSED, 1);
 
   // No Autocomplete or credit cards logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -9356,8 +9373,9 @@ TEST_F(BrowserAutofillManagerTest,
   browser_autofill_manager_->OnFormsSeen({form}, {});
   base::HistogramTester histogram_tester;
   browser_autofill_manager_->DidSuppressPopup(form, form.fields[0]);
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard",
-                                     FORM_EVENT_POPUP_SUPPRESSED, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard",
+      autofill_metrics::FORM_EVENT_POPUP_SUPPRESSED, 1);
 
   // No Autocomplete or address logs.
   const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
@@ -10866,7 +10884,7 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
   base::HistogramTester histogram_tester_;
 
   // Shorter alias of the Autofill.FormEvents we are interested in.
-  const FormEvent kEvent =
+  const autofill_metrics::FormEvent kEvent = autofill_metrics::
       FORM_EVENT_AUTOFILLED_FIELD_CLEARED_BY_JAVASCRIPT_AFTER_FILL_ONCE;
 };
 

@@ -46,9 +46,11 @@ namespace autofill {
 
 class AutofillField;
 class CreditCard;
-class FormEventLoggerBase;
 
+namespace autofill_metrics {
+class FormEventLoggerBase;
 struct FormGroupFillingStats;
+}  // namespace autofill_metrics
 
 // A given maximum is enforced to minimize the number of buckets generated.
 extern const int kMaxBucketsCount;
@@ -608,7 +610,8 @@ class AutofillMetrics {
     kMaxValue = kLeftEmpty
   };
 
-  using FormEventSet = DenseSet<FormEvent, NUM_FORM_EVENTS>;
+  using FormEventSet =
+      DenseSet<autofill_metrics::FormEvent, autofill_metrics::NUM_FORM_EVENTS>;
 
   // Utility class for determining the seamlessness of a credit card fill.
   class CreditCardSeamlessness {
@@ -641,8 +644,8 @@ class AutofillMetrics {
 
     // TODO(crbug.com/1275953): Remove once the new UKM metric has gained
     // traction.
-    FormEvent QualitativeFillableFormEvent() const;
-    FormEvent QualitativeFillFormEvent() const;
+    autofill_metrics::FormEvent QualitativeFillableFormEvent() const;
+    autofill_metrics::FormEvent QualitativeFillFormEvent() const;
 
     // Returns a four-bit bitmask.
     uint8_t BitmaskMetric() const;
@@ -727,7 +730,7 @@ class AutofillMetrics {
                        const FormInteractionCounts& form_interaction_counts,
                        const FormInteractionsFlowId& flow_id,
                        absl::optional<int64_t> fast_checkout_run_id);
-    void LogFormEvent(FormEvent form_event,
+    void LogFormEvent(autofill_metrics::FormEvent form_event,
                       const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
 
@@ -1063,8 +1066,9 @@ class AutofillMetrics {
   // Logs the `filling_stats` of the fields within a `form_type`. The filling
   // status consistent of the number of accepted, corrected or and unfilled
   // fields.
-  static void LogFieldFillingStats(FormType form_type,
-                                   const FormGroupFillingStats& filling_stats);
+  static void LogFieldFillingStats(
+      FormType form_type,
+      const autofill_metrics::FormGroupFillingStats& filling_stats);
 
   // Logs the number of sections and the number of fields/section.
   static void LogSectioningMetrics(
@@ -1094,7 +1098,7 @@ class AutofillMetrics {
   static void LogAutofillPerfectFilling(bool is_address, bool perfect_filling);
 
   struct LogCreditCardSeamlessnessParam {
-    const raw_ref<FormEventLoggerBase> event_logger;
+    const raw_ref<autofill_metrics::FormEventLoggerBase> event_logger;
     const raw_ref<const FormStructure> form;
     const raw_ref<const AutofillField> field;
     const raw_ref<const base::flat_set<FieldGlobalId>> newly_filled_fields;

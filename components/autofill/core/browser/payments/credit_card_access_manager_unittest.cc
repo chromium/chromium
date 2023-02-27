@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
@@ -94,6 +95,8 @@ const char16_t kTestNumber16[] = u"4234567890123456";
 const char16_t kTestCvc16[] = u"123";
 const char kTestServerId[] = "server_id_1";
 const char kTestServerId2[] = "server_id_2";
+
+using autofill_metrics::CreditCardFormEventLogger;
 
 #if !BUILDFLAG(IS_IOS)
 const char kTestCvc[] = "123";

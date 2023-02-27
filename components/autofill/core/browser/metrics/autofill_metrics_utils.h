@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
-namespace autofill {
+namespace autofill::autofill_metrics {
 
 // Helper struct to count the `FieldFillingStatus` for a form group like
 // addresses and credit cards.
@@ -98,6 +98,6 @@ enum class SettingsVisibleFieldTypeForMetrics {
 SettingsVisibleFieldTypeForMetrics ConvertSettingsVisibleFieldTypeForMetrics(
     ServerFieldType field_type);
 
-}  // namespace autofill
+}  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_

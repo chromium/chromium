@@ -60,7 +60,7 @@ CreditCardAccessManager::CreditCardAccessManager(
     AutofillDriver* driver,
     AutofillClient* client,
     PersonalDataManager* personal_data_manager,
-    CreditCardFormEventLogger* form_event_logger)
+    autofill_metrics::CreditCardFormEventLogger* form_event_logger)
     : driver_(driver),
       client_(client),
       payments_client_(client_->GetPaymentsClient()),
