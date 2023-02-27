@@ -11,6 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_index/content_index_provider_impl.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_model_utils.h"
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -45,18 +46,6 @@ constexpr base::TimeDelta kShowPartialViewMinInterval = base::Seconds(15);
 bool FindOfflineItemByContentId(const ContentId& to_find,
                                 const OfflineItem& candidate) {
   return candidate.id == to_find;
-}
-
-bool DownloadUIModelIsRecent(const DownloadUIModel* model,
-                             base::Time cutoff_time) {
-  return ((model->GetStartTime().is_null() && !model->IsDone()) ||
-          model->GetStartTime() > cutoff_time);
-}
-
-bool IsPendingDeepScanning(const DownloadUIModel& model) {
-  return model.GetState() == download::DownloadItem::IN_PROGRESS &&
-         model.GetDangerType() ==
-             download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
 }
 
 using DownloadUIModelPtrList = std::list<DownloadUIModelPtr>;
@@ -262,7 +251,7 @@ void DownloadBubbleUIController::OnItemUpdated(
   bool was_added = MaybeAddOfflineItem(item, /*is_new=*/false);
   OfflineItemModel model(offline_manager_, item);
   display_controller_->OnUpdatedItem(
-      model.IsDone(), IsPendingDeepScanning(model),
+      model.IsDone(), IsPendingDeepScanning(&model),
       was_added &&
           (browser_ == chrome::FindLastActiveWithProfile(profile_.get())));
 }
@@ -275,7 +264,7 @@ void DownloadBubbleUIController::OnDownloadUpdated(
   DownloadItemModel model(item);
   if (manager != download_notifier_.GetManager()) {
     display_controller_->OnUpdatedItem(item->IsDone(),
-                                       IsPendingDeepScanning(model),
+                                       IsPendingDeepScanning(&model),
                                        /*may_show_details=*/false);
     return;
   }
@@ -283,7 +272,7 @@ void DownloadBubbleUIController::OnDownloadUpdated(
       model.ShouldShowInBubble() &&
       (browser_ == chrome::FindLastActiveWithProfile(profile_.get()));
   display_controller_->OnUpdatedItem(
-      item->IsDone(), IsPendingDeepScanning(model), may_show_details);
+      item->IsDone(), IsPendingDeepScanning(&model), may_show_details);
 }
 
 void DownloadBubbleUIController::PruneOfflineItems() {
@@ -361,8 +350,9 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
     if (!is_main_view && model->WasActionedOn()) {
       continue;
     }
-    // Partial view entries are removed if viewed on the main view.
-    if (is_main_view) {
+    // Partial view entries are removed if viewed on the main view after
+    // completion.
+    if (is_main_view && !IsModelInProgress(model.get())) {
       model->SetActionedOn(true);
     }
     items_to_return.push_back(std::move(model));

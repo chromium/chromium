@@ -194,6 +194,7 @@ class DownloadBubbleUIControllerTest : public testing::Test {
         .WillRepeatedly(Return(download::DownloadItem::DownloadCreationType::
                                    TYPE_ACTIVE_DOWNLOAD));
     EXPECT_CALL(item(index), IsPaused()).WillRepeatedly(Return(false));
+    EXPECT_CALL(item(index), IsDangerous()).WillRepeatedly(Return(false));
     // Functions called when checking ShouldShowDownloadStartedAnimation().
     EXPECT_CALL(item(index), IsSavePackageDownload())
         .WillRepeatedly(Return(false));
@@ -434,7 +435,7 @@ TEST_F(DownloadBubbleUIControllerTest, ListIsCappedAndMostRecent) {
 }
 
 TEST_F(DownloadBubbleUIControllerTest,
-       OpeningMainViewRemovesEntryFromPartialView) {
+       OpeningMainViewRemovesCompletedEntryFromPartialView) {
   std::vector<std::string> ids = {"Download 1", "Offline 1"};
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::IN_PROGRESS, ids[0]);
@@ -443,9 +444,28 @@ TEST_F(DownloadBubbleUIControllerTest,
   EXPECT_EQ(controller().GetPartialView().size(), 2ul);
   EXPECT_EQ(second_controller().GetPartialView().size(), 2ul);
 
-  EXPECT_EQ(controller().GetMainView().size(), 2ul);
+  UpdateDownloadItem(/*item_index=*/0, DownloadState::COMPLETE);
+  // Completed offline item is removed.
+  UpdateOfflineItem(/*item_index=*/0, OfflineItemState::COMPLETE);
+  EXPECT_EQ(controller().GetMainView().size(), 1ul);
+  // Download was removed from partial view because it is completed.
   EXPECT_EQ(controller().GetPartialView().size(), 0ul);
   EXPECT_EQ(second_controller().GetPartialView().size(), 0ul);
+}
+
+TEST_F(DownloadBubbleUIControllerTest,
+       OpeningMainViewDoesNotRemoveInProgressEntryFromPartialView) {
+  std::vector<std::string> ids = {"Download 1", "Offline 1"};
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS, ids[0]);
+  InitOfflineItem(OfflineItemState::IN_PROGRESS, ids[1]);
+
+  EXPECT_EQ(controller().GetPartialView().size(), 2ul);
+
+  // This does not remove the entries from the partial view because the items
+  // are in progress.
+  EXPECT_EQ(controller().GetMainView().size(), 2ul);
+  EXPECT_EQ(controller().GetPartialView().size(), 2ul);
 }
 
 // Tests that no items are returned (i.e. no partial view will be shown) if it
@@ -457,7 +477,7 @@ TEST_F(DownloadBubbleUIControllerTest, NoItemsReturnedForPartialViewTooSoon) {
   // First time showing the partial view should work.
   EXPECT_CALL(display_controller(), OnNewItem(true)).Times(1);
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar1.pdf"),
-                   download::DownloadItem::IN_PROGRESS, ids[0]);
+                   download::DownloadItem::COMPLETE, ids[0]);
   EXPECT_EQ(controller().GetPartialView().size(), 1u);
 
   // No items are returned for a partial view because it is too soon.
