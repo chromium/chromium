@@ -608,6 +608,7 @@ test("components_unittests") {
   if (is_win) {
     deps += [
       "//components/browser_watcher:unit_tests",
+      "//components/stability_report:unit_tests",
       "//components/winhttp:unit_tests",
     ]
   }
