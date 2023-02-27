@@ -262,16 +262,6 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
     return false;
   }
 
-  // Profile migration should only be run for LacrosOnly i.e. no migration
-  // should run if Ash is still used as a browser.
-  if (IsAshWebBrowserEnabledForMigration(user, policy_init_state)) {
-    // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
-    // this log message.
-    LOG(WARNING)
-        << "Profile migration is only avaiable if Lacros is the only browser.";
-    return false;
-  }
-
   int attempts = GetMigrationAttemptCountForUser(local_state, user_id_hash);
   // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
   // log level to VLOG(1).
