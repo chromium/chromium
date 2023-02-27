@@ -25,8 +25,6 @@ namespace features_util {
 // As a consequence, all the corresponding setters (opting in/out, setting the
 // default store, etc) only exist on desktop. The getters exist on mobile too,
 // but have different (usually simpler) implementation.
-// TODO(crbug.com/1392699): Reorder the methods to group desktop-only ones vs
-// all-platform ones.
 
 // Whether the current signed-in user (aka unconsented primary account) has
 // opted in to use the Google account storage for passwords (as opposed to
@@ -61,30 +59,6 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service,
                                       const GURL& current_page_url);
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-// Sets opt-in to using account storage for passwords for the current
-// signed-in user (unconsented primary account).
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::OptInToAccountStorage.
-void OptInToAccountStorage(PrefService* pref_service,
-                           const syncer::SyncService* sync_service);
-
-// Clears the opt-in to using account storage for passwords for the
-// current signed-in user (unconsented primary account), as well as all other
-// associated settings (e.g. default store choice).
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::OptOutOfAccountStorageAndClearSettings.
-void OptOutOfAccountStorageAndClearSettings(
-    PrefService* pref_service,
-    const syncer::SyncService* sync_service);
-
-// Like OptOutOfAccountStorageAndClearSettings(), but applies to a specific
-// given |gaia_id| rather than to the current signed-in user.
-void OptOutOfAccountStorageAndClearSettingsForAccount(
-    PrefService* pref_service,
-    const std::string& gaia_id);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
 // Whether it makes sense to ask the user to move a password to their account or
 // in which store to save a password (i.e. profile or account store). This
 // is true if the user has opted in already, or hasn't opted in but all other
@@ -97,16 +71,6 @@ void OptOutOfAccountStorageAndClearSettingsForAccount(
 // store choice".
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service);
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-// Sets the default storage location for signed-in but non-syncing users. This
-// store is used for saving new credentials and adding blacking listing entries.
-// |pref_service| and |sync_service| must not be null.
-// See PasswordFeatureManager::SetDefaultPasswordStore.
-void SetDefaultPasswordStore(PrefService* pref_service,
-                             const syncer::SyncService* sync_service,
-                             PasswordForm::Store default_store);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 // Returns the default storage location for signed-in but non-syncing users
 // (i.e. will new passwords be saved to locally or to the account by default).
@@ -130,22 +94,6 @@ PasswordForm::Store GetDefaultPasswordStore(
 bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
                                const syncer::SyncService* sync_service);
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-// Clears all account-storage-related settings for all users *except* the ones
-// in the passed-in |gaia_ids|. Most notably, this includes the opt-in, but also
-// all other related settings like the default password store.
-// |pref_service| must not be null.
-void KeepAccountStorageSettingsOnlyForUsers(
-    PrefService* pref_service,
-    const std::vector<std::string>& gaia_ids);
-
-// Clears all account-storage-related settings for all users. Most notably, this
-// includes the opt-in, but also all other related settings like the default
-// password store. Meant to be called when account cookies were cleared.
-// |pref_service| must not be null.
-void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
 // See definition of PasswordAccountStorageUserState.
 metrics_util::PasswordAccountStorageUserState
 ComputePasswordAccountStorageUserState(const PrefService* pref_service,
@@ -160,6 +108,50 @@ ComputePasswordAccountStorageUsageLevel(
     const syncer::SyncService* sync_service);
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+// Sets opt-in to using account storage for passwords for the current
+// signed-in user (unconsented primary account).
+// |pref_service| and |sync_service| must not be null.
+// See PasswordFeatureManager::OptInToAccountStorage.
+void OptInToAccountStorage(PrefService* pref_service,
+                           const syncer::SyncService* sync_service);
+
+// Clears the opt-in to using account storage for passwords for the
+// current signed-in user (unconsented primary account), as well as all other
+// associated settings (e.g. default store choice).
+// |pref_service| and |sync_service| must not be null.
+// See PasswordFeatureManager::OptOutOfAccountStorageAndClearSettings.
+void OptOutOfAccountStorageAndClearSettings(
+    PrefService* pref_service,
+    const syncer::SyncService* sync_service);
+
+// Like OptOutOfAccountStorageAndClearSettings(), but applies to a specific
+// given |gaia_id| rather than to the current signed-in user.
+void OptOutOfAccountStorageAndClearSettingsForAccount(
+    PrefService* pref_service,
+    const std::string& gaia_id);
+
+// Sets the default storage location for signed-in but non-syncing users. This
+// store is used for saving new credentials and adding blacking listing entries.
+// |pref_service| and |sync_service| must not be null.
+// See PasswordFeatureManager::SetDefaultPasswordStore.
+void SetDefaultPasswordStore(PrefService* pref_service,
+                             const syncer::SyncService* sync_service,
+                             PasswordForm::Store default_store);
+
+// Clears all account-storage-related settings for all users *except* the ones
+// in the passed-in |gaia_ids|. Most notably, this includes the opt-in, but also
+// all other related settings like the default password store.
+// |pref_service| must not be null.
+void KeepAccountStorageSettingsOnlyForUsers(
+    PrefService* pref_service,
+    const std::vector<std::string>& gaia_ids);
+
+// Clears all account-storage-related settings for all users. Most notably, this
+// includes the opt-in, but also all other related settings like the default
+// password store. Meant to be called when account cookies were cleared.
+// |pref_service| must not be null.
+void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service);
+
 // Increases the count of how many times Chrome automatically offered a user
 // not opted-in to the account-scoped passwords storage to move a password to
 // their account. Should only be called if the user is signed-in and not

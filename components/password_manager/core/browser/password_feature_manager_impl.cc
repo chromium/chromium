@@ -34,78 +34,6 @@ bool PasswordFeatureManagerImpl::IsGenerationEnabled() const {
   }
 }
 
-bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
-  return features_util::IsOptedInForAccountStorage(pref_service_,
-                                                   sync_service_);
-}
-
-bool PasswordFeatureManagerImpl::ShouldShowAccountStorageOptIn() const {
-  return features_util::ShouldShowAccountStorageOptIn(pref_service_,
-                                                      sync_service_);
-}
-
-bool PasswordFeatureManagerImpl::ShouldShowAccountStorageReSignin(
-    const GURL& current_page_url) const {
-  return features_util::ShouldShowAccountStorageReSignin(
-      pref_service_, sync_service_, current_page_url);
-}
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-void PasswordFeatureManagerImpl::OptInToAccountStorage() {
-  features_util::OptInToAccountStorage(pref_service_, sync_service_);
-}
-
-void PasswordFeatureManagerImpl::OptOutOfAccountStorageAndClearSettings() {
-  features_util::OptOutOfAccountStorageAndClearSettings(pref_service_,
-                                                        sync_service_);
-}
-
-void PasswordFeatureManagerImpl::SetDefaultPasswordStore(
-    const PasswordForm::Store& store) {
-  features_util::SetDefaultPasswordStore(pref_service_, sync_service_, store);
-}
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-bool PasswordFeatureManagerImpl::ShouldShowAccountStorageBubbleUi() const {
-  return features_util::ShouldShowAccountStorageBubbleUi(pref_service_,
-                                                         sync_service_);
-}
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-bool PasswordFeatureManagerImpl::
-    ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
-  return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
-}
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
-    const {
-  DCHECK(pref_service_);
-  return features_util::GetDefaultPasswordStore(pref_service_, sync_service_);
-}
-
-bool PasswordFeatureManagerImpl::IsDefaultPasswordStoreSet() const {
-  return features_util::IsDefaultPasswordStoreSet(pref_service_, sync_service_);
-}
-
-metrics_util::PasswordAccountStorageUsageLevel
-PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
-  return features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
-                                                                sync_service_);
-}
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-void PasswordFeatureManagerImpl::RecordMoveOfferedToNonOptedInUser() {
-  features_util::RecordMoveOfferedToNonOptedInUser(pref_service_,
-                                                   sync_service_);
-}
-
-int PasswordFeatureManagerImpl::GetMoveOfferedToNonOptedInUserCount() const {
-  return features_util::GetMoveOfferedToNonOptedInUserCount(pref_service_,
-                                                            sync_service_);
-}
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
 bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
     const {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -129,5 +57,73 @@ bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
   return false;
 #endif
 }
+
+bool PasswordFeatureManagerImpl::IsOptedInForAccountStorage() const {
+  return features_util::IsOptedInForAccountStorage(pref_service_,
+                                                   sync_service_);
+}
+
+bool PasswordFeatureManagerImpl::ShouldShowAccountStorageOptIn() const {
+  return features_util::ShouldShowAccountStorageOptIn(pref_service_,
+                                                      sync_service_);
+}
+
+bool PasswordFeatureManagerImpl::ShouldShowAccountStorageReSignin(
+    const GURL& current_page_url) const {
+  return features_util::ShouldShowAccountStorageReSignin(
+      pref_service_, sync_service_, current_page_url);
+}
+
+bool PasswordFeatureManagerImpl::ShouldShowAccountStorageBubbleUi() const {
+  return features_util::ShouldShowAccountStorageBubbleUi(pref_service_,
+                                                         sync_service_);
+}
+
+PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
+    const {
+  DCHECK(pref_service_);
+  return features_util::GetDefaultPasswordStore(pref_service_, sync_service_);
+}
+
+bool PasswordFeatureManagerImpl::IsDefaultPasswordStoreSet() const {
+  return features_util::IsDefaultPasswordStoreSet(pref_service_, sync_service_);
+}
+
+metrics_util::PasswordAccountStorageUsageLevel
+PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
+  return features_util::ComputePasswordAccountStorageUsageLevel(pref_service_,
+                                                                sync_service_);
+}
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+void PasswordFeatureManagerImpl::OptInToAccountStorage() {
+  features_util::OptInToAccountStorage(pref_service_, sync_service_);
+}
+
+void PasswordFeatureManagerImpl::OptOutOfAccountStorageAndClearSettings() {
+  features_util::OptOutOfAccountStorageAndClearSettings(pref_service_,
+                                                        sync_service_);
+}
+
+void PasswordFeatureManagerImpl::SetDefaultPasswordStore(
+    const PasswordForm::Store& store) {
+  features_util::SetDefaultPasswordStore(pref_service_, sync_service_, store);
+}
+
+bool PasswordFeatureManagerImpl::
+    ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
+  return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
+}
+
+void PasswordFeatureManagerImpl::RecordMoveOfferedToNonOptedInUser() {
+  features_util::RecordMoveOfferedToNonOptedInUser(pref_service_,
+                                                   sync_service_);
+}
+
+int PasswordFeatureManagerImpl::GetMoveOfferedToNonOptedInUserCount() const {
+  return features_util::GetMoveOfferedToNonOptedInUserCount(pref_service_,
+                                                            sync_service_);
+}
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

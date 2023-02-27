@@ -32,35 +32,27 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   ~PasswordFeatureManagerImpl() override = default;
 
   bool IsGenerationEnabled() const override;
+
+  bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
+
   bool IsOptedInForAccountStorage() const override;
   bool ShouldShowAccountStorageOptIn() const override;
   bool ShouldShowAccountStorageReSignin(
       const GURL& current_page_url) const override;
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  void OptInToAccountStorage() override;
-  void OptOutOfAccountStorageAndClearSettings() override;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
   bool ShouldShowAccountStorageBubbleUi() const override;
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  void SetDefaultPasswordStore(const PasswordForm::Store& store) override;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   PasswordForm::Store GetDefaultPasswordStore() const override;
   bool IsDefaultPasswordStoreSet() const override;
   metrics_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  void OptInToAccountStorage() override;
+  void OptOutOfAccountStorageAndClearSettings() override;
+  bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
+  void SetDefaultPasswordStore(const PasswordForm::Store& store) override;
   void RecordMoveOfferedToNonOptedInUser() override;
   int GetMoveOfferedToNonOptedInUserCount() const override;
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-
-  bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
  private:
   const raw_ptr<PrefService> pref_service_;

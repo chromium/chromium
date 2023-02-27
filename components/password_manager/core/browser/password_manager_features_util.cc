@@ -237,6 +237,20 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
 #endif
 }
 
+bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
+                                   const syncer::SyncService* sync_service) {
+  DCHECK(pref_service);
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  // Show the opt-in if the user is eligible, but not yet opted in.
+  return IsUserEligibleForAccountStorage(sync_service) &&
+         !IsOptedInForAccountStorage(pref_service, sync_service);
+#else
+  // On Android and iOS, there is no opt-in promo.
+  return false;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+}
+
 bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service,
                                       const GURL& current_page_url) {
@@ -273,18 +287,138 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
 #endif
 }
 
-bool ShouldShowAccountStorageOptIn(const PrefService* pref_service,
-                                   const syncer::SyncService* sync_service) {
+bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
+                                      const syncer::SyncService* sync_service) {
+  // `sync_service` is null in incognito mode, or if --disable-sync was
+  // specified on the command-line.
+  return sync_service && !sync_service->IsSyncFeatureEnabled() &&
+         (IsOptedInForAccountStorage(pref_service, sync_service) ||
+          IsUserEligibleForAccountStorage(sync_service));
+}
+
+PasswordForm::Store GetDefaultPasswordStore(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service) {
   DCHECK(pref_service);
 
+  if (!IsUserEligibleForAccountStorage(sync_service)) {
+    return PasswordForm::Store::kProfileStore;
+  }
+
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  // Show the opt-in if the user is eligible, but not yet opted in.
-  return IsUserEligibleForAccountStorage(sync_service) &&
-         !IsOptedInForAccountStorage(pref_service, sync_service);
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  if (gaia_id.empty()) {
+    return PasswordForm::Store::kProfileStore;
+  }
+
+  PasswordForm::Store default_store =
+      AccountStorageSettingsReader(pref_service,
+                                   GaiaIdHash::FromGaiaId(gaia_id))
+          .GetDefaultStore();
+  // If none of the early-outs above triggered, then we *can* save to the
+  // account store in principle (though the user might not have opted in to that
+  // yet).
+  if (default_store == PasswordForm::Store::kNotSet) {
+    // The default store depends on the opt-in state. If the user has not opted
+    // in, then saves go to the profile store by default. If the user *has*
+    // opted in, then they've chosen to save to the account, so that becomes the
+    // default.
+    bool save_to_profile_store =
+        !IsOptedInForAccountStorage(pref_service, sync_service);
+    return save_to_profile_store ? PasswordForm::Store::kProfileStore
+                                 : PasswordForm::Store::kAccountStore;
+  }
+  return default_store;
 #else
-  // On Android and iOS, there is no opt-in promo.
+  return IsOptedInForAccountStorage(pref_service, sync_service)
+             ? PasswordForm::Store::kAccountStore
+             : PasswordForm::Store::kProfileStore;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+}
+
+bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
+                               const syncer::SyncService* sync_service) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  DCHECK(pref_service);
+
+  if (!sync_service) {
+    return false;
+  }
+
+  std::string gaia_id = sync_service->GetAccountInfo().gaia;
+  if (gaia_id.empty()) {
+    return false;
+  }
+
+  PasswordForm::Store default_store =
+      AccountStorageSettingsReader(pref_service,
+                                   GaiaIdHash::FromGaiaId(gaia_id))
+          .GetDefaultStore();
+  return default_store != PasswordForm::Store::kNotSet;
+#else
+  // The default store is never explicitly set on Android or iOS.
   return false;
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+}
+
+PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service) {
+  DCHECK(pref_service);
+  // The SyncService can be null in incognito, or due to a commandline flag. In
+  // those cases, simply consider the user as signed out.
+  if (!sync_service) {
+    return PasswordAccountStorageUserState::kSignedOutUser;
+  }
+
+  if (sync_service->IsSyncFeatureEnabled()) {
+    return PasswordAccountStorageUserState::kSyncUser;
+  }
+
+  if (sync_service->HasDisableReason(
+          syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
+    // Signed out. Check if any account storage opt-in exists.
+    return ShouldShowAccountStorageReSignin(pref_service, sync_service, GURL())
+               ? PasswordAccountStorageUserState::kSignedOutAccountStoreUser
+               : PasswordAccountStorageUserState::kSignedOutUser;
+  }
+
+  bool saving_locally = IsDefaultPasswordStoreSet(pref_service, sync_service) &&
+                        GetDefaultPasswordStore(pref_service, sync_service) ==
+                            PasswordForm::Store::kProfileStore;
+
+  // Signed in. Check for account storage opt-in.
+  if (IsOptedInForAccountStorage(pref_service, sync_service)) {
+    // Signed in and opted in. Check default storage location.
+    return saving_locally
+               ? PasswordAccountStorageUserState::
+                     kSignedInAccountStoreUserSavingLocally
+               : PasswordAccountStorageUserState::kSignedInAccountStoreUser;
+  }
+
+  // Signed in but not opted in. Check default storage location.
+  return saving_locally
+             ? PasswordAccountStorageUserState::kSignedInUserSavingLocally
+             : PasswordAccountStorageUserState::kSignedInUser;
+}
+
+PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
+    const PrefService* pref_service,
+    const syncer::SyncService* sync_service) {
+  using UserState = PasswordAccountStorageUserState;
+  using UsageLevel = PasswordAccountStorageUsageLevel;
+  switch (ComputePasswordAccountStorageUserState(pref_service, sync_service)) {
+    case UserState::kSignedOutUser:
+    case UserState::kSignedOutAccountStoreUser:
+    case UserState::kSignedInUser:
+    case UserState::kSignedInUserSavingLocally:
+      return UsageLevel::kNotUsingAccountStorage;
+    case UserState::kSignedInAccountStoreUser:
+    case UserState::kSignedInAccountStoreUserSavingLocally:
+      return UsageLevel::kUsingAccountStorage;
+    case UserState::kSyncUser:
+      return UsageLevel::kSyncing;
+  }
 }
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
@@ -341,79 +475,7 @@ void OptOutOfAccountStorageAndClearSettingsForAccount(
       "PasswordManager.AccountStorage.NumOptedInAccountsAfterOptOut",
       GetNumberOfOptedInAccounts(pref_service), 10);
 }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service) {
-  // `sync_service` is null in incognito mode, or if --disable-sync was
-  // specified on the command-line.
-  return sync_service && !sync_service->IsSyncFeatureEnabled() &&
-         (IsOptedInForAccountStorage(pref_service, sync_service) ||
-          IsUserEligibleForAccountStorage(sync_service));
-}
-
-bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
-                               const syncer::SyncService* sync_service) {
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  DCHECK(pref_service);
-
-  if (!sync_service)
-    return false;
-
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty())
-    return false;
-
-  PasswordForm::Store default_store =
-      AccountStorageSettingsReader(pref_service,
-                                   GaiaIdHash::FromGaiaId(gaia_id))
-          .GetDefaultStore();
-  return default_store != PasswordForm::Store::kNotSet;
-#else
-  // The default store is never explicitly set on Android or iOS.
-  return false;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
-PasswordForm::Store GetDefaultPasswordStore(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-
-  if (!IsUserEligibleForAccountStorage(sync_service))
-    return PasswordForm::Store::kProfileStore;
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  std::string gaia_id = sync_service->GetAccountInfo().gaia;
-  if (gaia_id.empty())
-    return PasswordForm::Store::kProfileStore;
-
-  PasswordForm::Store default_store =
-      AccountStorageSettingsReader(pref_service,
-                                   GaiaIdHash::FromGaiaId(gaia_id))
-          .GetDefaultStore();
-  // If none of the early-outs above triggered, then we *can* save to the
-  // account store in principle (though the user might not have opted in to that
-  // yet).
-  if (default_store == PasswordForm::Store::kNotSet) {
-    // The default store depends on the opt-in state. If the user has not opted
-    // in, then saves go to the profile store by default. If the user *has*
-    // opted in, then they've chosen to save to the account, so that becomes the
-    // default.
-    bool save_to_profile_store =
-        !IsOptedInForAccountStorage(pref_service, sync_service);
-    return save_to_profile_store ? PasswordForm::Store::kProfileStore
-                                 : PasswordForm::Store::kAccountStore;
-  }
-  return default_store;
-#else
-  return IsOptedInForAccountStorage(pref_service, sync_service)
-             ? PasswordForm::Store::kAccountStore
-             : PasswordForm::Store::kProfileStore;
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-}
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 void SetDefaultPasswordStore(PrefService* pref_service,
                              const syncer::SyncService* sync_service,
                              PasswordForm::Store default_store) {
@@ -466,67 +528,7 @@ void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service) {
   DCHECK(pref_service);
   pref_service->ClearPref(prefs::kAccountStoragePerAccountSettings);
 }
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
-PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  DCHECK(pref_service);
-  // The SyncService can be null in incognito, or due to a commandline flag. In
-  // those cases, simply consider the user as signed out.
-  if (!sync_service)
-    return PasswordAccountStorageUserState::kSignedOutUser;
-
-  if (sync_service->IsSyncFeatureEnabled())
-    return PasswordAccountStorageUserState::kSyncUser;
-
-  if (sync_service->HasDisableReason(
-          syncer::SyncService::DisableReason::DISABLE_REASON_NOT_SIGNED_IN)) {
-    // Signed out. Check if any account storage opt-in exists.
-    return ShouldShowAccountStorageReSignin(pref_service, sync_service, GURL())
-               ? PasswordAccountStorageUserState::kSignedOutAccountStoreUser
-               : PasswordAccountStorageUserState::kSignedOutUser;
-  }
-
-  bool saving_locally = IsDefaultPasswordStoreSet(pref_service, sync_service) &&
-                        GetDefaultPasswordStore(pref_service, sync_service) ==
-                            PasswordForm::Store::kProfileStore;
-
-  // Signed in. Check for account storage opt-in.
-  if (IsOptedInForAccountStorage(pref_service, sync_service)) {
-    // Signed in and opted in. Check default storage location.
-    return saving_locally
-               ? PasswordAccountStorageUserState::
-                     kSignedInAccountStoreUserSavingLocally
-               : PasswordAccountStorageUserState::kSignedInAccountStoreUser;
-  }
-
-  // Signed in but not opted in. Check default storage location.
-  return saving_locally
-             ? PasswordAccountStorageUserState::kSignedInUserSavingLocally
-             : PasswordAccountStorageUserState::kSignedInUser;
-}
-
-PasswordAccountStorageUsageLevel ComputePasswordAccountStorageUsageLevel(
-    const PrefService* pref_service,
-    const syncer::SyncService* sync_service) {
-  using UserState = PasswordAccountStorageUserState;
-  using UsageLevel = PasswordAccountStorageUsageLevel;
-  switch (ComputePasswordAccountStorageUserState(pref_service, sync_service)) {
-    case UserState::kSignedOutUser:
-    case UserState::kSignedOutAccountStoreUser:
-    case UserState::kSignedInUser:
-    case UserState::kSignedInUserSavingLocally:
-      return UsageLevel::kNotUsingAccountStorage;
-    case UserState::kSignedInAccountStoreUser:
-    case UserState::kSignedInAccountStoreUserSavingLocally:
-      return UsageLevel::kUsingAccountStorage;
-    case UserState::kSyncUser:
-      return UsageLevel::kSyncing;
-  }
-}
-
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 void RecordMoveOfferedToNonOptedInUser(
     PrefService* pref_service,
     const syncer::SyncService* sync_service) {
