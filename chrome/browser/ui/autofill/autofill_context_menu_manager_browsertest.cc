@@ -23,7 +23,7 @@
 #include "content/public/test/browser_test.h"
 
 namespace autofill {
-
+#if !BUILDFLAG(IS_CHROMEOS)
 class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
  public:
@@ -97,7 +97,6 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
   tab->Close();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        DisplaysFeedbackDialogUI) {
   base::RunLoop run_loop;
