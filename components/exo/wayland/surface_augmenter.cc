@@ -167,8 +167,6 @@ class AugmentedSubSurface : public SubSurfaceObserver {
       : sub_surface_(sub_surface) {
     sub_surface_->AddSubSurfaceObserver(this);
     sub_surface_->SetProperty(kSubSurfaceHasAugmentedSubSurfaceKey, true);
-    sub_surface_->surface()->set_leave_enter_callback(
-        Surface::LeaveEnterCallback());
   }
   AugmentedSubSurface(const AugmentedSubSurface&) = delete;
   AugmentedSubSurface& operator=(const AugmentedSubSurface&) = delete;

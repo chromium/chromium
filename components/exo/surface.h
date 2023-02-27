@@ -371,10 +371,6 @@ class Surface final : public ui::PropertyHandler {
     return pending_state_.damage.Contains(damage);
   }
 
-  bool HasLeaveEnterCallbackForTesting() const {
-    return !leave_enter_callback_.is_null();
-  }
-
   // Set occlusion tracking region for surface.
   void SetOcclusionTracking(bool tracking);
 

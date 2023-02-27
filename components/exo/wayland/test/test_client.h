@@ -81,9 +81,6 @@ class TestClient {
   zcr_remote_shell_v2* cr_remote_shell_v2() {
     return globals().cr_remote_shell_v2.get();
   }
-  surface_augmenter* surface_augmenter() {
-    return globals().surface_augmenter.get();
-  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Buffer creation support.
