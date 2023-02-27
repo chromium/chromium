@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
   ProjectorAppClientImpl* projector_app_client =
       static_cast<ProjectorAppClientImpl*>(ash::ProjectorAppClient::Get());
   content::WebContents* annotator_embedder =
-      projector_app_client->get_annotator_message_handler_for_test()
+      projector_app_client->get_annotator_handler_for_test()
           ->get_web_ui_for_test()
           ->GetWebContents();
   PrepareAppForTest(annotator_embedder);

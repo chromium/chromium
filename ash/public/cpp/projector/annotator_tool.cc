@@ -8,19 +8,10 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 
 namespace ash {
 
-namespace {
-
-const char kToolColor[] = "color";
-const char kToolSize[] = "size";
-const char kToolType[] = "tool";
-
-// Returns the hex value in RGBA format.
-// For example, SK_ColorGREEN -> "00FF00FF".
-std::string ConvertColorToHexString(SkColor color) {
+std::string AnnotatorTool::GetColorHexString() const {
   uint8_t alpha = SkColorGetA(color);
   uint8_t red = SkColorGetR(color);
   uint8_t green = SkColorGetG(color);
@@ -29,24 +20,7 @@ std::string ConvertColorToHexString(SkColor color) {
   return base::HexEncode(bytes);
 }
 
-// Converts the RGBA hex string to ARGB, then to an SkColor.
-// For example, "000000FF" -> "SK_ColorBLACK".
-// Returns red if conversion fails.
-SkColor ConvertHexStringToColor(const std::string& rgba_hex) {
-  const size_t kHexColorLength = 8;
-  const size_t kRgbaLength = 6;
-  if (rgba_hex.length() < kHexColorLength) {
-    return SK_ColorRED;
-  }
-  uint32_t argb_color;
-  // Shift the alpha value to the front of the hex string.
-  const bool success = base::HexStringToUInt(
-      rgba_hex.substr(kRgbaLength) + rgba_hex.substr(0, kRgbaLength),
-      &argb_color);
-  return success ? argb_color : SK_ColorRED;
-}
-
-std::string ConvertToolTypeToString(AnnotatorToolType type) {
+std::string AnnotatorTool::GetToolString() const {
   switch (type) {
     case AnnotatorToolType::kMarker:
       return "marker";
@@ -57,46 +31,6 @@ std::string ConvertToolTypeToString(AnnotatorToolType type) {
     case AnnotatorToolType::kEraser:
       return "eraser";
   }
-}
-
-AnnotatorToolType ConvertStringToToolType(const std::string& type) {
-  if (type == "marker")
-    return AnnotatorToolType::kMarker;
-  if (type == "pen")
-    return AnnotatorToolType::kPen;
-  if (type == "highlighter")
-    return AnnotatorToolType::kHighlighter;
-  if (type == "eraser")
-    return AnnotatorToolType::kEraser;
-  NOTREACHED();
-  return AnnotatorToolType::kMarker;
-}
-
-}  // namespace
-
-// static
-AnnotatorTool AnnotatorTool::FromValue(const base::Value& value) {
-  const base::Value::Dict* dict = value.GetIfDict();
-  DCHECK(dict);
-  DCHECK(dict->Find(kToolColor));
-  DCHECK(dict->FindString(kToolColor));
-  DCHECK(dict->Find(kToolSize));
-  DCHECK(dict->FindInt(kToolSize));
-  DCHECK(dict->Find(kToolType));
-  DCHECK(dict->FindString(kToolType));
-  AnnotatorTool t;
-  t.color = ConvertHexStringToColor(*(dict->FindString(kToolColor)));
-  t.size = *(dict->FindInt(kToolSize));
-  t.type = ConvertStringToToolType(*(dict->FindString(kToolType)));
-  return t;
-}
-
-base::Value AnnotatorTool::ToValue() const {
-  base::Value::Dict val;
-  val.Set(kToolColor, ConvertColorToHexString(color));
-  val.Set(kToolSize, size);
-  val.Set(kToolType, ConvertToolTypeToString(type));
-  return base::Value(std::move(val));
 }
 
 bool AnnotatorTool::operator==(const AnnotatorTool& rhs) const {
