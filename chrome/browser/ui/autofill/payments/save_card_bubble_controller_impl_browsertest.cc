@@ -111,11 +111,15 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
     }
   }
 
+  void TearDownOnMainThread() override {
+    controller_ = nullptr;
+    DialogBrowserTest::TearDownOnMainThread();
+  }
+
   SaveCardBubbleControllerImpl* controller() { return controller_; }
 
  private:
-  raw_ptr<SaveCardBubbleControllerImpl, DanglingUntriaged> controller_ =
-      nullptr;
+  raw_ptr<SaveCardBubbleControllerImpl> controller_ = nullptr;
 };
 
 // Invokes a bubble asking the user if they want to save a credit card locally.
