@@ -1348,7 +1348,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
     EXPECT_TRUE(base::PathExists(first_blob));
     EXPECT_FALSE(base::PathExists(corrupt_blob));
     const char kCorruptData[] = "corrupt";
-    base::WriteFile(corrupt_blob, kCorruptData, sizeof(kCorruptData));
+    base::WriteFile(corrupt_blob, kCorruptData);
   }
 
   SimpleTest(embedded_test_server()->GetURL(test_file));

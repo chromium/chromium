@@ -147,9 +147,7 @@ void MockBackgroundFetchDelegate::DownloadUrl(
     CHECK(base::CreateTemporaryFileInDir(temp_directory_.GetPath(),
                                          &response_path));
 
-    CHECK_NE(/* error= */ -1,
-             base::WriteFile(response_path, test_response->data.c_str(),
-                             test_response->data.size()));
+    CHECK(base::WriteFile(response_path, test_response->data));
 
     PostAbortCheckingTask(
         job_unique_id,

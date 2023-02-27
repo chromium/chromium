@@ -301,8 +301,7 @@ void StartServerOnHandlerThread(
           output_directory.Append(kDevToolsActivePortFileName);
       std::string port_target_string = base::StringPrintf(
           "%d\n%s", ip_address->port(), browser_guid.c_str());
-      if (base::WriteFile(path, port_target_string.c_str(),
-                          static_cast<int>(port_target_string.length())) < 0) {
+      if (!base::WriteFile(path, port_target_string)) {
         PLOG(ERROR) << "Error writing DevTools active port to file " << path;
       }
     }
