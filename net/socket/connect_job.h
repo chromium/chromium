@@ -274,7 +274,7 @@ class NET_EXPORT_PRIVATE ConnectJob {
   WebSocketEndpointLockManager* websocket_endpoint_lock_manager() {
     return common_connect_job_params_->websocket_endpoint_lock_manager;
   }
-  const CommonConnectJobParams* common_connect_job_params() {
+  const CommonConnectJobParams* common_connect_job_params() const {
     return common_connect_job_params_;
   }
 

@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
@@ -513,12 +514,18 @@ class NET_EXPORT HostResolver {
   // TODO(crbug.com/1264933): Delete once `AddressList` usage is fully replaced
   // in `HostResolver` and results.
   static AddressList EndpointResultToAddressList(
-      const std::vector<HostResolverEndpointResult>& endpoints,
+      base::span<const HostResolverEndpointResult> endpoints,
       const std::set<std::string>& aliases);
 
-  // Utility to get the non protocol endpoints.
+  // Utility to get the non-protocol endpoints.
   static std::vector<IPEndPoint> GetNonProtocolEndpoints(
-      const std::vector<HostResolverEndpointResult>& endpoints);
+      base::span<const HostResolverEndpointResult> endpoints);
+
+  // Returns whether there is at least one protocol endpoint in `endpoints`, and
+  // all such endpoints have ECH parameters. This can be used to implement the
+  // guidance in section 10.1 of draft-ietf-dnsop-svcb-https-11.
+  static bool AllProtocolEndpointsHaveEch(
+      base::span<const HostResolverEndpointResult> endpoints);
 
  protected:
   HostResolver();

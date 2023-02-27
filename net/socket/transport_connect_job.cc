@@ -511,25 +511,21 @@ bool TransportConnectJob::IsSvcbOptional(
   // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all routes
   // support ECH, disable the A/AAAA fallback. See Section 10.1 of
   // draft-ietf-dnsop-svcb-https-08.
+
   auto* scheme_host_port =
       absl::get_if<url::SchemeHostPort>(&params_->destination());
-  if (!base::FeatureList::IsEnabled(features::kEncryptedClientHello) ||
-      !scheme_host_port || scheme_host_port->scheme() != url::kHttpsScheme) {
+  if (!scheme_host_port || scheme_host_port->scheme() != url::kHttpsScheme) {
+    return true;  // This is not a SVCB-capable request at all.
+  }
+
+  if (!common_connect_job_params()->ssl_client_context ||
+      !common_connect_job_params()
+           ->ssl_client_context->config()
+           .EncryptedClientHelloEnabled()) {
     return true;  // ECH is not supported for this request.
   }
 
-  bool has_svcb = false;
-  for (const auto& result : results) {
-    if (!result.metadata.supported_protocol_alpns.empty()) {
-      has_svcb = true;
-      if (result.metadata.ech_config_list.empty()) {
-        return true;  // There is a non-ECH SVCB/HTTPS route.
-      }
-    }
-  }
-  // Either there were no SVCB/HTTPS records (should be SVCB-optional), or there
-  // were and all supported ECH (should be SVCB-reliant).
-  return !has_svcb;
+  return !HostResolver::AllProtocolEndpointsHaveEch(results);
 }
 
 bool TransportConnectJob::IsEndpointResultUsable(
