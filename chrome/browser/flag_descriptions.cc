@@ -1033,11 +1033,6 @@ const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[] =
     "This option enables improvements in the text shown when hovering over the "
     "Select-to-Speak feature icon in the system tray.";
 
-const char kPostQuantumCECPQ2Name[] = "TLS Post-Quantum Confidentiality";
-const char kPostQuantumCECPQ2Description[] =
-    "This option enables a post-quantum (i.e. resistent to quantum computers) "
-    "key exchange algorithm in TLS (CECPQ2).";
-
 const char kMacCoreLocationBackendName[] = "Core Location Backend";
 const char kMacCoreLocationBackendDescription[] =
     "Enables usage of the Core Location APIs as the backend for Geolocation "

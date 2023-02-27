@@ -590,9 +590,6 @@ extern const char kAccessibilitySelectToSpeakContextMenuOptionDescription[];
 extern const char kAccessibilitySelectToSpeakHoverTextImprovementsName[];
 extern const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[];
 
-extern const char kPostQuantumCECPQ2Name[];
-extern const char kPostQuantumCECPQ2Description[];
-
 extern const char kMacCoreLocationBackendName[];
 extern const char kMacCoreLocationBackendDescription[];
 
