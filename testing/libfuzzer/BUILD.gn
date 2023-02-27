@@ -43,7 +43,15 @@ source_set("libfuzzer_main") {
 # The currently selected fuzzing engine, providing a main() function.
 # Fuzzers should depend upon this.
 group("fuzzing_engine_main") {
-  deps = [ ":libfuzzer_main" ]
+  deps = [
+    ":fuzzing_engine",
+    ":libfuzzer_main",
+  ]
+}
+
+# Any fuzzer using any fuzzing engine. This will be used by infra scripts
+# to identify fuzzers which should be built and made available to ClusterFuzz.
+group("fuzzing_engine") {
 }
 
 # A config used by all fuzzer_tests.
