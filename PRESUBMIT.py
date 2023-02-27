@@ -6648,6 +6648,7 @@ Instrumentation tests should use either @Batch or @DoNotBatch. Use
 @Batch(Batch.PER_CLASS) in most cases. Use @Batch(Batch.UNIT_TESTS) when tests
 have no side-effects. If the tests are not safe to run in batch, please use
 @DoNotBatch with reasons.
+See https://source.chromium.org/chromium/chromium/src/+/main:docs/testing/batching_instrumentation_tests.md
 """, missing_annotation_errors))
     if extra_annotation_errors:
         results.append(
