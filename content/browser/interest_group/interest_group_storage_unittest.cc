@@ -43,8 +43,8 @@ using blink::InterestGroup;
 using testing::Field;
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
-using SellerCapabilities = blink::InterestGroup::SellerCapabilities;
-using SellerCapabilitiesType = blink::InterestGroup::SellerCapabilitiesType;
+using SellerCapabilities = blink::SellerCapabilities;
+using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 
 class InterestGroupStorageTest : public testing::Test {
  public:

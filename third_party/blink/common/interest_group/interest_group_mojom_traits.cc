@@ -34,13 +34,13 @@ bool StructTraits<blink::mojom::InterestGroupSizeDataView,
 }
 
 bool StructTraits<blink::mojom::SellerCapabilitiesDataView,
-                  blink::InterestGroup::SellerCapabilitiesType>::
+                  blink::SellerCapabilitiesType>::
     Read(blink::mojom::SellerCapabilitiesDataView data,
-         blink::InterestGroup::SellerCapabilitiesType* out) {
+         blink::SellerCapabilitiesType* out) {
   if (data.allows_interest_group_counts())
-    out->Put(blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
+    out->Put(blink::SellerCapabilities::kInterestGroupCounts);
   if (data.allows_latency_stats())
-    out->Put(blink::InterestGroup::SellerCapabilities::kLatencyStats);
+    out->Put(blink::SellerCapabilities::kLatencyStats);
   return true;
 }
 

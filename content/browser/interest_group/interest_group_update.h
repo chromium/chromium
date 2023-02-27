@@ -38,11 +38,9 @@ struct CONTENT_EXPORT InterestGroupUpdate {
   // old overrides around. Keys mapped to nullopt are deleted.
   absl::optional<base::flat_map<std::string, absl::optional<double>>>
       priority_signals_overrides;
-  absl::optional<
-      base::flat_map<url::Origin, blink::InterestGroup::SellerCapabilitiesType>>
+  absl::optional<base::flat_map<url::Origin, blink::SellerCapabilitiesType>>
       seller_capabilities;
-  absl::optional<blink::InterestGroup::SellerCapabilitiesType>
-      all_sellers_capabilities;
+  absl::optional<blink::SellerCapabilitiesType> all_sellers_capabilities;
   absl::optional<blink::InterestGroup::ExecutionMode> execution_mode;
   absl::optional<GURL> bidding_url;
   absl::optional<GURL> bidding_wasm_helper_url;

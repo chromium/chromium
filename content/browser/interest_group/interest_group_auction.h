@@ -856,7 +856,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // the server.
   bool ReportPaBuyersValueIfAllowed(
       const blink::InterestGroup& interest_group,
-      blink::InterestGroup::SellerCapabilities capability,
+      blink::SellerCapabilities capability,
       blink::AuctionConfig::NonSharedParams::BuyerReportType buyer_report_type,
       int value);
 

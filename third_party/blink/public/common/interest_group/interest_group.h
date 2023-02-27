@@ -11,11 +11,11 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/interest_group/seller_capabilities.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -75,17 +75,6 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     // IsEqualForTesting().
     bool operator==(const Size& other) const;
   };
-
-  enum class SellerCapabilities : uint32_t {
-    kInterestGroupCounts,
-    kLatencyStats,
-
-    kMaxValue = kLatencyStats
-  };
-  using SellerCapabilitiesType =
-      base::EnumSet<SellerCapabilities,
-                    SellerCapabilities::kInterestGroupCounts,
-                    SellerCapabilities::kMaxValue>;
 
   InterestGroup();
 
@@ -154,7 +143,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
 
-  static_assert(__LINE__ == 157, R"(
+  static_assert(__LINE__ == 146, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

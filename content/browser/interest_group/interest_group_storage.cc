@@ -51,7 +51,7 @@ namespace {
 
 using auction_worklet::mojom::BiddingBrowserSignalsPtr;
 using auction_worklet::mojom::PreviousWinPtr;
-using SellerCapabilitiesType = blink::InterestGroup::SellerCapabilitiesType;
+using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");

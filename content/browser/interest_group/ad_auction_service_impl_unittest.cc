@@ -1148,10 +1148,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   interest_group.priority_signals_overrides = {{{"old1", 1}, {"old2", 2}}};
   interest_group.seller_capabilities.emplace();
   interest_group.seller_capabilities->insert(std::make_pair(
-      kOriginA,
-      blink::InterestGroup::SellerCapabilities::kInterestGroupCounts));
+      kOriginA, blink::SellerCapabilities::kInterestGroupCounts));
   interest_group.all_sellers_capabilities =
-      blink::InterestGroup::SellerCapabilities::kLatencyStats;
+      blink::SellerCapabilities::kLatencyStats;
   interest_group.daily_update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
   interest_group.trusted_bidding_signals_url = kTrustedBiddingSignalsUrlA;
@@ -1198,11 +1197,11 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
             expected_priority_signals_overrides);
 
   EXPECT_EQ(group.all_sellers_capabilities,
-            blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
+            blink::SellerCapabilities::kInterestGroupCounts);
   ASSERT_TRUE(group.seller_capabilities);
   ASSERT_EQ(group.seller_capabilities->size(), 1u);
   EXPECT_EQ(group.seller_capabilities->at(kOriginA),
-            blink::InterestGroup::SellerCapabilities::kLatencyStats);
+            blink::SellerCapabilities::kLatencyStats);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),
             base::StringPrintf("%s/interest_group/new_bidding_logic.js",
@@ -2015,8 +2014,7 @@ TEST_F(AdAuctionServiceImplTest,
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
   const auto& group = groups[0].interest_group;
-  EXPECT_EQ(group.all_sellers_capabilities,
-            blink::InterestGroup::SellerCapabilitiesType());
+  EXPECT_EQ(group.all_sellers_capabilities, blink::SellerCapabilitiesType());
   EXPECT_FALSE(group.seller_capabilities);
   EXPECT_EQ(group.bidding_url, kBiddingLogicUrlA);
 }

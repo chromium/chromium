@@ -204,6 +204,7 @@ source_set("headers") {
     "interest_group/interest_group.h",
     "interest_group/interest_group_mojom_traits.h",
     "interest_group/interest_group_utils.h",
+    "interest_group/seller_capabilities.h",
     "link_to_text/link_to_text_mojom_traits.h",
     "loader/http_body_element_type.h",
     "loader/inter_process_time_ticks_converter.h",

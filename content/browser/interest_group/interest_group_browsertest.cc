@@ -141,14 +141,12 @@ base::Value::Dict StringDoubleMapToDict(
 }
 
 base::Value::List SellerCapabilitiesToList(
-    blink::InterestGroup::SellerCapabilitiesType capabilities) {
+    blink::SellerCapabilitiesType capabilities) {
   base::Value::List list;
-  for (blink::InterestGroup::SellerCapabilities capability : capabilities) {
-    if (capability ==
-        blink::InterestGroup::SellerCapabilities::kInterestGroupCounts) {
+  for (blink::SellerCapabilities capability : capabilities) {
+    if (capability == blink::SellerCapabilities::kInterestGroupCounts) {
       list.Append("interestGroupCounts");
-    } else if (capability ==
-               blink::InterestGroup::SellerCapabilities::kLatencyStats) {
+    } else if (capability == blink::SellerCapabilities::kLatencyStats) {
       list.Append("latencyStats");
     } else {
       ADD_FAILURE() << "Unknown seller capability "
@@ -160,9 +158,8 @@ base::Value::List SellerCapabilitiesToList(
 
 base::Value::Dict SellerCapabilitiesToDict(
     const absl::optional<
-        base::flat_map<url::Origin,
-                       blink::InterestGroup::SellerCapabilitiesType>>& map,
-    blink::InterestGroup::SellerCapabilitiesType all_sellers_capabilities) {
+        base::flat_map<url::Origin, blink::SellerCapabilitiesType>>& map,
+    blink::SellerCapabilitiesType all_sellers_capabilities) {
   base::Value::Dict dict;
   if (map) {
     for (const auto& [origin, capabilities] : *map) {
@@ -2649,10 +2646,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                     /*name=*/"cars")
                     .SetSellerCapabilities(
                         {{{url::Origin::Create(GURL("https://example.test")),
-                           blink::InterestGroup::SellerCapabilities::
-                               kInterestGroupCounts}}})
+                           blink::SellerCapabilities::kInterestGroupCounts}}})
                     .SetAllSellerCapabilities(
-                        blink::InterestGroup::SellerCapabilities::kLatencyStats)
+                        blink::SellerCapabilities::kLatencyStats)
                     .Build()));
 
   WaitForAccessObserved({});
@@ -2661,12 +2657,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_EQ(groups.size(), 1u);
   const blink::InterestGroup& group = groups[0].interest_group;
   EXPECT_EQ(group.all_sellers_capabilities,
-            blink::InterestGroup::SellerCapabilities::kLatencyStats);
+            blink::SellerCapabilities::kLatencyStats);
   ASSERT_TRUE(group.seller_capabilities);
   ASSERT_EQ(group.seller_capabilities->size(), 1u);
   EXPECT_EQ(group.seller_capabilities->at(
                 url::Origin::Create(GURL("https://example.test"))),
-            blink::InterestGroup::SellerCapabilities::kInterestGroupCounts);
+            blink::SellerCapabilities::kInterestGroupCounts);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -2687,8 +2683,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           /*priority_signals_overrides=*/absl::nullopt,
           /*seller_capabilities=*/{},
           /*all_sellers_capabilities=*/
-          blink::InterestGroup::SellerCapabilities::
-              kLatencyStats, /*execution_mode=*/
+          blink::SellerCapabilities::kLatencyStats, /*execution_mode=*/
           blink::InterestGroup::ExecutionMode::kCompatibilityMode,
           /*bidding_url=*/absl::nullopt,
           /*bidding_wasm_helper_url=*/absl::nullopt,
