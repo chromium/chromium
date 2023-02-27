@@ -57,6 +57,9 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 // URL which allows to change the password of compromised credential.
 @property(nonatomic, readonly) GURL changePasswordURL;
 
+// `shouldOfferToMoveToAccount` tells whether or not to show a move option.
+@property(nonatomic, assign) BOOL shouldOfferToMoveToAccount;
+
 - (instancetype)initWithCredential:
     (const password_manager::CredentialUIEntry&)credential
     NS_DESIGNATED_INITIALIZER;

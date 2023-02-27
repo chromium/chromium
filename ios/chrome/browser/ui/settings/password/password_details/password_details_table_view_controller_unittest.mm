@@ -195,8 +195,7 @@ class PasswordDetailsTableViewControllerTest
 
   ChromeTableViewController* InstantiateController() override {
     PasswordDetailsTableViewController* controller =
-        [[PasswordDetailsTableViewController alloc]
-            initWithSyncingUserEmail:syncing_user_email_];
+        [[PasswordDetailsTableViewController alloc] init];
     controller.handler = handler_;
     controller.delegate = delegate_;
     controller.reauthModule = reauthentication_module_;
@@ -352,17 +351,12 @@ class PasswordDetailsTableViewControllerTest
     credential_type_ = credentialType;
   }
 
-  void SetUserSyncingEmail(NSString* syncing_user_email) {
-    syncing_user_email_ = syncing_user_email;
-  }
-
  private:
   id snack_bar_;
   FakePasswordDetailsHandler* handler_ = nil;
   FakePasswordDetailsDelegate* delegate_ = nil;
   MockReauthenticationModule* reauthentication_module_ = nil;
   CredentialType credential_type_ = CredentialTypeRegular;
-  NSString* syncing_user_email_ = nil;
 };
 
 class PasswordGroupingTest : public ::testing::WithParamInterface<bool>,

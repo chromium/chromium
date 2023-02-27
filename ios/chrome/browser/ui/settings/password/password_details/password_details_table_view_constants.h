@@ -22,6 +22,8 @@ typedef NS_ENUM(NSInteger, PasswordDetailsItemType) {
   PasswordDetailsItemTypeChangePasswordButton,
   PasswordDetailsItemTypeChangePasswordRecommendation,
   PasswordDetailsItemTypeDeleteButton,
+  PasswordDetailsItemTypeMoveToAccountButton,
+  PasswordDetailsItemTypeMoveToAccountRecommendation,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONSTANTS_H_

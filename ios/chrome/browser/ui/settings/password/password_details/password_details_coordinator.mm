@@ -17,11 +17,13 @@
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -124,8 +126,7 @@
 }
 
 - (void)start {
-  self.viewController =
-      [[PasswordDetailsTableViewController alloc] initWithSyncingUserEmail:nil];
+  self.viewController = [[PasswordDetailsTableViewController alloc] init];
 
   std::vector<password_manager::CredentialUIEntry> credentials;
   NSString* displayName;
@@ -139,13 +140,16 @@
     credentials.push_back(_credential);
   }
 
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.mediator = [[PasswordDetailsMediator alloc]
          initWithPasswords:credentials
                displayName:displayName
       passwordCheckManager:IOSChromePasswordCheckManagerFactory::
-                               GetForBrowserState(
-                                   self.browser->GetBrowserState())
-                                   .get()];
+                               GetForBrowserState(browserState)
+                                   .get()
+               prefService:browserState->GetPrefs()
+               syncService:SyncServiceFactory::GetForBrowserState(
+                               browserState)];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;

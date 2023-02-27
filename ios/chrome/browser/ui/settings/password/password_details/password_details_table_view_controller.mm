@@ -59,6 +59,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPassword = kSectionIdentifierEnumZero,
   SectionIdentifierSite,
   SectionIdentifierCompromisedInfo,
+  SectionIdentifierMoveToAccount,
 };
 
 typedef NS_ENUM(NSInteger, ReauthenticationReason) {
@@ -80,7 +81,7 @@ bool IsPasswordNotesWithBackupEnabled() {
 
 // Size of the symbols.
 const CGFloat kSymbolSize = 15;
-const CGFloat kCompromisedPasswordSymbolSize = 22;
+const CGFloat kRecommendationSymbolSize = 22;
 
 }  // namespace
 
@@ -140,8 +141,9 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 // YES if this is the details view for a blocked site (never saved password).
 @property(nonatomic, assign) BOOL isBlockedSite;
 
-// Stores the user email if the user is authenticated amd syncing passwords.
-@property(nonatomic, readonly) NSString* syncingUserEmail;
+// Stores the signed in user email, or the empty string if the user is not
+// signed-in.
+@property(nonatomic, readonly) NSString* userEmail;
 
 @end
 
@@ -149,12 +151,11 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 #pragma mark - ViewController Life Cycle.
 
-- (instancetype)initWithSyncingUserEmail:(NSString*)syncingUserEmail {
+- (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _shouldEnableEditDoneButton = NO;
     _showPasswordWithoutAuth = NO;
-    _syncingUserEmail = syncingUserEmail;
     _passwordIndexToReveal = 0;
 
     _titleLabel = [[UILabel alloc] init];
@@ -392,6 +393,37 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   return item;
 }
 
+- (TableViewTextButtonItem*)moveToAccountButtonItem {
+  TableViewTextButtonItem* item = [[TableViewTextButtonItem alloc]
+      initWithType:PasswordDetailsItemTypeMoveToAccountButton];
+  item.buttonText =
+      l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE);
+  item.buttonTextColor = self.tableView.editing
+                             ? [UIColor colorNamed:kTextSecondaryColor]
+                             : [UIColor colorNamed:kBlueColor];
+  item.buttonBackgroundColor = [UIColor clearColor];
+  item.disableButtonIntrinsicWidth = YES;
+  item.boldButtonText = NO;
+  item.buttonContentHorizontalAlignment =
+      UIControlContentHorizontalAlignmentLeft;
+  return item;
+}
+
+- (SettingsImageDetailTextItem*)moveToAccountRecommendationItem {
+  DCHECK(_userEmail.length)
+      << "User must be signed-in to move a password to the "
+         "account;";
+  SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
+      initWithType:PasswordDetailsItemTypeMoveToAccountRecommendation];
+  item.detailText = l10n_util::GetNSStringF(
+      IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE_DESCRIPTION,
+      base::SysNSStringToUTF16(self.userEmail));
+  item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol,
+                                         kRecommendationSymbolSize);
+  item.imageViewTintColor = [UIColor colorNamed:kBlueColor];
+  return item;
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
@@ -404,8 +436,6 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
       [self ensureContextMenuShownForItemType:itemType
                                     tableView:tableView
                                   atIndexPath:indexPath];
-      break;
-    case PasswordDetailsItemTypeChangePasswordRecommendation:
       break;
     case PasswordDetailsItemTypeUsername: {
       if (self.tableView.editing) {
@@ -448,7 +478,10 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
         [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
       }
       break;
+    case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeDeleteButton:
+    case PasswordDetailsItemTypeMoveToAccountButton:
+    case PasswordDetailsItemTypeMoveToAccountRecommendation:
       break;
   }
 }
@@ -537,10 +570,26 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     case PasswordDetailsItemTypeDeleteButton: {
       TableViewTextButtonCell* tableViewTextButtonCell =
           base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+      [tableViewTextButtonCell.button removeTarget:nil
+                                            action:nil
+                                  forControlEvents:UIControlEventAllEvents];
       [tableViewTextButtonCell.button addTarget:self
                                          action:@selector(didTapDeleteButton:)
                                forControlEvents:UIControlEventTouchUpInside];
       [tableViewTextButtonCell.button setTag:indexPath.section];
+      break;
+    }
+    case PasswordDetailsItemTypeMoveToAccountButton: {
+      TableViewTextButtonCell* tableViewTextButtonCell =
+          base::mac::ObjCCastStrict<TableViewTextButtonCell>(cell);
+      [tableViewTextButtonCell.button setTag:indexPath.section];
+      tableViewTextButtonCell.button.enabled = !self.tableView.editing;
+      [tableViewTextButtonCell.button removeTarget:nil
+                                            action:nil
+                                  forControlEvents:UIControlEventAllEvents];
+      [tableViewTextButtonCell.button addTarget:self
+                                         action:@selector(didTapMoveButton:)
+                               forControlEvents:UIControlEventTouchUpInside];
       break;
     }
     case PasswordDetailsItemTypeNote:
@@ -589,6 +638,10 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 
 - (void)setIsBlockedSite:(BOOL)isBlockedSite {
   _isBlockedSite = isBlockedSite;
+}
+
+- (void)setUserEmail:(NSString*)userEmail {
+  _userEmail = userEmail;
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -653,7 +706,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     return DefaultSymbolTemplateWithPointSize(IsPasswordGroupingEnabled()
                                                   ? kErrorCircleFillSymbol
                                                   : kWarningFillSymbol,
-                                              kCompromisedPasswordSymbolSize);
+                                              kRecommendationSymbolSize);
   }
   return [UIImage imageNamed:@"round_settings_unsafe_state"];
 }
@@ -800,6 +853,8 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     case PasswordDetailsItemTypeChangePasswordButton:
     case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeDeleteButton:
+    case PasswordDetailsItemTypeMoveToAccountButton:
+    case PasswordDetailsItemTypeMoveToAccountRecommendation:
       return NO;
   }
 }
@@ -917,6 +972,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   NSInteger sectionForWebsite;
   NSInteger sectionForPassword;
   NSInteger sectionForCompromisedInfo;
+  NSInteger sectionForMoveCredential;
 
   if (IsPasswordGroupingEnabled()) {
     // Password details are displayed in its own section when Grouping is
@@ -928,17 +984,22 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     sectionForWebsite = nextSection;
     sectionForPassword = nextSection;
     sectionForCompromisedInfo = nextSection;
+    sectionForMoveCredential = nextSection;
   } else {
     // Password details fields are displayed in separate sections when Grouping
     // is not enabled.
     sectionForWebsite = SectionIdentifierSite;
     sectionForPassword = SectionIdentifierPassword;
     sectionForCompromisedInfo = SectionIdentifierCompromisedInfo;
+    sectionForMoveCredential = SectionIdentifierMoveToAccount;
 
     [model addSectionWithIdentifier:SectionIdentifierSite];
     [model addSectionWithIdentifier:SectionIdentifierPassword];
     if (passwordDetails.compromised) {
       [model addSectionWithIdentifier:SectionIdentifierCompromisedInfo];
+    }
+    if (passwordDetails.shouldOfferToMoveToAccount) {
+      [model addSectionWithIdentifier:SectionIdentifierMoveToAccount];
     }
   }
 
@@ -994,6 +1055,13 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     case CredentialTypeBlocked: {
       break;
     }
+  }
+
+  if (passwordDetails.shouldOfferToMoveToAccount) {
+    [model addItem:[self moveToAccountRecommendationItem]
+        toSectionWithIdentifier:sectionForMoveCredential];
+    [model addItem:[self moveToAccountButtonItem]
+        toSectionWithIdentifier:sectionForMoveCredential];
   }
 
   if (IsPasswordGroupingEnabled() && self.tableView.editing) {
@@ -1155,6 +1223,33 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
   [self.handler
       showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]
                                        anchorView:buttonView];
+}
+
+- (void)didTapMoveButton:(UIButton*)buttonView {
+  if (![self.reauthModule canAttemptReauth]) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
+  void (^movePasswordHandler)(ReauthenticationResult) =
+      ^(ReauthenticationResult result) {
+        PasswordDetailsTableViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        if (result == ReauthenticationResult::kFailure) {
+          return;
+        }
+        // Only one password at position 0 shows if no grouping applied.
+        int position = IsPasswordGroupingEnabled() ? buttonView.tag : 0;
+        DCHECK_GE(position, 0);
+        DCHECK(self.handler);
+        [self.handler moveCredentialToAccountStore:self.passwords[position]];
+      };
+  [self.reauthModule
+      attemptReauthWithLocalizedReason:
+          l10n_util::GetNSString(IDS_IOS_AUTH_TO_SAVE_PASSWORD_TO_ACCOUNT_STORE)
+                  canReusePreviousAuth:YES
+                               handler:movePasswordHandler];
 }
 
 #pragma mark - UIResponder

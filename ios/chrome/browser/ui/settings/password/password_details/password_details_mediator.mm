@@ -10,12 +10,18 @@
 
 #import "base/containers/contains.h"
 #import "base/containers/cxx20_erase.h"
+#import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
+#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/move_password_to_account_store_helper.h"
+#import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/features.h"
+#import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
@@ -43,6 +49,12 @@ using base::SysNSStringToUTF16;
 
   // Listens to compromised passwords changes.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
+
+  // Pref Service.
+  raw_ptr<PrefService> _prefService;
+
+  // Sync Service.
+  raw_ptr<syncer::SyncService> _syncService;
 }
 
 // Dictionary of usernames of a same domain. Key: domain and value: NSSet of
@@ -62,7 +74,9 @@ using base::SysNSStringToUTF16;
                     (const std::vector<password_manager::CredentialUIEntry>&)
                         credentials
                       displayName:(NSString*)displayName
-             passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
+             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService {
   DCHECK(manager);
   DCHECK(!credentials.empty());
 
@@ -76,6 +90,8 @@ using base::SysNSStringToUTF16;
   _displayName = displayName;
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, manager);
+  _prefService = prefService;
+  _syncService = syncService;
 
   // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
   // available in SavedPasswordsPresenter.
@@ -116,6 +132,9 @@ using base::SysNSStringToUTF16;
     return;
   _consumer = consumer;
 
+  [_consumer setUserEmail:base::SysUTF8ToNSString(
+                              _syncService->GetAccountInfo().email)];
+
   [self providePasswordsToConsumer];
 
   if (_credentials[0].blocked_by_user) {
@@ -147,12 +166,15 @@ using base::SysNSStringToUTF16;
             (const password_manager::CredentialUIEntry&)credential
                               client:(password_manager::PasswordManagerClient*)
                                          client {
+  auto it = base::ranges::find(_credentials, credential);
+  it->stored_in = {password_manager::PasswordForm::Store::kAccountStore};
   MovePasswordsToAccountStore(
       _manager->GetSavedPasswordsPresenter()->GetCorrespondingPasswordForms(
           credential),
       client,
       password_manager::metrics_util::MoveToAccountStoreTrigger::
           kExplicitlyTriggeredInSettings);
+  [self providePasswordsToConsumer];
 }
 
 #pragma mark - PasswordDetailsTableViewControllerDelegate
@@ -274,10 +296,20 @@ using base::SysNSStringToUTF16;
   NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
   std::vector<password_manager::CredentialUIEntry> insecureCredentials =
       _manager->GetInsecureCredentials();
+  bool isOptedInForAccountStorage =
+      password_manager::features_util::IsOptedInForAccountStorage(_prefService,
+                                                                  _syncService);
   for (password_manager::CredentialUIEntry credential : _credentials) {
     PasswordDetails* password =
         [[PasswordDetails alloc] initWithCredential:credential];
     password.compromised = base::Contains(insecureCredentials, credential);
+    // Move to account option is offered when a credential is not in account
+    // store. If the exact credential is stored in both profile and account
+    // it will not be offered, no need to bother the user.
+    password.shouldOfferToMoveToAccount =
+        !credential.stored_in.contains(
+            password_manager::PasswordForm::Store::kAccountStore) &&
+        isOptedInForAccountStorage && !credential.blocked_by_user;
     [passwords addObject:password];
   }
   [self.consumer setPasswords:passwords andTitle:_displayName];

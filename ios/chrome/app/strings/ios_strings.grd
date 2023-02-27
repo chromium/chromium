@@ -2784,6 +2784,15 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_CHECK_NEVER_RUN" desc="Used instead of timestamp when Password Check never ran" meaning="Check never run.">
         Check never run.
       </message>
+      <message name="IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE" desc="Action button to save password in google account. [iOS only]" meaning="User wants to move password from local device to google account storage.">
+        Save in Account
+      </message>
+      <message name="IDS_IOS_AUTH_TO_SAVE_PASSWORD_TO_ACCOUNT_STORE" desc="Auth reason to save password in google account. [iOS only]" meaning="Auth when user wants to move a password to their google account storage from local device storage.">
+        Save password in your Google Account
+      </message>
+      <message name="IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE_DESCRIPTION" desc="Description of save password in google account action. [iOS only]" meaning="Telling user that current password is in local device store and suggesting moving it to their google account store.">
+        This password is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>.
+      </message>
       <message name="IDS_IOS_SEARCH_COPIED" desc="The message displayed when the search is copied via long press (contextual search) [Length: 10em] [iOS only]">
         Copied
       </message>

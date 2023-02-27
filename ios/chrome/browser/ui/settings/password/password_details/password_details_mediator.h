@@ -15,6 +15,12 @@ struct CredentialUIEntry;
 class PasswordManagerClient;
 }  // namespace password_manager
 
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+class PrefService;
+
 class IOSChromePasswordCheckManager;
 @protocol PasswordDetailsConsumer;
 
@@ -30,6 +36,8 @@ class IOSChromePasswordCheckManager;
                         credentials
                       displayName:(NSString*)displayName
              passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                      prefService:(PrefService*)prefService
+                      syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
