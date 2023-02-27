@@ -98,8 +98,7 @@ TEST(TraceStartupConfigTest, ValidContent) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir.GetPath(), &trace_config_file));
-  ASSERT_NE(-1, base::WriteFile(trace_config_file, content.c_str(),
-                                (int)content.length()));
+  ASSERT_TRUE(base::WriteFile(trace_config_file, content));
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
@@ -121,8 +120,7 @@ TEST(TraceStartupConfigTest, ValidContentWithOnlyTraceConfig) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir.GetPath(), &trace_config_file));
-  ASSERT_NE(-1, base::WriteFile(trace_config_file, content.c_str(),
-                                (int)content.length()));
+  ASSERT_TRUE(base::WriteFile(trace_config_file, content));
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
@@ -155,8 +153,7 @@ TEST(TraceStartupConfigTest, ContentWithAbsoluteResultFilePath) {
   base::FilePath trace_config_file;
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir.GetPath(), &trace_config_file));
-  ASSERT_NE(-1, base::WriteFile(trace_config_file, content.c_str(),
-                                (int)content.length()));
+  ASSERT_TRUE(base::WriteFile(trace_config_file, content));
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
@@ -174,8 +171,7 @@ TEST(TraceStartupConfigTest, ContentWithNegtiveDuration) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir.GetPath(), &trace_config_file));
-  ASSERT_NE(-1, base::WriteFile(trace_config_file, content.c_str(),
-                                (int)content.length()));
+  ASSERT_TRUE(base::WriteFile(trace_config_file, content));
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
@@ -197,8 +193,7 @@ TEST(TraceStartupConfigTest, ContentWithoutTraceConfig) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir.GetPath(), &trace_config_file));
-  ASSERT_NE(-1, base::WriteFile(trace_config_file, content.c_str(),
-                                (int)content.length()));
+  ASSERT_TRUE(base::WriteFile(trace_config_file, content));
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 
@@ -214,8 +209,7 @@ TEST(TraceStartupConfigTest, InvalidContent) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir.GetPath(), &trace_config_file));
-  ASSERT_NE(-1, base::WriteFile(trace_config_file, content.c_str(),
-                                (int)content.length()));
+  ASSERT_TRUE(base::WriteFile(trace_config_file, content));
   base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
       switches::kTraceConfigFile, trace_config_file);
 

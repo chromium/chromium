@@ -95,8 +95,7 @@ TEST(BackgroundTracingUtilTest,
 
   base::FilePath config_file_path =
       temp_dir.GetPath().AppendASCII("config.json");
-  base::WriteFile(config_file_path, kInvalidTracingConfig,
-                  sizeof(kInvalidTracingConfig) - 1);
+  base::WriteFile(config_file_path, kInvalidTracingConfig);
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
@@ -122,8 +121,7 @@ TEST(BackgroundTracingUtilTest,
 
   base::FilePath config_file_path =
       temp_dir.GetPath().AppendASCII("config.json");
-  base::WriteFile(config_file_path, kInvalidTracingConfig,
-                  sizeof(kInvalidTracingConfig) - 1);
+  base::WriteFile(config_file_path, kInvalidTracingConfig);
 
   base::test::ScopedCommandLine scoped_command_line;
   base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
@@ -148,8 +146,7 @@ TEST(BackgroundTracingUtilTest,
 
   base::FilePath config_file_path =
       temp_dir.GetPath().AppendASCII("config.json");
-  base::WriteFile(config_file_path, kInvalidTracingConfig,
-                  sizeof(kInvalidTracingConfig) - 1);
+  base::WriteFile(config_file_path, kInvalidTracingConfig);
   auto output_file_path =
       temp_dir.GetPath().AppendASCII("test_trace.perfetto.gz");
 
