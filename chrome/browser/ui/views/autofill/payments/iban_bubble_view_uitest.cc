@@ -208,26 +208,10 @@ class IbanBubbleViewFullFormBrowserTest
   }
 
   views::View* FindViewInBubbleById(DialogViewId view_id) {
-    views::View* specified_view = nullptr;
-    LocationBarBubbleDelegateView* iban_bubble_view = nullptr;
-    switch (GetBubbleType()) {
-      case IbanBubbleType::kLocalSave: {
-        iban_bubble_view = GetSaveIbanBubbleView();
-        CHECK(iban_bubble_view);
-        specified_view =
-            iban_bubble_view->GetViewByID(static_cast<int>(view_id));
-        break;
-      }
-      case IbanBubbleType::kManageSavedIban: {
-        iban_bubble_view = GetManageSavedIbanBubbleView();
-        CHECK(iban_bubble_view);
-        specified_view =
-            iban_bubble_view->GetViewByID(static_cast<int>(view_id));
-        break;
-      }
-      case IbanBubbleType::kInactive:
-        NOTREACHED();
-    }
+    LocationBarBubbleDelegateView* iban_bubble_view =
+        GetIbanBubbleDelegateView();
+    views::View* specified_view =
+        iban_bubble_view->GetViewByID(static_cast<int>(view_id));
     if (!specified_view) {
       // Many of the save IBAN bubble's inner views are not child views but
       // rather contained by the dialog. If we didn't find what we were
@@ -262,16 +246,14 @@ class IbanBubbleViewFullFormBrowserTest
     CHECK(!GetSaveIbanBubbleView());
   }
 
-  void ClickOnIbanValueTogglelButton() {
-    SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
-    CHECK(save_iban_bubble_views);
+  void ClickOnIbanValueToggleButton() {
     ClickOnDialogView(
         FindViewInBubbleById(DialogViewId::TOGGLE_IBAN_VALUE_MASKING_BUTTON));
   }
 
   std::u16string GetDisplayedIbanValue() {
-    SaveIbanBubbleView* save_iban_bubble_views = GetSaveIbanBubbleView();
-    CHECK(save_iban_bubble_views);
+    AutofillBubbleBase* iban_bubble_views = GetIbanBubbleView();
+    CHECK(iban_bubble_views);
     views::Label* iban_value = static_cast<views::Label*>(
         FindViewInBubbleById(DialogViewId::IBAN_VALUE_LABEL));
     CHECK(iban_value);
@@ -349,9 +331,9 @@ class IbanBubbleViewFullFormBrowserTest
   }
 
   void ClickOnDialogView(views::View* view) {
-    GetSaveIbanBubbleView()->ResetViewShownTimeStampForTesting();
+    GetIbanBubbleDelegateView()->ResetViewShownTimeStampForTesting();
     views::BubbleFrameView* bubble_frame_view =
-        static_cast<views::BubbleFrameView*>(GetSaveIbanBubbleView()
+        static_cast<views::BubbleFrameView*>(GetIbanBubbleDelegateView()
                                                  ->GetWidget()
                                                  ->non_client_view()
                                                  ->frame_view());
@@ -360,12 +342,12 @@ class IbanBubbleViewFullFormBrowserTest
   }
 
   void ClickOnDialogViewAndWaitForWidgetDestruction(views::View* view) {
-    EXPECT_TRUE(GetSaveIbanBubbleView());
+    EXPECT_TRUE(GetIbanBubbleView());
     views::test::WidgetDestroyedWaiter destroyed_waiter(
         GetSaveIbanBubbleView()->GetWidget());
     ClickOnDialogView(view);
     destroyed_waiter.Wait();
-    EXPECT_FALSE(GetSaveIbanBubbleView());
+    EXPECT_FALSE(GetIbanBubbleView());
   }
 
   views::Textfield* nickname_input() {
@@ -378,6 +360,25 @@ class IbanBubbleViewFullFormBrowserTest
   raw_ptr<IBANSaveManager> iban_save_manager_ = nullptr;
 
  private:
+  LocationBarBubbleDelegateView* GetIbanBubbleDelegateView() {
+    LocationBarBubbleDelegateView* iban_bubble_view = nullptr;
+    switch (GetBubbleType()) {
+      case IbanBubbleType::kLocalSave: {
+        iban_bubble_view = GetSaveIbanBubbleView();
+        CHECK(iban_bubble_view);
+        break;
+      }
+      case IbanBubbleType::kManageSavedIban: {
+        iban_bubble_view = GetManageSavedIbanBubbleView();
+        CHECK(iban_bubble_view);
+        break;
+      }
+      case IbanBubbleType::kInactive:
+        NOTREACHED();
+    }
+    return iban_bubble_view;
+  }
+
   AutofillBubbleBase* GetIbanBubbleView() {
     IbanBubbleController* iban_bubble_controller =
         IbanBubbleController::GetOrCreate(GetActiveWebContents());
@@ -549,16 +550,16 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
   ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
 
-  ClickOnIbanValueTogglelButton();
+  ClickOnIbanValueToggleButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
 
-  ClickOnIbanValueTogglelButton();
+  ClickOnIbanValueToggleButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
 
-  ClickOnIbanValueTogglelButton();
+  ClickOnIbanValueToggleButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
 
-  ClickOnIbanValueTogglelButton();
+  ClickOnIbanValueToggleButton();
   EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
 }
 
@@ -585,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
   EXPECT_TRUE(nickname_label);
   EXPECT_EQ(nickname_label->GetText(), kNickname);
   // Verify the bubble type is manage saved IBAN.
-  EXPECT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
+  ASSERT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
 }
 
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
@@ -606,7 +607,38 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
   EXPECT_FALSE(FindViewInBubbleById(DialogViewId::NICKNAME_LABEL));
   // Verify the bubble type is manage saved IBAN.
-  EXPECT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
+  ASSERT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
+}
+
+// Tests the manage saved bubble. Ensures that clicking the eye icon button
+// successfully causes the IBAN value to be masked or unmasked.
+IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
+                       Local_ClickingHideOrShowIbanValueManageView) {
+  FillForm(kIbanValue);
+  SubmitFormAndWaitForIbanLocalSaveBubble();
+
+  ResetEventWaiterForSequence({DialogEvent::ACCEPT_SAVE_IBAN_COMPLETE});
+  ClickOnSaveButton();
+  WaitForObservedEvent();
+
+  // Open up manage IBANs bubble.
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  ClickOnView(GetSaveIbanIconView());
+  WaitForObservedEvent();
+
+  // Verify the bubble type is manage saved IBAN.
+  ASSERT_EQ(GetBubbleType(), IbanBubbleType::kManageSavedIban);
+  ClickOnIbanValueToggleButton();
+  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
+
+  ClickOnIbanValueToggleButton();
+  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
+
+  ClickOnIbanValueToggleButton();
+  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 1000 0000 0123 4567 89");
+
+  ClickOnIbanValueToggleButton();
+  EXPECT_EQ(GetDisplayedIbanValue(), u"DE91 **** **** **** **67 89");
 }
 
 }  // namespace autofill

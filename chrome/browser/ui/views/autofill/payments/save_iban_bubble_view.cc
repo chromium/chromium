@@ -14,38 +14,14 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_utils.h"
-#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
 namespace autofill {
-
-namespace {
-
-// Creates eye icon view to toggle between the masked or revealed IBAN value
-// on click.
-std::unique_ptr<views::ToggleImageButton> CreateIbanMaskingToggle(
-    views::Button::PressedCallback callback) {
-  auto button = std::make_unique<views::ToggleImageButton>(std::move(callback));
-  button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_SHOW_VALUE));
-  button->SetToggledTooltipText(
-      l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_HIDE_VALUE));
-  button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  button->SetToggled(false);
-  return button;
-}
-
-}  // namespace
 
 SaveIbanBubbleView::SaveIbanBubbleView(views::View* anchor_view,
                                        content::WebContents* web_contents,
@@ -68,12 +44,6 @@ SaveIbanBubbleView::SaveIbanBubbleView(views::View* anchor_view,
 void SaveIbanBubbleView::Show(DisplayReason reason) {
   ShowForReason(reason);
   AssignIdsToDialogButtonsForTesting();  // IN-TEST
-}
-
-void SaveIbanBubbleView::ToggleIbanValueMasking() {
-  const bool is_value_masked = iban_value_masking_button_->GetToggled();
-  iban_value_masking_button_->SetToggled(!is_value_masked);
-  iban_value_->SetText(GetIbanIdentifierString(is_value_masked));
 }
 
 void SaveIbanBubbleView::Hide() {
@@ -149,32 +119,20 @@ void SaveIbanBubbleView::CreateMainContentView() {
 
   iban_view->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_LABEL),
-      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-  auto* iban_value_view =
-      iban_view->AddChildView(std::make_unique<views::BoxLayoutView>());
-  iban_value_ = iban_value_view->AddChildView(std::make_unique<views::Label>(
-      GetIbanIdentifierString(/*is_value_masked=*/true),
-      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-  iban_value_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                               views::MaximumFlexSizeRule::kScaleToMaximum));
-  iban_value_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
 
-  iban_value_masking_button_ =
-      iban_value_view->AddChildView(CreateIbanMaskingToggle(
-          base::BindRepeating(&SaveIbanBubbleView::ToggleIbanValueMasking,
-                              base::Unretained(this))));
-  views::SetImageFromVectorIconWithColorId(iban_value_masking_button_,
-                                           views::kEyeIcon, ui::kColorIcon,
-                                           ui::kColorIconDisabled);
-  views::SetToggledImageFromVectorIconWithColorId(
-      iban_value_masking_button_, views::kEyeCrossedIcon, ui::kColorIcon,
-      ui::kColorIconDisabled);
+  iban_value_and_toggle_ =
+      iban_view->AddChildView(std::make_unique<ObscurableLabelWithToggleButton>(
+          controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
+              /*is_value_masked=*/true),
+          controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
+              /*is_value_masked=*/false),
+          l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_SHOW_VALUE),
+          l10n_util::GetStringUTF16(IDS_MANAGE_IBAN_VALUE_HIDE_VALUE)));
 
   iban_view->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME),
-      views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   nickname_textfield_ =
       iban_view->AddChildView(std::make_unique<views::Textfield>());
   nickname_textfield_->SetAccessibleName(
@@ -195,12 +153,10 @@ void SaveIbanBubbleView::AssignIdsToDialogButtonsForTesting() {
     cancel_button->SetID(DialogViewId::CANCEL_BUTTON);
   }
 
-  DCHECK(iban_value_masking_button_);
-  iban_value_masking_button_->SetID(
+  DCHECK(iban_value_and_toggle_);
+  iban_value_and_toggle_->value()->SetID(DialogViewId::IBAN_VALUE_LABEL);
+  iban_value_and_toggle_->toggle_obscured()->SetID(
       DialogViewId::TOGGLE_IBAN_VALUE_MASKING_BUTTON);
-
-  DCHECK(iban_value_);
-  iban_value_->SetID(DialogViewId::IBAN_VALUE_LABEL);
 
   if (nickname_textfield_) {
     nickname_textfield_->SetID(DialogViewId::NICKNAME_TEXTFIELD);
@@ -222,12 +178,6 @@ void SaveIbanBubbleView::OnDialogCancelled() {
 
 void SaveIbanBubbleView::Init() {
   CreateMainContentView();
-}
-
-std::u16string SaveIbanBubbleView::GetIbanIdentifierString(
-    bool is_value_masked) const {
-  return controller_->GetIBAN().GetIdentifierStringForAutofillDisplay(
-      is_value_masked);
 }
 
 }  // namespace autofill
