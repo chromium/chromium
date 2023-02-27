@@ -26,11 +26,6 @@
 
 namespace {
 
-bool CreateFile(const base::FilePath& file, const std::string& content) {
-  return base::WriteFile(file, content.c_str(), content.size()) ==
-         static_cast<int>(content.size());
-}
-
 class ZipFileCreatorTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
@@ -276,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
     for (int i = 1; i < 90; i++) {
       base::FilePath file(std::to_string(i) + ".txt");
       std::string content = "Hello" + std::to_string(i);
-      ASSERT_TRUE(CreateFile(root_dir.Append(file), content));
+      ASSERT_TRUE(base::WriteFile(root_dir.Append(file), content));
       file_tree_content[file] = content;
     }
     for (int i = 1; i <= 10; i++) {
@@ -287,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
         base::FilePath file = dir.Append(std::to_string(j) + ".txt");
         std::string content =
             "Hello" + std::to_string(i) + "/" + std::to_string(j);
-        ASSERT_TRUE(CreateFile(root_dir.Append(file), content));
+        ASSERT_TRUE(base::WriteFile(root_dir.Append(file), content));
         file_tree_content[file] = content;
       }
     }
