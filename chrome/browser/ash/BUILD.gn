@@ -4655,12 +4655,6 @@ static_library("test_support") {
     "//ui/views/controls/webview",
     "//ui/wm",
   ]
-
-  data = [
-    # TODO(crbug/1393862): Script should create binarypb from textpb.
-    # Required for policy/enrollment/psm/rlwe_test_support.cc
-    "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
-  ]
 }
 
 source_set("unit_tests") {
@@ -6225,10 +6219,7 @@ source_set("unit_tests") {
     ]
   }
 
-  data = [
-    "//chromeos/test/data/",
-    "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
-  ]
+  data = [ "//chromeos/test/data/" ]
 }
 
 config("allow_shadow_variables") {

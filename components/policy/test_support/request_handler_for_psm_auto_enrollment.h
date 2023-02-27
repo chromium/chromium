@@ -33,7 +33,7 @@ class RequestHandlerForPsmAutoEnrollment
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) override;
 
-  // Required for unit tests
+  // Returns a copy of the regression test data.
   static std::unique_ptr<RlweTestData> LoadTestData();
 
  private:

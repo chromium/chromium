@@ -25,7 +25,8 @@ using RlweClientFactory = base::RepeatingCallback<
         const private_membership::rlwe::RlwePlaintextId&)>;
 
 // Load a test case from the test database provided by the
-// third_party/private_membership library. These can be used to simulate PSM
+// third_party/private_membership library, i.e. a test case that is also used in
+// the EmbeddedPolicyTestServer. This test case can be used to simulate PSM
 // requests for members or non-members of the set.
 //
 // Note that this function performs a blocking file read.
