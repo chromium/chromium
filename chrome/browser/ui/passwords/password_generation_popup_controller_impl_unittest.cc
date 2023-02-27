@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -19,7 +21,16 @@
 
 namespace {
 
+using autofill::password_generation::PasswordGenerationUIData;
 using ::testing::_;
+
+PasswordGenerationUIData CreatePasswordGenerationUIData() {
+  return PasswordGenerationUIData(
+      gfx::RectF(100, 20), /*max_length=*/20, u"element",
+      /*user_typed_password=*/std::u16string(), autofill::FieldRendererId(100),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      autofill::FormData());
+}
 
 class MockPasswordManagerDriver
     : public password_manager::StubPasswordManagerDriver {
@@ -43,11 +54,7 @@ PasswordGenerationPopupControllerImplTest::CreateDriver() {
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateTheSame) {
-  autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, u"element",
-      /*user_typed_password=*/std::u16string(), autofill::FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      autofill::FormData());
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
   auto driver = CreateDriver();
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
@@ -65,11 +72,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateTheSame) {
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentBounds) {
   gfx::RectF rect(100, 20);
-  autofill::password_generation::PasswordGenerationUIData ui_data(
-      rect, /*max_length=*/20, u"element",
-      /*user_typed_password=*/std::u16string(), autofill::FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      autofill::FormData());
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
   auto driver = CreateDriver();
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
@@ -88,11 +91,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentBounds) {
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentTabs) {
-  autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, u"element",
-      /*user_typed_password=*/std::u16string(), autofill::FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      autofill::FormData());
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
   auto driver = CreateDriver();
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
@@ -111,11 +110,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentTabs) {
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentDrivers) {
-  autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, u"element",
-      /*user_typed_password=*/std::u16string(), autofill::FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      autofill::FormData());
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
   auto driver = CreateDriver();
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
@@ -135,11 +130,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest, GetOrCreateDifferentDrivers) {
 
 TEST_F(PasswordGenerationPopupControllerImplTest,
        GetOrCreateDifferentElements) {
-  autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, u"element",
-      /*user_typed_password=*/std::u16string(), autofill::FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      autofill::FormData());
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
   auto driver = CreateDriver();
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupControllerImpl> controller1 =
@@ -158,11 +149,7 @@ TEST_F(PasswordGenerationPopupControllerImplTest,
 }
 
 TEST_F(PasswordGenerationPopupControllerImplTest, DestroyInPasswordAccepted) {
-  autofill::password_generation::PasswordGenerationUIData ui_data(
-      gfx::RectF(100, 20), /*max_length=*/20, u"element",
-      /*user_typed_password=*/std::u16string(), autofill::FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      autofill::FormData());
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
   auto driver = CreateDriver();
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
   base::WeakPtr<PasswordGenerationPopupController> controller =
@@ -178,6 +165,21 @@ TEST_F(PasswordGenerationPopupControllerImplTest, DestroyInPasswordAccepted) {
         controller->Hide(autofill::PopupHidingReason::kViewDestroyed);
       });
   controller->PasswordAccepted();
+}
+
+TEST_F(PasswordGenerationPopupControllerImplTest, GetElementTextDirection) {
+  PasswordGenerationUIData ui_data{CreatePasswordGenerationUIData()};
+  ui_data.text_direction = base::i18n::TextDirection::RIGHT_TO_LEFT;
+  auto driver = CreateDriver();
+  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  base::WeakPtr<PasswordGenerationPopupController> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          nullptr /*previous*/, ui_data.bounds, ui_data, driver->AsWeakPtr(),
+          nullptr, web_contents.get(), main_rfh());
+
+  ASSERT_TRUE(controller);
+  EXPECT_EQ(controller->GetElementTextDirection(),
+            base::i18n::TextDirection::RIGHT_TO_LEFT);
 }
 
 }  // namespace

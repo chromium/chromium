@@ -11,6 +11,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/platform_util.h"
@@ -349,7 +350,8 @@ gfx::Rect PopupBaseView::GetOptionalPositionAndPlaceArrowOnPopup(
       /*content_area_bounds=*/max_bounds_for_popup,
       /*element_bounds=*/element_bounds,
       /*popup_preferred_size=*/preferred_size,
-      /*right_to_left=*/delegate_->IsRTL(),
+      /*right_to_left=*/delegate_->GetElementTextDirection() ==
+          base::i18n::TextDirection::RIGHT_TO_LEFT,
       /*scrollbar_width=*/gfx::scrollbar_size(),
       /*maximum_pixel_offset_to_center=*/
       maximum_pixel_offset_to_center,

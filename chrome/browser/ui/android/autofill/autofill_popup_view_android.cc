@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
+#include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/AutofillPopupBridge_jni.h"
@@ -143,7 +144,7 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
   }
 
   Java_AutofillPopupBridge_show(env, java_object_, data_array,
-                                controller_->IsRTL());
+                                base::i18n::IsRTL());
 }
 
 void AutofillPopupViewAndroid::AxAnnounce(const std::u16string& text) {

@@ -108,8 +108,7 @@ void AutofillKeyboardAccessoryView::Show() {
         ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),
         url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
-  Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array,
-                                                controller_->IsRTL());
+  Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array);
 }
 
 void AutofillKeyboardAccessoryView::AxAnnounce(const std::u16string& text) {

@@ -340,8 +340,9 @@ void AutofillPopupControllerImpl::SetElementBounds(const gfx::RectF& bounds) {
   controller_common_.element_bounds.set_size(bounds.size());
 }
 
-bool AutofillPopupControllerImpl::IsRTL() const {
-  return controller_common_.text_direction == base::i18n::RIGHT_TO_LEFT;
+base::i18n::TextDirection AutofillPopupControllerImpl::GetElementTextDirection()
+    const {
+  return controller_common_.text_direction;
 }
 
 std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {

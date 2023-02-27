@@ -211,8 +211,10 @@ const gfx::RectF& AutofillKeyboardAccessoryAdapter::element_bounds() const {
   return controller_->element_bounds();
 }
 
-bool AutofillKeyboardAccessoryAdapter::IsRTL() const {
-  return controller_ && controller_->IsRTL();
+base::i18n::TextDirection
+AutofillKeyboardAccessoryAdapter::GetElementTextDirection() const {
+  DCHECK(controller_);
+  return controller_->GetElementTextDirection();
 }
 
 std::vector<Suggestion> AutofillKeyboardAccessoryAdapter::GetSuggestions()

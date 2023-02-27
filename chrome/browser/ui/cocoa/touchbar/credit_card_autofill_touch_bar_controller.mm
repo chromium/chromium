@@ -4,6 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/touchbar/credit_card_autofill_touch_bar_controller.h"
 
+#include "base/i18n/rtl.h"
 #import "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
@@ -142,7 +143,7 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
                                 target:self
                                 action:@selector(acceptCreditCard:)];
     button.imageHugsTitle = YES;
-    button.imagePosition = _controller->IsRTL() ? NSImageLeft : NSImageRight;
+    button.imagePosition = base::i18n::IsRTL() ? NSImageLeft : NSImageRight;
   } else {
     button = [NSButton buttonWithTitle:buttonTitle
                                 target:self

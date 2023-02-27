@@ -7,6 +7,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_environment_variable_override.h"
 #include "base/strings/strcat.h"
@@ -33,10 +34,13 @@ namespace autofill {
 
 namespace {
 
-using testing::NiceMock;
-using testing::Return;
+using ::testing::Bool;
+using ::testing::Combine;
+using ::testing::NiceMock;
+using ::testing::Return;
 using CellIndex = PopupViewViews::CellIndex;
 using CellType = PopupRowView::CellType;
+using TestParameterType = std::tuple<bool, bool>;
 
 std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   std::vector<Suggestion> suggestions;
@@ -54,17 +58,35 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   return suggestions;
 }
 
+bool IsDarkModeOn(const TestParameterType& param) {
+  return std::get<0>(param);
+}
+
+bool IsBrowserLanguageRTL(const TestParameterType& param) {
+  return std::get<1>(param);
+}
+
+std::string GetTestSuffix(
+    const testing::TestParamInfo<TestParameterType> param_info) {
+  return base::StrCat(
+      {IsDarkModeOn(param_info.param) ? "Dark" : "Light",
+       IsBrowserLanguageRTL(param_info.param) ? "BrowserRTL" : "BrowserLTR"});
+}
+
 }  // namespace
 
-// If the boolean test parameter is `true`, dark mode is enforced.
-class PopupViewViewsBrowsertest : public UiBrowserTest,
-                                  public testing::WithParamInterface<bool> {
+// The tuple of boolean test parameters has the following meaning:
+// 1) Is dark mode on.
+// 2) Is browser language RTL.
+class PopupViewViewsBrowsertest
+    : public UiBrowserTest,
+      public testing::WithParamInterface<TestParameterType> {
  public:
   PopupViewViewsBrowsertest() = default;
   ~PopupViewViewsBrowsertest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam()) {
+    if (IsDarkModeOn(GetParam())) {
       command_line->AppendSwitch(switches::kForceDarkMode);
     }
   }
@@ -77,6 +99,8 @@ class PopupViewViewsBrowsertest : public UiBrowserTest,
         .WillRepeatedly(Return(native_view));
     EXPECT_CALL(controller_, GetWebContents())
         .WillRepeatedly(Return(web_contents));
+
+    base::i18n::SetRTLForTesting(IsBrowserLanguageRTL(GetParam()));
   }
 
   void PrepareSuggestions(std::vector<Suggestion> suggestions) {
@@ -205,6 +229,9 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   ShowAndVerifyUi();
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PopupViewViewsBrowsertest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupViewViewsBrowsertest,
+                         Combine(Bool(), Bool()),
+                         GetTestSuffix);
 
 }  // namespace autofill

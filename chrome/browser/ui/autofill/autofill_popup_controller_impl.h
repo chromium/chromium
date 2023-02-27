@@ -111,7 +111,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
   void SetElementBounds(const gfx::RectF& bounds);
-  bool IsRTL() const override;
+  base::i18n::TextDirection GetElementTextDirection() const override;
 
   // AutofillPopupController:
   void OnSuggestionsChanged() override;

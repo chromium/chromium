@@ -863,9 +863,7 @@ ChromeAutofillClient::GetReopenPopupArgs() const {
   gfx::RectF screen_space_independent_bounds =
       controller->element_bounds() - client_area.OffsetFromOrigin();
   return autofill::AutofillClient::PopupOpenArgs(
-      screen_space_independent_bounds,
-      controller->IsRTL() ? base::i18n::RIGHT_TO_LEFT
-                          : base::i18n::LEFT_TO_RIGHT,
+      screen_space_independent_bounds, controller->GetElementTextDirection(),
       controller->GetSuggestions(), AutoselectFirstSuggestion(false));
 }
 

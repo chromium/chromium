@@ -47,7 +47,10 @@ class MockAutofillPopupViewDelegate : public AutofillPopupViewDelegate {
   MOCK_METHOD(gfx::NativeView, container_view, (), (const override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (const override));
   MOCK_METHOD(const gfx::RectF&, element_bounds, (), (const override));
-  MOCK_METHOD(bool, IsRTL, (), (const override));
+  MOCK_METHOD(base::i18n::TextDirection,
+              GetElementTextDirection,
+              (),
+              (const override));
 
   base::WeakPtr<AutofillPopupViewDelegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -164,7 +165,7 @@ class PasswordGenerationPopupControllerImpl
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
-  bool IsRTL() const override;
+  base::i18n::TextDirection GetElementTextDirection() const override;
 
   void HideImpl();
 

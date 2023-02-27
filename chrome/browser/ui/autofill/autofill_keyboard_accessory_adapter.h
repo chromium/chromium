@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -104,7 +105,7 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
-  bool IsRTL() const override;
+  base::i18n::TextDirection GetElementTextDirection() const override;
   std::vector<Suggestion> GetSuggestions() const override;
 
   void OnDeletionConfirmed(int index);
