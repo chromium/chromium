@@ -1218,9 +1218,11 @@ enum class ToolbarKind {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   BrowserViewController* browserViewController = self.viewController;
 
+  DCHECK(self.browserContainerCoordinator.viewController);
   self.tabEventsMediator = [[TabEventsMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
             ntpCoordinator:_NTPCoordinator];
+  self.tabEventsMediator.consumer = browserViewController;
 
   browserViewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);

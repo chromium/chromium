@@ -29,9 +29,9 @@ class WebStateList;
 
 // Mediator that handles the setup of tab helpers that require UI-layer
 // dependencies not available when AttachTabHelpers() is called.
-// The required dependencies are injected into the mediator instance on init,
-// and are generally expected not to change during the mediator's lifetime.
-// The mediator keeps only weak references to injected dependencies.
+// The required dependencies are injected into the mediator instance as
+// properties, and are generally expected not to change during the mediator's
+// lifetime. The mediator keeps only weak references to injected dependencies.
 @interface TabLifecycleMediator : NSObject
 
 @property(nonatomic, weak) SideSwipeController* sideSwipeController;

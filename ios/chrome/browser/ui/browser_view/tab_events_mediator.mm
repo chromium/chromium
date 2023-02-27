@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ui/browser_view/tab_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -17,13 +19,16 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TabEventsMediator () <CRWWebStateObserver>
+@interface TabEventsMediator () <CRWWebStateObserver, WebStateListObserving>
 
 @end
 
 @implementation TabEventsMediator {
   // Bridges C++ WebStateObserver methods to this mediator.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+
+  // Bridges C++ WebStateListObserver methods to TabEventsMediator.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 
   // Forwards observer methods for all WebStates in the WebStateList to
   // this mediator.
@@ -44,6 +49,9 @@
 
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
+    webStateList->AddObserver(_webStateListObserverBridge.get());
     _allWebStateObservationForwarder =
         std::make_unique<AllWebStateObservationForwarder>(
             _webStateList, _webStateObserverBridge.get());
@@ -55,8 +63,12 @@
   _allWebStateObservationForwarder = nullptr;
   _webStateObserverBridge = nullptr;
 
+  _webStateList->RemoveObserver(_webStateListObserverBridge.get());
+  _webStateListObserverBridge.reset();
+
   _webStateList = nullptr;
   _ntpCoordinator = nil;
+  self.consumer = nil;
 }
 
 #pragma mark - CRWWebStateObserver methods.
@@ -77,6 +89,17 @@
     } else {
       [currentWebState->GetWebViewProxy() becomeFirstResponder];
     }
+  }
+}
+
+#pragma mark - WebStateListObserving methods
+
+- (void)webStateList:(WebStateList*)webStateList
+    willDetachWebState:(web::WebState*)webState
+               atIndex:(int)atIndex {
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (webState == currentWebState) {
+    [self.consumer resetTab];
   }
 }
 

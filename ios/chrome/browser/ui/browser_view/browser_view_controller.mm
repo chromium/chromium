@@ -3088,6 +3088,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
+#pragma mark - TabConsumer (Public)
+
+- (void)resetTab {
+  self.browserContainerViewController.contentView = nil;
+}
+
 #pragma mark - WebStateListObserving methods
 
 // TODO(crbug.com/1329088): Move BVC's tab lifeceyle event updates to a
@@ -3113,14 +3119,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return;
 
   [self webStateSelected:newWebState notifyToolbar:YES];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    willDetachWebState:(web::WebState*)webState
-               atIndex:(int)atIndex {
-  if (webState == self.currentWebState) {
-    self.browserContainerViewController.contentView = nil;
-  }
 }
 
 // Observer method, WebState replaced in `webStateList`.

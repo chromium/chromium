@@ -9,12 +9,16 @@
 
 @class NewTabPageCoordinator;
 class WebStateList;
+@protocol TabConsumer;
 
 // Mediator that handles tab events.
 // The required dependencies are injected into the mediator instance on init,
 // and are generally expected not to change during the mediator's lifetime.
 // The mediator keeps only weak references to injected dependencies.
 @interface TabEventsMediator : NSObject
+
+// Consumer for tab UI changes.
+@property(nonatomic, weak) id<TabConsumer> consumer;
 
 // Creates an instance of the mediator. Observers will be installed into all
 // existing web states in `webStateList`. While the mediator is alive,
