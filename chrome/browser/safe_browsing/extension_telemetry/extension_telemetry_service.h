@@ -271,6 +271,7 @@ class ExtensionTelemetryService : public KeyedService {
   // Then repeat the collection based on
   // |kExtensionTelemetryFileDataProcessIntervalSeconds| - default: 2 hours.
   base::OneShotTimer offstore_file_data_collection_timer_;
+  base::TimeTicks offstore_file_data_collection_start_time_;
 
   using SignalProcessors =
       base::flat_map<ExtensionSignalType,
