@@ -292,9 +292,11 @@ interface GenerateBidFinalizer {
 interface BidderWorklet {
   // Loads the same-origin realtime bidding signals URL (if necessary), and
   // after the rest of the arguments for it have been provided via
-  // `bid_finalizer`, invokes the worklet's generateBid() method, returning the
-  // generated bid and associated data. Waits for the worklet script to be
-  // loaded first, if needed.
+  // a FinishGenerateBid() call on `bid_finalizer`, invokes the worklet's
+  // generateBid() method, returning the generated bid and associated data.
+  // Waits for the worklet script to be loaded first, if needed.
+  // FinishGenerateBid() *must* always be called, even if no parameters are
+  // provided as promises.
   //
   // Arguments:
   // `bidder_worklet_non_shared_params` values that can vary in the
