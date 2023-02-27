@@ -416,6 +416,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1413781")
     public void testopenBookmarkManagerFolder() throws InterruptedException {
         openBookmarkManager();
         openMobileBookmarks();
