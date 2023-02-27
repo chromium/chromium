@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 627 tests; 478 PASS, 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 628 tests; 479 PASS, 149 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -730,5 +730,6 @@ FAIL Parsing: <non-special:x/￿y> against <about:blank> assert_equals: href exp
 FAIL Parsing: <non-special:x/?￿y> against <about:blank> assert_equals: href expected "non-special:x/?%EF%BF%BFy" but got "non-special:x/?%EF%BF%BDy"
 FAIL Parsing: <non-special:x/?#￿y> against <about:blank> assert_equals: href expected "non-special:x/?#%EF%BF%BFy" but got "non-special:x/?#%EF%BF%BDy"
 PASS Parsing: <> against <about:blank>
+PASS Parsing: <https://example.com/"quoted"> against <about:blank>
 Harness: the test ran to completion.
 
