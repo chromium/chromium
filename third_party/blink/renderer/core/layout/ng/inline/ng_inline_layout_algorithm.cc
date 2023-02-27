@@ -550,24 +550,9 @@ void NGInlineLayoutAlgorithm::PlaceControlItem(const NGInlineItem& item,
   DCHECK_EQ(item.Type(), NGInlineItem::kControl);
   DCHECK_GE(item.Length(), 1u);
   DCHECK(!item.TextShapeResult());
+  DCHECK_NE(item.TextType(), NGTextType::kNormal);
 #if DCHECK_IS_ON()
-  UChar character = line_info.ItemsData().text_content[item.StartOffset()];
-  NGTextType text_type;
-  switch (character) {
-    case kNewlineCharacter:
-      text_type = NGTextType::kForcedLineBreak;
-      break;
-    case kTabulationCharacter:
-      text_type = NGTextType::kFlowControl;
-      break;
-    case kZeroWidthSpaceCharacter:
-      text_type = NGTextType::kFlowControl;
-      break;
-    default:
-      NOTREACHED();
-      return;
-  }
-  DCHECK_EQ(item.TextType(), text_type);
+  item.CheckTextType(line_info.ItemsData().text_content);
 #endif
 
   // Don't generate fragments if this is a generated (not in DOM) break
