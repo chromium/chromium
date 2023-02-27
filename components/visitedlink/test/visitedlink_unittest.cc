@@ -28,8 +28,6 @@
 #include "components/visitedlink/common/visitedlink.mojom.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -636,13 +634,6 @@ class VisitRelayingRenderProcessHost : public MockRenderProcessHost {
       delete;
   VisitRelayingRenderProcessHost& operator=(
       const VisitRelayingRenderProcessHost&) = delete;
-
-  ~VisitRelayingRenderProcessHost() override {
-    content::NotificationService::current()->Notify(
-        content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-        content::Source<content::RenderProcessHost>(this),
-        content::NotificationService::NoDetails());
-  }
 };
 
 class VisitedLinkRenderProcessHostFactory
