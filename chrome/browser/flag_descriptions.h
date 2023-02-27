@@ -2082,9 +2082,6 @@ extern const char kContextualSearchSuppressShortViewDescription[];
 extern const char kAutofillManualFallbackAndroidName[];
 extern const char kAutofillManualFallbackAndroidDescription[];
 
-extern const char kEnableAutofillRefreshStyleName[];
-extern const char kEnableAutofillRefreshStyleDescription[];
-
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
 

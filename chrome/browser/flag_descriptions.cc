@@ -3653,11 +3653,6 @@ const char kAutofillManualFallbackAndroidDescription[] =
     "If enabled, adds toggle for addresses and payments bottom sheet to the "
     "keyboard accessory.";
 
-const char kEnableAutofillRefreshStyleName[] =
-    "Enable Autofill refresh style (Android)";
-const char kEnableAutofillRefreshStyleDescription[] =
-    "Enable modernized style for Autofill on Android";
-
 const char kEnableCommandLineOnNonRootedName[] =
     "Enable command line on non-rooted devices";
 const char kEnableCommandLineOnNoRootedDescription[] =

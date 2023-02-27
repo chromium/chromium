@@ -4985,11 +4985,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillManualFallbackAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillManualFallbackAndroid)},
 
-    {"enable-autofill-refresh-style",
-     flag_descriptions::kEnableAutofillRefreshStyleName,
-     flag_descriptions::kEnableAutofillRefreshStyleDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillRefreshStyleAndroid)},
-
     {"enable-autofill-touch-to-fill-for-credit-cards",
      flag_descriptions::kAutofillTouchToFillForCreditCardsAndroidName,
      flag_descriptions::kAutofillTouchToFillForCreditCardsAndroidDescription,

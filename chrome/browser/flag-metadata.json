@@ -1818,11 +1818,6 @@
     "expiry_milestone": 114
   },
   {
-    "name": "enable-autofill-refresh-style",
-    "owners": [ "tmartino@chromium.org" ],
-    "expiry_milestone": 78
-  },
-  {
     "name": "enable-autofill-touch-to-fill-for-credit-cards",
     "owners": [ "vishwasuppoor", "izuzic" ],
     "expiry_milestone": 120
