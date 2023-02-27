@@ -42,22 +42,23 @@ ImmersiveModeTabbedController::ImmersiveModeTabbedController(
                               overlay_window,
                               std::move(callback)),
       tab_window_(tab_window) {
-  if (@available(macOS 11.0, *)) {
-    // TODO(https://crbug.com/1414521): Support macOS versions older than
-    // macOS 11.
-    browser_window.toolbarStyle = NSWindowToolbarStyleUnifiedCompact;
-  }
   browser_window.titleVisibility = NSWindowTitleHidden;
   browser_window.toolbar = [[[NSToolbar alloc] init] autorelease];
 
   tab_titlebar_view_controller_.reset([[TabTitlebarViewController alloc] init]);
   tab_titlebar_view_controller_.get().view =
       [[[NSView alloc] init] autorelease];
+
+  // The view is pinned to the opposite side of the traffic lights. A view long
+  // enough is able to paint underneath the traffic lights. This also works with
+  // RTL setups.
   tab_titlebar_view_controller_.get().layoutAttribute =
-      (browser_window.windowTitlebarLayoutDirection ==
-       NSUserInterfaceLayoutDirectionRightToLeft)
-          ? NSLayoutAttributeRight
-          : NSLayoutAttributeLeft;
+      NSLayoutAttributeTrailing;
+
+  // TODO(https://crbug.com/1414521): Fix window tab parent. Currently the tab
+  // window is parented to the browser window. Instead it should be parented to
+  // the AppKit fullscreen window as a sibling of the overlay window. This will
+  // involve some changes to ImmersiveModeDelegate.
 }
 
 ImmersiveModeTabbedController::~ImmersiveModeTabbedController() {
@@ -105,9 +106,19 @@ void ImmersiveModeTabbedController::UpdateToolbarVisibility(
       TitlebarHide();
       break;
     case mojom::ToolbarVisibilityStyle::kNone:
-      browser_window().toolbar = nil;
+      TitlebarHide();
       break;
   }
+}
+
+void ImmersiveModeTabbedController::OnTopViewBoundsChanged(
+    const gfx::Rect& bounds) {
+  ImmersiveModeController::OnTopViewBoundsChanged(bounds);
+  NSRect frame = NSRectFromCGRect(bounds.ToCGRect());
+  [tab_titlebar_view_controller_.get().view
+      setFrameSize:NSMakeSize(frame.size.width,
+                              tab_titlebar_view_controller_.get()
+                                  .view.frame.size.height)];
 }
 
 void ImmersiveModeTabbedController::RevealLock() {
@@ -130,7 +141,7 @@ void ImmersiveModeTabbedController::TitlebarReveal() {
   if (@available(macOS 10.15, *)) {
     browser_window().titlebarHeight = tab_window_.frame.size.height - 1;
   }
-  browser_window().toolbar = [[[NSToolbar alloc] init] autorelease];
+  browser_window().toolbar.visible = YES;
   if (@available(macOS 10.15, *)) {
     browser_window().titlebarHeight = tab_window_.frame.size.height;
   }
@@ -142,7 +153,7 @@ void ImmersiveModeTabbedController::TitlebarHide() {
   if (@available(macOS 10.15, *)) {
     browser_window().titlebarHeight = tab_window_.frame.size.height - 1;
   }
-  browser_window().toolbar = nil;
+  browser_window().toolbar.visible = NO;
   if (@available(macOS 10.15, *)) {
     browser_window().titlebarHeight = tab_window_.frame.size.height;
   }

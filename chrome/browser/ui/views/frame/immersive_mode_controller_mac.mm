@@ -11,19 +11,30 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/common/chrome_features.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/border.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+// The width of the traffic lights. Used to layout the tab strip leaving a hole
+// for the traffic lights.
+// TODO(https://crbug.com/1414521): Get this dynamically. Unfortunately the
+// values in BrowserNonClientFrameViewMac::GetCaptionButtonInsets don't account
+// for a window with an NSToolbar.
+const int kTrafficLightsWidth = 70;
+
 class ImmersiveModeControllerMac : public ImmersiveModeController,
                                    public views::FocusChangeListener,
                                    public views::ViewObserver,
@@ -286,23 +297,47 @@ class ImmersiveModeTabbedControllerMac : public ImmersiveModeControllerMac {
 
   // ImmersiveModeControllerMac overrides:
   void SetEnabled(bool enabled) override;
+  void OnViewBoundsChanged(views::View* observed_view) override;
 
  private:
+  int tab_widget_height_ = 0;
 };
 
 void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
   BrowserView* browser_view = ImmersiveModeControllerMac::browser_view();
   if (enabled) {
-    browser_view->tab_overlay_widget()->GetRootView()->AddChildView(
-        browser_view->tab_strip_region_view());
+    tab_widget_height_ = browser_view->tab_strip_region_view()->height();
+    tab_widget_height_ += static_cast<BrowserNonClientFrameViewMac*>(
+                              browser_view->frame()->GetFrameView())
+                              ->GetTopInset(false);
+    // Without this -1 the tabs sit 1px too high. I assume this is because in
+    // fullscreen there is no resize handle.
+    tab_widget_height_ -= 1;
 
-    // TODO(https://crbug.com/1414521): The +8 height here is just a
-    // placeholder. Instead we need to move the top_container background to the
-    // tab_overlay_widget.
-    gfx::Size tab_region_size = browser_view->tab_strip_region_view()->size();
-    tab_region_size.set_height(tab_region_size.height() + 8);
-    browser_view->tab_overlay_widget()->SetSize(tab_region_size);
+    // TODO(https://crbug.com/1414521): The |tab_overlay_widget()| draws
+    // underneath the traffic lights via an NSTitlebarViewController with
+    // NSLayoutAttributeTrailing layout. In order to propagate all mouse and
+    // keyboard events from AppKit back to Views the |tab_overlay_widget()|
+    // needs to be placed at the same location on screen as the
+    // NSTitlebarViewController. 0,0 is the correct location for the input to
+    // line up with the view, however this causes mouse actions to not make it
+    // to the traffic lights. For now the |tab_overlay_widget()| has been
+    // ordered behind the AppKit fullscreen window which hosts the traffic
+    // lights. This allows for interaction with the traffic lights and tab strip
+    // but child widgets of |tab_overlay_widget()| appear underneath the
+    // toolbar. Find a solution.
+    browser_view->tab_overlay_widget()->SetBounds(
+        gfx::Rect(0, 0, browser_view->top_container()->size().width(),
+                  tab_widget_height_));
     browser_view->tab_overlay_widget()->Show();
+
+    // Inset the start of |tab_strip_region_view()| by |kTrafficLightsWidth|.
+    // This will leave a hole for the traffic light to appear.
+    browser_view->tab_overlay_view()->AddChildView(
+        browser_view->tab_strip_region_view());
+    gfx::Insets insets = gfx::Insets::TLBR(0, kTrafficLightsWidth, 0, 0);
+    browser_view->tab_strip_region_view()->SetBorder(
+        views::CreateEmptyBorder(insets));
 
     views::NativeWidgetMacNSWindowHost* tab_overlay_host =
         views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
@@ -311,10 +346,23 @@ void ImmersiveModeTabbedControllerMac::SetEnabled(bool enabled) {
     ImmersiveModeControllerMac::SetEnabled(enabled);
   } else {
     browser_view->tab_overlay_widget()->Hide();
+    browser_view->tab_strip_region_view()->SetBorder(nullptr);
     browser_view->top_container()->AddChildViewAt(
         browser_view->tab_strip_region_view(), 0);
     ImmersiveModeControllerMac::SetEnabled(enabled);
   }
+}
+
+void ImmersiveModeTabbedControllerMac::OnViewBoundsChanged(
+    views::View* observed_view) {
+  // Resize the width of |tab_overlay_view()| and |tab_overlay_widget()|.
+  BrowserView* browser_view = ImmersiveModeControllerMac::browser_view();
+  gfx::Size new_size(observed_view->size().width(), tab_widget_height_);
+  browser_view->tab_overlay_widget()->SetSize(new_size);
+  browser_view->tab_overlay_view()->SetSize(new_size);
+  browser_view->tab_strip_region_view()->SetSize(gfx::Size(
+      new_size.width(), browser_view->tab_strip_region_view()->height()));
+  ImmersiveModeControllerMac::OnViewBoundsChanged(observed_view);
 }
 
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac() {

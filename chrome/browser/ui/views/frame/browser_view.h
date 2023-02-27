@@ -199,6 +199,7 @@ class BrowserView : public BrowserWindow,
 #if BUILDFLAG(IS_MAC)
   views::Widget* overlay_widget() { return overlay_widget_.get(); }
   views::Widget* tab_overlay_widget() { return tab_overlay_widget_.get(); }
+  views::View* tab_overlay_view() { return tab_overlay_view_.get(); }
 
   // Returns if this browser view will use immersive fullscreen mode, based
   // on the state of the two relevant base::Features, as well as the type of
@@ -1046,13 +1047,17 @@ class BrowserView : public BrowserWindow,
   // Used when calling CreateMacOverlayView(). This widget owns `overlay_view_`.
   // Its content NSView will be reparented to a NSToolbarFullScreenWindow
   // during fullscreen.
-  raw_ptr<views::Widget, DanglingUntriaged> overlay_widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> overlay_widget_ = nullptr;
 
   // Also used when calling CreateMacOverlayView(). This widget will host the
   // tabstrip contents. Its content NSView will be reparented to a separate
   // section of the NSToolbarFullScreenWindow allowing for the tabs to live in
   // the Titlebar.
-  raw_ptr<views::Widget, DanglingUntriaged> tab_overlay_widget_;
+  raw_ptr<views::Widget, DanglingUntriaged> tab_overlay_widget_ = nullptr;
+
+  // The hosting view of TabStripRegionView during immersive fullscreen.
+  raw_ptr<views::View, DanglingUntriaged> tab_overlay_view_ = nullptr;
+
 #endif
 
   // The Bookmark Bar View for this window. Lazily created. May be null for

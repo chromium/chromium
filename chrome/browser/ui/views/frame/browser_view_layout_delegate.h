@@ -46,6 +46,7 @@ class BrowserViewLayoutDelegate {
   virtual bool IsWindowControlsOverlayEnabled() const = 0;
   virtual void UpdateWindowControlsOverlay(
       const gfx::Rect& available_titlebar_area) const = 0;
+  virtual bool ShouldLayoutTabStrip() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_DELEGATE_H_
