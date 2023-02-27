@@ -61,8 +61,14 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
       base::HistogramBase::kUmaTargetedHistogramFlag);
 
 #if BUILDFLAG(ENABLE_BASE_TRACING)
-  perfetto_track_.emplace(reinterpret_cast<uint64_t>(this),
-                          perfetto::ThreadTrack::Current());
+  perfetto_track_.emplace(
+      reinterpret_cast<uint64_t>(this),
+      // TODO(crbug.com/1006541): Replace with ThreadTrack::Current() after SDK
+      // migration.
+      // In the non-SDK version, ThreadTrack::Current() returns a different
+      // track id on some platforms (for example Mac OS), which results in
+      // async tracks not being associated with their thread.
+      perfetto::ThreadTrack::ForThread(base::PlatformThread::CurrentId()));
   // TODO(1006541): Use Perfetto library to name this Track.
   // auto desc = perfetto_track_->Serialize();
   // desc.set_name(JoinString({"MessagePumpPhases", thread_name}, " "));
