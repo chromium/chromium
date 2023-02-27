@@ -5443,13 +5443,6 @@ void NavigationRequest::CommitPageActivation() {
         commit_params_->pending_history_list_offset;
     page_restore_params->current_history_list_length =
         commit_params_->current_history_list_length;
-    page_restore_params->view_transition_state =
-        std::move(commit_params_->view_transition_state);
-    // Since we moved the view transition state to page restore params, we
-    // should reset the commit params one (move doesn't clear the optional).
-    // This ensures that we don't erroneously think that view_transition_state
-    // is unhandled and attempt to clean it up.
-    commit_params_->view_transition_state.reset();
     activated_entry = controller->GetBackForwardCache().RestoreEntry(
         nav_entry_id_, std::move(page_restore_params));
     // The only time activated_entry can be nullptr here, is if the
@@ -5491,6 +5484,11 @@ void NavigationRequest::CommitPageActivation() {
     // NavigationRequest to be destroyed. Return if this is the case.
     if (!weak_self)
       return;
+
+    // Use std::exchange instead of move, so that we clear out the optional on
+    // the commit_params.
+    activated_entry->SetViewTransitionState(
+        std::exchange(commit_params_->view_transition_state, {}));
 
     // Move the BackForwardCacheImpl::Entry into RenderFrameHostManager, in
     // preparation for committing. This entry may be either restored from the
@@ -5553,9 +5551,14 @@ void NavigationRequest::CommitPageActivation() {
     if (!weak_self)
       return;
 
+    DCHECK(stored_page);
+    // Use std::exchange instead of move, so that we clear out the optional on
+    // the commit_params.
+    stored_page->SetViewTransitionState(
+        std::exchange(commit_params_->view_transition_state, {}));
+
     // Move the StoredPage into RenderFrameHostManager, in
     // preparation for committing. This entry may be used for prerendering.
-    DCHECK(stored_page);
     frame_tree_node_->render_manager()->ActivatePrerender(
         std::move(stored_page));
   }

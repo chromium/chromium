@@ -141,7 +141,8 @@ class CONTENT_EXPORT PageImpl : public Page {
   // documents from prerendered to activated. Tells the corresponding
   // RenderFrameHostImpls that the renderer will be activating their documents.
   void ActivateForPrerendering(
-      StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate);
+      StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate,
+      absl::optional<blink::ViewTransitionState> view_transition_state);
 
   // Prerender2:
   // Dispatches load events that were deferred to be dispatched after

@@ -99,4 +99,15 @@ StoredPage::RenderViewHostImplSafeRefSet StoredPage::TakeRenderViewHosts() {
   return std::move(render_view_hosts_);
 }
 
+void StoredPage::SetViewTransitionState(
+    absl::optional<blink::ViewTransitionState> view_transition_state) {
+  DCHECK(!view_transition_state_);
+  view_transition_state_ = std::move(view_transition_state);
+}
+
+absl::optional<blink::ViewTransitionState>
+StoredPage::TakeViewTransitionState() {
+  return std::exchange(view_transition_state_, {});
+}
+
 }  // namespace content

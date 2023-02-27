@@ -1884,11 +1884,7 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
 
   WarnIfSandboxIneffective(document->domWindow());
 
-  if (view_transition_state_) {
-    ViewTransitionSupplement::CreateFromSnapshotForNavigation(
-        *document, std::move(*view_transition_state_));
-    view_transition_state_.reset();
-  }
+  StartViewTransitionIfNeeded(*document);
 }
 
 void DocumentLoader::WillCommitNavigation() {
@@ -3101,6 +3097,10 @@ void DocumentLoader::NotifyPrerenderingDocumentActivated(
   }
 
   GetTiming().SetActivationStart(params.activation_start);
+
+  DCHECK(!view_transition_state_);
+  view_transition_state_ = std::move(params.view_transition_state);
+  StartViewTransitionIfNeeded(*frame_->GetDocument());
 }
 
 HashMap<KURL, EarlyHintsPreloadEntry>
@@ -3270,6 +3270,14 @@ WebArchiveInfo DocumentLoader::GetArchiveInfo() const {
       WebURL(),
       base::Time(),
   };
+}
+
+void DocumentLoader::StartViewTransitionIfNeeded(Document& document) {
+  if (view_transition_state_) {
+    ViewTransitionSupplement::CreateFromSnapshotForNavigation(
+        document, std::move(*view_transition_state_));
+    view_transition_state_.reset();
+  }
 }
 
 // static

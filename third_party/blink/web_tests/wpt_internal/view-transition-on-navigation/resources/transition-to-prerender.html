@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<title>View transitions: prerender navigation helper</title>
+<link rel="help" href="https://github.com/WICG/view-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<meta name="view-transition" content="same-origin">
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<style>
+html { background: red; }
+div {
+  width: 200px;
+  height: 200px;
+  background: red;
+  color: black;
+  position: absolute;
+  top: 40px;
+  right: 8px;
+  view-transition-name: target;
+}
+
+::view-transition {
+  background: lightblue;
+}
+
+::view-transition-group(root) {
+  visibility: hidden;
+  animation-duration: 500s;
+}
+
+::view-transition-group(target) {
+  animation-play-state: paused;
+}
+::view-transition-new(target) {
+  animation: unset;
+  opacity: 1;
+}
+::view-transition-old(target) {
+  animation: unset;
+  opacity: 0;
+}
+</style>
+<div id=target>
+  There should be a green square on the left side of the screen,
+  on a field of lightblue. There should be no red in the final state.
+</div>
+
+<script>
+if (document.prerendering) {
+  target.style.background = "green";
+}
+const channel = new PrerenderChannel('prerender-channel');
+channel.postMessage('loaded!');
+</script>
+
+

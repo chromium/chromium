@@ -171,7 +171,8 @@ void PageImpl::SetActivationStartTime(base::TimeTicks activation_start) {
 }
 
 void PageImpl::ActivateForPrerendering(
-    StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts) {
+    StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts,
+    absl::optional<blink::ViewTransitionState> view_transition_state) {
   base::OnceClosure did_activate_render_views =
       base::BindOnce(&PageImpl::DidActivateAllRenderViewsForPrerendering,
                      weak_factory_.GetWeakPtr());
@@ -179,7 +180,8 @@ void PageImpl::ActivateForPrerendering(
   base::RepeatingClosure barrier = base::BarrierClosure(
       render_view_hosts.size(), std::move(did_activate_render_views));
   for (const auto& rvh : render_view_hosts) {
-    base::TimeTicks navigation_start_to_send;
+    auto params = blink::mojom::PrerenderPageActivationParams::New();
+
     // Only send navigation_start to the RenderViewHost for the main frame to
     // avoid sending the info cross-origin. Only this RenderViewHost needs the
     // info, as we expect the other RenderViewHosts are made for cross-origin
@@ -188,16 +190,16 @@ void PageImpl::ActivateForPrerendering(
     // not yet committed. These RenderViews still need to know about activation
     // so their documents are created in the non-prerendered state once their
     // navigation is committed.
-    if (main_document_->GetRenderViewHost() == &*rvh)
-      navigation_start_to_send = *activation_start_time_for_prerendering_;
+    if (main_document_->GetRenderViewHost() == &*rvh) {
+      params->activation_start = *activation_start_time_for_prerendering_;
+      params->view_transition_state = std::move(view_transition_state);
+    }
 
-    auto params = blink::mojom::PrerenderPageActivationParams::New();
     params->was_user_activated =
         main_document_->frame_tree_node()
                 ->has_received_user_gesture_before_nav()
             ? blink::mojom::WasActivatedOption::kYes
             : blink::mojom::WasActivatedOption::kNo;
-    params->activation_start = navigation_start_to_send;
     rvh->ActivatePrerenderedPage(std::move(params), barrier);
   }
 

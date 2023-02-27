@@ -3369,24 +3369,41 @@ void WebViewImpl::ActivatePrerenderedPage(
   // prerenderchange event and post-prerendering activation steps on each
   // document, which could mutate the frame tree and make iteration over it
   // complicated.
-  HeapVector<Member<Document>> documents;
+  HeapVector<Member<Document>> child_frame_documents;
+  Member<Document> main_frame_document;
+  if (auto* local_frame = DynamicTo<LocalFrame>(GetPage()->MainFrame())) {
+    main_frame_document = local_frame->GetDocument();
+  }
+
   for (Frame* frame = GetPage()->MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {
-    if (auto* local_frame = DynamicTo<LocalFrame>(frame))
-      documents.push_back(local_frame->GetDocument());
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      if (local_frame->GetDocument() != main_frame_document) {
+        child_frame_documents.push_back(local_frame->GetDocument());
+      }
+    }
   }
 
   // A null `activation_start` is sent to the WebViewImpl that does not host the
   // main frame, in which case we expect that it does not have any documents
   // since cross-origin documents are not loaded during prerendering.
-  DCHECK(documents.size() == 0 ||
+  DCHECK((!main_frame_document && child_frame_documents.size() == 0) ||
          !prerender_page_activation_params->activation_start.is_null());
+  // We also only send view_transition_state to the main frame.
+  DCHECK(main_frame_document ||
+         !prerender_page_activation_params->view_transition_state);
+
+  if (main_frame_document) {
+    main_frame_document->ActivateForPrerendering(
+        *prerender_page_activation_params);
+    prerender_page_activation_params->view_transition_state.reset();
+  }
 
   // While the spec says to post a task on the networking task source for each
   // document, we don't post a task here for simplicity. This allows dispatching
   // the event on all documents without a chance for other IPCs from the browser
   // to arrive in the intervening time, resulting in an unclear state.
-  for (auto& document : documents) {
+  for (auto& document : child_frame_documents) {
     document->ActivateForPrerendering(*prerender_page_activation_params);
   }
 

@@ -162,6 +162,11 @@ class CONTENT_EXPORT BackForwardCacheImpl
       stored_page_->SetDelegate(delegate);
     }
 
+    void SetViewTransitionState(
+        absl::optional<blink::ViewTransitionState> view_transition_state) {
+      stored_page_->SetViewTransitionState(std::move(view_transition_state));
+    }
+
     // The main document being stored.
     RenderFrameHostImpl* render_frame_host() {
       return stored_page_->render_frame_host();
