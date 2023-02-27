@@ -61,20 +61,21 @@ bool ValidateTabRange(const tab_groups::TabGroupInfo& group_info,
   return true;
 }
 
-// Creates a callback for when a favicon image is retrieved which creates a
-// standard icon image and then calls `callback` with the standardized image.
-base::OnceCallback<void(const favicon_base::FaviconImageResult&)>
-CreateFaviconResultCallback(
-    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
-  return base::BindOnce(
-      [](base::OnceCallback<void(const gfx::ImageSkia&)> image_skia_callback,
-         const favicon_base::FaviconImageResult& result) {
-        auto image = result.image.AsImageSkia();
-        image.EnsureRepsForSupportedScales();
-        std::move(image_skia_callback)
-            .Run(apps::CreateStandardIconImage(image));
-      },
-      std::move(callback));
+// Creates a standard icon image via `result`, and then calls `callback` with
+// the standardized image.
+void ImageResultToImageSkia(
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback,
+    const favicon_base::FaviconRawBitmapResult& result) {
+  if (!result.is_valid()) {
+    std::move(callback).Run(gfx::ImageSkia());
+    return;
+  }
+
+  auto image = gfx::Image::CreateFrom1xPNGBytes(result.bitmap_data->front(),
+                                                result.bitmap_data->size())
+                   .AsImageSkia();
+  image.EnsureRepsForSupportedScales();
+  std::move(callback).Run(apps::CreateStandardIconImage(image));
 }
 
 void AddTabGroupToBrowser(TabStripModel* browser_tab_model,
@@ -247,6 +248,9 @@ void DeskTemplateClientLacros::GetFaviconImage(
           ProfileManager::GetActiveUserProfile(),
           ServiceAccessType::EXPLICIT_ACCESS);
 
-  favicon_service->GetFaviconImageForPageURL(
-      url, CreateFaviconResultCallback(std::move(callback)), &task_tracker_);
+  favicon_service->GetRawFaviconForPageURL(
+      url, {favicon_base::IconType::kFavicon}, 0,
+      /*fallback_to_host=*/false,
+      base::BindOnce(&ImageResultToImageSkia, std::move(callback)),
+      &task_tracker_);
 }
