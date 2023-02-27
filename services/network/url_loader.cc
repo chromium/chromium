@@ -99,11 +99,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "net/base/features.h"
-#include "services/network/radio_monitor_android.h"
-#endif
-
 namespace network {
 
 namespace {
@@ -740,12 +735,6 @@ URLLoader::URLLoader(
     url_request_->cookie_setting_overrides().Put(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(net::features::kRecordRadioWakeupTrigger)) {
-    MaybeRecordURLLoaderCreationForWakeupTrigger(request, traffic_annotation);
-  }
-#endif
 
   // Resolve elements from request_body and prepare upload data.
   if (request.request_body.get()) {

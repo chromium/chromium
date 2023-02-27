@@ -26,11 +26,6 @@
 #include "services/network/resolve_host_request.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "net/base/features.h"
-#include "services/network/radio_monitor_android.h"
-#endif
-
 namespace network {
 namespace {
 
@@ -131,12 +126,6 @@ void HostResolver::ResolveHost(
                      base::Unretained(this), request.get()));
   if (rv != net::ERR_IO_PENDING)
     return;
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(net::features::kRecordRadioWakeupTrigger)) {
-    MaybeRecordResolveHostForWakeupTrigger(optional_parameters);
-  }
-#endif
 
   // Store the request with the resolver so it can be cancelled on resolver
   // shutdown.

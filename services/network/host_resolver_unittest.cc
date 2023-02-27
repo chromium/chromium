@@ -43,15 +43,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/radio_utils.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "net/android/radio_activity_tracker.h"
-#include "net/base/features.h"
-#include "services/network/radio_monitor_android.h"
-#endif
-
 namespace network {
 namespace {
 
@@ -1773,61 +1764,6 @@ TEST_F(HostResolverTest, MdnsListener_UnhandledResult) {
   EXPECT_THAT(response_client.hostname_results(), testing::IsEmpty());
 }
 #endif  // BUILDFLAG(ENABLE_MDNS)
-
-#if BUILDFLAG(IS_ANDROID)
-
-class HostResolverRecordRadioWakeupTest : public HostResolverTest {
- public:
-  HostResolverRecordRadioWakeupTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kRecordRadioWakeupTrigger);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(HostResolverRecordRadioWakeupTest, RecordPreconnect) {
-  base::HistogramTester histograms;
-
-  net::android::RadioActivityTracker::GetInstance()
-      .OverrideRadioActivityForTesting(
-          base::android::RadioDataActivity::kDormant);
-  net::android::RadioActivityTracker::GetInstance().OverrideRadioTypeForTesting(
-      base::android::RadioConnectionType::kCell);
-
-  auto inner_resolver = std::make_unique<net::MockHostResolver>();
-  inner_resolver->set_synchronous_mode(false);
-  inner_resolver->rules()->AddRule("example.com", "1.2.3.4");
-
-  HostResolver resolver(inner_resolver.get(), net::NetLog::Get());
-
-  base::RunLoop run_loop;
-  mojo::Remote<mojom::ResolveHostHandle> control_handle;
-  mojom::ResolveHostParametersPtr optional_parameters =
-      mojom::ResolveHostParameters::New();
-  optional_parameters->control_handle =
-      control_handle.BindNewPipeAndPassReceiver();
-  optional_parameters->purpose =
-      mojom::ResolveHostParameters::Purpose::kPreconnect;
-  mojo::PendingRemote<mojom::ResolveHostClient> pending_response_client;
-  TestResolveHostClient response_client(&pending_response_client, &run_loop);
-
-  resolver.ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
-                           net::HostPortPair("example.com", 160)),
-                       net::NetworkAnonymizationKey(),
-                       std::move(optional_parameters),
-                       std::move(pending_response_client));
-
-  run_loop.Run();
-
-  EXPECT_EQ(net::OK, response_client.result_error());
-  histograms.ExpectUniqueSample(
-      kUmaNamePossibleWakeupTriggerResolveHost,
-      mojom::ResolveHostParameters::Purpose::kPreconnect, 1);
-}
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace network

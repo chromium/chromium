@@ -1564,59 +1564,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose2"
-    enum="ResolveHostPurpose" expires_after="2023-04-05">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records the purpose of a host resolve request. Recorded when
-    NetworkContext::ResolveHost() is called while the radio state is dormant.
-    Only recorded on Android.
-  </summary>
-</histogram>
-
-<histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId2"
-    enum="TrafficAnnotationUniqueIdHash" expires_after="2023-04-05">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records a traffic annotation ID hash when a URLLoader is created and the
-    radio state is dormant. Only recorded on Android.
-  </summary>
-</histogram>
-
-<histogram
-    name="Network.Radio.PossibleWakeupTrigger.URLLoaderRequestDestination"
-    enum="RequestDestination" expires_after="2023-04-05">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records a request destination when a URLLoader is created and the radio
-    state is dormant. Only recorded on Android.
-  </summary>
-</histogram>
-
-<histogram
-    name="Network.Radio.PossibleWakeupTrigger.URLLoaderRequestIsPrefetch"
-    enum="Boolean" expires_after="2023-04-05">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records whether a network request is a prefetch when a URLLoader is created
-    and the radio state is dormant. Only recorded on Android.
-  </summary>
-</histogram>
-
-<histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderRequestPriority"
-    enum="NetRequestPriority" expires_after="2023-04-05">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records a request priority when a URLLoader is created and the radio state
-    is dormant. Only recorded on Android.
-  </summary>
-</histogram>
-
 <histogram name="Network.Radio.SimpleURLLoaderIsThrottled" enum="Boolean"
     expires_after="2023-06-25">
   <owner>bashi@chromium.org</owner>
