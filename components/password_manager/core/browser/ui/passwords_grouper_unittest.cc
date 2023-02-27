@@ -286,4 +286,38 @@ TEST_F(PasswordsGrouperTest, HttpAndHttpsGroupedTogether) {
       ElementsAre(AffiliatedGroup({credential}, {GetShownOrigin(credential)})));
 }
 
+TEST_F(PasswordsGrouperTest, FederatedAndroidAppGroupedWithRegularPasswords) {
+  PasswordForm form = CreateForm("https://test.app.com/");
+  PasswordForm federated_android_form;
+  federated_android_form.signon_realm =
+      "android://"
+      "5Z0D_o6B8BqileZyWhXmqO_wkO8uO0etCEXvMn5tUzEqkWUgfTSjMcTM7eMMTY_"
+      "FGJC9RlpRNt_8Qp5tgDocXw==@com.bambuna.podcastaddict/";
+  federated_android_form.username_value = u"test@gmail.com";
+  federated_android_form.url = GURL(federated_android_form.signon_realm);
+  federated_android_form.federation_origin =
+      url::Origin::Create(GURL(u"https://federatedOrigin.com"));
+
+  GroupedFacets group;
+  group.facets = {
+      Facet(FacetURI::FromPotentiallyInvalidSpec(
+          "android://"
+          "5Z0D_o6B8BqileZyWhXmqO_wkO8uO0etCEXvMn5tUzEqkWUgfTSjMcTM7eMMTY_"
+          "FGJC9RlpRNt_8Qp5tgDocXw==@com.bambuna.podcastaddict")),
+      Facet(FacetURI::FromPotentiallyInvalidSpec("https://test.app.com")),
+  };
+
+  EXPECT_CALL(affiliation_service(), GetAllGroups)
+      .WillRepeatedly(
+          base::test::RunOnceCallback<0>(std::vector<GroupedFacets>{group}));
+  grouper().GroupPasswords({form, federated_android_form}, base::DoNothing());
+
+  CredentialUIEntry credential({form}),
+      federated_credential({federated_android_form});
+  EXPECT_THAT(
+      grouper().GetAffiliatedGroupsWithGroupingInfo(),
+      ElementsAre(AffiliatedGroup({federated_credential, credential},
+                                  {GetShownOrigin(federated_credential)})));
+}
+
 }  // namespace password_manager
