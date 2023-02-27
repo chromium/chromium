@@ -22,6 +22,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -57,6 +58,8 @@ public class SearchEngineSettingsTest {
                                                 .around(mMainSettingsTestRule)
                                                 .around(mSearchEngineSettingsTestRule);
 
+    private TemplateUrlService mTemplateUrlService;
+
     /**
      * Change search engine and make sure it works correctly.
      */
@@ -81,18 +84,15 @@ public class SearchEngineSettingsTest {
             // Simulate selecting the third search engine, ensure that TemplateUrlService is
             // updated.
             String keyword2 = pref.setValueForTesting("2");
-            TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
             Assert.assertEquals(
-                    keyword2, templateUrlService.getDefaultSearchEngineTemplateUrl().getKeyword());
+                    keyword2, mTemplateUrlService.getDefaultSearchEngineTemplateUrl().getKeyword());
 
             // Simulate selecting the fourth search engine.
             String keyword3 = pref.getKeywordFromIndexForTesting(3);
-            String url = templateUrlService.getSearchEngineUrlFromTemplateUrl(keyword3);
+            String url = mTemplateUrlService.getSearchEngineUrlFromTemplateUrl(keyword3);
             keyword3 = pref.setValueForTesting("3");
-            Assert.assertEquals(keyword3,
-                    TemplateUrlServiceFactory.get()
-                            .getDefaultSearchEngineTemplateUrl()
-                            .getKeyword());
+            Assert.assertEquals(
+                    keyword3, mTemplateUrlService.getDefaultSearchEngineTemplateUrl().getKeyword());
         });
     }
 
@@ -105,7 +105,7 @@ public class SearchEngineSettingsTest {
                 () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
 
         ensureTemplateUrlServiceLoaded();
-        CriteriaHelper.pollUiThread(() -> TemplateUrlServiceFactory.get().isDefaultSearchManaged());
+        CriteriaHelper.pollUiThread(() -> mTemplateUrlService.isDefaultSearchManaged());
 
         mMainSettingsTestRule.startSettingsActivity();
 
@@ -154,19 +154,17 @@ public class SearchEngineSettingsTest {
             int index = indexOfFirstHttpSearchEngine(pref);
             String keyword = pref.setValueForTesting(Integer.toString(index));
 
-            TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
             Assert.assertEquals(
-                    keyword, templateUrlService.getDefaultSearchEngineTemplateUrl().getKeyword());
+                    keyword, mTemplateUrlService.getDefaultSearchEngineTemplateUrl().getKeyword());
         });
     }
 
     private int indexOfFirstHttpSearchEngine(SearchEngineSettings pref) {
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
-        List<TemplateUrl> urls = templateUrlService.getTemplateUrls();
+        List<TemplateUrl> urls = mTemplateUrlService.getTemplateUrls();
         int index;
         for (index = 0; index < urls.size(); ++index) {
             String keyword = pref.getKeywordFromIndexForTesting(index);
-            String url = templateUrlService.getSearchEngineUrlFromTemplateUrl(keyword);
+            String url = mTemplateUrlService.getSearchEngineUrlFromTemplateUrl(keyword);
             if (url.startsWith("http:")) {
                 return index;
             }
@@ -179,16 +177,20 @@ public class SearchEngineSettingsTest {
         // Make sure the template_url_service is loaded.
         final CallbackHelper onTemplateUrlServiceLoadedHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (TemplateUrlServiceFactory.get().isLoaded()) {
+            if (mTemplateUrlService == null) {
+                mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(
+                        Profile.getLastUsedRegularProfile());
+            }
+            if (mTemplateUrlService.isLoaded()) {
                 onTemplateUrlServiceLoadedHelper.notifyCalled();
             } else {
-                TemplateUrlServiceFactory.get().registerLoadListener(new LoadListener() {
+                mTemplateUrlService.registerLoadListener(new LoadListener() {
                     @Override
                     public void onTemplateUrlServiceLoaded() {
                         onTemplateUrlServiceLoadedHelper.notifyCalled();
                     }
                 });
-                TemplateUrlServiceFactory.get().load();
+                mTemplateUrlService.load();
             }
         });
         onTemplateUrlServiceLoadedHelper.waitForCallback(0);

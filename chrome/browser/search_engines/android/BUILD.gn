@@ -31,6 +31,7 @@ android_library("java") {
     "//chrome/browser/omaha/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",

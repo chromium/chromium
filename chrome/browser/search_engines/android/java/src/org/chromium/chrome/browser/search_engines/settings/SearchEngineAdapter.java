@@ -73,7 +73,8 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     /** The current context. */
-    private Context mContext;
+    private final Context mContext;
+    private final Profile mProfile;
 
     /** The layout inflater to use for the custom views. */
     private LayoutInflater mLayoutInflater;
@@ -107,9 +108,11 @@ public class SearchEngineAdapter extends BaseAdapter
     /**
      * Construct a SearchEngineAdapter.
      * @param context The current context.
+     * @param profile The Profile associated with these settings.
      */
-    public SearchEngineAdapter(Context context) {
+    public SearchEngineAdapter(Context context, Profile profile) {
         mContext = context;
+        mProfile = profile;
         mLayoutInflater =
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -119,7 +122,7 @@ public class SearchEngineAdapter extends BaseAdapter
      */
     public void start() {
         refreshData();
-        TemplateUrlServiceFactory.get().addObserver(this);
+        TemplateUrlServiceFactory.getForProfile(mProfile).addObserver(this);
     }
 
     /**
@@ -127,11 +130,11 @@ public class SearchEngineAdapter extends BaseAdapter
      */
     public void stop() {
         if (mHasLoadObserver) {
-            TemplateUrlServiceFactory.get().unregisterLoadListener(this);
+            TemplateUrlServiceFactory.getForProfile(mProfile).unregisterLoadListener(this);
             mHasLoadObserver = false;
         }
 
-        TemplateUrlServiceFactory.get().removeObserver(this);
+        TemplateUrlServiceFactory.getForProfile(mProfile).removeObserver(this);
     }
 
     @VisibleForTesting
@@ -153,7 +156,7 @@ public class SearchEngineAdapter extends BaseAdapter
      * Initialize the search engine list.
      */
     private void refreshData() {
-        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.get();
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
         if (!templateUrlService.isLoaded()) {
             mHasLoadObserver = true;
             templateUrlService.registerLoadListener(this);
@@ -201,11 +204,11 @@ public class SearchEngineAdapter extends BaseAdapter
         }
 
         if (mSelectedSearchEnginePosition == -1) {
-            throw new IllegalStateException(
-                    String.format("Default search engine is not found in available search engines:"
-                                    + " DSE is valid=%b, is managed=%b",
-                            defaultSearchEngineTemplateUrl != null,
-                            TemplateUrlServiceFactory.get().isDefaultSearchManaged()));
+            throw new IllegalStateException(String.format(
+                    "Default search engine is not found in available search engines:"
+                            + " DSE is valid=%b, is managed=%b",
+                    defaultSearchEngineTemplateUrl != null,
+                    TemplateUrlServiceFactory.getForProfile(mProfile).isDefaultSearchManaged()));
         }
 
         mInitialEnginePosition = mSelectedSearchEnginePosition;
@@ -409,7 +412,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
     @Override
     public void onTemplateUrlServiceLoaded() {
-        TemplateUrlServiceFactory.get().unregisterLoadListener(this);
+        TemplateUrlServiceFactory.getForProfile(mProfile).unregisterLoadListener(this);
         mHasLoadObserver = false;
         refreshData();
     }
@@ -431,7 +434,7 @@ public class SearchEngineAdapter extends BaseAdapter
         mSelectedSearchEnginePosition = position;
 
         String keyword = toKeyword(mSelectedSearchEnginePosition);
-        TemplateUrlServiceFactory.get().setSearchEngine(keyword);
+        TemplateUrlServiceFactory.getForProfile(mProfile).setSearchEngine(keyword);
 
         // If the user has manually set the default search engine, disable auto switching.
         boolean manualSwitch = mSelectedSearchEnginePosition != mInitialEnginePosition;
@@ -450,8 +453,9 @@ public class SearchEngineAdapter extends BaseAdapter
             return "";
         }
 
-        String url = TemplateUrlServiceFactory.get().getSearchEngineUrlFromTemplateUrl(
-                templateUrl.getKeyword());
+        String url =
+                TemplateUrlServiceFactory.getForProfile(mProfile).getSearchEngineUrlFromTemplateUrl(
+                        templateUrl.getKeyword());
         if (url == null) {
             Log.e(TAG, "Invalid template URL found: %s", templateUrl);
             assert false;
@@ -467,8 +471,7 @@ public class SearchEngineAdapter extends BaseAdapter
 
         PermissionInfo locationSettings =
                 new PermissionInfo(ContentSettingsType.GEOLOCATION, url, null, false);
-        return locationSettings.getContentSetting(Profile.getLastUsedRegularProfile())
-                == ContentSettingValues.ALLOW;
+        return locationSettings.getContentSetting(mProfile) == ContentSettingValues.ALLOW;
     }
 
     private int computeStartIndexForRecentSearchEngines() {
