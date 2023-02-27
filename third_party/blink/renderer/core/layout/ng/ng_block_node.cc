@@ -417,8 +417,9 @@ const NGLayoutResult* NGBlockNode::Layout(
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path) const {
   // https://linear.app/replay/issue/RUN-1219
-  recordreplay::Assert("[RUN-1219] NGBlockNode::Layout Start %d",
-                       GetLayoutBox()->RecordReplayId());
+  recordreplay::Assert("[RUN-1219] NGBlockNode::Layout Start %d cs=%d",
+                       GetLayoutBox()->RecordReplayId(),
+                       constraint_space.CacheSlot());
 
   // Use the old layout code and synthesize a fragment.
   if (!CanUseNewLayout())
