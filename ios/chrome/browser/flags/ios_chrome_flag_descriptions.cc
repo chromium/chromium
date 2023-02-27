@@ -274,6 +274,11 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
+const char kEnableBookmarksAccountStorageName[] =
+    "Enable Bookmarks Account Storage";
+const char kEnableBookmarksAccountStorageDescription[] =
+    "Enable bookmarks account storage and related UI features.";
+
 const char kEnableCBDSignOutName[] = "Enable Clear Browsing Data Sign-out";
 const char kEnableCBDSignOutDescription[] =
     "Offer signed-in user to sign-out from Clear Browsing Data settings.";

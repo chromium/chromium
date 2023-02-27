@@ -25,6 +25,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_switches.h"
 #import "components/autofill/ios/browser/autofill_switches.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/breadcrumbs/core/features.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/flag_descriptions.h"
@@ -1392,6 +1393,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIndicateAccountStorageErrorInAccountCellDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIndicateAccountStorageErrorInAccountCell)},
+    {"enable-bookmarks-account-storage",
+     flag_descriptions::kEnableBookmarksAccountStorageName,
+     flag_descriptions::kEnableBookmarksAccountStorageDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(bookmarks::kEnableBookmarksAccountStorage)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

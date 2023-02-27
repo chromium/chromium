@@ -206,6 +206,11 @@ extern const char kDefaultBrowserIntentsShowSettingsDescription[];
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 
+// Title and description for the flag to enable the bookmarks account storage
+// and related UI features.
+extern const char kEnableBookmarksAccountStorageName[];
+extern const char kEnableBookmarksAccountStorageDescription[];
+
 // Title and description for the flag to enable checking feed visibility on
 // attention log start.
 extern const char kEnableCheckVisibilityOnAttentionLogStartName[];

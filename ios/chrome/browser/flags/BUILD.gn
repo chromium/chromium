@@ -18,6 +18,7 @@ source_set("flags") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/bookmarks/common",
     "//components/breadcrumbs/core:feature_flags",
     "//components/commerce/core:feature_list",
     "//components/dom_distiller/core",
