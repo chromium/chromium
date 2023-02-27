@@ -29,8 +29,8 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_consumer.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_mediator.h"
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/tos/tos_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/uma/uma_coordinator.h"
-#import "ios/chrome/browser/ui/first_run/welcome/tos_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

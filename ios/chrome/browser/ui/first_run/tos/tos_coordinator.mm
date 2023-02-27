@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/first_run/welcome/tos_coordinator.h"
+#import "ios/chrome/browser/ui/first_run/tos/tos_coordinator.h"
 
 #import <WebKit/WebKit.h>
 
@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/tos_commands.h"
-#import "ios/chrome/browser/ui/first_run/welcome/tos_view_controller.h"
+#import "ios/chrome/browser/ui/first_run/tos/tos_view_controller.h"
 #import "ios/chrome/browser/ui/util/terms_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/web_view_creation_util.h"

@@ -32,8 +32,8 @@ source_set("signin") {
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:screen_delegate",
     "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/ui/first_run/tos",
     "//ios/chrome/browser/ui/first_run/uma",
-    "//ios/chrome/browser/ui/first_run/welcome",
   ]
 }
 
