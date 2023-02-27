@@ -615,7 +615,7 @@ def CheckPoliciesYamlOrdering(input_api, output_api):
     return results
 
   root = input_api.change.RepositoryRoot()
-  with open(os.path.join(root, _POLICIES_YAML_PATH), 'r') as f:
+  with open(os.path.join(root, _POLICIES_YAML_PATH), 'r', encoding='utf-8') as f:
     policies_yaml_lines = f.readlines()
 
   previous_id = 0
