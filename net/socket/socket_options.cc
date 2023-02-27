@@ -64,7 +64,9 @@ int SetSocketReceiveBufferSize(SocketDescriptor fd, int32_t size) {
   int os_error = errno;
 #endif
   int net_error = (rv == -1) ? MapSystemError(os_error) : OK;
-  DCHECK(!rv) << "Could not set socket receive buffer size: " << net_error;
+  if (net_error != OK) {
+    DLOG(ERROR) << "Could not set socket receive buffer size: " << net_error;
+  }
   return net_error;
 }
 
@@ -77,7 +79,9 @@ int SetSocketSendBufferSize(SocketDescriptor fd, int32_t size) {
   int os_error = errno;
 #endif
   int net_error = (rv == -1) ? MapSystemError(os_error) : OK;
-  DCHECK(!rv) << "Could not set socket receive buffer size: " << net_error;
+  if (net_error != OK) {
+    DLOG(ERROR) << "Could not set socket send buffer size: " << net_error;
+  }
   return net_error;
 }
 
