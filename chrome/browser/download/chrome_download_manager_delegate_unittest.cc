@@ -757,6 +757,8 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedByPolicy) {
   EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(kUrl));
   EXPECT_CALL(*download_item, GetContentDisposition())
       .WillRepeatedly(Return(kTargetDisposition));
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(true));
 
   base::FilePath kExpectedPath = GetPathInDownloadDir("bar.txt");
 
@@ -778,6 +780,41 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedByPolicy) {
   DetermineDownloadTarget(download_item.get(), &result);
   EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED,
             result.interrupt_reason);
+
+  VerifyAndClearExpectations();
+}
+
+TEST_F(ChromeDownloadManagerDelegateTest, NoSafetyChecksNotBlockedByPolicy) {
+  const GURL kUrl("http://example.com/foo");
+  const std::string kTargetDisposition("attachment; filename=\"foo.txt\"");
+
+  std::unique_ptr<download::MockDownloadItem> download_item =
+      CreateActiveDownloadItem(0);
+  EXPECT_CALL(*download_item, GetURL()).WillRepeatedly(ReturnRef(kUrl));
+  EXPECT_CALL(*download_item, GetContentDisposition())
+      .WillRepeatedly(Return(kTargetDisposition));
+  EXPECT_CALL(*download_item, RequireSafetyChecks())
+      .WillRepeatedly(Return(false));
+
+  base::FilePath kExpectedPath = GetPathInDownloadDir("bar.txt");
+
+  DetermineDownloadTargetResult result;
+
+  EXPECT_CALL(*delegate(), MockReserveVirtualPath(_, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<4>(PathValidationResult::CONFLICT),
+                      ReturnArg<1>()));
+  EXPECT_CALL(*delegate(),
+              RequestConfirmation_(
+                  _, _, DownloadConfirmationReason::TARGET_CONFLICT, _))
+      .WillOnce(WithArg<3>(ScheduleCallback2(
+          DownloadConfirmationResult::CONFIRMED, kExpectedPath)));
+
+  pref_service()->SetInteger(
+      prefs::kDownloadRestrictions,
+      static_cast<int>(DownloadPrefs::DownloadRestriction::ALL_FILES));
+
+  DetermineDownloadTarget(download_item.get(), &result);
+  EXPECT_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, result.interrupt_reason);
 
   VerifyAndClearExpectations();
 }

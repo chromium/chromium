@@ -1593,6 +1593,11 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
 bool ChromeDownloadManagerDelegate::ShouldBlockFile(
     download::DownloadItem* item,
     download::DownloadDangerType danger_type) const {
+  // Chrome-initiated background downloads should not be blocked.
+  if (!item->RequireSafetyChecks()) {
+    return false;
+  }
+
   DownloadPrefs::DownloadRestriction download_restriction =
       download_prefs_->download_restriction();
 
