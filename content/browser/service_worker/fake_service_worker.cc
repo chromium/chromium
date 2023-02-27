@@ -237,11 +237,11 @@ void FakeServiceWorker::SetIdleDelay(base::TimeDelta delay) {
 }
 
 void FakeServiceWorker::AddKeepAlive() {
-  NOTIMPLEMENTED();
+  idle_delay_.reset();
 }
 
 void FakeServiceWorker::ClearKeepAlive() {
-  NOTIMPLEMENTED();
+  idle_delay_ = base::Seconds(30);
 }
 
 void FakeServiceWorker::AddMessageToConsole(
