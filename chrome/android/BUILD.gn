@@ -770,6 +770,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/policy/policy_auditor.cc",
       "//chrome/browser/android/webapk/webapk_installer.h",
       "//chrome/browser/long_screenshots/long_screenshots_tab_service.h",
+      "//chrome/browser/metrics/metrics_reporting_state.h",
       "//chrome/browser/notifications/notification_handler.h",
       "//chrome/browser/notifications/notification_platform_bridge_android.cc",
     ]

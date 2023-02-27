@@ -16,9 +16,13 @@ using OnMetricsReportingCallbackType = base::OnceCallback<void(bool)>;
 // TODO(crbug.com/1296618): Make all call sites pass an appropriate value, and
 // remove |kUnknown|. Right now, |kUnknown| is used as a placeholder value while
 // call sites are being migrated.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.metrics
 enum class ChangeMetricsReportingStateCalledFrom {
   kUnknown,
   kUiSettings,
+
+  // The user opted out of metrics reporting in the First Run Experience.
+  kUiFirstRun,
 
   // Called from Chrome OS settings change. Chrome OS manages settings
   // externally and metrics service listens for changes.

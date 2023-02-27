@@ -206,8 +206,10 @@ void UmaSessionStats::SessionTimeTracker::BeginBackgroundSession() {
 // the Java side.
 static void JNI_UmaSessionStats_ChangeMetricsReportingConsent(
     JNIEnv*,
-    jboolean consent) {
-  UpdateMetricsPrefsOnPermissionChange(consent);
+    jboolean consent,
+    jint called_from) {
+  UpdateMetricsPrefsOnPermissionChange(
+      consent, static_cast<ChangeMetricsReportingStateCalledFrom>(called_from));
 
   // This function ensures a consent file in the data directory is either
   // created, or deleted, depending on consent. Starting up metrics services

@@ -158,13 +158,14 @@ public class UmaSessionStats {
      * Updates the metrics services based on a change of consent. This can happen during first-run
      * flow, and when the user changes their preferences.
      */
-    public static void changeMetricsReportingConsent(boolean consent) {
+    public static void changeMetricsReportingConsent(
+            boolean consent, @ChangeMetricsReportingStateCalledFrom int calledFrom) {
         PrivacyPreferencesManagerImpl privacyManager = PrivacyPreferencesManagerImpl.getInstance();
         // Update the metrics reporting preference.
         privacyManager.setUsageAndCrashReporting(consent);
 
         // Perform native changes needed to reflect the new consent value.
-        UmaSessionStatsJni.get().changeMetricsReportingConsent(consent);
+        UmaSessionStatsJni.get().changeMetricsReportingConsent(consent, calledFrom);
 
         updateMetricsServiceState();
     }
@@ -271,7 +272,7 @@ public class UmaSessionStats {
     @NativeMethods
     interface Natives {
         long init();
-        void changeMetricsReportingConsent(boolean consent);
+        void changeMetricsReportingConsent(boolean consent, int calledFrom);
         void initMetricsAndCrashReportingForTesting();
         void unsetMetricsAndCrashReportingForTesting();
         void updateMetricsAndCrashReportingForTesting(boolean consent);
