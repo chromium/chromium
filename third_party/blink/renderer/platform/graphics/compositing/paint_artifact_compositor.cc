@@ -678,12 +678,6 @@ void PaintArtifactCompositor::Update(
   CollectPendingLayers(artifact);
   PendingLayer::DecompositeTransforms(pending_layers_);
 
-  std::stringstream ss;
-  for (auto& pending_layer : pending_layers_) {
-    ss << pending_layer.CcLayer().id() << ", ";
-  }
-  recordreplay::Assert("[Run-1229-1434] PaintArtifactCompositor::Update %d %s", host->GetId(), ss.str().c_str());
-
   LayerListBuilder layer_list_builder;
   PropertyTreeManager property_tree_manager(*this, *host->property_trees(),
                                             *root_layer_, layer_list_builder,
@@ -710,6 +704,12 @@ void PaintArtifactCompositor::Update(
         tracks_raster_invalidations_, root_layer_->layer_tree_host());
 
     cc::Layer& layer = pending_layer.CcLayer();
+
+    // NOTE: This `Assert` must come after `UpdateCompositedLayer`, since that one sets `pending_layer.CcLayer`.
+    recordreplay::Assert(
+        "[RUN-1229-1434] PaintArtifactCompositor::Update %d %d",
+        host->GetId(), layer.id());
+
     const auto& property_state = pending_layer.GetPropertyTreeState();
     const auto& transform = property_state.Transform();
     const auto& clip = property_state.Clip();
