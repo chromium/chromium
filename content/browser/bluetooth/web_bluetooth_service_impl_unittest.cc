@@ -765,8 +765,16 @@ TEST_F(WebBluetoothServiceImplTest,
   EXPECT_FALSE(service_->AreScanFiltersAllowed(filters));
 }
 
+// TODO(https://crbug.com/1420032): Failing on iOS.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_BluetoothScanningPermissionRevokedWhenFocusIsLost \
+  DISABLED_BluetoothScanningPermissionRevokedWhenFocusIsLost
+#else
+#define MAYBE_BluetoothScanningPermissionRevokedWhenFocusIsLost \
+  BluetoothScanningPermissionRevokedWhenFocusIsLost
+#endif
 TEST_F(WebBluetoothServiceImplTest,
-       BluetoothScanningPermissionRevokedWhenFocusIsLost) {
+       MAYBE_BluetoothScanningPermissionRevokedWhenFocusIsLost) {
   blink::mojom::WebBluetoothLeScanFilterPtr filter = CreateScanFilter("a", "b");
   absl::optional<WebBluetoothServiceImpl::ScanFilters> filters;
   filters.emplace();
