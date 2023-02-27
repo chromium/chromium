@@ -147,7 +147,7 @@ void SearchInputType::UpdateView() {
 }
 
 void SearchInputType::UpdateCancelButtonVisibility() {
-  Element* button = GetElement().UserAgentShadowRoot()->getElementById(
+  Element* button = GetElement().EnsureShadowSubtree()->getElementById(
       shadow_element_names::kIdSearchClearButton);
   if (!button)
     return;

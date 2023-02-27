@@ -136,6 +136,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   TextControlInnerEditorElement* InnerEditorElement() const {
     return inner_editor_;
   }
+  virtual TextControlInnerEditorElement* EnsureInnerEditorElement() const = 0;
   HTMLElement* CreateInnerEditorElement();
   void DropInnerEditorElement() { inner_editor_ = nullptr; }
 

@@ -682,6 +682,11 @@ void HTMLTextAreaElement::SetPlaceholderVisibility(bool visible) {
   is_placeholder_visible_ = visible;
 }
 
+TextControlInnerEditorElement* HTMLTextAreaElement::EnsureInnerEditorElement()
+    const {
+  return InnerEditorElement();
+}
+
 void HTMLTextAreaElement::UpdatePlaceholderText() {
   HTMLElement* placeholder = PlaceholderElement();
   const String placeholder_text = GetPlaceholderValue();

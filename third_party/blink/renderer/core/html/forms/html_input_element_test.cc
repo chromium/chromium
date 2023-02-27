@@ -150,7 +150,7 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsDynamicContain) {
 TEST_F(HTMLInputElementTest, create) {
   auto* input = MakeGarbageCollected<HTMLInputElement>(
       GetDocument(), CreateElementFlags::ByCreateElement());
-  EXPECT_NE(nullptr, input->UserAgentShadowRoot());
+  EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
 
   input = MakeGarbageCollected<HTMLInputElement>(
       GetDocument(), CreateElementFlags::ByParser(&GetDocument()));

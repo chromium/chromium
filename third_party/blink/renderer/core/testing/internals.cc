@@ -1139,6 +1139,9 @@ Node* Internals::effectiveRootScroller(Document* document) {
 
 ShadowRoot* Internals::shadowRoot(Element* host) {
   DCHECK(host);
+  if (auto* input = DynamicTo<HTMLInputElement>(*host)) {
+    input->EnsureShadowSubtree();
+  }
   return host->GetShadowRoot();
 }
 

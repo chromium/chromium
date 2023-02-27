@@ -157,7 +157,9 @@ void TextControlElement::ForwardEvent(Event& event) {
   if (event.type() == event_type_names::kBlur ||
       event.type() == event_type_names::kFocus)
     return;
-  InnerEditorElement()->DefaultEventHandler(event);
+  if (auto* inner_editor = InnerEditorElement()) {
+    inner_editor->DefaultEventHandler(event);
+  }
 }
 
 String TextControlElement::StrippedPlaceholder() const {
@@ -197,11 +199,13 @@ bool TextControlElement::PlaceholderShouldBeVisible() const {
 }
 
 HTMLElement* TextControlElement::PlaceholderElement() const {
+  ShadowRoot* root = UserAgentShadowRoot();
+  if (!root) {
+    return nullptr;
+  }
   if (!SupportsPlaceholder())
     return nullptr;
-  DCHECK(UserAgentShadowRoot());
-  auto* element = UserAgentShadowRoot()->getElementById(
-      shadow_element_names::kIdPlaceholder);
+  auto* element = root->getElementById(shadow_element_names::kIdPlaceholder);
   CHECK(!element || IsA<HTMLElement>(element));
   return To<HTMLElement>(element);
 }
@@ -481,7 +485,7 @@ bool TextControlElement::SetSelectionRange(
   if (ShouldApplySelectionCache() || !isConnected())
     return did_change;
 
-  HTMLElement* inner_editor = InnerEditorElement();
+  HTMLElement* inner_editor = EnsureInnerEditorElement();
   if (!frame || !inner_editor)
     return did_change;
 
@@ -848,10 +852,8 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
   if (!IsTextControl() || OpenShadowRoot())
     return;
 
-  DCHECK(InnerEditorElement());
-
   bool text_is_changed = value != InnerEditorValue();
-  HTMLElement* inner_editor = InnerEditorElement();
+  HTMLElement* inner_editor = EnsureInnerEditorElement();
   if (!text_is_changed && inner_editor->HasChildren())
     return;
 
