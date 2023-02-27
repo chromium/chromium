@@ -314,9 +314,7 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
   const std::string manifest(GenerateVisualElementsManifest(version));
 
   // Write the manifest to |src_path|.
-  int size = base::checked_cast<int>(manifest.size());
-  if (base::WriteFile(src_path.Append(kVisualElementsManifest),
-                      manifest.c_str(), size) == size) {
+  if (base::WriteFile(src_path.Append(kVisualElementsManifest), manifest)) {
     VLOG(1) << "Successfully wrote " << kVisualElementsManifest << " to "
             << src_path.value();
     return true;

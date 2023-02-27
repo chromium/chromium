@@ -40,13 +40,11 @@ class DeleteTreeWorkItemTest : public testing::Test {
     ASSERT_TRUE(base::PathExists(dir_name_2_));
 
     file_name_1_ = dir_name_1_.Append(FILE_PATH_LITERAL("File_1.txt"));
-    ASSERT_TRUE(
-        base::WriteFile(file_name_1_, kTextContent, sizeof(kTextContent)));
+    ASSERT_TRUE(base::WriteFile(file_name_1_, kTextContent));
     ASSERT_TRUE(base::PathExists(file_name_1_));
 
     file_name_2_ = dir_name_2_.Append(FILE_PATH_LITERAL("File_2.txt"));
-    ASSERT_TRUE(
-        base::WriteFile(file_name_2_, kTextContent, sizeof(kTextContent)));
+    ASSERT_TRUE(base::WriteFile(file_name_2_, kTextContent));
     ASSERT_TRUE(base::PathExists(file_name_2_));
   }
 

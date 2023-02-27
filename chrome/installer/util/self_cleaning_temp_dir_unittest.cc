@@ -164,9 +164,8 @@ TEST_F(SelfCleaningTempDirTest, LeaveUsedOnDestroy) {
     EXPECT_EQ(parent_temp_dir.Append(L"Three"), temp_dir.path());
     EXPECT_TRUE(base::DirectoryExists(temp_dir.path()));
     // Drop a file somewhere.
-    EXPECT_EQ(static_cast<int>(std::size(kHiHon) - 1),
-              base::WriteFile(parent_temp_dir.AppendASCII(GetRandomFilename()),
-                              kHiHon, std::size(kHiHon) - 1));
+    EXPECT_TRUE(base::WriteFile(
+        parent_temp_dir.AppendASCII(GetRandomFilename()), kHiHon));
   }
   EXPECT_FALSE(base::DirectoryExists(parent_temp_dir.Append(L"Three")));
   EXPECT_TRUE(base::DirectoryExists(parent_temp_dir));

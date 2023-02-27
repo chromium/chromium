@@ -854,7 +854,7 @@ bool CreateEulaSentinel() {
     return false;
 
   return (base::CreateDirectory(eula_sentinel.DirName()) &&
-          base::WriteFile(eula_sentinel, "", 0) != -1);
+          base::WriteFile(eula_sentinel, ""));
 }
 
 installer::InstallStatus RegisterDevChrome(
