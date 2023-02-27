@@ -8136,6 +8136,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the type of each resource request that is autoupgraded to HTTPS and
     fails to load. This histogram was expired from M80 to M108.
+
+    Warning: an unexpected reorder happened in Apr 2021
+    (https://crrev.com/c/2798954). Please do not trust older reports.
   </summary>
 </histogram>
 
@@ -8146,6 +8149,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the type of each resource request that was autoupgraded to HTTPS and
     resulted in a response. This histogram was expired from M80 to M108.
+
+    Warning: an unexpected reorder happened in Apr 2021
+    (https://crrev.com/c/2798954). Please do not trust older reports.
   </summary>
 </histogram>
 
@@ -8157,6 +8163,9 @@ chromium-metrics-reviews@google.com.
     Logs the type of each resource request that is autoupgraded to HTTPS. This
     is logged when the request is started. This histogram was expired from M80
     to M108.
+
+    Warning: an unexpected reorder happened in Apr 2021
+    (https://crrev.com/c/2798954). Please do not trust older reports.
   </summary>
 </histogram>
 

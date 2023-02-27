@@ -2280,6 +2280,9 @@ chromium-metrics-reviews@google.com.
     is available from the memory cache and previously loaded by a different
     document, the resource will be considered as reused. Repetitive requests to
     the same url in a document will be counted only once.
+
+    Warning: an unexpected reorder happened in Apr 2021
+    (https://crrev.com/c/2798954). Please do not trust older reports.
   </summary>
 </histogram>
 

@@ -1232,6 +1232,9 @@ chromium-metrics-reviews@google.com.
     metric is taken every time a subresource load finishes.
 
     See ServiceWorker.Subresource.Handled.Type for handled cases.
+
+    Warning: an unexpected reorder happened in Apr 2021
+    (https://crrev.com/c/2798954). Please do not trust older reports.
   </summary>
 </histogram>
 
@@ -1245,6 +1248,9 @@ chromium-metrics-reviews@google.com.
     every time a subresource load finishes.
 
     See ServiceWorker.Subresource.Fallbacked.Type for fallbacked cases.
+
+    Warning: an unexpected reorder happened in Apr 2021
+    (https://crrev.com/c/2798954). Please do not trust older reports.
   </summary>
 </histogram>
 

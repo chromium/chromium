@@ -89882,7 +89882,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="ResourceType">
-  <int value="0" label="Main resource"/>
+  <int value="0" label="(Obsolete) Main resource"/>
   <int value="1" label="Image"/>
   <int value="2" label="CSSS"/>
   <int value="3" label="Script"/>
@@ -89892,10 +89892,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="XSL"/>
   <int value="8" label="Link prefetch"/>
   <int value="9" label="Text track"/>
-  <int value="10" label="ImportResource"/>
-  <int value="11" label="Audio"/>
-  <int value="12" label="Video"/>
-  <int value="13" label="Manifest"/>
+  <int value="10" label="Audio"/>
+  <int value="11" label="Video"/>
+  <int value="12" label="Manifest"/>
+  <int value="13" label="SpeculationRules"/>
   <int value="14" label="Mock"/>
 </enum>
 

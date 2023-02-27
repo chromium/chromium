@@ -424,7 +424,12 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-02-17">
   <owner>yoavweiss@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>Counts the number of unused preloads per ResourceType.</summary>
+  <summary>
+    Counts the number of unused preloads per ResourceType.
+
+    Warning: an unexpected reorder happened in Apr 2021
+    (https://crrev.com/c/2798954). Please do not trust older reports.
+  </summary>
 </histogram>
 
 <histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
