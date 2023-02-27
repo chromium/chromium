@@ -215,9 +215,7 @@ public final class WebFeedMainMenuItemTest {
         verify(mContext).startActivity(mIntentCaptor.capture());
         Intent intent = mIntentCaptor.getValue();
         assertNotNull(intent);
-        assertEquals(3, intent.getExtras().size());
-        assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_TITLE));
-        assertNotNull(intent.getExtras().getString(CreatorIntentConstants.CREATOR_TITLE));
+        assertEquals(2, intent.getExtras().size());
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_URL));
         assertNotNull(intent.getExtras().getString(CreatorIntentConstants.CREATOR_URL));
         assertTrue(intent.hasExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT));

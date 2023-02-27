@@ -369,7 +369,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
                 intent.putExtra(
                         CreatorIntentConstants.CREATOR_WEB_FEED_ID, mRecommendedWebFeedName);
             }
-            intent.putExtra(CreatorIntentConstants.CREATOR_TITLE, mTitle);
             intent.putExtra(CreatorIntentConstants.CREATOR_URL, mUrl.getSpec());
             intent.putExtra(
                     CreatorIntentConstants.CREATOR_ENTRY_POINT, SingleWebFeedEntryPoint.MENU);
