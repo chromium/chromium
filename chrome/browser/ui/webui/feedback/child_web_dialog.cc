@@ -27,6 +27,7 @@ ChildWebDialog::ChildWebDialog(Profile* profile,
                                const GURL& url,
                                const std::u16string& title,
                                ui::ModalType modal_type,
+                               const std::string& args,
                                int dialog_width,
                                int dialog_height,
                                bool can_resize,
@@ -36,6 +37,7 @@ ChildWebDialog::ChildWebDialog(Profile* profile,
       title_(title),
       url_(url),
       modal_type_(modal_type),
+      args_(args),
       dialog_width_(dialog_width),
       dialog_height_(dialog_height) {
   set_can_resize(can_resize);
@@ -79,7 +81,7 @@ void ChildWebDialog::GetMinimumDialogSize(gfx::Size* size) const {
 }
 
 std::string ChildWebDialog::GetDialogArgs() const {
-  return std::string();
+  return args_;
 }
 
 void ChildWebDialog::OnDialogClosed(const std::string& json_retval) {

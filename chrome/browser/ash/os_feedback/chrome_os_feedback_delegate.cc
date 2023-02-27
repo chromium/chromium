@@ -336,7 +336,7 @@ void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url) {
   ChildWebDialog* child_dialog = new ChildWebDialog(
       profile_, widget, url,
       /*title=*/std::u16string(),
-      /*modal_type=*/ui::MODAL_TYPE_NONE, /*dialog_width=*/640,
+      /*modal_type=*/ui::MODAL_TYPE_NONE, /*args=*/"", /*dialog_width=*/640,
       /*dialog_height=*/400, /*can_resize=*/true,
       /*can_minimize=*/true);
 

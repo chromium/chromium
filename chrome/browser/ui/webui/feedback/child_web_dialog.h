@@ -27,6 +27,7 @@ class ChildWebDialog : public ui::WebDialogDelegate {
                  const GURL& url,
                  const std::u16string& title,
                  ui::ModalType modal_type = ui::MODAL_TYPE_WINDOW,
+                 const std::string& args = "",
                  int dialog_width = 640,
                  int dialog_height = 400,
                  bool can_resize = true,
@@ -60,6 +61,7 @@ class ChildWebDialog : public ui::WebDialogDelegate {
   const std::u16string title_;
   const GURL url_;
   const ui::ModalType modal_type_;
+  const std::string args_;
   const int dialog_width_;
   const int dialog_height_;
 };

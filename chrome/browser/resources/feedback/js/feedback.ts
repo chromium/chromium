@@ -101,7 +101,7 @@ class FeedbackHelper {
   }
 
   showAutofillMetadataInfo() {
-    chrome.send('showAutofillMetadataInfo');
+    chrome.send('showAutofillMetadataInfo', [feedbackInfo.autofillMetadata]);
   }
 }
 
