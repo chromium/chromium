@@ -11,6 +11,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -185,6 +186,7 @@ void PasswordModelTypeController::OnAccountsCookieDeletedByUserAction() {
 
 void PasswordModelTypeController::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     // Note: kCleared event for ConsentLevel::kSync basically means that the
@@ -195,6 +197,7 @@ void PasswordModelTypeController::OnPrimaryAccountChanged(
     features_util::OptOutOfAccountStorageAndClearSettingsForAccount(
         pref_service_, event.GetPreviousState().primary_account.gaia);
   }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 }
 
 void PasswordModelTypeController::OnOptInStateMaybeChanged() {

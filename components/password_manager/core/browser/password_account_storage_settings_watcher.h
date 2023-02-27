@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/driver/sync_service_observer.h"
 
@@ -40,7 +41,9 @@ class PasswordAccountStorageSettingsWatcher
   const raw_ptr<syncer::SyncService> sync_service_;
   base::RepeatingClosure change_callback_;
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   PrefChangeRegistrar pref_change_registrar_;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace password_manager

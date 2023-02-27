@@ -12,6 +12,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/mock_password_store_interface.h"
@@ -929,10 +930,20 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
 
   for (bool opted_in : {false, true}) {
     if (opted_in) {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
       features_util::OptInToAccountStorage(&prefs_, sync_service());
+#else
+      test_sync_service()->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/true, syncer::UserSelectableTypeSet::All());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     } else {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
       features_util::OptOutOfAccountStorageAndClearSettings(&prefs_,
                                                             sync_service());
+#else
+      test_sync_service()->GetUserSettings()->SetSelectedTypes(
+          /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     }
 
     // In every pass in the loop, StoreMetricsReporter uses the same pref

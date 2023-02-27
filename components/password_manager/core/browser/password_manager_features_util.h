@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_FEATURES_UTIL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_MANAGER_FEATURES_UTIL_H_
 
+#include "build/build_config.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace syncer {
 class SyncService;
@@ -16,6 +17,16 @@ class PrefService;
 
 namespace password_manager {
 namespace features_util {
+
+// Note on password-account-storage methods on desktop vs mobile:
+// On desktop, there is an explicit per-user opt-in, and various associated
+// settings (e.g. which store is the default). On mobile, there is no explicit
+// opt-in, and no per-user settings.
+// As a consequence, all the corresponding setters (opting in/out, setting the
+// default store, etc) only exist on desktop. The getters exist on mobile too,
+// but have different (usually simpler) implementation.
+// TODO(crbug.com/1392699): Reorder the methods to group desktop-only ones vs
+// all-platform ones.
 
 // Whether the current signed-in user (aka unconsented primary account) has
 // opted in to use the Google account storage for passwords (as opposed to
@@ -50,6 +61,7 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service,
                                       const GURL& current_page_url);
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 // Sets opt-in to using account storage for passwords for the current
 // signed-in user (unconsented primary account).
 // |pref_service| and |sync_service| must not be null.
@@ -71,6 +83,7 @@ void OptOutOfAccountStorageAndClearSettings(
 void OptOutOfAccountStorageAndClearSettingsForAccount(
     PrefService* pref_service,
     const std::string& gaia_id);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 // Whether it makes sense to ask the user to move a password to their account or
 // in which store to save a password (i.e. profile or account store). This
@@ -79,9 +92,13 @@ void OptOutOfAccountStorageAndClearSettingsForAccount(
 // enabled, etc). |pref_service| must not be null. |sync_service| may be null
 // (commonly the case in incognito mode), in which case this will simply return
 // false. See PasswordFeatureManager::ShouldShowPasswordStorePicker.
+// TODO(crbug.com/1392699): This predicate is kinda confusing, especially on
+// mobile. Consider splitting it in two, "should offer move" and "should offer
+// store choice".
 bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service);
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 // Sets the default storage location for signed-in but non-syncing users. This
 // store is used for saving new credentials and adding blacking listing entries.
 // |pref_service| and |sync_service| must not be null.
@@ -89,6 +106,7 @@ bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
 void SetDefaultPasswordStore(PrefService* pref_service,
                              const syncer::SyncService* sync_service,
                              PasswordForm::Store default_store);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 // Returns the default storage location for signed-in but non-syncing users
 // (i.e. will new passwords be saved to locally or to the account by default).
@@ -112,6 +130,7 @@ PasswordForm::Store GetDefaultPasswordStore(
 bool IsDefaultPasswordStoreSet(const PrefService* pref_service,
                                const syncer::SyncService* sync_service);
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 // Clears all account-storage-related settings for all users *except* the ones
 // in the passed-in |gaia_ids|. Most notably, this includes the opt-in, but also
 // all other related settings like the default password store.
@@ -125,6 +144,7 @@ void KeepAccountStorageSettingsOnlyForUsers(
 // password store. Meant to be called when account cookies were cleared.
 // |pref_service| must not be null.
 void ClearAccountStorageSettingsForAllUsers(PrefService* pref_service);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 // See definition of PasswordAccountStorageUserState.
 metrics_util::PasswordAccountStorageUserState
@@ -139,6 +159,7 @@ ComputePasswordAccountStorageUsageLevel(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 // Increases the count of how many times Chrome automatically offered a user
 // not opted-in to the account-scoped passwords storage to move a password to
 // their account. Should only be called if the user is signed-in and not
@@ -155,6 +176,7 @@ void RecordMoveOfferedToNonOptedInUser(PrefService* pref_service,
 int GetMoveOfferedToNonOptedInUserCount(
     const PrefService* pref_service,
     const syncer::SyncService* sync_service);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace features_util
 

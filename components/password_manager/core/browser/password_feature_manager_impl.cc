@@ -50,6 +50,7 @@ bool PasswordFeatureManagerImpl::ShouldShowAccountStorageReSignin(
       pref_service_, sync_service_, current_page_url);
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 void PasswordFeatureManagerImpl::OptInToAccountStorage() {
   features_util::OptInToAccountStorage(pref_service_, sync_service_);
 }
@@ -63,16 +64,19 @@ void PasswordFeatureManagerImpl::SetDefaultPasswordStore(
     const PasswordForm::Store& store) {
   features_util::SetDefaultPasswordStore(pref_service_, sync_service_, store);
 }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 bool PasswordFeatureManagerImpl::ShouldShowAccountStorageBubbleUi() const {
   return features_util::ShouldShowAccountStorageBubbleUi(pref_service_,
                                                          sync_service_);
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 bool PasswordFeatureManagerImpl::
     ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
   return ShouldShowAccountStorageOptIn() && !IsDefaultPasswordStoreSet();
 }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
     const {
@@ -90,6 +94,7 @@ PasswordFeatureManagerImpl::ComputePasswordAccountStorageUsageLevel() const {
                                                                 sync_service_);
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 void PasswordFeatureManagerImpl::RecordMoveOfferedToNonOptedInUser() {
   features_util::RecordMoveOfferedToNonOptedInUser(pref_service_,
                                                    sync_service_);
@@ -99,6 +104,7 @@ int PasswordFeatureManagerImpl::GetMoveOfferedToNonOptedInUserCount() const {
   return features_util::GetMoveOfferedToNonOptedInUserCount(pref_service_,
                                                             sync_service_);
 }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 bool PasswordFeatureManagerImpl::IsBiometricAuthenticationBeforeFillingEnabled()
     const {

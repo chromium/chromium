@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -134,13 +135,19 @@ TEST_F(PasswordManagerClientHelperTest,
 }
 
 TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
-  EXPECT_CALL(*client()->GetPasswordFeatureManager(),
-              ShouldShowAccountStorageBubbleUi)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillOnce(Return(PasswordForm::Store::kAccountStore));
-  EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount);
+  ON_CALL(*client()->GetPasswordFeatureManager(),
+          ShouldShowAccountStorageBubbleUi)
+      .WillByDefault(Return(true));
+  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
+      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount);
+#else
+  // On Android and iOS, prompting to move after using a password isn't
+  // implemented.
+  EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   // Indicate successful login.
   const PasswordForm form =
@@ -151,11 +158,11 @@ TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
 
 TEST_F(PasswordManagerClientHelperTest,
        NoPromptToMoveForMovableFormInProfileMode) {
-  EXPECT_CALL(*client()->GetPasswordFeatureManager(),
-              ShouldShowAccountStorageBubbleUi)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillOnce(Return(PasswordForm::Store::kProfileStore));
+  ON_CALL(*client()->GetPasswordFeatureManager(),
+          ShouldShowAccountStorageBubbleUi)
+      .WillByDefault(Return(true));
+  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
+      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
   EXPECT_CALL(*client(), PromptUserToEnableAutosignin).Times(0);
 
@@ -198,11 +205,11 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
   base::test::ScopedFeatureList account_storage_feature;
   account_storage_feature.InitAndEnableFeature(
       features::kEnablePasswordsAccountStorage);
-  EXPECT_CALL(*client()->GetPasswordFeatureManager(),
-              ShouldShowAccountStorageBubbleUi)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
-      .WillOnce(Return(PasswordForm::Store::kAccountStore));
+  ON_CALL(*client()->GetPasswordFeatureManager(),
+          ShouldShowAccountStorageBubbleUi)
+      .WillByDefault(Return(true));
+  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
+      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
 
   EXPECT_CALL(*client(), PromptUserToMovePasswordToAccount).Times(0);
 
@@ -212,6 +219,7 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
       CreateFormManager(&gaia_account_form, /*is_movable=*/true));
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerClientHelperTest,
        NoPromptToMoveForNonOptedInUserIfRefusedTooManyTimes) {
   base::test::ScopedFeatureList account_storage_feature;
@@ -241,5 +249,6 @@ TEST_F(PasswordManagerClientHelperTest,
   helper()->NotifySuccessfulLoginWithExistingPassword(
       CreateFormManager(&form, /*is_movable=*/true));
 }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

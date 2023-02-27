@@ -1334,8 +1334,10 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
   // are refreshed the next time, typically on the next browser restart.
   if (should_clear_password_account_storage_settings_) {
     should_clear_password_account_storage_settings_ = false;
+#if !BUILDFLAG(IS_ANDROID)
     password_manager::features_util::ClearAccountStorageSettingsForAllUsers(
         profile_->GetPrefs());
+#endif  // !BUILDFLAG(IS_ANDROID)
   }
 
   slow_pending_tasks_closure_.Cancel();

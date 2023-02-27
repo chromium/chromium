@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FEATURE_MANAGER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 
 namespace syncer {
@@ -35,21 +36,29 @@ class PasswordFeatureManagerImpl : public PasswordFeatureManager {
   bool ShouldShowAccountStorageOptIn() const override;
   bool ShouldShowAccountStorageReSignin(
       const GURL& current_page_url) const override;
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   void OptInToAccountStorage() override;
   void OptOutOfAccountStorageAndClearSettings() override;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   bool ShouldShowAccountStorageBubbleUi() const override;
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   bool ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const override;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   void SetDefaultPasswordStore(const PasswordForm::Store& store) override;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   PasswordForm::Store GetDefaultPasswordStore() const override;
   bool IsDefaultPasswordStoreSet() const override;
   metrics_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   void RecordMoveOfferedToNonOptedInUser() override;
   int GetMoveOfferedToNonOptedInUserCount() const override;
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
   bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
