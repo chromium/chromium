@@ -47,6 +47,8 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     available_pointer_types =
         MediaValues::CalculateAvailablePointerTypes(frame);
     primary_hover_type = MediaValues::CalculatePrimaryHoverType(frame);
+    output_device_update_ability_type =
+        MediaValues::CalculateOutputDeviceUpdateAbilityType(frame);
     available_hover_types = MediaValues::CalculateAvailableHoverTypes(frame);
     em_size = MediaValues::CalculateEmSize(frame);
     // Use 0.5em as the fallback for ex, ch, ic, and lh units. CalculateEx()
@@ -222,6 +224,11 @@ int MediaValuesCached::AvailablePointerTypes() const {
 
 mojom::blink::HoverType MediaValuesCached::PrimaryHoverType() const {
   return data_.primary_hover_type;
+}
+
+mojom::blink::OutputDeviceUpdateAbilityType
+MediaValuesCached::OutputDeviceUpdateAbilityType() const {
+  return data_.output_device_update_ability_type;
 }
 
 int MediaValuesCached::AvailableHoverTypes() const {

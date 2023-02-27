@@ -1406,6 +1406,36 @@ static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
   }
 }
 
+static bool UpdateMediaFeatureEval(const MediaQueryExpValue& value,
+                                   MediaQueryOperator,
+                                   const MediaValues& media_values) {
+  bool can_update = !EqualIgnoringASCIICase(media_values.MediaType(),
+                                            media_type_names::kPrint);
+  // No value = boolean context:
+  // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
+  if (!value.IsValid()) {
+    return can_update;
+  }
+  const auto& device_update_ability_type =
+      media_values.OutputDeviceUpdateAbilityType();
+  DCHECK(value.IsId());
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return !can_update;
+    case CSSValueID::kSlow:
+      return can_update &&
+             device_update_ability_type ==
+                 mojom::blink::OutputDeviceUpdateAbilityType::kSlowType;
+    case CSSValueID::kFast:
+      return can_update &&
+             device_update_ability_type ==
+                 mojom::blink::OutputDeviceUpdateAbilityType::kFastType;
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
 static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {
   switch (op) {
     case MediaQueryOperator::kNone:

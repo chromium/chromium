@@ -146,6 +146,13 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
     }
   }
 
+  if (RuntimeEnabledFeatures::CSSUpdateMediaFeatureEnabled()) {
+    if (media_feature == media_feature_names::kUpdateMediaFeature) {
+      return ident == CSSValueID::kNone || ident == CSSValueID::kFast ||
+             ident == CSSValueID::kSlow;
+    }
+  }
+
   return false;
 }
 

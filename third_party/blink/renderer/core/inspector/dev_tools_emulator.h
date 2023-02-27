@@ -42,6 +42,8 @@ class CORE_EXPORT DevToolsEmulator final
   void SetPrimaryPointerType(mojom::blink::PointerType);
   void SetAvailableHoverTypes(int);
   void SetPrimaryHoverType(mojom::blink::HoverType);
+  void SetOutputDeviceUpdateAbilityType(
+      mojom::blink::OutputDeviceUpdateAbilityType);
   void SetMainFrameResizesAreOrientationChanges(bool);
   void SetDefaultPageScaleLimits(float min_scale, float max_scale);
   void SetShrinksViewportContentToFit(bool shrink_viewport_content);
@@ -122,6 +124,8 @@ class CORE_EXPORT DevToolsEmulator final
   mojom::blink::PointerType embedder_primary_pointer_type_;
   int embedder_available_hover_types_;
   mojom::blink::HoverType embedder_primary_hover_type_;
+  mojom::blink::OutputDeviceUpdateAbilityType
+      embedder_output_device_update_ability_type_;
   bool embedder_main_frame_resizes_are_orientation_changes_;
   float embedder_min_page_scale_;
   float embedder_max_page_scale_;

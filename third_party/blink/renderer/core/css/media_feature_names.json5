@@ -66,6 +66,7 @@
     "scan",
     "overflow-inline",
     "overflow-block",
+    "update",
     "device-posture",
     "horizontal-viewport-segments",
     "vertical-viewport-segments",

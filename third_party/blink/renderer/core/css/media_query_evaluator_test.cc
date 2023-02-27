@@ -188,6 +188,30 @@ MediaQueryEvaluatorTestCase g_print_test_cases[] = {
     {nullptr, false}  // Do not remove the terminator line.
 };
 
+// Tests when the output device is print.
+MediaQueryEvaluatorTestCase g_update_with_print_device_test_cases[] = {
+    {"(update)", false},       {"(update: none)", true},
+    {"(update: slow)", false}, {"(update: fast)", false},
+    {"update: fast", false},   {"(update: ?)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+// Tests when the output device is slow.
+MediaQueryEvaluatorTestCase g_update_with_slow_device_test_cases[] = {
+    {"(update)", true},       {"(update: none)", false},
+    {"(update: slow)", true}, {"(update: fast)", false},
+    {"update: fast", false},  {"(update: ?)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+// Tests when the output device is slow.
+MediaQueryEvaluatorTestCase g_update_with_fast_device_test_cases[] = {
+    {"(update)", true},        {"(update: none)", false},
+    {"(update: slow)", false}, {"(update: fast)", true},
+    {"update: fast", false},   {"(update: ?)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
 MediaQueryEvaluatorTestCase g_forcedcolors_active_cases[] = {
     {"(forced-colors: active)", true},
     {"(forced-colors: none)", false},
@@ -409,6 +433,8 @@ TEST(MediaQueryEvaluatorTest, Cached) {
   data.monochrome_bits_per_component = 0;
   data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
   data.primary_hover_type = mojom::blink::HoverType::kHoverHoverType;
+  data.output_device_update_ability_type =
+      mojom::blink::OutputDeviceUpdateAbilityType::kFastType;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
@@ -429,6 +455,36 @@ TEST(MediaQueryEvaluatorTest, Cached) {
     MediaQueryEvaluator media_query_evaluator(media_values);
     TestMQEvaluator(g_print_test_cases, media_query_evaluator);
     data.media_type = media_type_names::kScreen;
+  }
+
+  // Update values with print device.
+  {
+    data.media_type = media_type_names::kPrint;
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_update_with_print_device_test_cases,
+                    media_query_evaluator);
+    data.media_type = media_type_names::kScreen;
+  }
+
+  // Update values with slow device.
+  {
+    data.output_device_update_ability_type =
+        mojom::blink::OutputDeviceUpdateAbilityType::kSlowType;
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_update_with_slow_device_test_cases,
+                    media_query_evaluator);
+  }
+
+  // Update values with fast device.
+  {
+    data.output_device_update_ability_type =
+        mojom::blink::OutputDeviceUpdateAbilityType::kFastType;
+    auto* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_update_with_fast_device_test_cases,
+                    media_query_evaluator);
   }
 
   // Monochrome values.
@@ -469,10 +525,15 @@ TEST(MediaQueryEvaluatorTest, Dynamic) {
   TestMQEvaluator(g_viewport_test_cases, media_query_evaluator);
   TestMQEvaluator(g_overflow_with_scrollable_device_test_cases,
                   media_query_evaluator);
+  TestMQEvaluator(g_update_with_fast_device_test_cases, media_query_evaluator);
+  page_holder->GetFrame().GetSettings()->SetOutputDeviceUpdateAbilityType(
+      mojom::blink::OutputDeviceUpdateAbilityType::kSlowType);
+  TestMQEvaluator(g_update_with_slow_device_test_cases, media_query_evaluator);
   page_holder->GetFrameView().SetMediaType(media_type_names::kPrint);
   TestMQEvaluator(g_print_test_cases, media_query_evaluator);
   TestMQEvaluator(g_overflow_with_print_device_test_cases,
                   media_query_evaluator);
+  TestMQEvaluator(g_update_with_print_device_test_cases, media_query_evaluator);
 }
 
 TEST(MediaQueryEvaluatorTest, DynamicNoView) {

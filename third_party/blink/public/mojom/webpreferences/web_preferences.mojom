@@ -23,6 +23,15 @@ enum HoverType {
   kHoverHoverType                            = 2             // 1 << 1
 };
 
+// For media feature update, indicating the update ability of the output display,
+// once renering is done:
+// Slow - e-ink screens, underpowered devices.
+// Fast - regular computer screen.
+enum OutputDeviceUpdateAbilityType {
+  kSlowType,
+  kFastType
+};
+
 // There are multiple editing details that are different on Windows than
 // Macintosh. We use a single switch for all of them. Some examples:
 //
@@ -175,6 +184,7 @@ struct WebPreferences {
   int32 pointer_events_max_touch_points;
   int32 available_pointer_types;
   PointerType primary_pointer_type;
+  OutputDeviceUpdateAbilityType output_device_update_ability_type;
   int32 available_hover_types;
   HoverType primary_hover_type;
   bool dont_send_key_events_to_javascript;

@@ -267,6 +267,12 @@ void DevToolsEmulator::SetPrimaryHoverType(mojom::blink::HoverType hover_type) {
     web_view_->GetPage()->GetSettings().SetPrimaryHoverType(hover_type);
 }
 
+void DevToolsEmulator::SetOutputDeviceUpdateAbilityType(
+    mojom::blink::OutputDeviceUpdateAbilityType type) {
+  embedder_output_device_update_ability_type_ = type;
+  web_view_->GetPage()->GetSettings().SetOutputDeviceUpdateAbilityType(type);
+}
+
 gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
     const DeviceEmulationParams& params) {
   if (device_metrics_enabled_ &&

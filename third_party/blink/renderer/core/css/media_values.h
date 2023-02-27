@@ -68,6 +68,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   virtual mojom::blink::PointerType PrimaryPointerType() const = 0;
   virtual int AvailablePointerTypes() const = 0;
   virtual mojom::blink::HoverType PrimaryHoverType() const = 0;
+  virtual mojom::blink::OutputDeviceUpdateAbilityType
+  OutputDeviceUpdateAbilityType() const = 0;
   virtual int AvailableHoverTypes() const = 0;
   virtual bool ThreeDEnabled() const = 0;
   virtual const String MediaType() const = 0;
@@ -118,6 +120,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   static mojom::blink::PointerType CalculatePrimaryPointerType(LocalFrame*);
   static int CalculateAvailablePointerTypes(LocalFrame*);
   static mojom::blink::HoverType CalculatePrimaryHoverType(LocalFrame*);
+  static mojom::blink::OutputDeviceUpdateAbilityType
+  CalculateOutputDeviceUpdateAbilityType(LocalFrame*);
   static int CalculateAvailableHoverTypes(LocalFrame*);
   static ColorSpaceGamut CalculateColorGamut(LocalFrame*);
   static mojom::blink::PreferredColorScheme CalculatePreferredColorScheme(

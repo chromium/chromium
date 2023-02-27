@@ -1575,6 +1575,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetPrimaryPointerType(prefs.primary_pointer_type);
   settings->SetAvailableHoverTypes(prefs.available_hover_types);
   settings->SetPrimaryHoverType(prefs.primary_hover_type);
+  settings->SetOutputDeviceUpdateAbilityType(
+      prefs.output_device_update_ability_type);
   settings->SetBarrelButtonForDragEnabled(prefs.barrel_button_for_drag_enabled);
 
   settings->SetEditingBehavior(prefs.editing_behavior);

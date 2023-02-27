@@ -95,6 +95,8 @@ WebPreferences::WebPreferences()
       primary_pointer_type(blink::mojom::PointerType::kPointerNone),
       available_hover_types(0),
       primary_hover_type(blink::mojom::HoverType::kHoverNone),
+      output_device_update_ability_type(
+          blink::mojom::OutputDeviceUpdateAbilityType::kFastType),
       dont_send_key_events_to_javascript(false),
       sync_xhr_in_documents_enabled(true),
       number_of_cpu_cores(1),

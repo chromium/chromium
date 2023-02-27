@@ -124,6 +124,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   blink::mojom::PointerType primary_pointer_type;
   int available_hover_types;
   blink::mojom::HoverType primary_hover_type;
+  blink::mojom::OutputDeviceUpdateAbilityType output_device_update_ability_type;
   bool dont_send_key_events_to_javascript;
   bool barrel_button_for_drag_enabled = false;
   bool sync_xhr_in_documents_enabled;

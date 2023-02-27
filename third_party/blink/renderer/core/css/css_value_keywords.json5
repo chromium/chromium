@@ -1067,6 +1067,10 @@
     // (overflow-block:) media feature
     "paged",
 
+    // (update:) media feature
+    "slow",
+    "fast",
+
     // position
     "sticky",
 
