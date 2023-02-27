@@ -419,7 +419,8 @@ void TestRenderFrameHost::SendRendererInitiatedNavigationRequest(
           base::TimeTicks() /* renderer_before_unload_end */,
           absl::nullopt /* web_bundle_token */,
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
-              kDidNotStartWithTransientActivation);
+              kDidNotStartWithTransientActivation,
+          false /* is_container_initiated */);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = url;
   common_params->initiator_origin = GetLastCommittedOrigin();

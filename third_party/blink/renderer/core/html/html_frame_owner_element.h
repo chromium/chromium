@@ -124,8 +124,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void DidReportResourceTiming();
   bool HasPendingFallbackTimingInfo() const;
 
-  void WillPerformContainerInitiatedNavigation(const KURL&);
-
   // For unit tests, manually trigger the UpdateContainerPolicy method.
   void UpdateContainerPolicyForTests() { UpdateContainerPolicy(); }
 
@@ -191,6 +189,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // based on the frame attributes.
   virtual network::mojom::blink::TrustTokenParamsPtr ConstructTrustTokenParams()
       const;
+  void ReportFallbackResourceTimingIfNeeded();
 
  protected:
   bool is_swapping_frames() const { return is_swapping_frames_; }
@@ -237,7 +236,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
       bool is_loading_attr_lazy,
       AutomaticLazyLoadReason auto_lazy_load_reason);
 
-  void ReportFallbackResourceTimingIfNeeded();
   // Check if the frame should be lazy-loaded and apply when conditions are
   // passed. Return true when lazy-load is applied.
   bool LazyLoadIfPossible(const KURL&,

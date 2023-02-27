@@ -709,17 +709,6 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
   resource_timing_secondary_buffer_.push_back(entry);
 }
 
-void Performance::AddResourceTimingWithUnparsedServerTiming(
-    mojom::blink::ResourceTimingInfoPtr info,
-    const String& server_timing_value,
-    const AtomicString& initiator_type) {
-  if (info->allow_timing_details) {
-    info->server_timing =
-        ParseServerTimingFromHeaderValueToMojo(server_timing_value);
-  }
-  AddResourceTiming(std::move(info), initiator_type);
-}
-
 // Called after loadEventEnd happens.
 void Performance::NotifyNavigationTimingToObservers() {
   if (navigation_timing_)

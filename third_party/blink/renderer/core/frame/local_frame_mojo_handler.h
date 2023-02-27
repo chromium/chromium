@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/mojom/input/text_input_host.mojom-blink.h"
@@ -118,12 +119,6 @@ class LocalFrameMojoHandler
   void SaveImageAt(const gfx::Point& window_point) final;
   void ReportBlinkFeatureUsage(const Vector<mojom::blink::WebFeature>&) final;
   void RenderFallbackContent() final;
-  void RenderFallbackContentWithResourceTiming(
-      mojom::blink::ResourceTimingInfoPtr timing,
-      const String& server_timing_values) final;
-  void AddResourceTimingEntryFromNonNavigatedFrame(
-      mojom::blink::ResourceTimingInfoPtr timing,
-      blink::FrameOwnerElementType parent_frame_owner_element_type) final;
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) final;
   void MediaPlayerActionAt(
       const gfx::Point& window_point,
@@ -206,6 +201,23 @@ class LocalFrameMojoHandler
                          mojom::blink::TraverseCancelledReason reason) final;
   void SnapshotDocumentForViewTransition(
       SnapshotDocumentForViewTransitionCallback callback) final;
+
+  void AddResourceTimingEntryForFailedSubframeNavigation(
+      const FrameToken& subframe_token,
+      const KURL& initial_url,
+      base::TimeTicks start_time,
+      base::TimeTicks redirect_time,
+      base::TimeTicks request_start,
+      base::TimeTicks response_start,
+      uint32_t response_code,
+      const WTF::String& mime_type,
+      network::mojom::blink::LoadTimingInfoPtr load_timing_info,
+      net::HttpResponseInfo::ConnectionInfo connection_info,
+      const WTF::String& alpn_negotiated_protocol,
+      bool is_secure_transport,
+      bool is_validated,
+      const WTF::String& normalized_server_timing,
+      const ::network::URLLoaderCompletionStatus& completion_status) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

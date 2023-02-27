@@ -481,9 +481,6 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   void ClearUserActivationInFrameTree();
 
   void RenderFallbackContent();
-  void RenderFallbackContentWithResourceTiming(
-      mojom::blink::ResourceTimingInfoPtr timing,
-      const String& server_timing_values);
 
   // Only implemented for LocalFrames.
   virtual void ActivateHistoryUserActivationState() {}

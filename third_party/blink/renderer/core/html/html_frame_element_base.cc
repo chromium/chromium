@@ -93,7 +93,6 @@ void HTMLFrameElementBase::OpenURL(bool replace_current_item) {
 
   KURL url = GetDocument().CompleteURL(url_);
 
-  WillPerformContainerInitiatedNavigation(url);
   // There is no (easy) way to tell if |url_| is relative at this point. That
   // is determined in the KURL constructor. If we fail to create an absolute
   // URL at this point, *and* the base URL is a data URL, assume |url_| was

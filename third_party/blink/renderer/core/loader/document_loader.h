@@ -49,6 +49,8 @@
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
@@ -758,7 +760,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   CommitReason commit_reason_ = CommitReason::kRegular;
   uint64_t main_resource_identifier_ = 0;
   mojom::blink::ResourceTimingInfoPtr resource_timing_info_for_parent_;
-  base::TimeTicks redirect_end_time_;
   WebScopedVirtualTimePauser virtual_time_pauser_;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager_;
   ukm::SourceId ukm_source_id_;
@@ -822,6 +823,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Indicates whether the document should be loaded with its has_storage_access
   // bit set.
   const bool has_storage_access_;
+
+  // Only container-initiated navigations (e.g. iframe change src) report
+  // their resource timing to the parent.
+  mojom::blink::ParentResourceTimingAccess parent_resource_timing_access_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);
