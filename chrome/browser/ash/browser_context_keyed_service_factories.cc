@@ -94,6 +94,7 @@
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
 #include "chrome/browser/ui/ash/calendar/calendar_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
@@ -206,6 +207,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   SyncedPrintersManagerFactory::GetInstance();
   tether::TetherServiceFactory::GetInstance();
   TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt();
+  GlanceablesKeyedServiceFactory::GetInstance();
 }
 
 }  // namespace ash

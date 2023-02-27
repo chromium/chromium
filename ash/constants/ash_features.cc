@@ -1018,6 +1018,11 @@ const base::FeatureParam<std::string> kGalleryAppPdfEditNotificationText{
 // Enable glanceables on login.
 BASE_FEATURE(kGlanceables, "Glanceables", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables glanceables on time management surface.
+BASE_FEATURE(kGlanceablesV2,
+             "GlanceablesV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Gaia reauth endpoint.
 BASE_FEATURE(kGaiaReauthEndpoint,
              "GaiaReauthEndpoint",
@@ -2648,6 +2653,10 @@ bool IsGifRenderingEnabled() {
 
 bool AreGlanceablesEnabled() {
   return base::FeatureList::IsEnabled(kGlanceables);
+}
+
+bool AreGlanceablesV2Enabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesV2);
 }
 
 bool IsHibernateEnabled() {
