@@ -33,9 +33,9 @@
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "url/gurl.h"
 
@@ -65,12 +65,13 @@ base::TimeTicks TicksFromMicroseconds(int64_t micros) {
 
 }  // namespace
 
-// A mock WebRequestPeer to receive messages from the ResourceRequestSender.
-class MockRequestPeer : public WebRequestPeer {
+// A mock ResourceRequestClient to receive messages from the
+// ResourceRequestSender.
+class MockRequestClient : public ResourceRequestClient {
  public:
-  MockRequestPeer() = default;
+  MockRequestClient() = default;
 
-  // WebRequestPeer overrides:
+  // ResourceRequestClient overrides:
   void OnUploadProgress(uint64_t position, uint64_t size) override {}
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr head,
@@ -166,11 +167,11 @@ class ResourceRequestSenderTest : public testing::Test,
   ResourceRequestSender* sender() { return resource_request_sender_.get(); }
 
   void StartAsync(std::unique_ptr<network::ResourceRequest> request,
-                  scoped_refptr<WebRequestPeer> peer) {
+                  scoped_refptr<ResourceRequestClient> client) {
     sender()->SendAsync(
         std::move(request), scheduler::GetSingleThreadTaskRunnerForTesting(),
         TRAFFIC_ANNOTATION_FOR_TESTS, false,
-        /*cors_exempt_header_list=*/Vector<String>(), std::move(peer),
+        /*cors_exempt_header_list=*/Vector<String>(), std::move(client),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(this),
         std::vector<std::unique_ptr<URLLoaderThrottle>>(),
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
@@ -186,7 +187,7 @@ class ResourceRequestSenderTest : public testing::Test,
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<ResourceRequestSender> resource_request_sender_;
 
-  scoped_refptr<MockRequestPeer> mock_peer_;
+  scoped_refptr<MockRequestClient> mock_client_;
 };
 
 // Tests the generation of unique request ids.
@@ -203,7 +204,7 @@ class TimeConversionTest : public ResourceRequestSenderTest {
  public:
   void PerformTest(network::mojom::URLResponseHeadPtr response_head) {
     std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
-    StartAsync(std::move(request), mock_peer_);
+    StartAsync(std::move(request), mock_client_);
 
     ASSERT_EQ(1u, loader_and_clients_.size());
     mojo::Remote<network::mojom::URLLoaderClient> client(
@@ -271,8 +272,8 @@ class CompletionTimeConversionTest : public ResourceRequestSenderTest {
                    base::TimeTicks completion_time,
                    base::TimeDelta delay) {
     std::unique_ptr<network::ResourceRequest> request(CreateResourceRequest());
-    mock_peer_ = base::MakeRefCounted<MockRequestPeer>();
-    StartAsync(std::move(request), mock_peer_);
+    mock_client_ = base::MakeRefCounted<MockRequestClient>();
+    StartAsync(std::move(request), mock_client_);
 
     ASSERT_EQ(1u, loader_and_clients_.size());
     mojo::Remote<network::mojom::URLLoaderClient> client(
@@ -309,12 +310,12 @@ class CompletionTimeConversionTest : public ResourceRequestSenderTest {
   }
 
   base::TimeTicks request_start() const {
-    EXPECT_TRUE(mock_peer_->received_response());
-    return mock_peer_->last_load_timing().request_start;
+    EXPECT_TRUE(mock_client_->received_response());
+    return mock_client_->last_load_timing().request_start;
   }
   base::TimeTicks completion_time() const {
-    EXPECT_TRUE(mock_peer_->complete());
-    return mock_peer_->completion_status().completion_time;
+    EXPECT_TRUE(mock_client_->complete());
+    return mock_client_->completion_status().completion_time;
   }
 };
 

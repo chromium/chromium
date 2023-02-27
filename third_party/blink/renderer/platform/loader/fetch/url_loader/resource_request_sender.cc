@@ -40,13 +40,13 @@
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
-#include "third_party/blink/public/platform/web_request_peer.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request_util.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/mojo_url_loader_client.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/resource_request_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_response.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -145,7 +145,7 @@ void ResourceRequestSender::SendSync(
     const Vector<String>& cors_exempt_header_list,
     base::WaitableEvent* terminate_sync_load_event,
     mojo::PendingRemote<mojom::blink::BlobRegistry> download_to_blob_registry,
-    scoped_refptr<WebRequestPeer> peer,
+    scoped_refptr<ResourceRequestClient> client,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   CheckSchemeForReferrerPolicy(*request);
@@ -190,7 +190,7 @@ void ResourceRequestSender::SendSync(
 
   while (context_for_redirect) {
     DCHECK(response->redirect_info);
-    bool follow_redirect = peer->OnReceivedRedirect(
+    bool follow_redirect = client->OnReceivedRedirect(
         *response->redirect_info, response->head.Clone(),
         nullptr /* removed_headers */);
     redirect_or_response_event.Reset();
@@ -213,7 +213,7 @@ int ResourceRequestSender::SendAsync(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     uint32_t loader_options,
     const Vector<String>& cors_exempt_header_list,
-    scoped_refptr<WebRequestPeer> peer,
+    scoped_refptr<ResourceRequestClient> client,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
@@ -238,7 +238,7 @@ int ResourceRequestSender::SendAsync(
   // Compute a unique request_id for this renderer process.
   int request_id = GenerateRequestId();
   request_info_ = std::make_unique<PendingRequestInfo>(
-      std::move(peer), request->destination, KURL(request->url),
+      std::move(client), request->destination, KURL(request->url),
       std::move(resource_load_info_notifier_wrapper));
 
   request_info_->resource_load_info_notifier_wrapper
@@ -246,7 +246,7 @@ int ResourceRequestSender::SendAsync(
           request_id, request->url, request->method, request->referrer,
           request_info_->request_destination, request->priority);
 
-  auto client = std::make_unique<MojoURLLoaderClient>(
+  auto url_loader_client = std::make_unique<MojoURLLoaderClient>(
       this, loading_task_runner, url_loader_factory->BypassRedirectChecks(),
       request->url, back_forward_cache_loader_helper);
 
@@ -258,8 +258,8 @@ int ResourceRequestSender::SendAsync(
   std::unique_ptr<ThrottlingURLLoader> url_loader =
       ThrottlingURLLoader::CreateLoaderAndStart(
           std::move(url_loader_factory), throttles.ReleaseVector(), request_id,
-          loader_options, request.get(), client.get(), traffic_annotation,
-          std::move(loading_task_runner),
+          loader_options, request.get(), url_loader_client.get(),
+          traffic_annotation, std::move(loading_task_runner),
           absl::make_optional(std_cors_exempt_header_list));
 
   // The request may be canceled by `ThrottlingURLLoader::CreateAndStart()`, in
@@ -271,7 +271,7 @@ int ResourceRequestSender::SendAsync(
   }
 
   request_info_->url_loader = std::move(url_loader);
-  request_info_->url_loader_client = std::move(client);
+  request_info_->url_loader_client = std::move(url_loader_client);
 
   return request_id;
 }
@@ -329,18 +329,18 @@ void ResourceRequestSender::DeletePendingRequest(
   request_info_->url_loader_client.reset();
 
   // Always delete the `request_info_` asyncly so that cancelling the request
-  // doesn't delete the request context which the `request_info_->peer` points
+  // doesn't delete the request context which the `request_info_->client` points
   // to while its response is still being handled.
   task_runner->DeleteSoon(FROM_HERE, request_info_.release());
 }
 
 ResourceRequestSender::PendingRequestInfo::PendingRequestInfo(
-    scoped_refptr<WebRequestPeer> peer,
+    scoped_refptr<ResourceRequestClient> client,
     network::mojom::RequestDestination request_destination,
     const KURL& request_url,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper)
-    : peer(std::move(peer)),
+    : client(std::move(client)),
       request_destination(request_destination),
       url(request_url),
       response_url(request_url),
@@ -382,8 +382,8 @@ void ResourceRequestSender::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   }
 
   // TODO(yhirano): Consider using int64_t in
-  // WebRequestPeer::OnTransferSizeUpdated.
-  request_info_->peer->OnTransferSizeUpdated(transfer_size_diff);
+  // ResourceRequestClient::OnTransferSizeUpdated.
+  request_info_->client->OnTransferSizeUpdated(transfer_size_diff);
   if (!request_info_) {
     return;
   }
@@ -396,7 +396,7 @@ void ResourceRequestSender::OnUploadProgress(int64_t position, int64_t size) {
     return;
   }
 
-  request_info_->peer->OnUploadProgress(position, size);
+  request_info_->client->OnUploadProgress(position, size);
 }
 
 void ResourceRequestSender::OnReceivedResponse(
@@ -420,8 +420,8 @@ void ResourceRequestSender::OnReceivedResponse(
   }
   request_info_->load_timing_info = response_head->load_timing;
 
-  request_info_->peer->OnReceivedResponse(response_head.Clone(),
-                                          response_arrival);
+  request_info_->client->OnReceivedResponse(response_head.Clone(),
+                                            response_arrival);
   if (!request_info_) {
     return;
   }
@@ -437,7 +437,7 @@ void ResourceRequestSender::OnReceivedCachedMetadata(
   }
 
   if (data.size()) {
-    request_info_->peer->OnReceivedCachedMetadata(std::move(data));
+    request_info_->client->OnReceivedCachedMetadata(std::move(data));
   }
 }
 
@@ -476,7 +476,7 @@ void ResourceRequestSender::OnReceivedRedirect(
         request_info_->local_response_start - remote_response_start);
   }
   std::vector<std::string> removed_headers;
-  if (request_info_->peer->OnReceivedRedirect(
+  if (request_info_->client->OnReceivedRedirect(
           redirect_info, response_head.Clone(), &removed_headers)) {
     // Double-check if the request is still around. The call above could
     // potentially remove it.
@@ -511,7 +511,7 @@ void ResourceRequestSender::OnStartLoadingResponseBody(
   if (!request_info_) {
     return;
   }
-  request_info_->peer->OnStartLoadingResponseBody(std::move(body));
+  request_info_->client->OnStartLoadingResponseBody(std::move(body));
 }
 
 void ResourceRequestSender::OnRequestComplete(
@@ -526,7 +526,7 @@ void ResourceRequestSender::OnRequestComplete(
   request_info_->resource_load_info_notifier_wrapper
       ->NotifyResourceLoadCompleted(status);
 
-  WebRequestPeer* peer = request_info_->peer.get();
+  ResourceRequestClient* client = request_info_->client.get();
 
   network::URLLoaderCompletionStatus renderer_status(status);
   if (status.completion_time.is_null()) {
@@ -565,10 +565,10 @@ void ResourceRequestSender::OnRequestComplete(
   // The request ID will be removed from our pending list in the destructor.
   // Normally, dispatching this message causes the reference-counted request to
   // die immediately.
-  // TODO(kinuko): Revisit here. This probably needs to call request_info_->peer
-  // but the past attempt to change it seems to have caused crashes.
-  // (crbug.com/547047)
-  peer->OnCompletedRequest(renderer_status);
+  // TODO(kinuko): Revisit here. This probably needs to call
+  // request_info_->client but the past attempt to change it seems to have
+  // caused crashes. (crbug.com/547047)
+  client->OnCompletedRequest(renderer_status);
 }
 
 base::TimeTicks ResourceRequestSender::ToLocalURLResponseHead(

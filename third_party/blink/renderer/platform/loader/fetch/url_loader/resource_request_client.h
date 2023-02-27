@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_REQUEST_PEER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_REQUEST_PEER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_RESOURCE_REQUEST_CLIENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_RESOURCE_REQUEST_CLIENT_H_
 
 #include <stdint.h>
 
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace net {
 struct RedirectInfo;
@@ -27,15 +27,11 @@ struct URLLoaderCompletionStatus;
 
 namespace blink {
 
-// This is implemented by our custom resource loader within content. The Peer
-// and it's bridge should have identical lifetimes as they represent each end of
-// a communication channel.
-//
 // These callbacks mirror net::URLRequest::Delegate and the order and
 // conditions in which they will be called are identical. See url_request.h
 // for more information.
-class BLINK_PLATFORM_EXPORT WebRequestPeer
-    : public base::RefCounted<WebRequestPeer> {
+class BLINK_PLATFORM_EXPORT ResourceRequestClient
+    : public WTF::RefCounted<ResourceRequestClient> {
  public:
   // Called as upload progress is made.
   // note: only for requests with upload progress enabled.
@@ -78,11 +74,11 @@ class BLINK_PLATFORM_EXPORT WebRequestPeer
   virtual void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  virtual ~WebRequestPeer() = default;
+  virtual ~ResourceRequestClient() = default;
 
-  friend class base::RefCounted<WebRequestPeer>;
+  friend class WTF::RefCounted<ResourceRequestClient>;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_REQUEST_PEER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_RESOURCE_REQUEST_CLIENT_H_

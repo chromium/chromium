@@ -111,10 +111,10 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     const Vector<String>& cors_exempt_header_list,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
-  scoped_refptr<SyncLoadContext> context(new SyncLoadContext(
+  scoped_refptr<SyncLoadContext> context(base::AdoptRef(new SyncLoadContext(
       request.get(), std::move(pending_url_loader_factory), response,
       context_for_redirect, redirect_or_response_event, abort_event, timeout,
-      std::move(download_to_blob_registry), loading_task_runner));
+      std::move(download_to_blob_registry), loading_task_runner)));
   context->resource_request_sender_->SendAsync(
       std::move(request), std::move(loading_task_runner), traffic_annotation,
       loader_options, cors_exempt_header_list, context,

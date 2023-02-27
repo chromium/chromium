@@ -14,7 +14,7 @@ is frozen. Namely,
 
 - blink::MojoURLLoaderClient
 - blink::ResponseBodyLoader
-- blink::WebRequestPeer implementations
+- blink::ResourceRequestClient implementations
 - blink::ThrottlingURLLoader implementations
 - blink::BackForwardCacheLoaderHelper implementations
 

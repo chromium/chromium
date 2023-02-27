@@ -135,6 +135,7 @@ blink_platform_sources("loader") {
     "fetch/url_loader/navigation_body_loader.h",
     "fetch/url_loader/request_conversion.cc",
     "fetch/url_loader/request_conversion.h",
+    "fetch/url_loader/resource_request_client.h",
     "fetch/url_loader/resource_request_sender.cc",
     "fetch/url_loader/resource_request_sender.h",
     "fetch/url_loader/sync_load_context.cc",
