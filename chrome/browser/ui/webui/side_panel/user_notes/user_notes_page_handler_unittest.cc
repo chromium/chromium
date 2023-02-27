@@ -227,4 +227,12 @@ TEST_F(UserNotesPageHandlerTest, CurrentTabUrlChangedWithNavigation) {
   ASSERT_EQ(GURL(u"https://newurl4"), handler()->GetCurrentTabUrlForTesting());
 }
 
+TEST_F(UserNotesPageHandlerTest, HasNotesOnAnyPages) {
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  ASSERT_EQ(false, waiter.HasNotesInAnyPages());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("note1"));
+  ASSERT_EQ(true, waiter.HasNotesInAnyPages());
+}
+
 }  // namespace

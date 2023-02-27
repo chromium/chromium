@@ -87,6 +87,10 @@ interface UserNotesPageHandler {
   // Called when the sort option has been updated and the profile pref should be
   // updated.
   SetSortOrder(bool sort_by_newest);
+
+  // Return whether there are any notes in any pages.
+  // Used to determine if the empty state UI should be shown.
+  HasNotesInAnyPages() => (bool has_notes);
 };
 
 // WebUI-side handler for requests from the browser.

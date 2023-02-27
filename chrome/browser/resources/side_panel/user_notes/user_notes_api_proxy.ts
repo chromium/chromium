@@ -66,6 +66,10 @@ export class UserNotesApiProxyImpl implements UserNotesApiProxy {
     this.handler.setSortOrder(sortByNewest);
   }
 
+  hasNotesOnAnyPages() {
+    return this.handler.hasNotesInAnyPages();
+  }
+
   getCallbackRouter() {
     return this.callbackRouter;
   }

@@ -62,6 +62,7 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
       const ::GURL& url,
       ui::mojom::ClickModifiersPtr click_modifiers) override;
   void SetSortOrder(bool sort_by_newest) override;
+  void HasNotesInAnyPages(HasNotesInAnyPagesCallback callback) override;
 
   void OnSortByNewestPrefChanged();
 
