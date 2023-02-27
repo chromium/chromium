@@ -237,7 +237,6 @@
   'blink_web_tests': {
     'remove_from': [
       'Win10 Tests x64 (dbg)',
-      'mac-osxbeta-rel',
     ],
     'modifications': {
       'Linux Tests': {
@@ -494,6 +493,16 @@
           'shards': 8,
         },
       },
+      'mac-osxbeta-rel': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None
+            }
+          ],
+          'shards': 10,
+        },
+      },
       'mac-rel-cft': {
         'swarming': {
           'dimension_sets': [
@@ -583,7 +592,6 @@
       'Win10 Tests x64 (dbg)',
       'devtools_frontend_linux_blink_light_rel',
       'devtools_frontend_linux_blink_light_rel_fastbuild',
-      'mac-osxbeta-rel',
     ],
     'modifications': {
       'Linux Tests': {
@@ -824,6 +832,16 @@
         ],
         'swarming': {
           'shards': 10,
+        },
+      },
+      'mac-osxbeta-rel': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'gpu': None
+            }
+          ],
+          'shards': 7,
         },
       },
       'mac-rel-cft': {
