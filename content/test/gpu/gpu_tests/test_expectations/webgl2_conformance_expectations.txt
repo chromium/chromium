@@ -624,17 +624,20 @@ crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/mul
 crbug.com/angleproject/3686 [ android angle-opengles ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 
 # finder:group-start crbug.com/1382796 failures happen in many tests, so can be classified as stale for one specific test
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance/canvas/rapid-resizing.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance/context/context-release-with-workers.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance2/sync/sync-webgl-specific.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] deqp/data/gles3/shaders/declarations.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/primitiverestart/00.html [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] deqp/functional/gles3/textureshadow/* [ RetryOnFailure ]
+# finder:disable-narrowing
+crbug.com/1382796 [ android android-pixel-4 ] conformance/canvas/rapid-resizing.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/context/context-release-with-workers.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance2/sync/sync-webgl-specific.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] deqp/data/gles3/shaders/declarations.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/primitiverestart/00.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/shadermatrix/transpose.html [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] deqp/functional/gles3/textureshadow/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance/textures/video/* [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance/textures/video/* [ RetryOnFailure ]
 crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/image_bitmap_from_video/* [ RetryOnFailure ]
-crbug.com/1382796 [ android android-pixel-4 angle-opengles passthrough ] conformance2/textures/video/* [ RetryOnFailure ]
+crbug.com/1382796 [ android android-pixel-4 ] conformance2/textures/video/* [ RetryOnFailure ]
+# finder:enable-narrowing
 # finder:group-end
 
 crbug.com/1419019 [ android android-pixel-4 no-passthrough ] conformance2/transform_feedback/too-small-buffers.html [ RetryOnFailure ]
