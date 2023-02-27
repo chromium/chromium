@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 
@@ -66,12 +67,15 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
                                base::span<const uint8_t> json_message) override;
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
 
-  void DispatchProtocolMessageTask(base::Value::Dict message);
+  // Virtual for tests.
+  virtual void DispatchProtocolMessageTask(base::Value::Dict message);
 
   void SendProtocolMessage(base::Value::Dict message);
 
   bool HasEventHandler(const std::string& event_name,
                        const EventCallback& event_callback);
+
+  base::WeakPtr<SimpleDevToolsProtocolClient> GetWeakPtr();
 
   const std::string session_id_;
   base::raw_ptr<SimpleDevToolsProtocolClient> parent_client_ = nullptr;
@@ -80,6 +84,8 @@ class SimpleDevToolsProtocolClient : public content::DevToolsAgentHostClient {
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   base::flat_map<int, ResponseCallback> pending_response_map_;
   base::flat_map<std::string, std::vector<EventCallback>> event_handler_map_;
+
+  base::WeakPtrFactory<SimpleDevToolsProtocolClient> weak_ptr_factory_{this};
 };
 
 }  // namespace simple_devtools_protocol_client
