@@ -215,10 +215,11 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
                                 paint_offset);
     context.SetStrokeStyle(kSolidStroke);
     context.SetStrokeColor(Color::kLightGray);
-    context.SetFillColor(Color::kTransparent);
-    context.DrawRect(ToPixelSnappedRect(content_rect),
-                     PaintAutoDarkMode(layout_image_.StyleRef(),
-                                       DarkModeFilter::ElementRole::kBorder));
+    gfx::RectF outline_rect(ToPixelSnappedRect(content_rect));
+    outline_rect.Inset(0.5f);
+    context.StrokeRect(outline_rect, 1,
+                       PaintAutoDarkMode(layout_image_.StyleRef(),
+                                         DarkModeFilter::ElementRole::kBorder));
     return;
   }
 

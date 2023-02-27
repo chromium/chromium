@@ -60,7 +60,7 @@ class PaintControllerTestBase : public testing::Test {
                              const gfx::Rect& bounds) {
     return Draw(context, client, type, [&]() {
       DrawingRecorder recorder(context, client, type, bounds);
-      context.DrawRect(bounds, AutoDarkMode::Disabled());
+      context.FillRect(bounds, AutoDarkMode::Disabled());
     });
   }
 
