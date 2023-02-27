@@ -23,6 +23,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -282,14 +283,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual void Reset(ResetCallback callback);
   virtual void Cancel() = 0;
 
-  enum class Type {
-    kWinNative,  // i.e. webauthn.dll
-    kTouchID,    // the Chrome-native Touch ID integration on macOS
-    kChromeOS,   // the platform authenticator on Chrome OS
-    kOther,
-  };
   // GetType returns the type of the authenticator.
-  virtual Type GetType() const;
+  virtual AuthenticatorType GetType() const;
 
   // GetId returns a unique string representing this device. This string should
   // be distinct from all other devices concurrently discovered.

@@ -36,8 +36,8 @@ ChromeOSAuthenticator::ChromeOSAuthenticator(
 
 ChromeOSAuthenticator::~ChromeOSAuthenticator() {}
 
-FidoAuthenticator::Type ChromeOSAuthenticator::GetType() const {
-  return Type::kChromeOS;
+AuthenticatorType ChromeOSAuthenticator::GetType() const {
+  return AuthenticatorType::kChromeOS;
 }
 
 std::string ChromeOSAuthenticator::GetId() const {

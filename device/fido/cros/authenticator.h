@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       const CtapGetAssertionOptions& options,
       GetPlatformCredentialInfoForRequestCallback callback) override;
   void Cancel() override;
-  Type GetType() const override;
+  AuthenticatorType GetType() const override;
   std::string GetId() const override;
   const AuthenticatorSupportedOptions& Options() const override;
 

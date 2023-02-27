@@ -748,7 +748,7 @@ void MakeCredentialRequestHandler::HandleResponse(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
+  if (authenticator->GetType() == AuthenticatorType::kWinNative) {
     state_ = State::kFinished;
     if (status != CtapDeviceResponseCode::kSuccess) {
       std::move(completion_callback_)
@@ -983,7 +983,7 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
       request->resident_key_required =
 #if BUILDFLAG(IS_WIN)
           // Windows does not yet support rk=preferred.
-          authenticator->GetType() != FidoAuthenticator::Type::kWinNative &&
+          authenticator->GetType() != AuthenticatorType::kWinNative &&
 #endif
           auth_options.supports_resident_key &&
           !authenticator->DiscoverableCredentialStorageFull() &&

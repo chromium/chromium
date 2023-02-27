@@ -1350,8 +1350,8 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
 
 #if BUILDFLAG(IS_WIN)
       GetWebAuthenticationDelegate()->OperationSucceeded(
-          GetBrowserContext(), authenticator->GetType() ==
-                                   device::FidoAuthenticator::Type::kWinNative);
+          GetBrowserContext(),
+          authenticator->GetType() == device::AuthenticatorType::kWinNative);
 #endif
 
       absl::optional<device::FidoTransportProtocol> transport =
@@ -1580,7 +1580,7 @@ void AuthenticatorCommonImpl::OnSignResponse(
 #if BUILDFLAG(IS_WIN)
   GetWebAuthenticationDelegate()->OperationSucceeded(
       GetBrowserContext(),
-      authenticator->GetType() == device::FidoAuthenticator::Type::kWinNative);
+      authenticator->GetType() == device::AuthenticatorType::kWinNative);
 #endif
 
   // Show an account picker for discoverable credential requests (empty allow

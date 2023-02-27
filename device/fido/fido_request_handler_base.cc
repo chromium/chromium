@@ -374,7 +374,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->GetType() == FidoAuthenticator::Type::kWinNative) {
+  if (authenticator->GetType() == AuthenticatorType::kWinNative) {
     DCHECK(transport_availability_info_.has_win_native_api_authenticator);
     transport_availability_info_.win_native_api_authenticator_id =
         authenticator->GetId();

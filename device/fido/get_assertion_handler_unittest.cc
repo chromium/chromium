@@ -929,7 +929,7 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
 
     EXPECT_EQ(handler->AuthenticatorsForTesting().size(), 1u);
     EXPECT_EQ(handler->AuthenticatorsForTesting().begin()->second->GetType() ==
-                  FidoAuthenticator::Type::kWinNative,
+                  AuthenticatorType::kWinNative,
               enable_api);
   }
 }

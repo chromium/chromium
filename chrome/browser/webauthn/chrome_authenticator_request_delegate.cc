@@ -548,7 +548,7 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (authenticator->GetType() == device::FidoAuthenticator::Type::kWinNative &&
+  if (authenticator->GetType() == device::AuthenticatorType::kWinNative &&
       static_cast<const device::WinWebAuthnApiAuthenticator*>(authenticator)
           ->ShowsPrivacyNotice()) {
     // The OS' native API includes an attestation prompt.

@@ -129,8 +129,8 @@ void TouchIdAuthenticator::Cancel() {
   operation_.reset();
 }
 
-FidoAuthenticator::Type TouchIdAuthenticator::GetType() const {
-  return Type::kTouchID;
+AuthenticatorType TouchIdAuthenticator::GetType() const {
+  return AuthenticatorType::kTouchID;
 }
 
 std::string TouchIdAuthenticator::GetId() const {

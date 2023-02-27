@@ -363,8 +363,8 @@ void WinWebAuthnApiAuthenticator::Cancel() {
   win_api_->CancelCurrentOperation(&cancellation_id_);
 }
 
-FidoAuthenticator::Type WinWebAuthnApiAuthenticator::GetType() const {
-  return Type::kWinNative;
+AuthenticatorType WinWebAuthnApiAuthenticator::GetType() const {
+  return AuthenticatorType::kWinNative;
 }
 
 std::string WinWebAuthnApiAuthenticator::GetId() const {
