@@ -2933,6 +2933,10 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
 
   UpdateViewportStyle();
 
+  recordreplay::Assert("[RUN-1436-1437] Element::RecalcStyle A %d %d",
+                       !!GetDocument().documentElement(),
+                       NeedsStyleRecalc());
+
   if (GetDocument().documentElement()) {
     NthIndexCache nth_index_cache(GetDocument());
     if (NeedsStyleRecalc()) {
@@ -2940,6 +2944,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Style.RecalcTime");
       Element* viewport_defining = GetDocument().ViewportDefiningElement();
       RecalcStyle();
+      recordreplay::Assert("[RUN-1436-1437] Element::RecalcStyle B");
       if (viewport_defining != GetDocument().ViewportDefiningElement())
         ViewportDefiningElementDidChange();
     }
