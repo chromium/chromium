@@ -124,15 +124,22 @@ bool StringMatchesHiddenValue(const std::u16string& str) {
 // The suspicion is based on server-side provided hints and on checking the
 // field's id and name for hinting towards a CVC code, Social Security
 // Number or one-time password.
-bool IsNotPasswordField(const ProcessedField& field) {
-  return field.server_hints_not_password ||
-         field.autocomplete_flag == AutocompleteFlag::kNonPassword ||
-         StringMatchesCVC(field.field->name_attribute) ||
-         StringMatchesCVC(field.field->id_attribute) ||
-         StringMatchesSSN(field.field->name_attribute) ||
-         StringMatchesSSN(field.field->id_attribute) ||
-         StringMatchesOTP(field.field->name_attribute) ||
-         StringMatchesOTP(field.field->id_attribute);
+bool IsNotPasswordField(const ProcessedField& field,
+                        bool* otp_field_detected_with_regex = nullptr) {
+  if (field.server_hints_not_password ||
+      field.autocomplete_flag == AutocompleteFlag::kNonPassword ||
+      StringMatchesCVC(field.field->name_attribute) ||
+      StringMatchesCVC(field.field->id_attribute) ||
+      StringMatchesSSN(field.field->name_attribute) ||
+      StringMatchesSSN(field.field->id_attribute)) {
+    return true;
+  }
+  bool is_otp_field = StringMatchesOTP(field.field->name_attribute) ||
+                      StringMatchesOTP(field.field->id_attribute);
+  if (otp_field_detected_with_regex) {
+    *otp_field_detected_with_regex |= is_otp_field;
+  }
+  return is_otp_field;
 }
 
 // Returns true if the |field| is suspected to be not the username field.
@@ -769,10 +776,18 @@ void ParseUsingBaseHeuristics(
   if (!found_fields->HasPasswords()) {
     // What is the best interactability among passwords?
     Interactability password_max = Interactability::kUnlikely;
+    // TODO(crbug.com/1382805): The variable is used only for metrics for the
+    // new OTP regex launch. Remove the variable after the launch.
+    bool otp_field_detected_with_regex = false;
     for (const ProcessedField& processed_field : processed_fields) {
-      if (processed_field.is_password && !IsNotPasswordField(processed_field))
+      if (processed_field.is_password &&
+          !IsNotPasswordField(processed_field,
+                              &otp_field_detected_with_regex)) {
         password_max = std::max(password_max, processed_field.interactability);
+      }
     }
+    base::UmaHistogramBoolean("PasswordManager.ParserDetectedOtpFieldWithRegex",
+                              otp_field_detected_with_regex);
 
     // Try to find password elements (current, new, confirmation) among those
     // with best interactability.

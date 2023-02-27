@@ -2186,6 +2186,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ParserDetectedOtpFieldWithRegex"
+    enum="Boolean" expires_after="2023-07-01">
+  <owner>kolos@chromium.org</owner>
+  <owner>shaikhitdin@google.com</owner>
+  <summary>
+    Reports whether the form parser has detected an OTP field with regex.
+    Reported any time when the parser processes a form. Used to compare how
+    often the new and old OTP regexes detect any OTP field.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordChangeFlowDuration{EntryPoint}{StartEvent}{EndEvent}"
     units="ms" expires_after="2023-05-09">
