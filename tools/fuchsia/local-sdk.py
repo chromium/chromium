@@ -46,20 +46,21 @@ def Copy(src, dst):
 
 
 def main(args):
-  if len(args) == 0 or len(args) > 2 or not os.path.isdir(args[0]):
+  if len(args) == 0 or not os.path.isdir(args[0]):
     print("""usage: %s <path_to_fuchsia_tree> [architecture]""" % SELF_FILE)
     return 1
 
-  target_archs = []
-  if len(args) > 1:
-    arch = args[1]
-    if arch not in ['x64', 'arm64']:
-      print('Unknown architecture: ' + arch)
-      print('Must be "x64" or "arm64".')
-      return 1
-    target_archs = [arch]
+  ALL_ARCHS = set(['x64', 'arm64'])
+  if len(args) == 1:
+    target_archs = ALL_ARCHS
   else:
-    target_archs = ['x64', 'arm64']
+    target_archs = set(args[1:])
+    unknown_archs = target_archs - ALL_ARCHS
+    if unknown_archs:
+      print(
+          f'Unknown architectures: {unknown_archs}. Known architectures: {ALL_ARCHS}'
+      )
+      return 1
 
   # Nuke the SDK from DEPS, put our just-built one there, and set a fake .hash
   # file. This means that on next gclient runhooks, we'll restore to the
