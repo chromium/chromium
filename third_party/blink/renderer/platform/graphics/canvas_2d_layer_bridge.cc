@@ -35,6 +35,10 @@
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/memory_dump_request_args.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -73,14 +77,17 @@ bool Canvas2DLayerBridge::IsHibernationEnabled() {
   return base::FeatureList::IsEnabled(features::kCanvas2DHibernation);
 }
 
+HibernationHandler::~HibernationHandler() {
+  DCheckInvariant();
+  if (IsHibernating()) {
+    HibernatedCanvasMemoryDumpProvider::GetInstance().Unregister(this);
+  }
+}
+
 void HibernationHandler::TakeHibernationImage(sk_sp<SkImage>&& image) {
   DCheckInvariant();
   epoch_++;
   image_ = image;
-
-  if (!base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
-    return;
-  }
 
   width_ = image_->width();
   height_ = image_->height();
@@ -89,10 +96,11 @@ void HibernationHandler::TakeHibernationImage(sk_sp<SkImage>&& image) {
   // If we had an encoded version, discard it.
   encoded_.reset();
 
+  HibernatedCanvasMemoryDumpProvider::GetInstance().Register(this);
+
   // Don't bother compressing very small canvases.
-  size_t memory_size = image_->height() * static_cast<size_t>(image_->width()) *
-                       static_cast<size_t>(image_->imageInfo().bytesPerPixel());
-  if (memory_size < 16 * 1024) {
+  if (original_memory_size() < 16 * 1024 ||
+      !base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
     return;
   }
 
@@ -203,6 +211,7 @@ sk_sp<SkImage> HibernationHandler::GetImage() {
 
 void HibernationHandler::Clear() {
   DCheckInvariant();
+  HibernatedCanvasMemoryDumpProvider::GetInstance().Unregister(this);
   encoded_ = nullptr;
   image_ = nullptr;
 }
@@ -219,6 +228,73 @@ size_t HibernationHandler::memory_size() const {
 
 size_t HibernationHandler::original_memory_size() const {
   return static_cast<size_t>(width_) * height_ * bytes_per_pixel_;
+}
+
+// static
+HibernatedCanvasMemoryDumpProvider&
+HibernatedCanvasMemoryDumpProvider::GetInstance() {
+  static base::NoDestructor<HibernatedCanvasMemoryDumpProvider> instance;
+  return *instance.get();
+}
+
+void HibernatedCanvasMemoryDumpProvider::Register(HibernationHandler* handler) {
+  DCHECK(IsMainThread());
+  base::AutoLock locker(lock_);
+  DCHECK(handler->IsHibernating());
+  handlers_.insert(handler);
+}
+
+void HibernatedCanvasMemoryDumpProvider::Unregister(
+    HibernationHandler* handler) {
+  DCHECK(IsMainThread());
+  base::AutoLock locker(lock_);
+  DCHECK(handlers_.Contains(handler));
+  handlers_.erase(handler);
+}
+
+bool HibernatedCanvasMemoryDumpProvider::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  DCHECK(IsMainThread());
+
+  size_t total_hibernated_size = 0;
+  size_t total_original_size = 0;
+  auto* dump = pmd->CreateAllocatorDump("canvas/hibernated");
+
+  {
+    base::AutoLock locker(lock_);
+    int index = 0;
+    for (HibernationHandler* handler : handlers_) {
+      DCHECK(handler->IsHibernating());
+      total_original_size += handler->original_memory_size();
+      total_hibernated_size += handler->memory_size();
+
+      if (args.level_of_detail ==
+          base::trace_event::MemoryDumpLevelOfDetail::DETAILED) {
+        auto* canvas_dump = pmd->CreateAllocatorDump(
+            base::StringPrintf("canvas/hibernated/canvas_%d", index));
+        canvas_dump->AddScalar("memory_size", "bytes", handler->memory_size());
+        canvas_dump->AddScalar("is_encoded", "boolean", handler->is_encoded());
+        canvas_dump->AddScalar("original_memory_size", "bytes",
+                               handler->original_memory_size());
+        canvas_dump->AddScalar("height", "pixels", handler->height());
+        canvas_dump->AddScalar("width", "pixels", handler->width());
+      }
+      index++;
+    }
+  }
+
+  dump->AddScalar("size", "bytes", total_hibernated_size);
+  dump->AddScalar("original_size", "bytes", total_original_size);
+
+  return true;
+}
+
+HibernatedCanvasMemoryDumpProvider::HibernatedCanvasMemoryDumpProvider() {
+  DCHECK(IsMainThread());
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "hibernated_canvas",
+      Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()));
 }
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(const gfx::Size& size,

@@ -31,10 +31,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "base/rand_util.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer_client.h"
@@ -47,6 +50,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -71,6 +75,7 @@ class StaticBitmapImage;
 // All the fields are main-thread only. See DCheckInvariant() for invariants.
 class PLATFORM_EXPORT HibernationHandler {
  public:
+  ~HibernationHandler();
   // Semi-arbitrary threshold. Some past experiments (e.g. tile discard) have
   // shown that taking action after 5 minutes has a positive impact on memory,
   // and a minimal impact on tab switching latency (and on needless
@@ -154,6 +159,26 @@ class PLATFORM_EXPORT HibernationHandler {
   int bytes_per_pixel_;
 
   base::WeakPtrFactory<HibernationHandler> weak_ptr_factory_{this};
+};
+
+// memory-infra metrics for all hibernated canvases in this process. Main thread
+// only.
+class PLATFORM_EXPORT HibernatedCanvasMemoryDumpProvider
+    : public base::trace_event::MemoryDumpProvider {
+ public:
+  static HibernatedCanvasMemoryDumpProvider& GetInstance();
+  void Register(HibernationHandler* handler);
+  void Unregister(HibernationHandler* handler);
+
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
+ private:
+  friend class base::NoDestructor<HibernatedCanvasMemoryDumpProvider>;
+  HibernatedCanvasMemoryDumpProvider();
+
+  base::Lock lock_;
+  WTF::HashSet<HibernationHandler*> handlers_ GUARDED_BY(lock_);
 };
 
 class PLATFORM_EXPORT Canvas2DLayerBridge : public cc::TextureLayerClient {

@@ -34,6 +34,7 @@ class MainThreadTaskRunnerRestricted {
   friend class WebRtcVideoFrameAdapter;
   friend class WorkerGlobalScope;
   friend class HibernationHandler;
+  friend class HibernatedCanvasMemoryDumpProvider;
   friend MainThreadTaskRunnerRestricted AccessMainThreadForGpuFactories();
   friend MainThreadTaskRunnerRestricted
   AccessMainThreadForWebGraphicsContext3DProvider();
