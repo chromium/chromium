@@ -1824,6 +1824,39 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UserAgentVersion) {
                                 /*loads=*/2);
 }
 
+// Verify that client hints send when we restart the browser.
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, RestartBrowser) {
+  const GURL gurl = accept_ch_url();
+
+  // First request: no high-entropy hints send in the request header because we
+  // don't know server preferences.
+  SetClientHintExpectationsOnMainFrame(false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_TRUE(main_frame_ua_full_version_observed().empty());
+
+  // Send request: we should expect the high-entropy client hints send in the
+  // request header.
+  SetClientHintExpectationsOnMainFrame(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  blink::UserAgentMetadata ua = embedder_support::GetUserAgentMetadata();
+  std::string expected_full_version_list = ua.SerializeBrandFullVersionList();
+  EXPECT_EQ(main_frame_ua_full_version_list_observed(),
+            expected_full_version_list);
+
+  // Restart the browser, create a new browser to mock the restart process.
+  Browser* new_browser = CreateBrowser(browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(browser(), new_browser);
+
+  // First request with new browser should expect the high-entropy client hints
+  // send in the request header.
+  SetClientHintExpectationsOnMainFrame(true);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  EXPECT_EQ(main_frame_ua_full_version_list_observed(),
+            expected_full_version_list);
+}
+
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, UAHintsTabletMode) {
   const GURL gurl = accept_ch_url();
 
