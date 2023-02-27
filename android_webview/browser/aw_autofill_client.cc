@@ -47,7 +47,7 @@ namespace android_webview {
 void AwAutofillClient::CreateForWebContents(content::WebContents* contents,
                                             bool use_android_autofill_manager) {
   DCHECK(contents);
-  if (!FromWebContents(contents)) {
+  if (!ContentAutofillClient::FromWebContents(contents)) {
     contents->SetUserData(UserDataKey(),
                           base::WrapUnique(new AwAutofillClient(
                               contents, use_android_autofill_manager)));

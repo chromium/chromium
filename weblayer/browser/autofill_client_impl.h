@@ -27,7 +27,7 @@ class AutofillClientImpl : public autofill::ContentAutofillClient,
 
   static void CreateForWebContents(content::WebContents* contents) {
     DCHECK(contents);
-    if (!FromWebContents(contents)) {
+    if (!ContentAutofillClient::FromWebContents(contents)) {
       contents->SetUserData(UserDataKey(),
                             base::WrapUnique(new AutofillClientImpl(contents)));
     }

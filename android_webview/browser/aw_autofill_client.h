@@ -61,7 +61,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
  public:
   static AwAutofillClient* FromWebContents(content::WebContents* web_contents) {
     return static_cast<AwAutofillClient*>(
-        autofill::ContentAutofillClient::FromWebContents(web_contents));
+        ContentAutofillClient::FromWebContents(web_contents));
   }
 
   // The `use_android_autofill_manager` parameter determines which
