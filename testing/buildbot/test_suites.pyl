@@ -5026,6 +5026,23 @@
       },
     },
 
+    'telemetry_perf_unittests_isolated_scripts_xvfb': {
+      'telemetry_perf_unittests': {
+        'args': [
+          # TODO(crbug.com/1077284): Remove this once Crashpad is the default.
+          '--extra-browser-args=--enable-crashpad',
+          '--xvfb',
+        ],
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/549140
+          'shards': 12,
+        },
+        'resultdb': {
+          'enable': True,
+        },
+      },
+    },
+
     'test_buildbucket_api_gpu_use_cases': {
       'test_buildbucket_api_gpu_use_cases': {},
     },
@@ -5957,7 +5974,7 @@
       'linux_specific_chromium_isolated_scripts',
       'mojo_python_unittests_isolated_scripts',
       'pytype_tests',
-      'telemetry_perf_unittests_isolated_scripts',
+      'telemetry_perf_unittests_isolated_scripts_xvfb',
       'vulkan_swiftshader_isolated_scripts',
       'chromium_web_tests_high_dpi_isolated_scripts',
       'gpu_dawn_webgpu_blink_web_tests',
