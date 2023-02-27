@@ -201,6 +201,13 @@
         --cr-toggle-knob-diameter_: 14px;
       }
 
+      :host-context([chrome-refresh-2023]):host([checked]:active) #knob,
+      :host-context([chrome-refresh-2023]):host([checked]:hover) #knob {
+        --cr-toggle-checked-button-color:
+            var(--color-toggle-button-thumb-on-hover-pressed,
+                var(--cr-fallback-color-primary-container));
+      }
+
       :host-context([chrome-refresh-2023]):host(:hover) #knob::before {
         background-color: var(--cr-hover-background-color);
         border-radius: 50%;
@@ -212,7 +219,6 @@
         transform: translate(-50%, -50%);
         width: var(--cr-toggle-ripple-diameter);
       }
-
 
       paper-ripple {
         --paper-ripple-opacity: 1;

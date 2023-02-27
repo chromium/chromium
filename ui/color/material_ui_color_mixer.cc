@@ -70,6 +70,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorToggleButtonThumbOffDisabled] = {kColorSysStateDisabled};
   mixer[kColorToggleButtonThumbOn] = {kColorSysOnPrimary};
   mixer[kColorToggleButtonThumbOnDisabled] = {kColorSysSurface};
+  mixer[kColorToggleButtonThumbOnHoverPressed] = {kColorSysPrimaryContainer};
   mixer[kColorToggleButtonThumbOnIcon] = {kColorSysOnPrimaryContainer};
   mixer[kColorToggleButtonTrackOff] = {kColorSysSurfaceVariant};
   mixer[kColorToggleButtonTrackOn] = {kColorSysPrimary};

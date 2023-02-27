@@ -368,6 +368,7 @@
   E_CPONLY(kColorToggleButtonThumbOffDisabled) \
   E_CPONLY(kColorToggleButtonThumbOn) \
   E_CPONLY(kColorToggleButtonThumbOnDisabled) \
+  E_CPONLY(kColorToggleButtonThumbOnHoverPressed) \
   E_CPONLY(kColorToggleButtonThumbOnIcon) \
   E_CPONLY(kColorToggleButtonTrackOff) \
   E_CPONLY(kColorToggleButtonTrackOn) \
