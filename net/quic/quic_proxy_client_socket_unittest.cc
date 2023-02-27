@@ -21,6 +21,7 @@
 #include "net/base/proxy_string_util.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_cache.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -46,6 +47,7 @@
 #include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/socket_test_util.h"
+#include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -233,7 +235,7 @@ class QuicProxyClientSocketTest
     session_ = std::make_unique<QuicChromiumClientSession>(
         connection, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
-        &transport_security_state_, /*ssl_config_service=*/nullptr,
+        &transport_security_state_, &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
                        SocketTag(), NetworkAnonymizationKey(),
@@ -258,7 +260,8 @@ class QuicProxyClientSocketTest
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, NetLog::Get());
+        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
+        NetLog::Get());
 
     writer->set_delegate(session_.get());
 
@@ -594,6 +597,7 @@ class QuicProxyClientSocketTest
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   testing::StrictMock<quic::test::MockQuicConnectionVisitor> visitor_;
   TransportSecurityState transport_security_state_;
+  SSLConfigServiceDefaults ssl_config_service_;
   quic::QuicCryptoClientConfig crypto_config_;
 
   const quic::QuicConnectionId connection_id_;

@@ -475,6 +475,10 @@ class QuicStreamFactory::Job {
       // `endpoint_result` came from A/AAAA records directly, without HTTPS/SVCB
       // records. If we know the QUIC ALPN to use externally, i.e. via Alt-Svc,
       // use it. Otherwise, `endpoint_result` is not eligible for QUIC.
+      //
+      // TODO(https://crbug.com/1287248): If all routes have ECH configs, and
+      // ECH is enabled, we should switch to a SVCB-reliant mode. See
+      // draft-ietf-dnsop-svcb-https-11, section 10.1.
       return quic_version_;
     }
 
@@ -2160,7 +2164,7 @@ void QuicStreamFactory::FinishCreateSession(
       dns_resolution_end_time,
       std::make_unique<quic::QuicClientPushPromiseIndex>(), push_delegate_,
       tick_clock_, task_runner_, std::move(socket_performance_watcher),
-      net_log.net_log());
+      endpoint_result, net_log.net_log());
 
   all_sessions_[*session] = key;  // owning pointer
   writer->set_delegate(*session);

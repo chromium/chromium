@@ -21,6 +21,9 @@ struct NET_EXPORT SSLContextConfig {
   SSLContextConfig& operator=(const SSLContextConfig&);
   SSLContextConfig& operator=(SSLContextConfig&&);
 
+  // EncryptedClientHelloEnabled returns whether ECH is enabled.
+  bool EncryptedClientHelloEnabled() const;
+
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
   // SSL 2.0/3.0 and TLS 1.0/1.1 are not supported. If version_max <
@@ -42,10 +45,11 @@ struct NET_EXPORT SSLContextConfig {
   bool cecpq2_enabled = true;
 
   // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
-  // may be enabled or disabled, depending on feature flags.
+  // may be enabled or disabled, depending on feature flags. If querying whether
+  // ECH is enabled, use `EncryptedClientHelloEnabled` instead.
   bool ech_enabled = true;
 
-  // ADDING MORE HERE? Don't forget to update |SSLContextConfigsAreEqual|.
+  // ADDING MORE HERE? Don't forget to update `SSLContextConfigsAreEqual`.
 };
 
 // The interface for retrieving global SSL configuration.  This interface

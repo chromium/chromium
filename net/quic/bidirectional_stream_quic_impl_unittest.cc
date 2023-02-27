@@ -21,6 +21,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_request_info.h"
 #include "net/http/transport_security_state.h"
@@ -44,6 +45,7 @@
 #include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/quic/test_task_runner.h"
 #include "net/socket/socket_test_util.h"
+#include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_text_utils.h"
@@ -512,7 +514,7 @@ class BidirectionalStreamQuicImplTest
     session_ = std::make_unique<QuicChromiumClientSession>(
         connection_, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
-        &transport_security_state_, /*ssl_config_service=*/nullptr,
+        &transport_security_state_, &ssl_config_service_,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)),
         QuicSessionKey(kDefaultServerHostName, kDefaultServerPort,
                        PRIVACY_MODE_DISABLED, SocketTag(),
@@ -537,7 +539,8 @@ class BidirectionalStreamQuicImplTest
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, NetLog::Get());
+        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
+        NetLog::Get());
     session_->Initialize();
 
     // Blackhole QPACK decoder stream instead of constructing mock writes.
@@ -780,6 +783,7 @@ class BidirectionalStreamQuicImplTest
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   TransportSecurityState transport_security_state_;
+  SSLConfigServiceDefaults ssl_config_service_;
   std::unique_ptr<QuicChromiumClientSession> session_;
   quic::QuicCryptoClientConfig crypto_config_;
   HttpRequestHeaders headers_;

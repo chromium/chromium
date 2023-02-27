@@ -98,6 +98,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableTLS13EarlyData);
 // https://datatracker.ietf.org/doc/html/draft-ietf-tls-esni-13
 NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedClientHello);
 
+// Enables the TLS Encrypted ClientHello feature for QUIC. Only takes effect if
+// kEncryptedClientHello is also enabled.
+//
+// TODO(crbug.com/1287248): Remove this flag when ECH for QUIC is fully
+// implemented. This flag is just a temporary mechanism for now.
+NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedClientHelloQuic);
+
 // Enables optimizing the network quality estimation algorithms in network
 // quality estimator (NQE).
 NET_EXPORT BASE_DECLARE_FEATURE(kNetworkQualityEstimator);

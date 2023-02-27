@@ -21,6 +21,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_with_source.h"
@@ -39,13 +40,13 @@
 #include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
-#include "net/socket/ssl_client_socket.h"
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_config.h"
+#include "net/ssl/ssl_config_service_defaults.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
@@ -1222,7 +1223,7 @@ class WebSocketQuicStreamAdapterTest
     session_ = std::make_unique<QuicChromiumClientSession>(
         connection, std::move(socket),
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
-        &transport_security_state_, /*ssl_config_service=*/nullptr,
+        &transport_security_state_, &ssl_config_service_,
         /*server_info=*/nullptr,
         QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
                        SocketTag(), NetworkAnonymizationKey(),
@@ -1247,7 +1248,8 @@ class WebSocketQuicStreamAdapterTest
         std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-        /*socket_performance_watcher=*/nullptr, NetLog::Get());
+        /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
+        NetLog::Get());
 
     session_->Initialize();
 
@@ -1281,6 +1283,7 @@ class WebSocketQuicStreamAdapterTest
   scoped_refptr<TestTaskRunner> runner_;
   ProofVerifyDetailsChromium verify_details_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
+  SSLConfigServiceDefaults ssl_config_service_;
   quic::test::MockConnectionIdGenerator connection_id_generator_;
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;

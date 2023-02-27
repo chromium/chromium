@@ -60,7 +60,7 @@
 #include "net/socket/socket_test_util.h"
 #include "net/spdy/spdy_session_test_util.h"
 #include "net/spdy/spdy_test_util_common.h"
-#include "net/ssl/ssl_config_service_defaults.h"
+#include "net/ssl/test_ssl_config_service.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -245,12 +245,14 @@ class MockQuicStreamFactory : public QuicStreamFactory {
 
 class QuicStreamFactoryTestBase : public WithTaskEnvironment {
  protected:
-  QuicStreamFactoryTestBase(quic::ParsedQuicVersion version,
-                            bool enable_quic_priority_incremental_support)
+  QuicStreamFactoryTestBase(
+      quic::ParsedQuicVersion version,
+      bool enable_quic_priority_incremental_support,
+      std::vector<base::test::FeatureRef> enabled_features = {},
+      std::vector<base::test::FeatureRef> disabled_features = {})
       : host_resolver_(std::make_unique<MockHostResolver>(
             /*default_result=*/MockHostResolverBase::RuleResolver::
                 GetLocalhostResult())),
-        ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
         socket_factory_(std::make_unique<MockClientSocketFactory>()),
         runner_(base::MakeRefCounted<TestTaskRunner>(context_.mock_clock())),
         version_(version),
@@ -281,9 +283,12 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
             &QuicStreamFactoryTestBase::OnFailedOnDefaultNetwork,
             base::Unretained(this))),
         quic_params_(context_.params()) {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kPriorityIncremental,
-        enable_quic_priority_incremental_support);
+    if (enable_quic_priority_incremental_support) {
+      enabled_features.push_back(features::kPriorityIncremental);
+    } else {
+      disabled_features.push_back(features::kPriorityIncremental);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
     FLAGS_quic_enable_http3_grease_randomness = false;
     context_.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
   }
@@ -291,7 +296,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
   void Initialize() {
     DCHECK(!factory_);
     factory_ = std::make_unique<QuicStreamFactory>(
-        net_log_.net_log(), host_resolver_.get(), ssl_config_service_.get(),
+        net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
         socket_factory_.get(), http_server_properties_.get(),
         cert_verifier_.get(), &ct_policy_enforcer_, &transport_security_state_,
         /*sct_auditing_delegate=*/nullptr,
@@ -959,7 +964,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
 
   quic::test::QuicFlagSaver flags_;  // Save/restore all QUIC flag values.
   std::unique_ptr<MockHostResolverBase> host_resolver_;
-  std::unique_ptr<SSLConfigService> ssl_config_service_;
+  TestSSLConfigService ssl_config_service_{SSLContextConfig()};
   std::unique_ptr<MockClientSocketFactory> socket_factory_;
   MockCryptoClientStreamFactory crypto_client_stream_factory_;
   MockQuicContext context_;
@@ -2425,7 +2430,7 @@ TEST_P(QuicStreamFactoryTest, WriteErrorInCryptoConnectWithSyncHostResolution) {
 TEST_P(QuicStreamFactoryTest, CloseSessionDuringCreation) {
   quic_params_->close_sessions_on_ip_change = true;
   auto factory = MockQuicStreamFactory(
-      net_log_.net_log(), host_resolver_.get(), ssl_config_service_.get(),
+      net_log_.net_log(), host_resolver_.get(), &ssl_config_service_,
       socket_factory_.get(), http_server_properties_.get(),
       cert_verifier_.get(), &ct_policy_enforcer_, &transport_security_state_,
       /*sct_auditing_delegate=*/nullptr,
@@ -15336,6 +15341,182 @@ TEST_P(QuicStreamFactoryDnsAliasPoolingTest, IPPooling) {
 
   EXPECT_EQ(expected_dns_aliases1_, stream1->GetDnsAliases());
   EXPECT_EQ(expected_dns_aliases2_, stream2->GetDnsAliases());
+}
+
+class QuicStreamFactoryEchTest : public QuicStreamFactoryTestBase,
+                                 public ::testing::TestWithParam<TestParams> {
+ protected:
+  QuicStreamFactoryEchTest()
+      : QuicStreamFactoryTestBase(
+            GetParam().version,
+            GetParam().enable_quic_priority_incremental_support,
+            /*enabled_features=*/
+            {features::kEncryptedClientHello,
+             features::kEncryptedClientHelloQuic}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,
+                         QuicStreamFactoryEchTest,
+                         ::testing::ValuesIn(GetTestParams()),
+                         ::testing::PrintToStringParamName());
+
+// Test that, even if DNS does not provide ECH keys, ECH GREASE is enabled.
+TEST_P(QuicStreamFactoryEchTest, EchGrease) {
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_TRUE(config.ech_grease_enabled);
+  EXPECT_TRUE(config.ech_config_list.empty());
+}
+
+// Test that, connections where we discover QUIC from Alt-Svc (as opposed to
+// HTTPS-RR), ECH is picked up from DNS.
+TEST_P(QuicStreamFactoryEchTest, EchWithQuicFromAltSvc) {
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoint.metadata.supported_protocol_alpns = {quic::AlpnForVersion(version_)};
+  endpoint.metadata.ech_config_list = {1, 2, 3, 4};
+
+  host_resolver_ = std::make_unique<MockHostResolver>();
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      MockHostResolverBase::RuleResolver::RuleResult({endpoint}));
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_EQ(std::string(endpoint.metadata.ech_config_list.begin(),
+                        endpoint.metadata.ech_config_list.end()),
+            config.ech_config_list);
+}
+
+// Test that, connections where we discover QUIC from HTTPS-RR (as opposed to
+// Alt-Svc), ECH is picked up from DNS.
+TEST_P(QuicStreamFactoryEchTest, EchWithQuicFromHttpsRecord) {
+  quic_params_->supported_versions = {version_};
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoint.metadata.supported_protocol_alpns = {quic::AlpnForVersion(version_)};
+  endpoint.metadata.ech_config_list = {1, 2, 3, 4};
+
+  host_resolver_ = std::make_unique<MockHostResolver>();
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      MockHostResolverBase::RuleResolver::RuleResult({endpoint}));
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, quic::ParsedQuicVersion::Unsupported(),
+                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/true,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session =
+      GetActiveSession(scheme_host_port_, NetworkAnonymizationKey(),
+                       /*require_dns_https_alpn=*/true);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_EQ(std::string(endpoint.metadata.ech_config_list.begin(),
+                        endpoint.metadata.ech_config_list.end()),
+            config.ech_config_list);
+}
+
+// Test that, when ECH is disabled, neither ECH nor ECH GREASE are configured.
+TEST_P(QuicStreamFactoryEchTest, EchDisabled) {
+  quic_params_->supported_versions = {version_};
+  HostResolverEndpointResult endpoint;
+  endpoint.ip_endpoints = {IPEndPoint(IPAddress::IPv4Localhost(), 0)};
+  endpoint.metadata.supported_protocol_alpns = {quic::AlpnForVersion(version_)};
+  endpoint.metadata.ech_config_list = {1, 2, 3, 4};
+
+  host_resolver_ = std::make_unique<MockHostResolver>();
+  host_resolver_->rules()->AddRule(
+      scheme_host_port_.host(),
+      MockHostResolverBase::RuleResolver::RuleResult({endpoint}));
+
+  SSLContextConfig ssl_config;
+  ssl_config.ech_enabled = false;
+  ssl_config_service_.UpdateSSLConfigAndNotify(ssl_config);
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, quic::ParsedQuicVersion::Unsupported(),
+                privacy_mode_, DEFAULT_PRIORITY, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/true,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session =
+      GetActiveSession(scheme_host_port_, NetworkAnonymizationKey(),
+                       /*require_dns_https_alpn=*/true);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_TRUE(config.ech_config_list.empty());
+  EXPECT_FALSE(config.ech_grease_enabled);
 }
 
 }  // namespace net::test

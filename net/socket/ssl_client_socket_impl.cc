@@ -916,11 +916,11 @@ int SSLClientSocketImpl::Init() {
         host_and_port_, &client_cert_, &client_private_key_);
   }
 
-  if (context_->EncryptedClientHelloEnabled()) {
+  if (context_->config().EncryptedClientHelloEnabled()) {
     SSL_set_enable_ech_grease(ssl_.get(), 1);
   }
   if (!ssl_config_.ech_config_list.empty()) {
-    DCHECK(context_->EncryptedClientHelloEnabled());
+    DCHECK(context_->config().EncryptedClientHelloEnabled());
     net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
       base::Value::Dict dict;
       dict.Set("bytes", NetLogBinaryValue(ssl_config_.ech_config_list));

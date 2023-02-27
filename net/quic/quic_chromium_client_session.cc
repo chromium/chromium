@@ -35,6 +35,7 @@
 #include "net/base/privacy_mode.h"
 #include "net/base/url_util.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source_type.h"
@@ -998,6 +999,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     const base::TickClock* tick_clock,
     base::SequencedTaskRunner* task_runner,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
+    const HostResolverEndpointResult& endpoint_result,
     NetLog* net_log)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
@@ -1040,7 +1042,8 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       http3_logger_(std::make_unique<QuicHttp3Logger>(net_log_)),
       push_delegate_(push_delegate),
       push_promise_index_(std::move(push_promise_index)),
-      path_validation_writer_delegate_(this, task_runner_) {
+      path_validation_writer_delegate_(this, task_runner_),
+      ech_config_list_(endpoint_result.metadata.ech_config_list) {
   default_network_ = default_network;
   auto* socket_raw = socket.get();
   sockets_.push_back(std::move(socket));
@@ -1440,6 +1443,7 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
 
   ssl_info->key_exchange_group = crypto_params.key_exchange_group;
   ssl_info->peer_signature_algorithm = crypto_params.peer_signature_algorithm;
+  ssl_info->encrypted_client_hello = crypto_params.encrypted_client_hello;
   return true;
 }
 
@@ -1651,6 +1655,18 @@ void QuicChromiumClientSession::OnCanCreateNewOutgoingStream(
         CreateOutgoingReliableStreamImpl(request->traffic_annotation())
             ->CreateHandle());
   }
+}
+
+quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
+  quic::QuicSSLConfig config = quic::QuicSpdyClientSessionBase::GetSSLConfig();
+  if (ssl_config_service_->GetSSLContextConfig()
+          .EncryptedClientHelloEnabled() &&
+      base::FeatureList::IsEnabled(features::kEncryptedClientHelloQuic)) {
+    config.ech_grease_enabled = true;
+    config.ech_config_list.assign(ech_config_list_.begin(),
+                                  ech_config_list_.end());
+  }
+  return config;
 }
 
 void QuicChromiumClientSession::OnConfigNegotiated() {

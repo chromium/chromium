@@ -17,6 +17,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
+#include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
@@ -37,13 +38,11 @@
 #include "net/socket/connect_job.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
-#include "net/socket/ssl_client_socket.h"
 #include "net/socket/websocket_endpoint_lock_manager.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_test_util_common.h"
-#include "net/ssl/ssl_config.h"
-#include "net/ssl/ssl_info.h"
+#include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -346,6 +345,7 @@ class WebSocketHandshakeStreamCreateHelperTest
         ProofVerifyDetailsChromium verify_details;
         MockCryptoClientStreamFactory crypto_client_stream_factory;
         TransportSecurityState transport_security_state;
+        SSLConfigServiceDefaults ssl_config_service;
 
         FLAGS_quic_enable_http3_grease_randomness = false;
         clock_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(20));
@@ -425,7 +425,7 @@ class WebSocketHandshakeStreamCreateHelperTest
         session_ = std::make_unique<QuicChromiumClientSession>(
             connection, std::move(socket),
             /*stream_factory=*/nullptr, &crypto_client_stream_factory, &clock_,
-            &transport_security_state, /*ssl_config_service=*/nullptr,
+            &transport_security_state, &ssl_config_service,
             /*server_info=*/nullptr,
             QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
                            SocketTag(), NetworkAnonymizationKey(),
@@ -450,7 +450,8 @@ class WebSocketHandshakeStreamCreateHelperTest
             std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
             base::DefaultTickClock::GetInstance(),
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-            /*socket_performance_watcher=*/nullptr, NetLog::Get());
+            /*socket_performance_watcher=*/nullptr,
+            HostResolverEndpointResult(), NetLog::Get());
 
         session_->Initialize();
 

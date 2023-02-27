@@ -6,10 +6,8 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
-#include "net/base/features.h"
 #include "net/socket/ssl_client_socket_impl.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_client_session_cache.h"
@@ -76,11 +74,6 @@ SSLClientContext::~SSLClientContext() {
     ssl_config_service_->RemoveObserver(this);
   }
   CertDatabase::GetInstance()->RemoveObserver(this);
-}
-
-bool SSLClientContext::EncryptedClientHelloEnabled() const {
-  return config_.ech_enabled &&
-         base::FeatureList::IsEnabled(features::kEncryptedClientHello);
 }
 
 std::unique_ptr<SSLClientSocket> SSLClientContext::CreateSSLClientSocket(
