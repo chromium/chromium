@@ -78,6 +78,7 @@ def main(args):
         'extends': normalize_path(out_json_dir, out_json['extends']),
         'compilerOptions': {
             'baseUrl': '.',
+            'allowJs': out_json['compilerOptions']['allowJs'],
             'rootDirs': [
                 '.',
                 normalize_path(out_json_dir,
