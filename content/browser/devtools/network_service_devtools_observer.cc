@@ -211,14 +211,14 @@ void NetworkServiceDevToolsObserver::OnCorsError(
         rfhi,
         blink::mojom::WebFeature::kPrivateNetworkAccessIgnoredPreflightError);
 
-    if (!initiator_origin.has_value() ||
+    if (initiator_origin.has_value() &&
         !initiator_origin->IsSameOriginWith(url)) {
       GetContentClient()->browser()->LogWebFeatureForCurrentPage(
           rfhi, blink::mojom::WebFeature::
                     kPrivateNetworkAccessIgnoredCrossOriginPreflightError);
     }
 
-    if (!initiator_origin.has_value() ||
+    if (initiator_origin.has_value() &&
         net::SchemefulSite(initiator_origin.value()) !=
             net::SchemefulSite(url)) {
       GetContentClient()->browser()->LogWebFeatureForCurrentPage(
