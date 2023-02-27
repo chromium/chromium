@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "client/settings.h"
 #include "handler/linux/capture_snapshot.h"
 #include "handler/minidump_to_upload_parameters.h"
@@ -245,6 +246,16 @@ bool CrosCrashReportExceptionHandler::HandleExceptionWithConnection(
   // CrOS uses crash_reporter instead of Crashpad to report crashes.
   // crash_reporter needs to know the pid and uid of the crashing process.
   std::vector<std::string> argv({"/sbin/crash_reporter"});
+
+  // Used to distinguish between non-fatal and fatal crashes.
+  const ExceptionSnapshot* const exception_snapshot = snapshot->Exception();
+  if (exception_snapshot) {
+    // convert to int32, since crashpad uses -1 as a signal for non-fatal
+    // crashes.
+    argv.push_back(base::StringPrintf(
+        "--chrome_signal=%d",
+        static_cast<int32_t>(exception_snapshot->Exception())));
+  }
 
   argv.push_back("--chrome_memfd=" + std::to_string(file_writer.fd()));
 
