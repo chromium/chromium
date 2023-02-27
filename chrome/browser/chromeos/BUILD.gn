@@ -149,6 +149,8 @@ source_set("chromeos") {
     "reporting/metric_reporting_manager_delegate_base.h",
     "reporting/network/network_bandwidth_sampler.cc",
     "reporting/network/network_bandwidth_sampler.h",
+    "smart_reader/smart_reader_client_impl.cc",
+    "smart_reader/smart_reader_client_impl.h",
     "tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
     "tablet_mode/chrome_content_browser_client_tablet_mode_part.h",
     "tablet_mode/tablet_mode_page_behavior.cc",

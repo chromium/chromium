@@ -1,0 +1,29 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+// Includes all information about the current web page required by the
+// SmartReaderManagerAsh to provide a summary of the content.
+[Stable]
+struct SmartReaderPageContent {
+  // The title of the page. It is be UTF-16 encoded.
+  mojo_base.mojom.String16 title@0;
+  // The URL of the page being summarized.
+  url.mojom.Url url@1;
+  // The text content of the entire web page. This is derived from the page's
+  // accessibility tree. It is be UTF-16 encoded.
+  mojo_base.mojom.String16 content@2;
+};
+
+// Client interface implemented by browsers (ash or lacros). It will allow Ash
+// to access page content from LaCrOS.
+[Stable, Uuid="55f815c8-e2d5-4710-b067-73048efa6739"]
+interface SmartReaderClient {
+  // Returns the content of the web page being summarized.
+  GetPageContent@0() => (SmartReaderPageContent page_content);
+};

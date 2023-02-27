@@ -5061,6 +5061,7 @@ static_library("browser") {
       "//chrome/browser/ash",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/power/ml/smart_dim",
+      "//chrome/browser/ash/smart_reader",
       "//chrome/browser/ash/system_extensions",
       "//chrome/browser/ash/system_extensions/api/hid",
       "//chrome/browser/ash/system_extensions/api/window_management",

@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
 #include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 
 class ArcIconCache;
@@ -52,6 +53,10 @@ class ScreenOrientationDelegate;
 namespace video_conference {
 class VideoConferenceManagerClientImpl;
 }  // namespace video_conference
+
+namespace smart_reader {
+class SmartReaderClientImpl;
+}  // namespace smart_reader
 
 // Browser initialization for Lacros.
 class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
@@ -173,6 +178,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // changes to the permissions or capturing statuses of these apps.
   std::unique_ptr<video_conference::VideoConferenceManagerClientImpl>
       video_conference_manager_client_;
+
+  // Tracks the content within the current active tab in chrome to provide to
+  // the smart reader manager.
+  std::unique_ptr<smart_reader::SmartReaderClientImpl> smart_reader_client_;
 
   // Controls sync-related Crosapi clients.
   SyncCrosapiManagerLacros sync_crosapi_manager_;
