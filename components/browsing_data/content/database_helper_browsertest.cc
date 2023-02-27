@@ -60,14 +60,14 @@ class DatabaseHelperTest : public content::ContentBrowserTest {
           base::FilePath db_path1 =
               db_tracker->GetFullDBFilePath(kTestIdentifier1, db_name);
           base::CreateDirectory(db_path1.DirName());
-          ASSERT_EQ(0, base::WriteFile(db_path1, nullptr, 0));
+          ASSERT_TRUE(base::WriteFile(db_path1, base::StringPiece()));
           db_tracker->DatabaseOpened(kTestIdentifier2, db_name, description,
                                      &size);
           db_tracker->DatabaseClosed(kTestIdentifier2, db_name);
           base::FilePath db_path2 =
               db_tracker->GetFullDBFilePath(kTestIdentifier2, db_name);
           base::CreateDirectory(db_path2.DirName());
-          ASSERT_EQ(0, base::WriteFile(db_path2, nullptr, 0));
+          ASSERT_TRUE(base::WriteFile(db_path2, base::StringPiece()));
           std::vector<storage::OriginInfo> origins;
           db_tracker->GetAllOriginsInfo(&origins);
           ASSERT_EQ(2U, origins.size());
