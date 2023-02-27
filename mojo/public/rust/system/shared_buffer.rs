@@ -165,9 +165,8 @@ impl SharedBuffer {
         }
     }
 
-    /// Retrieves information about a shared buffer the this handle. The return
-    /// value is a set of flags (a bit vector in a u32) representing different
-    /// aspects of the shared buffer and the size of the shared buffer.
+    /// Retrieves information about this shared buffer. The return value is just
+    /// the size of the shared buffer.
     pub fn get_info(&self) -> Result<u64, MojoResult> {
         let mut info = ffi::MojoSharedBufferInfo::new(0);
         let r = MojoResult::from_code(unsafe {

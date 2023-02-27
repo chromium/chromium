@@ -76,6 +76,7 @@ pub trait Handle {
 /// `UntypedHandle` must hold either a valid `MojoHandle` or be
 /// `UntypedHandle::invalid()` (i.e. a 0 `MojoHandle`). The handle will be
 /// closed on `drop` if it is not `invalid()`.
+#[derive(Debug)]
 #[repr(transparent)]
 pub struct UntypedHandle {
     /// The native Mojo handle.

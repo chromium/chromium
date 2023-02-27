@@ -8,7 +8,6 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
-use mojo::system::core;
 use mojo::system::data_pipe;
 use mojo::system::message_pipe;
 use mojo::system::shared_buffer::{self, SharedBuffer};
@@ -18,23 +17,20 @@ use mojo::system::trap::{
 use mojo::system::wait_set;
 use mojo::system::{self, CastHandle, Handle, HandleSignals, MojoResult, SignalsState};
 
+use std::assert_matches::assert_matches;
+use std::mem::drop;
 use std::string::String;
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 use std::vec::Vec;
 
 tests! {
-    fn get_time_ticks_now() {
-        let x = core::get_time_ticks_now();
-        assert!(x >= 10);
-    }
-
     fn handle() {
         let sb = SharedBuffer::new(1).unwrap();
         let handle = sb.as_untyped();
         unsafe {
-            assert_eq!((handle.get_native_handle() != 0), handle.is_valid());
-            assert!(handle.get_native_handle() != 0 && handle.is_valid());
+            assert_ne!(handle.get_native_handle(), 0);
+            assert!(handle.is_valid());
             let mut h2 = system::acquire(handle.get_native_handle());
             assert!(h2.is_valid());
             h2.invalidate();
@@ -44,33 +40,37 @@ tests! {
 
     fn shared_buffer() {
         let bufsize = 100;
-        let sb1;
-        {
-            let mut buf;
-            {
-                let sb_c = SharedBuffer::new(bufsize).unwrap();
-                // Extract original handle to check against
-                let sb_h = sb_c.get_native_handle();
-                // Test casting of handle types
-                let sb_u = sb_c.as_untyped();
-                assert_eq!(sb_u.get_native_handle(), sb_h);
-                let sb = unsafe { SharedBuffer::from_untyped(sb_u) };
-                assert_eq!(sb.get_native_handle(), sb_h);
-                // Test map
-                buf = sb.map(0, bufsize).unwrap();
-                assert_eq!(buf.len(), bufsize as usize);
-                // Test get info
-                let size = sb.get_info().unwrap();
-                assert_eq!(size, bufsize);
-                buf.write(50, 34);
-                // Test duplicate
-                sb1 = sb.duplicate(shared_buffer::DuplicateFlags::empty()).unwrap();
-            }
-            // sb gets closed
-            buf.write(51, 35);
-        }
-        // buf just got closed
-        // remap to buf1 from sb1
+
+        // Create a shared buffer and test round trip through `UntypedHandle`.
+        let sb_first = SharedBuffer::new(bufsize).unwrap();
+        // Get original native handle to check against.
+        let sb_native_handle = sb_first.get_native_handle();
+
+        let sb_untyped = sb_first.as_untyped();
+        assert_eq!(sb_untyped.get_native_handle(), sb_native_handle);
+        let sb = unsafe { SharedBuffer::from_untyped(sb_untyped) };
+        assert_eq!(sb.get_native_handle(), sb_native_handle);
+
+        // Check the reported size is the same as our requested size.
+        let size = sb.get_info().unwrap();
+        assert_eq!(size, bufsize);
+
+        // Map the buffer.
+        let mut buf = sb.map(0, bufsize).unwrap();
+        assert_eq!(buf.len(), bufsize as usize);
+        buf.write(50, 34);
+
+        // Duplicate it and drop the original handle, which should maintain the
+        // `buf` mapping.
+        let sb1 = sb.duplicate(shared_buffer::DuplicateFlags::empty()).unwrap();
+        drop(sb);
+
+        buf.write(51, 35);
+
+        // Unmap `buf` by dropping it.
+        drop(buf);
+
+        // Create a new mapping and check for what we wrote.
         let buf1 = sb1.map(50, 50).unwrap();
         assert_eq!(buf1.len(), 50);
         // verify buffer contents
@@ -79,112 +79,99 @@ tests! {
     }
 
     fn message_pipe() {
-        let (endpt, endpt1) = message_pipe::create().unwrap();
-        // Extract original handle to check against
-        let endpt_h = endpt.get_native_handle();
-        // Test casting of handle types
-        let endpt_u = endpt.as_untyped();
-        assert_eq!(endpt_u.get_native_handle(), endpt_h);
-        {
-            let endpt0 = unsafe { message_pipe::MessageEndpoint::from_untyped(endpt_u) };
-            assert_eq!(endpt0.get_native_handle(), endpt_h);
-            {
-                let s: SignalsState = endpt0.wait(HandleSignals::WRITABLE).satisfied().unwrap();
-                assert!(s.satisfied().is_writable());
-                assert!(s.satisfiable().is_readable());
-                assert!(s.satisfiable().is_writable());
-                assert!(s.satisfiable().is_peer_closed());
-            }
-            match endpt0.read() {
-                Ok((_msg, _handles)) => panic!("Read should not have succeeded."),
-                Err(r) => assert_eq!(r, mojo::MojoResult::ShouldWait),
-            }
-            let hello = "hello".to_string().into_bytes();
-            let write_result = endpt1.write(&hello, Vec::new());
-            assert_eq!(write_result, mojo::MojoResult::Okay);
-            {
-                let s: SignalsState = endpt0.wait(HandleSignals::READABLE).satisfied().unwrap();
-                assert!(s.satisfied().is_readable());
-                assert!(s.satisfied().is_writable());
-                assert!(s.satisfiable().is_readable());
-                assert!(s.satisfiable().is_writable());
-                assert!(s.satisfiable().is_peer_closed());
-            }
-            let hello_data;
-            match endpt0.read() {
-                Ok((msg, _handles)) => hello_data = msg,
-                Err(r) => panic!("Failed to read message on endpt0, error: {}", r),
-            }
-            assert_eq!(String::from_utf8(hello_data).unwrap(), "hello".to_string());
-        }
-        let s: SignalsState = endpt1.wait(HandleSignals::READABLE | HandleSignals::WRITABLE).unsatisfiable().unwrap();
+        let (end_a, end_b) = message_pipe::create().unwrap();
+
+        // Extract original handle to check against.
+        let end_a_native_handle = end_a.get_native_handle();
+        // Test casting of handle types.
+        let end_a_untyped = end_a.as_untyped();
+        assert_eq!(end_a_untyped.get_native_handle(), end_a_native_handle);
+
+        // Test after UntypedHandle round trip.
+        let end_a = unsafe { message_pipe::MessageEndpoint::from_untyped(end_a_untyped) };
+        assert_eq!(end_a.get_native_handle(), end_a_native_handle);
+        let s: SignalsState = end_a.wait(HandleSignals::WRITABLE).satisfied().unwrap();
+        assert!(s.satisfied().is_writable());
+        assert!(s.satisfiable().is_readable());
+        assert!(s.satisfiable().is_writable());
+        assert!(s.satisfiable().is_peer_closed());
+
+        assert_matches!(end_a.read(), Err(mojo::MojoResult::ShouldWait));
+        let hello = "hello".to_string().into_bytes();
+        let write_result = end_b.write(&hello, Vec::new());
+        assert_eq!(write_result, mojo::MojoResult::Okay);
+        let s: SignalsState = end_a.wait(HandleSignals::READABLE).satisfied().unwrap();
+        assert!(s.satisfied().is_readable());
+        assert!(s.satisfied().is_writable());
+        assert!(s.satisfiable().is_readable());
+        assert!(s.satisfiable().is_writable());
+        assert!(s.satisfiable().is_peer_closed());
+
+        let (hello_data, _handles) = end_a.read().expect("failed to read from end_a");
+        assert_eq!(String::from_utf8(hello_data), Ok("hello".to_string()));
+
+        // Closing one endpoint should be seen by the other.
+        drop(end_a);
+
+        let s: SignalsState = end_b.wait(HandleSignals::READABLE | HandleSignals::WRITABLE).unsatisfiable().unwrap();
         assert!(s.satisfied().is_peer_closed());
         // For some reason QuotaExceeded is also set. TOOD(collinbaker): investigate.
         assert!(s.satisfiable().is_peer_closed());
     }
 
     fn data_pipe() {
-        let (cons0, prod0) = data_pipe::create_default().unwrap();
+        let (consumer, producer) = data_pipe::create_default().unwrap();
         // Extract original handle to check against
-        let cons_h = cons0.get_native_handle();
-        let prod_h = prod0.get_native_handle();
+        let consumer_native_handle = consumer.get_native_handle();
+        let producer_native_handle = producer.get_native_handle();
         // Test casting of handle types
-        let cons_u = cons0.as_untyped();
-        let prod_u = prod0.as_untyped();
-        assert_eq!(cons_u.get_native_handle(), cons_h);
-        assert_eq!(prod_u.get_native_handle(), prod_h);
-        let cons = unsafe { data_pipe::Consumer::<u8>::from_untyped(cons_u) };
-        let prod = unsafe { data_pipe::Producer::<u8>::from_untyped(prod_u) };
-        assert_eq!(cons.get_native_handle(), cons_h);
-        assert_eq!(prod.get_native_handle(), prod_h);
-        // Test waiting on producer
-        prod.wait(HandleSignals::WRITABLE).satisfied().unwrap();
-        // Test one-phase read/write.
-        // Writing.
+        let consumer_untyped = consumer.as_untyped();
+        let producer_untyped = producer.as_untyped();
+        assert_eq!(consumer_untyped.get_native_handle(), consumer_native_handle);
+        assert_eq!(producer_untyped.get_native_handle(), producer_native_handle);
+        let consumer = unsafe { data_pipe::Consumer::<u8>::from_untyped(consumer_untyped) };
+        let producer = unsafe { data_pipe::Producer::<u8>::from_untyped(producer_untyped) };
+        assert_eq!(consumer.get_native_handle(), consumer_native_handle);
+        assert_eq!(producer.get_native_handle(), producer_native_handle);
+
+        // Ensure the producer is writable, and check that we can wait on this
+        // (which should return immediately).
+        producer.wait(HandleSignals::WRITABLE).satisfied().unwrap();
+
+        // Try writing a message.
         let hello = "hello".to_string().into_bytes();
-        let bytes_written = prod.write(&hello, data_pipe::WriteFlags::empty()).unwrap();
+        let bytes_written = producer.write(&hello, data_pipe::WriteFlags::empty()).unwrap();
         assert_eq!(bytes_written, hello.len());
-        // Reading.
-        cons.wait(HandleSignals::READABLE).satisfied().unwrap();
-        let data_string = String::from_utf8(cons.read(data_pipe::ReadFlags::empty()).unwrap()).unwrap();
+
+        // Try reading our message.
+        consumer.wait(HandleSignals::READABLE).satisfied().unwrap();
+        let data_string = String::from_utf8(consumer.read(data_pipe::ReadFlags::empty()).unwrap()).unwrap();
         assert_eq!(data_string, "hello".to_string());
-        {
-            // Test two-phase read/write.
-            // Writing.
-            let goodbye = "goodbye".to_string().into_bytes();
-            let mut write_buf = match prod.begin() {
-                Ok(buf) => buf,
-                Err(err) => panic!("Error on write begin: {}", err),
-            };
-            assert!(write_buf.len() >= goodbye.len());
-            for i in 0..goodbye.len() {
-                write_buf[i].write(goodbye[i]);
-            }
-            // SAFETY: we wrote `goodbye.len()` valid elements to `write_buf`,
-            // so they are initialized.
-            unsafe {
-                write_buf.commit(goodbye.len());
-            }
-            // Reading.
-            cons.wait(HandleSignals::READABLE).satisfied().unwrap();
-            let mut data_goodbye: Vec<u8> = Vec::with_capacity(goodbye.len());
-            {
-                let read_buf = match cons.begin() {
-                    Ok(buf) => buf,
-                    Err(err) => panic!("Error on read begin: {}", err),
-                };
-                for i in 0..read_buf.len() {
-                    data_goodbye.push(read_buf[i]);
-                }
-                match cons.read(data_pipe::ReadFlags::empty()) {
-                    Ok(_bytes) => assert!(false),
-                    Err(r) => assert_eq!(r, mojo::MojoResult::Busy),
-                }
-                read_buf.commit(data_goodbye.len())
-            }
-            assert_eq!(data_goodbye.len(), goodbye.len());
-            assert_eq!(String::from_utf8(data_goodbye).unwrap(), "goodbye".to_string());
+
+        // Test two-phase read/write, where we acquire a buffer to use then
+        // commit the read/write when done.
+        let goodbye = "goodbye".to_string().into_bytes();
+        let mut write_buf = producer.begin().expect("error on write begin");
+        assert!(write_buf.len() >= goodbye.len());
+        std::mem::MaybeUninit::write_slice(&mut write_buf[0..goodbye.len()], &goodbye);
+        // SAFETY: we wrote `goodbye.len()` valid elements to `write_buf`,
+        // so they are initialized.
+        unsafe {
+            write_buf.commit(goodbye.len());
         }
+
+        // Try a two-phase read and check that we get the same result.
+        consumer.wait(HandleSignals::READABLE).satisfied().unwrap();
+        let read_buf = consumer.begin().expect("error on read begin");
+
+        // Ensure we get an error when attempting another read.
+        assert_matches!(consumer.read(data_pipe::ReadFlags::empty()), Err(mojo::MojoResult::Busy));
+
+        // Copy the buffer to ensure we commit the read before asserting.
+        let data = read_buf.to_vec();
+        read_buf.commit(data.len());
+
+        assert_eq!(data, goodbye);
     }
 
     fn wait_set() {

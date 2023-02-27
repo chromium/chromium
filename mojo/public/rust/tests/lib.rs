@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#![feature(assert_matches)]
+#![feature(maybe_uninit_write_slice)]
+
 #[macro_use]
 extern crate mojo;
 
