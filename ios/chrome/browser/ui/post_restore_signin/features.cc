@@ -12,17 +12,14 @@ namespace features {
 
 BASE_FEATURE(kIOSNewPostRestoreExperience,
              "IOSNewPostRestoreExperience",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const char kIOSNewPostRestoreExperienceParam[] =
     "ios-new-post-restore-experience";
 
 PostRestoreSignInType CurrentPostRestoreSignInType() {
-  if (base::FeatureList::IsEnabled(kIOSNewPostRestoreExperience))
-    return base::GetFieldTrialParamByFeatureAsBool(
-               kIOSNewPostRestoreExperience, kIOSNewPostRestoreExperienceParam,
-               false)
-               ? PostRestoreSignInType::kAlert
-               : PostRestoreSignInType::kFullscreen;
+  if (base::FeatureList::IsEnabled(kIOSNewPostRestoreExperience)) {
+    return PostRestoreSignInType::kAlert;
+  }
 
   return PostRestoreSignInType::kDisabled;
 }

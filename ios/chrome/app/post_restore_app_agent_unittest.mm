@@ -95,11 +95,6 @@ class PostRestoreAppAgentTest : public PlatformTest {
     StorePreRestoreIdentity(local_state_.Get(), accountInfo);
   }
 
-  void EnableFeatureVariationFullscreen() {
-    scoped_feature_list_.InitAndEnableFeature(
-        post_restore_signin::features::kIOSNewPostRestoreExperience);
-  }
-
   void EnableFeatureVariationAlert() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {base::test::FeatureRefAndParams(
@@ -124,18 +119,7 @@ TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
   MockAppStateChange(InitStageFinal);
 
   ClearPreRestoreIdentity(local_state_.Get());
-  EnableFeatureVariationFullscreen();
-  MockAppStateChange(InitStageFinal);
-}
-
-TEST_F(PostRestoreAppAgentTest, registerPromoFullscreen) {
-  EXPECT_CALL(*promos_manager_.get(),
-              RegisterPromoForSingleDisplay(
-                  promos_manager::Promo::PostRestoreSignInFullscreen))
-      .Times(1);
-
-  EnableFeatureVariationFullscreen();
-  SetFakePreRestoreAccountInfo();
+  EnableFeatureVariationAlert();
   MockAppStateChange(InitStageFinal);
 }
 
@@ -151,25 +135,12 @@ TEST_F(PostRestoreAppAgentTest, registerPromoAlert) {
 }
 
 TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
-  EnableFeatureVariationFullscreen();
+  EnableFeatureVariationAlert();
   SetFakePreRestoreAccountInfo();
   auth_service_->SetReauthPromptForSignInAndSync();
   EXPECT_TRUE(auth_service_->ShouldReauthPromptForSignInAndSync());
   MockAppStateChange(InitStageFinal);
   EXPECT_FALSE(auth_service_->ShouldReauthPromptForSignInAndSync());
-}
-
-TEST_F(PostRestoreAppAgentTest, deregisterPromoFullscreen) {
-  EXPECT_CALL(*promos_manager_.get(), DeregisterPromo(_)).Times(1);
-  EXPECT_CALL(
-      *promos_manager_.get(),
-      DeregisterPromo(promos_manager::Promo::PostRestoreSignInFullscreen))
-      .Times(1);
-
-  EnableFeatureVariationAlert();
-  SetFakePreRestoreAccountInfo();
-  ClearPreRestoreIdentity(local_state_.Get());
-  MockAppStateChange(InitStageFinal);
 }
 
 TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
@@ -178,21 +149,9 @@ TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
               DeregisterPromo(promos_manager::Promo::PostRestoreSignInAlert))
       .Times(1);
 
-  EnableFeatureVariationFullscreen();
+  EnableFeatureVariationAlert();
   SetFakePreRestoreAccountInfo();
   ClearPreRestoreIdentity(local_state_.Get());
-  MockAppStateChange(InitStageFinal);
-}
-
-TEST_F(PostRestoreAppAgentTest, featureVariationSwitchToFullscreen) {
-  EXPECT_CALL(*promos_manager_.get(),
-              RegisterPromoForSingleDisplay(
-                  promos_manager::Promo::PostRestoreSignInFullscreen))
-      .Times(1);
-
-  EnableFeatureVariationFullscreen();
-  SetFakePreRestoreAccountInfo();
-
   MockAppStateChange(InitStageFinal);
 }
 

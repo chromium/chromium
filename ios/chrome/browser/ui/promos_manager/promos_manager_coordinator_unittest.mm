@@ -39,23 +39,9 @@ PromosManagerCoordinatorTest::PromosManagerCoordinatorTest() {
 PromosManagerCoordinatorTest::~PromosManagerCoordinatorTest() {}
 
 void PromosManagerCoordinatorTest::CreatePromosManagerCoordinator() {
-  CreatePrefs();
-
   coordinator_ = [[PromosManagerCoordinator alloc]
       initWithBaseViewController:view_controller_
                          browser:browser_.get()];
-}
-
-// Create pref registry for tests.
-void PromosManagerCoordinatorTest::CreatePrefs() {
-  local_state_ = std::make_unique<TestingPrefServiceSimple>();
-
-  local_state_->registry()->RegisterListPref(
-      prefs::kIosPromosManagerImpressions);
-  local_state_->registry()->RegisterListPref(
-      prefs::kIosPromosManagerActivePromos);
-  local_state_->registry()->RegisterListPref(
-      prefs::kIosPromosManagerSingleDisplayActivePromos);
 }
 
 // Tests a provider's standardPromoDismissAction is called when a
