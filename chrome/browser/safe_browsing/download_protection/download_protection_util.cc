@@ -7,6 +7,7 @@
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
 
@@ -95,6 +96,25 @@ GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url) {
   // random UUID.
   return GURL("blob:" + frame_url.DeprecatedGetOriginAsURL().spec() +
               "file-system-access-write");
+}
+
+google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+SelectArchiveEntries(const google::protobuf::RepeatedPtrField<
+                     ClientDownloadRequest::ArchivedBinary>& src_binaries) {
+  google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>
+      selected;
+
+  // Limit the number of entries so we don't clog the backend.
+  // We can expand this limit by pushing a new download_file_types update.
+  int limit = FileTypePolicies::GetInstance()->GetMaxArchivedBinariesToReport();
+
+  for (int i = 0; selected.size() < limit && i < src_binaries.size(); i++) {
+    if (src_binaries[i].is_executable() || src_binaries[i].is_archive()) {
+      *selected.Add() = src_binaries[i];
+    }
+  }
+
+  return selected;
 }
 
 }  // namespace safe_browsing

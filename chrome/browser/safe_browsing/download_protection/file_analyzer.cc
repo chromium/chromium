@@ -12,6 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/file_util_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/common/safe_browsing/document_analyzer_results.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
@@ -29,24 +30,6 @@ namespace safe_browsing {
 namespace {
 
 using content::BrowserThread;
-
-void CopyArchivedBinaries(
-    const google::protobuf::RepeatedPtrField<
-        ClientDownloadRequest::ArchivedBinary>& src_binaries,
-    google::protobuf::RepeatedPtrField<ClientDownloadRequest::ArchivedBinary>*
-        dest_binaries) {
-  // Limit the number of entries so we don't clog the backend.
-  // We can expand this limit by pushing a new download_file_types update.
-  int limit = FileTypePolicies::GetInstance()->GetMaxArchivedBinariesToReport();
-
-  dest_binaries->Clear();
-  for (int i = 0; dest_binaries->size() < limit && i < src_binaries.size();
-       i++) {
-    if (src_binaries[i].is_executable() || src_binaries[i].is_archive()) {
-      *dest_binaries->Add() = src_binaries[i];
-    }
-  }
-}
 
 FileAnalyzer::Results ExtractFileFeatures(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
@@ -178,8 +161,8 @@ void FileAnalyzer::OnZipAnalysisFinished(
   }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
-  CopyArchivedBinaries(archive_results.archived_binary,
-                       &results_.archived_binaries);
+  results_.archived_binaries =
+      SelectArchiveEntries(archive_results.archived_binary);
 
   if (archive_results.has_executable) {
     results_.type = ClientDownloadRequest::ZIPPED_EXECUTABLE;
@@ -233,8 +216,8 @@ void FileAnalyzer::OnRarAnalysisFinished(
   }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
-  CopyArchivedBinaries(archive_results.archived_binary,
-                       &results_.archived_binaries);
+  results_.archived_binaries =
+      SelectArchiveEntries(archive_results.archived_binary);
 
   if (archive_results.has_executable) {
     results_.type = ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE;
@@ -299,8 +282,8 @@ void FileAnalyzer::OnDmgAnalysisFinished(
   // Even if !results.success, some of the DMG may have been parsed.
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
-  CopyArchivedBinaries(archive_results.archived_binary,
-                       &results_.archived_binaries);
+  results_.archived_binaries =
+      SelectArchiveEntries(archive_results.archived_binary);
 
   if (archive_results.success) {
     results_.type = ClientDownloadRequest::MAC_EXECUTABLE;
@@ -405,8 +388,8 @@ void FileAnalyzer::OnSevenZipAnalysisFinished(
   }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
-  CopyArchivedBinaries(archive_results.archived_binary,
-                       &results_.archived_binaries);
+  results_.archived_binaries =
+      SelectArchiveEntries(archive_results.archived_binary);
 
   if (archive_results.has_executable) {
     results_.type = ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE;
