@@ -1825,7 +1825,7 @@
   {
     "name": "enable-autofill-touch-to-fill-for-credit-cards",
     "owners": [ "vishwasuppoor", "izuzic" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 120
   },
   {
     "name": "enable-autofill-upi-vpa",
