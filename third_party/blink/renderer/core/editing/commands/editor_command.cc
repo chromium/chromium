@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/input/keyboard_shortcut_recorder.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
@@ -516,6 +517,10 @@ static bool ExecuteDeleteToBeginningOfLine(LocalFrame& frame,
                                            Event*,
                                            EditorCommandSource,
                                            const String&) {
+#if BUILDFLAG(IS_ANDROID)
+  RecordKeyboardShortcutForAndroid(KeyboardShortcut::kDeleteLine);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   DeleteWithDirection(frame, DeleteDirection::kBackward,
                       TextGranularity::kLineBoundary, true, false);
   return true;
