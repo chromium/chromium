@@ -320,12 +320,9 @@ std::string ConvertEtldToOrigin(const std::string etld_plus1, bool secure) {
 }
 
 bool IsPatternValidForType(const std::string& pattern_string,
-                           const std::string& type,
+                           ContentSettingsType content_type,
                            Profile* profile,
                            std::string* out_error) {
-  ContentSettingsType content_type =
-      site_settings::ContentSettingsTypeFromGroupName(type);
-
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromString(pattern_string);
 
@@ -1472,6 +1469,8 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
       type = *maybe_type;
     ContentSettingsType content_type =
         site_settings::ContentSettingsTypeFromGroupName(type);
+    CHECK(content_type != ContentSettingsType::DEFAULT)
+        << type << " is not expected to have a UI representation.";
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(profile_);
 
@@ -1595,8 +1594,11 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   CHECK(content_settings::ContentSettingFromString(value, &setting));
   std::vector<ContentSettingsType> types;
   if (type_string) {
-    types.push_back(
-        site_settings::ContentSettingsTypeFromGroupName(*type_string));
+    ContentSettingsType content_type =
+        site_settings::ContentSettingsTypeFromGroupName(*type_string);
+    CHECK(content_type != ContentSettingsType::DEFAULT)
+        << *type_string << " is not expected to have a UI representation.";
+    types.push_back(content_type);
   } else {
     // Clear device chooser data permission exceptions.
     if (setting == CONTENT_SETTING_DEFAULT) {
@@ -1691,6 +1693,8 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
+  CHECK(content_type != ContentSettingsType::DEFAULT)
+      << type << " is not expected to have a UI representation.";
 
   Profile* profile = nullptr;
   if (incognito) {
@@ -1753,6 +1757,8 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
 
   ContentSettingsType content_type =
       site_settings::ContentSettingsTypeFromGroupName(type);
+  CHECK(content_type != ContentSettingsType::DEFAULT)
+      << type << " is not expected to have a UI representation.";
   ContentSetting setting;
   CHECK(content_settings::ContentSettingFromString(value, &setting));
 
@@ -1937,11 +1943,16 @@ void SiteSettingsHandler::HandleIsPatternValidForType(
   CHECK_EQ(3U, args.size());
   const base::Value& callback_id = args[0];
   const std::string& pattern_string = args[1].GetString();
-  const std::string& type = args[2].GetString();
+  const std::string& type_string = args[2].GetString();
+
+  ContentSettingsType content_type =
+      site_settings::ContentSettingsTypeFromGroupName(type_string);
+  CHECK(content_type != ContentSettingsType::DEFAULT)
+      << type_string << " is not expected to have a UI representation.";
 
   std::string reason;
   bool is_valid =
-      IsPatternValidForType(pattern_string, type, profile_, &reason);
+      IsPatternValidForType(pattern_string, content_type, profile_, &reason);
 
   base::Value::Dict return_value;
   return_value.Set(kIsValidKey, base::Value(is_valid));

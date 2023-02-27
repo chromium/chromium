@@ -372,12 +372,16 @@ bool HasRegisteredGroupName(ContentSettingsType type) {
 }
 
 ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name) {
-  for (size_t i = 0; i < std::size(kContentSettingsTypeGroupNames); ++i) {
-    if (name == kContentSettingsTypeGroupNames[i].name)
-      return kContentSettingsTypeGroupNames[i].type;
+  for (const auto& entry : kContentSettingsTypeGroupNames) {
+    // Content setting types that aren't represented in the settings UI
+    // will have `nullptr` as their `name`. However, converting `nullptr`
+    // to a StringPiece will crash, so we have to handle it explicitly
+    // before comparing.
+    if (entry.name != nullptr && entry.name == name) {
+      return entry.type;
+    }
   }
 
-  NOTREACHED() << name << " is not a recognized content settings type.";
   return ContentSettingsType::DEFAULT;
 }
 
@@ -974,6 +978,7 @@ base::Value::List GetChooserExceptionListFromProfile(
   base::Value::List exceptions;
   ContentSettingsType content_type =
       ContentSettingsTypeFromGroupName(std::string(chooser_type.name));
+  DCHECK(content_type != ContentSettingsType::DEFAULT);
 
   // The BluetoothChooserContext is only available when the
   // WebBluetoothNewPermissionsBackend flag is enabled.
