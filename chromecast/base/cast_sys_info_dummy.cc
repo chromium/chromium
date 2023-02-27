@@ -27,13 +27,12 @@ std::string GetStringValue(const base::Value& sys_info_file,
                            const std::string& default_val) {
   DCHECK(sys_info_file.is_dict());
 
-  const base::Value* val =
-      sys_info_file.FindKeyOfType(key, base::Value::Type::STRING);
+  const std::string* val = sys_info_file.GetDict().FindString(key);
   if (!val) {
     LOG(WARNING) << "Json key not found: " << key;
     return default_val;
   }
-  return val->GetString();
+  return *val;
 }
 }  // namespace
 
