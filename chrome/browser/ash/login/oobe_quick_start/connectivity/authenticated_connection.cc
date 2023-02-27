@@ -103,6 +103,11 @@ void AuthenticatedConnection::NotifySourceOfUpdate() {
   SendPayload(message_payload);
 }
 
+void AuthenticatedConnection::RequestWifiCredentials(
+    RequestWifiCredentialsCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void AuthenticatedConnection::SendBootstrapOptions(
     ConnectionResponseCallback callback) {
   base::Value::Dict bootstrap_options;

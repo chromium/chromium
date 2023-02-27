@@ -39,6 +39,8 @@ source_set("connectivity") {
     "target_device_connection_broker_factory.h",
     "target_device_connection_broker_impl.cc",
     "target_device_connection_broker_impl.h",
+    "wifi_credentials.cc",
+    "wifi_credentials.h",
   ]
 }
 

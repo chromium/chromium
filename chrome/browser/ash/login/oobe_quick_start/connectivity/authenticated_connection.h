@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/wifi_credentials.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "components/cbor/values.h"
 #include "url/origin.h"
@@ -26,6 +27,9 @@ class AuthenticatedConnection : public Connection {
   using RequestAccountTransferAssertionCallback =
       base::OnceCallback<void(absl::optional<FidoAssertionInfo>)>;
 
+  using RequestWifiCredentialsCallback =
+      base::OnceCallback<void(absl::optional<WifiCredentials>)>;
+
   explicit AuthenticatedConnection(NearbyConnection* nearby_connection);
   AuthenticatedConnection(AuthenticatedConnection&) = delete;
   AuthenticatedConnection& operator=(AuthenticatedConnection&) = delete;
@@ -34,6 +38,8 @@ class AuthenticatedConnection : public Connection {
   void RequestAccountTransferAssertion(
       const std::string& challenge_b64url,
       RequestAccountTransferAssertionCallback callback);
+
+  void RequestWifiCredentials(RequestWifiCredentialsCallback callback);
 
   void NotifySourceOfUpdate();
 
