@@ -940,7 +940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication.Position{Index}"
-    enum="Boolean" expires_after="2023-03-01">
+    enum="Boolean" expires_after="2023-09-01">
   <obsolete>
     Deprecated in 11/2022. Replaced by ContentDuplication2 metrics.
   </obsolete>
@@ -958,7 +958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication.{Range}" units="%"
-    expires_after="2023-03-01">
+    expires_after="2023-09-01">
   <obsolete>
     Deprecated in 11/2022. Replaced by ContentDuplication2 metrics.
   </obsolete>
@@ -976,7 +976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication2.Position{Index}"
-    enum="Boolean" expires_after="2023-03-01">
+    enum="Boolean" expires_after="2023-09-01">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -993,7 +993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.ContentDuplication2.{Range}" units="%"
-    expires_after="2023-03-01">
+    expires_after="2023-09-01">
   <owner>jianli@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <summary>
@@ -1227,7 +1227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.NoticeCardFulfilled2" enum="Boolean"
-    expires_after="2023-03-01">
+    expires_after="2023-09-01">
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
   <summary>
