@@ -53,7 +53,9 @@ bool operator==(const FormFieldDataPredictions& a,
                 const FormFieldDataPredictions& b) {
   auto members = [](const FormFieldDataPredictions& p) {
     return std::tie(p.host_form_signature, p.signature, p.heuristic_type,
-                    p.server_type, p.overall_type, p.parseable_name, p.section);
+                    p.server_type, p.overall_type, p.parseable_name, p.section,
+                    p.rank, p.rank_in_signature_group, p.rank_in_host_form,
+                    p.rank_in_host_form_signature_group);
   };
   return members(a) == members(b);
 }

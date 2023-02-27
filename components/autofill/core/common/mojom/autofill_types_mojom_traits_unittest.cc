@@ -45,6 +45,10 @@ void CreateTestFieldDataPredictions(const std::string& signature,
   field_predict->overall_type = "TestOverallType";
   field_predict->parseable_name = "TestParseableName";
   field_predict->section = "TestSection";
+  field_predict->rank = 0;
+  field_predict->rank_in_signature_group = 1;
+  field_predict->rank_in_host_form = 2;
+  field_predict->rank_in_host_form_signature_group = 3;
 }
 
 void CreateTestPasswordFormFillData(PasswordFormFillData* fill_data) {

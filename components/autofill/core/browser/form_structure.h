@@ -491,6 +491,9 @@ class FormStructure {
  private:
   friend class FormStructureTestApi;
 
+  // Sets the rank of each field in the form.
+  void DetermineFieldRanks();
+
   // Production code only uses the default parameters.
   // Unit tests also test other parameters.
   struct ShouldBeParsedParams {

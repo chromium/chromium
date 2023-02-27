@@ -315,6 +315,11 @@ bool StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return false;
   if (!data.ReadSection(&out->section))
     return false;
+  out->rank = data.rank();
+  out->rank_in_signature_group = data.rank_in_signature_group();
+  out->rank_in_host_form = data.rank_in_host_form();
+  out->rank_in_host_form_signature_group =
+      data.rank_in_host_form_signature_group();
 
   return true;
 }

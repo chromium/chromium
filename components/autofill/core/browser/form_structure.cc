@@ -325,6 +325,7 @@ FormStructure::FormStructure(const FormData& form)
   // Do further processing on the fields, as needed.
   ProcessExtractedFields();
   SetFieldTypesFromAutocompleteAttribute();
+  DetermineFieldRanks();
 }
 
 FormStructure::FormStructure(
@@ -333,9 +334,29 @@ FormStructure::FormStructure(
     : form_signature_(form_signature) {
   for (const auto& signature : field_signatures)
     fields_.push_back(AutofillField::CreateForPasswordManagerUpload(signature));
+  DetermineFieldRanks();
 }
 
 FormStructure::~FormStructure() = default;
+
+void FormStructure::DetermineFieldRanks() {
+  size_t rank = 0;
+  std::map<FormGlobalId, size_t> rank_in_host_form;
+  std::map<FieldSignature, size_t> rank_in_signature_group;
+  std::map<std::pair<FormGlobalId, FieldSignature>, size_t>
+      rank_in_host_form_signature_group;
+
+  for (auto& field : fields_) {
+    field->set_rank(rank++);
+    field->set_rank_in_host_form(
+        rank_in_host_form[field->renderer_form_id()]++);
+    field->set_rank_in_signature_group(
+        rank_in_signature_group[field->GetFieldSignature()]++);
+    field->set_rank_in_host_form_signature_group(
+        rank_in_host_form_signature_group[std::make_pair(
+            field->renderer_form_id(), field->GetFieldSignature())]++);
+  }
+}
 
 void FormStructure::DetermineHeuristicTypes(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
@@ -734,6 +755,12 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
       annotated_field.parseable_name =
           base::UTF16ToUTF8(field->parseable_name());
       annotated_field.section = field->section.ToString();
+      annotated_field.rank = field->rank();
+      annotated_field.rank_in_signature_group =
+          field->rank_in_signature_group();
+      annotated_field.rank_in_host_form = field->rank_in_host_form();
+      annotated_field.rank_in_host_form_signature_group =
+          field->rank_in_host_form_signature_group();
       form.fields.push_back(annotated_field);
     }
 
@@ -2170,6 +2197,14 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
            << (field->IsFocusable() ? "Yes (focusable)" : "No (unfocusable)");
     buffer << Tr{} << "Is visible:"
            << (field->is_visible ? "Yes (visible)" : "No (invisible)");
+    buffer << Tr{} << "Ranks: "
+           << base::StringPrintf(
+                  "Field rank: %zu, rank in signature group: %zu, "
+                  "field rank in host form: %zu, rank in host form signature "
+                  "group: %zu",
+                  field->rank(), field->rank_in_signature_group(),
+                  field->rank_in_host_form(),
+                  field->rank_in_host_form_signature_group());
     buffer << CTag{"table"};
     buffer << CTag{"td"};
     buffer << CTag{"tr"};

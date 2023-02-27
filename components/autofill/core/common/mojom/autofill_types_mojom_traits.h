@@ -457,6 +457,24 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return r.section;
   }
 
+  static size_t rank(const autofill::FormFieldDataPredictions& r) {
+    return r.rank;
+  }
+
+  static size_t rank_in_signature_group(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.rank_in_signature_group;
+  }
+
+  static size_t rank_in_host_form(const autofill::FormFieldDataPredictions& r) {
+    return r.rank_in_host_form;
+  }
+
+  static size_t rank_in_host_form_signature_group(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.rank_in_host_form_signature_group;
+  }
+
   static bool Read(autofill::mojom::FormFieldDataPredictionsDataView data,
                    autofill::FormFieldDataPredictions* out);
 };
