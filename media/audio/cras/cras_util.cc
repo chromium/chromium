@@ -194,6 +194,14 @@ bool CrasUtil::CacheEffects() {
     LOG(ERROR) << "Fail to query AEC supported";
     aec_supported_ = false;
   }
+  if (libcras_client_get_agc_supported(client, &agc_supported_) < 0) {
+    LOG(ERROR) << "Fail to query AGC supported";
+    agc_supported_ = false;
+  }
+  if (libcras_client_get_ns_supported(client, &ns_supported_) < 0) {
+    LOG(ERROR) << "Fail to query NS supported";
+    ns_supported_ = false;
+  }
   if (libcras_client_get_aec_group_id(client, &aec_group_id_) < 0) {
     LOG(ERROR) << "Fail to query AEC group ID";
     aec_group_id_ = -1;  // The default group ID is -1
@@ -263,6 +271,20 @@ int CrasUtil::CrasGetAecSupported() {
     cras_effects_cached_ = CacheEffects();
   }
   return aec_supported_;
+}
+
+int CrasUtil::CrasGetAgcSupported() {
+  if (!cras_effects_cached_) {
+    cras_effects_cached_ = CacheEffects();
+  }
+  return agc_supported_;
+}
+
+int CrasUtil::CrasGetNsSupported() {
+  if (!cras_effects_cached_) {
+    cras_effects_cached_ = CacheEffects();
+  }
+  return ns_supported_;
 }
 
 int CrasUtil::CrasGetAecGroupId() {

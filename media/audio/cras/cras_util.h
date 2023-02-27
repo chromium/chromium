@@ -55,6 +55,14 @@ class MEDIA_EXPORT CrasUtil {
   // Virtual for testing.
   virtual int CrasGetAecSupported();
 
+  // Returns if system AGC is supported in CRAS.
+  // Virtual for testing.
+  virtual int CrasGetAgcSupported();
+
+  // Returns if system NS is supported in CRAS.
+  // Virtual for testing.
+  virtual int CrasGetNsSupported();
+
   // Returns the system AEC group ID. If no group ID is specified, -1 is
   // returned.
   // Virtual for testing.
@@ -66,6 +74,8 @@ class MEDIA_EXPORT CrasUtil {
 
  private:
   int aec_supported_ = false;
+  int agc_supported_ = false;
+  int ns_supported_ = false;
   int aec_group_id_ = -1;
   int default_output_buffer_size_ = 0;
   bool cras_effects_cached_ = false;
