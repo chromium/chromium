@@ -1525,7 +1525,21 @@ void HandleStringData(
 
 #endif
 
+std::unique_ptr<blocked_content::PopupNavigationDelegate>
+CreatePopupNavigationDelegate(NavigateParams params) {
+  return std::make_unique<ChromePopupNavigationDelegate>(std::move(params));
+}
+
+ChromeContentBrowserClient::PopupNavigationDelegateFactory
+    g_popup_navigation_delegate_factory = &CreatePopupNavigationDelegate;
+
 }  // namespace
+
+// static
+ChromeContentBrowserClient::PopupNavigationDelegateFactory&
+ChromeContentBrowserClient::GetPopupNavigationDelegateFactoryForTesting() {
+  return g_popup_navigation_delegate_factory;
+}
 
 ChromeContentBrowserClient::ChromeContentBrowserClient() {
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -3853,8 +3867,7 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   return !blocked_content::ConsiderForPopupBlocking(disposition) ||
          blocked_content::MaybeBlockPopup(
              web_contents, &opener_top_level_frame_url,
-             std::make_unique<ChromePopupNavigationDelegate>(
-                 std::move(nav_params)),
+             (*g_popup_navigation_delegate_factory)(std::move(nav_params)),
              nullptr /*=open_url_params*/, blocked_params.features(),
              HostContentSettingsMapFactory::GetForProfile(profile)) != nullptr;
 }

@@ -57,6 +57,10 @@ class StorageKey;
 class URLLoaderThrottle;
 }  // namespace blink
 
+namespace blocked_content {
+class PopupNavigationDelegate;
+}  // namespace blocked_content
+
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
@@ -104,6 +108,7 @@ class ChromeHidDelegate;
 class ChromeSerialDelegate;
 class ChromeUsbDelegate;
 class ChromeWebAuthenticationDelegate;
+struct NavigateParams;
 
 #if BUILDFLAG(ENABLE_VR)
 namespace vr {
@@ -113,6 +118,13 @@ class ChromeXrIntegrationClient;
 
 class ChromeContentBrowserClient : public content::ContentBrowserClient {
  public:
+  using PopupNavigationDelegateFactory =
+      std::unique_ptr<blocked_content::PopupNavigationDelegate> (*)(
+          NavigateParams);
+
+  static PopupNavigationDelegateFactory&
+  GetPopupNavigationDelegateFactoryForTesting();
+
   ChromeContentBrowserClient();
 
   ChromeContentBrowserClient(const ChromeContentBrowserClient&) = delete;

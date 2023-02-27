@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/auto_reset.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
@@ -30,6 +33,7 @@
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/event.h"
@@ -75,13 +79,31 @@ class TestQuietNotificationPermissionUiSelector
   QuietUiReason simulated_reason_for_quiet_ui_;
 };
 
+// An override that returns a fake URL for every blocked popup, so the UI
+// displays consistent strings for pixel tests.
+class TestPopupNavigationDelegate : public ChromePopupNavigationDelegate {
+ public:
+  using ChromePopupNavigationDelegate::ChromePopupNavigationDelegate;
+
+  // ChromePopupNavigationDelegate:
+  GURL GetURL() override { return GURL("http://blocked-popup/"); }
+};
+
+std::unique_ptr<blocked_content::PopupNavigationDelegate>
+CreateTestPopupNavigationDelegate(NavigateParams params) {
+  return std::make_unique<TestPopupNavigationDelegate>(std::move(params));
+}
+
 }  // namespace
 
 using ImageType = ContentSettingImageModel::ImageType;
 
 class ContentSettingBubbleDialogTest : public DialogBrowserTest {
  public:
-  ContentSettingBubbleDialogTest() {
+  ContentSettingBubbleDialogTest()
+      : resetter_(&ChromeContentBrowserClient::
+                      GetPopupNavigationDelegateFactoryForTesting(),
+                  &CreateTestPopupNavigationDelegate) {
     scoped_feature_list_.InitWithFeatures(
         {features::kQuietNotificationPrompts},
         {permissions::features::kPermissionQuietChip});
@@ -102,6 +124,8 @@ class ContentSettingBubbleDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override;
 
  private:
+  base::AutoReset<ChromeContentBrowserClient::PopupNavigationDelegateFactory>
+      resetter_;
   base::test::ScopedFeatureList scoped_feature_list_;
   absl::optional<permissions::MockPermissionRequest>
       notification_permission_request_;
@@ -157,6 +181,9 @@ void ContentSettingBubbleDialogTest::ApplyContentSettingsForType(
           blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
       // popup-many-10.html should generate 10 blocked popups.
       EXPECT_EQ(10u, helper->GetBlockedPopupsCount());
+      // Set a fake URL so the UI displays a consistent string for pixel tests.
+      web_contents->GetController().GetVisibleEntry()->SetVirtualURL(
+          GURL("http://popuptest/"));
       break;
     }
     case ContentSettingsType::PROTOCOL_HANDLERS:
