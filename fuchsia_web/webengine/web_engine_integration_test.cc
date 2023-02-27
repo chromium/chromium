@@ -60,7 +60,8 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
   }
 
   void StartWebEngine(base::CommandLine command_line) override {
-    context_provider_.emplace(command_line);
+    context_provider_.emplace(
+        ContextProviderForTest::Create(std::move(command_line)));
     context_provider_->ptr().set_error_handler(
         [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
   }

@@ -26,7 +26,10 @@ const char kTestServerRoot[] = "fuchsia_web/webengine/test/data";
 
 class WebEngineDebugIntegrationTest : public testing::Test {
  public:
-  WebEngineDebugIntegrationTest() {
+  WebEngineDebugIntegrationTest()
+      : web_context_provider_(ContextProviderForDebugTest::Create(
+            base::CommandLine(base::CommandLine::NO_PROGRAM))),
+        dev_tools_listener_binding_(&dev_tools_listener_) {
     web_context_provider_.ptr().set_error_handler(
         [](zx_status_t status) { FAIL() << zx_status_get_string(status); });
   }
@@ -53,11 +56,9 @@ class WebEngineDebugIntegrationTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
-  ContextProviderForDebugTest web_context_provider_{
-      base::CommandLine(base::CommandLine::NO_PROGRAM)};
+  ContextProviderForDebugTest web_context_provider_;
   TestDebugListener dev_tools_listener_;
-  fidl::Binding<fuchsia::web::DevToolsListener> dev_tools_listener_binding_{
-      &dev_tools_listener_};
+  fidl::Binding<fuchsia::web::DevToolsListener> dev_tools_listener_binding_;
   fuchsia::web::DebugSyncPtr debug_;
 
   base::OnceClosure on_url_fetch_complete_ack_;
