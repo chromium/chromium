@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/metrics/precedence_over_autocomplete_metrics.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/validation.h"
@@ -1148,7 +1149,7 @@ void FormStructure::LogQualityMetrics(
     // attribute that was used to represent the field.
     if (IsStreetNameOrHouseNumberType(field->server_type()) ||
         IsStreetNameOrHouseNumberType(field->heuristic_type())) {
-      AutofillMetrics::
+      autofill_metrics::
           LogHtmlTypesForAutofilledFieldWithStreetNameOrHouseNumberPredictions(
               *field);
     }
@@ -1191,7 +1192,7 @@ void FormStructure::LogQualityMetrics(
                  is_street_name_or_house_number;
         };
         if (precedence_feature_had_effect(*field)) {
-          AutofillMetrics::
+          autofill_metrics::
               LogEditedAutofilledFieldWithStreetNameOrHouseNumberPrecedenceAtSubmission(
                   *field);
         }
