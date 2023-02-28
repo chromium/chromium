@@ -92,6 +92,7 @@
 <translation id="7118091470949186573">Ara pots utilitzar Chromium cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="7165402419892018581">Tria Chromium a Emplenament automàtic</translation>
 <translation id="7175400662502680481">La teva contrasenya ha quedat exposada en una violació de les dades. El gestor de contrasenyes de Google recomana que la canviïs ara.</translation>
+<translation id="7192111075364461693">En aquests moments, les notificacions de Chromium estan desactivades a la configuració del dispositiu.</translation>
 <translation id="7208566199746267865">Per ajudar-te a estalviar temps, Chromium connecta els teus comptes al web. Pots afegir o suprimir comptes a Configuració.</translation>
 <translation id="725427773388857052">Chromium pot ajudar a protegir-te de violacions de les dades, de llocs web no segurs i més.</translation>
 <translation id="7255976941681861701">Descobreix el nou menú de Chromium</translation>
@@ -130,6 +131,7 @@ Aspectes que cal tenir en compte:
   • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>
 <translation id="894437814105052438">Quan tanquis la sessió, Chromium no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
+<translation id="8963279154877372067">Permet que les notificacions de Chromium incloguin alertes de baixada de preu</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
 <translation id="9059693977935746710">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes per a <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>

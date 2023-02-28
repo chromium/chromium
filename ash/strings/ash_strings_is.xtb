@@ -549,6 +549,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, hleður viðburðum.</translation>
 <translation id="3932043219784172185">Ekkert tæki tengt</translation>
 <translation id="3934456833412894880">Kveikt er á aðlagaðri hleðslu. Rafhlaðan helst í 80% til að lengja rafhlöðuendingu og fullhleðst þegar þú þarft á að halda.</translation>
+<translation id="3936620957945677513">Ýttu á Enter til að tengjast viðburðinum <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Líma</translation>
 <translation id="394485226368336402">Hljóðstillingar</translation>
 <translation id="3945319193631853098">Ýttu til að ljúka uppsetningu</translation>
@@ -1466,7 +1467,6 @@ Ný uppsetning</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Enn tókst ekki að staðfesta PIN-númerið eða aðgangsorðið. Athugaðu: Ef þú skiptir nýlega um aðgangsorð skaltu nota gamla aðgangsorðið. Nýja aðgangsorðið tekur gildi þegar þú hefur skráð þig út.</translation>
 <translation id="8855885154700222542">Lykill fyrir allan skjáinn</translation>
-<translation id="8858369206579825206">Persónuverndarstillingar</translation>
 <translation id="8870509716567206129">Forritið styður ekki að skjánum sé skipt.</translation>
 <translation id="8874184842967597500">Ekki tengt</translation>
 <translation id="8876661425082386199">Athugaðu tenginguna</translation>

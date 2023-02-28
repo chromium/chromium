@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irlandarra</translation>
 <translation id="4124935795427217608">Adarbakarra</translation>
 <translation id="4131235941541910880">Eraman zaborrontzira behar ez dituzun elementuak</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktibatu gailua konfiguratu ondoren</translation>
 <translation id="4153015322587141338">Apaleko fitxategiak bizkor atzitzeko, egin klik fitxategi batean eskuineko botoiarekin eta hautatu "<ph name="PIN_COMMAND" />".</translation>
 <translation id="4157569377477607576">Administratzailearen gidalerroek ez dituzte hauek gomendatzen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> mugitu da.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570"><ph name="FILE_NAME" /> ezabatuko da, eta ezingo duzu leheneratu.</translation>
 <translation id="4418686080762064601">Sortu lasterbide bat fitxategietarako</translation>
 <translation id="4425149324548788773">Nire unitatea</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gailua konfiguratu ondoren, administratzaileak kudeatua</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
 <translation id="4442424173763614572">DNS bilaketak huts egin du</translation>
 <translation id="4462159676511157176">Izen-zerbitzari pertsonalizatuak</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Ezin izan da kopiatu ustekabeko errore hau gertatu delako: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Nederlandarra (Herbehereak), nazioarteko teklatu estatubatuarrarekin (ordenagailurako)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, aktibatu gailua konfiguratu ondoren</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="5957366693331451795">Chromebox-ak</translation>
 <translation id="5982621672636444458">Ordenatzeko aukerak</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;bilatu Drive-n&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannadar fonetikoa</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Autentifikazio-zerbitzariaren identitatea baliozkotzeko, "Gaiaren ordezko izenaren bat-etortzea" edo "Domeinuko atzizkiaren bat-etortzea" falta da</translation>
 <translation id="7165320105431587207">Ezin izan da konfiguratu sarea</translation>
 <translation id="7170041865419449892">Barrutitik kanpo</translation>
 <translation id="7180611975245234373">Freskatu</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Konexiorik gabe erabilgarri</translation>
 <translation id="8492972329130824181">Ez dago erabilgarri etxeko sarea. Datu-ibiltaritzak gaituta egon behar du konektatu ahal izateko.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> elementu ateratzen…</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktibatu gailua konfiguratu ondoren, administratzaileak kudeatua</translation>
 <translation id="8521441079177373948">Erresuma Batukoa</translation>
 <translation id="853494022971700746">Frantsesa (Frantzia)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Xehetasunak.</translation>

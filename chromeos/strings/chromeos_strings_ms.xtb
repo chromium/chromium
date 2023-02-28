@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Mencari pengimbas</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
 <translation id="3268178239013324452">Gagal - Pintu terbuka</translation>
+<translation id="3275506277319227640">Dok pada <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imej avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit fail}other{Edit fail}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
 <translation id="3435896845095436175">Dayakan</translation>
+<translation id="345256797477978759">Dokkan tetingkap pada bahagian skrin sebelah <ph name="DIRECTION" /> yang lebih besar</translation>
 <translation id="3456078764689556234">Mencetak halaman <ph name="PRINTED_PAGES" /> daripada <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Mengimbas halaman <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% selesai.</translation>
 <translation id="3459509316159669723">Mencetak</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Bateri penuh</translation>
 <translation id="3600339377155080675">Cermin skrin</translation>
 <translation id="3602290021589620013">Pratonton</translation>
+<translation id="360282891121575443">Foto dalam album kongsi boleh dikemaskinikan oleh pengguna lain. Penukaran setiap hari mungkin menunjukkan hiasan latar yang tiada dalam album pada masa ini.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Tukar kertas dinding</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3606583719724308068">Kependaman tinggi ke laman web HTTPS</translation>
 <translation id="361575905210396100">Terima kasih atas maklum balas anda</translation>
 <translation id="3632579075709132555">Togol skrin privasi</translation>
+<translation id="3639846061339007994">atas</translation>
 <translation id="3651050199673793219">Pilih unit suhu</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Memuatkan...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Penuh</translation>
 <translation id="4333390807948134856">Kekunci <ph name="KEY_NAME" /> ditekan</translation>
 <translation id="435692326371619097">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dan Internet. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Dok pada bahagian yang lebih kecil</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menyambung...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Kata laluan</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Dapatkan maklumat yang berkaitan dengan pilihan anda</translation>
+<translation id="6698459586333070823">Album kongsi boleh dikemaskinikan oleh pengguna lain</translation>
 <translation id="6704062477274546131">Peleraian DNS</translation>
 <translation id="6723839937902243910">Kuasa</translation>
 <translation id="6723847290197874913">Lampu latar papan kekunci</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Foto sedia ada daripada kamera atau fail</translation>
 <translation id="7162487448488904999">Galeri</translation>
 <translation id="7170236477717446850">Gambar profil</translation>
+<translation id="7171919371520438592">Dokkan tetingkap pada bahagian skrin sebelah <ph name="DIRECTION" /> yang lebih kecil</translation>
 <translation id="7172721935181587524">1 Imej</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> ini diurus oleh <ph name="MANAGER" />. Pentadbir boleh mengkonfigurasikan peranti dari jauh.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Lampir</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Kelebihan</translation>
+<translation id="8210733748736414123">bawah</translation>
 <translation id="8226628635270268143">Pilih foto dan album kegemaran anda</translation>
 <translation id="8227119283605456246">Lampirkan fail</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Tambahkan akaun untuk berbilang log masuk. Semua akaun dilog masuk boleh diakses tanpa kata laluan, jadi ciri ini mesti digunakan dengan akaun yang dipercayai sahaja.</translation>
 <translation id="8364946094152050673">Pelayan tiada nama</translation>
 <translation id="8372477600026034341">Hos tambahan</translation>
+<translation id="8380114448424469341">Dokkan tetingkap pada separuh bahagian sebelah <ph name="DIRECTION" /> skrin</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini diurus perusahaan</translation>
 <translation id="8398927464629426868">Kadar pengecasan atau penyahcasan semasa peranti</translation>
 <translation id="8410244574650205435">Dikesan secara automatik</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Perkhidmatan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
 <translation id="9149391708638971077">Jalankan Ujian memori</translation>
+<translation id="9157515863513902090">Dok pada bahagian yang lebih besar</translation>
 <translation id="9173638680043580060">Kurang seminit lagi</translation>
 <translation id="917720651393141712">Ujian</translation>
 <translation id="9188992814426075118">Papan kekunci anda dapat memadankan kertas dinding anda secara automatik</translation>

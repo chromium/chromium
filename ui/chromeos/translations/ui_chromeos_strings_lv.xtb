@@ -761,6 +761,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' — &lt;em&gt;meklēt Diskā&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannadu, fonētiskā</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Nevar apstiprināt autentifikācijas servera identitāti, jo nav aizpildīts lauks “Subjekta alternatīvā nosaukuma atbilstība” vai “Domēna sufiksa atbilstība”.</translation>
 <translation id="7165320105431587207">Neizdevās konfigurēt tīklu</translation>
 <translation id="7170041865419449892">Ārpus diapazona</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>

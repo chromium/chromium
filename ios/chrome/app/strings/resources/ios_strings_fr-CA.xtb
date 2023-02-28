@@ -47,6 +47,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1254117744268754948">Sélectionner un dossier</translation>
 <translation id="1254424942107648268">Trouver le précédent</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
+<translation id="1264156759663453185">Le texte sélectionné est trop long pour une traduction partielle.</translation>
 <translation id="1265739287306757398">Découvrir comment</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
@@ -116,6 +117,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1689333818294560261">Pseudo</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> sélectionnés</translation>
 <translation id="1715515772563243997">Si vous faites confiance à <ph name="SITE" />, vous pouvez utiliser un mot de passe enregistré pour vous connecter.</translation>
+<translation id="173842016780303328">La traduction partielle a échoué.</translation>
 <translation id="1740468249224277719">Appuyez deux fois pour lancer l'installation.</translation>
 <translation id="1752547299766512813">Enr. mots passe</translation>
 <translation id="1753905327828125965">Les plus visités</translation>
@@ -177,6 +179,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2286505070150039482">Texte mis en évidence</translation>
+<translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Ces adresses seront supprimées de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
 <translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le gestionnaire de mots de passe Google.</translation>
 <translation id="2302742851632557585">Changer le mot de passe sur le site Web</translation>
 <translation id="2316709634732130529">Utiliser le mot de passe suggéré</translation>
@@ -241,6 +244,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2747003861858887689">Champ précédent</translation>
 <translation id="2749231692441336879">Vous suivez <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">à l'instant</translation>
+<translation id="2768727608073497433">Le texte sélectionné est vide.</translation>
 <translation id="2773292004659987824">Recherche en mode de navigation privée</translation>
 <translation id="277771892408211951">Sélectionner la langue</translation>
 <translation id="2780046210906776326">Courriel manquant</translation>
@@ -458,6 +462,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4324952538601951430">Vos favoris, mots de passe, paramètres et bien d'autres choses se trouvent désormais enregistrés ici</translation>
 <translation id="4334428914252001502">1 article non lu.</translation>
 <translation id="4338650699862464074">Envoie les URL des pages que vous consultez à Google.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Cette adresse sera supprimée de cet appareil et de vos autres appareils connectés.}one{Ces adresses seront supprimées de cet appareil et de vos autres appareils connectés.}other{Ces adresses seront supprimées de cet appareil et de vos autres appareils connectés.}}</translation>
 <translation id="4343046787186034850">Accès à l'appareil photo et au microphone autorisé</translation>
 <translation id="4359125752503270327">Cette page s'ouvrira dans une autre application.</translation>
 <translation id="4375040482473363939">Recherche de code QR</translation>
@@ -587,6 +592,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5232485538978018676">Se connecter avec un compte géré</translation>
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="5245322853195994030">Annuler la synchronisation</translation>
+<translation id="5271265092610673171">{count,plural, =1{Un champ obligatoire est vide. Remplissez-le avant d'enregistrer.}one{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}other{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -700,6 +706,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
 <translation id="6071409777669089905">Annuler l'épinglage de l'onglet</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
+<translation id="6100617279104942061">Connecté en tant que <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
 <translation id="6119050551270742952">La page Web actuelle est ouverte en mode de navigation privée</translation>
 <translation id="6122191549521593678">En ligne</translation>
@@ -1129,6 +1136,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="9098541895599151034">Supprimer <ph name="NUMBER_OF_ACCOUNTS" /> mots de passe?</translation>
 <translation id="9100610230175265781">Une phrase de passe est requise</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
+<translation id="9120217828624527905">Passer à la traduction de la page complète</translation>
 <translation id="9124387962554796433">Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9148126808321036104">Connectez-vous de nouveau</translation>

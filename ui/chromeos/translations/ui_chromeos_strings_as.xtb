@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">আইৰিশ্ব</translation>
 <translation id="4124935795427217608">এশিঙিয়া ঘোঁৰা</translation>
 <translation id="4131235941541910880">আপোনাক নলগা বস্তুসমূহ ট্ৰেশ্বলৈ নিয়ক</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>
 <translation id="4153015322587141338">শ্বেল্ফত আপোনাৰ ফাইল ক্ষিপ্ৰতাৰে এক্সেছ কৰিবলৈ এটা ফাইলত ৰাইট-ক্লিক কৰক আৰু "<ph name="PIN_COMMAND" />" বাছনি কৰক।</translation>
 <translation id="4157569377477607576">প্ৰশাসকৰ নীতিয়ে এইসমূহ চুপাৰিছ নকৰে:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> স্থানান্তৰ কৰা হ’ল।</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" মচা হ’ব আৰু আপুনি এইটো পুনঃস্থাপন কৰিব নোৱাৰিব।</translation>
 <translation id="4418686080762064601">আপোনাৰ ফাইলৰ বাবে এটা শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="4425149324548788773">মোৰ ড্ৰাইভ</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সংযোগ কৰক</translation>
 <translation id="4442424173763614572">DNS বিচাৰিব পৰা নগ'ল</translation>
 <translation id="4462159676511157176">কাষ্টম নাম ছার্ভাৰ</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">প্ৰতিলিপি কৰিব পৰা নগ’ল, অপ্ৰত্যাশিত আসোঁৱাহ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">আমেৰিকা যুক্তৰাষ্ট্ৰৰ আন্তঃৰাষ্ট্ৰীয় PC কীব’ৰ্ডৰ সৈতে ডাট্‌চ (নেডাৰলেণ্ডছ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টা বস্তু</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">মিলোৱাৰ বিকল্পসমূহ</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">’&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;’ - &lt;em&gt;সন্ধানৰ ড্ৰাইভ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">কানাড়া ফ’নেটিক</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ ছাৰ্ভাৰৰ পৰিচয় সত্যাপন কৰিবলৈ 'বিষয়ৰ বৈকল্পিক নামৰ সৈতে মিলা' অথবা 'ডমেইন চাফিক্সৰ সৈতে মিলা' মান উপলব্ধ নহয়</translation>
 <translation id="7165320105431587207">নেটৱৰ্ক কনফিগাৰ কৰাত বিফল হ'ল</translation>
 <translation id="7170041865419449892">সীমাৰ বাহিৰত</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
@@ -934,6 +938,7 @@
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
 <translation id="8492972329130824181">গৃহ নেটৱৰ্ক উপলব্ধ নহয়। সংযোগ কৰিবলৈ ম’বাইল ডেটা ৰ’মিং সক্ৰিয় কৰিবই লাগিব।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু আহৰণ কৰি থকা হৈছে...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" /> নম্বৰটো, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইচ ছেট আপ কৰাৰ পাছত সক্ৰিয় কৰক, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="8521441079177373948">ইউ.কে.</translation>
 <translation id="853494022971700746">ফৰাচী (ফ্ৰান্স)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>

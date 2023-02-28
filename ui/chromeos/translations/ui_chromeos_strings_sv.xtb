@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">iriska</translation>
 <translation id="4124935795427217608">Enhörning</translation>
 <translation id="4131235941541910880">Lägg objekt som inte behövs i papperskorgen</translation>
+<translation id="4134804435730168042">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktivera efter enhetskonfigurering</translation>
 <translation id="4153015322587141338">Högerklicka på en fil som du vill ha snabbt tillgänglig i hyllan och välj <ph name="PIN_COMMAND" />.</translation>
 <translation id="4157569377477607576">Enligt administratörspolicyn rekommenderas inte följande:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> har flyttats.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570"><ph name="FILE_NAME" /> raderas och du kan inte återställa den.</translation>
 <translation id="4418686080762064601">Skapa en genväg till dina filer</translation>
 <translation id="4425149324548788773">Min enhet</translation>
+<translation id="4432921877815220091">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Aktivera efter enhetskonfigurering, Hanteras av administratören</translation>
 <translation id="4439427728133035643">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, anslut</translation>
 <translation id="4442424173763614572">DNS-sökning misslyckades</translation>
 <translation id="4462159676511157176">Anpassade namnservrar</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">Kopieringen misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">nederländska (Nederländerna) med internationellt PC-tangentbord för USA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Aktivera efter enhetskonfigurering</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> objekt</translation>
 <translation id="5957366693331451795">Chromebox-modeller</translation>
 <translation id="5982621672636444458">Sorteringsalternativ</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;sök i Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kannada, fonetiskt</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Matchning av ämnets andra namn eller Matchning av domänsuffix saknas för att validera autentiseringsserverns identitet</translation>
 <translation id="7165320105431587207">Det gick inte att konfigurera nätverket</translation>
 <translation id="7170041865419449892">Utanför räckvidden</translation>
 <translation id="7180611975245234373">Uppdatera</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">Tillgänglig offline</translation>
 <translation id="8492972329130824181">Hemnätverket är inte tillgängligt. Dataroaming med mobildata måste aktiveras för anslutningen.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> objekt extraheras …</translation>
+<translation id="8502913769543567768">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktivera efter enhetskonfigureringen, Hanteras av administratören</translation>
 <translation id="8521441079177373948">Storbritannien</translation>
 <translation id="853494022971700746">franska (Frankrike)</translation>
 <translation id="8540608333167683902">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>

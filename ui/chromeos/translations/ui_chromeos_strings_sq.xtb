@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irlandisht</translation>
 <translation id="4124935795427217608">Njëbrirësh</translation>
 <translation id="4131235941541910880">Zhvendosi artikujt që nuk të duhen te koshi.</translation>
+<translation id="4134804435730168042">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivizoje pas konfigurimit të pajisjes</translation>
 <translation id="4153015322587141338">Kliko me butonin djathtas te një skedar dhe zgjidh "<ph name="PIN_COMMAND" />" për qasje të shpejtë te skedarët e tu në raft.</translation>
 <translation id="4157569377477607576">Politika e administratorit nuk rekomandon:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> është zhvendosur.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" do të fshihet dhe nuk do të mund ta restaurosh.</translation>
 <translation id="4418686080762064601">Krijo një shkurtore për skedarët e tu</translation>
 <translation id="4425149324548788773">Disku im</translation>
+<translation id="4432921877815220091">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivizoje pas konfigurimit të pajisjes, menaxhohet nga administratori yt</translation>
 <translation id="4439427728133035643">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, lidhu</translation>
 <translation id="4442424173763614572">Kërkimi i DNS-së dështoi</translation>
 <translation id="4462159676511157176">Serverët e personalizuar të emrit</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Operacioni i kopjimit dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Holandisht (Holandë) me tastierë amerikane ndërkombëtare për PC</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivizoje pas konfigurimit të pajisjes</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> artikuj</translation>
 <translation id="5957366693331451795">Pajisjet Chromebox</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;kërko në "Disk"&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kanadisht fonetike</translation>
 <translation id="714034171374937760">Baza e Chrome</translation>
+<translation id="7162080671816799010">Mungon "Përputhja e emrit alternativ të subjektit" ose "Përputhja e prapashtesës së domenit" për të verifikuar identitetin e serverit të vërtetimit</translation>
 <translation id="7165320105431587207">Konfigurimi i rrjetit dështoi</translation>
 <translation id="7170041865419449892">Jashtë mbulimit</translation>
 <translation id="7180611975245234373">Rifresko</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Mundësohet jashtë linje</translation>
 <translation id="8492972329130824181">Rrjeti i shtëpisë nuk ofrohet. Duhet të aktivizohet roaming-u për të dhënat celulare për t'u lidhur.</translation>
 <translation id="8499098729323186194">Po nxjerr <ph name="NUMBER_OF_ITEMS" /> artikuj...</translation>
+<translation id="8502913769543567768">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivizoje pas konfigurimit të pajisjes, menaxhohet nga administratori yt</translation>
 <translation id="8521441079177373948">Britanike</translation>
 <translation id="853494022971700746">Frëngjisht (Francë)</translation>
 <translation id="8540608333167683902">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, detaje</translation>

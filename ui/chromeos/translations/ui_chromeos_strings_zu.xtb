@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irish</translation>
 <translation id="4124935795427217608">I-Unicorn</translation>
 <translation id="4131235941541910880">Hambisa izinto ongazidingi kudoti.</translation>
+<translation id="4134804435730168042">Inethiwekhi ye-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Yenza isebenze ngemva kokusetha idivayisi</translation>
 <translation id="4153015322587141338">Chofoza ngakwesokudla kufayela, bese ukhetha okuthi "<ph name="PIN_COMMAND" />" ukuze uthole ukufinyelela okusheshayo kumafayela wakho akushelufu.</translation>
 <translation id="4157569377477607576">Inqubomgomo yomlawuli ayincomi:</translation>
 <translation id="4159731583141908892">kuhanjiswe okungu-<ph name="FILE_NAME" />.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">I-"<ph name="FILE_NAME" />" izosuswa futhi ngeke ukwazi ukuyibuyisela.</translation>
 <translation id="4418686080762064601">Dala isinqamuleli samafayela akho</translation>
 <translation id="4425149324548788773">IDrayivu yami</translation>
+<translation id="4432921877815220091">Inethiwekhi ye-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Yenza isebenze ngemva kokusetha idivayisi, Iphethwe ngumlawuli wakho</translation>
 <translation id="4439427728133035643">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, Xhuma</translation>
 <translation id="4442424173763614572">Ukubheka i-DSN kuhlulekile</translation>
 <translation id="4462159676511157176">Amaseva wegama langokwezifiso</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Ukusebenza kwekhophi kuhlulekile, iphutha elingalindelekile: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Dutch (Netherlands) nge-US International PC keyboard</translation>
 <translation id="5932901536148835538">I-Chromebit</translation>
+<translation id="5948255720516436063">Inethiwekhi ye-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Yenza isebenze ngemva kokusetha idivayisi</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> izinto</translation>
 <translation id="5957366693331451795">Ama-Chromebox</translation>
 <translation id="5982621672636444458">Izinketho zokuhlunga</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;iDrayivu yokusesha&lt;/em&gt;</translation>
 <translation id="7135561821015524160">I-Kannada Phonetic</translation>
 <translation id="714034171374937760">I-Chromebase</translation>
+<translation id="7162080671816799010">Okungekho 'Ukufana kwegama elinye lesihloko' noma 'Ukufaka kwesijobelelo sesizinda' ukuqinisekisa ukugunyaza ubunikazi beseva</translation>
 <translation id="7165320105431587207">Yehlulekile ukulungiselela inethiwekhi</translation>
 <translation id="7170041865419449892">Iphumile kubanga</translation>
 <translation id="7180611975245234373">Qala kabusha</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Itholakala kokungaxhunyiwe ku-inthanethi</translation>
 <translation id="8492972329130824181">Inethiwekhi yasekhaya ayitholakali. Ukuzulazula kwedatha yeselula kufanele kunikwe amandla ukuze kuxhume.</translation>
 <translation id="8499098729323186194">Ikhipha izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
+<translation id="8502913769543567768">Inethiwekhi ye-<ph name="NETWORK_INDEX" /> kwezingu-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Yenza kusebenza ngemva kokusetha idivayisi, Iphathwe ngumlawuli wakho</translation>
 <translation id="8521441079177373948">I-UK</translation>
 <translation id="853494022971700746">French (France)</translation>
 <translation id="8540608333167683902">Inethiwekhi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, imininingwane</translation>

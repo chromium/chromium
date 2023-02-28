@@ -549,6 +549,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, načítání událostí.</translation>
 <translation id="3932043219784172185">Není připojeno žádné zařízení</translation>
 <translation id="3934456833412894880">Je zapnuté adaptivní nabíjení. Baterie zůstane nabitá na 80 %, aby se prodloužila její životnost, a plně se nabije, jen když to budete potřebovat.</translation>
+<translation id="3936620957945677513">Stisknutím klávesy Enter se připojíte k události <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Vložit</translation>
 <translation id="394485226368336402">Nastavení zvuku</translation>
 <translation id="3945319193631853098">Klepnutím dokončete nastavení</translation>
@@ -1465,7 +1466,6 @@ Nová instalace</translation>
 <translation id="8850991929411075241">Hledat+Esc</translation>
 <translation id="8853703225951107899">Váš PIN nebo heslo se stále nepodařilo ověřit. Poznámka: Pokud jste heslo nedávno změnili, použijte staré heslo. Nové heslo bude možné použít až po odhlášení.</translation>
 <translation id="8855885154700222542">Tlačítko celé obrazovky</translation>
-<translation id="8858369206579825206">Nastavení ochrany soukromí</translation>
 <translation id="8870509716567206129">Aplikace nepodporuje režim rozdělené obrazovky.</translation>
 <translation id="8874184842967597500">Nepřipojeno</translation>
 <translation id="8876661425082386199">Zkontrolujte připojení</translation>

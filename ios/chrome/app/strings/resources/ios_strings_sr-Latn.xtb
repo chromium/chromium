@@ -179,6 +179,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2268044343513325586">Preciziraj</translation>
 <translation id="2273327106802955778">Meni Još</translation>
 <translation id="2286505070150039482">Istaknuti tekst</translation>
+<translation id="2287614783861766820">{count,plural, =1{Ova adresa će biti izbrisana sa ovog uređaja.}one{Ove adrese će biti izbrisane sa ovog uređaja.}few{Ove adrese će biti izbrisane sa ovog uređaja.}other{Ove adrese će biti izbrisane sa ovog uređaja.}}</translation>
 <translation id="2299218006564889602">Lozinke se šifruju na uređaju pre nego što se sačuvaju u Google menadžeru lozinki.</translation>
 <translation id="2302742851632557585">Promenite lozinku na veb-sajtu</translation>
 <translation id="2316709634732130529">Koristite predloženu lozinku</translation>
@@ -428,6 +429,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="408404951701638773">Traka za pretragu je sada dostupnija</translation>
 <translation id="4092655288299341041">Prikazuje pomoć</translation>
 <translation id="4101942614374785540">Lozinke se sada čuvaju na Google nalogu (<ph name="ACCOUNT" />). Možete da ih koristite svuda gde ste prijavljeni. Da biste to isključili, idite u <ph name="BEGIN_LINK" />podešavanja<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Izbriši adresu}one{Izbriši adrese}few{Izbriši adrese}other{Izbriši adrese}}</translation>
 <translation id="4108998448622696017">Otkriva opasne događaje kada se dogode i upozorava vas na njih.</translation>
 <translation id="411254640334432676">Preuzimanje nije uspelo.</translation>
 <translation id="4112644173421521737">Pretraži</translation>
@@ -461,6 +463,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4324952538601951430">Sačuvani obeleživači, lozinke, podešavanja i drugo su sada ovde</translation>
 <translation id="4334428914252001502">1 nepročitan članak.</translation>
 <translation id="4338650699862464074">Šalje URL-ove stranica koje posećujete Google-u.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Ova adresa će biti izbrisana sa ovog i drugih uređaja na kojima ste prijavljeni.}one{Ove adrese će biti izbrisane sa ovog i drugih uređaja na kojima ste prijavljeni.}few{Ove adrese će biti izbrisane sa ovog i drugih uređaja na kojima ste prijavljeni.}other{Ove adrese će biti izbrisane sa ovog i drugih uređaja na kojima ste prijavljeni.}}</translation>
 <translation id="4343046787186034850">Pristup kameri i mikrofonu je dozvoljen</translation>
 <translation id="4359125752503270327">Ova stranica će se otvoriti u drugoj aplikaciji.</translation>
 <translation id="4375040482473363939">Pretraga QR kodova</translation>
@@ -590,6 +593,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5232485538978018676">Prijavite se pomoću upravljanog naloga</translation>
 <translation id="5234764350956374838">Odbaci</translation>
 <translation id="5245322853195994030">Želite li da otkažete sinhronizaciju?</translation>
+<translation id="5271265092610673171">{count,plural, =1{Obavezno polje je prazno. Popunite ga pre čuvanja.}one{Neka obavezna polja su prazna. Popunite ih pre čuvanja.}few{Neka obavezna polja su prazna. Popunite ih pre čuvanja.}other{Neka obavezna polja su prazna. Popunite ih pre čuvanja.}}</translation>
 <translation id="5271549068863921519">Sačuvaj lozinku</translation>
 <translation id="5295239312320826323">Želite da uklonite nalog <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Prikaži</translation>

@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">მიმდინარეობს სკანერების ძიება</translation>
 <translation id="3246869037381808805">ბეჭდვის 1 დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="3268178239013324452">ვერ მოხერხდა — პრინტერის კარი ღიაა</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" /> მხარეს ჩამაგრება</translation>
 <translation id="3275729367986477355">ავატარის სურათი</translation>
 <translation id="3283504360622356314">{0,plural, =1{ფაილის რედაქტირება}other{ფაილების რედაქტირება}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> გჰც</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">უსაფრთხოება</translation>
 <translation id="3435896845095436175">ჩართვა</translation>
+<translation id="345256797477978759">ფანჯრის ჩამაგრება ეკრანის <ph name="DIRECTION" />, შედარებით დიდ მხარეს</translation>
 <translation id="3456078764689556234">ამობეჭდილი გვერდი <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />-დან.</translation>
 <translation id="345898999683440380">სკანირდება გვერდი <ph name="PAGE_NUM" />. დასრულებულია <ph name="PERCENTAGE_VALUE" />%.</translation>
 <translation id="3459509316159669723">ბეჭდვა</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
 <translation id="3600339377155080675">ეკრანის არეკვლა</translation>
 <translation id="3602290021589620013">გადახედვა</translation>
+<translation id="360282891121575443">გაზიარებულ ალბომებში არსებული ფოტოები შეიძლება განახლდეს სხვა მომხმარებლების მიერ. დღიური ცვლილებისას, შესაძლოა, ნაჩვენები იყოს ფონები, რომლებიც ამჟამად არ არის ალბომში.</translation>
 <translation id="3603829704940252505">ავატარი</translation>
 <translation id="3604713164406837697">ფონის შეცვლა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS ვებსაიტების რეაგირების დიდი დრო</translation>
 <translation id="361575905210396100">გმადლობთ გამოხმაურებისთვის</translation>
 <translation id="3632579075709132555">კონფიდენციალური ეკრანის გადართვა</translation>
+<translation id="3639846061339007994">ზედა</translation>
 <translation id="3651050199673793219">აირჩიეთ ტემპერატურის ერთეული</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> — ტესტი</translation>
 <translation id="370665806235115550">იტვირთება…</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">მთლიანი</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> კლავიში დაჭერილია</translation>
 <translation id="435692326371619097">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">შედარებით პატარა მხარეს ჩამაგრება</translation>
 <translation id="4378373042927530923">არ არის გაშვებული</translation>
 <translation id="4378551569595875038">დაკავშირება…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6659594942844771486">ჩანართი</translation>
 <translation id="6692996468359469499">მიიღეთ თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
+<translation id="6698459586333070823">გაზიარებულ ალბომები შეიძლება განახლდეს სხვა მომხმარებლების მიერ</translation>
 <translation id="6704062477274546131">DNS-ის დარეგულირება</translation>
 <translation id="6723839937902243910">ენერგია</translation>
 <translation id="6723847290197874913">კლავიატურის შენათება</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">არსებული ფოტო კამერიდან ან ფაილიდან</translation>
 <translation id="7162487448488904999">გალერეა</translation>
 <translation id="7170236477717446850">პროფილის სურათი</translation>
+<translation id="7171919371520438592">ფანჯრის ჩამაგრება ეკრანის <ph name="DIRECTION" />, შედარებით პატარა მხარეს</translation>
 <translation id="7172721935181587524">1 სურათი</translation>
 <translation id="7177485034254901881">ეს <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობის დისტანციურად კონფიგურაცია.</translation>
 <translation id="7180611975245234373">განახლება</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">დანართი</translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
+<translation id="8210733748736414123">ქვედა</translation>
 <translation id="8226628635270268143">აირჩიეთ თქვენი რჩეული ფოტოები და ალბომები</translation>
 <translation id="8227119283605456246">ფაილის მიმაგრება</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">დაამატეთ ანგარიში მრავლობითი შესვლისთვის. სისტემაში შესულ ანგარიშზე წვდომის მიღება შესაძლებელია პაროლის შეყვანის გარეშე, ამიტომ ეს ფუნქცია უნდა გამოიყენოთ მხოლოდ სანდო ანგარიშებზე.</translation>
 <translation id="8364946094152050673">სახელის ცარიელი სერვერები</translation>
 <translation id="8372477600026034341">დამატებითი ჰოსტები</translation>
+<translation id="8380114448424469341">ფანჯრის ჩამაგრება ეკრანის <ph name="DIRECTION" />, შედარებით დიდ მხარეს</translation>
 <translation id="8395584934117017006">ეს <ph name="DEVICE_TYPE" /> მართულია ორგანიზაციის მიერ</translation>
 <translation id="8398927464629426868">სიხშირე, რომლითაც მოწყობილობა ამჟამად იტენება ან იცლება</translation>
 <translation id="8410244574650205435">ავტომატურად აღმოჩენილი</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google სერვისები</translation>
 <translation id="9138630967333032450">მარცხენა shift</translation>
 <translation id="9149391708638971077">მეხსიერების ტესტის გაშვება</translation>
+<translation id="9157515863513902090">შედარებით დიდ მხარეს ჩამაგრება</translation>
 <translation id="9173638680043580060">დარჩენილია ერთ წუთზე ნაკლები</translation>
 <translation id="917720651393141712">შემოწმება</translation>
 <translation id="9188992814426075118">შესაძლებელია თქვენი კლავიატურის ავტომატურად მორგება თქვენი ფონის მიხედვით</translation>

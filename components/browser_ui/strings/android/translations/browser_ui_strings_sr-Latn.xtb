@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Sajtovi mogu da čuvaju podatke na uređaju</translation>
 <translation id="5771720122942595109">Dozvola <ph name="PERMISSION_1" /> je blokirana</translation>
 <translation id="5804241973901381774">Dozvole</translation>
+<translation id="5810805850857689118">Ova radnja će obrisati sve podatke i kolačiće za domen <ph name="ORIGIN" /> i sve sajtove u okviru njega</translation>
 <translation id="5860033963881614850">Isključeno</translation>
 <translation id="5876056640971328065">Pauziraj video</translation>
 <translation id="5884085660368669834">Podešavanje sajta</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Ne dozvoljavajte sajtovima da čuvaju podatke na uređaju (ne preporučuje se)</translation>
 <translation id="851751545965956758">Onemogući sajtovima da se povezuju sa uređajima</translation>
 <translation id="8525306231823319788">Ceo ekran</translation>
+<translation id="8528440122773422556">Ova radnja će obrisati sve podatke i kolačiće koje čuvaju svi sajtovi u okviru domena <ph name="ORIGIN" /> ili koje čuva povezana aplikacija na početnom ekranu</translation>
 <translation id="8541410041357371550">Ovaj sajt prima podatke o vašim temama oglasa iz Chrome-a da bi vam prikazivao relevantnije oglase.</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajt}one{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajt}few{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajta}other{Kolačići su dozvoljeni za <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sajtova}}</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8990043154272859344">Odjavićete se sa svih sajtova</translation>
 <translation id="9019902583201351841">Ovim upravljaju tvoji roditelji</translation>
+<translation id="9039697262778250930">Možda ćete biti odjavljeni sa ovih sajtova</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Ovaj sajt je u grupi koja može da vidi vaše aktivnosti. Grupu definiše <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Želite da izbrišete kolačiće?</translation>

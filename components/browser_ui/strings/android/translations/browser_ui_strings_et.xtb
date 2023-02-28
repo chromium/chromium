@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Heli esitavad saidid vaigistatakse</translation>
 <translation id="3602290021589620013">Eelvaade</translation>
 <translation id="3628308229821498208">Soovitatud otsingud</translation>
+<translation id="3636279694100170143">Teie külastatavad saidid saavad kontrollida, kas olete päris kasutaja, mitte robot.</translation>
+<translation id="3649190289964910441">Teie külastatav sait saab Chrome’i abil salvestada teabe, mis kinnitab, et olete päris kasutaja. Kui jätkate sirvimist, saavad saidid Chrome’i kaudu kontrollida esimese saidi salvestatud teavet, mis kinnitab, et olete usaldusväärne kasutaja.</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3763247130972274048">10 sekundi võrra kerimiseks topeltpuudutage videos vasakul või paremal</translation>
 <translation id="3794286421982011626">Külastatav sait saab salvestada teavet teie tegevuste kohta, et sait toimiks ootuspäraselt – näiteks selleks, et hoida teid saidile sisselogituna või salvestada teie ostukorvis olevad üksused. Saidid salvestavad selle teabe teie seadmesse sageli ajutiselt.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Vanema hallatud</translation>
 <translation id="4670064810192446073">Virtuaalreaalsus</translation>
 <translation id="4751476147751820511">Liikumis- või valgusandurid</translation>
+<translation id="477781522763920796">See seade toimib ilma teid tuvastamata ega luba saitidel vaadata teie sirvimisajalugu.</translation>
 <translation id="4779083564647765204">Suumi</translation>
 <translation id="4811450222531576619">Teave selle allika ja teema kohta</translation>
 <translation id="4836046166855586901">Küsi, kui sait soovib teada, millal kasutate aktiivselt seda seadet</translation>
@@ -258,6 +261,7 @@
 <translation id="5740126560802162366">Saidid võivad teie seadmesse andmeid salvestada</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> on keelatud</translation>
 <translation id="5804241973901381774">Load</translation>
+<translation id="5810805850857689118">See toiming kustutab kõik saidigrupi <ph name="ORIGIN" /> ning selle all olevate kõigi saitide andmed ja küpsised</translation>
 <translation id="5860033963881614850">Väljas</translation>
 <translation id="5876056640971328065">Video peatamine</translation>
 <translation id="5884085660368669834">Saidi eelistus</translation>
@@ -324,6 +328,7 @@
 <translation id="7016516562562142042">Praeguse otsingumootori puhul lubatud</translation>
 <translation id="702275896380648118">See sait tuvastab asjad, mis teile meeldivad, ja soovitab seejärel teistele saitidele reklaame. Samuti hangib see sait Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame.</translation>
 <translation id="702463548815491781">Soovitatav juhul, kui TalkBack või lülitiga juurdepääs on sisse lülitatud</translation>
+<translation id="7050519587566342213">Sirvimine on sujuvam, kuna saidid usaldavad teid suurema tõenäosusega.</translation>
 <translation id="7053983685419859001">Blokeeri</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 on valitud}other{# on valitud}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> on valitud.  Valikud on saadaval ekraanikuva ülaosas</translation>
@@ -409,6 +414,7 @@
 <translation id="8514955299594277296">Saitidel ei lubata teie seadmesse andmeid salvestada (pole soovitatav)</translation>
 <translation id="851751545965956758">Blokeeri saitidel seadmetega ühenduse loomine</translation>
 <translation id="8525306231823319788">Täisekraan</translation>
+<translation id="8528440122773422556">See toiming kustutab teie avakuval kõik saidigrupi <ph name="ORIGIN" /> alla kuuluvate saitide või selle rakenduse salvestatud andmed ja küpsised</translation>
 <translation id="8541410041357371550">See sait hangib Chrome'ist teie reklaamiteemad, et näidata teile asjakohasemaid reklaame</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Küpsisefailid on lubatud domeeni <ph name="FPS_OWNER" /> <ph name="FPS_MEMBERS_COUNT" /> saidi puhul}other{Küpsisefailid on lubatud domeeni <ph name="FPS_OWNER" /> <ph name="FPS_MEMBERS_COUNT" /> saidi puhul}}</translation>
 <translation id="857943718398505171">Lubatud (soovitatav)</translation>
@@ -437,6 +443,7 @@
 <translation id="8986362086234534611">Unusta</translation>
 <translation id="8990043154272859344">Teid logitakse kõikidelt saitidelt välja</translation>
 <translation id="9019902583201351841">Vanemate hallatud</translation>
+<translation id="9039697262778250930">Võite olla nendelt saitidelt välja logitud</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">See sait on grupis, mis näeb teie tegevusi. Grupi on määratlenud <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Kas kustutada küpsisefailid?</translation>

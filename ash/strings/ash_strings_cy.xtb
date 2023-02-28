@@ -288,6 +288,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2475982808118771221">Bu gwall</translation>
 <translation id="2482878487686419369">Hysbysiadau</translation>
 <translation id="2484513351006226581">Pwyswch <ph name="KEYBOARD_SHORTCUT" /> i newid cynllun y bysellfwrdd.</translation>
+<translation id="2487915095798731898">Ymuno</translation>
 <translation id="2501920221385095727">Bysellau gludiog</translation>
 <translation id="2509468283778169019">Mae CAPS LOCK wedi'i droi ymlaen</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -548,6 +549,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Wrthi'n llwytho digwyddiadau.</translation>
 <translation id="3932043219784172185">Ni chysylltwyd dyfais</translation>
 <translation id="3934456833412894880">Mae gwefru addasedig wedi'i droi ymlaen. Bydd eich batri yn aros ar 80% i ymestyn oes y batri ac yn gwefru'n llawn pan fydd ei angen arnoch.</translation>
+<translation id="3936620957945677513">Pwyswch Enter i ymuno â'r digwyddiad <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Gludo</translation>
 <translation id="394485226368336402">Gosodiadau sain</translation>
 <translation id="3945319193631853098">Tapiwch i orffen gosod</translation>
@@ -1465,7 +1467,6 @@ Gosodiad newydd</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Ni ellid dilysu eich PIN neu gyfrinair o hyd. Sylwer: Os gwnaethoch newid eich cyfrinair yn ddiweddar, defnyddiwch eich hen gyfrinair. Bydd eich cyfrinair newydd yn gweithio ar ôl i chi allgofnodi.</translation>
 <translation id="8855885154700222542">Bysell sgrîn lawn</translation>
-<translation id="8858369206579825206">Rheolyddion preifatrwydd</translation>
 <translation id="8870509716567206129">Nid yw'r ap yn cefnogi sgrîn hollt.</translation>
 <translation id="8874184842967597500">Ni chysylltir</translation>
 <translation id="8876661425082386199">Gwiriwch eich cysylltiad</translation>

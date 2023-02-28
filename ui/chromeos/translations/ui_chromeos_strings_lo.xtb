@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">ພາສາໄອຣິຊ</translation>
 <translation id="4124935795427217608">ຢູນິຄອນ</translation>
 <translation id="4131235941541910880">ຍ້າຍລາຍການທີ່ທ່ານບໍ່ຕ້ອງການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" /> ເຄືອຂ່າຍ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ</translation>
 <translation id="4153015322587141338">ຄລິກຂວາໃສ່ໄຟລ໌, ແລ້ວເລືອກ "<ph name="PIN_COMMAND" />" ສຳລັບການເຂົ້າເຖິງດ່ວນຫາໄຟລ໌ຂອງທ່ານໃນຖ້ານ.</translation>
 <translation id="4157569377477607576">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳ:</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" ຈະຖືກລຶບອອກ ແລະ ທ່ານຈະບໍ່ສາມາດກູ້ຄືນມັນໄດ້.</translation>
 <translation id="4418686080762064601">ສ້າງທາງລັດສຳລັບໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" /> ເຄືອຂ່າຍ, <ph name="NETWORK_NAME" />, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="4439427728133035643">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="4442424173763614572">ການຊອກເບິ່ງ DNS ບໍ່ສໍາເລັດ</translation>
 <translation id="4462159676511157176">ເຊີບເວີຊື່ກໍານົດເອງ</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">ດຳເນີນການສຳເນົາບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">ພາສາດັຈ (ເນເທີແລນ) ທີ່ໃຊ້ແປ້ນພິມຄອມພິວເຕີສະຫະລັດແບບສາກົນ</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> ເຄືອຂ່າຍ, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ລາຍການ</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ລຽງ​ລຳ​ດັບ​ທາງ​ເລືອກ</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ຊອກຫາ Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ການອອກສຽງພາສາຄັນນາດາ</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">ບໍ່ມີ 'ການຈັບຄູ່ຊື່ສຳຮອງຂອງຫົວຂໍ້' ຫຼື 'ການຈັບຄູ່ຄຳຕໍ່ທ້າຍໂດເມນ' ເພື່ອກວດສອບຕົວຕົນເຊີບເວີການພິສູດຢືນຢັນ</translation>
 <translation id="7165320105431587207">ປັບຕັ້ງເຄືອ​ຂ່າຍບໍ່ສໍາເລັດ</translation>
 <translation id="7170041865419449892">ຢູ່ນອກຂອບເຂດ</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">ມີອອຟລາຍນ໌ຢູ່</translation>
 <translation id="8492972329130824181">ເຄືອຂ່າຍເຮືອນບໍ່ພ້ອມນຳໃຊ້. ຕ້ອງເປີດການນຳໃຊ້ການໂຣມມິງອິນເຕີເນັດມືຖືເພື່ອເຊື່ອມຕໍ່.</translation>
 <translation id="8499098729323186194">ກຳລັງແຕກ <ph name="NUMBER_OF_ITEMS" /> ລາຍການ...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_INDEX" /> ເຄືອຂ່າຍຈາກ <ph name="NETWORK_COUNT" /> ເຄືອຂ່າຍ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ເປີດການນຳໃຊ້ຫຼັງຈາກຕັ້ງຄ່າອຸປະກອນ, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="8521441079177373948">ສະຫະ​ລາຊະ​ອານາຈັກ</translation>
 <translation id="853494022971700746">ພາສາຝຣັ່ງ (ຝຣັ່ງ)</translation>
 <translation id="8540608333167683902">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ລາຍລະອຽດ</translation>

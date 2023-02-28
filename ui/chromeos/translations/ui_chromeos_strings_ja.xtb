@@ -355,6 +355,7 @@
 <translation id="3971140002794351170">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">英語（イギリス）</translation>
 <translation id="3975895378829046965">ベンガル語（表音）</translation>
+<translation id="3999574733850440202">最近開いた Microsoft のファイルを OneDrive に移動しました</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4017788180641807848">英語（アメリカ）（Workman）キーボード</translation>
 <translation id="4019998208269143058">クイック ファイルに固定</translation>
@@ -363,6 +364,7 @@
 <translation id="4092890906744441904">アイルランド語</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
 <translation id="4131235941541910880">不要なアイテムはゴミ箱に移動してください</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" />件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、デバイスのセットアップ後に有効化</translation>
 <translation id="4153015322587141338">ファイルを右クリックして [<ph name="PIN_COMMAND" />] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="4157569377477607576">管理者のポリシーでは、次のことは推奨されていません。</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> を移動しました。</translation>
@@ -405,6 +407,7 @@
 <translation id="4414834425328380570">「<ph name="FILE_NAME" />」は削除され、復元できなくなります。</translation>
 <translation id="4418686080762064601">ファイルのショートカットを作成</translation>
 <translation id="4425149324548788773">マイドライブ</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、デバイスのセットアップ後に有効化、管理者によって管理</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
 <translation id="4442424173763614572">DNS を検索できませんでした</translation>
 <translation id="4462159676511157176">カスタム ネーム サーバー</translation>
@@ -614,6 +617,7 @@
 <translation id="5913638992615760742">コピーできませんでした。予期しないエラー: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">オランダ語（オランダ）（US インターナショナル PC）キーボード</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" />件）、<ph name="NETWORK_NAME" />、デバイスのセットアップ後に有効化</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個のアイテム</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">並べ替え方法</translation>
@@ -760,6 +764,7 @@
 <translation id="7126604456862387217">「&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;」 - &lt;em&gt;&lt;/em&gt;ドライブを検索</translation>
 <translation id="7135561821015524160">カンナダ語（表音）</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">認証サーバーの ID を検証するための「サブジェクト代替名マッチ」または「ドメイン サフィックス マッチ」がありません</translation>
 <translation id="7165320105431587207">ネットワークを設定できませんでした</translation>
 <translation id="7170041865419449892">圏外</translation>
 <translation id="7180611975245234373">更新</translation>
@@ -908,6 +913,7 @@
 <translation id="8300849813060516376">OTASP に失敗しました</translation>
 <translation id="8312871300878166382">フォルダに貼り付け</translation>
 <translation id="8329978297633540474">テキスト</translation>
+<translation id="8332007959299458842">最近開いた Microsoft のファイルを Google ドライブに移動しました</translation>
 <translation id="8335587457941836791">シェルフの固定解除</translation>
 <translation id="8335837413233998004">ベラルーシ語</translation>
 <translation id="8336153091935557858">昨日 <ph name="YESTERDAY_DAYTIME" /></translation>
@@ -934,6 +940,7 @@
 <translation id="8487700953926739672">オフラインでの利用</translation>
 <translation id="8492972329130824181">ホーム ネットワークは使用できません。接続するには、モバイルデータ ローミングを有効にする必要があります。</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを抽出しています...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、デバイスのセットアップ後に有効化、管理者によって管理</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">フランス語（フランス）</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>

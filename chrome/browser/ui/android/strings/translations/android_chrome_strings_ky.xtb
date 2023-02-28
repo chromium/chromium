@@ -351,6 +351,7 @@
 <translation id="2951071800649516099">Кийинкиге окуу тизмеңизге барактарды кошуңуз</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> окула элек барак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> окула элек барак}}</translation>
 <translation id="2961210776189273067">Аталышы</translation>
+<translation id="296370266220139811">Азыраак терип, убакыт үнөмдөңүз</translation>
 <translation id="2979025552038692506">Жашыруун режимде тандалган өтмөк</translation>
 <translation id="2979639724566107830">Жаңы терезеде ачуу</translation>
 <translation id="2981364137500752533">5 терезеге чейин ачсаңыз болот.</translation>
@@ -478,6 +479,7 @@
 <translation id="3578874072190212775">Cайттарга шылуундукка каршы күрөшүүгө жана ботторду адамдардан айырмалоого жардам бериңиз</translation>
 <translation id="3587482841069643663">Баары</translation>
 <translation id="3587596251841506391">Интернеттеги коопсуздукту жакшыртууга жардам бериңиз</translation>
+<translation id="3597179440835065298">Жакшыраак сунуштарды алыңыз</translation>
 <translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
 <translation id="3616113530831147358">Аудио</translation>
 <translation id="3622349720008044802">Терезелерди башкаруу</translation>
@@ -739,6 +741,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5005498671520578047">Сырсөздү көчүрүү</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сайты туташканы жатат</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Акыркы 15 мүнөттө</translation>
 <translation id="5032430150487044192">QR коду түзүлгөн жок</translation>
 <translation id="5039804452771397117">Уруксат берүү</translation>
 <translation id="5040262127954254034">Купуялык</translation>
@@ -874,6 +877,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5813552293717797987">Бул серепчи <ph name="PARENT_NAME_1" /> жана <ph name="PARENT_NAME_2" /> тарабынан башкарылат.</translation>
 <translation id="5814131985548525293">Баштоо үчүн бул жерге жазыңыз же үн сүрөтчөсүн таптап коюңуз</translation>
 <translation id="5814749351757353073">Жактырган сайттарыңызды колдоно бериңиз</translation>
+<translation id="5822875253699806474">Көргөн сайттарга тез кайтуу үчүн өтмөктөр менен таржымалды шайкештириңиз</translation>
 <translation id="583281660410589416">Белгисиз</translation>
 <translation id="5833984609253377421">Шилтеме менен бөлүшүү</translation>
 <translation id="5834764604050996579">QR кодун скандоо үчүн Chrome'го камераңызды колдонууга уруксат бериңиз</translation>
@@ -1128,6 +1132,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7088681679121566888">Chrome жаңыртылды</translation>
 <translation id="7105047059074518658">Түзмөктөрдү оңой колдонуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="7106762743910369165">Серепчиңиз уюмуңуз тарабынан башкарылат</translation>
+<translation id="7116588989735740310">Көргөн сайттарга башка түзмөктөрдө кайтуу үчүн өтмөктөр менен таржымалды шайкештириңиз</translation>
 <translation id="7130504491556983216">Кызыккан нерселердин тизмеси Интернеттеги аракеттериңизге жараша көрсөтүлөт</translation>
 <translation id="7138678301420049075">Башка</translation>
 <translation id="7146622961999026732">Бул сайттар менен колдонмолор сиз үчүн маанилүү окшойт:</translation>
@@ -1206,6 +1211,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="751961395872307827">Сайтка туташпай жатат</translation>
 <translation id="752220631458524187">Бүтүргөндө ажыратыңыз</translation>
 <translation id="7523960634226602883">Камераны иштетип, Google Lens'те колдонуңуз</translation>
+<translation id="7539698981064401140">Өтмөктөр менен таржымалды шайкештириңиз</translation>
 <translation id="7562080006725997899">Серептөө дайындары тазаланууда</translation>
 <translation id="756809126120519699">Chrome дайындары тазаланды</translation>
 <translation id="7577900504646297215">Кызыккан нерселерди башкаруу</translation>
@@ -1388,6 +1394,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8461694314515752532">Шайкештирилген дайындарды өзүңүздүн шайкештирүүчү купуя сөз айкашыңыз менен шифрлеңиз</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> интернетке туташып турганын текшериңиз</translation>
 <translation id="8473863474539038330">Даректер жана башкалар</translation>
+<translation id="847433688444405067">Түзмөктөрдү карап чыгуу</translation>
 <translation id="8481980314595922412">Сыноонун функциялары күйүк</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Таржымал барагын ачуу</translation>
@@ -1441,6 +1448,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
 <translation id="8746155870861185046">Бөлүп көрсөтүлгөн нерселерди бөлүшүү</translation>
+<translation id="874726034427945498">Дарек тилкесинде ылайыктуу сунуштарды көрүү үчүн өтмөктөр менен таржымалды шайкештириңиз</translation>
 <translation id="8748850008226585750">Жашырылган мазмундар</translation>
 <translation id="8756969031206844760">Сырсөз жаңыртылсынбы?</translation>
 <translation id="8765470054473112089">Дарек тилкесине же издөө кутучасына жазганыңызда, Chrome сизге жакшыраак сунуштарды көрсөтүү максатында сурамды демейки издөө каражатына жөнөтөт. Бул параметр Жашыруун режимде өчүк болот.</translation>
@@ -1506,6 +1514,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="9070377983101773829">Айтып издеп баштаңыз</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Сиз баш баккан сайттар Жашыруун режимде сакталбайт</translation>
+<translation id="9084103763810123431">Башка түзмөктө көрүү үчүн өтмөктөр менен таржымалды шайкештириңиз</translation>
 <translation id="9086302186042011942">Шайкештештирилүүдө</translation>
 <translation id="9086455579313502267">Тармакка кирүү мүмкүн эмес</translation>
 <translation id="9099220545925418560">Көрүлгөн вебсайттардын негизинде көрсөтүлөт. Бул параметр өчүк.</translation>

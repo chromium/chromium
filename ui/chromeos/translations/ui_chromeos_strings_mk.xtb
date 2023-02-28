@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">ирски</translation>
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="4131235941541910880">Преместете ги ставките што не ви требаат во корпата.</translation>
+<translation id="4134804435730168042">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Активирај по поставувањето на уредот</translation>
 <translation id="4153015322587141338">Кликнете со десно копче на датотека и изберете „<ph name="PIN_COMMAND" />“ за брз пристап до вашите датотеки на полицата.</translation>
 <translation id="4157569377477607576">Администраторското правило не препорачува:</translation>
 <translation id="4159731583141908892">Преместено: <ph name="FILE_NAME" />.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">„<ph name="FILE_NAME" />“ ќе се избрише и нема да може да ја вратите.</translation>
 <translation id="4418686080762064601">Создајте кратенка за вашите датотеки</translation>
 <translation id="4425149324548788773">Мојот Drive</translation>
+<translation id="4432921877815220091">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Активирај по поставувањето на уредот, Управувано од вашиот администратор</translation>
 <translation id="4439427728133035643">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, поврзи</translation>
 <translation id="4442424173763614572">Барањето DNS не успеа</translation>
 <translation id="4462159676511157176">Сервери со приспособено име</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Операцијата за копирање не успеа. Неочекувана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">холандски (Холандија) со американска меѓународна компјутерска тастатура</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Активирај по поставувањето на уредот</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ставки</translation>
 <translation id="5957366693331451795">Уреди Chromebox</translation>
 <translation id="5982621672636444458">Подреди опции</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;пребарај Диск&lt;/em&gt;</translation>
 <translation id="7135561821015524160">фонетски канада</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Недостасува „Совпаѓање на алтернативно име за наслов“ или „Совпаѓање на суфикс на домен“ за да се потврди идентитетот на серверот за автентикација</translation>
 <translation id="7165320105431587207">Не успеа да се конфигурира мрежата</translation>
 <translation id="7170041865419449892">Надвор од опсег</translation>
 <translation id="7180611975245234373">Освежи</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
 <translation id="8492972329130824181">Домашната мрежа не е достапна. Мора да се овозможи интернет-роаминг за да се поврзете.</translation>
 <translation id="8499098729323186194">Се извлекуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
+<translation id="8502913769543567768">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Активирај по поставувањето на уредот, Управувано од вашиот администратор</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">француски (Франција)</translation>
 <translation id="8540608333167683902">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>

@@ -92,6 +92,7 @@
 <translation id="7118091470949186573">メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chromium が使えるようになります。</translation>
 <translation id="7165402419892018581">自動入力で Chromium を選択する</translation>
 <translation id="7175400662502680481">データ侵害によってパスワードが漏洩しました。パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
+<translation id="7192111075364461693">現在、デバイスの設定で Chromium の通知がオフになっています。</translation>
 <translation id="7208566199746267865">Chromium ではアカウントがウェブで管理されるので、さまざまな手間を省くことができます。[設定] でアカウントの追加と削除を行うことができます。</translation>
 <translation id="725427773388857052">Chromium でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します。</translation>
 <translation id="7255976941681861701">新しい Chromium メニューについて</translation>
@@ -132,6 +133,7 @@
   • 同期をオンにした場合、アクセスした URL に関する情報も送信される場合があります。<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">このアカウントと保存されていないデータは Chromium から削除されます。</translation>
 <translation id="894437814105052438">ログアウトすると、Chromium で新しいデータが Google アカウントと同期されなくなります。これまでに同期されたデータはアカウントに残ります。</translation>
+<translation id="8963279154877372067">Chromium の通知設定で値下げアラートの受信を許可する</translation>
 <translation id="9022552996538154597">Chromium にログイン</translation>
 <translation id="9059693977935746710">このパスワードを覚えておく必要はありません。パスワードは、<ph name="EMAIL" /> のパスワード マネージャーに保存されます</translation>
 <translation id="9089354809943900324">Chromium は古いバージョンです</translation>

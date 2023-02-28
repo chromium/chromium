@@ -549,6 +549,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Tədbirlər yüklənir.</translation>
 <translation id="3932043219784172185">Qoşulmuş cihaz yoxdur</translation>
 <translation id="3934456833412894880">Uyğunlaşan şarj aktivdir. Batareyanın ömrünü uzatmaq üçün batareyanız 80% olaraq qalacaq və ehtiyac duyduğunuz zaman tam şarj ediləcək.</translation>
+<translation id="3936620957945677513">Tədbirə (<ph name="EVENT_SUMMARY" />) qoşulmaq üçün "enter" üzərinə toxunun</translation>
 <translation id="3943857333388298514">Yapışdırın.</translation>
 <translation id="394485226368336402">Audio ayarlar</translation>
 <translation id="3945319193631853098">Ayarlamanı bitirmək üçün toxunun</translation>
@@ -1466,7 +1467,6 @@ Yeni quraşdırma</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN və ya parolunuzu yenə doğrulamaq mümkün olmadı. Qeyd: Bu yaxınlarda parolunuzu dəyişmisinizsə, köhnə parolunuzu istifadə edin. Çıxdıqdan sonra yeni parolunuz tətbiq ediləcək.</translation>
 <translation id="8855885154700222542">Tam ekran açarı</translation>
-<translation id="8858369206579825206">Məxfilik kontrolları</translation>
 <translation id="8870509716567206129">Tətbiq ekran bölünməsini dəstəkləmir.</translation>
 <translation id="8874184842967597500">Qoşulmayıb</translation>
 <translation id="8876661425082386199">Bağlantını yoxlayın</translation>

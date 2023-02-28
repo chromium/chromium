@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Untuk logout dari Akun Google Anda di semua situs, <ph name="BEGIN_LINK" />logout dari Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome tidak dapat memeriksa update. Coba lagi nanti.</translation>
 <translation id="2732745070297234559">Chrome tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
+<translation id="2736805085127235148">Notifikasi Chrome saat ini dinonaktifkan di setelan perangkat.</translation>
 <translation id="2767464022270041271">Tidak ada sandi tersimpan. Pengelola Sandi Google dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="2869959624320573933">Login ke Chrome</translation>
 <translation id="2957447865124070833">Pilih <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Ini adalah Google Chrome versi terbaru</translation>
 <translation id="7939179037291298976">Dari Setelan iPhone, buka "Password Options", lalu pilih "Chrome"</translation>
 <translation id="8022947259858476807">Gunakan Chrome secara default untuk membuka link, menelusuri dari widget, dan mengisi otomatis sandi di aplikasi lainnya</translation>
+<translation id="804638182476029347">Izinkan notifikasi Chrome mendapatkan notifikasi diskon</translation>
 <translation id="81358522153858150">Chrome kini mendukung kebijakan pengguna untuk akun terkelola Anda</translation>
 <translation id="8160472928944011082">Chrome tidak dapat diupdate</translation>
 <translation id="8357607116237445042">Pilih apakah akan menghapus data Chrome dari perangkat ini atau menyimpannya</translation>

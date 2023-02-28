@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Iers</translation>
 <translation id="4124935795427217608">Eenhoorn</translation>
 <translation id="4131235941541910880">Verplaats overbodige items naar de prullenbak.</translation>
+<translation id="4134804435730168042">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activeren na apparaatinstelling</translation>
 <translation id="4153015322587141338">Klik met de rechtermuisknop op een bestand en selecteer '<ph name="PIN_COMMAND" />' voor snelle toegang tot je bestanden op de plank.</translation>
 <translation id="4157569377477607576">Op basis van het beheerdersbeleid wordt het volgende afgeraden:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verplaatst.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570"><ph name="FILE_NAME" /> wordt verwijderd en je kunt het niet herstellen.</translation>
 <translation id="4418686080762064601">Een snelkoppeling maken voor je bestanden</translation>
 <translation id="4425149324548788773">Mijn Drive</translation>
+<translation id="4432921877815220091">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activeren na apparaatinstelling, beheerd door je beheerder</translation>
 <translation id="4439427728133035643">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, verbinden</translation>
 <translation id="4442424173763614572">DNS-lookup mislukt</translation>
 <translation id="4462159676511157176">Aangepaste naamservers</translation>
@@ -616,6 +618,7 @@
 <translation id="5913638992615760742">Kopiëren mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Nederlands (Nederland) met Amerikaans pc-toetsenbord (internationaal)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activeren na apparaatinstelling</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteeropties</translation>
@@ -762,6 +765,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;zoeken in Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada (fonetisch)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Overeenkomst voor alternatieve naam van onderwerp of Overeenkomst voor domeinextensie ontbreekt. De identiteit van de verificatieserver kan niet worden gevalideerd.</translation>
 <translation id="7165320105431587207">Kan netwerk niet configureren</translation>
 <translation id="7170041865419449892">Geen bereik</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
@@ -937,6 +941,7 @@
 <translation id="8487700953926739672">Offline beschikbaar</translation>
 <translation id="8492972329130824181">Thuisnetwerk is niet beschikbaar. Mobiele dataroaming moet aanstaan om verbinding te maken.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> items uitpakken...</translation>
+<translation id="8502913769543567768">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activeren na apparaatinstelling, beheerd door je beheerder</translation>
 <translation id="8521441079177373948">VK</translation>
 <translation id="853494022971700746">Frans (Frankrijk)</translation>
 <translation id="8540608333167683902">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>

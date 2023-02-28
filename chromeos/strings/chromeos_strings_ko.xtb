@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">스캐너 검색 중</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3268178239013324452">실패 - 덮개 열림</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" />에 고정</translation>
 <translation id="3275729367986477355">아바타 이미지</translation>
 <translation id="3283504360622356314">{0,plural, =1{파일 수정}other{파일 수정}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3435896845095436175">사용</translation>
+<translation id="345256797477978759">화면 <ph name="DIRECTION" />의 더 큰 쪽에 창 고정</translation>
 <translation id="3456078764689556234">인쇄된 페이지 <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" /></translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />페이지를 스캔 중입니다. <ph name="PERCENTAGE_VALUE" />% 완료되었습니다.</translation>
 <translation id="3459509316159669723">인쇄</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">배터리 충전 완료</translation>
 <translation id="3600339377155080675">화면 미러링</translation>
 <translation id="3602290021589620013">미리보기</translation>
+<translation id="360282891121575443">공유 앨범에 있는 사진은 다른 사용자가 업데이트할 수 있습니다. 매일 변경을 선택하면 현재 앨범에 없는 배경화면이 표시될 수 있습니다.</translation>
 <translation id="3603829704940252505">아바타</translation>
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
 <translation id="361575905210396100">의견을 보내 주셔서 감사합니다</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
+<translation id="3639846061339007994">상단</translation>
 <translation id="3651050199673793219">온도 단위 선택</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> 테스트</translation>
 <translation id="370665806235115550">로드 중...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">전체화면</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> 키를 눌렀습니다.</translation>
 <translation id="435692326371619097">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">더 작은 쪽에 고정</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">비밀번호</translation>
 <translation id="6659594942844771486">탭</translation>
 <translation id="6692996468359469499">선택 항목과 관련된 정보 얻기</translation>
+<translation id="6698459586333070823">공유 앨범은 다른 사용자가 업데이트할 수 있음</translation>
 <translation id="6704062477274546131">DNS 변환</translation>
 <translation id="6723839937902243910">전원</translation>
 <translation id="6723847290197874913">키보드 백라이트</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">카메라 또는 파일의 기존 사진</translation>
 <translation id="7162487448488904999">갤러리</translation>
 <translation id="7170236477717446850">프로필 사진</translation>
+<translation id="7171919371520438592">화면 <ph name="DIRECTION" />의 더 작은 쪽에 창 고정</translation>
 <translation id="7172721935181587524">이미지 1개</translation>
 <translation id="7177485034254901881">이 <ph name="DEVICE_TYPE" />은(는) <ph name="MANAGER" />에서 관리합니다. 관리자가 기기를 원격으로 구성할 수 있습니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">접속</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8208861521865154048">혜택</translation>
+<translation id="8210733748736414123">하단</translation>
 <translation id="8226628635270268143">좋아하는 사진 및 앨범을 선택합니다.</translation>
 <translation id="8227119283605456246">파일 첨부</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">멀티 로그인에 계정을 추가하세요. 비밀번호를 입력하지 않고 모든 로그인 계정에 액세스할 수 있으므로 이 기능은 신뢰할 수 있는 계정에만 사용해야 합니다.</translation>
 <translation id="8364946094152050673">네임서버가 비어 있습니다.</translation>
 <translation id="8372477600026034341">추가 호스트</translation>
+<translation id="8380114448424469341">화면의 <ph name="DIRECTION" /> 절반에 창 고정</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> 기기는 기업에서 관리합니다.</translation>
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
 <translation id="8410244574650205435">자동으로 감지</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9138630967333032450">왼쪽 시프트</translation>
 <translation id="9149391708638971077">메모리 테스트 실행</translation>
+<translation id="9157515863513902090">더 큰 쪽에 고정</translation>
 <translation id="9173638680043580060">1분 미만 남음</translation>
 <translation id="917720651393141712">테스트</translation>
 <translation id="9188992814426075118">키보드 백라이트가 배경화면에 어울리게 자동으로 설정됩니다.</translation>

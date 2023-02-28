@@ -91,6 +91,7 @@
 <translation id="7118091470949186573">Chaque fois que vous appuierez sur des liens figurant dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chromium.</translation>
 <translation id="7165402419892018581">Sélectionner Chromium pour la saisie automatique</translation>
 <translation id="7175400662502680481">Votre mot de passe a été compromis lors d'une violation des données. Le Gestionnaire de mots de passe vous recommande de le modifier immédiatement.</translation>
+<translation id="7192111075364461693">Les notifications Chromium sont actuellement désactivées dans les paramètres de votre appareil.</translation>
 <translation id="7208566199746267865">Chromium vous permet de gagner du temps en connectant vos comptes au Web. Vous pouvez ajouter ou supprimer des comptes dans la section "Paramètres".</translation>
 <translation id="725427773388857052">Chromium peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web dangereux.</translation>
 <translation id="7255976941681861701">Découvrez le nouveau menu Chromium</translation>
@@ -131,6 +132,7 @@
   • Si vous activez la synchronisation, les métriques peuvent aussi inclure des infos sur les URL que vous consultez.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Ce compte et les données non enregistrées seront supprimés de Chromium.</translation>
 <translation id="894437814105052438">Lorsque vous vous déconnectez, Chromium cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
+<translation id="8963279154877372067">Autoriser les notifications Chromium à recevoir des alertes en cas de baisse de prix</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
 <translation id="9059693977935746710">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe pour <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>

@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Ірландская</translation>
 <translation id="4124935795427217608">Аднарог</translation>
 <translation id="4131235941541910880">Перамяшчайце непатрэбныя элементы ў сметніцу</translation>
+<translation id="4134804435730168042">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, актываваць пасля наладжвання прылады</translation>
 <translation id="4153015322587141338">Каб дадаць файл на паліцу для хуткага доступу, націсніце на яго правай кнопкай мышы і выберыце пункт "<ph name="PIN_COMMAND" />".</translation>
 <translation id="4157569377477607576">Палітыка адміністратара не рэкамендуе наступнае:</translation>
 <translation id="4159731583141908892">Элемент "<ph name="FILE_NAME" />" перамешчаны.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">Файл "<ph name="FILE_NAME" />" будзе выдалены, і вы не зможаце яго аднавіць.</translation>
 <translation id="4418686080762064601">Стварайце ярлыкі для файлаў</translation>
 <translation id="4425149324548788773">Мой Дыск</translation>
+<translation id="4432921877815220091">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, актываваць пасля наладжвання прылады, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="4439427728133035643">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="4442424173763614572">Не ўдалося выканаць пошук DNS</translation>
 <translation id="4462159676511157176">Карыстальніцкія серверы даменных імён</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Не ўдалося выканаць аперацыю капіравання. Нечаканая памылка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Нідэрландская (Нідэрланды) з міжнароднай клавіятурай ЗША для ПК</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, актываваць пасля наладжвання прылады</translation>
 <translation id="5955954492236143329">Элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметры сартавання</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;пошук на Дыску&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Канада (фанетычная раскладка)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Каб пацвердзіць сапраўднасць сервера аўтэнтыфікацыі, неабходна запоўніць поле "Супадзенне з альтэрнатыўнай назвай суб'екта" або "Супадзенне з суфіксам дамена"</translation>
 <translation id="7165320105431587207">Не ўдалося наладзіць сетку</translation>
 <translation id="7170041865419449892">Па-за зонай доступу</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
@@ -934,6 +938,7 @@
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
 <translation id="8492972329130824181">Хатняя сетка недаступная. Каб устанавіць падключэнне, трэба ўключыць роўмінг перадачы даных.</translation>
 <translation id="8499098729323186194">Вымаюцца элементы (<ph name="NUMBER_OF_ITEMS" />)...</translation>
+<translation id="8502913769543567768">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, актываваць пасля наладжвання прылады, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="8521441079177373948">Вялікабрытанія</translation>
 <translation id="853494022971700746">Французская (Францыя)</translation>
 <translation id="8540608333167683902">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>

@@ -550,6 +550,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, sündmusi laaditakse.</translation>
 <translation id="3932043219784172185">Ükski seade ei ole ühendatud</translation>
 <translation id="3934456833412894880">Kohanduv laadimine on sisse lülitatud. Tööea pikendamiseks laetakse akut, kuni see on 80% täis, ja seejärel laetakse see täielikult täis siis, kui seda vajate.</translation>
+<translation id="3936620957945677513">Üritusega <ph name="EVENT_SUMMARY" /> ühinemiseks vajutage sisestusklahvi.</translation>
 <translation id="3943857333388298514">Kleebi</translation>
 <translation id="394485226368336402">Heliseaded</translation>
 <translation id="3945319193631853098">Puudutage seadistamise lõpuleviimiseks</translation>
@@ -1467,7 +1468,6 @@ Uus installimine</translation>
 <translation id="8850991929411075241">Otsing + ESC</translation>
 <translation id="8853703225951107899">Teie PIN-koodi või parooli ei saanud ikka kinnitada. Märkus. Kui muutsite hiljuti parooli, siis kasutage vana parooli. Uus parool rakendatakse väljalogimisel.</translation>
 <translation id="8855885154700222542">Täisekraani klahv</translation>
-<translation id="8858369206579825206">Privaatsuse seaded</translation>
 <translation id="8870509716567206129">Rakendus ei toeta jagatud ekraani.</translation>
 <translation id="8874184842967597500">Ühendus puudub</translation>
 <translation id="8876661425082386199">Kontrollige ühendust</translation>

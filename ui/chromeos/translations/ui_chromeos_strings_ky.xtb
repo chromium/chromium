@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Ирландча</translation>
 <translation id="4124935795427217608">Жалгыз мүйүздүү ат</translation>
 <translation id="4131235941541910880">Керексиз нерселерди таштандыга салыңыз</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз</translation>
 <translation id="4153015322587141338">Текчедеги файлдарды ыкчам ачуу үчүн курсорду файлдын үстүнө алып келип, оң баскычын чыкылдатып, "<ph name="PIN_COMMAND" />" дегенди тандаңыз.</translation>
 <translation id="4157569377477607576">Администратордун саясаты төмөнкүлөрдү сунуштабайт:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылдырылды.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" өчүрүлөт жана аны калыбына келтире албайсыз.</translation>
 <translation id="4418686080762064601">Файлдарга өтүү үчүн ыкчам баскычты түзүү</translation>
 <translation id="4425149324548788773">Менин Drive'ым</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз, Администраторуңуз тарабынан тескелет</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Туташуу</translation>
 <translation id="4442424173763614572">DNS каралбай калды</translation>
 <translation id="4462159676511157176">Жалпы ат серверлери</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Көчүрүлбөй калды, күтүүсүз ката кетти: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Голландча (Голландия) жана эл аралык АКШ баскычтобу (жеке компьютерлер үчүн)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> элемент</translation>
 <translation id="5957366693331451795">Chromebox түзмөктөрү</translation>
 <translation id="5982621672636444458">Иреттөө опциясы</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Drive'ды издөө&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада (фонетикалык)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Сервердин аныктыгын текшерүү мүмкүн эмес, анткени "Субъекттин кошумча аталышына дал келүү" же "Домен суффиксине дал келүү" жок</translation>
 <translation id="7165320105431587207">Тармак конфигурацияланбай калды</translation>
 <translation id="7170041865419449892">Арымдан тышкары</translation>
 <translation id="7180611975245234373">Жаңылоо</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Оффлайнда жеткиликтүү</translation>
 <translation id="8492972329130824181">Үйдөгү тармак жеткиликсиз. Туташуу үчүн мобилдик интернет-роуминг иштетилиши керек.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> нерсе чыгарылууда...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Түзмөктү тууралагандан кийин иштетиңиз, Администраторуңуз тарабынан тескелет</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">Французча (Франция)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Чоо-жайы</translation>

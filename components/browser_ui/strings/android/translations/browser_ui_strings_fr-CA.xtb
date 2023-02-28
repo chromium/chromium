@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Désactiver le son sur les sites qui en font jouer</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3628308229821498208">Recherches suggérées</translation>
+<translation id="3636279694100170143">Les sites que vous visitez peuvent valider que vous êtes un véritable utilisateur et non un robot</translation>
+<translation id="3649190289964910441">Un site que vous visitez peut enregistrer des renseignements avec Chrome permettant de valider que vous êtes un véritable utilisateur. Au fur et à mesure de votre navigation, les sites peuvent vérifier auprès de Chrome ainsi qu'à partir du premier site visité que vous êtes bien un utilisateur de confiance.</translation>
 <translation id="3744111561329211289">Synchronisation en arrière-plan</translation>
 <translation id="3763247130972274048">Touchez deux fois à gauche ou à droite de la vidéo pour sauter 10 secondes</translation>
 <translation id="3794286421982011626">Un site que vous visitez peut enregistrer des renseignements en fonction de vos interactions pour qu’il fonctionne comme vous vous y attendez; par exemple, il peut vous permettre de rester connecté à un site ou d'enregistrer des articles dans votre panier. Les sites enregistrent souvent ces renseignements sur votre appareil de façon temporaire.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Géré par l’un de tes parents</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4751476147751820511">Capteurs de mouvement ou de luminosité</translation>
+<translation id="477781522763920796">Ce paramètre fonctionne sans vous identifier ni autoriser les sites à voir votre historique de navigation.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">En savoir plus sur sa source et son sujet</translation>
 <translation id="4836046166855586901">Demander une autorisation lorsqu'un site veut savoir si vous êtes en train d'utiliser cet appareil</translation>
@@ -324,6 +327,7 @@
 <translation id="7016516562562142042">Autorisée pour le moteur de recherche actuel</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
+<translation id="7050519587566342213">La navigation est plus fluide, car vous êtes considéré comme un utilisateur de confiance sur chaque site.</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> élément(s) sélectionné(s). Options disponibles vers le haut de l'écran</translation>

@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">ایرلندی</translation>
 <translation id="4124935795427217608">تک‌شاخ</translation>
 <translation id="4131235941541910880">مواردی را که نیاز ندارید به «حذف‌شده‌ها» منتقل کنید</translation>
+<translation id="4134804435730168042">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" /> شبکه، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، بعداز راه‌اندازی دستگاه فعال کنید</translation>
 <translation id="4153015322587141338">برای دسترسی سریع به فایل‌ها در قفسه، روی فایلی کلیک راست کنید و «<ph name="PIN_COMMAND" />» را انتخاب کنید.</translation>
 <translation id="4157569377477607576">خط‌مشی سرپرست موارد زیر را توصیه نمی‌کند:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> منتقل شد.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">«<ph name="FILE_NAME" />» حذف خواهد شد و دیگر نمی‌توانید آن را بازیابی کنید.</translation>
 <translation id="4418686080762064601">ایجاد میان‌بر برای فایل‌ها</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" /> شبکه، <ph name="NETWORK_NAME" />، بعداز راه‌اندازی دستگاه فعال کنید، تحت مدیریت سرپرست است</translation>
 <translation id="4439427728133035643">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، اتصال</translation>
 <translation id="4442424173763614572">‏جستجوی DNS انجام نشد</translation>
 <translation id="4462159676511157176">سرورهای نام سفارشی</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">عملیات کپی انجام نشد، خطای غیرمنتظره: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">هلندی (هلند) با صفحه‌کلید بین‌المللی آمریکایی رایانه</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" /> شبکه، <ph name="NETWORK_NAME" />، بعداز راه‌اندازی دستگاه فعال کنید</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> مورد</translation>
 <translation id="5957366693331451795">‏دستگاه‌های Chromebox</translation>
 <translation id="5982621672636444458">گزینه‌های مرتب‌سازی</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">‏'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;جستجوی Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">آواشناسی کانارا</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">«تطابق نام جایگزین موضوع» یا «تطابق پسوند دامنه» برای تأیید هویت سرور اصالت‌سنجی وجود ندارد</translation>
 <translation id="7165320105431587207">پیکربندی شبکه انجام نشد</translation>
 <translation id="7170041865419449892">خارج از محدوده</translation>
 <translation id="7180611975245234373">بازآوری</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
 <translation id="8492972329130824181">شبکه خانه دردسترس نیست. برای اتصال، رومینگ داده تلفن همراه باید فعال باشد.</translation>
 <translation id="8499098729323186194">درحال استخراج <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
+<translation id="8502913769543567768">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" /> شبکه، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، بعداز راه‌اندازی دستگاه فعال کنید، تحت مدیریت سرپرست است</translation>
 <translation id="8521441079177373948">بریتانیایی</translation>
 <translation id="853494022971700746">فرانسوی (فرانسه)</translation>
 <translation id="8540608333167683902">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>

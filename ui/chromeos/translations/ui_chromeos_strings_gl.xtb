@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irlandés</translation>
 <translation id="4124935795427217608">Unicornio</translation>
 <translation id="4131235941541910880">Envía á papeleira os elementos que non necesites</translation>
+<translation id="4134804435730168042">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />. Activar despois de configurar o dispositivo</translation>
 <translation id="4153015322587141338">Fai clic co botón dereito nun ficheiro e selecciona <ph name="PIN_COMMAND" /> para poder acceder a el rapidamente desde o andel.</translation>
 <translation id="4157569377477607576">A política do administrador non recomenda o seguinte:</translation>
 <translation id="4159731583141908892">Moveuse <ph name="FILE_NAME" />.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">Eliminarase o ficheiro "<ph name="FILE_NAME" />" e non poderás restablecelo.</translation>
 <translation id="4418686080762064601">Crea un atallo para acceder aos teus ficheiros</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
+<translation id="4432921877815220091">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Activar despois de configurar o dispositivo. Xestionada polo administrador</translation>
 <translation id="4439427728133035643">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="4442424173763614572">Erro ao buscar o DNS</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Non se puido efectuar a copia porque se produciu un erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Neerlandés (Países Baixos) con teclado internacional estadounidense (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />. Activar despois de configurar o dispositivo</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementos</translation>
 <translation id="5957366693331451795">Dispositivos Chromebox</translation>
 <translation id="5982621672636444458">Opcións de ordenación</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;": &lt;em&gt;buscar en Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Fonético (kannará)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Para validar a identidade do servidor de autenticación, cómpre cubrir o campo Coincidencia do nome alternativo do asunto ou o campo Coincidencia do sufixo de dominio</translation>
 <translation id="7165320105431587207">Non se puido configurar a rede</translation>
 <translation id="7170041865419449892">Fóra de alcance</translation>
 <translation id="7180611975245234373">Actualizar</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Dispoñible sen conexión</translation>
 <translation id="8492972329130824181">A rede doméstica non está dispoñible. Para conectarte, debes ter activada a itinerancia de datos móbiles.</translation>
 <translation id="8499098729323186194">Extraendo <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
+<translation id="8502913769543567768">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />. Activar despois de configurar o dispositivo. Xestionada polo administrador</translation>
 <translation id="8521441079177373948">RU</translation>
 <translation id="853494022971700746">Francés (Francia)</translation>
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>

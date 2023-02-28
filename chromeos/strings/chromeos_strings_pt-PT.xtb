@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">A procurar leitores…</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="3268178239013324452">Falha – Porta aberta</translation>
+<translation id="3275506277319227640">Ancore no lado <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Imagem do avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3435896845095436175">Ativar</translation>
+<translation id="345256797477978759">Ancorar a janela na parte <ph name="DIRECTION" /> maior do ecrã</translation>
 <translation id="3456078764689556234">Página <ph name="PRINTED_PAGES" /> impressa de <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">A digitalizar a página <ph name="PAGE_NUM" />… <ph name="PERCENTAGE_VALUE" />% concluído.</translation>
 <translation id="3459509316159669723">Impressão</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Bateria carregada</translation>
 <translation id="3600339377155080675">Espelhamento do ecrã</translation>
 <translation id="3602290021589620013">Pré-visualizar</translation>
+<translation id="360282891121575443">As fotos em álbuns partilhados podem ser atualizadas por outros utilizadores. As alterações diárias podem apresentar imagens de fundo não existentes no álbum.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Alterar imagem de fundo</translation>
 <translation id="360565022852130722">A rede WiFi está protegida com um protocolo pouco seguro WEP 802.1x.</translation>
 <translation id="3606583719724308068">Latência elevada para Websites HTTPS</translation>
 <translation id="361575905210396100">Agradecemos o seu feedback</translation>
 <translation id="3632579075709132555">Botão do ecrã de privacidade</translation>
+<translation id="3639846061339007994">superior</translation>
 <translation id="3651050199673793219">Selecione uma unidade de temperatura</translation>
 <translation id="3689839747745352263">Teste <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">A carregar...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Completo</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
 <translation id="435692326371619097">Faça a gestão das definições do APN (Nome do Ponto de Acesso) da rede. Os APNs estabelecem uma ligação entre uma rede móvel e a Internet. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Ancore no lado menor</translation>
 <translation id="4378373042927530923">Não foi executada.</translation>
 <translation id="4378551569595875038">A ligar...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6659594942844771486">Separador</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
+<translation id="6698459586333070823">Os álbuns partilhados podem ser atualizados por outros utilizadores</translation>
 <translation id="6704062477274546131">Resolução de DNS</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="6723847290197874913">Retroiluminação do teclado</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Foto existente da câmara ou do ficheiro</translation>
 <translation id="7162487448488904999">Galeria</translation>
 <translation id="7170236477717446850">Imagem do perfil</translation>
+<translation id="7171919371520438592">Ancorar a janela na parte <ph name="DIRECTION" /> menor do ecrã</translation>
 <translation id="7172721935181587524">1 imagem</translation>
 <translation id="7177485034254901881">Este <ph name="DEVICE_TYPE" /> é gerido por <ph name="MANAGER" />. Os administradores podem configurar remotamente o dispositivo.</translation>
 <translation id="7180611975245234373">Atualizar</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Anexar</translation>
 <translation id="8206859287963243715">Telemóvel</translation>
 <translation id="8208861521865154048">Benefícios</translation>
+<translation id="8210733748736414123">inferior</translation>
 <translation id="8226628635270268143">Escolha os seus álbuns ou fotos favoritos.</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
 <translation id="8230672074305416752">Falha ao enviar ping ao gateway da rede predefinida.</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Adicione uma conta para início de sessão integrado. É possível aceder a todas as contas com a sessão iniciada sem uma palavra-passe, por isso, só deve usar esta funcionalidade com contas fidedignas.</translation>
 <translation id="8364946094152050673">Os servidores de nomes estão vazios.</translation>
 <translation id="8372477600026034341">Anfitriões adicionais</translation>
+<translation id="8380114448424469341">Ancorar a janela na metade <ph name="DIRECTION" /> do ecrã</translation>
 <translation id="8395584934117017006">Este <ph name="DEVICE_TYPE" /> é gerido pela empresa.</translation>
 <translation id="8398927464629426868">A velocidade de carregamento ou descarregamento atual do dispositivo.</translation>
 <translation id="8410244574650205435">Detetado automaticamente</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Serviços Google</translation>
 <translation id="9138630967333032450">Shift do lado esquerdo</translation>
 <translation id="9149391708638971077">Executar teste de memória</translation>
+<translation id="9157515863513902090">Ancore no lado maior</translation>
 <translation id="9173638680043580060">Falta menos de um minuto</translation>
 <translation id="917720651393141712">Testar</translation>
 <translation id="9188992814426075118">O teclado pode corresponder automaticamente à sua imagem de fundo</translation>

@@ -549,6 +549,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />. S'estan carregant els esdeveniments.</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3934456833412894880">La funció Càrrega intel·ligent està activada. La bateria es mantindrà al 80% per allargar-ne la durada i poder carregar-la completament quan ho necessitis.</translation>
+<translation id="3936620957945677513">Prem Retorn per unir-te a l'esdeveniment <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Enganxa</translation>
 <translation id="394485226368336402">Configuració d'àudio</translation>
 <translation id="3945319193631853098">Toca per completar la configuració</translation>
@@ -1463,7 +1464,6 @@ Instal·lació nova</translation>
 <translation id="8850991929411075241">Cerca + Esc</translation>
 <translation id="8853703225951107899">El PIN o la contrasenya continuen sense poder-se verificar. Nota: si fa poc que has canviat la contrasenya, fes servir l'antiga. La contrasenya nova s'aplicarà un cop hagis tancat la sessió.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
-<translation id="8858369206579825206">Controls de privadesa</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
 <translation id="8874184842967597500">No connectada</translation>
 <translation id="8876661425082386199">Comprova la connexió</translation>
@@ -1508,7 +1508,7 @@ Instal·lació nova</translation>
 <translation id="9080206825613744995">S'està fent servir el micròfon.</translation>
 <translation id="9084606467167974638">Commuta la posició del menú</translation>
 <translation id="9085962983642906571">La bateria es manté al 80% mentre el dispositiu està connectat per allargar la durada de la bateria.</translation>
-<translation id="9089416786594320554">Mètodes d'entrada</translation>
+<translation id="9089416786594320554">Mètodes d'introducció</translation>
 <translation id="9091626656156419976">S'ha suprimit la pantalla <ph name="DISPLAY_NAME" /></translation>
 <translation id="9098969848082897657">Silencia el telèfon</translation>
 <translation id="9100887602489003640">S'està afegint el perfil. Espera uns minuts.</translation>

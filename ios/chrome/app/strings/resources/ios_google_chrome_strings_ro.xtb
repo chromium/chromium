@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Pentru a te deconecta de la Contul Google pe toate site-urile, <ph name="BEGIN_LINK" />deconectează-te de la Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="2732745070297234559">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
+<translation id="2736805085127235148">Notificările din Chrome sunt momentan dezactivate în setările dispozitivului.</translation>
 <translation id="2767464022270041271">Nu există parole salvate. Managerul de parole Google îți poate verifica parolele atunci când le salvezi.</translation>
 <translation id="2869959624320573933">Conectează-te la Chrome</translation>
 <translation id="2957447865124070833">Selectează <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome este actualizat</translation>
 <translation id="7939179037291298976">Din setările iPhone-ului, deschide Opțiuni pentru parolă și selectează Chrome</translation>
 <translation id="8022947259858476807">Folosește Chrome în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
+<translation id="804638182476029347">Permite notificările Chrome ca să primești alerte privind scăderea prețurilor</translation>
 <translation id="81358522153858150">Chrome acceptă acum politicile privind utilizatorii pentru contul tău gestionat</translation>
 <translation id="8160472928944011082">Chrome nu se poate actualiza</translation>
 <translation id="8357607116237445042">Alege dacă ștergi datele Chrome de pe dispozitiv sau le păstrezi</translation>

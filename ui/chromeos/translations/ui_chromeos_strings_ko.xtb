@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">아일랜드어</translation>
 <translation id="4124935795427217608">유니콘</translation>
 <translation id="4131235941541910880">필요하지 않은 항목은 휴지통으로 옮기세요.</translation>
+<translation id="4134804435730168042">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 기기 설정 후 활성화</translation>
 <translation id="4153015322587141338">파일을 마우스 오른쪽 버튼으로 클릭하고 실행기에서 파일에 빠르게 액세스할 수 있도록 "<ph name="PIN_COMMAND" />"을 선택합니다.</translation>
 <translation id="4157569377477607576">관리자 정책에서 권장되지 않는 사항:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" 파일이 삭제되며 복원할 수 없습니다.</translation>
 <translation id="4418686080762064601">파일의 바로가기 만들기</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
+<translation id="4432921877815220091">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, 기기 설정 후 활성화, 관리자가 관리함</translation>
 <translation id="4439427728133035643">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="4442424173763614572">DNS 조회 실패</translation>
 <translation id="4462159676511157176">사용자 지정 네임서버</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">복사 작업에 실패했습니다. 예상치 않은 오류: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">네덜란드어(네덜란드, 미국 국제 PC 키보드)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, 기기 설정 후 활성화</translation>
 <translation id="5955954492236143329">항목 <ph name="NUMBER_OF_ITEMS" />개</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">정렬 옵션</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;드라이브 검색&lt;/em&gt;</translation>
 <translation id="7135561821015524160">칸나다어(표음)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">인증 서버 ID를 확인하기 위한 '제목 보조 이름 일치' 또는 '도메인 서픽스 일치'가 누락되었습니다.</translation>
 <translation id="7165320105431587207">네트워크를 설정하지 못했습니다.</translation>
 <translation id="7170041865419449892">범위를 벗어났습니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">오프라인으로 사용 가능</translation>
 <translation id="8492972329130824181">홈 네트워크를 사용할 수 없습니다. 연결하려면 모바일 데이터 로밍이 사용 설정되어 있어야 합니다.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />개 항목 추출 중…</translation>
+<translation id="8502913769543567768">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 기기 설정 후 활성화, 관리자가 관리함</translation>
 <translation id="8521441079177373948">영어(영국)</translation>
 <translation id="853494022971700746">프랑스어(프랑스)</translation>
 <translation id="8540608333167683902">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>

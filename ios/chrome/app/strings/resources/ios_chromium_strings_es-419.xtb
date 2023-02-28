@@ -92,6 +92,7 @@
 <translation id="7118091470949186573">Ahora puedes usar Chromium cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="7165402419892018581">Elige Chromium para Autocompletar</translation>
 <translation id="7175400662502680481">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. El Administrador de contraseñas te recomienda cambiarla ahora.</translation>
+<translation id="7192111075364461693">Las notificaciones de Chromium están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="7208566199746267865">Chromium lleva tus cuentas a la Web para ahorrarte tiempo. Puedes agregar o quitar cuentas en la configuración.</translation>
 <translation id="725427773388857052">Chromium puede protegerte ante violaciones de la seguridad de los datos, sitios web inseguros y mucho más.</translation>
 <translation id="7255976941681861701">Descubre el nuevo menú de Chromium.</translation>
@@ -132,6 +133,7 @@ Aspectos para tener en cuenta:
   • Si desactivas la sincronización, las métricas también pueden incluir información sobre las URLs que visitas.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Esta cuenta y todos los datos sin guardar se quitarán de Chromium.</translation>
 <translation id="894437814105052438">Si sales de la cuenta, Chromium no sincronizará ningún dato nuevo con tu Cuenta de Google. Los datos sincronizados anteriormente permanecerán en la cuenta.</translation>
+<translation id="8963279154877372067">Permite las notificaciones de Chromium para recibir alertas de descuento</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9059693977935746710">No es necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Chromium no actualizado</translation>

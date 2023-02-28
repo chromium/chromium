@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irlandais</translation>
 <translation id="4124935795427217608">Licorne</translation>
 <translation id="4131235941541910880">Mettre les éléments inutiles dans la corbeille.</translation>
+<translation id="4134804435730168042">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activez après la configuration de l'appareil</translation>
 <translation id="4153015322587141338">Faites un clic droit sur un fichier et sélectionnez « <ph name="PIN_COMMAND" /> » afin d'accéder rapidement à vos fichiers sur l'étagère.</translation>
 <translation id="4157569377477607576">La politique de l'administrateur ne recommande pas :</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">«"<ph name="FILE_NAME" /> » sera supprimé et vous ne pourrez pas le restaurer.</translation>
 <translation id="4418686080762064601">Créer un raccourci vers vos fichiers</translation>
 <translation id="4425149324548788773">Mon disque</translation>
+<translation id="4432921877815220091">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activé après la configuration de l'appareil, géré par votre administrateur</translation>
 <translation id="4439427728133035643">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="4442424173763614572">Échec de la consultation de DNS.</translation>
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
@@ -616,6 +618,7 @@
 <translation id="5913638992615760742">Échec de la copie en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Néerlandais (Pays-Bas) avec clavier international américain (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, activé après la configuration de l'appareil</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> éléments</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Options de tri</translation>
@@ -762,6 +765,7 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; - &lt;em&gt;rechercher dans Google Disque&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada phonétique</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">La « correspondance du nom alternatif du sujet » ou la « correspondance du suffixe de domaine » doit être indiquée pour valider l'identité du serveur d'authentification</translation>
 <translation id="7165320105431587207">Échec de la configuration du réseau</translation>
 <translation id="7170041865419449892">Hors de portée</translation>
 <translation id="7180611975245234373">Actualiser</translation>
@@ -937,6 +941,7 @@
 <translation id="8487700953926739672">Offert en ligne</translation>
 <translation id="8492972329130824181">Le réseau domestique n'est pas accessible. L'itinérance sur réseau cellulaire doit être activée pour établir la connexion.</translation>
 <translation id="8499098729323186194">Extraction de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
+<translation id="8502913769543567768">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, activé après la configuration de l'appareil, géré par votre administrateur</translation>
 <translation id="8521441079177373948">R.-U.</translation>
 <translation id="853494022971700746">Français (France)</translation>
 <translation id="8540608333167683902">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>

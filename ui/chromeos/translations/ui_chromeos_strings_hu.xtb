@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">ír</translation>
 <translation id="4124935795427217608">Egyszarvú</translation>
 <translation id="4131235941541910880">Helyezze a kukába azokat az elemeket, amelyekre nincs szüksége.</translation>
+<translation id="4134804435730168042">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, hálózat szolgáltatója: <ph name="NETWORK_PROVIDER_NAME" />, Aktiválás eszközbeállítás után</translation>
 <translation id="4153015322587141338">Kattintson a kívánt fájlra a jobb egérgombbal, és válassza a(z) „<ph name="PIN_COMMAND" />” lehetőséget, így gyorsan hozzáférhet a polcon lévő fájlokhoz.</translation>
 <translation id="4157569377477607576">A rendszergazda által beállított házirend nem javasolja a következőket:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> áthelyezve.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">A rendszer törli a(z) „<ph name="FILE_NAME" />” fájlt, amely visszaállítása nem lehetséges.</translation>
 <translation id="4418686080762064601">Létrehozhat parancsikont a fájlokhoz</translation>
 <translation id="4425149324548788773">Saját meghajtó</translation>
+<translation id="4432921877815220091">Hálózat száma: <ph name="NETWORK_INDEX" />, összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, Aktiválás eszközbeállítás után, A rendszergazdája kezeli</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, csatlakozás</translation>
 <translation id="4442424173763614572">A DNS keresése sikertelen</translation>
 <translation id="4462159676511157176">Egyéni névszerverek</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">A másolási művelet nem várt hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">holland (Hollandia), amerikai nemzetközi PC-billentyűzettel</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, Aktiválás eszközbeállítás után</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elem</translation>
 <translation id="5957366693331451795">Chromeboxok</translation>
 <translation id="5982621672636444458">Rendezési beállítások</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;keresés a Drive-ban&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kannada, fonetikus</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Hiányzó „Tárgy alternatív neve – egyezés” vagy „Domainvégződés – egyezés” a hitelesítési szerver személyazonosságának ellenőrzéséhez</translation>
 <translation id="7165320105431587207">Nem sikerült konfigurálni a hálózatot</translation>
 <translation id="7170041865419449892">Tartományon kívül</translation>
 <translation id="7180611975245234373">Frissítés</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">Offline elérhető</translation>
 <translation id="8492972329130824181">Az otthoni hálózat nem áll rendelkezésre. A csatlakozáshoz engedélyezni kell a mobiladatokat használó roamingot.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> elem kibontása…</translation>
+<translation id="8502913769543567768">Hálózat száma: <ph name="NETWORK_INDEX" />., összes hálózat: <ph name="NETWORK_COUNT" />, hálózat neve: <ph name="NETWORK_NAME" />, hálózat szolgáltatója: <ph name="NETWORK_PROVIDER_NAME" />, Aktiválás eszközbeállítás után, A rendszergazdája kezeli</translation>
 <translation id="8521441079177373948">egyesült királyságbeli</translation>
 <translation id="853494022971700746">francia (Franciaország)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>

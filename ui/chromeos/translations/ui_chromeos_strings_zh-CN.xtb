@@ -759,6 +759,7 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; - 搜索云端硬盘&lt;em&gt;&lt;/em&gt;</translation>
 <translation id="7135561821015524160">卡纳达语注音</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">缺少“主体备用名称匹配”或“域名后缀匹配”，无法验证服务器身份</translation>
 <translation id="7165320105431587207">无法配置网络</translation>
 <translation id="7170041865419449892">超出范围</translation>
 <translation id="7180611975245234373">刷新</translation>

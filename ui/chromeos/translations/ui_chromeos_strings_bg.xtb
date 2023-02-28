@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Ирландски</translation>
 <translation id="4124935795427217608">Еднорог</translation>
 <translation id="4131235941541910880">Преместете в кошчето елементите, от които нямате нужда</translation>
+<translation id="4134804435730168042">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активиране след настройването на устройството</translation>
 <translation id="4153015322587141338">Кликнете с десния бутон върху даден файл и изберете „<ph name="PIN_COMMAND" />“, за да имате бърз достъп до него в лентата.</translation>
 <translation id="4157569377477607576">Според администраторско правило не се препоръчва:</translation>
 <translation id="4159731583141908892">Преместихте „<ph name="FILE_NAME" />“.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">Файлът <ph name="FILE_NAME" /> ще бъде изтрит и няма да можете да го възстановите.</translation>
 <translation id="4418686080762064601">Създавайте преки пътища към файловете си</translation>
 <translation id="4425149324548788773">Моят диск</translation>
+<translation id="4432921877815220091">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, активиране след настройване на устройството, управлява се от администратора ви</translation>
 <translation id="4439427728133035643">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, свързване</translation>
 <translation id="4442424173763614572">Търсенето в DNS не бе успешно</translation>
 <translation id="4462159676511157176">Специално зададени сървъри за имена</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">Копирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Нидерландски (Нидерландия) с американска международна клавиатура (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, активиране след настройване на устройството</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="5957366693331451795">Устройствата Chromebox</translation>
 <translation id="5982621672636444458">Опции за сортиране</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;търсене в Диск&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада (фонетична клавиатура)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">„Съответствие на алтернативното име на субекта“ или „Съответствие на суфикса на домейна“ не са конфигурирани с цел потвърждаване на самоличността на сървъра за удостоверяване</translation>
 <translation id="7165320105431587207">Конфигурирането на мрежата не бе успешно</translation>
 <translation id="7170041865419449892">Извън обхват</translation>
 <translation id="7180611975245234373">Опресняване</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">Налице офлайн</translation>
 <translation id="8492972329130824181">Няма достъп до домашната мрежа. Роумингът на мобилни данни трябва да е активиран, за да се установи връзка.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> елемента се извличат...</translation>
+<translation id="8502913769543567768">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активиране след настройването на устройството, управлява се от администратора ви</translation>
 <translation id="8521441079177373948">Британска клавиатура</translation>
 <translation id="853494022971700746">Френски (Франция)</translation>
 <translation id="8540608333167683902">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, подробности</translation>
