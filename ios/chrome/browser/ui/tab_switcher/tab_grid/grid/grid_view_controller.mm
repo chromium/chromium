@@ -1185,7 +1185,17 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                      animated:NO
                scrollPosition:scrollPosition];
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
-    [self updateFractionVisibleOfLastItem];
+
+    // Check `index` boundaries in order to filter out possible race
+    // conditions while mutating the collection.
+    if (index == NSNotFound || index >= self.items.count) {
+      return;
+    }
+
+    [self.collectionView
+        scrollToItemAtIndexPath:CreateIndexPath(index)
+               atScrollPosition:UICollectionViewScrollPositionCenteredVertically
+                       animated:YES];
   };
 
   [self performModelUpdates:modelUpdates
