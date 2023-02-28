@@ -238,10 +238,12 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   uint16_t StartTcpServer() {
     base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
         future;
+    auto options = network::mojom::TCPServerSocketOptions::New();
+    options->backlog = 5;
     GetNetworkContext()->CreateTCPServerSocket(
         net::IPEndPoint(net::IPAddress::IPv4Localhost(),
                         /*port=*/0),
-        /*backlog=*/5,
+        std::move(options),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         tcp_server_socket_.BindNewPipeAndPassReceiver(), future.GetCallback());
     auto local_addr = future.Get<absl::optional<net::IPEndPoint>>();

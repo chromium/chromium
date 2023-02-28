@@ -45,12 +45,12 @@ class NearbyConnectionsTcpSocketFactoryTest : public ::testing::Test {
     // network::TestNetworkContext:
     void CreateTCPServerSocket(
         const net::IPEndPoint& local_addr,
-        uint32_t backlog,
+        network::mojom::TCPServerSocketOptionsPtr options,
         const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
         mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
         CreateTCPServerSocketCallback callback) override {
       EXPECT_EQ(kLocalAddress, local_addr);
-      EXPECT_EQ(kBacklog, backlog);
+      EXPECT_EQ(kBacklog, options->backlog);
       EXPECT_EQ(traffic_annotation, net::MutableNetworkTrafficAnnotationTag(
                                         TRAFFIC_ANNOTATION_FOR_TESTS));
       std::move(callback).Run(net::OK, local_addr);

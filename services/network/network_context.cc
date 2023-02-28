@@ -1486,12 +1486,12 @@ void NetworkContext::CreateRestrictedUDPSocket(
 
 void NetworkContext::CreateTCPServerSocket(
     const net::IPEndPoint& local_addr,
-    uint32_t backlog,
+    mojom::TCPServerSocketOptionsPtr options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
     CreateTCPServerSocketCallback callback) {
   socket_factory_->CreateTCPServerSocket(
-      local_addr, backlog,
+      local_addr, std::move(options),
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       std::move(receiver), std::move(callback));
 }

@@ -79,14 +79,14 @@ void SocketFactory::CreateRestrictedUDPSocket(
 
 void SocketFactory::CreateTCPServerSocket(
     const net::IPEndPoint& local_addr,
-    int backlog,
+    mojom::TCPServerSocketOptionsPtr options,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
     mojom::NetworkContext::CreateTCPServerSocketCallback callback) {
   auto socket =
       std::make_unique<TCPServerSocket>(this, net_log_, traffic_annotation);
   net::IPEndPoint local_addr_out;
-  int result = socket->Listen(local_addr, backlog, &local_addr_out);
+  int result = socket->Listen(local_addr, options->backlog, &local_addr_out);
   if (result != net::OK) {
     std::move(callback).Run(result, absl::nullopt);
     return;

@@ -177,8 +177,10 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
   void SetUp() override {
     int net_error = net::ERR_FAILED;
     base::RunLoop run_loop;
+    auto options = network::mojom::TCPServerSocketOptions::New();
+    options->backlog = 1;
     factory_.CreateTCPServerSocket(
-        net::IPEndPoint(net::IPAddress::IPv6Localhost(), 0), 1 /* backlog */,
+        net::IPEndPoint(net::IPAddress::IPv6Localhost(), 0), std::move(options),
         TRAFFIC_ANNOTATION_FOR_TESTS,
         server_socket_.InitWithNewPipeAndPassReceiver(),
         base::BindOnce(

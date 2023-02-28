@@ -725,7 +725,7 @@ class MockNetworkContext : public network::TestNetworkContext {
 
   void CreateTCPServerSocket(
       const net::IPEndPoint& local_addr,
-      uint32_t backlog,
+      network::mojom::TCPServerSocketOptionsPtr options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<network::mojom::TCPServerSocket> receiver,
       CreateTCPServerSocketCallback callback) override {

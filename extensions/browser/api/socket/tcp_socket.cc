@@ -256,8 +256,11 @@ void TCPSocket::Listen(const std::string& address,
   if (!storage_partition_) {
     storage_partition_ = browser_context_->GetDefaultStoragePartition();
   }
+
+  auto options = network::mojom::TCPServerSocketOptions::New();
+  options->backlog = backlog;
   storage_partition_->GetNetworkContext()->CreateTCPServerSocket(
-      ip_end_point, backlog,
+      ip_end_point, std::move(options),
       net::MutableNetworkTrafficAnnotationTag(
           Socket::GetNetworkTrafficAnnotationTag()),
       server_socket_.BindNewPipeAndPassReceiver(),

@@ -265,14 +265,17 @@ void DirectSocketsServiceImpl::OpenTCPServerSocket(
     blink::mojom::DirectTCPServerSocketOptionsPtr options,
     mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
     OpenTCPServerSocketCallback callback) {
+  auto server_options = network::mojom::TCPServerSocketOptions::New();
+
   // Default if |options->backlog| is 0.
-  uint32_t backlog = SOMAXCONN;
+  server_options->backlog = SOMAXCONN;
   if (options->backlog > 0) {
     // Truncate the provided value if it is larger than allowed by the platform.
-    backlog = std::min<uint32_t>(options->backlog, SOMAXCONN);
+    server_options->backlog = std::min<uint32_t>(options->backlog, SOMAXCONN);
   }
+
   GetNetworkContext()->CreateTCPServerSocket(
-      options->local_addr, backlog,
+      options->local_addr, std::move(server_options),
       net::MutableNetworkTrafficAnnotationTag(kDirectSocketsTrafficAnnotation),
       std::move(socket), std::move(callback));
 }

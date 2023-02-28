@@ -93,10 +93,11 @@ void NearbyConnectionsTcpSocketFactory::CreateTCPServerSocket(
     std::move(callback).Run(net::ERR_FAILED, /*local_addr=*/absl::nullopt);
     return;
   }
-
+  auto options = network::mojom::TCPServerSocketOptions::New();
+  options->backlog = backlog;
   network_context->CreateTCPServerSocket(
-      net::IPEndPoint(local_addr, port.port()), backlog, traffic_annotation,
-      std::move(receiver),
+      net::IPEndPoint(local_addr, port.port()), std::move(options),
+      traffic_annotation, std::move(receiver),
       base::BindOnce(
           &NearbyConnectionsTcpSocketFactory::OnTcpServerSocketCreated,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

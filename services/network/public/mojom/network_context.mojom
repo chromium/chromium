@@ -1144,15 +1144,14 @@ interface NetworkContext {
   // and cannot be re-used for other purposes. Caller must specify an address
   // family in |local_addr| to be either IPv4 or IPv6. If port in |local_addr|
   // is 0, the OS will pick an available port. If address bytes are 0, the OS
-  // will pick a local address of the specified address family. |backlog| will
-  // be passed to the OS to set the size of accept queue.
+  // will pick a local address of the specified address family.
   // On success, the resulting local address will be written to |local_addr_out|
   // and |result| is net::OK. On failure, |result| is a network error code.
   //
   // Any sockets that are created but are yet to be destroyed will be destroyed
   // when NetworkContext goes away.
   CreateTCPServerSocket(IPEndPoint local_addr,
-                        uint32 backlog,
+                        TCPServerSocketOptions options,
                         MutableNetworkTrafficAnnotationTag traffic_annotation,
                         pending_receiver<TCPServerSocket> socket)
       => (int32 result, IPEndPoint? local_addr_out);
