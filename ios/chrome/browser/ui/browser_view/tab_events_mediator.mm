@@ -97,9 +97,22 @@
 - (void)webStateList:(WebStateList*)webStateList
     willDetachWebState:(web::WebState*)webState
                atIndex:(int)atIndex {
+  // When the active webState is detached, the view should be reset.
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
   if (webState == currentWebState) {
     [self.consumer resetTab];
+  }
+}
+
+- (void)webStateList:(WebStateList*)webStateList
+    didInsertWebState:(web::WebState*)webState
+              atIndex:(int)index
+           activating:(BOOL)activating {
+  // If a tab is inserted in the background (not activating), trigger an
+  // animation. (The animation for foreground tab insertion is handled in
+  // `didChangeActiveWebState`).
+  if (!activating) {
+    [self.consumer animateNewBackgroundTab];
   }
 }
 

@@ -14,6 +14,9 @@
 // Tells the consumer to reset the content view.
 - (void)resetTab;
 
+// Tells the consumer to start an animation for a background tab.
+- (void)animateNewBackgroundTab;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_TAB_CONSUMER_H_
