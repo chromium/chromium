@@ -1758,8 +1758,11 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
   void EnterFullscreenModeForTab(
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override {
-    is_fullscreen_ = true;
-    options_ = options;
+    fullscreen_mode_ = WebContents::FromRenderFrameHost(requesting_frame)
+                               ->IsBeingVisiblyCaptured()
+                           ? FullscreenMode::kPseudoContent
+                           : FullscreenMode::kContent;
+    fullscreen_options_ = options;
 
     if (waiting_for_ == kFullscreenEnter) {
       waiting_for_ = kNothing;
@@ -1770,7 +1773,7 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
   void FullscreenStateChangedForTab(
       RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override {
-    options_ = options;
+    fullscreen_options_ = options;
 
     if (waiting_for_ == kFullscreenOptions) {
       waiting_for_ = kNothing;
@@ -1779,8 +1782,8 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
   }
 
   void ExitFullscreenModeForTab(WebContents*) override {
-    is_fullscreen_ = false;
-    options_ = blink::mojom::FullscreenOptions();
+    fullscreen_mode_ = FullscreenMode::kWindowed;
+    fullscreen_options_ = blink::mojom::FullscreenOptions();
 
     if (waiting_for_ == kFullscreenExit) {
       waiting_for_ = kNothing;
@@ -1789,25 +1792,20 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
   }
 
   bool IsFullscreenForTabOrPending(const WebContents* web_contents) override {
-    return is_fullscreen_;
+    return fullscreen_mode_ == FullscreenMode::kContent ||
+           fullscreen_mode_ == FullscreenMode::kPseudoContent;
   }
 
-  bool IsFullscreenForTabOrPending(const WebContents* web_contents,
-                                   int64_t* display_id) override {
-    const bool fullscreen = IsFullscreenForTabOrPending(web_contents);
-    if (fullscreen && display_id) {
-      // Workaround for WebContents::GetNativeView not being const.
-      // TODO(crbug.com/1347558): Make WebContents::GetNativeView const.
-      DCHECK_EQ(web_contents_, web_contents);
-      *display_id = display::Screen::GetScreen()
-                        ->GetDisplayNearestView(web_contents_->GetNativeView())
-                        .id();
-    }
-    return fullscreen;
+  FullscreenState GetFullscreenState(
+      const WebContents* web_contents) const override {
+    FullscreenState state;
+    state.target_mode = fullscreen_mode_;
+    state.target_display_id = fullscreen_options_.display_id;
+    return state;
   }
 
   const blink::mojom::FullscreenOptions& fullscreen_options() {
-    return options_;
+    return fullscreen_options_;
   }
 
   void AddNewContents(WebContents* source,
@@ -1878,8 +1876,8 @@ class TestWCDelegateForDialogsAndFullscreen : public JavaScriptDialogManager,
 
   std::string last_message_;
 
-  bool is_fullscreen_ = false;
-  blink::mojom::FullscreenOptions options_;
+  FullscreenMode fullscreen_mode_ = FullscreenMode::kWindowed;
+  blink::mojom::FullscreenOptions fullscreen_options_;
 
   std::vector<std::unique_ptr<WebContents>> popups_;
 
@@ -2991,6 +2989,31 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(ExecJs(wc, script));
   test_delegate.Wait();
   EXPECT_FALSE(wc->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       PopupsFromJavaScriptDoNotEndFullscreenWithinTab) {
+  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
+  TestWCDelegateForDialogsAndFullscreen test_delegate(wc);
+
+  GURL url("about:blank");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // capture
+  base::ScopedClosureRunner capture_closure = wc->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/false, /*stay_awake=*/false);
+  EXPECT_TRUE(wc->IsBeingVisiblyCaptured());
+  // popup
+  wc->EnterFullscreenMode(wc->GetPrimaryMainFrame(), {});
+  EXPECT_TRUE(wc->IsFullscreen());
+  EXPECT_EQ(wc->GetDelegate()->GetFullscreenState(wc).target_mode,
+            FullscreenMode::kPseudoContent);
+  std::string script = "window.open('', '', 'width=200,height=100')";
+  test_delegate.WillWaitForNewContents();
+  EXPECT_TRUE(ExecJs(wc, script));
+  test_delegate.Wait();
+  EXPECT_TRUE(wc->IsFullscreen());
+  capture_closure.RunAndReset();
 }
 
 // Tests that if a popup is opened, a WebContents *up* the opener chain is

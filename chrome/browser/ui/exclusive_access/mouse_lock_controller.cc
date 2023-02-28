@@ -61,10 +61,7 @@ void MouseLockController::RequestToLockMouse(WebContents* web_contents,
   // user successfully escaped from a previous lock.  Exceptions are when the
   // page has unlocked (i.e. not the user), or if we're in tab fullscreen (which
   // requires its own transient user activation).
-  if (!last_unlocked_by_target &&
-      !exclusive_access_manager()
-           ->fullscreen_controller()
-           ->IsFullscreenForTabOrPending(web_contents)) {
+  if (!last_unlocked_by_target && !web_contents->IsFullscreen()) {
     if (!user_gesture) {
       web_contents->GotResponseToLockMouseRequest(
           blink::mojom::PointerLockResult::kRequiresUserGesture);

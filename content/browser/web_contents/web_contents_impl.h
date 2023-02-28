@@ -48,6 +48,7 @@
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/web_contents/file_chooser_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/mhtml_generation_result.h"
@@ -328,10 +329,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // If the returned value is an empty string, it means that there is no
   // human-readable name.
   std::string GetTitleForMediaControls();
-
-  // Returns true if this WebContents is in fullscreen (or pending fullscreen)
-  // on the specified display ID.
-  bool IsFullscreenOnDisplay(int64_t display_id) const;
 
   // WebContents ------------------------------------------------------
   WebContentsDelegate* GetDelegate() override;

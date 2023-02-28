@@ -93,9 +93,7 @@ bool KeyboardLockController::RequiresPressAndHoldEscToExit() const {
 
 void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
-  if (!exclusive_access_manager()
-           ->fullscreen_controller()
-           ->IsFullscreenForTabOrPending(web_contents)) {
+  if (!web_contents->IsFullscreen()) {
     return;
   }
 
