@@ -89,7 +89,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -2940,7 +2940,7 @@ class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
  public:
   explicit GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper(
       DeviceLocalAccountSessionType session_type)
-      : session_type_(session_type), user_manager_(new ash::MockUserManager) {}
+      : session_type_(session_type) {}
 
   void SetUpOnMainThread() {
     ash::LoginState::Get()->SetLoggedInState(
@@ -2948,20 +2948,25 @@ class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
         session_type_ == DeviceLocalAccountSessionType::kPublic
             ? ash::LoginState::LoggedInUserType::LOGGED_IN_USER_PUBLIC_ACCOUNT
             : ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
-    EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
-        .WillRepeatedly(
-            Return(session_type_ == DeviceLocalAccountSessionType::kAppKiosk));
-    EXPECT_CALL(*user_manager_, IsLoggedInAsWebKioskApp())
-        .WillRepeatedly(
-            Return(session_type_ == DeviceLocalAccountSessionType::kWebKiosk));
-    EXPECT_CALL(*user_manager_, IsLoggedInAsPublicAccount())
-        .WillRepeatedly(
-            Return(session_type_ == DeviceLocalAccountSessionType::kPublic));
-    EXPECT_CALL(*user_manager_, GetLoggedInUsers())
-        .WillRepeatedly(
-            testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    user_manager::User* user = nullptr;
+    const AccountId account_id = AccountId::FromUserEmail("test@test");
+    switch (session_type_) {
+      case DeviceLocalAccountSessionType::kPublic:
+        user = user_manager->AddPublicAccountUser(account_id);
+        break;
+      case DeviceLocalAccountSessionType::kAppKiosk:
+        user = user_manager->AddKioskAppUser(account_id);
+        break;
+      case DeviceLocalAccountSessionType::kWebKiosk:
+        user = user_manager->AddWebKioskAppUser(account_id);
+        break;
+    }
+    ASSERT_TRUE(user);
+    user_manager->UserLoggedIn(account_id, user->username_hash(),
+                               /*browser_restart=*/false, /*is_child=*/false);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_));
+        std::move(user_manager));
   }
 
   void TearDownOnMainThread() { scoped_user_manager_.reset(); }
@@ -2974,8 +2979,6 @@ class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
   ash::ScopedStubInstallAttributes test_install_attributes_{
       ash::StubInstallAttributes::CreateCloudManaged("example.com", "fake-id")};
 
-  // Owned by |scoped_user_manager_|.
-  ash::MockUserManager* user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
