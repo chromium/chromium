@@ -4,6 +4,7 @@
 
 package org.chromium.mojo.bindings;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -54,7 +55,7 @@ public class ServiceMessage extends Message {
     public Message getPayload() {
         if (mPayload == null) {
             ByteBuffer truncatedBuffer =
-                    ((ByteBuffer) getData().position(getHeader().getSize())).slice();
+                    ((ByteBuffer) ((Buffer) getData()).position(getHeader().getSize())).slice();
             truncatedBuffer.order(ByteOrder.LITTLE_ENDIAN);
             mPayload = new Message(truncatedBuffer, getHandles());
         }

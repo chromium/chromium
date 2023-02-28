@@ -27,6 +27,7 @@ import org.chromium.mojo.system.SharedBufferHandle.MapFlags;
 import org.chromium.mojo.system.UntypedHandle;
 import org.chromium.mojo.system.Watcher;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -232,7 +233,7 @@ public class CoreImpl implements Core {
                 // succeeds below, so we unconditionally release them here.
                 handlesBuffer.putLong(handle.releaseNativeHandle());
             }
-            handlesBuffer.position(0);
+            ((Buffer) handlesBuffer).position(0);
         }
         int mojoResult =
                 CoreImplJni.get()
