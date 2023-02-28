@@ -1046,11 +1046,6 @@ bool AuraOutput::SendDisplayMetrics(const display::Display& display,
       if (current_output_scale == output_scale)
         flags |= ZAURA_OUTPUT_SCALE_PROPERTY_CURRENT;
 
-      // TODO(malaykeshav): This can be removed in the future when client
-      // has been updated.
-      if (wl_resource_get_version(resource_) < 6)
-        output_scale = std::round(1000.f / zoom_factor);
-
       zaura_output_send_scale(resource_, flags, output_scale);
     }
   }
