@@ -89,3 +89,11 @@ To get Chrome OS System Colors, an element must:
 :host-context(body.jelly-enabled) cr-expand-button::part(icon) {
   --cr-icon-button-fill-color: var(--cros-sys-secondary);
 }
+
+:host-context(body.jelly-enabled) {
+  /* TODO: cros-separator-color will be updated globally. Remove this definition
+       after the swap. */
+  --cros-separator-color: var(--cros-sys-separator);
+  --cr-primary-text-color: var(--cros-sys-primary);
+  --cr-secondary-text-color: var(--cros-sys-secondary);
+}
