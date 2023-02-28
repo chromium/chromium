@@ -2084,9 +2084,6 @@ extern const char kEnableCommandLineOnNoRootedDescription[];
 extern const char kEnablePasswordsAccountStorageName[];
 extern const char kEnablePasswordsAccountStorageDescription[];
 
-extern const char kEnableOskResizesVisualViewportByDefaultName[];
-extern const char kEnableOskResizesVisualViewportByDefaultDescription[];
-
 extern const char kExploreSitesName[];
 extern const char kExploreSitesDescription[];
 

@@ -1856,11 +1856,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   if (!prefs.strict_mime_type_check_for_worker_scripts_enabled) {
     RuntimeEnabledFeatures::SetStrictMimeTypesForWorkersEnabled(false);
   }
-
-  if (features::OSKResizesVisualViewportByDefault()) {
-    RuntimeEnabledFeatures::SetViewportMetaInteractiveWidgetPropertyEnabled(
-        true);
-  }
 }
 
 void WebViewImpl::ThemeChanged() {

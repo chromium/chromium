@@ -24,9 +24,7 @@ enum VirtualKeyboardVisibilityRequest {
 enum VirtualKeyboardMode {
   // No mode explicitly set by the author. Use the platform default. Current
   // defaults:
-  // Android - resizes-content: entire page container is resized, inducing
-  //           layout.
-  // ChromeOS - resizes-visual: only the visual viewport is resized.
+  // Android/ChromeOS - resizes-visual: only the visual viewport is resized.
   // Other - no virtual keyboard interaction.
   kUnset,
   // The virtual keyboard resizes the visual viewport only; it does not affect
@@ -35,11 +33,11 @@ enum VirtualKeyboardMode {
   // The virtual keyboard resizes the layout (and visual) viewport as well as
   // the initial containing block. Can be set by the page via the viewport meta
   // tag using `interactive-widget=resizes-content`. Currently works only on
-  // Android Chrome and only when the OSKResizesVisualViewportByDefault flag is
-  // enabled.
+  // Android Chrome.
   kResizesContent,
   // The virtual keyboard doesn't resize any viewports and is observable only
   // via the virtualKeyboard API `geometrychange` event. Can be set using the
-  // `navigator.virtualKeyboard.overlayContent` API.
+  // `navigator.virtualKeyboard.overlayContent` API or
+  // `interactive-widget=overlays-content` in the viewport meta tag.
   kOverlaysContent
 };

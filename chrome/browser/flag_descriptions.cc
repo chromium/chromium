@@ -3648,13 +3648,6 @@ const char kEnablePasswordsAccountStorageDescription[] =
     "Enables storing passwords in a second, Gaia-account-scoped storage for "
     "signed-in but not syncing users";
 
-const char kEnableOskResizesVisualViewportByDefaultName[] =
-    "Enable OSK resizes visual viewport by default";
-const char kEnableOskResizesVisualViewportByDefaultDescription[] =
-    "Unless explicitly overriden by the page author, the Android "
-    "On-Screen-Keyboard (OSK) will avoid changing the page height, resizing "
-    "only the visual viewport.";
-
 const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =
     "Enables portal from new tab page to explore websites.";

@@ -404,9 +404,7 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
     }
   } else if (key_string == "shrink-to-fit") {
     // Ignore vendor-specific argument.
-  } else if (RuntimeEnabledFeatures::
-                 ViewportMetaInteractiveWidgetPropertyEnabled() &&
-             key_string == "interactive-widget") {
+  } else if (key_string == "interactive-widget") {
     absl::optional<ui::mojom::blink::VirtualKeyboardMode> resize_type =
         ParseVirtualKeyboardValueAsEnum(value_string);
 

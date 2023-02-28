@@ -209,11 +209,12 @@ public class CompositorViewHolder extends FrameLayout
      */
     private boolean mHasKeyboardGeometryChangeFired;
 
+    /**
+     * By default, the virtual keyboard overlays content, only resizing the visual viewport.
+     * Web content can use APIs that can change this to cause the WebContents to be resized.
+     */
     @VirtualKeyboardMode.EnumType
-    private int mVirtualKeyboardMode =
-            ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled()
-            ? VirtualKeyboardMode.RESIZES_VISUAL
-            : VirtualKeyboardMode.RESIZES_CONTENT;
+    private int mVirtualKeyboardMode = VirtualKeyboardMode.RESIZES_VISUAL;
 
     private OnscreenContentProvider mOnscreenContentProvider;
 
@@ -436,8 +437,7 @@ public class CompositorViewHolder extends FrameLayout
         // contents.
         //
         // [1] - https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_FULLSCREEN
-        if (mShowingFullscreen
-                && (!ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled())
+        if (mShowingFullscreen && mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT
                 && KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this)) {
             getWindowVisibleDisplayFrame(mCacheRect);
 
@@ -961,10 +961,7 @@ public class CompositorViewHolder extends FrameLayout
         if (mPrefService.getBoolean(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT)) {
             return VirtualKeyboardMode.RESIZES_CONTENT;
         }
-        if (ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled()) {
-            return VirtualKeyboardMode.RESIZES_VISUAL;
-        }
-        return VirtualKeyboardMode.RESIZES_CONTENT;
+        return VirtualKeyboardMode.RESIZES_VISUAL;
     }
 
     private boolean oskResizesVisualViewport() {

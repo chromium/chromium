@@ -3468,11 +3468,6 @@
       status: "stable",
     },
     {
-      name: "ViewportMetaInteractiveWidgetProperty",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "ViewportSegments",
       status: "experimental",
       base_feature: "none",

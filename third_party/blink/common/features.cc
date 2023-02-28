@@ -245,13 +245,6 @@ BASE_FEATURE(kAnchorElementInteraction,
              "AnchorElementInteraction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable "interoperable" Android virtual-keyboard. i.e. the keyboard doesn't
-// affect page layout, resizing only the visual viewport. This matches WebKit
-// and ChromeOS behavior.
-BASE_FEATURE(kOSKResizesVisualViewportByDefault,
-             "OSKResizesVisualViewportByDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
 BASE_FEATURE(kPlzDedicatedWorker,
@@ -352,11 +345,6 @@ const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
 BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool OSKResizesVisualViewportByDefault() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kOSKResizesVisualViewportByDefault);
-}
 
 bool IsFencedFramesEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kFencedFrames);

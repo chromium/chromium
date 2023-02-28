@@ -451,6 +451,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Broken with OSKResizesVisualViewportByDefault - crbug.com/1384433")
     public void testMovesUpSnackbar() throws TimeoutException {
         final String kSnackbarText = "snackbar";
 
