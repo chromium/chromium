@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -207,26 +208,11 @@ UpdateServiceStub::UpdateServiceStub(scoped_refptr<updater::UpdateService> impl,
                                      UpdaterScope scope,
                                      base::RepeatingClosure task_start_listener,
                                      base::RepeatingClosure task_end_listener)
-    : filter_(std::make_unique<UpdateServiceStubUntrusted>(this)),
-      server_(
-          {.server_name = GetUpdateServiceServerName(scope),
-           .message_pipe_id =
-               named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
-          base::BindRepeating(base::BindRepeating(
-              [](mojom::UpdateService* interface,
-                 mojom::UpdateService* filter,
-                 std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
-                return IsConnectionTrusted(*info) ? interface : filter;
-              },
-              this,
-              filter_.get()))),
-      impl_(impl),
-      task_start_listener_(task_start_listener),
-      task_end_listener_(task_end_listener) {
-  server_.set_disconnect_handler(base::BindRepeating(
-      []() { VLOG(1) << "UpdateService client disconnected."; }));
-  server_.StartServer();
-}
+    : UpdateServiceStub(impl,
+                        scope,
+                        task_start_listener,
+                        task_end_listener,
+                        base::RepeatingClosure()) {}
 
 UpdateServiceStub::~UpdateServiceStub() = default;
 
@@ -357,6 +343,37 @@ void UpdateServiceStub::RunInstaller(const std::string& app_id,
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
                       install_settings, std::move(state_change_callback),
                       std::move(on_complete_callback).Then(task_end_listener_));
+}
+
+UpdateServiceStub::UpdateServiceStub(
+    scoped_refptr<updater::UpdateService> impl,
+    UpdaterScope scope,
+    base::RepeatingClosure task_start_listener,
+    base::RepeatingClosure task_end_listener,
+    base::RepeatingClosure endpoint_created_listener_for_testing)
+    : filter_(std::make_unique<UpdateServiceStubUntrusted>(this)),
+      server_(
+          {.server_name = GetUpdateServiceServerName(scope),
+           .message_pipe_id =
+               named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
+          base::BindRepeating(base::BindRepeating(
+              [](mojom::UpdateService* interface,
+                 mojom::UpdateService* filter,
+                 std::unique_ptr<named_mojo_ipc_server::ConnectionInfo> info) {
+                return IsConnectionTrusted(*info) ? interface : filter;
+              },
+              this,
+              filter_.get()))),
+      impl_(impl),
+      task_start_listener_(task_start_listener),
+      task_end_listener_(task_end_listener) {
+  server_.set_disconnect_handler(base::BindRepeating(
+      []() { VLOG(1) << "UpdateService client disconnected."; }));
+  if (endpoint_created_listener_for_testing) {
+    server_.set_on_server_endpoint_created_callback_for_testing(  // IN-TEST
+        endpoint_created_listener_for_testing);
+  }
+  server_.StartServer();
 }
 
 }  // namespace updater

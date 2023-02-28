@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
@@ -60,6 +62,16 @@ class UpdateServiceStub : public mojom::UpdateService {
                     RunInstallerCallback callback) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(UpdaterIPCTestCase, AllRpcsComplete);
+  // Creates an `UpdateServiceStub` and invokes a callback when the server
+  // endpoint is created. This is useful for tests.
+  UpdateServiceStub(
+      scoped_refptr<updater::UpdateService> impl,
+      UpdaterScope scope,
+      base::RepeatingClosure task_start_listener,
+      base::RepeatingClosure task_end_listener,
+      base::RepeatingClosure endpoint_created_listener_for_testing);
+
   std::unique_ptr<mojom::UpdateService> filter_;
   named_mojo_ipc_server::NamedMojoIpcServer<mojom::UpdateService> server_;
   scoped_refptr<updater::UpdateService> impl_;
