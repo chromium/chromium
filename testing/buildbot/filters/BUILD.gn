@@ -53,6 +53,7 @@ source_set("browser_tests_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/cft.official.browser_tests.filter",
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter",
     "//testing/buildbot/filters/chromeos.msan.browser_tests.oobe_positive.filter",
     "//testing/buildbot/filters/code_coverage.browser_tests.filter",

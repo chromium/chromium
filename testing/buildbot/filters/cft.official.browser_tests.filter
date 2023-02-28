@@ -1,0 +1,6 @@
+# crbug/1419576: Positive filter to only run Chrome for Testing info bar tests
+# on the Chrome for Testing official builders.
+#
+# These builders do not require any other test because they can leverage test
+# coverage from the Chrome official builders.
+ChromeForTestingInfoBarTest.*
