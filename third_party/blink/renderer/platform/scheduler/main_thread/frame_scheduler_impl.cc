@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/find_in_page_budget_pool_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_web_scheduling_task_queue_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/page_visibility_state.h"
@@ -672,6 +673,12 @@ void FrameSchedulerImpl::OnRemovedAggressiveThrottlingOptOut() {
       static_cast<bool>(aggressive_throttling_opt_out_count_);
   if (parent_page_scheduler_)
     parent_page_scheduler_->OnThrottlingStatusUpdated();
+}
+
+void FrameSchedulerImpl::OnTaskCompleted(TaskQueue::TaskTiming* timing) {
+  if (delegate_) {
+    delegate_->OnTaskCompleted(timing->start_time(), timing->end_time());
+  }
 }
 
 void FrameSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context) const {

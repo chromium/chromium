@@ -74,6 +74,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     kVisibilityState = 1 << 12,
     kBackForwardCacheRestoration = 1 << 13,
     kSoftNavigation = 1 << 14,
+    kLongAnimationFrame = 1 << 15,
   };
 
   const AtomicString& name() const { return name_; }
@@ -118,7 +119,8 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
     DEFINE_THREAD_SAFE_STATIC_LOCAL(
         HashSet<PerformanceEntryType>, valid_timeline_entry_types,
         ({kNavigation, kMark, kMeasure, kResource, kTaskAttribution, kPaint,
-          kFirstInput, kBackForwardCacheRestoration, kSoftNavigation}));
+          kFirstInput, kBackForwardCacheRestoration, kSoftNavigation,
+          kLongAnimationFrame}));
     return valid_timeline_entry_types.Contains(entry_type);
   }
 

@@ -10,6 +10,7 @@
     "first-input",
     "largest-contentful-paint",
     "layout-shift",
+    "long-animation-frame",
     "longtask",
     "mark",
     "measure",

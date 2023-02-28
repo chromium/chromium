@@ -1989,6 +1989,10 @@
       base_feature: "none",
     },
     {
+      name: "LongAnimationFrameTiming",
+      status: "experimental"
+    },
+    {
       name: "MachineLearningCommon",
       implied_by: ["MachineLearningModelLoader", "MachineLearningNeuralNetwork"],
       status: "experimental",

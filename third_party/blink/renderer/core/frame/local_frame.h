@@ -907,6 +907,9 @@ class CORE_EXPORT LocalFrame final
       BlockingDetails details) override;
   const base::UnguessableToken& GetAgentClusterId() const override;
 
+  void OnTaskCompleted(base::TimeTicks start_time,
+                       base::TimeTicks end_time) override;
+
   // Activates the user activation states of this frame and all its ancestors.
   //
   // The |notification_type| parameter is used for histograms only.

@@ -1179,6 +1179,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_entry.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_event_timing.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_event_timing.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_long_animation_frame_timing.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_long_animation_frame_timing.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_long_task_timing.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_long_task_timing.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_performance_mark.cc",

@@ -2367,6 +2367,12 @@ const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {
   return base::UnguessableToken::Null();
 }
 
+void LocalFrame::OnTaskCompleted(base::TimeTicks start_time,
+                                 base::TimeTicks end_time) {
+  if (FrameWidget* widget = GetWidgetForLocalRoot()) {
+    widget->OnTaskCompletedForFrame(start_time, end_time, this);
+  }
+}
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {
   return mojo_handler_->ReportingService();
 }

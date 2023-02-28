@@ -82,6 +82,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
 
   void ScheduleAnimationInternal(bool do_raster);
   void AnimateNow();
+  bool RequestedMainFramePending() override;
 
   // When |do_raster| is false, only a main frame animation step is performed,
   // but when true, a full composite is performed and a frame submitted to the

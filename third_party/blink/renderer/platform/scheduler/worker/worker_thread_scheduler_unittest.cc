@@ -466,6 +466,7 @@ class FrameSchedulerDelegateWithUkmSourceId : public FrameScheduler::Delegate {
   ukm::UkmRecorder* GetUkmRecorder() override { return nullptr; }
 
   ukm::SourceId GetUkmSourceId() override { return source_id_; }
+  void OnTaskCompleted(base::TimeTicks, base::TimeTicks) override {}
 
   void UpdateTaskTime(base::TimeDelta time) override {}
 

@@ -133,6 +133,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
@@ -311,6 +312,11 @@ WebFrameWidgetImpl::~WebFrameWidgetImpl() {
 
 void WebFrameWidgetImpl::BindLocalRoot(WebLocalFrame& local_root) {
   local_root_ = To<WebLocalFrameImpl>(local_root);
+  if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled() &&
+      !IsHidden()) {
+    animation_frame_timing_monitor_ =
+        MakeGarbageCollected<AnimationFrameTimingMonitor>(*this);
+  }
 }
 
 bool WebFrameWidgetImpl::ForTopMostMainFrame() const {
@@ -332,6 +338,11 @@ void WebFrameWidgetImpl::Close() {
     View()->SetMainFrameViewWidget(nullptr);
   }
 
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->Shutdown();
+    animation_frame_timing_monitor_.Clear();
+  }
+
   mutator_dispatcher_ = nullptr;
   local_root_ = nullptr;
   widget_base_->Shutdown();
@@ -345,6 +356,11 @@ void WebFrameWidgetImpl::Close() {
 
 WebLocalFrame* WebFrameWidgetImpl::LocalRoot() const {
   return local_root_;
+}
+
+bool WebFrameWidgetImpl::RequestedMainFramePending() {
+  return View() && View()->does_composite() && LayerTreeHost() &&
+         LayerTreeHost()->RequestedMainFramePending();
 }
 
 gfx::Rect WebFrameWidgetImpl::ComputeBlockBound(
@@ -1283,6 +1299,7 @@ void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
   visitor->Trace(input_target_receiver_);
   visitor->Trace(mouse_capture_element_);
   visitor->Trace(device_emulator_);
+  visitor->Trace(animation_frame_timing_monitor_);
 }
 
 void WebFrameWidgetImpl::SetNeedsRecalculateRasterScales() {
@@ -1350,6 +1367,10 @@ void WebFrameWidgetImpl::DidObserveFirstScrollDelay(
 }
 
 void WebFrameWidgetImpl::WillBeginMainFrame() {
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->WillBeginMainFrame();
+  }
+
   if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled())
     return;
 
@@ -1372,12 +1393,38 @@ WebFrameWidgetImpl::AllocateNewLayerTreeFrameSink() {
   return nullptr;
 }
 
+void WebFrameWidgetImpl::ReportLongAnimationFrameTiming(
+    AnimationFrameTimingInfo* timing_info) {
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(), [&](WebLocalFrameImpl* local_frame) {
+        DOMWindowPerformance::performance(*local_frame->GetFrame()->DomWindow())
+            ->ReportLongAnimationFrameTiming(timing_info);
+      });
+}
+
+bool WebFrameWidgetImpl::ShouldReportLongAnimationFrameTiming() const {
+  return widget_base_ && !IsHidden();
+}
+void WebFrameWidgetImpl::OnTaskCompletedForFrame(base::TimeTicks start_time,
+                                                 base::TimeTicks end_time,
+                                                 LocalFrame* frame) {
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->OnTaskCompleted(start_time, end_time,
+                                                     frame);
+  }
+}
+
 void WebFrameWidgetImpl::DidBeginMainFrame() {
   LocalFrame* root_frame = LocalRootImpl()->GetFrame();
   DCHECK(root_frame);
 
   if (LocalFrameView* frame_view = root_frame->View())
     frame_view->RunPostLifecycleSteps();
+
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->DidBeginMainFrame();
+  }
+
   if (Page* page = root_frame->GetPage())
     page->Animator().PostAnimate();
 }
@@ -1387,6 +1434,11 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   TRACE_EVENT0("blink", "WebFrameWidgetImpl::UpdateLifecycle");
   if (!LocalRootImpl())
     return;
+
+  if (requested_update == WebLifecycleUpdate::kAll &&
+      animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->WillPerformStyleAndLayoutCalculation();
+  }
 
   GetPage()->UpdateLifecycle(*LocalRootImpl()->GetFrame(), requested_update,
                              reason);
@@ -4207,6 +4259,11 @@ void WebFrameWidgetImpl::WasHidden() {
                                       [](WebLocalFrameImpl* local_frame) {
                                         local_frame->Client()->WasHidden();
                                       });
+
+  if (animation_frame_timing_monitor_) {
+    animation_frame_timing_monitor_->Shutdown();
+    animation_frame_timing_monitor_.Clear();
+  }
 }
 
 void WebFrameWidgetImpl::WasShown(bool was_evicted) {
@@ -4219,6 +4276,12 @@ void WebFrameWidgetImpl::WasShown(bool was_evicted) {
         // On eviction, the last SurfaceId is invalidated. We need to
         // allocate a new id.
         &RemoteFrame::ResendVisualProperties);
+  }
+
+  if (!animation_frame_timing_monitor_ &&
+      RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled()) {
+    animation_frame_timing_monitor_ =
+        MakeGarbageCollected<AnimationFrameTimingMonitor>(*this);
   }
 }
 

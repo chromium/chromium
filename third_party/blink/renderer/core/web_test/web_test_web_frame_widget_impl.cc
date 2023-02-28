@@ -149,6 +149,10 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   }
 }
 
+bool WebTestWebFrameWidgetImpl::RequestedMainFramePending() {
+  return animation_scheduled_;
+}
+
 void WebTestWebFrameWidgetImpl::StartDragging(
     const WebDragData& data,
     DragOperationsMask mask,

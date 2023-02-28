@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
+#include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
@@ -105,6 +106,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       public viz::mojom::blink::InputTargetClient,
       public mojom::blink::FrameWidgetInputHandler,
       public FrameWidget,
+      public AnimationFrameTimingMonitor::Client,
       public WidgetEventHandler {
  public:
   struct PromiseCallbacks {
@@ -315,8 +317,16 @@ class CORE_EXPORT WebFrameWidgetImpl
       bool may_throttle_if_undrawn_frames) override;
   int GetVirtualKeyboardResizeHeight() const override;
 
+  void OnTaskCompletedForFrame(base::TimeTicks start_time,
+                               base::TimeTicks end_time,
+                               LocalFrame*) override;
   void SetVirtualKeyboardResizeHeightForTesting(int);
   bool GetMayThrottleIfUndrawnFramesForTesting();
+
+  // AnimationFrameTimingMonitor::Client overrides
+  void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo* info) override;
+  bool ShouldReportLongAnimationFrameTiming() const override;
+  bool RequestedMainFramePending() override;
 
   // WebFrameWidget overrides.
   void InitializeNonCompositing(WebNonCompositedWidgetClient* client) override;
@@ -1018,6 +1028,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Used to override values given from the browser such as ScreenInfo,
   // WidgetScreenRect, WindowScreenRect, and the widget's size.
   Member<ScreenMetricsEmulator> device_emulator_;
+
+  Member<AnimationFrameTimingMonitor> animation_frame_timing_monitor_;
 
   // keyPress events to be suppressed if the associated keyDown event was
   // handled.
