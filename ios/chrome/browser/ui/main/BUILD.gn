@@ -209,6 +209,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
     "//ios/chrome/browser/ui/promos_manager:promos_manager_scene_agent",
+    "//ios/chrome/browser/ui/recent_tabs/bring_android_tabs:util",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/sync",
