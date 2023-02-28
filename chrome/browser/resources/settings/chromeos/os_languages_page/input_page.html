@@ -107,11 +107,13 @@
 
 <div route-path="default">
   <template is="dom-if" if="[[shouldShowLanguagePacksNotice_]]">
-    <localized-link id="languagePacksNotice"
-        class="cr-row first bottom-margin cr-secondary-text"
-        localized-string="$i18n{languagePacksNotice}"
-        on-link-clicked="onLanguagePackNoticeLinkClick_">
-    </localized-link>
+    <div class="cr-row first bottom-margin">
+      <localized-link id="languagePacksNotice"
+          class="cr-secondary-text"
+          localized-string="$i18n{languagePacksNotice}"
+          on-link-clicked="onLanguagePackNoticeLinkClick_">
+      </localized-link>
+    </div>
   </template>
   <settings-toggle-button
       class="first" id="showImeMenu"
