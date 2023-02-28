@@ -148,7 +148,8 @@ FindAppIdResult FindAppId(const base::Value::Dict& prefs,
 // Note that PluginVM does not match this prefix since it has a
 // hard-coded window_app_id.
 std::string GetGuestTokenForWindowId(const std::string* window_app_id) {
-  if (!base::StartsWith(*window_app_id, kGuestOsWindowAppIdPrefix,
+  if (!window_app_id ||
+      !base::StartsWith(*window_app_id, kGuestOsWindowAppIdPrefix,
                         base::CompareCase::SENSITIVE)) {
     return std::string();
   }
@@ -224,10 +225,13 @@ std::string GetGuestOsShelfAppId(Profile* profile,
   // here.
   std::string app_id;
 
+  std::string token = GetGuestTokenForWindowId(window_app_id);
+  absl::optional<GuestId> guest_id =
+      GuestOsSessionTracker::GetForProfile(profile)->GetGuestIdForToken(token);
+
   if (window_startup_id) {
-    // TODO(b/244651040): Also add container_token for startup_ids.
     if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey,
-                  *window_startup_id, absl::nullopt, &app_id,
+                  *window_startup_id, guest_id, &app_id,
                   true) == FindAppIdResult::UniqueMatch) {
       return app_id;
     }
@@ -238,10 +242,6 @@ std::string GetGuestOsShelfAppId(Profile* profile,
   if (!window_app_id) {
     return std::string();
   }
-
-  const auto token = GetGuestTokenForWindowId(window_app_id);
-  const auto guest_id =
-      GuestOsSessionTracker::GetForProfile(profile)->GetGuestIdForToken(token);
 
   // (Legacy) Wayland apps won't be prefixed with org.chromium.termina. or
   // org.chromium.guest_os

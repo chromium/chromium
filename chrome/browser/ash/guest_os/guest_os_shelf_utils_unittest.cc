@@ -325,6 +325,21 @@ TEST_F(GuestOsShelfUtilsTest,
             "crostini:unknown_app_id");
 }
 
+TEST_F(
+    GuestOsShelfUtilsTest,
+    GetGuestOsShelfAppIdFindsAppUsingStartupIdsIfMultipleAppsInDifferentContainersShareDesktopFileIds) {
+  SetGuestOsRegistry({
+      {.desktop_file_id = "duplicate", .startup_notify = true},
+      {.desktop_file_id = "duplicate",
+       .container_name = "container 2",
+       .startup_notify = true},
+  });
+
+  EXPECT_EQ(GetShelfAppId({.app_id = TestXWindowIdWithToken("duplicate"),
+                           .startup_id = "duplicate"}),
+            GenAppId({.desktop_file_id = "duplicate"}));
+}
+
 TEST_F(GuestOsShelfUtilsTest, GetGuestOsShelfAppIdCanFindAppsByName) {
   SetGuestOsRegistry({
       {.desktop_file_id = "app", .app_name = "name"},

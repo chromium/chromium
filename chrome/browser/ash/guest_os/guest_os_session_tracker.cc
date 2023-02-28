@@ -144,6 +144,10 @@ absl::optional<vm_tools::concierge::VmInfo> GuestOsSessionTracker::GetVmInfo(
 
 absl::optional<GuestId> GuestOsSessionTracker::GetGuestIdForToken(
     const std::string& container_token) {
+  if (container_token.empty()) {
+    return absl::nullopt;
+  }
+
   auto iter = tokens_to_guests_.find(container_token);
   if (iter == tokens_to_guests_.end()) {
     return absl::nullopt;
