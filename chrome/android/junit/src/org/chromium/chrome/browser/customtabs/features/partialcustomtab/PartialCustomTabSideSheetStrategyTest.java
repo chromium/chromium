@@ -211,12 +211,16 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertFalse(getWindowAttributes().isFullscreen());
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
+        doReturn(47)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(org.chromium.chrome.R.dimen.custom_tabs_shadow_offset));
 
         strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
 
         mFullscreen = true;
         strategy.onEnterFullscreen(null, null);
         assertTrue(getWindowAttributes().isFullscreen());
+        assertEquals("Shadow should be removed.", 0, strategy.getShadowOffsetForTesting());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
 
@@ -226,6 +230,7 @@ public class PartialCustomTabSideSheetStrategyTest {
         assertFalse(getWindowAttributes().isFullscreen());
         assertEquals(height, getWindowAttributes().height);
         assertEquals(width, getWindowAttributes().width);
+        assertNotEquals("Shadow should be restored.", 0, strategy.getShadowOffsetForTesting());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
     }
 

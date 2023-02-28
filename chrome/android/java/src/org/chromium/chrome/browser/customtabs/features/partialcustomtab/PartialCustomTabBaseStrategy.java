@@ -199,6 +199,7 @@ public abstract class PartialCustomTabBaseStrategy
         attrs.y = 0;
         attrs.x = 0;
         mActivity.getWindow().setAttributes(attrs);
+        updateShadowOffset();
         maybeInvokeResizeCallback();
     }
 
@@ -207,6 +208,7 @@ public abstract class PartialCustomTabBaseStrategy
         // |mNavbarHeight| is zero now. Post the task instead.
         new Handler().post(() -> {
             initializeSize();
+            updateShadowOffset();
             maybeInvokeResizeCallback();
         });
     }
@@ -283,7 +285,7 @@ public abstract class PartialCustomTabBaseStrategy
     }
 
     protected void updateShadowOffset() {
-        if (isFullHeight() || mDrawOutlineShadow || shouldHaveNoShadowOffset()) {
+        if (isFullHeight() || isFullscreen() || mDrawOutlineShadow || shouldHaveNoShadowOffset()) {
             mShadowOffset = 0;
         } else {
             mShadowOffset = mActivity.getResources().getDimensionPixelSize(
@@ -431,5 +433,10 @@ public abstract class PartialCustomTabBaseStrategy
     int getTopMarginForTesting() {
         var mlp = (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
         return mlp.topMargin;
+    }
+
+    @VisibleForTesting
+    int getShadowOffsetForTesting() {
+        return mShadowOffset;
     }
 }
