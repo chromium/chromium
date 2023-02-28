@@ -68,6 +68,9 @@ struct CredentialUIEntry {
 
     // The URL that will be linked to when an entry is clicked.
     GURL url;
+
+    // signon_realm of a corresponding PasswordForm.
+    std::string signon_realm;
   };
 
   struct Less {

@@ -181,3 +181,12 @@ export function makeInsecureCredential(params: InsecureCredentialsParams):
     compromisedInfo: types.length ? compromisedInfo : undefined,
   };
 }
+
+export function createAffiliatedDomain(domain: string):
+    chrome.passwordsPrivate.DomainInfo {
+  return {
+    name: domain,
+    url: `https://${domain}/login`,
+    signonRealm: `https://${domain}/login`,
+  };
+}

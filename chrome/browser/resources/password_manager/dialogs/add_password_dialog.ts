@@ -13,6 +13,7 @@ import '../shared_style.css.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
@@ -23,10 +24,27 @@ export interface AddPasswordDialogElement {
   $: {
     dialog: CrDialogElement,
     websiteInput: CrInputElement,
+    usernameInput: CrInputElement,
   };
 }
 
 const AddPasswordDialogElementBase = I18nMixin(PolymerElement);
+
+function getUsernamesByOrigin(
+    passwords: chrome.passwordsPrivate.PasswordUiEntry[]):
+    Map<string, Set<string>> {
+  // Group existing usernames by signonRealm.
+  return passwords.reduce(function(usernamesByOrigin, entry) {
+    assert(entry.affiliatedDomains);
+    for (const domain of entry.affiliatedDomains) {
+      if (!usernamesByOrigin.has(domain.signonRealm)) {
+        usernamesByOrigin.set(domain.signonRealm, new Set());
+      }
+      usernamesByOrigin.get(domain.signonRealm).add(entry.username);
+    }
+    return usernamesByOrigin;
+  }, new Map());
+}
 
 export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   static get is() {
@@ -40,16 +58,57 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   static get properties() {
     return {
       website_: String,
+      username_: String,
+
+      urlCollection_: Object,
+
+      usernamesBySignonRealm_: {
+        type: Object,
+        values: () => new Map(),
+      },
 
       /**
        * Error message if the website input is invalid.
        */
       websiteErrorMessage_: {type: String, value: null},
+
+      usernameErrorMessage_: {
+        type: String,
+        computed: 'computeUsernameErrorMessage_(urlCollection_, username_, ' +
+            'usernamesBySignonRealm_)',
+      },
     };
   }
 
   private website_: string;
+  private username_: string;
+  private usernamesBySignonRealm_: Map<string, Set<string>>;
   private websiteErrorMessage_: string|null;
+  private usernameErrorMessage_: string|null;
+  private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
+
+  private setSavedPasswordsListener_: (
+      (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setSavedPasswordsListener_ = passwordList => {
+      this.usernamesBySignonRealm_ = getUsernamesByOrigin(passwordList);
+    };
+
+    PasswordManagerImpl.getInstance().getSavedPasswordList().then(
+        this.setSavedPasswordsListener_);
+    PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
+        this.setSavedPasswordsListener_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    assert(this.setSavedPasswordsListener_);
+    PasswordManagerImpl.getInstance().removeSavedPasswordListChangedListener(
+        this.setSavedPasswordsListener_);
+    this.setSavedPasswordsListener_ = null;
+  }
 
   private onCancel_() {
     this.$.dialog.close();
@@ -62,10 +121,9 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     PasswordManagerImpl.getInstance()
         .getUrlCollection(this.website_)
         .then(urlCollection => {
-          this.websiteErrorMessage_ = null;
-          if (!urlCollection) {
-            this.websiteErrorMessage_ = this.i18n('notValidWebsite');
-          }
+          this.urlCollection_ = urlCollection;
+          this.websiteErrorMessage_ =
+              !urlCollection ? this.i18n('notValidWebsite') : null;
         })
         .catch(() => this.websiteErrorMessage_ = this.i18n('notValidWebsite'));
   }
@@ -79,6 +137,22 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   private isWebsiteInputInvalid_(): boolean {
     return !!this.websiteErrorMessage_;
+  }
+
+  private computeUsernameErrorMessage_(): string|null {
+    const signonRealm = this.urlCollection_?.signonRealm;
+    if (!signonRealm) {
+      return null;
+    }
+    if (this.usernamesBySignonRealm_.has(signonRealm) &&
+        this.usernamesBySignonRealm_.get(signonRealm)!.has(this.username_)) {
+      return this.i18n('usernameAlreadyUsed', this.website_);
+    }
+    return null;
+  }
+
+  private isUsernameInputInvalid_(): boolean {
+    return !!this.usernameErrorMessage_;
   }
 }
 

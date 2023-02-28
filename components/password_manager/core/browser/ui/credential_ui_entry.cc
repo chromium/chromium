@@ -210,6 +210,7 @@ CredentialUIEntry::GetAffiliatedDomains() const {
   std::vector<CredentialUIEntry::DomainInfo> domains;
   for (const auto& facet : facets) {
     CredentialUIEntry::DomainInfo domain;
+    domain.signon_realm = facet.signon_realm;
     password_manager::FacetURI facet_uri =
         password_manager::FacetURI::FromPotentiallyInvalidSpec(
             facet.signon_realm);

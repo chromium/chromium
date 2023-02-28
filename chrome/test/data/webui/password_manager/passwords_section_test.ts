@@ -12,7 +12,7 @@ import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_prox
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {createCredentialGroup, createPasswordEntry} from './test_util.js';
+import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
 
 /**
  * @param subsection The passwords subsection element that will be checked.
@@ -252,12 +252,12 @@ suite('PasswordsSectionTest', function() {
       }),
     ];
     passwordManager.data.groups[0]!.entries[0]!.affiliatedDomains = [
-      {name: 'foo.de', url: 'https://foo.de/'},
-      {name: 'Foo App', url: 'https://m.foo.com/'},
+      createAffiliatedDomain('foo.de'),
+      createAffiliatedDomain('m.foo.com'),
     ];
     passwordManager.data.groups[1]!.entries[0]!.affiliatedDomains = [
-      {name: 'bar.uk', url: 'https://bar.uk/'},
-      {name: 'Bar App', url: 'https://m.bar.com/'},
+      createAffiliatedDomain('bar.uk'),
+      createAffiliatedDomain('m.bar.com'),
     ];
 
     const section = await createPasswordsSection();

@@ -9,6 +9,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
 
 suite('AddPasswordDialogTest', function() {
   let passwordManager: TestPasswordManagerProxy;
@@ -51,5 +52,52 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(
         dialog.i18n('missingTLD', 'www.com'),
         dialog.$.websiteInput.errorMessage);
+  });
+
+  test('username validation works', async function() {
+    passwordManager.data.passwords = [
+      createPasswordEntry({url: 'www.example.com', username: 'test'}),
+      createPasswordEntry({url: 'www.example2.com', username: 'test2'}),
+    ];
+    passwordManager.data.passwords[0]!.affiliatedDomains =
+        [createAffiliatedDomain('www.example.com')];
+    passwordManager.data.passwords[1]!.affiliatedDomains =
+        [createAffiliatedDomain('www.example2.com')];
+
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    // Enter website for which user has a saved password.
+    dialog.$.websiteInput.value = 'www.example.com';
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
+    assertEquals(
+        'www.example.com',
+        await passwordManager.whenCalled('getUrlCollection'));
+    assertFalse(dialog.$.usernameInput.invalid);
+
+    // Update username to the same value and observe error.
+    dialog.$.usernameInput.value = 'test';
+    assertTrue(dialog.$.usernameInput.invalid);
+    assertEquals(
+        dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
+        dialog.$.usernameInput.errorMessage);
+
+    // Update username and observe no error.
+    dialog.$.usernameInput.value = 'test2';
+    assertFalse(dialog.$.usernameInput.invalid);
+
+    // Update website input to match a second existing password and observe
+    // error again.
+    passwordManager.reset();
+    dialog.$.websiteInput.value = 'www.example2.com';
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
+    assertEquals(
+        'www.example2.com',
+        await passwordManager.whenCalled('getUrlCollection'));
+    assertTrue(dialog.$.usernameInput.invalid);
+    assertEquals(
+        dialog.i18n('usernameAlreadyUsed', 'www.example2.com'),
+        dialog.$.usernameInput.errorMessage);
   });
 });

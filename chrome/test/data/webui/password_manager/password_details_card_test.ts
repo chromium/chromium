@@ -11,7 +11,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {createPasswordEntry} from './test_util.js';
+import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
 
 suite('PasswordDetailsCardTest', function() {
   let passwordManager: TestPasswordManagerProxy;
@@ -116,8 +116,8 @@ suite('PasswordDetailsCardTest', function() {
     const password = createPasswordEntry(
         {url: 'test.com', username: 'vik', password: 'password69'});
     password.affiliatedDomains = [
-      {name: 'test.com', url: 'https://test.com/'},
-      {name: 'Test App', url: 'https://m.test.com/'},
+      createAffiliatedDomain('test.com'),
+      createAffiliatedDomain('m.test.com'),
     ];
 
     const card = document.createElement('password-details-card');
@@ -169,7 +169,7 @@ suite('PasswordDetailsCardTest', function() {
   test('clicking edit button opens an edit dialog', async function() {
     const password = createPasswordEntry(
         {id: 1, url: 'test.com', username: 'vik', password: 'password69'});
-    password.affiliatedDomains = [{name: 'test.com', url: 'https://test.com/'}];
+    password.affiliatedDomains = [createAffiliatedDomain('test.com')];
 
     const card = document.createElement('password-details-card');
     card.password = password;

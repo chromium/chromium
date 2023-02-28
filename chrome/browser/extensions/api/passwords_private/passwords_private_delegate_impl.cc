@@ -966,6 +966,7 @@ PasswordsPrivateDelegateImpl::CreatePasswordUiEntryFromCredentialUiEntry(
           api::passwords_private::DomainInfo domainInfo;
           domainInfo.name = domain.name;
           domainInfo.url = domain.url.spec();
+          domainInfo.signon_realm = domain.signon_realm;
           return domainInfo;
         });
   }

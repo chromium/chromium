@@ -170,6 +170,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"tryAgain", IDS_PASSWORD_MANAGER_UI_CHECK_PASSWORDS_AFTER_ERROR},
     {"undoRemovePassword", IDS_PASSWORD_MANAGER_UI_UNDO},
     {"unmuteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_UNMUTE_ISSUE},
+    {"usernameAlreadyUsed", IDS_PASSWORD_MANAGER_UI_USERNAME_ALREADY_USED},
     {"usernameCopiedToClipboard",
      IDS_PASSWORD_MANAGER_UI_USERNAME_COPIED_TO_CLIPBOARD},
     {"usernameLabel", IDS_PASSWORD_MANAGER_UI_USERNAME_LABEL},

@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {createPasswordEntry} from './test_util.js';
+import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
 
 suite('EditPasswordDialogTest', function() {
   setup(function() {
@@ -20,8 +20,8 @@ suite('EditPasswordDialogTest', function() {
     const password =
         createPasswordEntry({id: 0, username: 'user1', password: 'sTr0nGp@@s'});
     password.affiliatedDomains = [
-      {name: 'test.com', url: 'https://test.com/'},
-      {name: 'Test App', url: 'https://m.test.com/'},
+      createAffiliatedDomain('test.com'),
+      createAffiliatedDomain('m.test.com'),
     ];
 
     const dialog = document.createElement('edit-password-dialog');
@@ -49,7 +49,7 @@ suite('EditPasswordDialogTest', function() {
   test('show/hide password', async function() {
     const password = createPasswordEntry(
         {id: 1, url: 'test.com', username: 'vik', password: 'password69'});
-    password.affiliatedDomains = [{name: 'test.com', url: 'https://test.com/'}];
+    password.affiliatedDomains = [createAffiliatedDomain('test.com')];
     const dialog = document.createElement('edit-password-dialog');
     dialog.password = password;
     document.body.appendChild(dialog);

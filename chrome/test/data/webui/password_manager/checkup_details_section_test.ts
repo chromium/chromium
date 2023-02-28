@@ -15,7 +15,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-import {createCredentialGroup, makeInsecureCredential, makePasswordManagerPrefs} from './test_util.js';
+import {createAffiliatedDomain, createCredentialGroup, makeInsecureCredential, makePasswordManagerPrefs} from './test_util.js';
 
 suite('CheckupDetailsSectionTest', function() {
   const CompromiseType = chrome.passwordsPrivate.CompromiseType;
@@ -627,8 +627,7 @@ suite('CheckupDetailsSectionTest', function() {
         CompromiseType.LEAKED,
       ],
     });
-    credential.affiliatedDomains =
-        [{name: 'test.com', url: 'https://test.com/'}];
+    credential.affiliatedDomains = [createAffiliatedDomain('test.com')];
     passwordManager.data.insecureCredentials = [credential];
 
     const section = document.createElement('checkup-details-section');
@@ -666,8 +665,7 @@ suite('CheckupDetailsSectionTest', function() {
         CompromiseType.LEAKED,
       ],
     });
-    credential.affiliatedDomains =
-        [{name: 'test.com', url: 'https://test.com/'}];
+    credential.affiliatedDomains = [createAffiliatedDomain('test.com')];
     passwordManager.data.insecureCredentials = [credential];
 
     const section = document.createElement('checkup-details-section');
@@ -701,8 +699,7 @@ suite('CheckupDetailsSectionTest', function() {
         CompromiseType.LEAKED,
       ],
     });
-    credential.affiliatedDomains =
-        [{name: 'test.com', url: 'https://test.com/'}];
+    credential.affiliatedDomains = [createAffiliatedDomain('test.com')];
     passwordManager.data.insecureCredentials = [credential];
 
     const section = document.createElement('checkup-details-section');
@@ -757,8 +754,7 @@ suite('CheckupDetailsSectionTest', function() {
         CompromiseType.LEAKED,
       ],
     });
-    credential.affiliatedDomains =
-        [{name: 'test.com', url: 'https://test.com/'}];
+    credential.affiliatedDomains = [createAffiliatedDomain('test.com')];
     passwordManager.data.insecureCredentials = [credential];
 
     const section = document.createElement('checkup-details-section');
