@@ -672,6 +672,30 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
+IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
+                       NestedSameSiteCookieAccess) {
+  SetCrossSiteCookieOnHost(kHostA);
+  SetCrossSiteCookieOnHost(kHostB);
+
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(kHostB, "/iframe.html");
+  NavigateNestedFrameTo(kHostA, "/empty.html");
+
+  // Verify that the innermost frame (which is same-site with the top-level
+  // frame) gets the correct results from the APIs.
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetNestedFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetNestedFrame()));
+
+  // TODO(https://crbug.com/1420320): Even though the API says access has been
+  // granted, cookies are still not accessible. The behavior should be updated
+  // so that it is consistent: either reject/return false, or *really* grant
+  // cookie access.
+  EXPECT_EQ(ReadCookies(GetNestedFrame(), kHostA), NoCookies());
+}
+
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          StorageAccessAPIBrowserTest,
                          testing::Bool());
