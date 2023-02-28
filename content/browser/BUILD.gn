@@ -2287,13 +2287,6 @@ source_set("browser") {
     ]
   }
 
-  if (!is_android && !is_fuchsia) {
-    sources += [
-      "smart_card/smart_card_service.cc",
-      "smart_card/smart_card_service.h",
-    ]
-  }
-
   # TODO(crbug.com/1327384): Remove `permissions_common`.
   # DO NOT add unrelated entries to this block.
   deps += [ "//components/permissions:permissions_common" ]
@@ -2368,6 +2361,8 @@ source_set("browser") {
       "ml/ml_service_impl_cros.cc",
       "ml/ml_service_impl_cros.h",
       "renderer_host/pepper/firewall_hole_proxy.cc",
+      "smart_card/smart_card_service.cc",
+      "smart_card/smart_card_service.h",
     ]
     deps += [
       "//chromeos/crosapi/mojom",

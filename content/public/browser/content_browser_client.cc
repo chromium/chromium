@@ -1046,7 +1046,7 @@ FontAccessDelegate* ContentBrowserClient::GetFontAccessDelegate() {
   return nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
 SmartCardDelegate* ContentBrowserClient::GetSmartCardDelegate(
     BrowserContext* browser_context) {
   return nullptr;

@@ -174,7 +174,7 @@
 #include "third_party/blink/public/mojom/serial/serial.mojom-forward.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "third_party/blink/public/mojom/smart_card/smart_card.mojom-forward.h"
 #endif
 
@@ -1909,7 +1909,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::SerialService> receiver);
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
   void GetSmartCardService(
       mojo::PendingReceiver<blink::mojom::SmartCardService> receiver);
 #endif

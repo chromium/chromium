@@ -252,7 +252,7 @@ class TtsEnvironmentAndroid;
 class TtsControllerDelegate;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
 class SmartCardDelegate;
 #endif
 
@@ -1863,7 +1863,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   // API.
   virtual FontAccessDelegate* GetFontAccessDelegate();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_CHROMEOS)
   // Allows the embedder to provide an implementation of the Web Smart Card API.
   virtual SmartCardDelegate* GetSmartCardDelegate(
       BrowserContext* browser_context);
