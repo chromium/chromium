@@ -12,7 +12,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
@@ -20,7 +19,6 @@
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 

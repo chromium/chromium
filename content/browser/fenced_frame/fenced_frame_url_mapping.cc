@@ -8,18 +8,13 @@
 #include <map>
 #include <string>
 
-#include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
-#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 namespace content {
 
