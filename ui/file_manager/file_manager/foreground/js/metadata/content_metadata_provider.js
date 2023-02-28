@@ -218,7 +218,7 @@ export class ContentMetadataProvider extends MetadataProvider {
       }
     }
 
-    const fileEntry = /** @type {!FileEntry} */ (entry);
+    const fileEntry = /** @type {!FileEntry} */ (util.unwrapEntry(entry));
     this.getContentMetadata_(fileEntry, names).then(callback);
   }
 

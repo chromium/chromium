@@ -52,7 +52,8 @@ export async function openWindow(params) {
  */
 export async function resolveIsolatedEntries(isolatedEntries) {
   return promisify(
-      chrome.fileManagerPrivate.resolveIsolatedEntries, isolatedEntries);
+      chrome.fileManagerPrivate.resolveIsolatedEntries,
+      isolatedEntries.map(e => util.unwrapEntry(e)));
 }
 
 /**
@@ -69,7 +70,8 @@ export async function getPreferences() {
  */
 export async function validatePathNameLength(parentEntry, name) {
   return promisify(
-      chrome.fileManagerPrivate.validatePathNameLength, parentEntry, name);
+      chrome.fileManagerPrivate.validatePathNameLength,
+      util.unwrapEntry(parentEntry), name);
 }
 
 /**
@@ -292,7 +294,8 @@ export async function getMimeType(entry) {
  */
 export async function getFileTasks(entries, dlpSourceUrls) {
   return promisify(
-      chrome.fileManagerPrivate.getFileTasks, entries, dlpSourceUrls);
+      chrome.fileManagerPrivate.getFileTasks,
+      entries.map(e => util.unwrapEntry(e)), dlpSourceUrls);
 }
 
 /**
@@ -302,7 +305,8 @@ export async function getFileTasks(entries, dlpSourceUrls) {
  */
 export async function executeTask(taskDescriptor, entries) {
   return promisify(
-      chrome.fileManagerPrivate.executeTask, taskDescriptor, entries);
+      chrome.fileManagerPrivate.executeTask, taskDescriptor,
+      entries.map(e => util.unwrapEntry(e)));
 }
 
 /**

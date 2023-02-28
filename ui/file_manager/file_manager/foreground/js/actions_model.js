@@ -614,7 +614,7 @@ class CustomAction {
    */
   execute() {
     chrome.fileManagerPrivate.executeCustomAction(
-        this.entries_, this.id_, () => {
+        this.entries_.map(e => util.unwrapEntry(e)), this.id_, () => {
           if (chrome.runtime.lastError) {
             console.error(
                 'Failed to execute a custom action because of: ' +
@@ -808,7 +808,8 @@ export class ActionsModel extends EventTarget {
             // For FSP, fetch custom actions via an API.
             case VolumeManagerCommon.VolumeType.PROVIDED:
               chrome.fileManagerPrivate.getCustomActions(
-                  this.entries_, customActions => {
+                  this.entries_.map(e => util.unwrapEntry(e)),
+                  customActions => {
                     if (chrome.runtime.lastError) {
                       console.error(
                           'Failed to fetch custom actions because of: ' +

@@ -34,6 +34,7 @@ export class ImportCrostiniImageDialog extends ConfirmDialog {
     super.showWithTitle(
         str('IMPORT_CROSTINI_IMAGE_DIALOG_TITLE'),
         str('IMPORT_CROSTINI_IMAGE_DIALOG_DESCRIPTION'),
-        chrome.fileManagerPrivate.importCrostiniImage.bind(null, entry));
+        chrome.fileManagerPrivate.importCrostiniImage.bind(
+            null, /** @type {!Entry} */ (util.unwrapEntry(entry))));
   }
 }

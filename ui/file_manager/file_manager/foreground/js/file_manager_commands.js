@@ -1900,7 +1900,8 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] =
             fileManager.metadataModel.getCache(entries, ['sourceUrl'])
                 .map(m => m.sourceUrl || '');
         chrome.fileManagerPrivate.invokeSharesheet(
-            entries, launchSource, dlpSourceUrls, () => {
+            entries.map(e => util.unwrapEntry(e)), launchSource, dlpSourceUrls,
+            () => {
               if (chrome.runtime.lastError) {
                 console.warn(chrome.runtime.lastError.message);
                 return;

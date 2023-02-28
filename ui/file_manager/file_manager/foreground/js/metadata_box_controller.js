@@ -271,6 +271,7 @@ export class MetadataBoxController {
    */
   setDirectorySize_(entry, isSameEntry) {
     assert(entry.isDirectory);
+    entry = /** @type {!DirectoryEntry} */ (util.unwrapEntry(entry));
 
     if (this.metadataBox_.size === '') {
       this.metadataBox_.size = ' ';  // Provide a dummy size value.
