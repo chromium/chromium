@@ -16,17 +16,12 @@ public class TabImpl implements ITab {
 
     private transient ITab mFloatingTab;
 
-    public TabImpl() {
-        this(TabInfo.create());
+    public TabImpl(String groupId) {
+        this(TabInfo.create(groupId));
     }
 
     public TabImpl(TabInfo tabInfo) {
         this.tabInfo = tabInfo;
-    }
-
-    @Override
-    public int getId() {
-        return this.tabInfo.getId();
     }
 
     @Override

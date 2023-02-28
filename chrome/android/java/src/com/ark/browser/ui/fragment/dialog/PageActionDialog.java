@@ -83,7 +83,7 @@ public class PageActionDialog extends AttachListDialogFragment<String>
                 ZToast.normal("TODO 悬浮打开");
                 break;
             case 3:
-                boolean r = TabListManager.getInstance().moveToNewTab(mPageInfo);
+                boolean r = TabListManager.moveToNewTab(mPageInfo);
                 if (r) {
                     ZToast.success("移动页面成功！");
                 } else {

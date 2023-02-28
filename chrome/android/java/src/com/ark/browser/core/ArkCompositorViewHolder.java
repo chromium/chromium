@@ -45,6 +45,8 @@ import androidx.fragment.app.FragmentActivity;
 import com.ark.browser.tab.ArkSwipeRefreshHandler;
 import com.ark.browser.tab.ArkTabImpl;
 import com.ark.browser.tab.ArkTabWebContentsObserver;
+import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.tab.dao.ArkTabStore;
 import com.ark.browser.ui.dialog.SmartSearchPopupWindow;
@@ -75,6 +77,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -85,6 +88,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content.browser.selection.FloatingActionModeCallback;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
@@ -1815,8 +1819,6 @@ public class ArkCompositorViewHolder extends FrameLayout
 //    }
 
     public interface Callback {
-
-//        boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url);
 
         ITabGroup getTabList(Tab current);
 

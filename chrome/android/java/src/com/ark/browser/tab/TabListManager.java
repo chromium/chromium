@@ -100,6 +100,10 @@ public class TabListManager {
         return mTabGroups.get(incognito ? GROUP_INCOGNITO : GROUP_DEFAULT);
     }
 
+    public ITabGroup getTabGroup(String groupId) {
+        return mTabGroups.get(groupId);
+    }
+
     public List<ITabGroup> getTabGroups() {
         return new ArrayList<>(mTabGroups.values());
     }
@@ -166,10 +170,6 @@ public class TabListManager {
     public void selectTabGroup(boolean incognito) {
         currentIndex = incognito ? 1 : 0;
     }
-
-//    public IPage getCurrentPage() {
-//        return getCurrentTabList().getCurrentPage();
-//    }
 
     public PageInfo getCurrentPageInfo() {
         return getCurrentTabList().getCurrentPageInfo();
@@ -257,43 +257,6 @@ public class TabListManager {
         return getTabGroup(tabInfo.getTabInfo().isIncognito()).cloneTab(tabInfo);
     }
 
-    public boolean moveToNewTab(PageInfo page) {
-        if (page != null) {
-            ITabGroup tabList = getTabGroup(page.isIncognito());
-            return tabList.moveToNewTab(tabList.getPageById(page.getId()));
-        }
-        return false;
-    }
-
-    public void openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type, boolean incognito) {
-        openNewTab(null, loadUrlParams, type, incognito);
-    }
-
-    public void openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type) {
-        openNewTab(null, loadUrlParams, type, isIncognitoSelected());
-    }
-
-    public void openNewTab(PageInfo pageInfo, LoadUrlParams loadUrlParams, @TabLaunchType int type,
-                           boolean incognito) {
-        ITabGroup tabList = getTabGroup(incognito);
-        ITab currentTab = pageInfo == null ? null : tabList.getTabById(pageInfo.getTabId());
-        tabList.openNewTab(currentTab, loadUrlParams, type);
-    }
-
-//    public boolean openNewPage(@NonNull Tab parent, @TabLaunchType int type, String url) {
-//        ArkLogger.d("TabListManager", "openNewPage url=" + url + " type=" + type);
-//
-//        ITabGroup tabList = getTabList(parent.isIncognito());
-//        return tabList.openNewPage(parent, type, url);
-//    }
-//
-//    public boolean openNewPage(@NonNull Tab parent, LoadUrlParams params) {
-//        ArkLogger.d("TabListManager", "openNewPage params=" + params);
-//
-//        ITabGroup tabList = getTabList(parent.isIncognito());
-//        return tabList.openNewPage(parent, params);
-//    }
-
     public void addObserver(TabManagerObserver observer) {
         ArkLogger.e(TAG, "addObserver hasObserver=" + mObservers.hasObserver(observer));
         if (!mObservers.hasObserver(observer)) {
@@ -305,5 +268,13 @@ public class TabListManager {
         mObservers.removeObserver(observer);
     }
 
+    public static boolean moveToNewTab(PageInfo page) {
+        ITab tab = TabListManager.getInstance().getTabInfo(page);
+        if (tab != null) {
+            ITabGroup tabList = TabListManager.getInstance().getTabGroup(tab.getGroupId());
+            return tabList.moveToNewTab(tabList.getPageById(page.getId()));
+        }
+        return false;
+    }
 
 }

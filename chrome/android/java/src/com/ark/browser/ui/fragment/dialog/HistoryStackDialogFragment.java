@@ -242,7 +242,7 @@ public class HistoryStackDialogFragment extends OverDragBottomDialogFragment<His
                                 ZToast.normal("TODO 悬浮打开");
                                 break;
                             case 3:
-                                boolean r = TabListManager.getInstance().moveToNewTab(pageInfo);
+                                boolean r = TabListManager.moveToNewTab(pageInfo);
                                 if (r) {
                                     ZToast.success("移动页面成功！");
                                     startAnim(ivThumbnail, pageInfo);

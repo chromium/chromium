@@ -155,6 +155,7 @@ public class TabGroupImpl implements ITabGroup {
                     File tabFile = ArkTabDao.getTabFile(id);
                     ArkLogger.e(TAG, "from tabInfo tabFile=" + tabFile);
                     TabInfo tabInfo = TabInfo.from(tabFile);
+                    tabInfo.setGroupId(getId());
                     ArkLogger.e(TAG, "from tabInfo=" + tabInfo);
                     mTabList.add(new TabImpl(tabInfo));
                 }
@@ -232,7 +233,7 @@ public class TabGroupImpl implements ITabGroup {
         ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl() + " type=" + type);
 
 
-        ITab newTab = new TabImpl();
+        ITab newTab = new TabImpl(getId());
 
         if (currentTab != null) {
             int index = indexOf(currentTab);
@@ -326,7 +327,7 @@ public class TabGroupImpl implements ITabGroup {
 
 //            selectTab(tab, tab.getCurrentPage());
 
-            TabInfo newTabInfo = TabInfo.create();
+            TabInfo newTabInfo = TabInfo.create(getId());
             ITab newTab = new TabImpl(newTabInfo);
             page.getPageInfo().setTabId(newTabInfo.getId());
             newTab.getPages().add(page);

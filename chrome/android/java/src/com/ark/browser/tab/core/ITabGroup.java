@@ -6,8 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.core.util.AtomicFile;
 
 import com.ark.browser.tab.ArkTabImpl;
-import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.TabCacheManager;
 import com.ark.browser.tab.TabInfo;
 import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.dao.ArkTabDao;
@@ -37,9 +37,9 @@ public interface ITabGroup {
     @NonNull
     String getId();
 
-    public boolean isIncognito();
+    boolean isIncognito();
 
-    public int getIndex();
+    int getIndex();
 
     default int getCount() {
         return getTabList().size();
@@ -149,22 +149,6 @@ public interface ITabGroup {
         return tab.getCurrentPage();
     }
 
-//    default IPage getPreviousPage() {
-//        ITab tab = getCurrentTab();
-//        if (tab == null) {
-//            return null;
-//        }
-//        return tab.getPreviousPage();
-//    }
-
-//    default IPage getForwardPage() {
-//        ITab tab = getCurrentTab();
-//        if (tab == null) {
-//            return null;
-//        }
-//        return tab.getNextPage();
-//    }
-
     default PageInfo getCurrentPageInfo() {
         ITab tab = getCurrentTab();
         if (tab == null) {
@@ -172,22 +156,6 @@ public interface ITabGroup {
         }
         return tab.getCurrentPageInfo();
     }
-
-//    default PageInfo getPreviousPageInfo() {
-//        ITab tab = getCurrentTab();
-//        if (tab == null) {
-//            return null;
-//        }
-//        return tab.getPreviousPageInfo();
-//    }
-
-//    default PageInfo getForwardPageInfo() {
-//        ITab tab = getCurrentTab();
-//        if (tab == null) {
-//            return null;
-//        }
-//        return tab.getNextPageInfo();
-//    }
 
     default TabInfo getCurrentTabInfo() {
         return getTabInfoAt(getIndex());
@@ -368,23 +336,20 @@ public interface ITabGroup {
 
 
 
-    public ITab cloneTab(ITab tabInfo);
+    ITab cloneTab(ITab tabInfo);
 
-    public void openNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
+    void openNewTab(ITab currentTab, LoadUrlParams loadUrlParams, @TabLaunchType int type);
 
-//    default boolean openNewPage(Tab parent, @TabLaunchType int type, String url) {
-//        LoadUrlParams params = new LoadUrlParams(UrlFormatter.fixupUrl(url));
-//        params.setReferrer(new Referrer(parent.getUrl().toString(), org.chromium.network.mojom.ReferrerPolicy.DEFAULT));
-//        return openNewPage(parent, params, type);
-//    }
-//
-//    default boolean openNewPage(Tab parent, LoadUrlParams params) {
-//        return openNewPage(parent, params, TabLaunchType.FROM_CHROME_UI);
-//    }
-//
-//    public boolean openNewPage(Tab parent, LoadUrlParams loadUrlParams, @TabLaunchType int type);
+    default void openNewTab(PageInfo pageInfo, LoadUrlParams loadUrlParams, @TabLaunchType int type) {
+        ITab currentTab = pageInfo == null ? null : getTabById(pageInfo.getTabId());
+        openNewTab(currentTab, loadUrlParams, type);
+    }
 
-    public boolean moveToNewTab(IPage page);
+    default void openNewTab(LoadUrlParams loadUrlParams, @TabLaunchType int type) {
+        openNewTab(getCurrentTab(), loadUrlParams, type);
+    }
+
+    boolean moveToNewTab(IPage page);
 
     default boolean removeTab(Tab tab) {
         ArkLogger.d(getClass().getSimpleName(), "closeTab tab=" + tab);
@@ -466,14 +431,14 @@ public interface ITabGroup {
      *
      * @param observer The observer to be subscribed.
      */
-    public void addObserver(TabInfoObserver observer);
+    void addObserver(TabInfoObserver observer);
 
     /**
      * Unsubscribes a previously subscribed {@link TabInfoObserver}.
      *
      * @param observer The observer to be unsubscribed.
      */
-    public void removeObserver(TabInfoObserver observer);
+    void removeObserver(TabInfoObserver observer);
 
     default Profile getProfile() {
         ITab iTab = getCurrentTab();

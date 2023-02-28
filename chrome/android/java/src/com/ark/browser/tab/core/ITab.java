@@ -23,7 +23,13 @@ public interface ITab {
 
     int INVALID_TAB_INDEX = -1;
 
-    int getId();
+    default int getId() {
+        return getTabInfo().getId();
+    }
+
+    default String getGroupId() {
+        return getTabInfo().getGroupId();
+    }
 
     TabInfo getTabInfo();
 

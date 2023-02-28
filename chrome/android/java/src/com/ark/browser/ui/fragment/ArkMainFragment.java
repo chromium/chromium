@@ -323,11 +323,6 @@ public class ArkMainFragment extends BaseFragment implements
         mViewHolder.setFocusable(false);
         mViewHolder.initCompositor(getWindowAndroid(), new ArkCompositorViewHolder.Callback() {
 
-//            @Override
-//            public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
-//                return TabListManager.getInstance().openNewPage(current, type, url);
-//            }
-
             @Override
             public ITabGroup getTabList(Tab current) {
                 if (current == null) {
@@ -437,62 +432,23 @@ public class ArkMainFragment extends BaseFragment implements
     }
 
     public void onSearchEvent(LoadUrlEvent event) {
+        ITabGroup tabGroup = TabListManager.getInstance().getTabGroup(event.isIncognito());
+
         popTo(ArkMainFragment.class, false);
         for (int i = 0; i < getChildFragmentManager().getBackStackEntryCount(); i++) {
             popChild();
         }
-        if (event.isNewTab() || getActivityTab() == null) {
-            loadUrlInNewTab(event.getPageInfo(), event.getLoadUrlParams(), event.isIncognito());
+
+        mSwitcherManager.goToBrowser();
+
+        LoadUrlParams loadUrlParams = event.getLoadUrlParams();
+        if (event.isNewTab() || tabGroup.getCurrentTab() == null) {
+            loadUrlParams.setTransitionType(PageTransition.GENERATED);
+            tabGroup.openNewTab(event.getPageInfo(), event.getLoadUrlParams(), TabLaunchType.FROM_CHROME_UI);
             return;
         }
 
-        LoadUrlParams loadUrlParams = event.getLoadUrlParams();
-        loadUrlParams.setTransitionType(PageTransition.GENERATED);
-        if (getActivityTab() != null) {
-            loadUrl(loadUrlParams);
-        } else {
-            loadUrlInNewTab(event.getPageInfo(), loadUrlParams);
-        }
-    }
-
-    public void loadUrl(String url) {
-        loadUrl(new LoadUrlParams(url));
-    }
-
-    public void loadUrl(LoadUrlParams params) {
-        loadUrl(params, TabListManager.getInstance().isIncognitoSelected());
-    }
-
-    public void loadUrl(String url, boolean incognito) {
-        loadUrl(new LoadUrlParams(url), incognito);
-    }
-
-    public void loadUrl(LoadUrlParams params, boolean incognito) {
-        mSwitcherManager.goToBrowser();
-        TabListManager.getInstance().openNewTab(
-                TabListManager.getInstance().getCurrentPageInfo(),
-                params, TabLaunchType.FROM_CHROME_UI, incognito);
-    }
-
-    public void loadUrlInNewTab(String url, boolean incognito) {
-        loadUrlInNewTab(null, url, incognito);
-    }
-
-    public void loadUrlInNewTab(PageInfo pageInfo, String url, boolean incognito) {
-        loadUrlInNewTab(pageInfo, new LoadUrlParams(url), incognito);
-    }
-
-    public void loadUrlInNewTab(LoadUrlParams params) {
-        loadUrlInNewTab(null, params);
-    }
-
-    public void loadUrlInNewTab(PageInfo pageInfo, LoadUrlParams params) {
-        loadUrlInNewTab(pageInfo, params, TabListManager.getInstance().isIncognitoSelected());
-    }
-
-    public void loadUrlInNewTab(PageInfo pageInfo, LoadUrlParams params, boolean incognito) {
-        mSwitcherManager.goToBrowser();
-        TabListManager.getInstance().openNewTab(pageInfo, params, TabLaunchType.FROM_CHROME_UI, incognito);
+        tabGroup.openNewTab(loadUrlParams, TabLaunchType.FROM_CHROME_UI);
     }
 
 

@@ -351,7 +351,7 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void moveTab() {
-        boolean r = TabListManager.getInstance().moveToNewTab(mTab.getPageInfo());
+        boolean r = TabListManager.moveToNewTab(mTab.getPageInfo());
         if (r) {
             ZToast.success("移动页面成功！");
         } else {

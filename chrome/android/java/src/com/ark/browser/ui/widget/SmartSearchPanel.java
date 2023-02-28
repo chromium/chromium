@@ -96,22 +96,22 @@ public class SmartSearchPanel extends FrameLayout {
                 return new ArkNavigationHandler() {
                     @Override
                     public boolean canGoForward() {
-                        return mFloatTabList.canGoForward();
+                        return mFloatTabGroup.canGoForward();
                     }
 
                     @Override
                     public boolean goForward() {
-                        return mFloatTabList.goForward();
+                        return mFloatTabGroup.goForward();
                     }
 
                     @Override
                     public boolean canGoBack() {
-                        return mFloatTabList.canGoBack();
+                        return mFloatTabGroup.canGoBack();
                     }
 
                     @Override
                     public boolean goBack() {
-                        return mFloatTabList.goBack();
+                        return mFloatTabGroup.goBack();
                     }
                 };
             }
@@ -572,8 +572,8 @@ public class SmartSearchPanel extends FrameLayout {
 
                 @Override
                 public void onShutDown() {
-                    if (mFloatTabList != null) {
-                        mFloatTabList.destroy();
+                    if (mFloatTabGroup != null) {
+                        mFloatTabGroup.destroy();
                     }
                 }
             });
@@ -605,13 +605,13 @@ public class SmartSearchPanel extends FrameLayout {
         }
         Arrays.fill(posArray, -1);
         mCurrentPosition = 0;
-        if (mFloatTabList != null) {
+        if (mFloatTabGroup != null) {
             if (mFloatingTabInfoObserver != null) {
                 mFloatingTabInfoObserver.onDestroy();
                 mFloatingTabInfoObserver = null;
             }
-            mFloatTabList.destroy();
-            mFloatTabList = null;
+            mFloatTabGroup.destroy();
+            mFloatTabGroup = null;
         }
 
         if (mViewHolder != null) {
@@ -627,22 +627,22 @@ public class SmartSearchPanel extends FrameLayout {
     }
 
     public Tab getActivityTab() {
-        if (mFloatTabList == null) {
+        if (mFloatTabGroup == null) {
             return null;
         }
-        ITab tab = mFloatTabList.getCurrentTab();
+        ITab tab = mFloatTabGroup.getCurrentTab();
         if (tab != null) {
             return TabCacheManager.getInstance().findTab(tab.getId());
         }
         return null;
     }
 
-    private ITabGroup mFloatTabList;
+    private ITabGroup mFloatTabGroup;
 
     private ITabGroup getFloatTabList() {
-        if (mFloatTabList == null) {
+        if (mFloatTabGroup == null) {
 
-            mFloatTabList = new TabGroupImpl("group_smart_search", false) {
+            mFloatTabGroup = new TabGroupImpl("group_smart_search", false) {
 
                 @Override
                 public void onIndexChanged(int index) {
@@ -650,22 +650,22 @@ public class SmartSearchPanel extends FrameLayout {
                 }
 
             };
-            mFloatingTabInfoObserver = new FloatingTabInfoObserver(mFloatTabList);
+            mFloatingTabInfoObserver = new FloatingTabInfoObserver(mFloatTabGroup);
 
-            ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabList);
+            ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabGroup);
 
         }
-        return mFloatTabList;
+        return mFloatTabGroup;
     }
 
     private int loadUrl(int index, FormatSmartSearchItem item) {
-        mFloatTabList = getFloatTabList();
-        ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabList);
-        if (mFloatTabList == null) {
+        mFloatTabGroup = getFloatTabList();
+        ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabGroup);
+        if (mFloatTabGroup == null) {
             return index;
         }
 
-        ITab iTab = mFloatTabList.getTabAt(index);
+        ITab iTab = mFloatTabGroup.getTabAt(index);
         ArkLogger.e(TAG, "loadUrl tab=" + iTab);
         if (iTab == null) {
             String url = item.getUrl(keyword);
@@ -687,13 +687,13 @@ public class SmartSearchPanel extends FrameLayout {
             }
         }
 
-        mFloatTabList.selectTabAt(index);
+        mFloatTabGroup.selectTabAt(index);
         return index;
     }
 
     private int openNewTab(LoadUrlParams loadUrlParams) {
         ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl());
-        TabInfo newTabInfo = TabInfo.create();
+        TabInfo newTabInfo = TabInfo.create(mFloatTabGroup.getId());
         ITab newTab = new TabImpl(newTabInfo) {
 
             @Override
@@ -707,18 +707,18 @@ public class SmartSearchPanel extends FrameLayout {
             }
         };
 
-        mFloatTabList.getTabList().add(newTab);
+        mFloatTabGroup.getTabList().add(newTab);
 
         newTabInfo.setLaunchType(TabLaunchType.FROM_CHROME_UI);
         ArkTabImpl tab = ArkTabImpl.create(newTab, null);
 
         tab.loadInNewPage(loadUrlParams);
 
-        for (TabInfoObserver obs : mFloatTabList.getObservers()) {
+        for (TabInfoObserver obs : mFloatTabGroup.getObservers()) {
             obs.didAddTab(newTab, TabSelectionType.FROM_USER);
         }
 
-        return mFloatTabList.getCount() - 1;
+        return mFloatTabGroup.getCount() - 1;
     }
 
     private FloatingTabInfoObserver mFloatingTabInfoObserver;

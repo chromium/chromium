@@ -95,7 +95,7 @@ public class PageInfo {
         info.fromMerge = is.readBoolean();
         info.themeColor = is.readInt();
         info.originalIndex = is.readInt();
-        if (version == 2) {
+        if (version >= 2) {
             info.mUserAgent = is.readUTF();
         }
         info.url = is.readUTF();

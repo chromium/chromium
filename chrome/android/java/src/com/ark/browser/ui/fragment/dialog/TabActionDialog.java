@@ -94,7 +94,7 @@ public class TabActionDialog extends AttachListDialogFragment<String>
                 LoadUrlEvent.post(mTab.getCurrentPageInfo(), true, true);
                 break;
             case 2:
-                boolean r = TabListManager.getInstance().moveToNewTab(mTab.getCurrentPageInfo());
+                boolean r = TabListManager.moveToNewTab(mTab.getCurrentPageInfo());
                 if (r) {
                     ZToast.success("移动页面成功！");
                 } else {
