@@ -103,8 +103,9 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
   const ExtensionInfo* GetExtensionInfoFromExtensionStore(
       const ExtensionId& extension_id) {
     auto iter = telemetry_service_->extension_store_.find(extension_id);
-    if (iter == telemetry_service_->extension_store_.end())
+    if (iter == telemetry_service_->extension_store_.end()) {
       return nullptr;
+    }
     return iter->second.get();
   }
 
@@ -862,6 +863,116 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyTimestampsInPrefs) {
       file_data_dict.FindDict(kExtensionId[1]);
   EXPECT_TRUE(actual_extension_1->FindString(kFileDataProcessTimestampPref));
   EXPECT_TRUE(actual_extension_1->FindDict(kFileDataDictPref));
+}
+
+TEST_F(ExtensionTelemetryServiceTest,
+       FileData_AttachesOffstoreFileDataToReport) {
+  // Enable |kExtensionTelemetryFileData| feature and starts collection.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      {kExtensionTelemetryFileData},
+      {{"StartupDelaySeconds",
+        base::NumberToString(kFileDataStartUpDelaySeconds)}});
+  telemetry_service_->SetEnabled(true);
+  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.RunUntilIdle();
+
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  const auto& file_data_dict =
+      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+
+  const base::Value::Dict* extension_0_dict =
+      file_data_dict.FindDict(kExtensionId[0])->FindDict(kFileDataDictPref);
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().id(), kExtensionId[0]);
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().manifest_json(),
+            *(extension_0_dict->FindString(kManifestFile)));
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos_size(), 1);
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos(0).name(),
+            kJavaScriptFile);
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos(0).hash(),
+            *(extension_0_dict->FindString(kJavaScriptFile)));
+
+  const base::Value::Dict* extension_1_dict =
+      file_data_dict.FindDict(kExtensionId[1])->FindDict(kFileDataDictPref);
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().id(), kExtensionId[1]);
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().manifest_json(),
+            *(extension_1_dict->FindString(kManifestFile)));
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().file_infos_size(), 1);
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().file_infos(0).name(),
+            kJavaScriptFile);
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().file_infos(0).hash(),
+            *(extension_1_dict->FindString(kJavaScriptFile)));
+}
+
+TEST_F(ExtensionTelemetryServiceTest,
+       FileData_DoesNotAttachFileDataForNonOffstoreExtensions) {
+  // Register webstore extension 2.
+  RegisterExtensionWithExtensionService(kExtensionId[2], kExtensionName[2],
+                                        ManifestLocation::kInternal,
+                                        Extension::FROM_WEBSTORE);
+  // Enable |kExtensionTelemetryFileData| feature and starts collection.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      {kExtensionTelemetryFileData},
+      {{"StartupDelaySeconds",
+        base::NumberToString(kFileDataStartUpDelaySeconds)}});
+  telemetry_service_->SetEnabled(true);
+  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.RunUntilIdle();
+
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+
+  // Verify that Extension 0 has offstore file data.
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().id(), kExtensionId[0]);
+  EXPECT_FALSE(
+      telemetry_report_pb->reports(0).extension().manifest_json().empty());
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos_size(), 1);
+
+  // Verify Extension 1 has offstore file data.
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().id(), kExtensionId[1]);
+  EXPECT_FALSE(
+      telemetry_report_pb->reports(1).extension().manifest_json().empty());
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().file_infos_size(), 1);
+
+  // Verify Extension 2 does not have offstore file data.
+  EXPECT_EQ(telemetry_report_pb->reports(2).extension().id(), kExtensionId[2]);
+  EXPECT_FALSE(telemetry_report_pb->reports(2).extension().has_manifest_json());
+  EXPECT_EQ(telemetry_report_pb->reports(2).extension().file_infos_size(), 0);
+}
+
+TEST_F(ExtensionTelemetryServiceTest, FileData_HandlesEmptyFileDataInPrefs) {
+  // Enable |kExtensionTelemetryFileData| feature and starts collection.
+  telemetry_service_->SetEnabled(false);
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      {kExtensionTelemetryFileData},
+      {{"StartupDelaySeconds",
+        base::NumberToString(kFileDataStartUpDelaySeconds)}});
+  telemetry_service_->SetEnabled(true);
+  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.RunUntilIdle();
+
+  // Set up pref dict:
+  // extension 0 - empty file data dict
+  // extension 1 - missing file data dict key
+  base::Value::Dict extension_0_dict;
+  extension_0_dict.Set(kFileDataDictPref, base::Value::Dict());
+  base::Value::Dict empty_file_data_dicts;
+  empty_file_data_dicts.Set(kExtensionId[0], std::move(extension_0_dict));
+  empty_file_data_dicts.Set(kExtensionId[1], base::Value::Dict());
+  profile_.GetPrefs()->SetDict(prefs::kExtensionTelemetryFileData,
+                               std::move(empty_file_data_dicts));
+
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+
+  // Verify Extension 0 does not have offstore file data.
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().id(), kExtensionId[0]);
+  EXPECT_FALSE(telemetry_report_pb->reports(0).extension().has_manifest_json());
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos_size(), 0);
+
+  // Verify Extension 1 does not have offstore file data.
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().id(), kExtensionId[1]);
+  EXPECT_FALSE(telemetry_report_pb->reports(1).extension().has_manifest_json());
+  EXPECT_EQ(telemetry_report_pb->reports(1).extension().file_infos_size(), 0);
 }
 
 }  // namespace safe_browsing

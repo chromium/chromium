@@ -85,6 +85,7 @@ using ExtensionInfo =
 
 constexpr char kFileDataProcessTimestampPref[] = "last_processed_timestamp";
 constexpr char kFileDataDictPref[] = "file_data";
+constexpr char kManifestFile[] = "manifest.json";
 
 // Delay before the Telemetry Service checks its last upload time.
 base::TimeDelta kStartupUploadCheckDelaySeconds = base::Seconds(15);
@@ -226,8 +227,9 @@ void ExtensionTelemetryService::OnPrefChanged() {
 
 void ExtensionTelemetryService::SetEnabled(bool enable) {
   // Make call idempotent.
-  if (enabled_ == enable)
+  if (enabled_ == enable) {
     return;
+  }
 
   enabled_ = enable;
   if (enabled_) {
@@ -417,8 +419,9 @@ void ExtensionTelemetryService::AddSignal(
 void ExtensionTelemetryService::CreateAndUploadReport() {
   DCHECK(enabled_);
   active_report_ = CreateReport();
-  if (!active_report_)
+  if (!active_report_) {
     return;
+  }
 
   auto upload_data = std::make_unique<std::string>();
   if (!active_report_->SerializeToString(upload_data.get())) {
@@ -490,8 +493,9 @@ void ExtensionTelemetryService::StartUploadCheck() {
   // This check is performed as a delayed task after enabling the service. The
   // service may become disabled between the time this task is scheduled and it
   // actually runs. So make sure service is enabled before performing the check.
-  if (!enabled_)
+  if (!enabled_) {
     return;
+  }
 
   if ((GetLastUploadTimeForExtensionTelemetry(*pref_service_) +
        current_reporting_interval_) <= base::Time::Now()) {
@@ -510,8 +514,9 @@ void ExtensionTelemetryService::PersistOrUploadData() {
   } else {
     // Otherwise persist data gathered so far.
     active_report_ = CreateReport();
-    if (!active_report_)
+    if (!active_report_) {
       return;
+    }
     std::string write_string;
     if (!active_report_->SerializeToString(&write_string)) {
       active_report_.reset();
@@ -529,8 +534,9 @@ ExtensionTelemetryService::CreateReport() {
   // extension store is empty) AND there are no installed extensions currently.
   std::unique_ptr<extensions::ExtensionSet> installed_extensions =
       extension_registry_->GenerateInstalledExtensionsSet();
-  if (extension_store_.empty() && installed_extensions->is_empty())
+  if (extension_store_.empty() && installed_extensions->is_empty()) {
     return nullptr;
+  }
 
   auto telemetry_report_pb =
       std::make_unique<ExtensionTelemetryReportRequest>();
@@ -666,6 +672,46 @@ void ExtensionTelemetryService::DumpReportForTest(
   DVLOG(1) << "Telemetry Report: " << ss.str();
 }
 
+ExtensionTelemetryService::OffstoreExtensionFileData::
+    OffstoreExtensionFileData() = default;
+ExtensionTelemetryService::OffstoreExtensionFileData::
+    ~OffstoreExtensionFileData() = default;
+ExtensionTelemetryService::OffstoreExtensionFileData::
+    OffstoreExtensionFileData::OffstoreExtensionFileData(
+        const OffstoreExtensionFileData& src) = default;
+
+absl::optional<ExtensionTelemetryService::OffstoreExtensionFileData>
+ExtensionTelemetryService::RetrieveOffstoreFileDataForReport(
+    const extensions::ExtensionId& extension_id) {
+  const auto& pref_dict = GetExtensionTelemetryFileData(*pref_service_);
+  const base::Value::Dict* extension_dict = pref_dict.FindDict(extension_id);
+  if (!extension_dict) {
+    return absl::nullopt;
+  }
+
+  const base::Value::Dict* file_data_dict =
+      extension_dict->FindDict(kFileDataDictPref);
+  if (!file_data_dict || file_data_dict->empty()) {
+    return absl::nullopt;
+  }
+
+  OffstoreExtensionFileData offstore_extension_file_data;
+  base::Value::Dict dict = file_data_dict->Clone();
+  absl::optional<base::Value> manifest_value = dict.Extract(kManifestFile);
+  if (manifest_value.has_value()) {
+    offstore_extension_file_data.manifest =
+        std::move(manifest_value.value().GetString());
+  }
+
+  for (auto&& [file_name, file_hash] : dict) {
+    ExtensionTelemetryReportRequest_ExtensionInfo_FileInfo file_info;
+    file_info.set_name(std::move(file_name));
+    file_info.set_hash(std::move(file_hash.GetString()));
+    offstore_extension_file_data.file_infos.emplace_back(std::move(file_info));
+  }
+  return absl::make_optional(offstore_extension_file_data);
+}
+
 std::unique_ptr<ExtensionInfo>
 ExtensionTelemetryService::GetExtensionInfoForReport(
     const extensions::Extension& extension) {
@@ -691,6 +737,19 @@ ExtensionTelemetryService::GetExtensionInfoForReport(
       GetBlocklistState(extension.id(), extension_prefs_));
   extension_info->set_disable_reasons(
       extension_prefs_->GetDisableReasons(extension.id()));
+
+  if (base::FeatureList::IsEnabled(kExtensionTelemetryFileData)) {
+    absl::optional<OffstoreExtensionFileData> offstore_file_data =
+        RetrieveOffstoreFileDataForReport(extension.id());
+
+    if (offstore_file_data.has_value()) {
+      extension_info->set_manifest_json(
+          std::move(offstore_file_data.value().manifest));
+      for (auto& file_info : offstore_file_data.value().file_infos) {
+        extension_info->mutable_file_infos()->Add(std::move(file_info));
+      }
+    }
+  }
 
   return extension_info;
 }
