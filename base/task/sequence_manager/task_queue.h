@@ -97,9 +97,6 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   // Shuts down the queue. All tasks currently queued will be discarded.
   virtual void ShutdownTaskQueue();
 
-  // Shuts down the queue when there are no more tasks queued.
-  void ShutdownTaskQueueGracefully();
-
   // Queues with higher priority (smaller number) are selected to run before
   // queues of lower priority. Note that there is no starvation protection,
   // i.e., a constant stream of high priority work can mean that tasks in lower
@@ -442,6 +439,9 @@ class BASE_EXPORT TaskQueue : public RefCountedThreadSafe<TaskQueue> {
   void OnQueueEnabledVoteChanged(bool enabled);
 
   bool IsOnMainThread() const;
+
+  // Shuts down the queue when there are no more tasks queued.
+  void ShutdownTaskQueueGracefully();
 
   // TaskQueue has ownership of an underlying implementation but in certain
   // cases (e.g. detached frames) their lifetime may diverge.

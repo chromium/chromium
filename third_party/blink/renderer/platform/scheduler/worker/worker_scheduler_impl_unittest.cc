@@ -160,7 +160,14 @@ class WorkerSchedulerImplTest : public testing::Test {
   void PostTestTask(Vector<String>* run_order,
                     const String& task_descriptor,
                     TaskType task_type) {
-    worker_scheduler_->GetTaskRunner(task_type)->PostTask(
+    PostTestTask(run_order, task_descriptor,
+                 *worker_scheduler_->GetTaskRunner(task_type).get());
+  }
+
+  void PostTestTask(Vector<String>* run_order,
+                    const String& task_descriptor,
+                    base::SingleThreadTaskRunner& task_runner) {
+    task_runner.PostTask(
         FROM_HERE, WTF::BindOnce(&AppendToVectorTestTask,
                                  WTF::Unretained(run_order), task_descriptor));
   }
@@ -184,11 +191,16 @@ TEST_F(WorkerSchedulerImplTest, TestPostTasks) {
   RunUntilIdle();
   EXPECT_THAT(run_order, testing::ElementsAre("T1", "T2", "T3"));
 
+  // GetTaskRunner() is only supposed to be called by the WorkerThread, and only
+  // during initialization. Simulate this by using a cached task runner after
+  // disposal.
+  scoped_refptr<base::SingleThreadTaskRunner> test_task_runner =
+      worker_scheduler_->GetTaskRunner(TaskType::kInternalTest);
   // Tasks should not run after the scheduler is disposed of.
   worker_scheduler_->Dispose();
   run_order.clear();
-  PostTestTask(&run_order, "T4", TaskType::kInternalTest);
-  PostTestTask(&run_order, "T5", TaskType::kInternalTest);
+  PostTestTask(&run_order, "T4", *test_task_runner.get());
+  PostTestTask(&run_order, "T5", *test_task_runner.get());
   RunUntilIdle();
   EXPECT_TRUE(run_order.empty());
 
