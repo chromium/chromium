@@ -11,13 +11,11 @@
 
 #include "ash/shell.h"
 #include "chrome-color-management-server-protocol.h"
+#include "components/exo/wayland/output_metrics.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_output.h"
-#include "components/exo/wayland/wayland_display_util.h"
 #include "components/exo/wayland/zcr_color_manager.h"
-#include "components/exo/wm_helper.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "wayland-server-protocol-core.h"
 
@@ -162,63 +160,27 @@ bool WaylandDisplayHandler::SendDisplayMetrics(const display::Display& display,
     return false;
   }
 
-  const display::ManagedDisplayInfo& info =
-      WMHelper::GetInstance()->GetDisplayInfo(display.id());
+  const OutputMetrics output_metrics(display);
 
-  const float kInchInMm = 25.4f;
-  const char* kUnknown = "unknown";
-
-  const std::string& make = info.manufacturer_id();
-  const std::string& model = info.product_id();
-
-  // TODO(oshima): The current Wayland protocol currently has no way of
-  // informing a client about any overscan the display has, and what the safe
-  // area of the display might be. We may want to make a change to the
-  // aura-shell (zaura_output) protocol, or to upstream a change to the
-  // xdg-output (currently unstable) protocol to add that information.
-
-  // |origin| is used in wayland service to identify the workspace
-  // the pixel size will be applied.
-  const gfx::Point origin = display.bounds().origin();
-
-  // |physical_size_px| is the physical resolution of the display in pixels.
-  // The value should not include any overscan insets or display rotation,
-  // except for any panel orientation adjustment.
-  const gfx::Size physical_size_px = info.bounds_in_native().size();
-
-  // |physical_size_mm| is our best-effort approximation for the physical size
-  // of the display in millimeters, given the display resolution and DPI. The
-  // value should not include any overscan insets or display rotation, except
-  // for any panel orientation adjustment.
-  const gfx::Size physical_size_mm =
-      ScaleToRoundedSize(physical_size_px, kInchInMm / info.device_dpi());
-
-  // Use panel_rotation otherwise some X apps will refuse to take events from
-  // outside the "visible" region.
-  wl_output_send_geometry(output_resource_, origin.x(), origin.y(),
-                          physical_size_mm.width(), physical_size_mm.height(),
-                          WL_OUTPUT_SUBPIXEL_UNKNOWN,
-                          make.empty() ? kUnknown : make.c_str(),
-                          model.empty() ? kUnknown : model.c_str(),
-                          OutputTransform(display.panel_rotation()));
-
-  // TODO(reveman): Send real list of modes.
-  wl_output_send_mode(output_resource_,
-                      WL_OUTPUT_MODE_CURRENT | WL_OUTPUT_MODE_PREFERRED,
-                      physical_size_px.width(), physical_size_px.height(),
-                      static_cast<int>(60000));
+  wl_output_send_geometry(
+      output_resource_, output_metrics.origin.x(), output_metrics.origin.y(),
+      output_metrics.physical_size_mm.width(),
+      output_metrics.physical_size_mm.height(), output_metrics.subpixel,
+      output_metrics.make.c_str(), output_metrics.model.c_str(),
+      output_metrics.panel_transform);
+  wl_output_send_mode(output_resource_, output_metrics.mode_flags,
+                      output_metrics.physical_size_px.width(),
+                      output_metrics.physical_size_px.height(),
+                      output_metrics.refresh_mhz);
 
   if (xdg_output_resource_) {
-    XdgOutputSendLogicalPosition(origin);
-    XdgOutputSendLogicalSize(display.bounds().size());
-    XdgOutputSendDescription(display.label());
+    XdgOutputSendLogicalPosition(output_metrics.logical_origin);
+    XdgOutputSendLogicalSize(output_metrics.logical_size);
+    XdgOutputSendDescription(output_metrics.description);
   } else {
     if (wl_resource_get_version(output_resource_) >=
         WL_OUTPUT_SCALE_SINCE_VERSION) {
-      // wl_output only supports integer scaling, so if device scale factor is
-      // fractional we need to round it up to the closest integer.
-      wl_output_send_scale(output_resource_,
-                           std::ceil(display.device_scale_factor()));
+      wl_output_send_scale(output_resource_, output_metrics.scale);
     }
   }
 

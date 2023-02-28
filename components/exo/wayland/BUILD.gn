@@ -19,6 +19,8 @@ source_set("wayland") {
   sources = [
     "content_type.cc",
     "content_type.h",
+    "output_metrics.cc",
+    "output_metrics.h",
     "overlay_prioritizer.cc",
     "overlay_prioritizer.h",
     "scoped_wl.cc",
@@ -262,6 +264,7 @@ source_set("unit_tests") {
 
   sources = [
     "clients/security_delegate_binding_test.cc",
+    "output_metrics_unittest.cc",
     "server_unittest.cc",
     "surface_unittest.cc",
     "test/client_util.cc",
@@ -313,6 +316,7 @@ source_set("unit_tests") {
     "//third_party/wayland-protocols:remote_shell_protocol",
     "//third_party/wayland-protocols:xdg_output_protocol",
     "//third_party/wayland-protocols:xdg_shell_protocol",
+    "//ui/base/wayland:wayland_display_util",
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/display",
