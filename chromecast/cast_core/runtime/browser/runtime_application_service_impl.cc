@@ -8,6 +8,7 @@
 
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/cast_web_view.h"
 #include "chromecast/cast_core/grpc/grpc_status_or.h"
@@ -149,6 +150,9 @@ void RuntimeApplicationServiceImpl::Load(
     return;
   }
 
+  metrics::CastMetricsHelper::GetInstance()->DidStartLoad(
+      request.application_config().app_id());
+
   // Start the gRPC server.
   grpc_server_.emplace();
   grpc_server_->SetHandler<
@@ -198,6 +202,8 @@ void RuntimeApplicationServiceImpl::Load(
   runtime_application_->SetUrlRewriteRules(std::move(mojom_rules));
 
   cast_web_view_ = CreateCastWebView();
+  metrics::CastMetricsHelper::GetInstance()->DidCompleteLoad(
+      request.application_config().app_id(), request.cast_session_id());
   runtime_application_->Load(std::move(callback));
 }
 
