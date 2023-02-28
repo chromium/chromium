@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 76 tests; 0 PASS, 76 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 80 tests; 0 PASS, 80 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL convTranspose2d float32 4D input and filter(non-constant) tensors default options / cpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors default options / cpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors options.padding / cpu / sync builder[operationName] is not a function
@@ -18,6 +18,7 @@ FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=io
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / cpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / cpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors options.bias / cpu / sync builder[operationName] is not a function
+FAIL convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / cpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors options.activation=relu / cpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter(non-constant) tensors default options / gpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors default options / gpu / sync builder[operationName] is not a function
@@ -37,6 +38,7 @@ FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=io
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / gpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / gpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors options.bias / gpu / sync builder[operationName] is not a function
+FAIL convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / gpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter tensors options.activation=relu / gpu / sync builder[operationName] is not a function
 FAIL convTranspose2d float32 4D input and filter(non-constant) tensors default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
@@ -56,6 +58,7 @@ FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=io
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.bias / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.activation=relu / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter(non-constant) tensors default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
@@ -75,6 +78,7 @@ FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=io
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.bias / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+FAIL convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL convTranspose2d float32 4D input and filter tensors options.activation=relu / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 Harness: the test ran to completion.
 

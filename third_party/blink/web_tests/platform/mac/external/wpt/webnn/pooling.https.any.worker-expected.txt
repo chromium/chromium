@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-Found 136 tests; 0 PASS, 136 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL averagePool2d float32 4D tensor default options / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+Found 140 tests; 0 PASS, 140 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL averagePool2d float32 4D tensor all positive default options / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL averagePool2d float32 4D tensor all negative default options / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL averagePool2d float32 4D tensor options.windowDimensions / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL averagePool2d float32 4D tensor options.padding / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL averagePool2d float32 4D tensor options.strides / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -17,7 +18,8 @@ FAIL averagePool2d float32 4D tensor options.roundingType=ceil / cpu / sync Fail
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL averagePool2d float32 4D tensor options.dilations with options.strides / cpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL averagePool2d float32 4D tensor default options / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL averagePool2d float32 4D tensor all positive default options / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
+FAIL averagePool2d float32 4D tensor all negative default options / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL averagePool2d float32 4D tensor options.windowDimensions / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL averagePool2d float32 4D tensor options.padding / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL averagePool2d float32 4D tensor options.strides / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
@@ -68,7 +70,8 @@ FAIL maxPool2d float32 4D tensor options.roundingType=ceil / gpu / sync Failed t
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
 FAIL maxPool2d float32 4D tensor options.dilations with options.strides / gpu / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL averagePool2d float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL averagePool2d float32 4D tensor all positive default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL averagePool2d float32 4D tensor all negative default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.windowDimensions / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.strides / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -85,7 +88,8 @@ FAIL averagePool2d float32 4D tensor options.roundingType=ceil / cpu / async pro
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.dilations with options.strides / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL averagePool2d float32 4D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL averagePool2d float32 4D tensor all positive default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL averagePool2d float32 4D tensor all negative default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.windowDimensions / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.strides / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"

@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-Found 68 tests; 0 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL averagePool2d float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+Found 70 tests; 0 PASS, 70 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL averagePool2d float32 4D tensor all positive default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL averagePool2d float32 4D tensor all negative default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.windowDimensions / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.strides / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
@@ -17,7 +18,8 @@ FAIL averagePool2d float32 4D tensor options.roundingType=ceil / cpu / async pro
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.dilations with options.strides / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
-FAIL averagePool2d float32 4D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL averagePool2d float32 4D tensor all positive default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
+FAIL averagePool2d float32 4D tensor all negative default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.windowDimensions / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 FAIL averagePool2d float32 4D tensor options.strides / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"

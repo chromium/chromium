@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-Found 68 tests; 6 PASS, 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL averagePool2d float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
+Found 70 tests; 8 PASS, 62 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL averagePool2d float32 4D tensor all positive default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
+FAIL averagePool2d float32 4D tensor all negative default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.windowDimensions / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.strides / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
@@ -16,8 +17,9 @@ FAIL averagePool2d float32 4D tensor options.roundingType=floor / cpu / async pr
 FAIL averagePool2d float32 4D tensor options.roundingType=ceil / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL averagePool2d float32 4D tensor options.dilations with options.strides / cpu / async assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual -0.2304840087890625 should be close enough to expected -0.23048464953899384 by the acceptable 11 ULP distance, but they have 43 ULP distance expected true got false
-FAIL averagePool2d float32 4D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
+PASS averagePool2d float32 4D tensor options.dilations with options.strides / cpu / async
+FAIL averagePool2d float32 4D tensor all positive default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
+FAIL averagePool2d float32 4D tensor all negative default options / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.windowDimensions / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.padding / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.strides / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
@@ -33,7 +35,7 @@ FAIL averagePool2d float32 4D tensor options.roundingType=floor / gpu / async pr
 FAIL averagePool2d float32 4D tensor options.roundingType=ceil / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil / gpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
-FAIL averagePool2d float32 4D tensor options.dilations with options.strides / gpu / async assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual -0.2304840087890625 should be close enough to expected -0.23048464953899384 by the acceptable 11 ULP distance, but they have 43 ULP distance expected true got false
+PASS averagePool2d float32 4D tensor options.dilations with options.strides / gpu / async
 FAIL maxPool2d float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.windowDimensions / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
 FAIL maxPool2d float32 4D tensor options.padding / cpu / async promise_test: Unhandled rejection with value: object "NotSupportedError: The nchw input layout is not supported."
