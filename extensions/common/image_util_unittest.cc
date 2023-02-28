@@ -188,11 +188,7 @@ void WriteRenderedIcon(const SkBitmap& icon,
                                                      &bitmap));
   std::vector<unsigned char> output_data;
   ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output_data));
-  const int bytes_to_write = output_data.size();
-  ASSERT_EQ(bytes_to_write,
-            base::WriteFile(rendered_icon_path,
-                            reinterpret_cast<const char*>(&output_data[0]),
-                            bytes_to_write));
+  ASSERT_TRUE(base::WriteFile(rendered_icon_path, output_data));
 }
 
 }  // namespace

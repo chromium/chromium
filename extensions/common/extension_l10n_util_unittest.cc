@@ -41,8 +41,7 @@ TEST(ExtensionL10nUtil, ValidateLocalesWithBadLocale) {
 
   base::FilePath messages_file = locale.Append(kMessagesFilename);
   std::string data = "{ \"name\":";
-  ASSERT_EQ(static_cast<int>(data.length()),
-            base::WriteFile(messages_file, data.c_str(), data.length()));
+  ASSERT_TRUE(base::WriteFile(messages_file, data));
 
   base::Value::Dict manifest;
   manifest.Set(keys::kDefaultLocale, "en");
@@ -95,9 +94,7 @@ TEST(ExtensionL10nUtil, GetValidLocalesWithUnsupportedLocale) {
   base::FilePath locale_1 = src_path.AppendASCII("sr");
   ASSERT_TRUE(base::CreateDirectory(locale_1));
   std::string data("whatever");
-  ASSERT_EQ(static_cast<int>(data.length()),
-            base::WriteFile(locale_1.Append(kMessagesFilename), data.c_str(),
-                            data.length()));
+  ASSERT_TRUE(base::WriteFile(locale_1.Append(kMessagesFilename), data));
   // Unsupported locale.
   ASSERT_TRUE(base::CreateDirectory(src_path.AppendASCII("xxx_yyy")));
 
@@ -202,8 +199,7 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsBadJSONFormat) {
 
   std::string data = "{ \"name\":";
   base::FilePath messages_file = locale.Append(kMessagesFilename);
-  ASSERT_EQ(static_cast<int>(data.length()),
-            base::WriteFile(messages_file, data.c_str(), data.length()));
+  ASSERT_TRUE(base::WriteFile(messages_file, data));
 
   std::string error;
   EXPECT_FALSE(extension_l10n_util::LoadMessageCatalogs(
@@ -229,16 +225,12 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsDuplicateKeys) {
   std::string data =
       "{ \"name\": { \"message\": \"something\" }, "
       "\"name\": { \"message\": \"something else\" } }";
-  ASSERT_EQ(static_cast<int>(data.length()),
-            base::WriteFile(locale_1.Append(kMessagesFilename), data.c_str(),
-                            data.length()));
+  ASSERT_TRUE(base::WriteFile(locale_1.Append(kMessagesFilename), data));
 
   base::FilePath locale_2 = src_path.AppendASCII("sr");
   ASSERT_TRUE(base::CreateDirectory(locale_2));
 
-  ASSERT_EQ(static_cast<int>(data.length()),
-            base::WriteFile(locale_2.Append(kMessagesFilename), data.c_str(),
-                            data.length()));
+  ASSERT_TRUE(base::WriteFile(locale_2.Append(kMessagesFilename), data));
 
   std::string error;
   // JSON parser hides duplicates. We are going to get only one key/value
@@ -265,10 +257,9 @@ TEST(ExtensionL10nUtil, LoadMessageCatalogsCompressed) {
   std::string data = "{ \"name\": { \"message\": \"something\" } }";
   std::string compressed_data;
   ASSERT_TRUE(compression::GzipCompress(data, &compressed_data));
-  ASSERT_EQ(static_cast<int>(compressed_data.length()),
-            base::WriteFile(locale.Append(kMessagesFilename)
-                                .AddExtension(FILE_PATH_LITERAL(".gz")),
-                            compressed_data.c_str(), compressed_data.length()));
+  ASSERT_TRUE(base::WriteFile(
+      locale.Append(kMessagesFilename).AddExtension(FILE_PATH_LITERAL(".gz")),
+      compressed_data));
 
   // Test that LoadMessageCatalogs fails with gzip_permission = kDisallow.
   std::string error;

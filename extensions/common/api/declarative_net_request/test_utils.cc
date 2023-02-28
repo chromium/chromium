@@ -335,9 +335,8 @@ void WriteManifestAndRulesets(const base::FilePath& extension_dir,
   // Persists a background script if needed.
   if (flags & ConfigFlag::kConfig_HasBackgroundScript) {
     std::string content = "chrome.test.sendMessage('ready');";
-    CHECK_EQ(static_cast<int>(content.length()),
-             base::WriteFile(extension_dir.Append(kBackgroundScriptFilepath),
-                             content.c_str(), content.length()));
+    CHECK(base::WriteFile(extension_dir.Append(kBackgroundScriptFilepath),
+                          content));
   }
 
   // Persist manifest file.
