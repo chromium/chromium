@@ -80,8 +80,10 @@ class PluginVmInstaller : public KeyedService,
     DOWNLOAD_FAILED_404 = 30,
     // Download appeared to succeed but downloaded image size was unexpected
     DOWNLOAD_SIZE_MISMATCH = 31,
+    // Image with the right name exists, but in a wrong location.
+    EXISTING_IMAGE_INVALID = 32,
 
-    kMaxValue = DOWNLOAD_SIZE_MISMATCH,
+    kMaxValue = EXISTING_IMAGE_INVALID,
   };
 
   enum class InstallingState {

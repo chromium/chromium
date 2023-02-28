@@ -81912,6 +81912,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="29" label="DOWNLOAD_FAILED_403"/>
   <int value="30" label="DOWNLOAD_FAILED_404"/>
   <int value="31" label="DOWNLOAD_SIZE_MISMATCH"/>
+  <int value="32" label="EXISTING_IMAGE_INVALID"/>
 </enum>
 
 <enum name="PluginVmSetupResult">
