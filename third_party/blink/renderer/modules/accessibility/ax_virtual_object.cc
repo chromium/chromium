@@ -62,11 +62,6 @@ void AXVirtualObject::AddChildren() {
   }
 }
 
-void AXVirtualObject::ChildrenChangedWithCleanLayout() {
-  ClearChildren();
-  AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
-}
-
 const AtomicString& AXVirtualObject::GetAOMPropertyOrARIAAttribute(
     AOMStringProperty property) const {
   if (!accessible_node_)

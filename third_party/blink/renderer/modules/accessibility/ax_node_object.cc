@@ -4796,61 +4796,6 @@ bool AXNodeObject::OnNativeSetSequentialFocusNavigationStartingPointAction() {
   return true;
 }
 
-void AXNodeObject::ChildrenChangedWithCleanLayout() {
-  DCHECK(!IsDetached()) << "Don't call on detached node: "
-                        << ToString(true, true);
-  DCHECK(GetNode() || GetLayoutObject());
-
-  // When children changed on a <map> that means we need to forward the
-  // children changed to the <img> that parents the <area> elements.
-  // TODO(accessibility) Consider treating <img usemap> as aria-owns so that
-  // we get implementation "for free" vai relation cache, etc.
-  if (HTMLMapElement* map_element = DynamicTo<HTMLMapElement>(GetNode())) {
-    HTMLImageElement* image_element = map_element->ImageElement();
-    if (image_element) {
-      AXObject* ax_image = AXObjectCache().Get(image_element);
-      if (ax_image) {
-        ax_image->ChildrenChangedWithCleanLayout();
-        return;
-      }
-    }
-  }
-
-  // Always invalidate |children_| even if it was invalidated before, because
-  // now layout is clean.
-  SetNeedsToUpdateChildren();
-
-  // The caller, AXObjectCacheImpl::ChildrenChangedWithCleanLayout(), is only
-  // Between the time that AXObjectCacheImpl::ChildrenChanged() determines
-  // which included parent to use and now, it's possible that the parent will
-  // no longer be ignored. This is rare, but is covered by this test:
-  // external/wpt/accessibility/crashtests/delayed-ignored-change.html/
-  //
-  // If this object is no longer included in the tree, then our parent needs to
-  // recompute its included-in-the-tree children vector. (And if our parent
-  // isn't included in the tree either, it will recursively update its parent
-  // and so on.)
-  //
-  // The first ancestor that's included in the tree will
-  // be the one that actually fires the ChildrenChanged
-  // event notification.
-  if (!LastKnownIsIncludedInTreeValue()) {
-    if (AXObject* ax_parent = CachedParentObject()) {
-      ax_parent->ChildrenChangedWithCleanLayout();
-      return;
-    }
-  }
-
-  // TODO(accessibility) Move this up.
-  if (!CanHaveChildren())
-    return;
-
-  DCHECK(!IsDetached()) << "None of the above should be able to detach |this|: "
-                        << ToString(true, true);
-
-  AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
-}
-
 void AXNodeObject::SelectedOptions(AXObjectVector& options) const {
   if (auto* select = DynamicTo<HTMLSelectElement>(GetNode())) {
     for (auto* const option : *select->selectedOptions()) {

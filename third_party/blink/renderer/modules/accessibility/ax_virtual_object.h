@@ -23,7 +23,6 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
   void Detach() override;
   bool IsVirtualObject() const override { return true; }
   void AddChildren() override;
-  void ChildrenChangedWithCleanLayout() override;
   const AtomicString& GetAOMPropertyOrARIAAttribute(
       AOMStringProperty) const override;
   bool HasAOMPropertyOrARIAAttribute(AOMBooleanProperty,
