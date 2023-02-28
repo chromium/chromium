@@ -33,10 +33,17 @@ MoveToDesksMenuModel::MoveToDesksMenuModel(
   if (add_title)
     AddTitle(l10n_util::GetStringUTF16(IDS_MOVE_TO_DESKS_MENU));
 
-  AddCheckItem(TOGGLE_ASSIGN_TO_ALL_DESKS,
-               l10n_util::GetStringUTF16(IDS_ASSIGN_TO_ALL_DESKS));
-  assign_to_all_desks_item_index_ = GetItemCount() - 1;
-  AddSeparator(ui::NORMAL_SEPARATOR);
+  bool needs_separator = add_title;
+  if (delegate_->IsCommandIdEnabled(TOGGLE_ASSIGN_TO_ALL_DESKS)) {
+    AddCheckItem(TOGGLE_ASSIGN_TO_ALL_DESKS,
+                 l10n_util::GetStringUTF16(IDS_ASSIGN_TO_ALL_DESKS));
+    assign_to_all_desks_item_index_ = GetItemCount() - 1;
+    needs_separator = true;
+  }
+
+  if (needs_separator) {
+    AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 
   constexpr int kMaxNumberOfDesks = MOVE_TO_DESK_16 - MOVE_TO_DESK_1 + 1;
   for (int i = 0; i < kMaxNumberOfDesks; ++i)

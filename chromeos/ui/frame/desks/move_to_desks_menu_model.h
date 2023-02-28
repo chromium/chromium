@@ -58,7 +58,9 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<ui::SimpleMenuModel::Delegate> delegate_;
 
   // This is the index of the assign to all desks item in the menu model.
-  size_t assign_to_all_desks_item_index_;
+  // Floated windows cannot be assigned to all desks. In that case, this will be
+  // nullopt.
+  absl::optional<size_t> assign_to_all_desks_item_index_;
 };
 
 }  // namespace chromeos
