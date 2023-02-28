@@ -11,6 +11,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
@@ -85,6 +86,10 @@ class VideoConferenceTrayTest : public AshTestBase {
     return video_conference_tray()->audio_icon();
   }
 
+  VideoConferenceTrayButton* screen_share_icon() {
+    return video_conference_tray()->screen_share_icon();
+  }
+
   // Make the tray and buttons visible by setting `VideoConferenceMediaState`,
   // and return the state so it can be modified.
   VideoConferenceMediaState SetTrayAndButtonsVisible() {
@@ -92,6 +97,7 @@ class VideoConferenceTrayTest : public AshTestBase {
     state.has_media_app = true;
     state.has_camera_permission = true;
     state.has_microphone_permission = true;
+    state.is_capturing_screen = true;
     controller()->UpdateWithMediaState(state);
     return state;
   }
@@ -352,6 +358,33 @@ TEST_F(VideoConferenceTrayTest, ToggleMicrophoneButton) {
   LeftClickOn(audio_icon());
   EXPECT_FALSE(controller()->microphone_muted());
   EXPECT_FALSE(audio_icon()->toggled());
+}
+
+TEST_F(VideoConferenceTrayTest, ClickScreenshareButton) {
+  SetTrayAndButtonsVisible();
+
+  bool stop_callback_called = false;
+
+  auto stop_callback = base::BindRepeating(
+      [](bool* stop_callback_called) { *stop_callback_called = true; },
+      base::Unretained(&stop_callback_called));
+
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
+      stop_callback, base::RepeatingClosure(), std::u16string());
+
+  // Click the screen share button should trigger the screen access stop
+  // callback.
+  LeftClickOn(screen_share_icon());
+  EXPECT_TRUE(stop_callback_called);
+
+  stop_callback_called = false;
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
+      stop_callback);
+
+  // Click the screen share button should not trigger the remoting share stop
+  // callback.
+  LeftClickOn(screen_share_icon());
+  EXPECT_FALSE(stop_callback_called);
 }
 
 TEST_F(VideoConferenceTrayTest, PrivacyIndicator) {

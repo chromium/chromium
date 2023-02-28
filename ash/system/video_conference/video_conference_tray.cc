@@ -9,9 +9,12 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
+#include "ash/system/privacy/screen_security_controller.h"
+#include "ash/system/system_notification_controller.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_constants.h"
@@ -327,7 +330,10 @@ void VideoConferenceTray::OnAudioButtonClicked(const ui::Event& event) {
 }
 
 void VideoConferenceTray::OnScreenShareButtonClicked(const ui::Event& event) {
-  // TODO(b/253277644): Implement the callback for `screen_share_icon_`.
+  Shell::Get()
+      ->system_notification_controller()
+      ->screen_security_controller()
+      ->StopAllSessions(/*is_screen_access=*/true);
 }
 
 BEGIN_METADATA(VideoConferenceTray, TrayBackgroundView)

@@ -30,17 +30,18 @@ class ASH_EXPORT ScreenSecurityController : public ScreenSecurityObserver,
 
   ~ScreenSecurityController() override;
 
+  // Stop all sharing/accessing sessions by calling all the callbacks in
+  // `screen_access_stop_callbacks_` or `remoting_share_stop_callbacks_`,
+  // depending on `is_screen_access` argument. Also removes any privacy
+  // notifications if exist.
+  void StopAllSessions(bool is_screen_access);
+
  private:
   // Creates the screen security notification. If
   // `is_screen_access_notification`, the notification is created for screen
   // access. Otherwise it is for remoting screen share.
   void CreateNotification(const std::u16string& message,
                           bool is_screen_access_notification);
-
-  // Removes the notification and calls all the callbacks in
-  // `screen_access_stop_callbacks_` or `remoting_share_stop_callbacks_`,
-  // depending on `is_screen_access` argument.
-  void StopAllSessions(bool is_screen_access);
 
   // Changes the source of current capture session by bringing up the picker
   // again, only if there is only one screen capture session.

@@ -44,6 +44,24 @@ ScreenSecurityController::~ScreenSecurityController() {
   Shell::Get()->RemoveShellObserver(this);
 }
 
+void ScreenSecurityController::StopAllSessions(bool is_screen_access) {
+  message_center::MessageCenter::Get()->RemoveNotification(
+      is_screen_access ? kScreenAccessNotificationId
+                       : kRemotingScreenShareNotificationId,
+      /*by_user=*/false);
+
+  std::vector<base::OnceClosure> callbacks;
+  std::swap(callbacks, is_screen_access ? screen_access_stop_callbacks_
+                                        : remoting_share_stop_callbacks_);
+  for (base::OnceClosure& callback : callbacks) {
+    if (callback) {
+      std::move(callback).Run();
+    }
+  }
+
+  change_source_callback_.Reset();
+}
+
 void ScreenSecurityController::CreateNotification(
     const std::u16string& message,
     bool is_screen_access_notification) {
@@ -125,27 +143,6 @@ void ScreenSecurityController::CreateNotification(
       std::move(notification));
 }
 
-void ScreenSecurityController::StopAllSessions(bool is_screen_access) {
-  if (features::IsVideoConferenceEnabled() && !is_screen_access) {
-    return;
-  }
-
-  message_center::MessageCenter::Get()->RemoveNotification(
-      is_screen_access ? kScreenAccessNotificationId
-                       : kRemotingScreenShareNotificationId,
-      false /* by_user */);
-
-  std::vector<base::OnceClosure> callbacks;
-  std::swap(callbacks, is_screen_access ? screen_access_stop_callbacks_
-                                        : remoting_share_stop_callbacks_);
-  for (base::OnceClosure& callback : callbacks) {
-    if (callback)
-      std::move(callback).Run();
-  }
-
-  change_source_callback_.Reset();
-}
-
 void ScreenSecurityController::ChangeSource() {
   if (change_source_callback_ && screen_access_stop_callbacks_.size() == 1) {
     change_source_callback_.Run();
@@ -156,14 +153,14 @@ void ScreenSecurityController::OnScreenAccessStart(
     base::OnceClosure stop_callback,
     const base::RepeatingClosure& source_callback,
     const std::u16string& access_app_name) {
+  screen_access_stop_callbacks_.emplace_back(std::move(stop_callback));
+  change_source_callback_ = source_callback;
+
   // Don't send screen access notifications, because the VideoConferenceTray
   // serves as the notifier for this.
   if (features::IsVideoConferenceEnabled()) {
     return;
   }
-
-  screen_access_stop_callbacks_.emplace_back(std::move(stop_callback));
-  change_source_callback_ = source_callback;
 
   // We do not want to show the screen capture notification and the chromecast
   // casting tray notification at the same time.
@@ -188,13 +185,13 @@ void ScreenSecurityController::OnScreenAccessStop() {
 
 void ScreenSecurityController::OnRemotingScreenShareStart(
     base::OnceClosure stop_callback) {
+  remoting_share_stop_callbacks_.emplace_back(std::move(stop_callback));
+
   // Don't send screen share notifications, because the VideoConferenceTray
   // serves as the notifier for screen share.
   if (features::IsVideoConferenceEnabled()) {
     return;
   }
-
-  remoting_share_stop_callbacks_.emplace_back(std::move(stop_callback));
 
   CreateNotification(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_SCREEN_SHARE_BEING_HELPED),

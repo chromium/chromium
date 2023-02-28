@@ -9,7 +9,9 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
+#include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/system_notification_controller.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
@@ -67,6 +69,33 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ScreenSecurityControllerTest,
     /*IsPrivacyIndicatorsFeatureEnabled()=*/::testing::Bool());
+
+// Tests that `StopAllSessions()` is working properly with both params.
+TEST_P(ScreenSecurityControllerTest, StopAllSessions) {
+  bool stop_callback_called = false;
+
+  auto stop_callback = base::BindRepeating(
+      [](bool* stop_callback_called) { *stop_callback_called = true; },
+      base::Unretained(&stop_callback_called));
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
+      stop_callback, base::RepeatingClosure(), std::u16string());
+
+  Shell::Get()
+      ->system_notification_controller()
+      ->screen_security_controller()
+      ->StopAllSessions(/*is_screen_access=*/true);
+  EXPECT_TRUE(stop_callback_called);
+
+  stop_callback_called = false;
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
+      stop_callback);
+
+  Shell::Get()
+      ->system_notification_controller()
+      ->screen_security_controller()
+      ->StopAllSessions(/*is_screen_access=*/false);
+  EXPECT_TRUE(stop_callback_called);
+}
 
 TEST_P(ScreenSecurityControllerTest, ShowScreenCaptureNotification) {
   Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
