@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -31,7 +33,30 @@ const char kLoginScreenRebootDescription[] =
 const char kUserSessionRebootDescription[] =
     "Reboot remote command (user session)";
 
-constexpr base::TimeDelta kUserSessionRebootTimeout = base::Minutes(5);
+constexpr base::TimeDelta kDefaultUserSessionRebootTimeout = base::Minutes(5);
+
+base::TimeDelta GetUserSessionTimeout() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
+  std::string timeout_string = command_line->GetSwitchValueASCII(
+      ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting);
+
+  if (timeout_string.empty()) {
+    return kDefaultUserSessionRebootTimeout;
+  }
+
+  int timeout_in_seconds;
+  if (!base::StringToInt(timeout_string, &timeout_in_seconds) ||
+      timeout_in_seconds < 0) {
+    LOG(ERROR) << "Ignored "
+               << ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting
+               << "=" << timeout_string;
+    return kDefaultUserSessionRebootTimeout;
+  }
+
+  return base::Seconds(timeout_in_seconds);
+}
 
 base::TimeTicks GetBootTime() {
   return base::TimeTicks::Now() - base::SysInfo::Uptime();
@@ -62,7 +87,8 @@ DeviceCommandRebootJob::DeviceCommandRebootJob(
       in_session_notifications_scheduler_(in_session_notifications_scheduler),
       in_session_reboot_timer_(clock, tick_clock),
       clock_(clock),
-      get_boot_time_callback_(std::move(get_boot_time_callback)) {
+      get_boot_time_callback_(std::move(get_boot_time_callback)),
+      user_session_timeout_(GetUserSessionTimeout()) {
   DCHECK(get_boot_time_callback_);
 }
 
@@ -105,7 +131,7 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult result_callback) {
 }
 
 void DeviceCommandRebootJob::RebootUserSession() {
-  const auto reboot_time = clock_->Now() + kUserSessionRebootTimeout;
+  const auto reboot_time = clock_->Now() + user_session_timeout_;
   in_session_notifications_scheduler_->SchedulePendingRebootNotifications(
       base::BindOnce(&DeviceCommandRebootJob::OnRebootButtonClicked,
                      weak_factory_.GetWeakPtr()),

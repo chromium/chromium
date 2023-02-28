@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_reboot_job_test_util.h"
@@ -26,7 +29,17 @@ constexpr base::TimeDelta kUserSessionRebootDelay = base::Minutes(5);
 }  // namespace
 
 class DeviceCommandRebootJobTest : public DeviceCommandRebootJobTestBase,
-                                   public testing::Test {};
+                                   public testing::Test {
+ protected:
+  DeviceCommandRebootJobTest() {
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kRemoteRebootCommandTimeoutInSecondsForTesting,
+        base::NumberToString(kUserSessionRebootDelay.InSeconds()));
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+};
 
 // Test that the command expires after default expiration time.
 TEST_F(DeviceCommandRebootJobTest, ExpiresAfterExpirationTime) {

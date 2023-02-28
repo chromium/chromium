@@ -132,6 +132,8 @@ class DeviceCommandRebootJob : public RemoteCommandJob {
 
   CallbackWithResult result_callback_;
 
+  const base::TimeDelta user_session_timeout_;
+
   base::WeakPtrFactory<DeviceCommandRebootJob> weak_factory_{this};
 };
 

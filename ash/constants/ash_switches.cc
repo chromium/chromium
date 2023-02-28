@@ -830,6 +830,10 @@ const char kQsAddFakeCastDevices[] = "qs-add-fake-cast-devices";
 // "/usr/share/chromeos-assets/regulatory_labels/".
 const char kRegulatoryLabelDir[] = "regulatory-label-dir";
 
+// Testing timeout for reboot command. Useful for tast tests.
+const char kRemoteRebootCommandTimeoutInSecondsForTesting[] =
+    "remote-reboot-command-timeout-in-seconds-for-testing";
+
 // Indicates that reven UI strings and features should be shown.
 const char kRevenBranding[] = "reven-branding";
 
