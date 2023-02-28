@@ -18,6 +18,7 @@
 
 class Browser;
 class GURL;
+class Profile;
 
 namespace content {
 class RenderFrameHost;
@@ -115,6 +116,12 @@ class TestSignedWebBundleBuilder {
 };
 
 TestSignedWebBundle BuildDefaultTestSignedWebBundle();
+
+// Adds an Isolated Web App to the WebAppRegistrar. The IWA will have an empty
+// filepath for |IsolatedWebAppLocation|.
+AppId AddDummyIsolatedAppToRegistry(Profile* profile,
+                                    const GURL& start_url,
+                                    const std::string& name);
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_ISOLATED_WEB_APP_TEST_UTILS_H_

@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -223,5 +224,24 @@ TestSignedWebBundle BuildDefaultTestSignedWebBundle() {
   builder.AddManifest(kTestManifest);
   builder.AddPngImage(kTestIconUrl, GetTestIconInString());
   return builder.Build();
+}
+
+AppId AddDummyIsolatedAppToRegistry(Profile* profile,
+                                    const GURL& start_url,
+                                    const std::string& name) {
+  CHECK(profile);
+  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
+  CHECK(provider);
+
+  std::unique_ptr<WebApp> isolated_web_app = test::CreateWebApp(start_url);
+  const AppId app_id = isolated_web_app->app_id();
+  isolated_web_app->SetName(name);
+  isolated_web_app->SetScope(isolated_web_app->start_url());
+  isolated_web_app->SetIsolationData(
+      WebApp::IsolationData(InstalledBundle{.path = base::FilePath()}));
+
+  ScopedRegistryUpdate update(&provider->sync_bridge_unsafe());
+  update->CreateApp(std::move(isolated_web_app));
+  return app_id;
 }
 }  // namespace web_app
