@@ -7,6 +7,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
@@ -22,24 +23,18 @@ namespace content {
 // features that are enabled dynamically, most commonly from Origin Trials.
 // The class will perform security checks before updating a RenderFrameHost's
 // RuntimeFeatureStateReadContext with the validated feature state we receive.
-// It will also accept persistent origin trial tokens provided through meta
-// http-equiv tags, and will add them to the set of tokens for the owning
-// origin.
-//
-// An instance of this class is owned by the RenderFrameHostImpl. It is
-// instantiated on-demand via the BrowserInterfaceBroker once the renderer
-// creates and binds a remote instance.
-class RuntimeFeatureStateControllerImpl
-    : public blink::mojom::RuntimeFeatureStateController {
+class CONTENT_EXPORT RuntimeFeatureStateControllerImpl
+    : public DocumentService<blink::mojom::RuntimeFeatureStateController> {
  public:
-  // Constructor takes both the RenderFrameHost and the receiver. The document
-  // data may be altered by a future IPC call.
-  explicit RuntimeFeatureStateControllerImpl(
-      RenderFrameHost& host,
+  RuntimeFeatureStateControllerImpl(const RuntimeFeatureStateControllerImpl&) =
+      delete;
+  RuntimeFeatureStateControllerImpl& operator=(
+      const RuntimeFeatureStateControllerImpl&) = delete;
+
+  static void Create(
+      RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::RuntimeFeatureStateController>
           receiver);
-
-  ~RuntimeFeatureStateControllerImpl() override;
 
   // mojom::RuntimeFeatureStateController methods
   void ApplyFeatureDiffForOriginTrial(
@@ -51,8 +46,13 @@ class RuntimeFeatureStateControllerImpl
       const std::vector<url::Origin>& script_origins) override;
 
  private:
-  mojo::Receiver<blink::mojom::RuntimeFeatureStateController> receiver_;
-  raw_ref<RenderFrameHost> render_frame_host_;
+  explicit RuntimeFeatureStateControllerImpl(
+      RenderFrameHost& host,
+      mojo::PendingReceiver<blink::mojom::RuntimeFeatureStateController>
+          receiver);
+
+  // `this` can only be destructed as a DocumentService.
+  ~RuntimeFeatureStateControllerImpl() override;
 };
 
 }  // namespace content

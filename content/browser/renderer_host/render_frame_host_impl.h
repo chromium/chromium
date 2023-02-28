@@ -273,7 +273,6 @@ class RenderFrameProxyHost;
 class RenderProcessHost;
 class RenderViewHostImpl;
 class RenderWidgetHostView;
-class RuntimeFeatureStateControllerImpl;
 class ServiceWorkerContainerHost;
 class SiteInfo;
 class SpeechSynthesisImpl;
@@ -4311,10 +4310,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Hosts blink::mojom::PushMessaging for the RenderFrame.
   std::unique_ptr<PushMessagingManager> push_messaging_manager_;
-
-  // Hosts blink::mojom::RuntimeFeatureStateController for the RenderFrame.
-  std::unique_ptr<RuntimeFeatureStateControllerImpl>
-      runtime_feature_state_controller_;
 
   // Hosts blink::mojom::SpeechSynthesis for the RenderFrame.
   std::unique_ptr<SpeechSynthesisImpl> speech_synthesis_impl_;
