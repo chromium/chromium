@@ -26,6 +26,8 @@ source_set("browser") {
     "observers/core/largest_contentful_paint_handler.h",
     "observers/core/uma_page_load_metrics_observer.cc",
     "observers/core/uma_page_load_metrics_observer.h",
+    "observers/cross_origin_page_load_metrics_observer.cc",
+    "observers/cross_origin_page_load_metrics_observer.h",
     "observers/early_hints_page_load_metrics_observer.cc",
     "observers/early_hints_page_load_metrics_observer.h",
     "observers/fenced_frames_page_load_metrics_observer.cc",

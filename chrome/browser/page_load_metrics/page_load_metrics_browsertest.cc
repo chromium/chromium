@@ -3661,6 +3661,66 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, SameOriginNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL kUrl1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL kUrl2 = embedded_test_server()->GetURL("a.com", "/title2.html");
+
+  auto waiter1 = CreatePageLoadMetricsTestWaiter("waiter1");
+  waiter1->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl1));
+  waiter1->Wait();
+
+  auto waiter2 = CreatePageLoadMetricsTestWaiter("waiter2");
+  waiter2->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl2));
+  waiter2->Wait();
+
+  NavigateToUntrackedUrl();
+  VerifyNavigationMetrics({kUrl1, kUrl2});
+
+  // Navigation from about:blank to kUrl1 is a cross origin navigation.
+  histogram_tester_->ExpectTotalCount(
+      "PageLoad.Clients.CrossOrigin.FirstContentfulPaint", 1);
+  histogram_tester_->ExpectTotalCount(
+      "PageLoad.Clients.CrossOrigin.LargestContentfulPaint", 1);
+  // Navigation from kUrl1 to kUrl2 is a same origin navigation.
+  histogram_tester_->ExpectTotalCount(
+      "PageLoad.Clients.SameOrigin.FirstContentfulPaint", 1);
+  histogram_tester_->ExpectTotalCount(
+      "PageLoad.Clients.SameOrigin.LargestContentfulPaint", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, CrossOriginNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL kUrl1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL kUrl2 = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  auto waiter1 = CreatePageLoadMetricsTestWaiter("waiter1");
+  waiter1->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter1->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl1));
+  waiter1->Wait();
+
+  auto waiter2 = CreatePageLoadMetricsTestWaiter("waiter2");
+  waiter2->AddPageExpectation(TimingField::kFirstContentfulPaint);
+  waiter1->AddPageExpectation(TimingField::kLargestContentfulPaint);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl2));
+  waiter2->Wait();
+
+  NavigateToUntrackedUrl();
+  VerifyNavigationMetrics({kUrl1, kUrl2});
+
+  // Navigation from about:blank to kUrl1 and navigation from kUrl1 to kUrl2 are
+  // cross origin navigations.
+  histogram_tester_->ExpectTotalCount(
+      "PageLoad.Clients.CrossOrigin.FirstContentfulPaint", 2);
+  histogram_tester_->ExpectTotalCount(
+      "PageLoad.Clients.CrossOrigin.LargestContentfulPaint", 2);
+}
+
 class PageLoadMetricsBrowserTestWithFencedFrames
     : public PageLoadMetricsBrowserTest {
  public:
