@@ -337,7 +337,11 @@ MockDrmDevice::MockDrmDevice(const base::FilePath& path,
   plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
 }
 
-MockDrmDevice::~MockDrmDevice() = default;
+MockDrmDevice::~MockDrmDevice() {
+  if (plane_manager_) {
+    plane_manager_.reset();
+  }
+}
 
 // static
 ScopedDrmPropertyBlobPtr MockDrmDevice::AllocateInFormatsBlob(

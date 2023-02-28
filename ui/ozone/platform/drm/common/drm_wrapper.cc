@@ -378,6 +378,7 @@ bool DrmWrapper::SetObjectProperty(uint32_t object_id,
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
                                              const char* name) const {
+  DCHECK(drm_fd_.is_valid());
   TRACE_EVENT2("drm", "DrmWrapper::GetProperty", "connector",
                connector->connector_id, "name", name);
   for (int i = 0; i < connector->count_props; ++i) {
@@ -396,6 +397,7 @@ ScopedDrmPropertyPtr DrmWrapper::GetProperty(drmModeConnector* connector,
 }
 
 ScopedDrmPropertyPtr DrmWrapper::GetProperty(uint32_t id) const {
+  DCHECK(drm_fd_.is_valid());
   return ScopedDrmPropertyPtr(drmModeGetProperty(drm_fd_.get(), id));
 }
 
@@ -413,6 +415,7 @@ bool DrmWrapper::SetProperty(uint32_t connector_id,
 
 ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlob(const void* blob,
                                                      size_t size) {
+  DCHECK(drm_fd_.is_valid());
   uint32_t id = 0;
   int ret = drmModeCreatePropertyBlob(drm_fd_.get(), blob, size, &id);
   DCHECK(!ret && id);
@@ -426,11 +429,12 @@ ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlobWithFlags(const void* blob,
 // TODO(markyacoub): the flag requires being merged to libdrm then backported to
 // CrOS. Remove the #if once that happens.
 #if defined(DRM_MODE_CREATE_BLOB_WRITE_ONLY)
+  DCHECK(drm_fd_.is_valid());
   uint32_t id = 0;
   int ret = -1;
 
-  ret = drmModeCreatePropertyBlobWithFlags(file_.GetPlatformFile(), blob, size,
-                                           &id, flags);
+  ret =
+      drmModeCreatePropertyBlobWithFlags(drm_fd_.get(), blob, size, &id, flags);
   DCHECK(!ret && id);
   return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 #else
@@ -439,6 +443,7 @@ ScopedDrmPropertyBlob DrmWrapper::CreatePropertyBlobWithFlags(const void* blob,
 }
 
 void DrmWrapper::DestroyPropertyBlob(uint32_t id) {
+  DCHECK(drm_fd_.is_valid());
   drmModeDestroyPropertyBlob(drm_fd_.get(), id);
 }
 
