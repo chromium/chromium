@@ -111,7 +111,7 @@ enum class RestrictedPrefetchReused {
 
 void RecordPervasivePayloadIndex(const char* histogram_name, int index) {
   if (index != -1) {
-    base::UmaHistogramExactLinear(histogram_name, index, 101);
+    base::UmaHistogramExactLinear(histogram_name, index, 323);
   }
 }
 

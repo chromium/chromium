@@ -670,7 +670,7 @@ URLLoader::URLLoader(
       pervasive_payload_requested_ = true;
       url_request_->set_pervasive_payloads_index_for_logging(index.value());
       base::UmaHistogramExactLinear("Network.CacheTransparency.URLMatched",
-                                    index.value(), 101);
+                                    index.value(), 323);
       DVLOG(2) << "Found pervasive payload: " << request.url.spec();
     }
   }
