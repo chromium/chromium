@@ -261,6 +261,7 @@
 <translation id="5740126560802162366">Сајтови могу да чувају податке на уређају</translation>
 <translation id="5771720122942595109">Дозвола <ph name="PERMISSION_1" /> је блокирана</translation>
 <translation id="5804241973901381774">Дозволе</translation>
+<translation id="5810805850857689118">Ова радња ће обрисати све податке и колачиће за домен <ph name="ORIGIN" /> и све сајтове у оквиру њега</translation>
 <translation id="5860033963881614850">Искључено</translation>
 <translation id="5876056640971328065">Паузирај видео</translation>
 <translation id="5884085660368669834">Подешавање сајта</translation>
@@ -413,6 +414,7 @@
 <translation id="8514955299594277296">Не дозвољавајте сајтовима да чувају податке на уређају (не препоручује се)</translation>
 <translation id="851751545965956758">Онемогући сајтовима да се повезују са уређајима</translation>
 <translation id="8525306231823319788">Цео екран</translation>
+<translation id="8528440122773422556">Ова радња ће обрисати све податке и колачиће које чувају сви сајтови у оквиру домена <ph name="ORIGIN" /> или које чува повезана апликација на почетном екрану</translation>
 <translation id="8541410041357371550">Овај сајт прима податке о вашим темама огласа из Chrome-а да би вам приказивао релевантније огласе.</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајт}one{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајт}few{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајта}other{Колачићи су дозвољени за <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> сајтова}}</translation>
 <translation id="857943718398505171">Дозвољено (препоручено)</translation>
@@ -441,6 +443,7 @@
 <translation id="8986362086234534611">Заборави</translation>
 <translation id="8990043154272859344">Одјавићете се са свих сајтова</translation>
 <translation id="9019902583201351841">Овим управљају твоји родитељи</translation>
+<translation id="9039697262778250930">Можда ћете бити одјављени са ових сајтова</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Овај сајт је у групи која може да види ваше активности. Групу дефинише <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Желите да избришете колачиће?</translation>

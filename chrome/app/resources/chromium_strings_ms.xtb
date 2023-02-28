@@ -196,8 +196,8 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5527463683072221100">Buka PDF dalam Chromium</translation>
 <translation id="5614091477838198795">Apabila dihidupkan, anda juga akan dilog keluar daripada Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Kemas kini Chromium tersedia}=1{Kemas kini Chromium tersedia}other{Kemas kini Chromium telah tersedia selama # hari}}</translation>
-<translation id="5634636535844844681">Chromium memerlukan Windows 7 atau lebih tinggi.</translation>
 <translation id="5653831366781983928">Sila mulakan semula Chromium sekarang</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Paparkan Chromium dalam bahasa ini</translation>
 <translation id="5862307444128926510">Selamat datang ke Chromium</translation>
 <translation id="5883558403894052917">Chromium mendapati bahawa item ini mengandungi perisian hasad:</translation>
@@ -340,12 +340,15 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8266560134891435528">Chromium tidak dapat menyemak kata laluan anda kerana anda tidak log masuk</translation>
 <translation id="8276522524898344151">Chromium cuba menyalin kata laluan.</translation>
 <translation id="8290862415967981663">Fail ini mungkin berbahaya, maka Chromium telah menyekatnya.</translation>
+<translation id="8325404639443959713">Lakukan pelbagai lagi dengan Chromium</translation>
 <translation id="8330519371938183845">Log masuk untuk menyegerakkan dan memperibadikan Chromium pada semua peranti anda</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> menggunakan Chromium sebelum ini</translation>
 <translation id="8357820681460164151">Untuk mengakses bahan penyemak imbas Chromium anda pada semua peranti anda, log masuk, kemudian hidupkan penyegerakan</translation>
 <translation id="8360718212975266891">Untuk mendapatkan kemaskinian Chromium yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.</translation>
+<translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Lancarkan semula Chromium dalam masa sehari}other{Lancarkan semula Chromium dalam masa # hari}}</translation>
 <translation id="8453117565092476964">Arkib pemasang rosak atau tidak sah. Sila muat turun Chromium sekali lagi.</translation>
+<translation id="8458614432758743027">Chromium memerlukan Windows 10 atau versi lebih baharu.</translation>
 <translation id="8463672209299734063">Pilihan: Bantu kami mempertingkat ciri dan prestasi Chromium OS dengan menghantar data diagnostik dan penggunaan kepada Google secara automatik.</translation>
 <translation id="8493179195440786826">Chromium sudah usang</translation>
 <translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
@@ -379,6 +382,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="9158494823179993217">Pentadbir sistem anda telah mengkonfigurasikan Chromium agar membuka penyemak imbas alternatif untuk mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Lancarkan semula untuk mengemas kini &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Peribadikan Chromium anda</translation>
 <translation id="93478295209880648">Chromium mungkin tidak akan berfungsi dengan betul kerana tidak lagi disokong pada Windows XP atau Windows Vista</translation>
 <translation id="942598560705308788">Sijil diurus oleh Chromium</translation>
 <translation id="965162752251293939">Siapakah yang sedang menggunakan Chromium?</translation>

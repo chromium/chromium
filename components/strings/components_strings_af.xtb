@@ -589,6 +589,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2361263712565360498">275x395 mm</translation>
 <translation id="236340516568226369">Verander grootte van Wissel-kieslys</translation>
+<translation id="2365355378251437925">Voer <ph name="FIELD" /> in</translation>
 <translation id="2367567093518048410">Vlak</translation>
 <translation id="2380886658946992094">Wetlik</translation>
 <translation id="2383455408879745299">Personaliseer jou toeganklikheidsnutsgoed in Chrome-instellings</translation>
@@ -876,6 +877,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="317878711435188021">Weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="3180358318770512945">Ouerskap</translation>
 <translation id="3187306450550410410">Aanpasbare werkreëlings</translation>
+<translation id="3187380004437786923">Bestuur betalings</translation>
 <translation id="3187472288455401631">Advertensiemeting</translation>
 <translation id="3190736958609431397">Stop nasporing</translation>
 <translation id="319282854780294203">Sosiale netwerke</translation>
@@ -1271,6 +1273,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4154664944169082762">Vingerafdrukke</translation>
 <translation id="4159784952369912983">Pers</translation>
 <translation id="4165986682804962316">Werfinstellings</translation>
+<translation id="4169535189173047238">Moenie toelaat nie</translation>
 <translation id="4171400957073367226">Swak verifiëringhandtekening</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Wys altyd</translation>
@@ -3333,6 +3336,7 @@ Bykomende besonderhede:
 <translation id="950736567201356821">Tripelpons bo</translation>
 <translation id="961663415146723894">Gebind onder</translation>
 <translation id="962484866189421427">Hierdie inhoud kan probeer om misleidende programme te installeer wat voorgee om iets anders te wees of wat data insamel wat gebruik kan word om jou na te spoor. <ph name="BEGIN_LINK" />Wys in elk geval<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Alle gebruikers</translation>
 <translation id="964050462028070434">Bestuur wagwoorde en wagwoordsleutels …</translation>
 <translation id="96680173638229310">Motors en voertuie</translation>
 <translation id="969892804517981540">Amptelike bou</translation>

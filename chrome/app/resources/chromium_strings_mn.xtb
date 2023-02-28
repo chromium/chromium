@@ -196,8 +196,8 @@
 <translation id="5527463683072221100">PDF-г Chromium-д нээх</translation>
 <translation id="5614091477838198795">Асаалттай үед таныг мөн Chromium-с гаргана</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-н шинэчлэлт боломжтой байна}=1{Chromium-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>
-<translation id="5634636535844844681">Chromium-д Windows 7 болон үүнээс дээших хувилбарууд шаардлагатай.</translation>
 <translation id="5653831366781983928">Chromium-г одоо дахин эхлүүлнэ үү</translation>
+<translation id="5690427481109656848">Google ХХК</translation>
 <translation id="5698481217667032250">Chromium-г энэ хэлээр харуулах</translation>
 <translation id="5862307444128926510">Chromium-д тавтай морил</translation>
 <translation id="5883558403894052917">Эдгээр зүйл хортой программ агуулж байгааг Chromium олж мэдлээ:</translation>
@@ -338,10 +338,12 @@
 <translation id="8266560134891435528">Та нэвтрээгүй байгаа тул Chromium таны нууц үгсийг шалгах боломжгүй байна</translation>
 <translation id="8276522524898344151">Chromium нь нууц үгс хуулахыг оролдож байна.</translation>
 <translation id="8290862415967981663">Энэ файл аюултай тул Chromium блоклосон байна.</translation>
+<translation id="8325404639443959713">Chromium-р илүү ихийг хийгээрэй</translation>
 <translation id="8330519371938183845">Төхөөрөмжүүддээ Chromium-г синк хийж, хувийн болгохын тулд нэвтрэх</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> өмнө нь Chromium-г ашиглаж байсан</translation>
 <translation id="8357820681460164151">Та бүх төхөөрөмж дээрээ Chromium хөтчийн зүйлсдээ хандахын тулд нэвтэрч, дараа нь синк хийхийг асаана уу</translation>
 <translation id="8360718212975266891">Chromium-н цаашдын шинэчлэлтийг авахын тулд танд Windows 10 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер Windows 8-г ашиглаж байна.</translation>
+<translation id="8370517070665726704">Зохиогчийн эрх <ph name="YEAR" /> Google ХХК. Бүх эрх хуулиар хамгаалагдсан.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium-г 1 хоногийн дотор дахин ажиллуулна уу}other{Chromium-г # хоногийн дотор дахин ажиллуулна уу}}</translation>
 <translation id="8453117565092476964">Суулгагчийн архив устгагдсан эсвэл хүчингүй болсон байна. Chromium-ыг дахин татаж авна уу.</translation>
 <translation id="8463672209299734063">Заавал биш: Оношилгоо болон ашиглалтын өгөгдлийг Google-д автоматаар илгээснээр ChromiumOS-н онцлогууд, гүйцэтгэлийг сайжруулахад тусална уу.</translation>
@@ -377,6 +379,7 @@
 <translation id="9158494823179993217">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд өөр хөтөч нээхээр тохируулсан байна.</translation>
 <translation id="9185526690718004400">&amp;Chromium-г шинэчлэхийн тулд дахин ачаалах</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Chromium-г өөрийн болгоoрой</translation>
 <translation id="93478295209880648">Windows XP болон Windows Vista нь цаашид Chromium-г дэмжихгүй тул буруу ажиллаж болзошгүй</translation>
 <translation id="942598560705308788">Chromium-с удирддаг гэрчилгээ</translation>
 <translation id="965162752251293939">Chromium-г хэн ашиглаж байна вэ?</translation>

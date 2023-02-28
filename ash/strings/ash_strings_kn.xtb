@@ -502,6 +502,11 @@
 <translation id="3633097874324966332">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಜೋಡಿಸಲು ಬ್ಲೂಟೂತ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="3638400994746983214">ಗೌಪ್ಯತೆ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">ಅಪ್‌ಡೇಟ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> ರಿಂದ
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Google Calendar ನಲ್ಲಿನ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" /> ದಿನ)</translation>
 <translation id="3659814201068740063">(<ph name="PERCENTAGE" />%) ರ‍ಷ್ಟು ಬ್ಯಾಟರಿ <ph name="TIME_LEFT" /> ಸಮಯ ಉಳಿದಿದೆ.
 ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪವರ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -1467,9 +1472,9 @@
 <translation id="8850991929411075241">ಹುಡುಕಾಟ+Esc</translation>
 <translation id="8853703225951107899">ನಿಮ್ಮ ಪಿನ್ ಅಥವಾ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಇನ್ನೂ ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಗಮನಿಸಿ: ನೀವು ಇತ್ತೀಚೆಗೆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಿದ್ದರೆ, ನಿಮ್ಮ ಹಳೆಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿ. ನೀವು ಸೈನ್ ಔಟ್ ಮಾಡಿದ ನಂತರ ನಿಮ್ಮ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅನ್ವಯಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8855885154700222542">ಪೂರ್ಣಪರದೆ ಕೀ</translation>
-<translation id="8858369206579825206">ಗೌಪ್ಯತೆ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="8870509716567206129">ಅಪ್ಲಿಕೇಶನ್ ಸ್ಪ್ಲಿಟ್ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="8874184842967597500">ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
+<translation id="8876148469852588625">ಒಟ್ಟು <ph name="EVENT_TOTAL_COUNT" /> ರಲ್ಲಿ <ph name="EVENT_POSITION" /> ಈವೆಂಟ್</translation>
 <translation id="8876661425082386199">ನಿಮ್ಮ ಕನೆಕ್ಷನ್ ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="8877788021141246043">ಜ್ಞಾಪನೆಯನ್ನು ಹೊಂದಿಸಿ</translation>
 <translation id="8878886163241303700">ಪರದೆಯನ್ನು ವಿಸ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>

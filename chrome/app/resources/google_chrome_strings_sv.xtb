@@ -130,6 +130,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="3245429137663807393">Om du även delar Chrome-användningsrapporter ingår webbadresserna du besöker i dessa rapporter</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
+<translation id="3293912612584488930">Gör mer med Chrome</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome startas om nu}=1{Om en sekund startas Chrome om}other{Om # sekunder startas Chrome om}}</translation>
 <translation id="3396977131400919238">Ett operativsystemsfel inträffade under installationen. Ladda ned Google Chrome igen.</translation>
@@ -413,7 +414,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8989968390305463310">Webbhistoriken påverkar vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen automatiskt och löpande varje månad. Intressen kan förnyas om du inte tar bort dem.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Det finns en uppdatering för Chrome}=1{Det finns en uppdatering för Chrome}other{Det finns en uppdatering för Chrome sedan # dagar}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex-system</translation>
-<translation id="9067395829937117663">För Google Chrome krävs Windows 7 eller senare.</translation>
 <translation id="911206726377975832">Vill du även ta bort din webbinformation?</translation>
 <translation id="9138603949443464873">Ändringarna tillämpas när du startar om Chrome</translation>
 <translation id="9195993889682885387">Chrome kan göra en uppskattning av dina intressen utifrån din webbhistorik från de senaste veckorna. Denna information finns kvar på enheten.</translation>

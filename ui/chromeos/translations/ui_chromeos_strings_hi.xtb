@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">आयरिश</translation>
 <translation id="4124935795427217608">यूनिकॉर्न</translation>
 <translation id="4131235941541910880">ग़ैर-ज़रूरी आइटम को ट्रैश में ले जाएं</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें</translation>
 <translation id="4153015322587141338">शेल्फ़ में अपनी फ़ाइलों को तुरंत ऐक्सेस करने के लिए, किसी फ़ाइल पर दायां क्लिक करें. इसके बाद, "<ph name="PIN_COMMAND" />" चुनें.</translation>
 <translation id="4157569377477607576">एडमिन नीति, ये सुझाव नहीं देती:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> को भेज दिया गया.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" को मिटा दिया जाएगा और इसे वापस नहीं लाया जा सकेगा.</translation>
 <translation id="4418686080762064601">अपनी फ़ाइलों के लिए एक शॉर्टकट बनाएं</translation>
 <translation id="4425149324548788773">मेरी डिस्क</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें. सेटअप आपका एडमिन मैनेज करता है</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="4442424173763614572">DNS लुकअप विफल</translation>
 <translation id="4462159676511157176">कस्टम नाम सर्वर</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">कॉपी बनाने में अनचाही गड़बड़ी : <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">यूएस इंटरनैशनल पीसी कीबोर्ड के साथ डच (नीदरलैंड्स)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> आइटम</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">क्रम से लगाने के विकल्प</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;खोज डिस्क&lt;/em&gt;</translation>
 <translation id="7135561821015524160">कन्नड़ फ़ोनेटिक</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">'विषय के दूसरे नाम से मिलती-जुलती' या 'डोमेन सफ़िक्स से मिलती-जुलती' जैसी जानकारी उपलब्ध नहीं होने की वजह से, पुष्टि करने वाले सर्वर की पहचान नहीं की जा सकती</translation>
 <translation id="7165320105431587207">नेटवर्क कॉन्फ़िगर करने में विफल</translation>
 <translation id="7170041865419449892">तय सीमा के मुताबिक नहीं है</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">ऑफ़लाइन उपलब्ध है</translation>
 <translation id="8492972329130824181">होम नेटवर्क उपलब्ध नहीं है. कनेक्ट करने के लिए, मोबाइल डेटा रोमिंग को चालू करना ज़रूरी है.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> आइटम ढूंढे जा रहे हैं...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें. सेटअप आपका एडमिन मैनेज करता है</translation>
 <translation id="8521441079177373948">यूके</translation>
 <translation id="853494022971700746">फ़्रेंच (फ़्रांस)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>

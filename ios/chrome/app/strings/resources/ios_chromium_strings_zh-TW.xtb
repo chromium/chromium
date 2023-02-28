@@ -92,6 +92,7 @@
 <translation id="7118091470949186573">現在你只要在訊息、文件或其他應用程式中輕觸連結，即可使用 Chromium。</translation>
 <translation id="7165402419892018581">選擇使用 Chromium 的自動填入功能</translation>
 <translation id="7175400662502680481">你的密碼因為資料侵害事件遭到外洩，密碼管理員建議你立即變更這組密碼。</translation>
+<translation id="7192111075364461693">目前未在裝置設定中開啟 Chromium 通知。</translation>
 <translation id="7208566199746267865">Chromium 會將你的所有帳戶同步到網路上，為你節省時間。你可以在「設定」中新增或移除帳戶。</translation>
 <translation id="725427773388857052">Chromium 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
 <translation id="7255976941681861701">瞭解新版 Chromium 選單</translation>
@@ -132,6 +133,7 @@
   • 開啟同步功能後，指標可能也會包含先前造訪網址的資訊。<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">系統會將這個帳戶和所有未儲存的資料從 Chromium 中移除。</translation>
 <translation id="894437814105052438">登出帳戶後，Chromium 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
+<translation id="8963279154877372067">允許 Chromium 顯示通知才能接收降價快訊</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="9059693977935746710">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的密碼管理員中</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>

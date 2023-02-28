@@ -129,6 +129,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
+<translation id="3293912612584488930">Toujours plus avec Chrome</translation>
 <translation id="3360895254066713204">Aide de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome va être relancé maintenant}=1{Chrome va être relancé dans 1 seconde}one{Chrome va être relancé dans # seconde}other{Chrome va être relancé dans # secondes}}</translation>
 <translation id="3396977131400919238">Erreur de système d'exploitation pendant l'installation. Veuillez télécharger de nouveau Google Chrome.</translation>
@@ -412,7 +413,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8989968390305463310">Votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime automatiquement vos centres d'intérêt tous les mois. Les centres d'intérêt peuvent s'actualiser, sauf si vous les supprimez.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est disponible}=1{Une mise à jour de Chrome est disponible}one{Une mise à jour de Chrome est disponible depuis # jour}other{Une mise à jour de Chrome est disponible depuis # jours}}</translation>
 <translation id="9053892488859122171">Système ChromeOS Flex</translation>
-<translation id="9067395829937117663">Vous devez disposer de Windows 7 ou version ultérieure pour utiliser Google Chrome.</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>
 <translation id="9138603949443464873">Pour appliquer vos modifications, relancez Chrome</translation>
 <translation id="9195993889682885387">Chrome peut estimer quels sont vos centres d'intérêt en fonction de votre historique de navigation des dernières semaines. Ces informations restent sur votre appareil.</translation>

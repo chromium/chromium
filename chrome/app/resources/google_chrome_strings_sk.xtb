@@ -128,6 +128,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3245429137663807393">Ak zdieľate aj prehľady používania Chromu, tieto prehľady zahŕňajú webové adresy, ktoré navštívite</translation>
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3286538390144397061">Reštartovať</translation>
+<translation id="3293912612584488930">S Chromom môžete robiť viac</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sa teraz reštartuje}=1{Chrome sa reštartuje o 1 sekundu}few{Chrome sa reštartuje o # sekundy}many{Chrome sa reštartuje o # sekundy}other{Chrome sa reštartuje o # sekúnd}}</translation>
 <translation id="3396977131400919238">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Google Chrome znova.</translation>
@@ -155,6 +156,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože sa pri prihlasovaní vyskytla chyba.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
+<translation id="3809772425479558446">Google Chrome vyžaduje systém Windows 10 alebo novší.</translation>
 <translation id="3835168907083856002">Týmto sa vytvorí nový profil Chromu pre <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Zatvorte všetky okná prehliadača Google Chrome a skúste to znova.</translation>
 <translation id="3865754807470779944">Máte nainštalovaný Chrome verzie <ph name="PRODUCT_VERSION" /></translation>
@@ -411,7 +413,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8989968390305463310">Vaša história prehliadania ovplyvňuje zobrazované reklamy a záujmy, ktoré sú odhadnuté nižšie. Chrome priebežne automaticky odstraňuje vaše záujmy každý mesiac, aby tak chránil vaše súkromie. Záujmy sa môžu obnoviť, pokiaľ ich neodstránite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozícii aktualizácia Chromu}=1{Je k dispozícii aktualizácia Chromu}few{Aktualizácia Chromu je k dispozícii už # dni}many{Aktualizácia Chromu je k dispozícii už # dňa}other{Aktualizácia Chromu je k dispozícii už # dní}}</translation>
 <translation id="9053892488859122171">Systém Chrome OS Flex</translation>
-<translation id="9067395829937117663">Google Chrome vyžaduje Windows 7 alebo vyšší.</translation>
 <translation id="911206726377975832">Chcete tiež odstrániť svoje údaje prehliadania?</translation>
 <translation id="9138603949443464873">Ak chcete zmeny použiť, spustite Chrome znova</translation>
 <translation id="9195993889682885387">Chrome môže odhadnúť vaše záujmy na základe vašej histórie prehliadania z posledných niekoľkých týždňov. Tieto údaje zostávajú vo vašom zariadení.</translation>

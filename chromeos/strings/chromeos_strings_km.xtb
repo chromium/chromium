@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">កំពុងរកមើលម៉ាស៊ីនស្កេន</translation>
 <translation id="3246869037381808805">កិច្ចការបោះពុម្ពដែលចាស់ជាង 1 ថ្ងៃនឹងត្រូវលុបចេញ</translation>
 <translation id="3268178239013324452">មិនបានសម្រេច - ​​​ទ្វារចំហ</translation>
+<translation id="3275506277319227640">ភ្ជាប់​នៅខាង<ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">រូប​តំណាង</translation>
 <translation id="3283504360622356314">{0,plural, =1{កែ​ឯកសារ}other{កែ​ឯកសារ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">សុវត្ថិភាព</translation>
 <translation id="3435896845095436175">បើកដំណើរការ</translation>
+<translation id="345256797477978759">ភ្ជាប់​វិនដូ​នៅលើ​ផ្នែក​ដែល​ធំជាងខាង<ph name="DIRECTION" />នៃ​អេក្រង់</translation>
 <translation id="3456078764689556234">បានបោះពុម្ព​ទំព័រទី <ph name="PRINTED_PAGES" /> ក្នុងចំណោម <ph name="TOTAL_PAGES" />។</translation>
 <translation id="345898999683440380">កំពុង​ស្កេនទំព័រទី <ph name="PAGE_NUM" />។ បានបញ្ចប់ <ph name="PERCENTAGE_VALUE" />%។</translation>
 <translation id="3459509316159669723">កំពុងបោះពុម្ព</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">ថ្មពេញ</translation>
 <translation id="3600339377155080675">បញ្ចាំងអេក្រង់</translation>
 <translation id="3602290021589620013">ពិនិត្យមើល</translation>
+<translation id="360282891121575443">រូបថត​នៅ​ក្នុង​អាល់ប៊ុមរួម​អាច​ត្រូវ​បាន​ធ្វើ​បច្ចុប្បន្នភាព​ដោយ​អ្នក​ប្រើប្រាស់​ផ្សេងទៀត។ ការ​ផ្លាស់ប្ដូ​ររាល់ថ្ងៃ​អាច​បង្ហាញ​ផ្ទាំង​រូបភាព​ដែល​បច្ចុប្បន្ន​មិន​ស្ថិត​នៅ​ក្នុង​អាល់ប៊ុម។</translation>
 <translation id="3603829704940252505">រូបតំណាង</translation>
 <translation id="3604713164406837697">ប្ដូរផ្ទាំងរូបភាព</translation>
 <translation id="360565022852130722">បណ្ដាញ WiFi មានសុវត្ថិភាពជាមួយ WEP 802.1x ប្រូតូកូលខ្សោយ</translation>
 <translation id="3606583719724308068">ការពន្យារខ្ពស់ចំពោះគេហទំព័រ HTTPS</translation>
 <translation id="361575905210396100">សូមអរគុណ​ចំពោះ​មតិកែលម្អ​របស់អ្នក</translation>
 <translation id="3632579075709132555">ប៊ូតុងបិទ/បើក​របាំងឯកជនភាព</translation>
+<translation id="3639846061339007994">លើ</translation>
 <translation id="3651050199673793219">ជ្រើសរើស​ឯកតា​សីតុណ្ហភាព</translation>
 <translation id="3689839747745352263">តេស្ត <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">កំពុងដំណើរការ...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">ពេញ</translation>
 <translation id="4333390807948134856">បានចុច​គ្រាប់ចុច <ph name="KEY_NAME" /></translation>
 <translation id="435692326371619097">គ្រប់គ្រង​ការ​កំណត់ APN បណ្ដាញ។ APN បង្កើត​ការ​តភ្ជាប់​រវាង​បណ្ដាញ​ចល័ត និង​អ៊ីនធឺណិត។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">ភ្ជាប់​នៅ​ខាង​ដែល​តូច​ជាង</translation>
 <translation id="4378373042927530923">មិនដំណើរការទេ</translation>
 <translation id="4378551569595875038">កំពុងភ្ជាប់...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">ពាក្យសម្ងាត់</translation>
 <translation id="6659594942844771486">ផ្ទាំង</translation>
 <translation id="6692996468359469499">ទទួលបានព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើស​របស់អ្នក</translation>
+<translation id="6698459586333070823">អាល់ប៊ុមរួម​អាច​ត្រូ​វបាន​ធ្វើបច្ចុប្បន្នភាព​ដោយ​អ្នក​ប្រើប្រាស់​ផ្សេង​ទៀត</translation>
 <translation id="6704062477274546131">ដំណោះស្រាយ DNS</translation>
 <translation id="6723839937902243910">ថាមពល</translation>
 <translation id="6723847290197874913">ពន្លឺផ្នែកខាងក្រោយនៃក្ដារចុច</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">រូបភាពពីកាមេរ៉ា និងឯកសារដែលមានស្រាប់</translation>
 <translation id="7162487448488904999">សាល​រូបភាព</translation>
 <translation id="7170236477717446850">រូបភាព​កម្រងព័ត៌មាន</translation>
+<translation id="7171919371520438592">ភ្ជាប់​វិនដូ​នៅលើ​ផ្នែក​ដែល​តូច​ជាងខាង<ph name="DIRECTION" />នៃ​អេក្រង់</translation>
 <translation id="7172721935181587524">រូបភាព 1</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោម​ការគ្រប់គ្រងរបស់ <ph name="MANAGER" />។ អ្នកគ្រប់គ្រង​អាចកំណត់រចនាសម្ព័ន្ធ​ឧបករណ៍​នេះពីចម្ងាយបាន។</translation>
 <translation id="7180611975245234373">ធ្វើឲ្យថ្មីឡើងវិញ…</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">ភ្ជាប់</translation>
 <translation id="8206859287963243715">ប្រព័ន្ធទូរស័ព្ទ</translation>
 <translation id="8208861521865154048">អត្ថប្រយោជន៍</translation>
+<translation id="8210733748736414123">ក្រោម</translation>
 <translation id="8226628635270268143">ជ្រើសរើស​រូបថត និងអាល់ប៊ុមដែលអ្នកចូលចិត្ត</translation>
 <translation id="8227119283605456246">ភ្ជាប់ឯកសារ</translation>
 <translation id="8230672074305416752">មិនអាចភីងច្រកបណ្ដាញលំនាំដើមបានទេ</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">បន្ថែមគណនីមួយដើម្បីចូលពីគណនីច្រើន។ គណនីដែលចូលទាំងអស់អាចចូលប្រើដោយគ្មានពាក្យសម្ងាត់ ដូច្នេះលក្ខណពិសេសនេះគួរត្រូវបានប្រើជាមួយគណនីដែលគួរជឿជាក់តែប៉ុណ្ណោះ។</translation>
 <translation id="8364946094152050673">DNS នៅទទេ</translation>
 <translation id="8372477600026034341">ម៉ាស៊ីន​បន្ថែម</translation>
+<translation id="8380114448424469341">ភ្ជាប់​វិនដូ​នៅ​ផ្នែក​ពាក់​កណ្ដាល​ខាង<ph name="DIRECTION" />នៃ​អេក្រង់​</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> នេះស្ថិតក្រោមការគ្រប់គ្រងលក្ខណៈសហគ្រាស</translation>
 <translation id="8398927464629426868">អត្រាដែលឧបករណ៍កំពុងសាកថ្ម ឬបញ្ចេញថាមពលក្នុងពេលបច្ចុប្បន្ន</translation>
 <translation id="8410244574650205435">បាន​រកឃើញ​ដោយស្វ័យប្រវត្តិ</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">សេវាកម្ម Google</translation>
 <translation id="9138630967333032450">shift ឆ្វេង</translation>
 <translation id="9149391708638971077">ដំណើរការតេស្តអង្គចងចាំ</translation>
+<translation id="9157515863513902090">ភ្ជាប់​នៅ​ខាង​ដែល​ធំជាង</translation>
 <translation id="9173638680043580060">នៅសល់​តិច​ជាង​មួយ​នាទី</translation>
 <translation id="917720651393141712">ធ្វើតេស្ត</translation>
 <translation id="9188992814426075118">ក្ដារចុច​របស់អ្នក​អាច​ត្រូវគ្នា​ជាមួយ​ផ្ទាំង​រូបភាព​របស់អ្នក​ដោយស្វ័យប្រវត្តិ</translation>

@@ -501,6 +501,11 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="3633097874324966332">Otvorite postavke Bluetootha da biste uparili uređaj</translation>
 <translation id="3638400994746983214">Uključite/isključite zaslon privatnosti. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Zakašnjelo ažuriranje</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        od <ph name="START_TIME" /> do
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Odaberite za više pojedinosti u Google kalendaru.</translation>
 <translation id="3659444876902283058">(Dan <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Još oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Priključite uređaj na napajanje.</translation>
@@ -1466,9 +1471,9 @@ Novo instaliranje</translation>
 <translation id="8850991929411075241">Pretraživanje + Esc</translation>
 <translation id="8853703225951107899">Bez obzira na to, vaš PIN ili zaporku nije bilo moguće potvrditi. Napomena: ako ste nedavno promijenili zaporku, upotrijebite staru zaporku. Vaša nova zaporka primijenit će se nakon što se odjavite.</translation>
 <translation id="8855885154700222542">tipka cijelog zaslona</translation>
-<translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podijeljeni zaslon.</translation>
 <translation id="8874184842967597500">Niste povezani</translation>
+<translation id="8876148469852588625">Događaj <ph name="EVENT_POSITION" /> od <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Provjerite vezu</translation>
 <translation id="8877788021141246043">Postavi podsjetnik</translation>
 <translation id="8878886163241303700">Produljenje zaslona</translation>

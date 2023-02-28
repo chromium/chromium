@@ -130,6 +130,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3245429137663807393">Si también compartes informes de uso de Chrome, esos informes incluirán las URLs que visites.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
+<translation id="3293912612584488930">Haz más con Chrome</translation>
 <translation id="3360895254066713204">Ayudante de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se reiniciará ahora}=1{Chrome se reiniciará dentro de 1 segundo}other{Chrome se reiniciará dentro de # segundos}}</translation>
 <translation id="3396977131400919238">Se ha producido un error de sistema operativo durante el proceso de instalación. Vuelve a descargar Google Chrome.</translation>
@@ -413,7 +414,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="8989968390305463310">Tu historial de navegación influye en los anuncios que ves y en los intereses que se estiman abajo. Para proteger tu privacidad, Chrome elimina automáticamente tus intereses cada mes. Los intereses se actualizan a menos que los elimines.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible desde hace # días}}</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
-<translation id="9067395829937117663">Google Chrome requiere Windows 7 o una versión posterior.</translation>
 <translation id="911206726377975832">¿Quieres borrar también los datos de navegación?</translation>
 <translation id="9138603949443464873">Reinicia Chrome para aplicar los cambios</translation>
 <translation id="9195993889682885387">Chrome puede estimar tus intereses basándose en tu historial de navegación de las últimas semanas. Esta información se queda en tu dispositivo.</translation>
@@ -422,7 +422,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="93760716455950538">Reiniciar ChromeOS Flex</translation>
 <translation id="940313311831216333">Para acceder a tus cosas de Chrome en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="943390475793766444">Chrome recomienda analizar este archivo porque puede que sea peligroso.</translation>
-<translation id="963650557422347554">Si se activa esta opción, Chrome ahorrará batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento suave y la velocidad de fotogramas de los vídeos.</translation>
+<translation id="963650557422347554">Si se activa esta opción, Chrome ahorrará batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y la velocidad de fotogramas de los vídeos.</translation>
 <translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
 <translation id="989816563149873169">Usa <ph name="SHORTCUT" /> para cambiar de un perfil de Chrome a otro</translation>
 </translationbundle>

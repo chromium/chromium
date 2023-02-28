@@ -372,6 +372,7 @@
 <translation id="4092890906744441904">Ιρλανδικά</translation>
 <translation id="4124935795427217608">Μονόκερος</translation>
 <translation id="4131235941541910880">Μεταφέρετε τα στοιχεία που δεν θέλετε στον κάδο</translation>
+<translation id="4134804435730168042">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ενεργοποίηση μετά τη ρύθμιση συσκευής</translation>
 <translation id="4153015322587141338">Κάντε δεξί κλικ σε ένα αρχείο και επιλέξτε <ph name="PIN_COMMAND" /> για γρήγορη πρόσβαση στα αρχεία σας που βρίσκονται στο ράφι.</translation>
 <translation id="4157569377477607576">Η πολιτική διαχειριστή δεν συνιστά:</translation>
 <translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
@@ -414,6 +415,7 @@
 <translation id="4414834425328380570">Το αρχείο <ph name="FILE_NAME" /> θα διαγραφεί και δεν θα μπορείτε να το επαναφέρετε.</translation>
 <translation id="4418686080762064601">Δημιουργήστε μια συντόμευση για τα αρχεία σας</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
+<translation id="4432921877815220091">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ενεργοποίηση μετά τη ρύθμιση της συσκευής, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="4439427728133035643">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Σύνδεση</translation>
 <translation id="4442424173763614572">Η αναζήτηση DNS απέτυχε</translation>
 <translation id="4462159676511157176">Προσαρμοσμένοι διακομιστές ονομάτων</translation>
@@ -628,6 +630,7 @@
 <translation id="5913638992615760742">Αποτυχία λειτουργίας αντιγραφής, μη αναμενόμενο σφάλμα: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Ολλανδικά (Ολλανδία) με πληκτρολόγιο υπολογιστή Διεθνές ΗΠΑ</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ενεργοποίηση μετά τη ρύθμιση συσκευής</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> στοιχεία</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Επιλογές ταξινόμησης</translation>
@@ -775,6 +778,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;αναζήτηση Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Φωνητική εισαγωγή Κανάντα</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Λείπουν τα στοιχεία Αντιστοιχία εναλλακτικού ονόματος υποκειμένου ή Αντιστοιχία επιθήματος τομέα, για επικύρωση της ταυτότητας διακομιστή ελέγχου ταυτότητας.</translation>
 <translation id="7165320105431587207">Αποτυχία διαμόρφωσης δικτύου</translation>
 <translation id="7170041865419449892">Εκτός εύρους τιμών</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
@@ -955,6 +959,7 @@
 <translation id="8487700953926739672">Διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="8492972329130824181">Το οικιακό δίκτυο δεν είναι διαθέσιμο. Για να συνδεθείτε, πρέπει να ενεργοποιήσετε την περιαγωγή δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="8499098729323186194">Εξαγωγή <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
+<translation id="8502913769543567768">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ενεργοποίηση μετά τη ρύθμιση συσκευής, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="8521441079177373948">ΗΒ</translation>
 <translation id="853494022971700746">Γαλλικά (Γαλλίας)</translation>
 <translation id="8540608333167683902">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>

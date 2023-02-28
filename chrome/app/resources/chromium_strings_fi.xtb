@@ -196,8 +196,8 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5527463683072221100">Avaa PDF-tiedostot Chromiumissa</translation>
 <translation id="5614091477838198795">Kun tämä on päällä, sinut kirjataan ulos myös Chromiumista</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-päivitys on saatavilla}=1{Chromium-päivitys on saatavilla}other{Chromium-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
-<translation id="5634636535844844681">Chromium edellyttää Windows 7:ää tai uudempaa versiota.</translation>
 <translation id="5653831366781983928">Käynnistä Chromium uudelleen nyt</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Näytä Chromium tällä kielellä</translation>
 <translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5883558403894052917">Chromium havaitsi, että näissä kohteissa on haittaohjelmia:</translation>
@@ -340,10 +340,12 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8266560134891435528">Chromium ei voi tarkistaa salasanojasi, koska et ole kirjautuneena sisään</translation>
 <translation id="8276522524898344151">Chromium yrittää kopioida salasanoja.</translation>
 <translation id="8290862415967981663">Tämä tiedosto voi olla vaarallinen, joten Chromium on estänyt sen.</translation>
+<translation id="8325404639443959713">Tee enemmän Chromiumilla</translation>
 <translation id="8330519371938183845">Kirjaudu sisään, niin voit synkronoida Chromiumin ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> käytti aiemmin Chromiumia</translation>
 <translation id="8357820681460164151">Jos haluat pääsyn Chromiumin selainsisältöön kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="8360718212975266891">Jotta saat tulevia Chromiumin päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Käynnistä Chromium uudelleen vuorokauden kuluessa}other{Käynnistä Chromium uudelleen # vuorokauden kuluessa}}</translation>
 <translation id="8453117565092476964">Asennusarkisto on virheellinen. Lataa Chromium uudelleen.</translation>
 <translation id="8463672209299734063">Valinnainen: Auta parantamaan Chromium-käyttöjärjestelmän ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
@@ -379,6 +381,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="9158494823179993217">Järjestelmänvalvojasi on määrittänyt Chromiumin avaamaan toisen selaimen, jolla <ph name="TARGET_URL_HOSTNAME" /> avataan.</translation>
 <translation id="9185526690718004400">Päivitä &amp;Chromium käynnistämällä se uudelleen</translation>
 <translation id="9190841055450128916">Chromium (saapuva mDNS)</translation>
+<translation id="924957577793602335">Tee Chromiumista näköisesi</translation>
 <translation id="93478295209880648">Chromium ei välttämättä toimi oikein, koska se ei enää tue Windows XP:tä tai Windows Vistaa.</translation>
 <translation id="942598560705308788">Chromiumin hallinnoimat varmenteet</translation>
 <translation id="965162752251293939">Kuka käyttää Chromiumia?</translation>

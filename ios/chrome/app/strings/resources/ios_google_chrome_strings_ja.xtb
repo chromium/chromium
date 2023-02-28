@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">すべてのウェブサイトで Google アカウントからログアウトするには、<ph name="BEGIN_LINK" />Chrome からログアウト<ph name="END_LINK" />します。</translation>
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
+<translation id="2736805085127235148">現在、デバイスの設定で Chrome の通知がオフになっています。</translation>
 <translation id="2767464022270041271">保存されているパスワードがありません。パスワードを保存すると、Google パスワード マネージャーで確認できるようになります。</translation>
 <translation id="2869959624320573933">Chrome へのログイン</translation>
 <translation id="2957447865124070833">[<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />] を選択する</translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome は最新版です</translation>
 <translation id="7939179037291298976">iPhone の [設定] から [パスワード オプション] を開き、[Chrome] を選択します</translation>
 <translation id="8022947259858476807">Chrome を既定に設定すると、リンクの表示やウィジェットからの検索、他のアプリでのパスワードの自動入力に使用できるようになります</translation>
+<translation id="804638182476029347">Chrome の通知設定で値下げアラートの受信を許可する</translation>
 <translation id="81358522153858150">Chrome で管理対象アカウントのユーザー ポリシーがサポートされるようになりました</translation>
 <translation id="8160472928944011082">Chrome を更新できません</translation>
 <translation id="8357607116237445042">このデバイスから Chrome データを削除するかどうかを選択してください</translation>

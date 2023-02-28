@@ -355,6 +355,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="2951071800649516099">Lisää sivuja lukulistalle myöhempää käyttöä varten</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> sivu lukematta}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> sivua lukematta}}</translation>
 <translation id="2961210776189273067">Titteli</translation>
+<translation id="296370266220139811">Säästä aikaa ja kirjoita vähemmän</translation>
 <translation id="2979025552038692506">Valittu incognito-välilehti</translation>
 <translation id="2979639724566107830">Avaa uudessa ikkunassa</translation>
 <translation id="2981364137500752533">Sinulla voi olla enintään viisi ikkunaa.</translation>
@@ -482,6 +483,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3578874072190212775">Auta sivustoja estämään petoksia ja erottamaan botit ihmisistä</translation>
 <translation id="3587482841069643663">Kaikki</translation>
 <translation id="3587596251841506391">Paranna verkon turvallisuutta</translation>
+<translation id="3597179440835065298">Parempia ehdotuksia</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3616113530831147358">Ääni</translation>
 <translation id="3622349720008044802">Hallitse ikkunoita</translation>
@@ -747,6 +749,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> haluaa muodostaa yhteyden</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Viimeiset 15 minuuttia</translation>
 <translation id="5032430150487044192">QR-koodin luominen ei onnistu</translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5040262127954254034">Tietosuoja</translation>
@@ -882,6 +885,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5813552293717797987"><ph name="PARENT_NAME_1" /> ja <ph name="PARENT_NAME_2" /> ylläpitävät tätä selainta.</translation>
 <translation id="5814131985548525293">Kirjoita tähän tai aloita napauttamalla puhekuvaketta</translation>
 <translation id="5814749351757353073">Pysy ajan tasalla lempisivustojesi tapahtumista</translation>
+<translation id="5822875253699806474">Synkronoimalla välilehdet ja historian voit palata nopeasti sivustoille, joilla olet käynyt</translation>
 <translation id="583281660410589416">Tuntematon</translation>
 <translation id="5833984609253377421">Jaa linkki</translation>
 <translation id="5834764604050996579">Jos haluat lukea QR-koodin, anna Chromen käyttää kameraa</translation>
@@ -1136,6 +1140,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7088681679121566888">Chrome on ajan tasalla</translation>
 <translation id="7105047059074518658">Selaa helposti useilla laitteilla kirjautumalla sisään</translation>
 <translation id="7106762743910369165">Organisaatiosi ylläpitää selainta</translation>
+<translation id="7116588989735740310">Synkronoimalla välilehdet ja historian voit palata sivustoille muilla laitteilla</translation>
 <translation id="7130504491556983216">Kiinnostuksen kohteitasi listataan tähän sitä mukaa, kun selaat internetiä</translation>
 <translation id="7138678301420049075">Muu</translation>
 <translation id="7146622961999026732">Nämä sivustot ja sovellukset vaikuttavat olevan tärkeitä sinulle:</translation>
@@ -1214,6 +1219,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="751961395872307827">Yhteyden muodostaminen sivustoon epäonnistui</translation>
 <translation id="752220631458524187">Katkaise yhteys, kun olet valmis</translation>
 <translation id="7523960634226602883">Hae kameran avulla Google Lensissa</translation>
+<translation id="7539698981064401140">Synkronoi välilehdet ja historia</translation>
 <translation id="7562080006725997899">Selaustietoja poistetaan</translation>
 <translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>
 <translation id="7577900504646297215">Ylläpidä kiinnostuksen kohteita</translation>
@@ -1396,6 +1402,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8461694314515752532">Salaa synkronoidut tiedot oman synkronoinnin tunnuslauseesi avulla</translation>
 <translation id="8466613982764129868">Varmista, että <ph name="TARGET_DEVICE_NAME" /> on yhteydessä internetiin</translation>
 <translation id="8473863474539038330">Osoitteet ja muita tietoja</translation>
+<translation id="847433688444405067">Selaa eri laitteilla</translation>
 <translation id="8481980314595922412">Kokeiluominaisuudet ovat käytössä</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Avaa Historia-sivu</translation>
@@ -1449,6 +1456,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8746155870861185046">Jaa kohta</translation>
+<translation id="874726034427945498">Synkronoimalla välilehdet ja historian näet parempia ehdotuksia osoitepalkissa</translation>
 <translation id="8748850008226585750">Sisältö piilotettu</translation>
 <translation id="8756969031206844760">Päivitetäänkö salasana?</translation>
 <translation id="8765470054473112089">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin oletushakukoneellesi, niin saat parempia ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
@@ -1514,6 +1522,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="9070377983101773829">Aloita puhehaku</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Avaamiasi sivustoja ei tallenneta incognito-tilassa</translation>
+<translation id="9084103763810123431">Synkronoimalla välilehdet ja historian voit jatkaa selaamista toisella laitteella</translation>
 <translation id="9086302186042011942">Synkronoidaan</translation>
 <translation id="9086455579313502267">Ei yhteyttä verkkoon.</translation>
 <translation id="9099220545925418560">Perustuu selaushistoriaasi. Tämä asetus on poissa päältä.</translation>

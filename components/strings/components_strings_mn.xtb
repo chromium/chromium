@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2361263712565360498">275 х 395 мм</translation>
 <translation id="236340516568226369">Хэмжээг өөрчлөхийг асаах/унтраах цэс</translation>
+<translation id="2365355378251437925"><ph name="FIELD" />-г оруулна уу</translation>
 <translation id="2367567093518048410">Түвшин</translation>
 <translation id="2380886658946992094">Хууль ёсны</translation>
 <translation id="2383455408879745299">Chrome-н тохиргоонд хандалтын хэрэгслээ хувийн болгоно уу</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">Таныг энэ төхөөрөмжийг хэзээ идэвхтэй ашиглаж буйг мэдэх</translation>
 <translation id="3180358318770512945">Хүүхэд өсгөх</translation>
 <translation id="3187306450550410410">Уян хатан ажлын цаг</translation>
+<translation id="3187380004437786923">Төлбөр удирдах</translation>
 <translation id="3187472288455401631">Зарын хэмжигдэхүүн</translation>
 <translation id="3190736958609431397">Хянахаа болих</translation>
 <translation id="319282854780294203">Сошиал сүлжээ</translation>
@@ -1272,6 +1274,7 @@
 <translation id="4154664944169082762">Хурууны хээ</translation>
 <translation id="4159784952369912983">Нил ягаан</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
+<translation id="4169535189173047238">Зөвшөөрөхгүй</translation>
 <translation id="4171400957073367226">Баталгаажуулалт хийхэд ашигласан гарын үсэг хангалтгүй байна</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Байнга харуулж байна уу</translation>
@@ -3333,6 +3336,7 @@
 <translation id="950736567201356821">Баруун дээд буланд гурван нүх цоолох</translation>
 <translation id="961663415146723894">Доод булан дагуу үдэж хавтаслах</translation>
 <translation id="962484866189421427">Энэ контент ямар нэг дүр эсгэсэн эсвэл таныг хянахын тулд өгөгдөл цуглуулах зорилготой хуурамч апп суулгахыг оролдож болзошгүй. <ph name="BEGIN_LINK" />Ямартай ч харуулах<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Бүх хэрэглэгч</translation>
 <translation id="964050462028070434">Нууц үг болон Passkey-г удирдах…</translation>
 <translation id="96680173638229310">Авто машин, тээврийн хэрэгсэл</translation>
 <translation id="969892804517981540">Албан ёсоор бий болгох</translation>

@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">အိုင်းရစ်ရှ်</translation>
 <translation id="4124935795427217608">သိင်္ဂဿမြင်း</translation>
 <translation id="4131235941541910880">မလိုသောဖိုင်များကို အမှိုက်ပုံးသို့ ရွှေ့ပါ</translation>
+<translation id="4134804435730168042">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ</translation>
 <translation id="4153015322587141338">ဖိုင်ကို ညာဘက်ခလုတ်နှိပ်ပြီး စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် “<ph name="PIN_COMMAND" />” ကို ရွေးပါ။</translation>
 <translation id="4157569377477607576">စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ-</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">“<ph name="FILE_NAME" />” ကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ။ သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="4439427728133035643">ကွန်ရက် <ph name="NETWORK_COUNT" />ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ရန်</translation>
 <translation id="4442424173763614572">DNS ကြည့်ရှုမှု မအောင်မြင်ခဲ့</translation>
 <translation id="4462159676511157176">စိတ်ကြိုက်အမည် ဆာဗာများ</translation>
@@ -612,8 +614,10 @@
 <translation id="5911887972742538906">သင်၏ Linux အပလီကေးရှင်းကို ထည့်သွင်းရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
 <translation id="5912396950572065471">ဖော်မက်</translation>
 <translation id="5913638992615760742">မိတ္တူကူးယူ၍ မရပါ၊ မျှော်လင့်မထားသော အမှား- <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">ရှာဖွေမှုတူးလ်အသစ်များ ရနိုင်သည်</translation>
 <translation id="5926082595146149752">ယူအက်စ်နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် ဒတ်ချ် (နယ်သာလန်)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ခု</translation>
 <translation id="5957366693331451795">Chromebox များ</translation>
 <translation id="5982621672636444458">ရွေးချယ်စရာများ စီရန်</translation>
@@ -760,6 +764,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ဒရိုက်ရှာ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ကန်နာဒါ အသံထွက်</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">အထောက်အထားစိစစ်မှုဆိုင်ရာ ဆာဗာအထောက်အထားကို အတည်ပြုရန် ‘အကြောင်းအရာ၏ အခြားအမည်နှင့် ကိုက်ညီမှု’ (သို့) ‘ဒိုမိန်းနောက်ဆက်နှင့် ကိုက်ညီမှု’ တို့ မပါဝင်ပါ</translation>
 <translation id="7165320105431587207">ကွန်ရက်ပြုပြင်ရန် မအောင်မြင်ပါ</translation>
 <translation id="7170041865419449892">ဘောင်အပြင်မှာ ရှိနေ</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
@@ -935,6 +940,7 @@
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
 <translation id="8492972329130824181">အိမ်ကွန်ရက်ကို မရနိုင်ပါ။ ချိတ်ဆက်ရန် ကွန်ရက်ပြင်ပဒေတာ အသုံးပြုခြင်းကို ဖွင့်ထားရမည်။</translation>
 <translation id="8499098729323186194">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ထုတ်ယူနေသည်…</translation>
+<translation id="8502913769543567768">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />။ စက်ကို စနစ်ထည့်သွင်းပြီးနောက် စတင်ပါ။ သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="8521441079177373948">ယူကေ</translation>
 <translation id="853494022971700746">ပြင်သစ် (ပြင်သစ်)</translation>
 <translation id="8540608333167683902">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>

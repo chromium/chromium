@@ -126,6 +126,7 @@
 <translation id="3245429137663807393">మీరు Chrome వినియోగ రిపోర్ట్‌లను కూడా షేర్ చేస్తున్నట్లయితే, ఆ రిపోర్ట్‌లలో మీరు సందర్శించే URLలు ఉంటాయి</translation>
 <translation id="3282568296779691940">Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
+<translation id="3293912612584488930">Chromeతో మరెన్నో చేయండి</translation>
 <translation id="3360895254066713204">Chrome సహాయకారుడు</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome ఇప్పుడు తిరిగి ప్రారంభించబడుతుంది}=1{Chrome 1 సెకనులో తిరిగి ప్రారంభించబడుతుంది}other{Chrome # సెకన్లలో తిరిగి ప్రారంభించబడుతుంది}}</translation>
 <translation id="3396977131400919238">ఇన‌స్ట‌లేష‌న్‌ సమయంలో ఒక ఆపరేటింగ్ సిస్టమ్ ఎర్ర‌ర్‌ ఏర్పడింది. దయచేసి Google Chromeను మ‌ళ్లీ డౌన్‌లోడ్ చేయండి.</translation>
@@ -153,6 +154,7 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">సైన్ ఇన్ చేయడంలో ఎర్రర్ కారణంగా ChromeOS Flex మీ డేటాను సింక్ చేయలేకపోయింది.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
+<translation id="3809772425479558446">Google Chromeకు Windows 10 లేదా అంతకంటే ఆధునిక వెర్షన్ అవసరం.</translation>
 <translation id="3835168907083856002">ఇది <ph name="USER_EMAIL_ADDRESS" />కు కొత్త Chrome ప్రొఫైల్‌ను క్రియేట్ చేస్తుంది</translation>
 <translation id="386202838227397562">దయచేసి అన్ని Google Chrome విండోలను మూసివేసి, మళ్ళీ ప్రయత్నించండి.</translation>
 <translation id="3865754807470779944">Chrome వెర్షన్ <ph name="PRODUCT_VERSION" /> ఇన్‌స్టాల్ చేయబడింది</translation>
@@ -405,7 +407,6 @@
 <translation id="8989968390305463310">మీ బ్రౌజింగ్ హిస్టరీ మీరు చూసే యాడ్‌లను, దిగువున అంచనా వేసిన ఆసక్తులపై ప్రభావం చూపుతుంది. మీ గోప్యతను రక్షించడానికి, Chrome ప్రతి నెలా దశల వారీగా మీ ఆసక్తులను ఆటోమేటిక్‌గా తొలగిస్తుంది. ఆసక్తులు మీరు తీసివేస్తే మినహా, రిఫ్రెష్ అవుతూనే ఉంటాయి.</translation>
 <translation id="8999208279178790196">{0,plural, =0{ఒక Chrome అప్‌డేట్ అందుబాటులో ఉంది}=1{ఒక Chrome అప్‌డేట్ అందుబాటులో ఉంది}other{ఒక Chrome అప్‌డేట్ # రోజులుగా అందుబాటులో ఉంది}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex సిస్టమ్</translation>
-<translation id="9067395829937117663">Google Chromeకి Windows 7 లేదా అంతకంటే ఆధునికమైనది ఉండటం ఆవశ్యకం.</translation>
 <translation id="911206726377975832">మీ బ్రౌజింగ్ డేటాను కూడా తొలగించాలా?</translation>
 <translation id="9138603949443464873">మీ మార్పులను వర్తింపజేయడానికి, Chromeని పునఃప్రారంభించండి</translation>
 <translation id="9195993889682885387">గత కొన్ని వారాల మీ బ్రౌజింగ్ హిస్టరీ ఆధారంగా Chrome మీ ఆసక్తులను అంచనా వేయగలదు. ఈ సమాచారం మీ పరికరంలో ఉంటుంది.</translation>

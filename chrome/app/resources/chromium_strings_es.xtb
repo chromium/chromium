@@ -198,8 +198,8 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5527463683072221100">Abrir archivos PDF en Chromium</translation>
 <translation id="5614091477838198795">Si activas esta opción, también se cerrará tu sesión en Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hay una actualización de Chromium disponible}=1{Hay una actualización de Chromium disponible}other{Hay una actualización de Chromium disponible desde hace # días}}</translation>
-<translation id="5634636535844844681">Chromium requiere Windows 7 o una versión posterior.</translation>
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostrar Chromium en este idioma</translation>
 <translation id="5862307444128926510">Te damos la bienvenida a Chromium</translation>
 <translation id="5883558403894052917">Chromium ha detectado que estos elementos contienen malware:</translation>
@@ -218,7 +218,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="6072463441809498330">Haz que Chromium sea más rápido</translation>
 <translation id="608006075545470555">Añadir perfil de trabajo a este navegador</translation>
 <translation id="6096348254544841612">Personaliza y controla Chromium. Hay una actualización disponible.</translation>
-<translation id="6102072151902574948">Si se activa esta opción, Chromium ahorrará batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento suave y la velocidad de fotogramas de los vídeos.</translation>
+<translation id="6102072151902574948">Si se activa esta opción, Chromium ahorrará batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido y la velocidad de fotogramas de los vídeos.</translation>
 <translation id="6119438414301547735">Permitir que la extensión muestre solicitudes de acceso en la barra de herramientas de Chromium</translation>
 <translation id="6120345080069858279">Chromium guardará esta contraseña en tu cuenta de Google para que no tengas que recordarla.</translation>
 <translation id="6129621093834146363"><ph name="FILE_NAME" /> es peligroso, por lo que Chromium lo ha bloqueado.</translation>
@@ -342,10 +342,12 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8266560134891435528">Chromium no puede comprobar tus contraseñas porque no has iniciado sesión</translation>
 <translation id="8276522524898344151">Chromium está intentando copiar contraseñas.</translation>
 <translation id="8290862415967981663">Es posible que este archivo sea peligroso, por lo que Chromium lo ha bloqueado.</translation>
+<translation id="8325404639443959713">Haz más con Chromium</translation>
 <translation id="8330519371938183845">Inicia sesión para sincronizar y personalizar Chromium en todos tus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>
 <translation id="8357820681460164151">Para acceder a tus elementos del navegador de Chromium en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="8360718212975266891">Para recibir futuras actualizaciones de Chromium, deberás tener Windows 10 o una versión posterior. Este ordenador tiene Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en el próximo día}other{Reinicia Chromium en los próximos # días}}</translation>
 <translation id="8453117565092476964">El archivo de instalación está dañado o no es válido. Vuelve a descargar Chromium.</translation>
 <translation id="8463672209299734063">Opcional: Ayuda a mejorar las funciones y el rendimiento de ChromiumOS enviando automáticamente datos de diagnóstico y de uso a Google.</translation>
@@ -381,6 +383,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="9158494823179993217">El administrador del sistema ha configurado Chromium para que abra otro navegador al acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reiniciar para actualizar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (tráfico mDNS entrante)</translation>
+<translation id="924957577793602335">Personaliza Chromium a tu gusto</translation>
 <translation id="93478295209880648">Es posible que Chromium no funcione correctamente porque ya no es compatible con Windows XP ni Windows Vista</translation>
 <translation id="942598560705308788">Certificados gestionados por Chromium</translation>
 <translation id="965162752251293939">¿Quién usa Chromium?</translation>

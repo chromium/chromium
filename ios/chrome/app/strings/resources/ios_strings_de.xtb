@@ -47,6 +47,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="1254117744268754948">Ordner wählen</translation>
 <translation id="1254424942107648268">Vorherige Übereinstimmung suchen</translation>
 <translation id="1258491128795710625">Neue Funktionen</translation>
+<translation id="1264156759663453185">Der ausgewählte Text ist für eine teilweise Übersetzung zu lang.</translation>
 <translation id="1265739287306757398">Weitere Informationen</translation>
 <translation id="1272079795634619415">Stoppen</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
@@ -698,6 +699,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6066301408025741299">Zum Abbrechen tippen</translation>
 <translation id="6071409777669089905">Tab loslösen</translation>
 <translation id="6084848228346514841">Tabs auswählen</translation>
+<translation id="6100617279104942061">Angemeldet als <ph name="USER_EMAIL" />. Die Einstellungen werden geöffnet.</translation>
 <translation id="6103540626693881831">Verschlüsselung auf dem Gerät</translation>
 <translation id="6119050551270742952">Die aktuelle Webseite ist im Inkognitomodus</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1126,6 +1128,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> Passwörter löschen?</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
 <translation id="9107664647686727385">Auf gehackte Passwörter prüfen</translation>
+<translation id="9120217828624527905">Zur Übersetzung der ganzen Seite wechseln</translation>
 <translation id="9124387962554796433">Mithilfe deines Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren.</translation>
 <translation id="9137526406337347448">Google-Dienste</translation>
 <translation id="9148126808321036104">Erneut anmelden</translation>

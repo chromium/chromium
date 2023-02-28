@@ -355,6 +355,7 @@
 <translation id="2951071800649516099">Захоўвайце старонкі, каб прачытаць іх пазней, – дадавайце іх у спіс на прагляд</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрачытаная старонка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаная старонка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаныя старонкі}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаных старонак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытанай старонкі}}</translation>
 <translation id="2961210776189273067">Форма звароту</translation>
+<translation id="296370266220139811">Эканомце час, менш пішыце</translation>
 <translation id="2979025552038692506">Выбраная ўкладка інкогніта</translation>
 <translation id="2979639724566107830">Адкрыць у новым акне</translation>
 <translation id="2981364137500752533">Вы можаце адкрываць не больш за 5 вокнаў.</translation>
@@ -482,6 +483,7 @@
 <translation id="3578874072190212775">Дапамажыце сайтам выяўляць махлярства і адрозніваць ботаў ад людзей</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3587596251841506391">Павысіць бяспеку ў інтэрнэце</translation>
+<translation id="3597179440835065298">Атрымлівайце лепшыя прапановы</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
 <translation id="3622349720008044802">Кіраванне вокнамі</translation>
@@ -747,6 +749,7 @@
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> хоча падключыцца</translation>
 <translation id="5016205925109358554">З засечкамі</translation>
+<translation id="5017529052065664584">За апошнія 15 хвілін</translation>
 <translation id="5032430150487044192">Не ўдалося стварыць QR-код</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5040262127954254034">Прыватнасць</translation>
@@ -882,6 +885,7 @@
 <translation id="5813552293717797987">Гэтым браўзерам кіруюць карыстальнікі <ph name="PARENT_NAME_1" /> і <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Увядзіце тэкст тут або націсніце на значок мікрафона, каб пачаць пошук</translation>
 <translation id="5814749351757353073">Падпісвайцеся на любімыя сайты</translation>
+<translation id="5822875253699806474">Каб хутка вяртацца на сайты, якія вы наведвалі, сінхранізуйце свае ўкладкі і гісторыю</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5833984609253377421">Абагуліць спасылку</translation>
 <translation id="5834764604050996579">Каб сканіраваць QR-код, дазвольце браўзеру Chrome выкарыстоўваць камеру</translation>
@@ -1136,6 +1140,7 @@
 <translation id="7088681679121566888">Chrome не патрабуе абнаўлення</translation>
 <translation id="7105047059074518658">Увайдзіце, каб вам было прасцей выкарыстоўваць браўзер на розных прыладах</translation>
 <translation id="7106762743910369165">Вашым браўзерам кіруе арганізацыя</translation>
+<translation id="7116588989735740310">Каб вяртацца на сайты, якія вы наведвалі на іншых прыладах, сінхранізуйце свае ўкладкі і гісторыю</translation>
 <translation id="7130504491556983216">Інтарэсы будуць з'яўляцца тут па меры прагляду вамі вэб-старонак</translation>
 <translation id="7138678301420049075">Іншыя</translation>
 <translation id="7146622961999026732">Гэтыя сайты і праграмы могуць быць важнымі для вас:</translation>
@@ -1214,6 +1219,7 @@
 <translation id="751961395872307827">Не ўдаецца падключыцца да сайта</translation>
 <translation id="752220631458524187">Калі скончыце, адключыце прыладу</translation>
 <translation id="7523960634226602883">Пошук з дапамогай камеры і Google Аб'ектыва</translation>
+<translation id="7539698981064401140">Сінхранізуйце свае ўкладкі і гісторыю</translation>
 <translation id="7562080006725997899">Ідзе ачыстка даных прагляду</translation>
 <translation id="756809126120519699">Даныя Chrome выдалены</translation>
 <translation id="7577900504646297215">Кіраваць інтарэсамі</translation>
@@ -1396,6 +1402,7 @@
 <translation id="8461694314515752532">Зашыфраваць сінхранізаваныя даныя з дапамогай фразы-пароля.</translation>
 <translation id="8466613982764129868">Праверце, ці прылада "<ph name="TARGET_DEVICE_NAME" />" падключана да інтэрнэту</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
+<translation id="847433688444405067">Праглядайце на розных прыладах</translation>
 <translation id="8481980314595922412">Пробныя функцыі ўключаны</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Адкрыць старонку гісторыі</translation>
@@ -1449,6 +1456,7 @@
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8746155870861185046">Абагуліць вылучанае змесціва</translation>
+<translation id="874726034427945498">Каб бачыць лепшыя прапановы ў адрасным радку, сінхранізуйце свае ўкладкі і гісторыю</translation>
 <translation id="8748850008226585750">Змесціва схавана</translation>
 <translation id="8756969031206844760">Абнавіць пароль?</translation>
 <translation id="8765470054473112089">Пры ўводзе тэксту ў адрасны радок або ў поле пошуку Chrome будзе адпраўляць яго ў стандартную пошукавую сістэму, каб падабраць для вас найлепшыя прапановы пошуку. У рэжыме інкогніта гэта функцыя не працуе.</translation>
@@ -1495,6 +1503,7 @@
 <translation id="8970887620466824814">Нешта пайшло не так.</translation>
 <translation id="8972098258593396643">Спампаваць у стандартную папку?</translation>
 <translation id="8987641763863173640">Кіраваць наладамі перадпрагляду відэа</translation>
+<translation id="8987736167266086032">Працягвайце з месца, дзе спыніліся</translation>
 <translation id="8989968390305463310">Гісторыя прагляду сайтаў уплывае на рэкламу, якая вам паказваецца, і на спіс пералічаных ніжэй інтарэсаў. У мэтах аховы вашай прыватнасці звесткі пра вашы інтарэсы ў Chrome штомесяц аўтаматычна выдаляюцца. Інтарэсы могуць абнаўляцца, пакуль вы іх не выдаліце.</translation>
 <translation id="8993760627012879038">Адкрыць новую ўкладку ў рэжыме інкогніта</translation>
 <translation id="8996847606757455498">Выбраць іншага пастаўшчыка</translation>
@@ -1513,6 +1522,7 @@
 <translation id="9070377983101773829">Пачаць галасавы пошук</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Звесткі аб сайтах, якія вы наведваеце ў рэжыме інкогніта, не захоўваюцца</translation>
+<translation id="9084103763810123431">Каб працягваць прагляд на іншай прыладзе, сінхранізуйце свае ўкладкі і гісторыю</translation>
 <translation id="9086302186042011942">Сінхранізацыя</translation>
 <translation id="9086455579313502267">Не ўдалося атрымаць доступ да сеткі</translation>
 <translation id="9099220545925418560">Выкарыстоўваюцца даныя гісторыі прагляду сайтаў. Гэта налада выключана.</translation>

@@ -47,6 +47,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="1254117744268754948">Seleccionar carpeta</translation>
 <translation id="1254424942107648268">Buscar anterior</translation>
 <translation id="1258491128795710625">Novedades</translation>
+<translation id="1264156759663453185">El texto seleccionado es demasiado grande para una traducción parcial.</translation>
 <translation id="1265739287306757398">Más información</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
@@ -177,6 +178,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2268044343513325586">Restringir</translation>
 <translation id="2273327106802955778">Menú más</translation>
 <translation id="2286505070150039482">Texto resaltado</translation>
+<translation id="2287614783861766820">{count,plural, =1{Esta dirección se eliminará de este dispositivo.}other{Estas direcciones se eliminarán de este dispositivo.}}</translation>
 <translation id="2299218006564889602">Tus contraseñas se cifran en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>
 <translation id="2302742851632557585">Cambiar contraseña en el sitio web</translation>
 <translation id="2316709634732130529">Usar contraseña sugerida</translation>
@@ -458,6 +460,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4324952538601951430">Ahora, los marcadores, las contraseñas, la configuración y el resto de los elementos que guardes estarán aquí</translation>
 <translation id="4334428914252001502">1 artículo no leído.</translation>
 <translation id="4338650699862464074">Envía las URL de las páginas que visitas a Google.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Esta dirección se eliminará de este dispositivo y de cualquier otro en el que hayas iniciado sesión.}other{Estas direcciones se eliminarán de este dispositivo y de cualquier otro en el que hayas iniciado sesión.}}</translation>
 <translation id="4343046787186034850">Accesos a cámara y micrófono permitidos</translation>
 <translation id="4359125752503270327">Esta página se abrirá en otra aplicación.</translation>
 <translation id="4375040482473363939">Búsqueda mediante códigos QR</translation>
@@ -587,6 +590,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5232485538978018676">Iniciar sesión con una cuenta gestionada</translation>
 <translation id="5234764350956374838">Cerrar</translation>
 <translation id="5245322853195994030">¿Quieres cancelar la sincronización?</translation>
+<translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Rellénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Rellénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
 <translation id="5295239312320826323">¿Quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -700,6 +704,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6066301408025741299">Toca para cancelar.</translation>
 <translation id="6071409777669089905">No fijar pestaña</translation>
 <translation id="6084848228346514841">Seleccionar pestañas</translation>
+<translation id="6100617279104942061">Has iniciado sesión como <ph name="USER_EMAIL" />. Se abre la configuración.</translation>
 <translation id="6103540626693881831">Cifrado en el dispositivo</translation>
 <translation id="6119050551270742952">Sitio actual en modo incógnito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1129,6 +1134,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9098541895599151034">¿Eliminar <ph name="NUMBER_OF_ACCOUNTS" /> contraseñas?</translation>
 <translation id="9100610230175265781">La frase de contraseña es obligatoria</translation>
 <translation id="9107664647686727385">Comprueba si tienes contraseñas vulneradas</translation>
+<translation id="9120217828624527905">Cambiar a traducción de página completa</translation>
 <translation id="9124387962554796433">Es posible que Google utilice tu historial para personalizar la Búsqueda y otros servicios de Google.</translation>
 <translation id="9137526406337347448">Servicios de Google</translation>
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>

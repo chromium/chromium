@@ -355,6 +355,7 @@
 <translation id="2951071800649516099">తర్వాత చదవడానికి మీ చదవాల్సిన లిస్ట్‌కు పేజీలను జోడించండి</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> చదవని పేజీ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> చదవని పేజీలు}}</translation>
 <translation id="2961210776189273067">టైటిల్</translation>
+<translation id="296370266220139811">టైమ్ ఆదా చేయండి, తక్కువ టైప్ చేయండి</translation>
 <translation id="2979025552038692506">ఎంచుకున్న అజ్ఞాత ట్యాబ్</translation>
 <translation id="2979639724566107830">కొత్త విండోలో తెరువు</translation>
 <translation id="2981364137500752533">మీరు 5 విండోల వరకు తెరవవచ్చు.</translation>
@@ -482,6 +483,7 @@
 <translation id="3578874072190212775">మోసాలను ఎదుర్కోవడంలో, అలాగే వ్యక్తులు, బాట్‌ల మధ్య ఉన్న తేడాను గుర్తించడంలో సైట్‌లకు సహాయపడుతుంది</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
 <translation id="3587596251841506391">వెబ్ భద్రతనుపెంచడంలో సాయపడుతుంది</translation>
+<translation id="3597179440835065298">మెరుగైన సూచనలను పొందండి</translation>
 <translation id="3602290021589620013">ప్రివ్యూ</translation>
 <translation id="3616113530831147358">ఆడియో</translation>
 <translation id="3622349720008044802">విండోలను మేనేజ్ చేయండి</translation>
@@ -747,6 +749,7 @@
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">గత 15 నిమిషాల డేటా</translation>
 <translation id="5032430150487044192">QR కోడ్‌ను క్రియేట్ చేయడం సాధ్యపడదు</translation>
 <translation id="5039804452771397117">అనుమతించండి</translation>
 <translation id="5040262127954254034">గోప్యత</translation>
@@ -882,6 +885,7 @@
 <translation id="5813552293717797987">ఈ బ్రౌజర్ <ph name="PARENT_NAME_1" />, <ph name="PARENT_NAME_2" /> ద్వారా మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="5814131985548525293">ప్రారంభించడానికి ఇక్కడ టైప్ చేయండి లేదా వాయిస్ చిహ్నాన్ని ట్యాప్ చేయండి</translation>
 <translation id="5814749351757353073">మీకు ఇష్టమైన సైట్‌ల గురించి తెలుసుకోండి</translation>
+<translation id="5822875253699806474">మీరు బ్రౌజ్ చేసిన సైట్‌లకు తిరిగి క్విక్‌గా వెళ్లడానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5833984609253377421">లింక్‌ను షేర్ చేయి</translation>
 <translation id="5834764604050996579">QR కోడ్‌ను స్కాన్ చేయడం కోసం, మీ కెమెరాను ఉపయోగించడానికి Chromeను అనుమతించండి</translation>
@@ -921,6 +925,7 @@
 <translation id="6002122790816966947">మీ పరికరాలు</translation>
 <translation id="6005538289190791541">సూచించబడిన పాస్‌వర్డ్‌</translation>
 <translation id="6011308810877101166">సెర్చ్ సూచనలను మెరుగుపరుస్తుంది</translation>
+<translation id="6026538407078977628">ఫుల్ స్క్రీన్‌కు విస్తరింపజేయండి</translation>
 <translation id="6039379616847168523">తదుపరి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="604124094241169006">ఆటోమేటిక్‌గా</translation>
@@ -1136,6 +1141,7 @@
 <translation id="7088681679121566888">Chrome అప్‌డేట్ చేసి ఉంది</translation>
 <translation id="7105047059074518658">పరికరాల్లో సులభంగా బ్రౌజ్ చేయడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="7106762743910369165">మీ బ్రౌజర్ మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
+<translation id="7116588989735740310">మీరు ఇతర పరికరాలలో బ్రౌజ్ చేసిన సైట్‌లకు తిరిగి వెళ్లడానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="7130504491556983216">మీరు వెబ్‌లో బ్రౌజ్ చేస్తున్నప్పుడు, ఇక్కడ ఆసక్తి ఉన్న అంశాల లిస్ట్ కనిపిస్తుంది</translation>
 <translation id="7138678301420049075">ఇతర</translation>
 <translation id="7146622961999026732">ఈ సైట్‌లు, యాప్‌లు మీకు ముఖ్యమైనవిగా అనిపిస్తున్నాయి:</translation>
@@ -1192,6 +1198,7 @@
 <translation id="7437998757836447326">Chrome నుండి సైన్ అవుట్ చేయండి</translation>
 <translation id="7443901082822119557">అజ్ఞాత మోడ్‌లో ఉండగా, వివిధ సైట్‌లలో మీ బ్రౌజింగ్ యాక్టివిటీని చూడటానికి సైట్‌లు మీ కుక్కీలను ఉపయోగించలేవు, ఉదాహరణకు, యాడ్‌లను వ్యక్తిగతీకరించడం. కొన్ని సైట్‌లలోని ఫీచర్‌లు సరిగ్గా పని చేయకపోవచ్చు.</translation>
 <translation id="7453467225369441013">దాదాపు అన్ని సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది. మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు.</translation>
+<translation id="7453810262525006706">సైడ్ వ్యూకు కుదించండి</translation>
 <translation id="7454641608352164238">తగినంత స్థలం లేదు</translation>
 <translation id="7455988709578031708">మీ బ్రౌజింగ్ హిస్టరీ ఆధారంగా. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
 <translation id="7456774706094330779">పొడిగించిన ప్రీ - లోడింగ్</translation>
@@ -1214,6 +1221,7 @@
 <translation id="751961395872307827">సైట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="752220631458524187">మీ చర్యలు పూర్తయిన తర్వాత డిస్‌కనెక్ట్ చేయండి</translation>
 <translation id="7523960634226602883">Google Lensను ఉపయోగించి మీ కెమెరాతో సెర్చ్ చేయండి</translation>
+<translation id="7539698981064401140">మీ ట్యాబ్స్, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="7562080006725997899">బ్రౌజింగ్ డేటాను తీసివేస్తోంది</translation>
 <translation id="756809126120519699">Chrome డేటా తీసివేయబడింది</translation>
 <translation id="7577900504646297215">ఆసక్తులను మేనేజ్ చేయండి</translation>
@@ -1396,6 +1404,7 @@
 <translation id="8461694314515752532">మీ స్వంత సింక్‌ రహస్య పదబంధంతో సింక్ చేయబడిన డేటాను ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> ఇంటర్నెట్‌కు కనెక్ట్ చేయబడి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
+<translation id="847433688444405067">పరికరాలన్నింటిలో బ్రౌజ్ చేయండి</translation>
 <translation id="8481980314595922412">ట్రయల్ ఫీచర్‌లు ఆన్ చేయబడ్డాయి</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">హిస్టరీ పేజీని తెరవండి</translation>
@@ -1449,6 +1458,7 @@
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8746155870861185046">హైలైట్‌ను షేర్ చేయండి</translation>
+<translation id="874726034427945498">మీ అడ్రస్ బార్‌లో మెరుగైన సూచనలను చూడటానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="8748850008226585750">కంటెంట్‌లు దాచబడ్డాయి</translation>
 <translation id="8756969031206844760">పాస్‌వర్డ్‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="8765470054473112089">మీరు అడ్రస్ బార్‌లో లేదా సెర్చ్ బాక్స్‌లో టైప్ చేసినప్పుడు, మెరుగైన సూచనలను పొందడానికి Chrome మీరు టైప్ చేసిన దానిని మీ ఆటోమేటిక్ సెర్చ్ ఇంజిన్‌కు పంపుతుంది. అజ్ఞాత మోడ్‌లో ఇది ఆఫ్‌లో ఉంటుంది.</translation>
@@ -1514,6 +1524,7 @@
 <translation id="9070377983101773829">వాయిస్ శోధనను ప్రారంభించండి</translation>
 <translation id="9074739597929991885">బ్లూటూత్</translation>
 <translation id="9081543426177426948">మీరు సందర్శించే సైట్‌లు అజ్ఞాత మోడ్‌లో సేవ్ చేయబడవు</translation>
+<translation id="9084103763810123431">మరొక పరికరంలో బ్రౌజింగ్ కొనసాగించడానికి, మీ ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="9086302186042011942">సింక్ చేస్తోంది</translation>
 <translation id="9086455579313502267">నెట్‌వర్క్‌ని యాక్సెస్ చేయడం సాధ్యం కాలేదు</translation>
 <translation id="9099220545925418560">మీ బ్రౌజింగ్ హిస్టరీ ఆధారంగా. ఈ సెట్టింగ్ ఆఫ్ చేయబడింది.</translation>

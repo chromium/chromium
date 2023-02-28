@@ -155,6 +155,7 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ ಎದುರಾದ ದೋಷದಿಂದಾಗಿ ChromeOS Flex ಅನ್ನು ಸಿಂಕ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
+<translation id="3809772425479558446">Google Chrome ಗೆ Windows 10 ಅಥವಾ ಹೆಚ್ಚಿನ ಆವೃತ್ತಿಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="3835168907083856002">ಇದು <ph name="USER_EMAIL_ADDRESS" /> ಗಾಗಿ ಹೊಸ Chrome ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುತ್ತದೆ</translation>
 <translation id="386202838227397562">ದಯವಿಟ್ಟು ಎಲ್ಲಾ Google Chrome ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3865754807470779944">Chrome ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -408,7 +409,6 @@
 <translation id="8989968390305463310">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ ನಿಮಗೆ ಕಾಣಿಸುವ ಜಾಹೀರಾತುಗಳು ಮತ್ತು ಆಸಕ್ತಿಗಳ ಮೇಲೆ, ಕೆಳಗೆ ಅಂದಾಜು ಮಾಡಿರುವಂತೆ ಪ್ರಭಾವ ಬೀರುತ್ತದೆ. ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, Chrome ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಪ್ರತಿ ತಿಂಗಳು ರೋಲಿಂಗ್ ಆಧಾರದಲ್ಲಿ ಸ್ವಯಂ-ಅಳಿಸುತ್ತದೆ. ನೀವು ಆಸಕ್ತಿಗಳನ್ನು ತೆಗೆದುಹಾಕದಿದ್ದಾಗ ಅವು ರಿಫ್ರೆಶ್ ಆಗಬಹುದು.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}=1{Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}one{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}other{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex ಸಿಸ್ಟಂ</translation>
-<translation id="9067395829937117663">Google Chrome ಗೆ Windows 7 ಅಥವಾ ಹೆಚ್ಚಿನ ಆವೃತ್ತಿಯು ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="911206726377975832">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಸಹ ಅಳಿಸುವುದೇ?</translation>
 <translation id="9138603949443464873">ನಿಮ್ಮ ಬದಲಾವಣೆಗಳನ್ನು ಅನ್ವಯಿಸಲು, Chrome ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="9195993889682885387">ಕಳೆದ ಕೆಲವು ವಾರಗಳ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಆಧರಿಸಿ Chrome ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಅಂದಾಜು ಮಾಡಬಲ್ಲದು. ಈ ಮಾಹಿತಿ ನಿಮ್ಮ ಸಾಧನದಲ್ಲೇ ಉಳಿಯುತ್ತದೆ.</translation>

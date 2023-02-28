@@ -355,6 +355,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="2951071800649516099">Voeg pagina's aan je leeslijst toe voor later</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ongelezen pagina}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ongelezen pagina's}}</translation>
 <translation id="2961210776189273067">Titel</translation>
+<translation id="296370266220139811">Bespaar tijd en typ minder</translation>
 <translation id="2979025552038692506">Geselecteerd incognitotabblad</translation>
 <translation id="2979639724566107830">Openen in nieuw venster</translation>
 <translation id="2981364137500752533">Je kunt maximaal 5 vensters hebben.</translation>
@@ -482,6 +483,7 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3578874072190212775">Help sites fraude te bestrijden en bots te onderscheiden van mensen</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587596251841506391">Bijdragen aan veiliger internet</translation>
+<translation id="3597179440835065298">Krijg betere suggesties</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Vensters beheren</translation>
@@ -747,6 +749,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> wil verbinding maken</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Afgelopen 15 minuten</translation>
 <translation id="5032430150487044192">Kan geen QR-code maken</translation>
 <translation id="5039804452771397117">Toestaan</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -882,6 +885,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5813552293717797987">Deze browser wordt beheerd door <ph name="PARENT_NAME_1" /> en <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Typ hier of tik op het microfoonicoon om te starten</translation>
 <translation id="5814749351757353073">Blijf op de hoogte van je favoriete sites</translation>
+<translation id="5822875253699806474">Synchroniseer je tabbladen en geschiedenis om snel terug te gaan naar sites die je hebt bezocht</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5833984609253377421">Link delen</translation>
 <translation id="5834764604050996579">Als je een QR-code wilt scannen, moet je Chrome toestemming geven om je camera te gebruiken</translation>
@@ -1136,6 +1140,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7088681679121566888">Chrome is up-to-date</translation>
 <translation id="7105047059074518658">Log in om makkelijker te browsen op apparaten</translation>
 <translation id="7106762743910369165">Je browser wordt beheerd door je organisatie</translation>
+<translation id="7116588989735740310">Synchroniseer je tabbladen en geschiedenis om terug te gaan naar sites die je op andere apparaten hebt bezocht</translation>
 <translation id="7130504491556983216">Hier komt een lijst met interesses als je browst op internet.</translation>
 <translation id="7138678301420049075">Overige</translation>
 <translation id="7146622961999026732">Zo te zien zijn deze sites en apps belangrijk voor jou:</translation>
@@ -1214,6 +1219,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="751961395872307827">Kan geen verbinding maken met de site</translation>
 <translation id="752220631458524187">Koppel je telefoon los als je klaar bent</translation>
 <translation id="7523960634226602883">Zoeken met je camera via Google Lens</translation>
+<translation id="7539698981064401140">Je tabbladen en geschiedenis synchroniseren</translation>
 <translation id="7562080006725997899">Browsegegevens wissen</translation>
 <translation id="756809126120519699">Chrome-gegevens gewist</translation>
 <translation id="7577900504646297215">Interesses beheren</translation>
@@ -1396,6 +1402,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8461694314515752532">Gesynchroniseerde gegevens versleutelen met een eigen wachtwoordzin</translation>
 <translation id="8466613982764129868">Zorg dat <ph name="TARGET_DEVICE_NAME" /> is verbonden met internet</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
+<translation id="847433688444405067">Browse op verschillende apparaten</translation>
 <translation id="8481980314595922412">Proeffuncties staan aan</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">De pagina Geschiedenis openen</translation>
@@ -1449,6 +1456,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8746155870861185046">Gemarkeerde tekst delen</translation>
+<translation id="874726034427945498">Synchroniseer je tabbladen en geschiedenis om betere suggesties in je adresbalk te zien</translation>
 <translation id="8748850008226585750">Content verborgen</translation>
 <translation id="8756969031206844760">Wachtwoord updaten?</translation>
 <translation id="8765470054473112089">Als je in de adresbalk of het zoekvak typt, stuurt Chrome wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
@@ -1514,6 +1522,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="9070377983101773829">Gesproken zoekopdracht starten</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Sites die je bezoekt, worden niet opgeslagen in de incognitomodus</translation>
+<translation id="9084103763810123431">Synchroniseer je tabbladen en geschiedenis om verder te browsen op een ander apparaat</translation>
 <translation id="9086302186042011942">Synchroniseren</translation>
 <translation id="9086455579313502267">Geen toegang tot het netwerk</translation>
 <translation id="9099220545925418560">Gebaseerd op je browsegeschiedenis. Deze instelling staat uit.</translation>

@@ -198,8 +198,8 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5527463683072221100">Odpri datoteke PDF v Chromiumu</translation>
 <translation id="5614091477838198795">Če je to vklopljeno, boste odjavljeni tudi iz Chromiuma.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Posodobitev za Chromium je na voljo}=1{Posodobitev za Chromium je na voljo}one{Posodobitev za Chromium je na voljo že # dan}two{Posodobitev za Chromium je na voljo že # dneva}few{Posodobitev za Chromium je na voljo že # dni}other{Posodobitev za Chromium je na voljo že # dni}}</translation>
-<translation id="5634636535844844681">Za Chromium potrebujete Windows 7 ali novejši.</translation>
 <translation id="5653831366781983928">Znova zaženite Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium v tem jeziku</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5883558403894052917">Chromium je ugotovil, da ti elementi vsebujejo zlonamerno programsko opremo:</translation>
@@ -347,8 +347,10 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8340674089072921962">Uporabnik <ph name="USER_EMAIL_ADDRESS" /> je prej uporabljal Chromium</translation>
 <translation id="8357820681460164151">Če želite do stvari v brskalniku Chromium dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
 <translation id="8360718212975266891">Če želite prejemati prihodnje posodobitve Chromiuma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium znova zaženite v enem dnevu}one{Chromium znova zaženite v # dnevu}two{Chromium znova zaženite v # dnevih}few{Chromium znova zaženite v # dnevih}other{Chromium znova zaženite v # dnevih}}</translation>
 <translation id="8453117565092476964">Arhiv namestitvenega programa je poškodovan ali neveljaven. Znova prenesite Chromium.</translation>
+<translation id="8458614432758743027">Za Chromium potrebujete Windows 10 ali novejšega.</translation>
 <translation id="8463672209299734063">Izbirno: Pomagajte izboljšati funkcije sistema Chromium OS in njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
 <translation id="8493179195440786826">Chromium je zastarel</translation>
 <translation id="8550334526674375523">Ta delovni profil je v celoti ločen od osebnega profila.</translation>

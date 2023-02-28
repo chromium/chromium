@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">iiri</translation>
 <translation id="4124935795427217608">Yksisarvinen</translation>
 <translation id="4131235941541910880">Siirrä tarpeettomat kohteet roskakoriin</translation>
+<translation id="4134804435730168042">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivoi laitteen käyttöönoton jälkeen</translation>
 <translation id="4153015322587141338">Klikkaa tiedostoa kakkospainikkeella ja valitse <ph name="PIN_COMMAND" />, niin löydät tiedostot nopeasti hyllystä.</translation>
 <translation id="4157569377477607576">Järjestelmänvalvojakäytännössä ei suositella seuraavia:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> siirretty.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570"><ph name="FILE_NAME" /> poistetaan, eikä sitä voi palauttaa.</translation>
 <translation id="4418686080762064601">Luo tiedostoille pikakuvake</translation>
 <translation id="4425149324548788773">Oma Drive</translation>
+<translation id="4432921877815220091">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivoi laitteen käyttöönoton jälkeen, järjestelmänvalvojan ylläpitämä</translation>
 <translation id="4439427728133035643">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, yhdistä</translation>
 <translation id="4442424173763614572">DNS-haku epäonnistui</translation>
 <translation id="4462159676511157176">Omat nimipalvelimet</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">Kopiointi epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">hollanti (Alankomaat), Yhdysvaltain kansainvälinen PC-näppäimistö</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivoi laitteen käyttöönoton jälkeen</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> kohdetta</translation>
 <translation id="5957366693331451795">Chromeboxit</translation>
 <translation id="5982621672636444458">Lajitteluasetukset</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; – &lt;em&gt;hae Drivesta&lt;/em&gt;</translation>
 <translation id="7135561821015524160">foneettinen kannada</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">"Aiheen vaihtoehtoisen nimen vastaavuus" tai "Verkkotunnuksen päätteen vastaavuus" puuttuu todennuspalvelimen henkilöllisyyden vahvistamista varten</translation>
 <translation id="7165320105431587207">Verkon asetuksien määrittäminen epäonnistui</translation>
 <translation id="7170041865419449892">Katvealueella</translation>
 <translation id="7180611975245234373">Päivitä</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
 <translation id="8492972329130824181">Kotiverkko ei ole käytettävissä. Yhteyden muodostaminen edellyttää roamingia.</translation>
 <translation id="8499098729323186194">Puretaan <ph name="NUMBER_OF_ITEMS" /> kohdetta…</translation>
+<translation id="8502913769543567768">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivoi laitteen käyttöönoton jälkeen, järjestelmänvalvojan ylläpitämä</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">ranska (Ranska)</translation>
 <translation id="8540608333167683902">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, lisätietoja</translation>

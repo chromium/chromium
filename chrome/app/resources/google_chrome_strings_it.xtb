@@ -153,6 +153,7 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Impossibile sincronizzare i dati in ChromeOS Flex a causa di un errore durante l'accesso.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
+<translation id="3809772425479558446">Google Chrome richiede Windows 10 o versioni successive.</translation>
 <translation id="3835168907083856002">Questa operazione creerà un nuovo profilo Chrome per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Chiudi tutte le finestre di Google Chrome e riprova.</translation>
 <translation id="3865754807470779944">La versione di Chrome <ph name="PRODUCT_VERSION" /> è installata</translation>
@@ -405,7 +406,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8989968390305463310">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
-<translation id="9067395829937117663">Google Chrome richiede Windows 7 o versioni successive.</translation>
 <translation id="911206726377975832">Eliminare anche i tuoi dati di navigazione?</translation>
 <translation id="9138603949443464873">Riavvia Chrome per applicare le modifiche</translation>
 <translation id="9195993889682885387">Chrome può stimare i tuoi interessi in base alla cronologia di navigazione delle ultime settimane. Queste informazioni rimangono sul dispositivo.</translation>

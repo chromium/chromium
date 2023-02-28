@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK" />դուրս եկեք Chrome-ից<ph name="END_LINK" />։</translation>
 <translation id="2695886661449553974">Chrome-ը չի կարող ստուգել թարմացումների առկայությունը։ Փորձեք ավելի ուշ։</translation>
 <translation id="2732745070297234559">Chrome-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք։</translation>
+<translation id="2736805085127235148">Chrome-ի ծանուցումներն այս պահին անջատված են սարքի կարգավորումներում։</translation>
 <translation id="2767464022270041271">Պահված գաղտնաբառեր չկան։ Google գաղտնաբառերի կառավարիչը կարող է ստուգել ձեր գաղտնաբառերը, երբ պահում եք դրանք։</translation>
 <translation id="2869959624320573933">Մուտք Chrome</translation>
 <translation id="2957447865124070833">Ընտրեք <ph name="BEGIN_BOLD" />Chrome-ը<ph name="END_BOLD" />։</translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome-ը թարմացված է</translation>
 <translation id="7939179037291298976">Ձեր iPhone-ի կարգավորումներում ընտրեք «Գաղտնաբառերի կարգավորումներ», ապա՝ «Chrome»</translation>
 <translation id="8022947259858476807">Դարձրեք Chrome-ը ձեր կանխադրված դիտարկիչը՝ հղումներ բացելու, վիջեթներից որոնելու և այլ հավելվածներում գաղտնաբառերի ինքնալրացման համար</translation>
+<translation id="804638182476029347">Թույլատրեք Chrome-ին ուղարկել ծանուցումներ, որպեսզի տեղեկանաք գների իջեցման մասին</translation>
 <translation id="81358522153858150">Chrome-ն այժմ աջակցում է օգտագործման կանոններ կառավարվող հաշիվների համար</translation>
 <translation id="8160472928944011082">Չհաջողվեց թարմացնել Chrome-ը</translation>
 <translation id="8357607116237445042">Հեռացնե՞լ Chrome-ի տվյալներն այս սարքից</translation>

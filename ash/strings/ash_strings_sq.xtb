@@ -549,6 +549,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, ngjarjet po ngarkohen.</translation>
 <translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
 <translation id="3934456833412894880">"Karikimi me përshtatje" është aktiv. Bateria jote do të qëndrojë në 80% për të rritur kohëzgjatjen e saj dhe do të karikohet plotësisht kur të të nevojitet.</translation>
+<translation id="3936620957945677513">Godit "Enter" për t'u bashkuar në ngjarjen "<ph name="EVENT_SUMMARY" />"</translation>
 <translation id="3943857333388298514">Ngjite</translation>
 <translation id="394485226368336402">Cilësimet e audios</translation>
 <translation id="3945319193631853098">Trokit për të përfunduar konfigurimin</translation>
@@ -1466,7 +1467,6 @@ Instalim i ri</translation>
 <translation id="8850991929411075241">Kërko+Esc</translation>
 <translation id="8853703225951107899">Kod yt PIN ose fjalëkalimi përsëri nuk mund të verifikoheshin. Shënim. Nëse e ke ndryshuar fjalëkalimin së fundi, përdor fjalëkalimin e vjetër. Fjalëkalimi yt i ri do të zbatohet pasi të dalësh nga llogaria.</translation>
 <translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
-<translation id="8858369206579825206">Kontrollet e privatësisë</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8876661425082386199">Kontrollo lidhjen tënde</translation>

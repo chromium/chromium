@@ -589,7 +589,7 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2361263712565360498">275 x 395 毫米</translation>
 <translation id="236340516568226369">調整切換選單大小</translation>
-<translation id="2365355378251437925">請輸入「<ph name="FIELD" />」</translation>
+<translation id="2365355378251437925">輸入 <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">級別</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">在 Chrome 設定中個人化您的無障礙工具</translation>
@@ -877,6 +877,7 @@
 <translation id="317878711435188021">知道您是否正在使用此裝置</translation>
 <translation id="3180358318770512945">育兒</translation>
 <translation id="3187306450550410410">彈性工作安排</translation>
+<translation id="3187380004437786923">管理付款</translation>
 <translation id="3187472288455401631">廣告評估功能</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="319282854780294203">社交網絡</translation>
@@ -1271,6 +1272,7 @@
 <translation id="4154664944169082762">指紋</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165986682804962316">網站設定</translation>
+<translation id="4169535189173047238">不允許</translation>
 <translation id="4171400957073367226">驗證簽名錯誤</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">永遠顯示</translation>
@@ -3333,6 +3335,7 @@
 <translation id="950736567201356821">三孔 (頂端)</translation>
 <translation id="961663415146723894">釘裝 (底部)</translation>
 <translation id="962484866189421427">此內容可能會嘗試安裝欺詐應用程式來冒充其他內容，或收集可用來追蹤您的資料。<ph name="BEGIN_LINK" />一律顯示<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">所有使用者</translation>
 <translation id="964050462028070434">管理密碼和密鑰…</translation>
 <translation id="96680173638229310">汽車和車輛</translation>
 <translation id="969892804517981540">正式版本</translation>

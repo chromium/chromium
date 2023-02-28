@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">PDF-терді Chromium-де ашу</translation>
 <translation id="5614091477838198795">Қосылған кезде, Chromium браузерінен шығарыласыз.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium браузерінің жаңартылған нұсқасы қолжетімді}=1{Chromium браузерінің жаңартылған нұсқасы қолжетімді}other{Chromium браузерінің жаңартылған нұсқасы # күннен бері қолжетімді}}</translation>
-<translation id="5634636535844844681">Chromium браузері Windows 7 жүйесін не одан кейінгі нұсқасын қажет етеді.</translation>
 <translation id="5653831366781983928">Chromium браузерін қайта іске қосыңыз</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium жүйесін осы тілде көрсету</translation>
 <translation id="5862307444128926510">Chromium жүйесіне қош келдіңіз</translation>
 <translation id="5883558403894052917">Chromium бұл элементтерде зиянды бағдарлама бар екенін анықтады:</translation>
@@ -346,6 +346,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> бұрын Chromium браузерін пайдаланған</translation>
 <translation id="8357820681460164151">Chromium браузерінің материалдарын барлық құрылғыда пайдалану үшін аккаунтқа кіріп, синхрондау параметрін қосыңыз.</translation>
 <translation id="8360718212975266891">Chromium-нің жаңа нұсқаларын алып тұру үшін Windows 10 не одан кейінгі операциялық жүйе керек болады. Бұл компьютерде Windows 8 нұсқасы орнатылған.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Барлық құқықтары қорғалған.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium браузерін бір күннің ішінде қайта іске қосыңыз}other{Chromium браузерін # күннің ішінде қайта іске қосыңыз}}</translation>
 <translation id="8453117565092476964">Орнатқыш мұрағаты бүлінген немесе жарамсыз. Chromium қайтадан жүктеңіз.</translation>
 <translation id="8463672209299734063">Міндетті емес: диагностика және пайдалану туралы деректі Google-ға автоматты түрде жіберу арқылы ChromiumOS функциялары мен жұмыс өнімділігін жақсартуға көмектесіңіз.</translation>

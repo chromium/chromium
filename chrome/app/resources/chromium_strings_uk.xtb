@@ -196,8 +196,8 @@
 <translation id="5527463683072221100">Відкривати файли PDF у Chromium</translation>
 <translation id="5614091477838198795">Якщо перемикач увімкнено, ви також автоматично вийдете зі свого облікового запису в Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступне оновлення Chromium}=1{Доступне оновлення Chromium}one{Оновлення Chromium доступне вже # день}few{Оновлення Chromium доступне вже # дні}many{Оновлення Chromium доступне вже # днів}other{Оновлення Chromium доступне вже # дня}}</translation>
-<translation id="5634636535844844681">Для роботи Chromium потрібно мати ОС Windows 7 або новішої версії.</translation>
 <translation id="5653831366781983928">Перезапустіть Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Вибрати цю мову для Chromium</translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
 <translation id="5883558403894052917">Веб-переглядач Chromium виявив, що наведені нижче елементи містять зловмисне програмне забезпечення.</translation>
@@ -340,10 +340,12 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8266560134891435528">Chromium не може перевірити паролі, оскільки ви не ввійшли в обліковий запис</translation>
 <translation id="8276522524898344151">Chromium намагається скопіювати паролі.</translation>
 <translation id="8290862415967981663">Цей файл може бути небезпечним, тому Chromium заблокував його.</translation>
+<translation id="8325404639443959713">Більше можливостей із Chromium</translation>
 <translation id="8330519371938183845">Увійдіть, щоб синхронізувати та персоналізувати роботу Chromium на всіх своїх пристроях</translation>
 <translation id="8340674089072921962">Раніше ви входили в обліковий запис <ph name="USER_EMAIL_ADDRESS" /> у Chromium</translation>
 <translation id="8357820681460164151">Щоб мати доступ до своїх даних у веб-переглядачі Chromium на всіх пристроях, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>
 <translation id="8360718212975266891">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 8.</translation>
+<translation id="8370517070665726704">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Перезапустіть Chromium упродовж дня}one{Перезапустіть Chromium упродовж # дня}few{Перезапустіть Chromium упродовж # днів}many{Перезапустіть Chromium упродовж # днів}other{Перезапустіть Chromium упродовж # дня}}</translation>
 <translation id="8453117565092476964">Архів програми встановлення пошкоджений або недійсний. Завантажте Chromium ще раз.</translation>
 <translation id="8463672209299734063">Необов’язково: допоможіть нам покращувати функції та підвищувати продуктивність Chromium OS, автоматично надсилаючи в Google дані про діагностику та використання.</translation>
@@ -379,6 +381,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="9158494823179993217">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в альтернативному веб-переглядачі.</translation>
 <translation id="9185526690718004400">Перезапустити, щоб оновити &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Персоналізуйте Chromium</translation>
 <translation id="93478295209880648">Chromium може працювати неналежним чином, оскільки більше не підтримується у Windows XP та Windows Vista</translation>
 <translation id="942598560705308788">Сертифікати, якими керує Chromium</translation>
 <translation id="965162752251293939">Хто користується веб-переглядачем Chromium?</translation>

@@ -2849,13 +2849,6 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3589193811812796052">WebAssembly modüllerinin kaynaklar arasında gönderilmesini engelle</translation>
 <translation id="3591527072193107424">Eski Tarayıcı Desteği özelliğini etkinleştir.</translation>
 <translation id="3591584750136265240">Giriş için kimlik doğrulama yöntemini yapılandır</translation>
-<translation id="359203136434560942">Kilit ekranındaki ekran koruyucuda gösterilecek resim listesini yapılandırır.
-
-Her liste öğesi, ekran koruyucuda gösterilecek bir resme referans verir. Öğenin üyesi olarak resmin URL'si ve doğrulama için resim dosyasının SHA-256 karma değeri yer almalıdır. Resim biçimi JPEG olmalıdır. <ph name="PRODUCT_OS_NAME" /> cihazı bu resimleri indirir ve bu referansların yerel bir önbelleğini saklar.
-
-<ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> politikası Yanlış değerine ayarlanırsa bu politikanın hiçbir etkisi olmaz.
-
-Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> politikasında ayarlanan değerden bağımsız olarak kilit ekranında ekran koruyucu gösterilmez.</translation>
 <translation id="3593905652755912452">Devre dışı bırakılan form kontrollerinde eski etkinlik gönderme davranışı kullanılacak.</translation>
 <translation id="3596112486106491038">Sanal makine komut satırı erişimini etkinleştir</translation>
 <translation id="3603469950773500315">Yeni <ph name="CORS" /> uygulamasındaki çözümlerin <ph name="CORS" /> tarafından kontrol edilmesini sağlayarak Uzantıların uyumlu davranışı sürdürmesine ve belirtilen üstbilgilerin <ph name="PRODUCT_NAME" /> tarafından <ph name="CORS" /> kontrolleri olmadan gönderilmesine olanak tanıyın.
@@ -3877,7 +3870,6 @@ Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uyg
 <translation id="4624417808625504735">Bu sitelerde JavaScript'in JIT kullanmasını engelle</translation>
 <translation id="46321462262887935">Üst sıradaki tuşlara işlev tuşu olarak davran, ancak kullanıcının değişiklik yapmasına izin ver</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> için listelenen içerik türlerini işlemeye izin ver</translation>
-<translation id="4632566332417930481">Kurumsal politika tarafından yüklenen uzantılarda Geliştirici Araçları kullanımına izin verme, diğer bağlamlarda Geliştirici Araçları kullanımına izin ver</translation>
 <translation id="4636354638176939375">Gözetimli kullanıcı oluşturmayı devre dışı bırak</translation>
 <translation id="4646626362889216307">Politikanın ayarlanması, farklı kaynaklardan seçilen politikaların aynı kapsamda ve düzeyde birleştirilmesine olanak tanır. Bu birleştirme, her kaynaktaki sözlüğün ilk düzey anahtarlarında meydana gelir. En yüksek öncelikli kaynaktan gelen anahtar tercih edilir.
 
@@ -4004,7 +3996,6 @@ Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için 
           Bu politika ayarlanmadan bırakılırsa mono ses başlangıçta devre dışıdır ancak istenildiğinde kullanıcı tarafından etkinleştirilebilir.</translation>
 <translation id="4768446404233019970">TLS'de 3DES şifre paketlerini etkinleştir</translation>
 <translation id="4770334626033858263">Ebeveyn Erişim Kodu'nu oluşturmak ve doğrulamak için kullanılan yapılandırma.</translation>
-<translation id="4772431363738215349">Ekran koruyucu resminin indirilebileceği URL.</translation>
 <translation id="4773997835955617342">Manuel olarak oluşturulan yeni kayıtlar için önerilen <ph name="KRB5_CONFIG" /> yapılandırmasını değiştirir.
 
       Bu politika etkinleştirilirse "KerberosCustomPrefilledConfig" politikasının değeri önerilen yapılandırma olarak uygulanır ve Kerberos kimlik doğrulama iletişim kutusunun "Gelişmiş" bölümünde gösterilir.
@@ -4605,7 +4596,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 
       Bu politika False (Yanlış) değerine ayarlanırsa Crostini kapsayıcılara bağlantı noktası yönlendirme devre dışı bırakılır.</translation>
 <translation id="538108065117008131"><ph name="PRODUCT_FRAME_NAME" /> için aşağıdaki içerik türlerini işlemeye izin ver.</translation>
-<translation id="5382211603538487131">Resmin SHA-256 karması.</translation>
 <translation id="538768040137709073">Senkronize etme etkin durumda ve kullanıcı Oturum açmışken, kullanıcıların Chrome Masaüstü cihazlar ve bir Android cihaz arasında kısa mesaj göndermesine olanak tanıyan Paylaşılan Pano özelliğini etkinleştirin.
 
           Bu politika true (doğru) değerine ayarlanırsa Chrome kullanıcısı için cihazlar arasında kısa mesaj gönderme özelliği etkinleştirilir.
@@ -4814,13 +4804,6 @@ Bu politika, M112 sürümünde kaldırılmıştır.</translation>
 <translation id="5535256585099022933">Yeniden başlatma zaman aralığını ayarla</translation>
 <translation id="553806128266843748">Veri akışı kısıtlamanın etkinleştirilip etkinleştirilmediğini gösteren bir boole flag'i.</translation>
 <translation id="5540885720415375851">Yerel cihaz bulmaya izin ver</translation>
-<translation id="5545132877693005604">Oturum açma ekranındaki ekran koruyucuda gösterilecek resim listesini yapılandırır.
-
-Her liste öğesi, ekran koruyucuda gösterilecek bir resme referans verir. Öğenin üyesi olarak resmin URL'si ve doğrulama için resim dosyasının SHA-256 karma değeri yer almalıdır. Resim biçimi JPEG olmalıdır. <ph name="PRODUCT_OS_NAME" /> cihazı bu resimleri indirir ve bu referansların yerel bir önbelleğini saklar.
-
-<ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> politikası Yanlış değerine ayarlanırsa bu politikanın hiçbir etkisi olmaz.
-
-Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> politikasında ayarlanan değerden bağımsız olarak oturum açma ekranında ekran koruyucu gösterilmez.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Giriş ekranında yüksek kontrastı etkinleştir</translation>
 <translation id="555077880566103058">Tüm sitelerin otomatik olarak <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştırmasına izin ver</translation>

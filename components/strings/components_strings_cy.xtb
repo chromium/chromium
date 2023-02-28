@@ -589,6 +589,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Newidiwch faint y ddewislen toglo</translation>
+<translation id="2365355378251437925">Rhowch <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Lefel</translation>
 <translation id="2380886658946992094">Cyfreithiol</translation>
 <translation id="2383455408879745299">Personoleiddio'ch offer hygyrchedd yn y gosodiadau Chrome</translation>
@@ -876,6 +877,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="317878711435188021">Gwybod pan fyddwch wrthi'n defnyddio'r ddyfais hon</translation>
 <translation id="3180358318770512945">Bod yn rhiant</translation>
 <translation id="3187306450550410410">Trefniadau gwaith hyblyg</translation>
+<translation id="3187380004437786923">Rheoli taliadau</translation>
 <translation id="3187472288455401631">Mesur hysbysebion</translation>
 <translation id="3190736958609431397">Dadolrhain</translation>
 <translation id="319282854780294203">Rhwydweithiau cymdeithasol</translation>
@@ -1271,6 +1273,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4154664944169082762">Olion bysedd</translation>
 <translation id="4159784952369912983">Porffor</translation>
 <translation id="4165986682804962316">Gosodiadau gwefan</translation>
+<translation id="4169535189173047238">Peidio â chaniatáu</translation>
 <translation id="4171400957073367226">Llofnod dilysu gwael</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Dangos bob tro</translation>
@@ -3333,6 +3336,7 @@ Manylion ychwanegol:
 <translation id="950736567201356821">Tri thwll ar y brig</translation>
 <translation id="961663415146723894">Rhwymo ar y gwaelod</translation>
 <translation id="962484866189421427">Gallai'r cynnwys hwn geisio gosod apiau twyllodrus sy'n esgus bod yn rhywbeth arall neu gasglu data y gallent eu defnyddio i'ch olrhain. <ph name="BEGIN_LINK" />Dangos beth bynnag<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Pob defnyddiwr</translation>
 <translation id="964050462028070434">Rheoli Cyfrineiriau a Chodau Pas…</translation>
 <translation id="96680173638229310">Ceir a cherbydau</translation>
 <translation id="969892804517981540">Datblygiad Swyddogol</translation>

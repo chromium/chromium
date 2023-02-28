@@ -92,6 +92,7 @@
 <translation id="7118091470949186573">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="7165402419892018581">Välj Chromium för autofyll</translation>
 <translation id="7175400662502680481">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Lösenordshantering att byta lösenord nu.</translation>
+<translation id="7192111075364461693">Chromium-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="7208566199746267865">Med Chromium sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="7255976941681861701">Bekanta dig med den nya Chromium-menyn</translation>
@@ -130,6 +131,7 @@ Tänk på detta:
   • Om du aktiverar synkronisering kan mätvärdena även innehålla information om webbadresser du besöker.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Det här kontot och data som inte har sparats tas bort från Chromium.</translation>
 <translation id="894437814105052438">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chromium. Data som redan har synkroniserats finns kvar i kontot.</translation>
+<translation id="8963279154877372067">Tillåt Chromium-aviseringar om sänkt pris</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
 <translation id="9059693977935746710">Du behöver inte komma ihåg det här lösenordet. Det sparas med Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>

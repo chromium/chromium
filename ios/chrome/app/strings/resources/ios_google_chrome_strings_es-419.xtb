@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Para salir de tu Cuenta de Google en todos los sitios web, debes <ph name="BEGIN_LINK" />salir de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
 <translation id="2732745070297234559">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
+<translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
 <translation id="7939179037291298976">En la configuración de tu iPhone, abre "Opciones de contraseña" y selecciona "Chrome"</translation>
 <translation id="8022947259858476807">Usa Chrome como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
+<translation id="804638182476029347">Permite las notificaciones de Chrome para recibir alertas de descuentos</translation>
 <translation id="81358522153858150">Chrome ahora es compatible con las políticas del usuario de tus dispositivos administrados</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
 <translation id="8357607116237445042">Decide si quieres borrar o conservar los datos de Chrome que tienes almacenados en este dispositivo</translation>

@@ -355,6 +355,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="2951071800649516099">Lägg till sidor som du vill läsa senare i läslistan</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> oläst sida i listan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olästa sidor i listan}}</translation>
 <translation id="2961210776189273067">Titel</translation>
+<translation id="296370266220139811">Spara tid och skriv mindre</translation>
 <translation id="2979025552038692506">Vald inkognitoflik</translation>
 <translation id="2979639724566107830">Öppna i nytt fönster</translation>
 <translation id="2981364137500752533">Du kan ha upp till fem fönster.</translation>
@@ -482,6 +483,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3578874072190212775">Hjälp webbplatser att bekämpa bedrägerier och att skilja botar från människor</translation>
 <translation id="3587482841069643663">Alla</translation>
 <translation id="3587596251841506391">Förbättra säkerheten på webben</translation>
+<translation id="3597179440835065298">Få bättre förslag</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3616113530831147358">Ljud</translation>
 <translation id="3622349720008044802">Hantera fönster</translation>
@@ -748,6 +750,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5005498671520578047">Kopiera lösenord</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> vill ansluta</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">De senaste 15 minuterna</translation>
 <translation id="5032430150487044192">Det gick inte att skapa QR-koden</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5040262127954254034">Integritet</translation>
@@ -883,6 +886,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5813552293717797987">Den här webbläsaren hanteras av <ph name="PARENT_NAME_1" /> och <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Börja genom att skriva här eller trycka på mikrofonikonen</translation>
 <translation id="5814749351757353073">Håll dig uppdaterad om dina favoritwebbplatser</translation>
+<translation id="5822875253699806474">Synkronisera flikar och historik för att snabbt återgå till webbplatser du har besökt</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5833984609253377421">Dela länk</translation>
 <translation id="5834764604050996579">Tillåt att Chrome använder kameran om du vill skanna en QR-kod.</translation>
@@ -1137,6 +1141,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7088681679121566888">Chrome har uppdaterats</translation>
 <translation id="7105047059074518658">Logga in och surfa enklare på olika enheter</translation>
 <translation id="7106762743910369165">Webbläsaren hanteras av din organisation</translation>
+<translation id="7116588989735740310">Synkronisera flikar och historik för att återgå till webbplatser du har besökt på andra enheter</translation>
 <translation id="7130504491556983216">En lista med intressen visas här allt eftersom du surfar på webben</translation>
 <translation id="7138678301420049075">Övrigt</translation>
 <translation id="7146622961999026732">De här webbplatserna och apparna verkar vara viktiga för dig:</translation>
@@ -1215,6 +1220,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="751961395872307827">Det gick inte att ansluta till webbplatsen</translation>
 <translation id="752220631458524187">Koppla från när du är klar</translation>
 <translation id="7523960634226602883">Sök med kameran med hjälp av Google Lens</translation>
+<translation id="7539698981064401140">Synkronisera flikar och historik</translation>
 <translation id="7562080006725997899">Tar bort webbinformation</translation>
 <translation id="756809126120519699">Data i Chrome har rensats</translation>
 <translation id="7577900504646297215">Hantera intressen</translation>
@@ -1397,6 +1403,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8461694314515752532">Kryptera synkroniserad data med en egen lösenfras för synkronisering</translation>
 <translation id="8466613982764129868">Kontrollera att <ph name="TARGET_DEVICE_NAME" /> är ansluten till internet</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
+<translation id="847433688444405067">Bläddra bland enheter</translation>
 <translation id="8481980314595922412">Provfunktionerna är aktiverade</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Öppna historiksidan</translation>
@@ -1450,6 +1457,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8746155870861185046">Dela markering</translation>
+<translation id="874726034427945498">Synkronisera flikar och historik för att få bättre förslag i adressfältet</translation>
 <translation id="8748850008226585750">Innehållet har dolts</translation>
 <translation id="8756969031206844760">Vill du uppdatera lösenordet?</translation>
 <translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
@@ -1515,6 +1523,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="9070377983101773829">Starta röstsökning</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Webbplatser du besöker sparas inte i inkognitoläget</translation>
+<translation id="9084103763810123431">Synkronisera flikar och historik om du vill fortsätta surfa på en annan enhet</translation>
 <translation id="9086302186042011942">Synkroniserar</translation>
 <translation id="9086455579313502267">Det går inte att ansluta till nätverket</translation>
 <translation id="9099220545925418560">Baserat på din webbhistorik. Inställningen är inaktiverad.</translation>

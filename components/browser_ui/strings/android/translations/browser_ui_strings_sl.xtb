@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Izklop zvoka na spletnih mestih, ki predvajajo zvok</translation>
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3628308229821498208">Predlagane iskalne poizvedbe</translation>
+<translation id="3636279694100170143">Spletna mesta, ki jih obiščete, lahko preverijo, ali ste resničen uporabnik, ne pa bot.</translation>
+<translation id="3649190289964910441">Spletno mesto, ki ga obiščete, lahko v Chromu shrani podatke, ki potrjujejo, da ste resničen uporabnik. Med brskanjem se lahko spletna mesta obrnejo na Chrome in na prvem spletnem mestu potrdijo, da ste verjetno zaupanja vreden uporabnik.</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3763247130972274048">Dvakrat se dotaknite videoposnetka levo ali desno, da preskočite 10 s</translation>
 <translation id="3794286421982011626">Spletno mesto, ki ga obiščete, lahko shranjuje podatke o tem, kaj počnete, da lahko deluje po pričakovanjih – poskrbi na primer, da ostanete prijavljeni na spletnem mestu, ali shranjuje izdelke v nakupovalni košarici. Spletna mesta te podatke pogosto začasno shranijo v vaši napravi.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Upravlja starš</translation>
 <translation id="4670064810192446073">Navidezna resničnost</translation>
 <translation id="4751476147751820511">Tipala za gibanje in svetlobo</translation>
+<translation id="477781522763920796">Ta nastavitev deluje, ne da bi prišlo do vaše osebne prepoznave ali da bi bil spletnim mestom omogočen ogled vaše zgodovine brskanja.</translation>
 <translation id="4779083564647765204">Povečaj</translation>
 <translation id="4811450222531576619">Preberite več o njenem viru in temi</translation>
 <translation id="4836046166855586901">Vprašaj, ko želi spletno mesto vedeti, kdaj aktivno uporabljate to napravo.</translation>
@@ -258,6 +261,7 @@
 <translation id="5740126560802162366">Spletna mesta lahko shranjujejo podatke v napravi.</translation>
 <translation id="5771720122942595109">Blokirano: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Dovoljenja</translation>
+<translation id="5810805850857689118">To dejanje bo izbrisalo vse podatke in piškotke za spletno mesto <ph name="ORIGIN" /> ter vsa njegova podrejena spletna mesta.</translation>
 <translation id="5860033963881614850">Izklopljeno</translation>
 <translation id="5876056640971328065">Začasna zaustavitev videa</translation>
 <translation id="5884085660368669834">Nastavitve spletnega mesta</translation>
@@ -324,6 +328,7 @@
 <translation id="7016516562562142042">Dovoljeno za trenutni iskalnik</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="702463548815491781">Priporočljivo, ko je vklopljena aplikacija TalkBack ali funkcija dostopa s stikalom</translation>
+<translation id="7050519587566342213">Brskanje se manj zatika, saj ste za spletna mesta bolj zaupanja vredni.</translation>
 <translation id="7053983685419859001">Blokiraj</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 izbran}one{# izbran}two{# izbrana}few{# izbrani}other{# izbranih}}</translation>
 <translation id="7087918508125750058">Št. izbranih: <ph name="ITEM_COUNT" />. Možnosti so na voljo na zgornjem delu zaslona.</translation>
@@ -409,6 +414,7 @@
 <translation id="8514955299594277296">Spletnim mestom ni dovoljeno shranjevanje podatkov v napravi (ni priporočljivo)</translation>
 <translation id="851751545965956758">Spletnim mestom prepreči povezovanje z napravami</translation>
 <translation id="8525306231823319788">Celozaslonsko</translation>
+<translation id="8528440122773422556">To dejanje bo izbrisalo vse podatke in piškotke, ki so jih shranila vsa spletna mesta v skupini <ph name="ORIGIN" /> ali z njo povezana aplikacija na začetnem zaslonu.</translation>
 <translation id="8541410041357371550">To spletno mesto pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletno mesto <ph name="FPS_OWNER" />.}one{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletno mesto <ph name="FPS_OWNER" />.}two{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletni mesti <ph name="FPS_OWNER" />.}few{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletna mesta <ph name="FPS_OWNER" />.}other{Piškotki so dovoljeni za <ph name="FPS_MEMBERS_COUNT" /> spletnih mest <ph name="FPS_OWNER" />.}}</translation>
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
@@ -437,6 +443,7 @@
 <translation id="8986362086234534611">Pozabi</translation>
 <translation id="8990043154272859344">Odjavljeni boste z vseh spletnih mest.</translation>
 <translation id="9019902583201351841">Upravljajo starši</translation>
+<translation id="9039697262778250930">Morda boste odjavljeni s teh spletnih mest.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">To spletno mesto je v skupini, ki si lahko ogleda vašo dejavnost. Definiral(-a) jo je <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Želite izbrisati piškotke?</translation>

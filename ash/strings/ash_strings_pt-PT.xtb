@@ -279,6 +279,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2429753432712299108">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Antes de aceitar, confirme que esta chave está indicada nesse dispositivo: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="243878895369688216">Aberto ontem</translation>
+<translation id="2440978926514840421">Gravação de GIF feita</translation>
 <translation id="2441427462554639370">A gravação terminou porque o espaço de armazenamento está criticamente baixo</translation>
 <translation id="24452542372838207">Expandir notificação</translation>
 <translation id="2449089818483227734">Bateria fraca</translation>
@@ -502,6 +503,11 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3633097874324966332">Abra as definições do Bluetooth para sincronizar o seu dispositivo</translation>
 <translation id="3638400994746983214">Ative/desative o ecrã de privacidade. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Atualização vencida</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        de <ph name="START_TIME" /> a
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Selecione para obter mais detalhes no Calendário Google.</translation>
 <translation id="3659444876902283058">(Dia <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Resta(m) cerca de <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Ligue o dispositivo à corrente.</translation>
@@ -1467,9 +1473,9 @@ Nova instalação</translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível validar o seu PIN ou palavra-passe. Nota: se alterou a sua palavra-passe recentemente, utilize a palavra-passe antiga. A nova palavra-passe será aplicada quando terminar sessão.</translation>
 <translation id="8855885154700222542">Tecla de ecrã inteiro</translation>
-<translation id="8858369206579825206">Controlos de privacidade</translation>
 <translation id="8870509716567206129">A aplicação não é compatível com o ecrã dividido.</translation>
 <translation id="8874184842967597500">Sem ligação</translation>
+<translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Verifique a sua ligação</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8878886163241303700">Ecrã alargado</translation>

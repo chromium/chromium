@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2361263712565360498">275 x 395 мм</translation>
 <translation id="236340516568226369">Меню зміни розмірів</translation>
+<translation id="2365355378251437925">Заповніть поле "<ph name="FIELD" />"</translation>
 <translation id="2367567093518048410">Рівень</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Персоналізуйте інструменти спеціальних можливостей у налаштуваннях Chrome</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">дізнаватися, чи ви активно використовуєте цей пристрій</translation>
 <translation id="3180358318770512945">Виховання дітей</translation>
 <translation id="3187306450550410410">Гнучка організація праці</translation>
+<translation id="3187380004437786923">Керувати платежами</translation>
 <translation id="3187472288455401631">Оцінка ефективності реклами</translation>
 <translation id="3190736958609431397">Скасувати відстеження</translation>
 <translation id="319282854780294203">Соціальні мережі</translation>
@@ -1271,6 +1273,7 @@
 <translation id="4154664944169082762">Відбитки</translation>
 <translation id="4159784952369912983">Пурпуровий</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
+<translation id="4169535189173047238">Не дозволяти</translation>
 <translation id="4171400957073367226">Недійсний підпис для підтвердження</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Завжди показувати</translation>
@@ -3334,6 +3337,7 @@
 <translation id="950736567201356821">Пробити три отвори вгорі</translation>
 <translation id="961663415146723894">Зшити внизу</translation>
 <translation id="962484866189421427">Ця сторінка може намагатися встановлювати оманливі додатки, які видають себе за інший вміст, або збирати дані для відстеження ваших дій. <ph name="BEGIN_LINK" />Усе одно показати<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Усі користувачі</translation>
 <translation id="964050462028070434">Керувати паролями та ключами доступу…</translation>
 <translation id="96680173638229310">Автомобілі й транспортні засоби</translation>
 <translation id="969892804517981540">Офіційне складання</translation>

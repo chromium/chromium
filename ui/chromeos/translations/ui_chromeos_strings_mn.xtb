@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Ирланд</translation>
 <translation id="4124935795427217608">Ганц эвэртэй морь</translation>
 <translation id="4131235941541910880">Хэрэггүй зүйлсээ хогийн сав руу зөөнө үү</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Төхөөрөмжийг тохируулсны дараа идэвхжүүлнэ үү</translation>
 <translation id="4153015322587141338">Тавиур дээрх файлууддаа шуурхай хандахын тулд файл дээр баруун товшоод, "<ph name="PIN_COMMAND" />"-г сонгоно уу.</translation>
 <translation id="4157569377477607576">Администраторын бодлого дараахыг санал болгодоггүй:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" />-г зөөсөн.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />"-г устгах бөгөөд та үүнийг сэргээх боломжгүй болно.</translation>
 <translation id="4418686080762064601">Файлууддаа товчлол үүсгэх</translation>
 <translation id="4425149324548788773">Миний Драйв</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Төхөөрөмжийг тохируулсны дараа идэвхжүүлнэ үү. Танай администратор удирддаг</translation>
 <translation id="4439427728133035643">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, холбогдох</translation>
 <translation id="4442424173763614572">DNS хайлт амжилтгүй боллоо</translation>
 <translation id="4462159676511157176">Стандарт нэртэй серверүүд</translation>
@@ -612,6 +614,7 @@
 <translation id="5913638992615760742">Дараах санамсаргүй алдаа гарсан тул хуулж чадсангүй: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">АНУ-ын олон улсын компьютерын гартай голланд (Нидерланд)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, Төхөөрөмжийг тохируулсны дараа идэвхжүүлнэ үү</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> зүйл</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Эрэмбийн сонголт</translation>
@@ -758,6 +761,7 @@
 <translation id="7126604456862387217">"&lt;b&gt; <ph name="SEARCH_STRING" /> &lt;/ б&gt; '- search &lt;em&gt; Drive &lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада авиа зүй</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Баталгаажуулалтын серверийн таниулбарыг баталгаажуулах 'Субъектийн хоёрдогч нэрийн тохирол' эсвэл 'Домэйний дагаврын тохирол' дутуу байна</translation>
 <translation id="7165320105431587207">Сүлжээг тохируулж чадсангүй</translation>
 <translation id="7170041865419449892">Хамрах хүрээнээс гадуур</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
@@ -933,6 +937,7 @@
 <translation id="8487700953926739672">Сүлжээнд холбогдоогүй байна</translation>
 <translation id="8492972329130824181">Гэрийн сүлжээ боломжгүй байна. Холбогдохын тулд мобайл дата роумингийг идэвхжүүлсэн байх ёстой.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />-г гаргаж байна...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" />-с <ph name="NETWORK_INDEX" />-р сүлжээ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Төхөөрөмжийг тохируулсны дараа идэвхжүүлнэ үү. Танай администратор удирддаг</translation>
 <translation id="8521441079177373948">Их Британи</translation>
 <translation id="853494022971700746">Франц (Франц)</translation>
 <translation id="8540608333167683902">Cүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, дэлгэрэнгүй мэдээлэл</translation>

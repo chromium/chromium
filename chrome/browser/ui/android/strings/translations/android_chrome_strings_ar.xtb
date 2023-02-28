@@ -356,6 +356,7 @@
 <translation id="2951071800649516099">يمكنك إضافة صفحات إلى قائمة القراءة للاطّلاع عليها لاحقًا</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{صفحة واحدة (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) غير مقروءة}zero{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}two{صفحتان (<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />) غير مقروءتَين}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحات غير مقروءة}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}}</translation>
 <translation id="2961210776189273067">العنوان</translation>
+<translation id="296370266220139811">توفير الوقت والانتقال سريعًا</translation>
 <translation id="2979025552038692506">علامة تبويب محددة للتصفح المتخفي</translation>
 <translation id="2979639724566107830">فتح الإشارة في نافذة جديدة</translation>
 <translation id="2981364137500752533">يمكنك فتح 5 نوافذ بحد أقصى.</translation>
@@ -483,6 +484,7 @@
 <translation id="3578874072190212775">مساعدة المواقع الإلكترونية على مكافحة الاحتيال وتمييز برامج التتبُّع عن الأشخاص</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3587596251841506391">المساعدة في تحسين الأمان على الويب</translation>
+<translation id="3597179440835065298">الحصول على اقتراحات أفضل</translation>
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
 <translation id="3622349720008044802">إدارة النوافذ</translation>
@@ -748,6 +750,7 @@
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5011311129201317034">يريد <ph name="SITE" /> الاتصال</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">آخر 15 دقيقة</translation>
 <translation id="5032430150487044192">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5040262127954254034">الخصوصية</translation>
@@ -883,6 +886,7 @@
 <translation id="5813552293717797987">تتم إدارة هذا المتصفِّح من خلال <ph name="PARENT_NAME_1" /> و<ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">يمكنك الكتابة هنا أو النقر على رمز الصوت للبدء.</translation>
 <translation id="5814749351757353073">متابعة المواقع الإلكترونية المفضّلة</translation>
+<translation id="5822875253699806474">يمكنك مزامنة علامات التبويب والسجلّ للانتقال بسرعة إلى المواقع الإلكترونية التي زرتها.</translation>
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5833984609253377421">مشاركة الرابط</translation>
 <translation id="5834764604050996579">‏لمسح رمز استجابة سريعة ضوئيًا، يُرجى السماح لمتصفّح Chrome باستخدام الكاميرا.</translation>
@@ -1137,6 +1141,7 @@
 <translation id="7088681679121566888">‏Chrome محدّث.</translation>
 <translation id="7105047059074518658">تسجيل الدخول للتصفّح بشكل أسهل على الأجهزة المختلفة</translation>
 <translation id="7106762743910369165">تتولّى مؤسستك إدارة متصفِّحك.</translation>
+<translation id="7116588989735740310">يمكنك مزامنة علامات التبويب والسجلّ لمواصلة تصفّح المواقع الإلكترونية التي زرتها على الأجهزة الأخرى.</translation>
 <translation id="7130504491556983216">ستظهر هنا قائمة الاهتمامات أثناء تصفّحك للويب.</translation>
 <translation id="7138678301420049075">أخرى</translation>
 <translation id="7146622961999026732">يبدو أن المواقع الإلكترونية والتطبيقات التالية مهمة بالنسبة إليك:</translation>
@@ -1215,6 +1220,7 @@
 <translation id="751961395872307827">يتعذّر الاتصال بالموقع</translation>
 <translation id="752220631458524187">‏يُرجي نزع كابل USB من الهاتف عند الانتهاء.</translation>
 <translation id="7523960634226602883">‏البحث من خلال الكاميرا باستخدام "عدسة Google"</translation>
+<translation id="7539698981064401140">مزامنة علامات التبويب والسجلّ</translation>
 <translation id="7562080006725997899">جارٍ محو بيانات التصفح</translation>
 <translation id="756809126120519699">‏بيانات Chrome التي تم محوها</translation>
 <translation id="7577900504646297215">إدارة الاهتمامات</translation>
@@ -1231,7 +1237,7 @@
 <translation id="7619072057915878432">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب إخفاقات الشبكة.</translation>
 <translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
 <translation id="7630202231528827509">‏عنوان URL خاص بمقدِّم الخدمة</translation>
-<translation id="7634280112532283638">الحدّ من الرسائل غير المرغوب فيها والاحتيال</translation>
+<translation id="7634280112532283638">الحدّ من الاحتيال والمحتوى غير المرغوب فيه</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
 <translation id="7641339528570811325">محو بيانات التصفّح...</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
@@ -1397,6 +1403,7 @@
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
 <translation id="8466613982764129868">يُرجى التأكُّد من اتصال الجهاز <ph name="TARGET_DEVICE_NAME" /> بالإنترنت.</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
+<translation id="847433688444405067">التصفّح على جميع الأجهزة</translation>
 <translation id="8481980314595922412">تم تفعيل ميزات الإصدار التجريبي.</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">فتح صفحة السجل</translation>
@@ -1450,6 +1457,7 @@
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>
 <translation id="8746155870861185046">مشاركة النص المميّز</translation>
+<translation id="874726034427945498">يمكنك مزامنة علامات التبويب والسجلّ للحصول على اقتراحات أفضل في شريط العناوين.</translation>
 <translation id="8748850008226585750">المحتوى مخفي</translation>
 <translation id="8756969031206844760">هل تريد تعديل كلمة المرور؟</translation>
 <translation id="8765470054473112089">‏عند الكتابة في شريط العناوين أو مربّع البحث، يرسل Chrome ما تكتبه إلى محرك البحث التلقائي للحصول على اقتراحات أفضل. يتم إيقاف هذا الإعداد في "وضع التصفّح المتخفي".</translation>
@@ -1515,6 +1523,7 @@
 <translation id="9070377983101773829">بدء البحث الصوتي</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9081543426177426948">المواقع الإلكترونية التي تزورها لا يتم حفظها في وضع التصفح المتخفي</translation>
+<translation id="9084103763810123431">يمكنك مزامنة علامات التبويب والسجلّ لمواصلة التصفّح على جهاز آخر.</translation>
 <translation id="9086302186042011942">جارٍ المزامنة</translation>
 <translation id="9086455579313502267">تعذر الدخول إلى الشبكة</translation>
 <translation id="9099220545925418560">تستند مواضيع الإعلانات إلى سجلّ التصفُّح الخاص بك. هذا الإعداد غير مفعَّل.</translation>

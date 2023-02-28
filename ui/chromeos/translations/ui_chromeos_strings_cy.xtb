@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Gwyddeleg</translation>
 <translation id="4124935795427217608">Uncorn</translation>
 <translation id="4131235941541910880">Symud eitemau nad oes eu hangen arnoch i'r bin sbwriel.</translation>
+<translation id="4134804435730168042">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Gweithredu ar ôl gosod dyfais</translation>
 <translation id="4153015322587141338">De-gliciwch ffeil, a dewiswch "<ph name="PIN_COMMAND" />" i gael mynediad cyflym at eich ffeiliau yn y silff.</translation>
 <translation id="4157569377477607576">Nid yw polisi gweinyddwr yn argymell:</translation>
 <translation id="4159731583141908892">Symudwyd <ph name="FILE_NAME" />.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">Bydd "<ph name="FILE_NAME" />" yn cael ei dileu ac ni fyddwch yn gallu ei hadfer.</translation>
 <translation id="4418686080762064601">Creu llwybr byr ar gyfer eich ffeiliau</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Gweithredu ar ôl gosod dyfais, Wedi'i reoli gan eich Gweinyddwr</translation>
 <translation id="4439427728133035643">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Cysylltu</translation>
 <translation id="4442424173763614572">Wedi methu â chwilio am DNS</translation>
 <translation id="4462159676511157176">Gweinyddion enw personol</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Gwnaeth y weithred copïo fethu, gwall annisgwyl: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Iseldireg (Yr Iseldiroedd) gyda bysellfwrdd Cyfrifiadur Rhyngwladol UDA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Gweithredu ar ôl gosod dyfais</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> eitem</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Dewisiadau trefnu</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;chwilio Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Canareg Seinegol</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Mae angen 'Subject alternative name match' neu 'Domain suffix match' er mwyn dilysu hunaniaeth y gweinydd dilysu</translation>
 <translation id="7165320105431587207">Wedi methu â ffurfweddu'r rhwydwaith</translation>
 <translation id="7170041865419449892">Allan o'r ystod</translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
@@ -934,6 +938,7 @@
 <translation id="8487700953926739672">Ar gael all-lein</translation>
 <translation id="8492972329130824181">Nid yw'r rhwydwaith cartref ar gael. Rhaid galluogi trawsrwydweithio data symudol i gysylltu.</translation>
 <translation id="8499098729323186194">Wrthi'n echdynnu <ph name="NUMBER_OF_ITEMS" /> eitem...</translation>
+<translation id="8502913769543567768">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Gweithredu ar ôl gosod dyfais, Wedi'i reoli gan eich Gweinyddwr</translation>
 <translation id="8521441079177373948">DU</translation>
 <translation id="853494022971700746">Ffrangeg (Ffrainc)</translation>
 <translation id="8540608333167683902">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal<ph name="SIGNAL_STRENGTH" />%, Manylion</translation>

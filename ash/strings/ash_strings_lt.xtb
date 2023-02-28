@@ -549,6 +549,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, įkeliami įvykiai.</translation>
 <translation id="3932043219784172185">Nėra susieto įrenginio</translation>
 <translation id="3934456833412894880">Prisitaikantis įkrovimas įjungtas. Bus palaikomas 80 proc. akumuliatoriaus įkrovos lygis siekiant pailginti akumuliatoriaus veikimo laiką, o prireikus jis bus visiškai įkrautas.</translation>
+<translation id="3936620957945677513">Spustelėkite „Enter“, kad prisijungtumėte prie įvykio „<ph name="EVENT_SUMMARY" />“</translation>
 <translation id="3943857333388298514">Įklijuoti</translation>
 <translation id="394485226368336402">Garso nustatymai</translation>
 <translation id="3945319193631853098">Palieskite, kad baigtumėte sąranką</translation>
@@ -1466,7 +1467,6 @@ Naujas įdiegimas</translation>
 <translation id="8850991929411075241">Paieškos klavišas + „Esc“</translation>
 <translation id="8853703225951107899">Vis tiek nepavyko patvirtinti PIN kodo arba slaptažodžio. Pastaba: jei neseniai pakeitėte slaptažodį, naudokite senąjį. Naujas slaptažodis bus pritaikytas atsijungus.</translation>
 <translation id="8855885154700222542">Viso ekrano klavišas</translation>
-<translation id="8858369206579825206">Privatumo valdikliai</translation>
 <translation id="8870509716567206129">Programoje nepalaikomas skaidytas ekranas.</translation>
 <translation id="8874184842967597500">Neprisijungta</translation>
 <translation id="8876661425082386199">Ryšio patikra</translation>

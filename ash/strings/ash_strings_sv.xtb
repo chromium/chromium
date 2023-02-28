@@ -549,6 +549,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="3925540965556789199">Läser in händelser den <ph name="DATE" />.</translation>
 <translation id="3932043219784172185">Det finns ingen ansluten enhet</translation>
 <translation id="3934456833412894880">Smart laddning har aktiverats. Batteriet laddas upp till 80 % så att det ska räcka längre. Det laddas helt när du behöver det.</translation>
+<translation id="3936620957945677513">Tryck på retur om du vill gå med i händelsen <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Klistra in</translation>
 <translation id="394485226368336402">Ljudinställningar</translation>
 <translation id="3945319193631853098">Tryck om du vill slutföra konfigureringen</translation>
@@ -1466,7 +1467,6 @@ Nyligen installerad</translation>
 <translation id="8850991929411075241">Sök+Escape</translation>
 <translation id="8853703225951107899">Det gick fortfarande inte att verifiera pinkoden eller lösenordet. Obs! Om du nyligen har bytt lösenord ska du använda det gamla lösenordet. Det nya lösenordet börjar gälla när du loggar ut.</translation>
 <translation id="8855885154700222542">Tangent för helskärm</translation>
-<translation id="8858369206579825206">Integritetsinställningar</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8876661425082386199">Kontrollera anslutningen</translation>

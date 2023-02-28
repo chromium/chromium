@@ -127,6 +127,7 @@
 <translation id="3245429137663807393">Kui jagate ka Chrome'i kasutusaruandeid, hõlmavad need teie külastatavaid URL-e</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3286538390144397061">Taaskäivitada kohe</translation>
+<translation id="3293912612584488930">Tehke Chrome’iga rohkem</translation>
 <translation id="3360895254066713204">Chrome'i abistaja</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käivitatakse kohe uuesti}=1{Chrome käivitatakse uuesti 1 sekundi pärast}other{Chrome käivitatakse uuesti # sekundi pärast}}</translation>
 <translation id="3396977131400919238">Installimisel ilmnes operatsioonisüsteemi viga. Palun laadige Google Chrome uuesti alla.</translation>
@@ -154,6 +155,7 @@
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex ei saanud sisselogimisvea tõttu teie andmeid sünkroonida.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
+<translation id="3809772425479558446">Google Chrome vajab operatsioonisüsteemi Windows 10 või uuemat versiooni.</translation>
 <translation id="3835168907083856002">See loob konto <ph name="USER_EMAIL_ADDRESS" /> jaoks uue Chrome'i profiili.</translation>
 <translation id="386202838227397562">Sulgege kõik Google Chrome'i aknad ja proovige uuesti.</translation>
 <translation id="3865754807470779944">Chrome'i versioon <ph name="PRODUCT_VERSION" /> on installitud</translation>
@@ -408,7 +410,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="8989968390305463310">Teie sirvimisajalugu mõjutab kuvatavaid reklaame ja huvisid vastavalt allolevatele prognoosidele. Teie privaatsuse kaitsmiseks kustutab Chrome automaatselt teie huvisid jooksvalt iga kuu. Huvisid võidakse värskendada, kui te neid ei eemalda.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'i värskendus on saadaval}=1{Chrome'i värskendus on saadaval}other{Chrome'i värskendus on # päeva saadaval olnud}}</translation>
 <translation id="9053892488859122171">Chrome OS Flexi süsteem</translation>
-<translation id="9067395829937117663">Google Chrome vajab operatsioonisüsteemi Windows 7 või uuemat versiooni.</translation>
 <translation id="911206726377975832">Kas kustutada ka teie sirvimisandmed?</translation>
 <translation id="9138603949443464873">Muudatuste rakendamiseks käivitage Chrome uuesti</translation>
 <translation id="9195993889682885387">Chrome suudab prognoosida teie huvisid, võttes aluseks teie viimase mõne nädala sirvimisajaloo. See teave jääb teie seadmesse.</translation>

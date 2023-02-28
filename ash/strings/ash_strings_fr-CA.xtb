@@ -549,6 +549,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, chargement des événements en cours…</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934456833412894880">La recharge adaptative est activée. Votre pile restera à 80 % afin de prolonger son autonomie et se rechargera complètement lorsque vous en aurez besoin.</translation>
+<translation id="3936620957945677513">Cliquez sur Entrée pour accéder à l'événement <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="394485226368336402">Paramètres audio</translation>
 <translation id="3945319193631853098">Touchez pour terminer la configuration</translation>
@@ -1465,7 +1466,6 @@ Nouvelle installation</translation>
 <translation id="8850991929411075241">Recherche+Échap</translation>
 <translation id="8853703225951107899">Votre NIP ou votre mot de passe n'a toujours pas pu être vérifié. Remarque : Si vous avez récemment changé votre mot de passe, servez-vous de votre ancien mot de passe. Votre nouveau mot de passe sera appliqué lorsque vous vous déconnecterez.</translation>
 <translation id="8855885154700222542">Touche mode Plein écran</translation>
-<translation id="8858369206579825206">Paramètres de confidentialité</translation>
 <translation id="8870509716567206129">L'application n'est pas compatible avec l'écran partagé.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8876661425082386199">Vérifiez votre connexion</translation>

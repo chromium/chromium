@@ -615,6 +615,7 @@
 <translation id="5911887972742538906">Došlo je do pogreške tijekom instalacije vaše Linux aplikacije.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Kopiranje nije uspjelo, neočekivana pogreška: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Dostupne su nove značajke pretraživanja</translation>
 <translation id="5926082595146149752">nizozemski (Nizozemska) s američkom međunarodnom tipkovnicom za PC</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivira se nakon postavljanja uređaja</translation>
@@ -764,6 +765,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pretraži Disk&lt;/em&gt;</translation>
 <translation id="7135561821015524160">karnatački fonetski</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Nedostaje "podudaranje alternativnog naziva predmeta" ili "podudaranje domenskog nastavka" za potvrdu identiteta poslužitelja za autentifikaciju</translation>
 <translation id="7165320105431587207">Konfiguriranje mreže nije uspjelo</translation>
 <translation id="7170041865419449892">Izvan raspona</translation>
 <translation id="7180611975245234373">Osvježi</translation>

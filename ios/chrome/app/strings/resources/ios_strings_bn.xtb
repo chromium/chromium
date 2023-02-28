@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">ফোল্ডার বেছে নিন</translation>
 <translation id="1254424942107648268">পূর্ববর্তী খুঁজুন</translation>
 <translation id="1258491128795710625">নতুন কী আছে</translation>
+<translation id="1264156759663453185">আংশিক অনুবাদের জন্য বেছে নেওয়া টেক্সটের সাইজ অনেক বড়।</translation>
 <translation id="1265739287306757398">কীভাবে করবেন জানুন</translation>
 <translation id="1272079795634619415">বন্ধ</translation>
 <translation id="1275718070701477396">নির্বাচিত</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">রিফাইন করুন</translation>
 <translation id="2273327106802955778">‘আরও’ মেনু</translation>
 <translation id="2286505070150039482">হাইলাইট করা টেক্সট</translation>
+<translation id="2287614783861766820">{count,plural, =1{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}one{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}other{এই ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}}</translation>
 <translation id="2299218006564889602">Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার পাসওয়ার্ড ডিভাইসে এনক্রিপ্ট করা হয়</translation>
 <translation id="2302742851632557585">ওয়েবসাইটে গিয়ে পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="2316709634732130529">সাজেস্ট করা পাসওয়ার্ড ব্যবহার করুন</translation>
@@ -458,6 +460,7 @@
 <translation id="4324952538601951430">আপনার সেভ করা বুকমার্ক, পাসওয়ার্ড, সেটিংস এবং আরও অনেক কিছু এখন এখানে পাবেন</translation>
 <translation id="4334428914252001502">পড়া হয়নি এমন ১টি নিবন্ধ।</translation>
 <translation id="4338650699862464074">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়।</translation>
+<translation id="4342054591427973606">{count,plural, =1{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}one{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}other{এই ডিভাইস ও আপনার সাইন-ইন করা অন্যান্য ডিভাইস থেকে এই ঠিকানাটি মুছে ফেলা হবে।}}</translation>
 <translation id="4343046787186034850">ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি আছে</translation>
 <translation id="4359125752503270327">এই পৃষ্ঠাটি আরেকটি অ্যাপ্লিকেশানে খুলবে।</translation>
 <translation id="4375040482473363939">QR কোড খুঁজুন</translation>
@@ -587,6 +590,7 @@
 <translation id="5232485538978018676">ম্যানেজ করা অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="5234764350956374838">খারিজ</translation>
 <translation id="5245322853195994030">সিঙ্ক বাতিল করুন</translation>
+<translation id="5271265092610673171">{count,plural, =1{ফাঁকা রাখা যাবে না এমন ফিল্ড খালি আছে। সেভ করার আগে এটি পূরণ করুন।}one{ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।}other{ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।}}</translation>
 <translation id="5271549068863921519">পাসওয়ার্ড সেভ করুন</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> অ্যাকাউন্ট সরাবেন?</translation>
 <translation id="5300589172476337783">দেখান</translation>
@@ -701,6 +705,7 @@
 <translation id="6066301408025741299">বাতিল করতে আলতো চাপুন৷</translation>
 <translation id="6071409777669089905">ট্যাব আনপিন করুন</translation>
 <translation id="6084848228346514841">ট্যাব বেছে নিন</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করেছেন। সেটিংস খোলে।</translation>
 <translation id="6103540626693881831">অন-ডিভাইস এনক্রিপশন</translation>
 <translation id="6119050551270742952">বর্তমান ওয়েবপেজটি ছদ্মবেশী মোডে আছে</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
@@ -1130,6 +1135,7 @@
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" />টি পাসওয়ার্ড মুছবেন?</translation>
 <translation id="9100610230175265781">পাসফ্রেজের প্রয়োজন</translation>
 <translation id="9107664647686727385">কোনও পাসওয়ার্ড লিক হয়েছে কিনা দেখুন</translation>
+<translation id="9120217828624527905">সম্পূর্ণ পৃষ্ঠা অনুবাদে পরিবর্তন করুন</translation>
 <translation id="9124387962554796433">সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
 <translation id="9137526406337347448">Google পরিসেবাসমূহ</translation>
 <translation id="9148126808321036104">আবার সাইন-ইন করুন</translation>

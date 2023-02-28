@@ -589,6 +589,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2361263712565360498">275 × 395 mm</translation>
 <translation id="236340516568226369">Menú para cambio de tamaño</translation>
+<translation id="2365355378251437925">Ingresa el <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Nivel</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personaliza tus herramientas de accesibilidad en la configuración de Chrome</translation>
@@ -877,6 +878,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="317878711435188021">Saber en qué momento estás usando activamente este dispositivo</translation>
 <translation id="3180358318770512945">Crianza</translation>
 <translation id="3187306450550410410">Acuerdos de trabajo flexibles</translation>
+<translation id="3187380004437786923">Administrar pagos</translation>
 <translation id="3187472288455401631">Medición de anuncios</translation>
 <translation id="3190736958609431397">Dejar de realizar el seguimiento</translation>
 <translation id="319282854780294203">Redes sociales</translation>
@@ -1272,6 +1274,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4154664944169082762">Huellas digitales</translation>
 <translation id="4159784952369912983">Púrpura</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
+<translation id="4169535189173047238">No permitir</translation>
 <translation id="4171400957073367226">La firma de verificación no es válida.</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Mostrar siempre</translation>
@@ -3335,6 +3338,7 @@ Detalles adicionales:
 <translation id="950736567201356821">Perforación triple en la parte superior</translation>
 <translation id="961663415146723894">Encuadernado en la parte inferior</translation>
 <translation id="962484866189421427">Este contenido podría intentar instalar apps engañosas que se hagan pasar por otro tipo de contenido o que recopilen datos que se usen para rastrearte. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Todos los usuarios</translation>
 <translation id="964050462028070434">Administrar contraseñas y llaves de acceso…</translation>
 <translation id="96680173638229310">Autos y vehículos</translation>
 <translation id="969892804517981540">Build oficial</translation>

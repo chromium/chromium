@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Ірландська</translation>
 <translation id="4124935795427217608">Єдиноріг</translation>
 <translation id="4131235941541910880">Перемістіть непотрібні файли в кошик</translation>
+<translation id="4134804435730168042">Мережа № <ph name="NETWORK_INDEX" /> (усього: <ph name="NETWORK_COUNT" />); назва мережі: <ph name="NETWORK_NAME" />; оператор мережі: <ph name="NETWORK_PROVIDER_NAME" />. Активація доступна після налаштування пристрою.</translation>
 <translation id="4153015322587141338">Натисніть файл правою кнопкою миші й виберіть команду "<ph name="PIN_COMMAND" />", щоб швидко відкривати його на панелі запуску.</translation>
 <translation id="4157569377477607576">Згідно з правилом адміністратора не рекомендовано:</translation>
 <translation id="4159731583141908892">Файл "<ph name="FILE_NAME" />" переміщено.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">Файл "<ph name="FILE_NAME" />" буде видалено, і ви не зможете відновити його.</translation>
 <translation id="4418686080762064601">Створіть ярлики для своїх файлів</translation>
 <translation id="4425149324548788773">Мій диск</translation>
+<translation id="4432921877815220091">Мережа № <ph name="NETWORK_INDEX" /> (усього: <ph name="NETWORK_COUNT" />); назва мережі: <ph name="NETWORK_NAME" />. Активація доступна після налаштування пристрою. Мережею керує адміністратор.</translation>
 <translation id="4439427728133035643">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="4442424173763614572">Помилка пошуку DNS</translation>
 <translation id="4462159676511157176">Імена серверів – персоналізовано</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">Не вдалося скопіювати. Неочікувана помилка: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Нідерландська (Нідерланди), міжнародна розкладка США для ПК</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Мережа № <ph name="NETWORK_INDEX" /> (усього: <ph name="NETWORK_COUNT" />); назва мережі: <ph name="NETWORK_NAME" />. Активація доступна після налаштування пристрою.</translation>
 <translation id="5955954492236143329">Елементів: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметри сортування</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' – &lt;em&gt;шукати на Диску&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Каннада, фонетична розкладка</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Підтвердити справжність сервера автентифікації неможливо, оскільки поле "Збіг з альтернативною назвою суб’єкта" або "Збіг із суфіксом домену", не заповнено</translation>
 <translation id="7165320105431587207">Помилка налаштування мережі</translation>
 <translation id="7170041865419449892">За межами досяжності</translation>
 <translation id="7180611975245234373">Оновити</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>
 <translation id="8492972329130824181">Домашня мережа недоступна. Щоб підключитися, потрібно ввімкнути роумінг мобільних даних.</translation>
 <translation id="8499098729323186194">Видобування елементів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
+<translation id="8502913769543567768">Мережа № <ph name="NETWORK_INDEX" /> (усього: <ph name="NETWORK_COUNT" />); назва мережі: <ph name="NETWORK_NAME" />; оператор мережі: <ph name="NETWORK_PROVIDER_NAME" />. Активація доступна після налаштування пристрою. Мережею керує адміністратор.</translation>
 <translation id="8521441079177373948">Англійська (Велика Британія)</translation>
 <translation id="853494022971700746">Французька (Франція)</translation>
 <translation id="8540608333167683902">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>

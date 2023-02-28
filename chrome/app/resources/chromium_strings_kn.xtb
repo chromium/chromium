@@ -194,8 +194,8 @@
 <translation id="5527463683072221100">Chromium ನಲ್ಲಿ PDF ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5614091477838198795">ಇದನ್ನು ಆನ್ ಮಾಡಿದಾಗ, Chromium ನಿಂದಲೂ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}=1{Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}one{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}other{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chromium ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}}</translation>
-<translation id="5634636535844844681">Chromium ಗೆ Windows 7 ಅಥವಾ ಹೆಚ್ಚಿನ ಆವೃತ್ತಿ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="5653831366781983928">ಇದೀಗ Chromium ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">ಈ ಭಾಷೆಯಲ್ಲಿ Chromium ಪ್ರದರ್ಶಿಸು</translation>
 <translation id="5862307444128926510">Chromium ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="5883558403894052917">ಈ ಐಟಂಗಳಲ್ಲಿ ಮಾಲ್‌ವೇರ್ ಇರುವುದನ್ನು Chromium ಪತ್ತೆಹಚ್ಚಿದೆ:</translation>
@@ -338,8 +338,10 @@
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ಅವರು ಮೊದಲಿನಿಂದಲೆ Chromium ಬಳಸುತ್ತಿದ್ದರು</translation>
 <translation id="8357820681460164151">ನಿಮ್ಮ Chromium ಬ್ರೌಸರ್‌ನ ವಿಷಯಗಳನ್ನು ಎಲ್ಲಾ ಸಾಧನಗಳಾದ್ಯಂತ ಪ್ರವೇಶಿಸಲು, ಸೈನ್ ಇನ್ ಮಾಡಿ, ನಂತರ ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="8360718212975266891">ಭವಿಷ್ಯದ Chromium ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನೀವು Windows 10 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಯನ್ನು ಹೊಂದಿರಬೇಕಾಗುತ್ತದೆ. ಈ ಕಂಪ್ಯೂಟರ್ ಪ್ರಸ್ತುತ Windows 8 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
+<translation id="8370517070665726704">ಕೃತಿಸ್ವಾಮ್ಯ <ph name="YEAR" /> Google LLC. ಎಲ್ಲ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="8417404458978023919">{0,plural, =1{ಒಂದು ದಿನದ ಒಳಗೆ Chromium ಮರುಪ್ರಾರಂಭಿಸಿ}one{# ದಿನಗಳ ಒಳಗೆ Chromium ಮರುಪ್ರಾರಂಭಿಸಿ}other{# ದಿನಗಳ ಒಳಗೆ Chromium ಮರುಪ್ರಾರಂಭಿಸಿ}}</translation>
 <translation id="8453117565092476964">ಸ್ಥಾಪಕ ಆರ್ಕೈವ್ ದೋಷಪೂರಿತವಾಗಿದೆ ಅಥವಾ ಅಮಾನ್ಯವಾಗಿದೆ. ದಯವಿಟ್ಟು Chromium ಅನ್ನು ಪುನಃ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
+<translation id="8458614432758743027">Chromium ಗೆ Windows 10 ಅಥವಾ ಹೆಚ್ಚಿನ ಆವೃತ್ತಿಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="8463672209299734063">ಐಚ್ಛಿಕ: ಡಯಗ್ನೊಸ್ಟಿಕ್ ಮತ್ತು ಬಳಕೆಯ ಡೇಟಾವನ್ನು Google ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಕಳುಹಿಸುವ ಮೂಲಕ ChromiumOS ವೈಶಿಷ್ಟ್ಯಗಳು ಮತ್ತು ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ.</translation>
 <translation id="8493179195440786826">Chromium ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="8550334526674375523">ಈ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಪ್ರೊಫೈಲ್‌ನಿಂದ ಸಂಪೂರ್ಣವಾಗಿ ಪ್ರತ್ಯೇಕವಾಗಿದೆ.</translation>

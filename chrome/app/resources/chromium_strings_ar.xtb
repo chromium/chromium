@@ -192,8 +192,8 @@
 <translation id="5527463683072221100">‏فتح ملفات PDF في Chromium</translation>
 <translation id="5614091477838198795">‏عند تفعيل هذا الخيار، سيتم تسجيل خروجك أيضًا من Chromium.</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏يتوفر تحديث لمتصفح Chromium}=1{‏يتوفر تحديث لمتصفح Chromium}two{‏يتوفر تحديث لمتصفح Chromium منذ يومين}few{‏يتوفر تحديث لمتصفح Chromium منذ # أيام}many{‏يتوفر تحديث لمتصفح Chromium منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chromium منذ # يوم}}</translation>
-<translation id="5634636535844844681">‏يتطلب Chromium نظام التشغيل Windows 7 أو إصدارًا أحدث.</translation>
 <translation id="5653831366781983928">‏يُرجى إعادة تشغيل Chromium الآن</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏عرض Chromium بهذه اللغة</translation>
 <translation id="5862307444128926510">‏مرحبًا بك في Chromium</translation>
 <translation id="5883558403894052917">‏رصد Chromium أنّ هذه العناصر تحتوي على برامج ضارة:</translation>
@@ -336,10 +336,12 @@
 <translation id="8266560134891435528">‏يتعذّر على Chromium التحقّق من كلمات المرور لأنك لم تسجّل الدخول.</translation>
 <translation id="8276522524898344151">‏يحاول Chromium نسخ كلمات المرور.</translation>
 <translation id="8290862415967981663">‏قد يكون هذا الملف ضارًا، لذلك فقد حظره Chromium.</translation>
+<translation id="8325404639443959713">‏إنجاز المزيد باستخدام Chromium</translation>
 <translation id="8330519371938183845">‏يمكنك تسجيل الدخول لمزامنة Chromium وتخصيصه على جميع أجهزتك.</translation>
 <translation id="8340674089072921962">‏كان <ph name="USER_EMAIL_ADDRESS" /> يستخدم Chromium مسبقًا</translation>
 <translation id="8357820681460164151">‏للوصول إلى بياناتك في متصفّح Chromium من جميع أجهزتك، سجِّل الدخول وفعِّل المزامنة.</translation>
 <translation id="8360718212975266891">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام كمبيوتر يعمل بنظام التشغيل Windows 10 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل Windows 8.</translation>
+<translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏يجب إعادة تشغيل Chromium في غضون يوم واحد}zero{‏يجب إعادة تشغيل Chromium في غضون # يوم}two{‏يجب إعادة تشغيل Chromium في غضون يومين}few{‏يجب إعادة تشغيل Chromium في غضون # أيام}many{‏يجب إعادة تشغيل Chromium في غضون # يومًا}other{‏يجب إعادة تشغيل Chromium في غضون # يوم}}</translation>
 <translation id="8453117565092476964">‏أرشيف أداة التثبيت تالف أو غير صالح. يُرجى إعادة تنزيل Chromium.</translation>
 <translation id="8463672209299734063">‏إجراء اختياري: يمكنك المساعدة في تحسين ميزات نظام التشغيل Chromium وأدائه من خلال إرسال بيانات التشخيص والاستخدام تلقائيًا إلى Google.</translation>
@@ -375,6 +377,7 @@
 <translation id="9158494823179993217">‏ضَبَط مشرف النظام Chromium لفتح متصفِّح بديل للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">‏إعادة تشغيل متصفِّح Chromium لتحديثه</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">‏إضافة لمستك الخاصة إلى Chromium</translation>
 <translation id="93478295209880648">‏قد لا يعمل Chromium بشكل صحيح لأنه لم يعد مدعومًا على أنظمة التشغيل Windows XP أو Windows Vista.</translation>
 <translation id="942598560705308788">‏الشهادات التي يديرها متصفّح Chromium</translation>
 <translation id="965162752251293939">‏مَن يستخدم Chromium؟</translation>

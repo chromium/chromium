@@ -355,6 +355,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="2951071800649516099">Afegeix pàgines a la llista de lectura per a més tard</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pàgina no llegida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pàgines no llegides}}</translation>
 <translation id="2961210776189273067">Títol</translation>
+<translation id="296370266220139811">Estalvia temps i escriu menys</translation>
 <translation id="2979025552038692506">Pestanya d'incògnit seleccionada</translation>
 <translation id="2979639724566107830">Obre-ho en una finestra nova</translation>
 <translation id="2981364137500752533">Pots tenir fins a 5 finestres.</translation>
@@ -482,6 +483,7 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3578874072190212775">Ajuda els llocs web a lluitar contra el frau i a distingir les persones dels bots</translation>
 <translation id="3587482841069643663">Tots</translation>
 <translation id="3587596251841506391">Millora la seguretat al web</translation>
+<translation id="3597179440835065298">Obtén suggeriments millors</translation>
 <translation id="3602290021589620013">Previsualitza</translation>
 <translation id="3616113530831147358">Àudio</translation>
 <translation id="3622349720008044802">Gestiona les finestres</translation>
@@ -747,6 +749,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> es vol connectar</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Últims 15 minuts</translation>
 <translation id="5032430150487044192">No es pot crear el codi QR</translation>
 <translation id="5039804452771397117">Permet</translation>
 <translation id="5040262127954254034">Privadesa</translation>
@@ -882,6 +885,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5813552293717797987"><ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" /> gestionen aquest navegador.</translation>
 <translation id="5814131985548525293">Escriu aquí o toca la icona de veu per començar</translation>
 <translation id="5814749351757353073">Estigues al corrent dels teus llocs web preferits</translation>
+<translation id="5822875253699806474">Per tornar ràpidament als llocs web que has visitat, sincronitza les pestanyes i l'historial</translation>
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5833984609253377421">Comparteix l'enllaç</translation>
 <translation id="5834764604050996579">Per escanejar un codi QR, permet que Chrome utilitzi la càmera</translation>
@@ -1136,6 +1140,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7088681679121566888">Chrome està actualitzat</translation>
 <translation id="7105047059074518658">Inicia la sessió per navegar millor en tots els dispositius</translation>
 <translation id="7106762743910369165">La teva organització gestiona el navegador</translation>
+<translation id="7116588989735740310">Per tornar als llocs que has visitat en altres dispositius, sincronitza les pestanyes i l'historial</translation>
 <translation id="7130504491556983216">Aquí es mostrarà una llista d'interessos a mesura que naveguis pel web</translation>
 <translation id="7138678301420049075">Altres</translation>
 <translation id="7146622961999026732">Aquests llocs web i aquestes aplicacions semblen importants per a tu:</translation>
@@ -1214,6 +1219,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="751961395872307827">No es pot connectar amb el lloc web</translation>
 <translation id="752220631458524187">Desconnecta'l quan hagis acabat</translation>
 <translation id="7523960634226602883">Cerca amb la càmera mitjançant Google Lens</translation>
+<translation id="7539698981064401140">Sincronitza pestanyes i l'historial</translation>
 <translation id="7562080006725997899">S'estan esborrant les dades de navegació</translation>
 <translation id="756809126120519699">S'han esborrat les dades de Chrome</translation>
 <translation id="7577900504646297215">Gestiona els interessos</translation>
@@ -1396,6 +1402,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8461694314515752532">Encripta les dades sincronitzades amb la teva frase de contrasenya de sincronització</translation>
 <translation id="8466613982764129868">Comprova que el dispositiu <ph name="TARGET_DEVICE_NAME" /> estigui connectat a Internet</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
+<translation id="847433688444405067">Navega per tots els dispositius</translation>
 <translation id="8481980314595922412">Les funcions de prova estan activades</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Obre la pàgina de l'historial</translation>
@@ -1449,6 +1456,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8746155870861185046">Comparteix el text marcat</translation>
+<translation id="874726034427945498">Per veure millors suggeriments a la barra d'adreces, sincronitza les pestanyes i l'historial</translation>
 <translation id="8748850008226585750">Contingut amagat</translation>
 <translation id="8756969031206844760">Vols actualitzar la contrasenya?</translation>
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
@@ -1514,6 +1522,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="9070377983101773829">Inicia la cerca per veu</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Els llocs web que visites no es desen en mode d'incògnit</translation>
+<translation id="9084103763810123431">Per continuar navegant en un altre dispositiu, sincronitza les pestanyes i l'historial</translation>
 <translation id="9086302186042011942">Sincronització</translation>
 <translation id="9086455579313502267">No es pot accedir a la xarxa</translation>
 <translation id="9099220545925418560">Segons el teu historial de navegació. Aquesta opció de configuració està desactivada.</translation>

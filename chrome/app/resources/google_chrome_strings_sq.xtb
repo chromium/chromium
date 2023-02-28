@@ -129,6 +129,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3245429137663807393">Nëse ndan edhe raportet e përdorimit të Chrome, ato raporte përfshijnë URL-të që viziton</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3286538390144397061">Rindiz tani</translation>
+<translation id="3293912612584488930">Bëj më shumë me Chrome</translation>
 <translation id="3360895254066713204">Ndihmësi i Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome do të hapet përsëri tani}=1{Chrome do të hapet përsëri për 1 sekondë}other{Chrome do të hapet përsëri për # sekonda}}</translation>
 <translation id="3396977131400919238">Ndodhi një gabim në sistemin operativ gjatë instalimit. Shkarko përsëri Google Chrome.</translation>
@@ -412,7 +413,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8989968390305463310">Historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chrome fshin automatikisht interesat e tua në vazhdimësi çdo muaj. Interesat mund të rifreskohen, përveçse nëse ti i heq ato.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>
 <translation id="9053892488859122171">Sistemi Chrome OS Flex</translation>
-<translation id="9067395829937117663">Google Chrome kërkon Windows 7 ose një version më të lartë.</translation>
 <translation id="911206726377975832">Të fshihen po ashtu të dhënat e shfletimit?</translation>
 <translation id="9138603949443464873">Për të zbatuar ndryshimet, rinis Chrome</translation>
 <translation id="9195993889682885387">Chrome mund të përllogarisë interesat e tua bazuar në historikun tënd të shfletimit nga javët e fundit. Ky informacion qëndron në pajisjen tënde.</translation>

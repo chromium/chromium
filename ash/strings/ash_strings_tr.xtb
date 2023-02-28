@@ -549,6 +549,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Etkinlikler yükleniyor.</translation>
 <translation id="3932043219784172185">Bağlı cihaz yok</translation>
 <translation id="3934456833412894880">Uyarlanabilir şarj açık. Piliniz, pil ömrünü uzatmak için %80'de kalacak ve ihtiyacınız olduğunda tamamen şarj olacak.</translation>
+<translation id="3936620957945677513"><ph name="EVENT_SUMMARY" /> etkinliğine katılmak için enter tuşuna basın</translation>
 <translation id="3943857333388298514">Yapıştır</translation>
 <translation id="394485226368336402">Ses ayarları</translation>
 <translation id="3945319193631853098">Kuruluımu tamamlamak için dokunun</translation>
@@ -1466,7 +1467,6 @@ Yeni yüklenmiş</translation>
 <translation id="8850991929411075241">Ara+Esc</translation>
 <translation id="8853703225951107899">PIN'iniz veya şifreniz hâlâ doğrulanamadı. Not: Şifrenizi yakın zamanda değiştirdiyseniz eski şifrenizi kullanın. Yeni şifreniz, oturumunuzu kapattıktan sonra geçerli olacaktır.</translation>
 <translation id="8855885154700222542">Tam ekran tuşu</translation>
-<translation id="8858369206579825206">Gizlilik denetimleri</translation>
 <translation id="8870509716567206129">Uygulama bölünmüş ekranı desteklemiyor.</translation>
 <translation id="8874184842967597500">Bağlı değil</translation>
 <translation id="8876661425082386199">Bağlantınızı denetleyin</translation>

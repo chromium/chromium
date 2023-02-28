@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">फोल्डर निवडा</translation>
 <translation id="1254424942107648268">मागील शोधा</translation>
 <translation id="1258491128795710625">नवीन काय आहे</translation>
+<translation id="1264156759663453185">निवडलेला मजकूर आंशिक भाषांतरासाठी खूप मोठा आहे.</translation>
 <translation id="1265739287306757398">कसे ते जाणून घ्या</translation>
 <translation id="1272079795634619415">थांबा</translation>
 <translation id="1275718070701477396">निवडले</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">सुधारित करा</translation>
 <translation id="2273327106802955778">अधिक मेनू</translation>
 <translation id="2286505070150039482">हायलाइट केलेला मजकूर</translation>
+<translation id="2287614783861766820">{count,plural, =1{हा पत्ता या डिव्हाइसवरून हटवला जाईल.}other{हे पत्ते या डिव्हाइसवरून हटवले जातील.}}</translation>
 <translation id="2299218006564889602">तुमचे पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी ते तुमच्या डिव्हाइसवर एंक्रिप्ट केले जातात.</translation>
 <translation id="2302742851632557585">वेबसाइट वर पासवर्ड बदला</translation>
 <translation id="2316709634732130529">सुचवलेला पासवर्ड वापरा</translation>
@@ -387,6 +389,7 @@
 <translation id="3789841737615482174">स्थापना करा</translation>
 <translation id="380329542618494757">नाव</translation>
 <translation id="3803696231112616155">ही साइट भाषांतरित करण्यासाठी ऑफर</translation>
+<translation id="3803967590068704619">हा पत्ता तुमच्या Google खाते (<ph name="USER_EMAIL" />) मध्ये सेव्ह केला आहे. तुम्ही कोणत्याही डिव्हाइसवर संपूर्ण Google उत्पादनांवर हा पत्ता वापरू शकता.</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
 <translation id="3818293389945649617">पुढील शोधा</translation>
 <translation id="3819183753496523827">तुम्ही ऑफलाइन आहात. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
@@ -458,6 +461,7 @@
 <translation id="4324952538601951430">तुमचे सेव्ह केलेले बुकमार्क, पासवर्ड, सेटिंग्ज आणि बरेच काही आता येथे आहेत</translation>
 <translation id="4334428914252001502">न वाचलेला एक लेख.</translation>
 <translation id="4338650699862464074">तुम्ही भेट दिलेल्या पेजच्या URL Google ला पाठवते.</translation>
+<translation id="4342054591427973606">{count,plural, =1{हा पत्ता या आणि तुम्ही साइन-इन केलेल्या इतर डिव्हाइसवरून हटवला जाईल.}other{हे पत्ते या आणि तुम्ही साइन-इन केलेल्या इतर डिव्हाइसवरून हटवले जातील.}}</translation>
 <translation id="4343046787186034850">कॅमेरा आणि मायक्रोफोन अ‍ॅक्सेस करण्याची अनुमती दिली आहे</translation>
 <translation id="4359125752503270327">हे पेज दुसऱ्या ॲप्समध्ये उघडेल.</translation>
 <translation id="4375040482473363939">QR कोड शोध</translation>
@@ -587,6 +591,7 @@
 <translation id="5232485538978018676">व्यवस्थापित केलेल्या खाते यासह साइन इन करा</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
 <translation id="5245322853195994030">सिंक रद्द करा</translation>
+<translation id="5271265092610673171">{count,plural, =1{भरणे आवश्यक असलेले फील्ड रिकामे आहे. सेव्ह करण्याआधी भरा.}other{भरणे आवश्यक असलेली फील्ड रिकामी आहेत. सेव्ह करण्याआधी ती भरा.}}</translation>
 <translation id="5271549068863921519">पासवर्ड सेव्ह करा</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> हे खाते काढून टाकायचे आहे का?</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
@@ -700,6 +705,7 @@
 <translation id="6066301408025741299">रद्द करण्यासाठी टॅप करा.</translation>
 <translation id="6071409777669089905">टॅब अनपिन करा</translation>
 <translation id="6084848228346514841">टॅब निवडा</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> म्हणून साइन इन केले आहे. या बटणामुळे सेटिंग्ज उघडतात.</translation>
 <translation id="6103540626693881831">डिव्हाइसवरील एंक्रिप्शन</translation>
 <translation id="6119050551270742952">सध्याचे वेबपेज गुप्त मोडमध्ये सुरू आहे</translation>
 <translation id="6122191549521593678">ऑनलाइन</translation>
@@ -738,6 +744,7 @@
 <translation id="6342069812937806050">आत्ताच</translation>
 <translation id="6344783595350022745">मजकूर साफ करा</translation>
 <translation id="6346549652287021269">नवीन डाउनलोड सुरू करायचे?</translation>
+<translation id="6347953390226388422">{count,plural, =1{हा पत्ता तुमच्या Google खाते (<ph name="USER_EMAIL" />) आणि या डिव्हाइसवरून हटवला जाईल.}other{हे पत्ते तुमच्या Google खाते (<ph name="USER_EMAIL" />) आणि या डिव्हाइसवरून हटवले जातील.}}</translation>
 <translation id="634878792104344809">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> ला फॉलो करा</translation>
 <translation id="6362362396625799311">कोणतेही गुप्त टॅब नाहीत</translation>
@@ -1130,6 +1137,7 @@
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> खात्यांचे पासवर्ड हटवायचे आहेत का?</translation>
 <translation id="9100610230175265781">सांकेतिक पासफ्रेझ आवश्यक</translation>
 <translation id="9107664647686727385">धोक्यात असलेले पासवर्ड तपासा</translation>
+<translation id="9120217828624527905">पूर्ण पेज भाषांतर यावर स्विच करा</translation>
 <translation id="9124387962554796433">Search आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google कदाचित तुमचा इतिहास वापरू शकते.</translation>
 <translation id="9137526406337347448">Google सेवा</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>

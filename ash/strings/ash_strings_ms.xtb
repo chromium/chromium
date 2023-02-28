@@ -502,6 +502,11 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3633097874324966332">Buka tetapan Bluetooth untuk menggandingkan peranti anda</translation>
 <translation id="3638400994746983214">Togol skrin privasi. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Kemas kini terlewat</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> hingga
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Pilih untuk mendapatkan butiran lanjut dalam Google Calendar.</translation>
 <translation id="3659444876902283058">(Hari <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Kira-kira <ph name="TIME_LEFT" /> lagi (<ph name="PERCENTAGE" />%).
 Sambungkan peranti anda kepada sumber kuasa.</translation>
@@ -550,6 +555,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuatkan acara.</translation>
 <translation id="3932043219784172185">Tiada peranti disambungkan</translation>
 <translation id="3934456833412894880">Pengecasan mudah suai dihidupkan. Bateri anda akan kekal pada 80% untuk memanjangkan hayat bateri dan mengecas sepenuhnya apabila anda memerlukannya.</translation>
+<translation id="3936620957945677513">Tekan enter untuk menyertai acara <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Tampal</translation>
 <translation id="394485226368336402">Tetapan audio</translation>
 <translation id="3945319193631853098">Ketik untuk menyelesaikan persediaan</translation>
@@ -1467,9 +1473,9 @@ Pemasangan baharu</translation>
 <translation id="8850991929411075241">Carian+Esc</translation>
 <translation id="8853703225951107899">PIN atau kata laluan anda masih tidak dapat disahkan. Nota: Jika anda menukar kata laluan anda baru-baru ini, gunakan kata laluan lama anda. Kata laluan baharu anda akan digunakan apabila anda log keluar.</translation>
 <translation id="8855885154700222542">Kekunci skrin penuh</translation>
-<translation id="8858369206579825206">Kawalan privasi</translation>
 <translation id="8870509716567206129">Apl tidak menyokong skrin pisah.</translation>
 <translation id="8874184842967597500">Tidak bersambung</translation>
+<translation id="8876148469852588625">Acara <ph name="EVENT_POSITION" /> daripada <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Semak sambungan anda</translation>
 <translation id="8877788021141246043">Tetapkan peringatan</translation>
 <translation id="8878886163241303700">Meluaskan skrin</translation>

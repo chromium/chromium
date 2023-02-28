@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">За да излезете от профила си в Google на всички уебсайтове, <ph name="BEGIN_LINK" />излезте от профила си в Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome не можа да провери за актуализации. Опитайте отново по-късно.</translation>
 <translation id="2732745070297234559">Chrome не успя да провери всички пароли. Опитайте отново утре.</translation>
+<translation id="2736805085127235148">Понастоящем известията в Chrome са изключени от настройките на устройството ви.</translation>
 <translation id="2767464022270041271">Няма запазени пароли. Google Мениджър на пароли може да проверява паролите ви, когато ги запазите.</translation>
 <translation id="2869959624320573933">Влизане в Chrome</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome е актуален</translation>
 <translation id="7939179037291298976">Отворете Password Options в настройките на своя iPhone и изберете Chrome</translation>
 <translation id="8022947259858476807">Използвайте Chrome по подразбиране за отваряне на връзки, търсене от приспособления и автоматично попълване на пароли в други приложения</translation>
+<translation id="804638182476029347">Разрешаване в известията от Chrome да се показват сигнали за понижения на цените</translation>
 <translation id="81358522153858150">Chrome вече поддържа правила за потребители за управляваните ви профили</translation>
 <translation id="8160472928944011082">Chrome не може да се актуализира</translation>
 <translation id="8357607116237445042">Изберете дали данните ви в Chrome да бъдат изчистени от това устройство, или запазени</translation>

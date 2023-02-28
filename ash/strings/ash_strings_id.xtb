@@ -549,6 +549,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Memuat acara.</translation>
 <translation id="3932043219784172185">Tidak ada perangkat yang terhubung</translation>
 <translation id="3934456833412894880">Pengisian daya adaptif aktif. Daya baterai Anda hanya akan diisi sampai 80% untuk memperpanjang masa pakai baterai, dan diisi penuh jika Anda memerlukannya.</translation>
+<translation id="3936620957945677513">Tekan Enter untuk bergabung ke acara <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Sisipkan</translation>
 <translation id="394485226368336402">Setelan audio</translation>
 <translation id="3945319193631853098">Ketuk untuk menyelesaikan penyiapan</translation>
@@ -1466,7 +1467,6 @@ Baru diinstal</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">PIN atau sandi Anda belum dapat diverifikasi. Catatan: Jika Anda baru-baru ini mengubah sandi, gunakan sandi lama Anda. Sandi baru akan diterapkan setelah Anda logout.</translation>
 <translation id="8855885154700222542">Tombol layar penuh</translation>
-<translation id="8858369206579825206">Kontrol privasi</translation>
 <translation id="8870509716567206129">Aplikasi tidak mendukung layar terpisah.</translation>
 <translation id="8874184842967597500">Tak terhubung</translation>
 <translation id="8876661425082386199">Periksa koneksi Anda</translation>

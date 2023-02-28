@@ -126,6 +126,7 @@
 <translation id="3245429137663807393">Si también compartes los informes de uso de Chrome, estos incluirán las URL que visites.</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
+<translation id="3293912612584488930">Realiza más acciones con Chrome</translation>
 <translation id="3360895254066713204">Ayuda de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Se reiniciará Chrome ahora}=1{Se reiniciará Chrome en 1 segundo}other{Se reiniciará Chrome en # segundos}}</translation>
 <translation id="3396977131400919238">Se produjo un error del sistema operativo durante la instalación. Descargue Google Chrome nuevamente.</translation>
@@ -405,7 +406,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8989968390305463310">Tu historial de navegación afecta los anuncios que ves y los intereses como se estima a continuación. Para proteger tu privacidad, Chrome borra tus intereses automáticamente de manera continua todos los meses. Los intereses se pueden actualizar a no ser que los quites.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible hace # días}}</translation>
 <translation id="9053892488859122171">Sistema de Chrome OS Flex</translation>
-<translation id="9067395829937117663">Para usar Google Chrome, se requiere Windows 7 o versiones posteriores.</translation>
 <translation id="911206726377975832">¿También eliminar datos de navegación?</translation>
 <translation id="9138603949443464873">Para aplicar los cambios, vuelve a ejecutar Chrome</translation>
 <translation id="9195993889682885387">Chrome puede estimar tus intereses en función de tu historial de navegación de las últimas semanas. Esta información permanece en tu dispositivo.</translation>

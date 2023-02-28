@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2361263712565360498">275 x 395 мм</translation>
 <translation id="236340516568226369">Меню змянення памеру</translation>
+<translation id="2365355378251437925">Увядзіце даныя ў поле "<ph name="FIELD" />"</translation>
 <translation id="2367567093518048410">Узровень</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Персаналізаваць інструменты спецыяльных магчымасцей у наладах Chrome</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">Атрымліваць інфармацыю пра тое, калі вы карыстаецеся гэтай прыладай.</translation>
 <translation id="3180358318770512945">Гадаванне дзяцей</translation>
 <translation id="3187306450550410410">Рухомы графік працы</translation>
+<translation id="3187380004437786923">Кіраваць плацяжамі</translation>
 <translation id="3187472288455401631">Вымярэнне паказчыкаў, звязаных з рэкламай</translation>
 <translation id="3190736958609431397">Перастаць адсочваць</translation>
 <translation id="319282854780294203">Сацыяльныя сеткі</translation>
@@ -1270,6 +1272,7 @@
 <translation id="4154664944169082762">Лічбавыя адбіткі</translation>
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4165986682804962316">Налады сайтаў</translation>
+<translation id="4169535189173047238">Не дазваляць</translation>
 <translation id="4171400957073367226">Подпіс спраўджання недапушчальны</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Заўсёды паказваць</translation>
@@ -3333,6 +3336,7 @@
 <translation id="950736567201356821">Тры дзіркі зверху</translation>
 <translation id="961663415146723894">Пераплёт знізу</translation>
 <translation id="962484866189421427">Праз гэта змесціва могуць усталявацца падманныя праграмы, якія спрабуюць выдаваць сябе за нешта іншае або збіраюць даныя, што могуць быць выкарыстаны для сачэння за вамі. <ph name="BEGIN_LINK" />Усё роўна паказаць<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Усе карыстальнікі</translation>
 <translation id="964050462028070434">Кіраваць паролямі і ключамі доступу…</translation>
 <translation id="96680173638229310">Аўтамабілі і транспарт</translation>
 <translation id="969892804517981540">Афіцыйная зборка</translation>

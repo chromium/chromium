@@ -590,6 +590,7 @@
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2361263712565360498">275 x 395 मि॰मी॰</translation>
 <translation id="236340516568226369">टॉगल मेन्यू का साइज़ बदलें</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> डालें</translation>
 <translation id="2367567093518048410">स्तर</translation>
 <translation id="2380886658946992094">कानूनी</translation>
 <translation id="2383455408879745299">Chrome की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">जानना चाहती है कि आप इस डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="3180358318770512945">बच्चे की परवरिश से जुड़ी जानकारी</translation>
 <translation id="3187306450550410410">कर्मचारी के हिसाब से काम करने की व्यवस्था</translation>
+<translation id="3187380004437786923">पेमेंट मैनेज करें</translation>
 <translation id="3187472288455401631">विज्ञापनों की परफ़ॉर्मेंस का आकलन</translation>
 <translation id="3190736958609431397">ट्रैक न करें</translation>
 <translation id="319282854780294203">सोशल नेटवर्क</translation>
@@ -1271,6 +1273,7 @@
 <translation id="4154664944169082762">फ़िंगरप्रिंट</translation>
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
+<translation id="4169535189173047238">अनुमति न दें</translation>
 <translation id="4171400957073367226">गलत सत्यापन हस्ताक्षर</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">हमेशा दिखाएं</translation>
@@ -3334,6 +3337,7 @@
 <translation id="950736567201356821">सबसे ऊपर ट्रिपल पंच</translation>
 <translation id="961663415146723894">नीचे की ओर बाइंड</translation>
 <translation id="962484866189421427">यह सामग्री ऐसे धोखा देने वाले ऐप्लिकेशन इंस्टॉल कर सकती है जो कुछ और होने का दावा करते हैं या ऐसा डेटा इकट्ठा करते हैं जिसका इस्तेमाल आप पर नज़र रखने के लिए किया जा सके. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">सभी उपयोगकर्ता</translation>
 <translation id="964050462028070434">पासवर्ड और पासकी मैनेज करें…</translation>
 <translation id="96680173638229310">ऑटो और वाहन</translation>
 <translation id="969892804517981540">आधिकारिक बिल्ड</translation>

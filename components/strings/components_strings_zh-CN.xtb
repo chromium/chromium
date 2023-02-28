@@ -875,6 +875,7 @@
 <translation id="317878711435188021">了解您何时在主动使用此设备</translation>
 <translation id="3180358318770512945">育儿</translation>
 <translation id="3187306450550410410">弹性工作安排</translation>
+<translation id="3187380004437786923">管理付款</translation>
 <translation id="3187472288455401631">广告衡量</translation>
 <translation id="3190736958609431397">取消跟踪</translation>
 <translation id="319282854780294203">社交网络</translation>
@@ -1268,6 +1269,7 @@
 <translation id="4154664944169082762">指纹</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165986682804962316">网站设置</translation>
+<translation id="4169535189173047238">不允许</translation>
 <translation id="4171400957073367226">验证签名无效</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">一律显示</translation>
@@ -3330,6 +3332,7 @@
 <translation id="950736567201356821">三孔（顶部）</translation>
 <translation id="961663415146723894">装订（底部）</translation>
 <translation id="962484866189421427">此内容可能会尝试安装欺骗性应用，而这些应用能够冒充其他内容或收集可用于对您进行跟踪的数据。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">所有用户</translation>
 <translation id="964050462028070434">管理密码和通行密钥…</translation>
 <translation id="96680173638229310">汽车与车辆</translation>
 <translation id="969892804517981540">正式版本</translation>

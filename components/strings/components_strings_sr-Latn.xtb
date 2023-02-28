@@ -487,6 +487,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2108755909498034140">Ponovo pokrenite računar</translation>
 <translation id="2111166930115883695">Pritisnite taster za razmak da biste igrali</translation>
 <translation id="2112529237938317174">Prikaži detalje dozvole</translation>
+<translation id="2113232594265919362">Ovo upozorenje vam se prikazuje jer ovaj sajt ne podržava HTTPS i deo je Google programa napredne zaštite. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Kartica</translation>
 <translation id="2114841414352855701">Zanemaruju se jer su zamenjene smernicama <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Koverta C5</translation>
@@ -589,6 +590,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2361263712565360498">275×395 mm</translation>
 <translation id="236340516568226369">Meni za promenu veličine</translation>
+<translation id="2365355378251437925">Unesite <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Nivo</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalizujte alatke za pristupačnost u podešavanjima Chrome-a</translation>
@@ -876,6 +878,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="317878711435188021">da zna kada aktivno koristite ovaj uređaj</translation>
 <translation id="3180358318770512945">Roditeljstvo</translation>
 <translation id="3187306450550410410">Fleksibilni uslovi rada</translation>
+<translation id="3187380004437786923">Upravljaj plaćanjima</translation>
 <translation id="3187472288455401631">Merenje oglasa</translation>
 <translation id="3190736958609431397">Opozovi praćenje</translation>
 <translation id="319282854780294203">Društvene mreže</translation>
@@ -1208,6 +1211,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3990250421422698716">Protresanje radi poravnanja</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
 <translation id="399952081411886534">Ostale funkcije koje doprinose privatnosti oglasa</translation>
+<translation id="4000598935132966791">Saznajte više o ograničenjima za sajtove u pregledačima kojima se upravlja</translation>
 <translation id="4006465311664329701">Načini plaćanja, ponude i adrese koji koriste Google Pay</translation>
 <translation id="4009243425692662128">Sadržaj stranica koje štampate se šalje u Google Cloud ili trećim stranama na analizu. Na primer, možda će biti skeniran u potrazi za osetljivim podacima.</translation>
 <translation id="4010758435855888356">Želite li da dozvolite pristup memorijskom prostoru?</translation>
@@ -1271,6 +1275,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4154664944169082762">Otisci</translation>
 <translation id="4159784952369912983">Ljubičasta</translation>
 <translation id="4165986682804962316">Podešavanja sajta</translation>
+<translation id="4169535189173047238">Ne dozvoli</translation>
 <translation id="4171400957073367226">Neispravan potpis za verifikaciju</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Uvek prikaži</translation>

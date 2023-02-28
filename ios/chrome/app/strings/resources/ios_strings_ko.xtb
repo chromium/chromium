@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">폴더 선택</translation>
 <translation id="1254424942107648268">이전 찾기</translation>
 <translation id="1258491128795710625">새로운 기능</translation>
+<translation id="1264156759663453185">선택한 텍스트가 너무 길어서 부분 번역할 수 없습니다.</translation>
 <translation id="1265739287306757398">자세히 알아보기</translation>
 <translation id="1272079795634619415">중지</translation>
 <translation id="1275718070701477396">선택됨</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">상세검색</translation>
 <translation id="2273327106802955778">더보기 메뉴</translation>
 <translation id="2286505070150039482">강조표시된 텍스트</translation>
+<translation id="2287614783861766820">{count,plural, =1{이 주소가 이 기기에서 삭제됩니다.}other{이 주소가 이 기기에서 삭제됩니다.}}</translation>
 <translation id="2299218006564889602">비밀번호를 기기 내에서 암호화한 후 Google 비밀번호 관리자에 저장합니다</translation>
 <translation id="2302742851632557585">웹사이트에서 비밀번호 변경</translation>
 <translation id="2316709634732130529">추천 비밀번호 사용</translation>
@@ -387,6 +389,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3789841737615482174">설치</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3803696231112616155">이 사이트 번역 옵션 제공</translation>
+<translation id="3803967590068704619">Google 계정(<ph name="USER_EMAIL" />)에 저장된 주소입니다. 어느 기기에서나 모든 Google 제품에서 이 주소를 사용할 수 있습니다.</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3818293389945649617">다음 찾기</translation>
 <translation id="3819183753496523827">오프라인 상태입니다. 인터넷 연결을 확인한 후 다시 시도해 보세요.</translation>
@@ -458,6 +461,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4324952538601951430">저장된 북마크, 비밀번호, 설정 등이 이제 여기 표시됩니다.</translation>
 <translation id="4334428914252001502">읽지 않은 기사 1개 있음</translation>
 <translation id="4338650699862464074">방문한 페이지의 URL을 Google에 전송합니다.</translation>
+<translation id="4342054591427973606">{count,plural, =1{이 기기와 다른 로그인된 기기에서 이 주소가 삭제됩니다.}other{이 기기와 다른 로그인된 기기에서 이 주소가 삭제됩니다.}}</translation>
 <translation id="4343046787186034850">카메라 및 마이크 액세스 허용됨</translation>
 <translation id="4359125752503270327">이 페이지는 다른 애플리케이션에서 열립니다.</translation>
 <translation id="4375040482473363939">QR 코드 검색</translation>
@@ -587,6 +591,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5232485538978018676">관리 계정으로 로그인</translation>
 <translation id="5234764350956374838">닫기</translation>
 <translation id="5245322853195994030">동기화 취소</translation>
+<translation id="5271265092610673171">{count,plural, =1{필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.}other{일부 필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.}}</translation>
 <translation id="5271549068863921519">비밀번호 저장</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> 계정을 삭제하시겠습니까?</translation>
 <translation id="5300589172476337783">표시</translation>
@@ -700,6 +705,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6066301408025741299">취소하려면 탭하세요.</translation>
 <translation id="6071409777669089905">탭 고정 해제</translation>
 <translation id="6084848228346514841">탭 선택</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> 계정으로 로그인되었습니다. 설정을 엽니다.</translation>
 <translation id="6103540626693881831">기기 내 암호화</translation>
 <translation id="6119050551270742952">현재 시크릿 모드에서 웹페이지 사용 중</translation>
 <translation id="6122191549521593678">온라인</translation>
@@ -737,6 +743,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6342069812937806050">방금</translation>
 <translation id="6344783595350022745">텍스트 삭제</translation>
 <translation id="6346549652287021269">다운로드를 새로 시작하시겠습니까?</translation>
+<translation id="6347953390226388422">{count,plural, =1{Google 계정(<ph name="USER_EMAIL" />)과 이 기기에서 이 주소가 삭제됩니다.}other{Google 계정(<ph name="USER_EMAIL" />)과 이 기기에서 이 주소가 삭제됩니다.}}</translation>
 <translation id="634878792104344809">비밀번호, 방문 기록 등을 모든 기기에 동기화</translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> 팔로우</translation>
 <translation id="6362362396625799311">시크릿 탭 없음</translation>
@@ -1129,6 +1136,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="9098541895599151034">비밀번호 <ph name="NUMBER_OF_ACCOUNTS" />개를 삭제하시겠습니까?</translation>
 <translation id="9100610230175265781">암호를 입력해야 합니다.</translation>
 <translation id="9107664647686727385">유출된 비밀번호 확인</translation>
+<translation id="9120217828624527905">전체 페이지 번역으로 전환</translation>
 <translation id="9124387962554796433">Google 검색 및 다른 Google 서비스를 맞춤설정하기 위하여 Google에서 사용자의 방문 기록을 이용할 수 있습니다</translation>
 <translation id="9137526406337347448">Google 서비스</translation>
 <translation id="9148126808321036104">다시 로그인</translation>

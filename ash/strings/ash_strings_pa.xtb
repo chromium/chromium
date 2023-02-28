@@ -502,6 +502,11 @@
 <translation id="3633097874324966332">ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਜੋੜਾਬੱਧ ਕਰਨ ਲਈ ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="3638400994746983214">ਪਰਦੇਦਾਰੀ ਸਕ੍ਰੀਨ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649505501900178324">ਅੱਪਡੇਟ ਕਰਨਾ ਬਾਕੀ ਹੈ</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> ਤੋਂ
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" /> ਤੱਕ। Google Calendar ਵਿੱਚ ਹੋਰ ਵੇਰਵੇ ਦੇਖਣ ਲਈ ਚੁਣੋ।</translation>
 <translation id="3659444876902283058">(ਦਿਨ <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">ਲਗਭਗ <ph name="TIME_LEFT" /> ਬਾਰੇ (<ph name="PERCENTAGE" />%)।
 ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰ ਸਰੋਤ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
@@ -549,6 +554,7 @@
 <translation id="3925540965556789199"><ph name="DATE" />, ਇਵੈਂਟ ਲੋਡ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ।</translation>
 <translation id="3932043219784172185">ਕੋਈ ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="3934456833412894880">ਅਡੈਪਟਿਵ ਚਾਰਜਿੰਗ ਚਾਲੂ ਹੈ। ਬੈਟਰੀ ਲਾਈਫ਼ ਵਧਾਉਣ ਲਈ ਬੈਟਰੀ 80% ਤੱਕ ਰਹੇਗੀ, ਅਤੇ ਲੋੜ ਪੈਣ 'ਤੇ ਇਸਨੂੰ ਪੂਰਾ ਚਾਰਜ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
+<translation id="3936620957945677513"><ph name="EVENT_SUMMARY" /> ਇਵੈਂਟ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="3943857333388298514">ਪੇਸਟ ਕਰੋ</translation>
 <translation id="394485226368336402">ਆਡੀਓ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3945319193631853098">ਸੈੱਟਅੱਪ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
@@ -1467,9 +1473,9 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਹਾਲੇ ਵੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ ਕਰੋ: ਜੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ। ਇੱਕ ਵਾਰ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਲਾਗੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8855885154700222542">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਕੁੰਜੀ</translation>
-<translation id="8858369206579825206">ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ</translation>
 <translation id="8870509716567206129">ਐਪ ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ।</translation>
 <translation id="8874184842967597500">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
+<translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="EVENT_POSITION" /> ਇਵੈਂਟ</translation>
 <translation id="8876661425082386199">ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="8877788021141246043">ਕੋਈ ਯਾਦ-ਸੂਚਨਾ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="8878886163241303700">ਸਕ੍ਰੀਨ ਦਾ ਵਿਸਤਾਰ ਕਰ ਰਿਹਾ ਹੈ</translation>

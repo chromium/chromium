@@ -47,6 +47,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1254117744268754948">Map kiezen</translation>
 <translation id="1254424942107648268">Vorige zoeken</translation>
 <translation id="1258491128795710625">Wat is er nieuw</translation>
+<translation id="1264156759663453185">De geselecteerde tekst is te groot voor een gedeeltelijke vertaling.</translation>
 <translation id="1265739287306757398">Meer informatie</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
@@ -177,6 +178,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2268044343513325586">Verfijnen</translation>
 <translation id="2273327106802955778">Menu Meer</translation>
 <translation id="2286505070150039482">Gemarkeerde tekst</translation>
+<translation id="2287614783861766820">{count,plural, =1{Dit adres wordt verwijderd van dit apparaat.}other{Deze adressen worden verwijderd van dit apparaat.}}</translation>
 <translation id="2299218006564889602">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2302742851632557585">Wachtwoord wijzigen op website</translation>
 <translation id="2316709634732130529">Voorgesteld wachtwoord gebruiken</translation>
@@ -458,6 +460,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4324952538601951430">Onder andere je opgeslagen bookmarks, wachtwoorden en instellingen staan nu hier</translation>
 <translation id="4334428914252001502">1 ongelezen artikel.</translation>
 <translation id="4338650699862464074">Verzendt de URL's van pagina's die je bezoekt naar Google.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Dit adres wordt verwijderd van dit apparaat en je andere ingelogde apparaten.}other{Deze adressen worden verwijderd van dit apparaat en je andere ingelogde apparaten.}}</translation>
 <translation id="4343046787186034850">Camera- en microfoontoegang toegestaan</translation>
 <translation id="4359125752503270327">Deze pagina wordt geopend in een andere app.</translation>
 <translation id="4375040482473363939">Zoeken naar QR-code</translation>
@@ -587,6 +590,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5232485538978018676">Inloggen met een beheerd account</translation>
 <translation id="5234764350956374838">Sluiten</translation>
 <translation id="5245322853195994030">Synchronisatie annuleren</translation>
+<translation id="5271265092610673171">{count,plural, =1{Een verplicht veld is leeg. Vul het in voordat je opslaat.}other{Sommige verplichte velden zijn leeg. Vul ze in voordat je opslaat.}}</translation>
 <translation id="5271549068863921519">Wachtwoord opslaan</translation>
 <translation id="5295239312320826323">Account <ph name="USER_EMAIL" /> verwijderen?</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -700,6 +704,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6066301408025741299">Tik om te annuleren.</translation>
 <translation id="6071409777669089905">Tabblad losmaken</translation>
 <translation id="6084848228346514841">Tabbladen selecteren</translation>
+<translation id="6100617279104942061">Ingelogd als <ph name="USER_EMAIL" />. Hiermee worden de instellingen geopend.</translation>
 <translation id="6103540626693881831">Versleuteling op het apparaat</translation>
 <translation id="6119050551270742952">De huidige webpagina is in de incognitomodus</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1129,6 +1134,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> wachtwoorden verwijderen?</translation>
 <translation id="9100610230175265781">Wachtwoordzin vereist</translation>
 <translation id="9107664647686727385">Checken op gehackte wachtwoorden</translation>
+<translation id="9120217828624527905">Overschakelen naar vertaling van volledige pagina</translation>
 <translation id="9124387962554796433">Google kan je geschiedenis gebruiken om Google Zoeken en andere Google-services te personaliseren.</translation>
 <translation id="9137526406337347448">Google-services</translation>
 <translation id="9148126808321036104">Opnieuw inloggen</translation>

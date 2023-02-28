@@ -129,7 +129,7 @@
 <translation id="3245429137663807393">如果您同時分享 Chrome 使用情況報告，這些報告將會包含您瀏覽的網址</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
-<translation id="3293912612584488930">Chrome 讓你事半功倍</translation>
+<translation id="3293912612584488930">使用 Chrome 讓您事半功倍</translation>
 <translation id="3360895254066713204">Chrome 輔助工具</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將於 1 秒後重新啟動}other{Chrome 將於 # 秒後重新啟動}}</translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
@@ -413,7 +413,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8989968390305463310">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex 系統</translation>
-<translation id="9067395829937117663">Google Chrome 只能在 Windows 7 或以上作業系統中執行。</translation>
 <translation id="911206726377975832">您要一併刪除瀏覽數據嗎？</translation>
 <translation id="9138603949443464873">如要套用變更，請重新啟動 Chrome</translation>
 <translation id="9195993889682885387">Chrome 可根據最近幾星期的瀏覽記錄推測您的興趣。這些資料會儲存在您的裝置上。</translation>

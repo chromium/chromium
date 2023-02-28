@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2361263712565360498">২৭৫ x ৩৯৫ মি.মি.</translation>
 <translation id="236340516568226369">ট'গল কৰাৰ মেনুৰ আকাৰ সলনি কৰক</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> দিয়ক</translation>
 <translation id="2367567093518048410">স্তৰ</translation>
 <translation id="2380886658946992094">লিগেল</translation>
 <translation id="2383455408879745299">Chromeৰ ছেটিঙত আপোনাৰ সাধ্য সুবিধাৰ সঁজুলি ব্যক্তিগতকৰণ কৰক</translation>
@@ -874,6 +875,7 @@
 <translation id="317878711435188021">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে জনা</translation>
 <translation id="3180358318770512945">অভিভাৱক</translation>
 <translation id="3187306450550410410">কৰ্মচাৰীৰ সুবিধামতে ব্যৱস্থা কৰা কৰ্মস্থান</translation>
+<translation id="3187380004437786923">পৰিশোধ পৰিচালনা কৰক</translation>
 <translation id="3187472288455401631">বিজ্ঞাপনৰ জোখ-মাখ</translation>
 <translation id="3190736958609431397">ট্ৰেক কৰা বন্ধ কৰক</translation>
 <translation id="319282854780294203">ছ’চিয়েল নেটৱৰ্ক</translation>
@@ -1268,6 +1270,7 @@
 <translation id="4154664944169082762">ফিংগাৰপ্ৰিণ্ট</translation>
 <translation id="4159784952369912983">বেঙুনীয়া</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
+<translation id="4169535189173047238">অনুমতি নিদিব</translation>
 <translation id="4171400957073367226">সত্যাপনৰ স্বাক্ষৰটো বেয়া</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">সদায় দেখুৱাওক</translation>
@@ -3328,6 +3331,7 @@
 <translation id="950736567201356821">ওপৰৰ অংশত তিনিবাৰ পাঞ্চ কৰা</translation>
 <translation id="961663415146723894">তলৰ অংশত সংযুক্ত কৰক</translation>
 <translation id="962484866189421427">এই সমলে বিভ্ৰান্তিকৰ এপ্ ইনষ্টল কৰিবলৈ চেষ্টা কৰিব পাৰে যি আন ছদ্মৱেশ ধাৰণ কৰিব পাৰে বা আপোনাৰ কাৰ্যকলাপৰ ওপৰত চকু ৰাখিবলৈ ব্যৱহাৰ কৰা ডেটা সংগ্ৰহ কৰিব পাৰে। <ph name="BEGIN_LINK" />যিকোনো প্ৰকাৰে দেখুৱাওক<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">সকলো ব্যৱহাৰকাৰী</translation>
 <translation id="964050462028070434">পাছৱৰ্ড আৰু পাছকী পৰিচালনা কৰক…</translation>
 <translation id="96680173638229310">অট’ আৰু বাহন</translation>
 <translation id="969892804517981540">আনুষ্ঠানিক বিল্ড</translation>

@@ -279,6 +279,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2429753432712299108">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Bevestig vóór het accepteren dat de volgende toegangscode op dat apparaat wordt getoond: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
 <translation id="243878895369688216">Gisteren geopend</translation>
+<translation id="2440978926514840421">Gif-opname gemaakt</translation>
 <translation id="2441427462554639370">Opname beëindigd omdat er zeer weinig opslagruimte beschikbaar is</translation>
 <translation id="24452542372838207">Melding uitvouwen</translation>
 <translation id="2449089818483227734">De batterij is bijna leeg</translation>
@@ -549,6 +550,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, afspraken laden.</translation>
 <translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3934456833412894880">Aangepast opladen staat aan. Je batterij blijft op 80% om de batterijduur te verlengen en wordt volledig opgeladen wanneer je dat nodig hebt.</translation>
+<translation id="3936620957945677513">Druk op Enter om deel te nemen aan de afspraak <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="394485226368336402">Audio-instellingen</translation>
 <translation id="3945319193631853098">Tik om het instellen af te ronden</translation>
@@ -1463,7 +1465,6 @@ Nieuwe installatie</translation>
 <translation id="8850991929411075241">Zoeken+Esc</translation>
 <translation id="8853703225951107899">Je pincode of wachtwoord kan nog steeds niet worden geverifieerd. Opmerking: Als je onlangs je wachtwoord hebt gewijzigd, gebruik je je oude wachtwoord. Je nieuwe wachtwoord wordt toegepast zodra je uitlogt.</translation>
 <translation id="8855885154700222542">Toets voor volledig scherm</translation>
-<translation id="8858369206579825206">Privacyopties</translation>
 <translation id="8870509716567206129">App biedt geen ondersteuning voor gesplitst scherm.</translation>
 <translation id="8874184842967597500">Niet verbonden</translation>
 <translation id="8876661425082386199">Je verbinding checken</translation>

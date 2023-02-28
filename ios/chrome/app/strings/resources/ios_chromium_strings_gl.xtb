@@ -92,6 +92,7 @@
 <translation id="7118091470949186573">Xa podes utilizar Chromium sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="7165402419892018581">Escolle Chromium para autocompletar</translation>
 <translation id="7175400662502680481">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais recomenda que o cambies de inmediato.</translation>
+<translation id="7192111075364461693">As notificacións de Chromium están desactivadas actualmente na configuración do dispositivo.</translation>
 <translation id="7208566199746267865">Chromium fai que aforres tempo ao pasar as túas contas á web. Podes engadir ou eliminar contas en Configuración.</translation>
 <translation id="725427773388857052">Chromium pode protexerte contra violacións da seguranza dos datos, sitios web que non son seguros e moito máis.</translation>
 <translation id="7255976941681861701">Coñece o novo menú de Chromium</translation>
@@ -132,6 +133,7 @@ Cuestións que se deben ter en conta:
   • Se activas a sincronización, nas métricas tamén podería figurar información sobre os URL que visitas.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
 <translation id="894437814105052438">Cando peches sesión, Chromium non sincronizará datos novos coa túa Conta de Google. Os datos que se sincronizasen antes permanecerán na conta.</translation>
+<translation id="8963279154877372067">Permitir que as notificacións de Chromium avisen sobre as baixadas de prezo</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
 <translation id="9059693977935746710">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais para <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>

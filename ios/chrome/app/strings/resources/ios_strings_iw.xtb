@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">בחירת תיקייה</translation>
 <translation id="1254424942107648268">חיפוש המחרוזת הקודמת</translation>
 <translation id="1258491128795710625">מה חדש</translation>
+<translation id="1264156759663453185">נבחר יותר מדי טקסט לתרגום חלקי.</translation>
 <translation id="1265739287306757398">איך עושים זאת?</translation>
 <translation id="1272079795634619415">הפסקה</translation>
 <translation id="1275718070701477396">נבחר</translation>
@@ -128,7 +129,6 @@
 <translation id="1832848789136765277">כדי לוודא שתמיד תהיה לך גישה לנתונים המסונכרנים שלך, עליך לאמת את זהותך</translation>
 <translation id="1870148520156231997">הצגת הסיסמה</translation>
 <translation id="1872096359983322073">פנס</translation>
-<translation id="1886370402958071554">מחיקת הכתובת</translation>
 <translation id="1891796056033961979">הסימניות, הסיסמאות, ההגדרות ונתונים נוספים זמינים במסך הזה.</translation>
 <translation id="1894023287452300670">כאן ניתן לעקוב אחר המחיר</translation>
 <translation id="1911619930368729126">‏העלאה אל Google Drive</translation>
@@ -704,6 +704,7 @@
 <translation id="6066301408025741299">יש להקיש כדי לבטל.</translation>
 <translation id="6071409777669089905">ביטול הצמדת הכרטיסייה</translation>
 <translation id="6084848228346514841">בחירת כרטיסיות</translation>
+<translation id="6100617279104942061">נכנסת לחשבון בתור <ph name="USER_EMAIL" />. ההגדרות ייפתחו.</translation>
 <translation id="6103540626693881831">הצפנה במכשיר</translation>
 <translation id="6119050551270742952">דף האינטרנט הנוכחי מוצג במצב אנונימי</translation>
 <translation id="6122191549521593678">אונליין</translation>
@@ -1133,6 +1134,7 @@
 <translation id="9098541895599151034">למחוק <ph name="NUMBER_OF_ACCOUNTS" /> סיסמאות?</translation>
 <translation id="9100610230175265781">יש להזין ביטוי סיסמה</translation>
 <translation id="9107664647686727385">בדיקה לאיתור סיסמאות שנחשפו</translation>
+<translation id="9120217828624527905">צריך לעבור לתרגום דף מלא</translation>
 <translation id="9124387962554796433">‏Google עשויה להשתמש בהיסטוריית הגלישה שלך כדי להתאים אישית את החיפוש ושירותי Google נוספים.</translation>
 <translation id="9137526406337347448">‏שירותי Google</translation>
 <translation id="9148126808321036104">כניסה חוזרת</translation>

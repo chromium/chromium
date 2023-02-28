@@ -47,6 +47,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1254117744268754948">Kausta valimine</translation>
 <translation id="1254424942107648268">Eelmise vaste otsimine</translation>
 <translation id="1258491128795710625">Mis on uut?</translation>
+<translation id="1264156759663453185">Valitud tekst on osaliseks tõlkimiseks liiga suur.</translation>
 <translation id="1265739287306757398">Lisateave</translation>
 <translation id="1272079795634619415">Peata</translation>
 <translation id="1275718070701477396">Valitud</translation>
@@ -177,6 +178,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2268044343513325586">Täpsustamine</translation>
 <translation id="2273327106802955778">Rohkem menüü-üksusi</translation>
 <translation id="2286505070150039482">Esiletõstetud tekst</translation>
+<translation id="2287614783861766820">{count,plural, =1{See aadress kustutatakse sellest seadmest.}other{Need aadressid kustutatakse sellest seadmest.}}</translation>
 <translation id="2299218006564889602">Paroolid krüpteeritakse teie seadmes, enne kui need salvestatakse Google'i paroolihaldurisse.</translation>
 <translation id="2302742851632557585">Muuda veebisaidi parooli</translation>
 <translation id="2316709634732130529">Kasuta soovitatud parooli</translation>
@@ -320,6 +322,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3244271242291266297">kk</translation>
 <translation id="3245744387817103524">Teie muudatust ei õnnestunud salvestada.</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> <ph name="NUM_SUGGESTIONS" />-st</translation>
+<translation id="3264775633254836593">Paroolide automaattäide</translation>
 <translation id="3268451620468152448">Avatud vahelehed</translation>
 <translation id="3272527697863656322">Loobu</translation>
 <translation id="3277021493514034324">Saidi aadress on kopeeritud</translation>
@@ -425,6 +428,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="408404951701638773">Otsinguriba aktiveerimine on nüüd lihtsam</translation>
 <translation id="4092655288299341041">Abi kuvamine</translation>
 <translation id="4101942614374785540">Paroolid salvestatakse nüüd teie Google'i kontole (<ph name="ACCOUNT" />). Saate neid kasutada kõikjal, kus olete sisse logitud. Selle väljalülitamiseks avage <ph name="BEGIN_LINK" />seaded<ph name="END_LINK" />.</translation>
+<translation id="4105841739161771091">{count,plural, =1{Kustuta aadress}other{Kustuta aadressid}}</translation>
 <translation id="4108998448622696017">Tuvastab ohtlikke sündmusi ja hoiatab teid enne, kui need juhtuvad.</translation>
 <translation id="411254640334432676">Allalaadimine ebaõnnestus.</translation>
 <translation id="4112644173421521737">Otsi</translation>
@@ -458,6 +462,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4324952538601951430">Teie salvestatud järjehoidjad, paroolid, seaded ja muu on nüüd siin</translation>
 <translation id="4334428914252001502">1 lugemata artikkel.</translation>
 <translation id="4338650699862464074">Saadab Google'ile teie külastatud lehtede URL-id.</translation>
+<translation id="4342054591427973606">{count,plural, =1{See aadress kustutatakse sellest ja muudest seadmetest, kus olete sisse logitud.}other{Need aadressid kustutatakse sellest ja muudest seadmetest, kus olete sisse logitud.}}</translation>
 <translation id="4343046787186034850">Juurdepääs kaamerale ja mikrofonile on lubatud</translation>
 <translation id="4359125752503270327">See leht avatakse teises rakenduses.</translation>
 <translation id="4375040482473363939">QR-koodi otsing</translation>
@@ -587,6 +592,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5232485538978018676">Sisselogimine hallatud kontoga</translation>
 <translation id="5234764350956374838">Loobu</translation>
 <translation id="5245322853195994030">Tühista sünkroonimine</translation>
+<translation id="5271265092610673171">{count,plural, =1{Kohustuslik väli on tühi. Täitke see enne salvestamist.}other{Mõned kohustuslikud väljad on tühjad. Täitke need enne salvestamist.}}</translation>
 <translation id="5271549068863921519">Salvesta parool</translation>
 <translation id="5295239312320826323">Kas eemaldada konto <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Kuva</translation>
@@ -700,6 +706,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6066301408025741299">Tühistamiseks puudutage.</translation>
 <translation id="6071409777669089905">Vabasta vaheleht</translation>
 <translation id="6084848228346514841">Valige vahelehed</translation>
+<translation id="6100617279104942061">Sisse logitud kasutajana <ph name="USER_EMAIL" />. Avab seaded.</translation>
 <translation id="6103540626693881831">Krüpteerimine seadmes</translation>
 <translation id="6119050551270742952">Praegune veebileht on inkognito režiimis</translation>
 <translation id="6122191549521593678">Onlain</translation>
@@ -734,6 +741,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6324669097367352121">Sisselogimisseaded</translation>
 <translation id="6337234675334993532">Krüpteerimine</translation>
 <translation id="633809752005859102">Midagi läks väga valesti. Töötame selle kallal.</translation>
+<translation id="6340285871011301182">Osaline tõlge pole saadaval.</translation>
 <translation id="6342069812937806050">Äsja</translation>
 <translation id="6344783595350022745">Lihttekst</translation>
 <translation id="6346549652287021269">Kas alustada uut allalaadimist?</translation>
@@ -844,6 +852,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6914583639806229067">Otsi kopeeritud pilti</translation>
 <translation id="6914783257214138813">Teie paroolid on nähtavad kõigile, kes saavad vaadata eksporditud faili.</translation>
 <translation id="6930799952781667037">Puudutage selle keele valimiseks.</translation>
+<translation id="6939941780796374211">Paroolivalikud</translation>
 <translation id="6944369514868857500">Valige muu konto</translation>
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -939,6 +948,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7738120385185846461">Probleemist teavitamine …</translation>
 <translation id="7741325291586284254">Uus inkognito vaheleht</translation>
 <translation id="7744394900930577716">Paroolid muudes rakendustes</translation>
+<translation id="7749790401023484470">Te ei valinud mingisugust teksti.</translation>
 <translation id="7756478488453921771">Menüü → Seaded → Makseviisid</translation>
 <translation id="7765158879357617694">Liiguta</translation>
 <translation id="7772032839648071052">Kinnitage parool</translation>
@@ -1053,6 +1063,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8534481786647257214">Google+ postitus on valmis.</translation>
 <translation id="8548878600947630424">Otsi lehelt ...</translation>
 <translation id="8558480467877843976">Nüüd saate kasutada Chrome'i iga kord, kui sirvite või puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
+<translation id="8585679456315406468">Märkusesse saab salvestada kuni 1000 tähemärki.</translation>
 <translation id="8588404856427128947">Väljas</translation>
 <translation id="8591976964826315682">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="8605219856220328675">Sule vaheleht.</translation>
@@ -1129,6 +1140,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9098541895599151034">Kas kustutada <ph name="NUMBER_OF_ACCOUNTS" /> parooli?</translation>
 <translation id="9100610230175265781">Parool on vajalik</translation>
 <translation id="9107664647686727385">Ohustatud paroolide otsimine</translation>
+<translation id="9120217828624527905">Terve lehe tõlkimise sisselülitamine</translation>
 <translation id="9124387962554796433">Google võib kasutada teie ajalugu otsingu ja muude Google'i teenuste isikupärastamiseks.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Logige uuesti sisse</translation>

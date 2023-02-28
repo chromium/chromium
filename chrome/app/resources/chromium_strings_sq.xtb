@@ -198,8 +198,8 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5527463683072221100">Hap PDF-të në Chromium</translation>
 <translation id="5614091477838198795">Kur opsioni është aktiv, do të dalësh po ashtu nga Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ofrohet një përditësim i Chromium}=1{Ofrohet një përditësim i Chromium}other{Një përditësim i Chromium ofrohet prej # ditësh}}</translation>
-<translation id="5634636535844844681">Chromium kërkon Windows 7 ose një version më të lartë.</translation>
 <translation id="5653831366781983928">Rinise Chromium tani</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Shfaqe Chromium në këtë gjuhë</translation>
 <translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
 <translation id="5883558403894052917">Chromium vuri re se këta artikuj përmbajnë softuer keqdashës:</translation>
@@ -341,10 +341,12 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8266560134891435528">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua sepse nuk je identifikuar</translation>
 <translation id="8276522524898344151">Chromium po përpiqet të kopjojë fjalëkalimet.</translation>
 <translation id="8290862415967981663">Ky skedar mund të jetë i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
+<translation id="8325404639443959713">Bëj më shumë me Chromium</translation>
 <translation id="8330519371938183845">Identifikohu për të sinkronizuar dhe personalizuar Chromium nëpër pajisjet e tua</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ka përdorur më parë Chromium</translation>
 <translation id="8357820681460164151">Për t'u qasur te gjërat e shfletuesit Chromium nëpër të gjitha pajisjet e tua, identifikohu dhe më pas aktivizo sinkronizimin</translation>
 <translation id="8360718212975266891">Për të marrë përditësimet e ardhshme të Chromium, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 8.</translation>
+<translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Hap përsëri Chromium brenda një dite}other{Hap përsëri Chromium brenda # ditësh}}</translation>
 <translation id="8453117565092476964">Arkivi i instaluesit është i dëmtuar ose i pavlefshëm. Shkarkoje Chromium përsëri.</translation>
 <translation id="8463672209299734063">Opsionale: Ndihmo në përmirësimin e veçorive dhe performancës së ChromiumOS duke dërguar automatikisht te Google të dhëna diagnostikuese dhe përdorimi.</translation>
@@ -380,6 +382,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="9158494823179993217">Administratori i sistemit ka konfiguruar Chromium që të hapë një shfletues alternativ për të pasur qasje te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Nise përsëri për të përditësuar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Personalizoje Chromium</translation>
 <translation id="93478295209880648">Chromium mund të mos funksionojë si duhet sepse nuk mbështetet më në Windows XP ose Windows Vista</translation>
 <translation id="942598560705308788">Certifikatat e menaxhuara nga Chromium</translation>
 <translation id="965162752251293939">Kush po e përdor Chromium?</translation>

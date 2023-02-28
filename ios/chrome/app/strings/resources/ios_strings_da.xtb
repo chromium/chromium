@@ -47,6 +47,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1254117744268754948">Vælg mappe</translation>
 <translation id="1254424942107648268">Find forrige</translation>
 <translation id="1258491128795710625">Nyheder</translation>
+<translation id="1264156759663453185">Den valgte tekst er for stor til delvis oversættelse.</translation>
 <translation id="1265739287306757398">Se, hvordan du gør</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Valgt</translation>
@@ -177,6 +178,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2268044343513325586">Juster</translation>
 <translation id="2273327106802955778">Menuen Mere</translation>
 <translation id="2286505070150039482">Fremhævet tekst</translation>
+<translation id="2287614783861766820">{count,plural, =1{Adressen slettes fra denne enhed.}one{Adressen slettes fra denne enhed.}other{Adresserne slettes fra denne enhed.}}</translation>
 <translation id="2299218006564889602">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangskodeadministrator.</translation>
 <translation id="2302742851632557585">Skift adgangskode på website</translation>
 <translation id="2316709634732130529">Brug foreslået adgangskode</translation>
@@ -458,6 +460,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4324952538601951430">Nu finder du dine gemte bogmærker, adgangskoder, indstillinger og meget mere lige her</translation>
 <translation id="4334428914252001502">1 ulæst artikel.</translation>
 <translation id="4338650699862464074">Sender webadresser på de sider, du besøger, til Google.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Adressen slettes fra denne enhed og eventuelle andre enheder, du er logget ind på}one{Adressen slettes fra denne enhed og eventuelle andre enheder, du er logget ind på}other{Adresserne slettes fra denne enhed og eventuelle andre enheder, du er logget ind på}}</translation>
 <translation id="4343046787186034850">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="4359125752503270327">Denne side åbner i en anden app.</translation>
 <translation id="4375040482473363939">Søgning efter QR-kode</translation>
@@ -587,6 +590,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5232485538978018676">Log ind med Managerkonto</translation>
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5245322853195994030">Annuller synkronisering</translation>
+<translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}one{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}other{Nogle obligatoriske felter er tomme. Udfyld dem, inden du gemmer.}}</translation>
 <translation id="5271549068863921519">Gem adgangskode</translation>
 <translation id="5295239312320826323">Vil du fjerne kontoen <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Vis</translation>
@@ -700,6 +704,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6066301408025741299">Tryk for at annullere.</translation>
 <translation id="6071409777669089905">Frigør fane</translation>
 <translation id="6084848228346514841">Vælg faner</translation>
+<translation id="6100617279104942061">Logget ind som <ph name="USER_EMAIL" />. Åbner indstillinger.</translation>
 <translation id="6103540626693881831">Kryptering på enheden</translation>
 <translation id="6119050551270742952">Den aktuelle webside er i inkognitotilstand</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1129,6 +1134,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9098541895599151034">Vil du slette <ph name="NUMBER_OF_ACCOUNTS" /> adgangskoder?</translation>
 <translation id="9100610230175265781">Adgangssætning kræves</translation>
 <translation id="9107664647686727385">Tjekker, om der er kompromitterede adgangskoder</translation>
+<translation id="9120217828624527905">Skift til oversættelse af hele siden</translation>
 <translation id="9124387962554796433">Google kan bruge din historik til at tilpasse Søgning og andre Google-tjenester.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9148126808321036104">Log ind igen</translation>

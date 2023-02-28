@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">เลือกโฟลเดอร์</translation>
 <translation id="1254424942107648268">ค้นหาก่อนหน้า</translation>
 <translation id="1258491128795710625">มีอะไรใหม่</translation>
+<translation id="1264156759663453185">ข้อความที่เลือกมีจำนวนเยอะเกินไปสำหรับการแปลข้อความบางส่วน</translation>
 <translation id="1265739287306757398">เรียนรู้วิธี</translation>
 <translation id="1272079795634619415">หยุด</translation>
 <translation id="1275718070701477396">เลือกแล้ว</translation>
@@ -128,7 +129,6 @@
 <translation id="1832848789136765277">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงข้อมูลที่ซิงค์ไว้ได้ทุกเมื่อ</translation>
 <translation id="1870148520156231997">แสดงรหัสผ่าน</translation>
 <translation id="1872096359983322073">แฟลช</translation>
-<translation id="1886370402958071554">ลบที่อยู่</translation>
 <translation id="1891796056033961979">บุ๊กมาร์ก รหัสผ่าน การตั้งค่า และข้อมูลอื่นๆ ที่บันทึกไว้จะพร้อมให้ใช้งานจากหน้าจอนี้</translation>
 <translation id="1894023287452300670">ติดตามราคาที่นี่</translation>
 <translation id="1911619930368729126">อัปโหลดไปยัง Google ไดรฟ์</translation>
@@ -704,6 +704,7 @@
 <translation id="6066301408025741299">แตะเพื่อยกเลิก</translation>
 <translation id="6071409777669089905">เลิกปักหมุดแท็บ</translation>
 <translation id="6084848228346514841">เลือกแท็บ</translation>
+<translation id="6100617279104942061">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดการตั้งค่า</translation>
 <translation id="6103540626693881831">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="6119050551270742952">หน้าเว็บนี้อยู่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="6122191549521593678">ออนไลน์</translation>
@@ -1133,6 +1134,7 @@
 <translation id="9098541895599151034">ลบรหัสผ่าน <ph name="NUMBER_OF_ACCOUNTS" /> บัญชีใช่ไหม</translation>
 <translation id="9100610230175265781">ต้องระบุรหัสผ่าน</translation>
 <translation id="9107664647686727385">ตรวจหารหัสผ่านที่ถูกละเมิด</translation>
+<translation id="9120217828624527905">เปลี่ยนเป็นการแปลภาษาทั้งหน้า</translation>
 <translation id="9124387962554796433">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เหมาะกับคุณ</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>

@@ -130,6 +130,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3245429137663807393">Ako delite i Chrome izveštaje o korišćenju, ti izveštaji obuhvataju URL-ove koje posećujete</translation>
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
 <translation id="3286538390144397061">Restartuj odmah</translation>
+<translation id="3293912612584488930">Uradite više uz Chrome</translation>
 <translation id="3360895254066713204">Chrome pomoćnik</translation>
 <translation id="3379938682270551431">{0,plural, =0{Ponovo ćemo pokrenuti Chrome}=1{Ponovo ćemo pokrenuti Chrome za 1 sekundu}one{Ponovo ćemo pokrenuti Chrome za # sekundu}few{Ponovo ćemo pokrenuti Chrome za # sekunde}other{Ponovo ćemo pokrenuti Chrome za # sekundi}}</translation>
 <translation id="3396977131400919238">Tokom instalacije je došlo do greške u operativnom sistemu. Preuzmite Google Chrome ponovo.</translation>
@@ -157,6 +158,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex nije uspeo da sinhronizuje podatke zbog greške pri prijavljivanju.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
+<translation id="3809772425479558446">Za Google Chrome je potreban Windows 10 ili novija verzija.</translation>
 <translation id="3835168907083856002">Ovim će se napraviti nov Chrome profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Zatvorite sve prozore Google Chrome pregledača i pokušajte ponovo.</translation>
 <translation id="3865754807470779944">Instalirana je verzija Chrome-a <ph name="PRODUCT_VERSION" /></translation>
@@ -413,7 +415,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8989968390305463310">Istorija pregledanja utiče na oglase koji vam se prikazuju i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome automatski briše interesovanja svakog meseca čim postanu dostupna. Interesovanja mogu da se osvežavaju ako ih ne uklonite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ažuriranje za Chrome je dostupno}=1{Ažuriranje za Chrome je dostupno}one{Ažuriranje za Chrome je dostupno već # dan}few{Ažuriranje za Chrome je dostupno već # dana}other{Ažuriranje za Chrome je dostupno već # dana}}</translation>
 <translation id="9053892488859122171">Chrome OS Flex sistem</translation>
-<translation id="9067395829937117663">Za Google Chrome je potreban Windows 7 ili novija verzija.</translation>
 <translation id="911206726377975832">Želite li da izbrišete i podatke pregledanja?</translation>
 <translation id="9138603949443464873">Da biste primenili promene, ponovo pokrenite Chrome</translation>
 <translation id="9195993889682885387">Chrome može da proceni interesovanja na osnovu istorije pregledanja iz poslednjih nekoliko nedelja. Te informacije ostaju na uređaju.</translation>

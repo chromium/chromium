@@ -92,6 +92,7 @@
 <translation id="7118091470949186573">Sad možete koristiti Chromium svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="7165402419892018581">Odabir Chromiuma za automatsko popunjavanje</translation>
 <translation id="7175400662502680481">Vaša je zaporka ugrožena zbog povrede podataka. Upravitelj zaporki preporučuje da je odmah promijenite.</translation>
+<translation id="7192111075364461693">Obavijesti Chromiuma trenutačno su isključene u postavkama uređaja.</translation>
 <translation id="7208566199746267865">Chromium vam štedi vrijeme sinkronizacijom vaših računa na webu. Račune možete dodavati i uklanjati u postavkama.</translation>
 <translation id="725427773388857052">Chromium vam može pomoći da se bolje zaštitite od povrede podataka, nesigurnih web-lokacija i još mnogo toga.</translation>
 <translation id="7255976941681861701">Upoznajte novi izbornik Chromiuma</translation>
@@ -132,6 +133,7 @@ Važne napomene:
   • Ako uključite sinkronizaciju, mjerni podaci mogu uključivati i podatke o URL-ovima koje posjetite.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Taj račun i svi nespremljeni podaci uklonit će se iz Chromiuma.</translation>
 <translation id="894437814105052438">Kad se odjavite, Chromium neće sinkronizirati nove podatke s vašim Google računom. Ranije sinkronizirani podaci ostat će na računu.</translation>
+<translation id="8963279154877372067">Dopustite obavijesti Chromiuma da biste primali upozorenja o sniženju cijena</translation>
 <translation id="9022552996538154597">Prijava na Chromium</translation>
 <translation id="9059693977935746710">Nećete morati pamtiti tu zaporku. Spremit će se u Upravitelj zaporki za <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium je zastario</translation>

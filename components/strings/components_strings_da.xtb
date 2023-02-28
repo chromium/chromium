@@ -589,6 +589,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu med skydeknapper til tilpasning af størrelse</translation>
+<translation id="2365355378251437925">Angiv <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Niveau</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Tilpas dine hjælpefunktioner i Chrome-indstillingerne</translation>
@@ -876,6 +877,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="317878711435188021">Vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="3180358318770512945">Børn og forældre</translation>
 <translation id="3187306450550410410">Fleksibelt arbejde</translation>
+<translation id="3187380004437786923">Administrer betalinger</translation>
 <translation id="3187472288455401631">Annoncemåling</translation>
 <translation id="3190736958609431397">Hold ikke længere øje</translation>
 <translation id="319282854780294203">Sociale netværk</translation>
@@ -1271,6 +1273,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4154664944169082762">Fingeraftryk</translation>
 <translation id="4159784952369912983">Lilla</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
+<translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4171400957073367226">Ugyldig verifikationssignatur</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Vis altid</translation>
@@ -2188,7 +2191,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Portfals</translation>
-<translation id="6428450836711225518">Bekræft dit telefonnummer</translation>
+<translation id="6428450836711225518">Verificer dit telefonnummer</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Skift Google-adgangskode</translation>
 <translation id="6431119592588449664">Rapporten er uploadet</translation>
@@ -3334,6 +3337,7 @@ Yderligere oplysninger:
 <translation id="950736567201356821">Tre huller øverst</translation>
 <translation id="961663415146723894">Bind nederst</translation>
 <translation id="962484866189421427">Dette indhold kan forsøge at installere vildledende apps, der foregiver at være noget andet, eller som indsamler data, der kan anvendes til at overvåge dig. <ph name="BEGIN_LINK" />Vis alligevel<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Alle brugere</translation>
 <translation id="964050462028070434">Administrer adgangskoder og adgangsnøgler…</translation>
 <translation id="96680173638229310">Biler og køretøjer</translation>
 <translation id="969892804517981540">Officiel version</translation>

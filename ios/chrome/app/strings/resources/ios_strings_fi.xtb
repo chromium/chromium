@@ -47,6 +47,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="1254117744268754948">Valitse kansio</translation>
 <translation id="1254424942107648268">Hae edellinen</translation>
 <translation id="1258491128795710625">Uutta</translation>
+<translation id="1264156759663453185">Valittu teksti on liian suuri osittaiseen kääntämiseen.</translation>
 <translation id="1265739287306757398">Lisätietoja</translation>
 <translation id="1272079795634619415">Pysäytä</translation>
 <translation id="1275718070701477396">Valittu</translation>
@@ -177,6 +178,7 @@ Salatun datasi voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2268044343513325586">Tarkenna</translation>
 <translation id="2273327106802955778">Lisäasetusvalikko</translation>
 <translation id="2286505070150039482">Korostettu teksti</translation>
+<translation id="2287614783861766820">{count,plural, =1{Osoite poistetaan tältä laitteelta.}other{Nämä osoitteet poistetaan tältä laitteelta.}}</translation>
 <translation id="2299218006564889602">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>
 <translation id="2302742851632557585">Vaihda salasana verkkosivustolla</translation>
 <translation id="2316709634732130529">Käytä salasanaehdotusta</translation>
@@ -458,6 +460,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4324952538601951430">Esim. tallentamasi kirjanmerkit, salasanat ja asetukset ovat nyt täällä</translation>
 <translation id="4334428914252001502">1 lukematon artikkeli</translation>
 <translation id="4338650699862464074">Lähettää avaamiesi sivujen URL-osoitteet Googlelle.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Osoite poistetaan tältä ja muilta sisäänkirjautuneilta laitteilta.}other{Nämä osoitteet poistetaan tältä ja muilta sisäänkirjautuneilta laitteilta.}}</translation>
 <translation id="4343046787186034850">Pääsy kameraan ja mikrofoniin myönnetty</translation>
 <translation id="4359125752503270327">Tämä sivu avataan toisessa sovelluksessa.</translation>
 <translation id="4375040482473363939">QR-koodihaku</translation>
@@ -587,6 +590,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5232485538978018676">Kirjaudu sisään hallinnoidulla tilillä</translation>
 <translation id="5234764350956374838">Hylkää</translation>
 <translation id="5245322853195994030">Peru synkronointi</translation>
+<translation id="5271265092610673171">{count,plural, =1{Pakollinen kenttä on tyhjä. Täytä se ennen tallentamista.}other{Jotkin pakolliset kentät ovat tyhjiä. Täytä ne ennen tallentamista.}}</translation>
 <translation id="5271549068863921519">Tallenna salasana</translation>
 <translation id="5295239312320826323">Poistetaanko tili <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Näytä</translation>
@@ -700,6 +704,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6066301408025741299">Peru napauttamalla.</translation>
 <translation id="6071409777669089905">Irrota välilehti</translation>
 <translation id="6084848228346514841">Valitse välilehdet</translation>
+<translation id="6100617279104942061">Kirjautuneena käyttäjänä <ph name="USER_EMAIL" />. Avaa asetukset.</translation>
 <translation id="6103540626693881831">Laitteen salaus</translation>
 <translation id="6119050551270742952">Nykyinen verkkosivu on incognito-tilassa</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1129,6 +1134,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9098541895599151034">Poistetaanko <ph name="NUMBER_OF_ACCOUNTS" /> salasanaa?</translation>
 <translation id="9100610230175265781">Tunnuslause tarvitaan</translation>
 <translation id="9107664647686727385">Tarkista salasanojen vaarantuminen</translation>
+<translation id="9120217828624527905">Vaihda koko sivun kääntämiseen</translation>
 <translation id="9124387962554796433">Google voi muokata Hakua ja muita Googlen palveluita historiasi perusteella.</translation>
 <translation id="9137526406337347448">Googlen palvelut</translation>
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>

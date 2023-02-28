@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="2732745070297234559">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà.</translation>
+<translation id="2736805085127235148">En aquests moments, les notificacions de Chrome estan desactivades a la configuració del dispositiu.</translation>
 <translation id="2767464022270041271">No hi ha cap contrasenya desada. El gestor de contrasenyes de Google pot comprovar les teves contrasenyes quan les deses.</translation>
 <translation id="2869959624320573933">Inicia la sessió a Chrome</translation>
 <translation id="2957447865124070833">Selecciona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
 <translation id="7939179037291298976">A la configuració de l'iPhone, obre Opcions de contrasenya i selecciona Chrome</translation>
 <translation id="8022947259858476807">Utilitza Chrome de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
+<translation id="804638182476029347">Permet que les notificacions de Chrome incloguin alertes de baixada de preu</translation>
 <translation id="81358522153858150">Chrome ara admet polítiques dels usuaris per al compte gestionat</translation>
 <translation id="8160472928944011082">Chrome no es pot actualitzar</translation>
 <translation id="8357607116237445042">Tria si vols esborrar les dades de Chrome d'aquest dispositiu o si vols conservar-les</translation>

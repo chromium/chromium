@@ -196,8 +196,8 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5527463683072221100">Atvērt PDF failus pārlūkā Chromium</translation>
 <translation id="5614091477838198795">Iestatījumam esot ieslēgtam, jūs tiksiet izrakstīts arī no pārlūka Chromium.</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ir pieejams Chromium atjauninājums}=1{Ir pieejams Chromium atjauninājums}zero{Chromium atjauninājums ir pieejams jau # dienu}one{Chromium atjauninājums ir pieejams jau # dienu}other{Chromium atjauninājums ir pieejams jau # dienas}}</translation>
-<translation id="5634636535844844681">Pārlūka Chromium izmantošanai nepieciešama operētājsistēma Windows 7 vai jaunāka versija.</translation>
 <translation id="5653831366781983928">Lūdzu, nekavējoties restartējiet pārlūku Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Rādīt Chromium šajā valodā</translation>
 <translation id="5862307444128926510">Laipni lūdzam pārlūkā Chromium!</translation>
 <translation id="5883558403894052917">Pārlūkā Chromium tika konstatēts, ka tālāk norādītie vienumi satur ļaunprātīgu programmatūru:</translation>
@@ -341,6 +341,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> iepriekš izmantoja Chromium</translation>
 <translation id="8357820681460164151">Lai piekļūtu savam Chromium saturam visās savās ierīcēs, pierakstieties un pēc tam ieslēdziet sinhronizāciju.</translation>
 <translation id="8360718212975266891">Lai saņemtu turpmākus Chromium atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 8.</translation>
+<translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Restartējiet pārlūku Chromium vienas dienas laikā}zero{Restartējiet pārlūku Chromium # dienu laikā}one{Restartējiet pārlūku Chromium # dienas laikā}other{Restartējiet pārlūku Chromium # dienu laikā}}</translation>
 <translation id="8453117565092476964">Instalēšanas programmas arhīvs ir bojāts vai nav derīgs. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="8463672209299734063">Neobligāti: palīdziet uzlabot Chromium OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>

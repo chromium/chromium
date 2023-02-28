@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">หากต้องการออกจากระบบบัญชี Google ในเว็บไซต์ทั้งหมด ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chrome<ph name="END_LINK" /></translation>
 <translation id="2695886661449553974">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="2732745070297234559">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
+<translation id="2736805085127235148">ตอนนี้การแจ้งเตือนของ Chrome ปิดอยู่ในการตั้งค่าอุปกรณ์</translation>
 <translation id="2767464022270041271">ไม่มีรหัสผ่านที่บันทึกไว้ เครื่องมือจัดการรหัสผ่านบน Google จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกไว้</translation>
 <translation id="2869959624320573933">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="2957447865124070833">เลือก <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome อัปเดตแล้ว</translation>
 <translation id="7939179037291298976">จากการตั้งค่าของ iPhone ให้เปิด "ตัวเลือกรหัสผ่าน" แล้วเลือก "Chrome"</translation>
 <translation id="8022947259858476807">ใช้ Chrome โดยค่าเริ่มต้นเพื่อเปิดลิงก์ ค้นหาจากวิดเจ็ต และป้อนรหัสผ่านอัตโนมัติในแอปอื่นๆ</translation>
+<translation id="804638182476029347">อนุญาตให้การแจ้งเตือนของ Chrome รับการแจ้งเตือนเมื่อราคาลดลง</translation>
 <translation id="81358522153858150">ตอนนี้ Chrome รองรับนโยบายผู้ใช้สำหรับบัญชีที่จัดการแล้ว</translation>
 <translation id="8160472928944011082">อัปเดต Chrome ไม่ได้</translation>
 <translation id="8357607116237445042">เลือกว่าจะล้างข้อมูล Chrome จากอุปกรณ์นี้หรือเก็บไว้</translation>

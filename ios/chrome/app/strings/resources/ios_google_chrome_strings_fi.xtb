@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Jos haluat kirjautua ulos Google-tililtäsi kaikilla sivustoilla, <ph name="BEGIN_LINK" />kirjaudu ulos Chromesta<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>
 <translation id="2732745070297234559">Chrome ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
+<translation id="2736805085127235148">Chromen ilmoitukset ovat tällä hetkellä poissa päältä laiteasetuksissa.</translation>
 <translation id="2767464022270041271">Ei tallennettuja salasanoja Google Salasanat voi tarkistaa salasanasi tallennuksen yhteydessä.</translation>
 <translation id="2869959624320573933">Kirjaudu Chromeen</translation>
 <translation id="2957447865124070833">Valitse <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome on ajan tasalla</translation>
 <translation id="7939179037291298976">Avaa iPhonen asetuksista Salasanavalinnat ja valitse Chrome.</translation>
 <translation id="8022947259858476807">Käytä Chromea oletuksena ja avaa linkkejä, hae widgeteistä ja täytä salasanoja automaattisesti muissa sovelluksissa</translation>
+<translation id="804638182476029347">Salli Chrome-ilmoitukset, jotta saat ilmoituksia hinnan laskusta</translation>
 <translation id="81358522153858150">Chrome tukee nyt hallinnoidun tilin käyttäjäkäytäntöjä</translation>
 <translation id="8160472928944011082">Chromea ei voi päivittää</translation>
 <translation id="8357607116237445042">Valitse, haluatko poistaa Chrome-datasi tältä laitteelta vai säilyttää sen</translation>

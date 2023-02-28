@@ -198,8 +198,8 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5527463683072221100">Agor ffeiliau PDF yn Chromium</translation>
 <translation id="5614091477838198795">Pan fydd ymlaen, byddwch hefyd yn cael eich allgofnodi o Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Mae diweddariad Cromiwm ar gael}=1{Mae diweddariad Cromiwm ar gael}two{Mae diweddariad Chromium wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}}</translation>
-<translation id="5634636535844844681">Mae Chromium yn gofyn am Windows 7 neu uwch.</translation>
 <translation id="5653831366781983928">Ailgychwynnwch Chromium nawr</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Dangos Chromium yn yr iaith hon</translation>
 <translation id="5862307444128926510">Croeso i Chromium</translation>
 <translation id="5883558403894052917">Gwnaeth Chromium ganfod bod yr eitemau hyn yn cynnwys drwgwedd:</translation>
@@ -342,10 +342,12 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8266560134891435528">Ni all Chromium wirio'ch cyfrineiriau oherwydd nad ydych wedi mewngofnodi</translation>
 <translation id="8276522524898344151">Mae Chromium yn ceisio copïo cyfrineiriau.</translation>
 <translation id="8290862415967981663">Mae'n bosib bod y ffeil hon yn beryglus, felly mae Chromium wedi ei rhwystro.</translation>
+<translation id="8325404639443959713">Gwneud rhagor gyda Chromium</translation>
 <translation id="8330519371938183845">Mewngofnodi i gysoni a phersonoleiddio Chromium ar draws eich dyfeisiau</translation>
 <translation id="8340674089072921962">Yn flaenorol roedd <ph name="USER_EMAIL_ADDRESS" /> yn defnyddio Chromium</translation>
 <translation id="8357820681460164151">I gael mynediad at eich holl bethau porwr Chromium ar draws eich holl ddyfeisiau, mewngofnodwch, yna trowch gysoni ymlaen</translation>
 <translation id="8360718212975266891">I gael diweddariadau Chromium yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 8.</translation>
+<translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Ail-lansiwch Chromium o fewn un diwrnod}zero{Ail-lansiwch Chromium o fewn # diwrnod}two{Ail-lansiwch Chromium o fewn # ddiwrnod}few{Ail-lansiwch Chromium o fewn # diwrnod}many{Ail-lansiwch Chromium o fewn # diwrnod}other{Ail-lansiwch Chromium o fewn # diwrnod}}</translation>
 <translation id="8453117565092476964">Mae'r archif gosodwr wedi'i lygru neu'n annilys. Lawrlwythwch Chromium eto.</translation>
 <translation id="8463672209299734063">Dewisol: Helpu i wella nodweddion a pherfformiad ChromiumOS drwy anfon data diagnostig a defnydd at Google yn awtomatig.</translation>
@@ -381,6 +383,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="9158494823179993217">Mae'ch gweinyddwr system wedi ffurfweddu Chromium i agor porwr gwahanol i fynd i mewn i <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Ail-lansiwch i ddiweddaru &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Personoleiddio Chromium</translation>
 <translation id="93478295209880648">Mae'n bosib na fydd Chromium yn gweithredu'n gywir oherwydd nad yw'n cael ei gefnogi mwyach ar Windows XP na Windows Vista</translation>
 <translation id="942598560705308788">Tystysgrifau a reolir gan Chromium</translation>
 <translation id="965162752251293939">Pwy sy'n defnyddio Chromium?</translation>

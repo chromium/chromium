@@ -196,8 +196,8 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
 <translation id="5614091477838198795">Quando está ativado, a sua sessão também é terminada no Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Está disponível uma atualização do Chromium}=1{Está disponível uma atualização do Chromium}other{Está disponível uma atualização do Chromium há # dias}}</translation>
-<translation id="5634636535844844681">O Chromium requer o Windows 7 ou superior.</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Apresentar o Chromium neste idioma</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5883558403894052917">O Chromium encontrou software malicioso nestes itens:</translation>
@@ -345,8 +345,10 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estava a utilizar o Chromium</translation>
 <translation id="8357820681460164151">Para aceder aos seus itens do navegador Chromium em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
 <translation id="8360718212975266891">Para obter atualizações futuras do Chromium, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicie o Chromium dentro de um dia}other{Reinicie o Chromium dentro de # dias}}</translation>
 <translation id="8453117565092476964">O arquivo do programa de instalação está corrompido ou não é válido. Descarregue novamente o Chromium.</translation>
+<translation id="8458614432758743027">O Chromium requer o Windows 10 ou superior.</translation>
 <translation id="8463672209299734063">Opcional: ajudar a melhorar as funcionalidades e o desempenho do ChromiumOS ao enviar automaticamente dados de diagnóstico e utilização para a Google.</translation>
 <translation id="8493179195440786826">O Chromium Está Desatualizado</translation>
 <translation id="8550334526674375523">Este perfil de trabalho está completamente separado do seu perfil pessoal.</translation>

@@ -279,6 +279,7 @@
 <translation id="2429753432712299108">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ ก่อนที่จะยอมรับ โปรดยืนยันว่ารหัสผ่านนี้ปรากฏบนอุปกรณ์นั้น: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">แสดงรหัสผ่าน</translation>
 <translation id="243878895369688216">เปิดเมื่อวานนี้</translation>
+<translation id="2440978926514840421">บันทึก GIF แล้ว</translation>
 <translation id="2441427462554639370">การบันทึกสิ้นสุดเนื่องจากพื้นที่เก็บข้อมูลใกล้เต็มแล้ว</translation>
 <translation id="24452542372838207">ขยายการแจ้งเตือน</translation>
 <translation id="2449089818483227734">แบตเตอรี่เหลือน้อย</translation>
@@ -1467,7 +1468,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ หากคุณเพิ่งเปลี่ยนรหัสผ่านไปไม่นาน ให้ใช้รหัสผ่านเก่า รหัสผ่านใหม่จะมีผลเมื่อคุณออกจากระบบ</translation>
 <translation id="8855885154700222542">แป้นแสดงเต็มหน้าจอ</translation>
-<translation id="8858369206579825206">การควบคุมความเป็นส่วนตัว</translation>
 <translation id="8870509716567206129">แอปไม่สนับสนุนการแยกหน้าจอ</translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>
 <translation id="8876661425082386199">ตรวจสอบการเชื่อมต่อของคุณ</translation>

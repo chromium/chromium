@@ -198,8 +198,8 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5527463683072221100">Otvaraj PDF-ove u Chromiumu</translation>
 <translation id="5614091477838198795">Kada je uključeno, također ćete biti odjavljeni iz Chromiuma</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ažuriranje za Chromium je dostupno}=1{Ažuriranje za Chromium je dostupno}one{Ažuriranje za Chromium je dostupno # dan}few{Ažuriranje za Chromium je dostupno # dana}other{Ažuriranje za Chromium je dostupno # dana}}</translation>
-<translation id="5634636535844844681">Za Chromium je potreban Windows 7 ili noviji operativni sistem.</translation>
 <translation id="5653831366781983928">Ponovo pokrenite Chromium sada</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium na ovom jeziku.</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5883558403894052917">Chromium je otkrio da ove stavke sadržavaju zlonamjerni softver:</translation>
@@ -347,8 +347,10 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> je prethodno koristio/la Chromium</translation>
 <translation id="8357820681460164151">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim stvarima s Chromium preglednika na svim svojim uređajima</translation>
 <translation id="8360718212975266891">Da primate buduća ažuriranja za Chromium, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.</translation>
+<translation id="8370517070665726704">Autorska prava <ph name="YEAR" /> Google LLC. Sva prava su zadržana.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Ponovo pokreni Chromium u roku od jednog dana}one{Ponovo pokreni Chromium u roku od # dana}few{Ponovo pokreni Chromium u roku od # dana}other{Ponovo pokreni Chromium u roku od # dana}}</translation>
 <translation id="8453117565092476964">Arhiva alata za instaliranje je oštećena ili nevažeća. Ponovo preuzmite Chromium.</translation>
+<translation id="8458614432758743027">Chromium zahtijeva Windows 10 ili noviju verziju.</translation>
 <translation id="8463672209299734063">Nije obavezno: Pomozite nam da poboljšamo funkcije i performanse ChromiumOS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
 <translation id="8493179195440786826">Chromium nije ažuriran</translation>
 <translation id="8550334526674375523">Ovaj radni profil je u potpunosti odvojen od vašeg ličnog profila.</translation>

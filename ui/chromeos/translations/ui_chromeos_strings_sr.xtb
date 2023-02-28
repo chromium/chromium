@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">ирски</translation>
 <translation id="4124935795427217608">Једнорог</translation>
 <translation id="4131235941541910880">Преместите ставке које вам не требају у отпад</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активирај после подешавања уређаја</translation>
 <translation id="4153015322587141338">Кликните десним тастером на фајл и изаберите <ph name="PIN_COMMAND" /> за брз приступ фајловима на полици.</translation>
 <translation id="4157569377477607576">Смернице администратора не препоручују:</translation>
 <translation id="4159731583141908892">Премештених ставки: <ph name="FILE_NAME" />.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">Фајл <ph name="FILE_NAME" /> ће бити избрисан и нећете моћи да га вратите.</translation>
 <translation id="4418686080762064601">Направите пречицу за фајлове</translation>
 <translation id="4425149324548788773">Мој диск</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, активирај после подешавања уређаја, управља администратор</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, повежи</translation>
 <translation id="4442424173763614572">DNS претрага није успела</translation>
 <translation id="4462159676511157176">Прилагођени сервери назива</translation>
@@ -613,8 +615,10 @@
 <translation id="5911887972742538906">Дошло је до грешке током инсталирања Linux апликације.</translation>
 <translation id="5912396950572065471">Формат</translation>
 <translation id="5913638992615760742">Операција копирања није успела, неочекивана грешка: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Доступне су нове функције претраге</translation>
 <translation id="5926082595146149752">холандски (Холандија) са америчком интернационалном тастатуром за рачунар</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, активирај после подешавања уређаја</translation>
 <translation id="5955954492236143329">Ставки: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox-ови</translation>
 <translation id="5982621672636444458">Опције сортирања</translation>
@@ -937,6 +941,7 @@
 <translation id="8487700953926739672">Доступно ван мреже</translation>
 <translation id="8492972329130824181">Кућна мрежа није доступна. Пренос података у ромингу мора да буде омогућен ради повезивања.</translation>
 <translation id="8499098729323186194">Издвајају се ставке (<ph name="NUMBER_OF_ITEMS" />)...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, активирај после подешавања уређаја, управља администратор</translation>
 <translation id="8521441079177373948">УК</translation>
 <translation id="853494022971700746">француски (Француска)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>

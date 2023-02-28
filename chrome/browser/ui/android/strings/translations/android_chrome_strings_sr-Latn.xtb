@@ -355,6 +355,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="2951071800649516099">Dodajte stranice na listu za čitanje za kasnije</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
 <translation id="2961210776189273067">Zvanje</translation>
+<translation id="296370266220139811">Uštedite vreme i kucajte manje</translation>
 <translation id="2979025552038692506">Izabrane kartice bez arhiviranja</translation>
 <translation id="2979639724566107830">Otvorite u novom prozoru</translation>
 <translation id="2981364137500752533">Možete da imate najviše 5 prozora.</translation>
@@ -482,6 +483,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3578874072190212775">Pomozite sajtovima u borbi protiv prevara i u razlikovanju robota od ljudi</translation>
 <translation id="3587482841069643663">Sve</translation>
 <translation id="3587596251841506391">Poboljšajte bezbednost na vebu</translation>
+<translation id="3597179440835065298">Dobijajte bolje predloge</translation>
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Upravljajte prozorima</translation>
@@ -747,6 +749,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> želi da se poveže</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Poslednjih 15 minuta</translation>
 <translation id="5032430150487044192">Pravljenje QR koda nije uspelo</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5040262127954254034">Privatnost</translation>
@@ -882,6 +885,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5813552293717797987">Ovim pregledačem upravljaju <ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Unesite tekst ovde ili dodirnite ikonu mikrofona da biste započeli</translation>
 <translation id="5814749351757353073">Budite u toku sa omiljenim sajtovima</translation>
+<translation id="5822875253699806474">Da biste se brzo vratili na sajtove koje ste posetili, sinhronizujte kartice i istoriju</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5833984609253377421">Deli link</translation>
 <translation id="5834764604050996579">Da biste skenirali QR kôd, dozvolite da Chrome koristi kameru</translation>
@@ -921,6 +925,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="6002122790816966947">Uređaji</translation>
 <translation id="6005538289190791541">Predložena lozinka</translation>
 <translation id="6011308810877101166">Poboljšajte predloge za pretragu</translation>
+<translation id="6026538407078977628">Proširite na prikaz preko celog ekrana</translation>
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -1136,6 +1141,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
 <translation id="7105047059074518658">Prijavite se da biste lakše pregledali na svim uređajima</translation>
 <translation id="7106762743910369165">Organizacija upravlja pregledačem</translation>
+<translation id="7116588989735740310">Da biste se vratili na sajtove posećene na drugim uređajima, sinhronizujte kartice i istoriju</translation>
 <translation id="7130504491556983216">Lista interesovanja će se prikazati ovde dok pregledate veb</translation>
 <translation id="7138678301420049075">Drugo</translation>
 <translation id="7146622961999026732">Izgleda da su vam ovi sajtovi i aplikacije važni:</translation>
@@ -1192,6 +1198,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7437998757836447326">Odjavljivanje iz Chrome-a</translation>
 <translation id="7443901082822119557">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na različitim sajtovima, na primer, za personalizaciju oglasa. Funkcije na nekim sajtovima mogu da prestanu sa radom.</translation>
 <translation id="7453467225369441013">Odjaviće vas sa većine sajtova. Neće vas odjaviti sa Google naloga.</translation>
+<translation id="7453810262525006706">Skupite u bočni prikaz</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
 <translation id="7455988709578031708">Na osnovu istorije pregledanja. Ovo podešavanje je uključeno.</translation>
 <translation id="7456774706094330779">Produženo predučitavanje</translation>
@@ -1214,6 +1221,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="751961395872307827">Povezivanje sa sajtom nije uspelo</translation>
 <translation id="752220631458524187">Prekinite vezu kada završite</translation>
 <translation id="7523960634226602883">Pretražite pomoću kamere putem Google objektiva</translation>
+<translation id="7539698981064401140">Sinhronizujte kartice i istoriju</translation>
 <translation id="7562080006725997899">Brisanje podataka pregledanja</translation>
 <translation id="756809126120519699">Chrome podaci su obrisani</translation>
 <translation id="7577900504646297215">Upravljajte interesovanjima</translation>
@@ -1396,6 +1404,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8461694314515752532">Šifrujte sinhronizovane podatke pomoću sopstvene pristupne fraze za sinhronizaciju</translation>
 <translation id="8466613982764129868">Uverite se da je <ph name="TARGET_DEVICE_NAME" /> povezan na internet</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
+<translation id="847433688444405067">Pregledajte na više uređaja</translation>
 <translation id="8481980314595922412">Probne funkcije su uključene</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Otvaranje stranice istorija</translation>
@@ -1449,6 +1458,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8746155870861185046">Deli isticanje</translation>
+<translation id="874726034427945498">Da biste videli bolje predloge na traci za adresu, sinhronizujte kartice i istoriju</translation>
 <translation id="8748850008226585750">Sadržaj je sakriven</translation>
 <translation id="8756969031206844760">Želite li da ažurirate lozinku?</translation>
 <translation id="8765470054473112089">Kada kucate u traci za adresu ili u okviru za pretragu, Chrome šalje tekst koji unosite podrazumevanom pretraživaču da biste dobijali bolje predloge. Ovo je isključeno u režimu bez arhiviranja.</translation>
@@ -1514,6 +1524,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="9070377983101773829">Započni glasovnu pretragu</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Sajtovi koje posećujete se ne čuvaju u režimu bez arhiviranja</translation>
+<translation id="9084103763810123431">Da biste nastavili da pregledate na drugom uređaju, sinhronizujte kartice i istoriju</translation>
 <translation id="9086302186042011942">Sinhronizovanje</translation>
 <translation id="9086455579313502267">Ne možemo da pristupimo mreži</translation>
 <translation id="9099220545925418560">Na osnovu istorije pregledanja. Ovo podešavanje je isključeno.</translation>

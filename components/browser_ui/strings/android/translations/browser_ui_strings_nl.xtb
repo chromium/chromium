@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Geluid uitzetten voor sites met geluid</translation>
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3628308229821498208">Voorgestelde zoekopdrachten</translation>
+<translation id="3636279694100170143">Sites die je bezoekt, kunnen bevestigen dat je een echte gebruiker bent en geen bot</translation>
+<translation id="3649190289964910441">Een site die je bezoekt, kan informatie opslaan in Chrome waarmee wordt bevestigd dat je een echte gebruiker bent. Terwijl je browst, kunnen sites via Chrome checken dat je waarschijnlijk een betrouwbare gebruiker bent en dit verifiëren vanaf de eerste site die je bezoekt.</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
 <translation id="3794286421982011626">Een site die je bezoekt, kan informatie over je activiteiten opslaan zodat deze werkt zoals verwacht, bijvoorbeeld om je ingelogd te houden op een site of artikelen in je winkelwagentje op te slaan. Sites slaan deze informatie vaak tijdelijk op je apparaat op.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Beheerd door je ouder</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
+<translation id="477781522763920796">Deze instelling werkt zonder je te identificeren of sites toe te staan je browsegeschiedenis te bekijken.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Meer informatie over de bron en het onderwerp</translation>
 <translation id="4836046166855586901">Vragen als een site wil weten wanneer je dit apparaat actief gebruikt</translation>
@@ -324,6 +327,7 @@
 <translation id="7016516562562142042">Toegestaan voor huidige zoekmachine</translation>
 <translation id="702275896380648118">Deze site stelt vast wat je leuk vindt en stelt daarna advertenties voor op andere sites. Deze site krijgt ook je advertentieonderwerpen van Chrome zodat de site je relevantere advertenties kan laten zien.</translation>
 <translation id="702463548815491781">Aanbevolen als TalkBack of Toegang via schakelaar aanstaan</translation>
+<translation id="7050519587566342213">Browsen verloopt soepeler, omdat je waarschijnlijk eerder vertrouwd wordt als je van de ene site naar de andere gaat.</translation>
 <translation id="7053983685419859001">Blokkeren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 geselecteerd}other{# geselecteerd}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> geselecteerd. Opties beschikbaar bovenaan het scherm.</translation>

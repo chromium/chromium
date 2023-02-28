@@ -126,6 +126,7 @@
 <translation id="3245429137663807393">Jika anda turut berkongsi laporan penggunaan Chrome, laporan tersebut menyertakan URL yang anda lawati</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
 <translation id="3286538390144397061">Mulakan Semula Sekarang</translation>
+<translation id="3293912612584488930">Lakukan pelbagai perkara lagi dengan Chrome</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan dilancarkan semula sekarang}=1{Chrome akan dilancarkan semula dalam masa sesaat}other{Chrome akan dilancarkan semula dalam masa # saat}}</translation>
 <translation id="3396977131400919238">Ralat sistem pengendalian berlaku semasa pemasangan. Sila muat turun Google Chrome semula.</translation>
@@ -153,6 +154,7 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex tidak dapat menyegerakkan data anda disebabkan ralat melog masuk.</translation>
 <translation id="3795971588916395511">Chrome OS Google</translation>
+<translation id="3809772425479558446">Google Chrome memerlukan Windows 10 atau versi lebih baharu.</translation>
 <translation id="3835168907083856002">Tindakan ini akan membuat profil Chrome baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Sila tutup semua tetingkap Google Chrome dan cuba semula.</translation>
 <translation id="3865754807470779944">Chrome versi <ph name="PRODUCT_VERSION" /> dipasang</translation>
@@ -405,7 +407,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8989968390305463310">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara automatik secara bergilir setiap bulan. Minat akan dimuat semula melainkan anda mengalih keluar minat anda.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Kemas kini Chrome tersedia}=1{Kemas kini Chrome tersedia}other{Kemas kini Chrome telah tersedia selama # hari}}</translation>
 <translation id="9053892488859122171">Sistem Chrome OS Flex</translation>
-<translation id="9067395829937117663">Google Chrome memerlukan Windows 7 atau lebih tinggi.</translation>
 <translation id="911206726377975832">Padamkan juga data menyemak imbas anda?</translation>
 <translation id="9138603949443464873">Untuk menggunakan perubahan anda, mulakan semula Chrome</translation>
 <translation id="9195993889682885387">Chrome dapat menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda dari beberapa minggu yang lalu. Maklumat ini kekal pada peranti anda.</translation>

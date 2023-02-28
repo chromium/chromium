@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Da biste se odjavili sa svojeg Google računa na svim web-lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nije uspio provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="2732745070297234559">Chrome nije uspio provjeriti sve zaporke. Pokušajte ponovo sutra.</translation>
+<translation id="2736805085127235148">Obavijesti Chromea trenutačno su isključene u postavkama uređaja.</translation>
 <translation id="2767464022270041271">Nema nijedne spremljene zaporke. Google upravitelj zaporki može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="2869959624320573933">Prijava u Chrome</translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome ažuriran je</translation>
 <translation id="7939179037291298976">U postavkama iPhonea otvorite Opcije zaporke, a zatim odaberite Chrome</translation>
 <translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da biste otvarali veze, pretraživali putem widgeta i automatski popunjavali zaporke u drugim aplikacijama</translation>
+<translation id="804638182476029347">Dopustite Chromeove obavijesti da biste primali upozorenja o sniženju cijena</translation>
 <translation id="81358522153858150">Chrome sada za vaš upravljani račun podržava korisnička pravila</translation>
 <translation id="8160472928944011082">Ažuriranje Chromea nije moguće</translation>
 <translation id="8357607116237445042">Odaberite želite li podatke iz Chromea izbrisati s ovog uređaja ili ih zadržati</translation>

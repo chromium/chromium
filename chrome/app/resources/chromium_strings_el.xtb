@@ -196,8 +196,8 @@
 <translation id="5527463683072221100">Άνοιγμα PDF στο Chromium</translation>
 <translation id="5614091477838198795">Όταν είναι ενεργή η επιλογή, θα αποσυνδεθείτε και από το Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium}=1{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium}other{Υπάρχει μια διαθέσιμη ενημέρωση του Chromium για # ημέρες}}</translation>
-<translation id="5634636535844844681">Το Chromium απαιτεί Windows 7 ή νεότερη έκδοση.</translation>
 <translation id="5653831366781983928">Επανεκκινήστε το Chromium τώρα</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Να εμφανίζεται το Chromium σε αυτήν τη γλώσσα</translation>
 <translation id="5862307444128926510">Καλώς ήρθατε στο Chromium</translation>
 <translation id="5883558403894052917">Το Chromium εντόπισε κακόβουλο πρόγραμμα σε αυτά τα στοιχεία:</translation>
@@ -340,10 +340,12 @@
 <translation id="8266560134891435528">Το Chromium δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας επειδή δεν είστε συνδεδεμένοι.</translation>
 <translation id="8276522524898344151">Το Chromium προσπαθεί να αντιγράψει κωδικούς πρόσβασης.</translation>
 <translation id="8290862415967981663">Αυτό το αρχείο ενδέχεται να είναι επικίνδυνο και έχει αποκλειστεί από το Chromium.</translation>
+<translation id="8325404639443959713">Κάντε περισσότερα με το Chromium</translation>
 <translation id="8330519371938183845">Συνδεθείτε, για να συγχρονίσετε και να εξατομικεύσετε το Chromium στις συσκευές σας</translation>
 <translation id="8340674089072921962">Η διεύθυνση <ph name="USER_EMAIL_ADDRESS" /> χρησιμοποιούσε το Chromium στο παρελθόν</translation>
 <translation id="8357820681460164151">Για να έχετε πρόσβαση από όλες τις συσκευές σας στο περιεχόμενο που διαθέτετε στο πρόγραμμα περιήγησης Chromium, συνδεθείτε και, στη συνέχεια, ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="8360718212975266891">Για τη λήψη μελλοντικών ενημερώσεων του Chromium, θα χρειαστείτε Windows 10 ή νεότερη έκδοση. Αυτός ο υπολογιστής χρησιμοποιεί Windows 8.</translation>
+<translation id="8370517070665726704">Πνευματικά δικαιώματα <ph name="YEAR" /> Google LLC. Με την επιφύλαξη παντός δικαιώματος.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Επανεκκίνηση του Chromium σε μία ημέρα}other{Επανεκκίνηση του Chromium σε # ημέρες}}</translation>
 <translation id="8453117565092476964">Το αρχείο του προγράμματος εγκατάστασης είναι κατεστραμμένο ή μη έγκυρο. Κατεβάστε το Chromium ξανά.</translation>
 <translation id="8463672209299734063">Προαιρετικό: Συμβάλετε στη βελτίωση των λειτουργιών και της απόδοσης του Chromium OS με αυτόματη αποστολή διαγνωστικών και δεδομένων χρήσης στην Google.</translation>
@@ -379,6 +381,7 @@
 <translation id="9158494823179993217">Ο διαχειριστής συστήματος έχει διαμορφώσει το Chromium έτσι ώστε να ανοίγει άλλο πρόγραμμα περιήγησης για την πρόσβαση στη διεύθυνση <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Επανεκκίνηση για ενημέρωση του &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Εξατομίκευση του Chromium</translation>
 <translation id="93478295209880648">Το Chromium μπορεί να μην λειτουργεί σωστά, επειδή δεν υποστηρίζεται πια σε Windows XP και Windows Vista</translation>
 <translation id="942598560705308788">Πιστοποιητικά που διαχειρίζεται το Chromium</translation>
 <translation id="965162752251293939">Ποιος χρησιμοποιεί το Chromium;</translation>

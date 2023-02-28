@@ -47,6 +47,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1254117744268754948">Klasör Seçin</translation>
 <translation id="1254424942107648268">Öncekini Bul</translation>
 <translation id="1258491128795710625">Yenilikler</translation>
+<translation id="1264156759663453185">Seçilen metin kısmi çeviri için çok büyük.</translation>
 <translation id="1265739287306757398">Nasıl Yapacağınızı Öğrenin</translation>
 <translation id="1272079795634619415">Durdur</translation>
 <translation id="1275718070701477396">Seçildi</translation>
@@ -177,6 +178,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2268044343513325586">Hassaslaştır</translation>
 <translation id="2273327106802955778">Diğer menüsü</translation>
 <translation id="2286505070150039482">Vurgulanan Metin</translation>
+<translation id="2287614783861766820">{count,plural, =1{Bu adres bu cihazdan silinecek.}other{Bu adresler bu cihazdan silinecek.}}</translation>
 <translation id="2299218006564889602">Şifreleriniz Google Şifre Yöneticisi'ne kaydedilmeden önce cihazınızda şifrelenir.</translation>
 <translation id="2302742851632557585">Web sitesindeki şifreyi değiştirme</translation>
 <translation id="2316709634732130529">Önerilen Şifreyi Kullan</translation>
@@ -458,6 +460,7 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="4324952538601951430">Kayıtlı yer işaretleriniz, şifreleriniz, ayarlarınız ve daha fazlası artık burada</translation>
 <translation id="4334428914252001502">1 okunmamış makale.</translation>
 <translation id="4338650699862464074">Ziyaret ettiğiniz sayfaların URL'lerini Google'a gönderir.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Bu adres, bu cihazdan ve oturum açtığınız diğer cihazlardan silinecek.}other{Bu adresler, bu cihazdan ve oturum açtığınız diğer cihazlardan silinecek.}}</translation>
 <translation id="4343046787186034850">Kamera ve Mikrofon Erişimine İzin Veriliyor</translation>
 <translation id="4359125752503270327">Bu sayfa, başka bir uygulamada açılacak.</translation>
 <translation id="4375040482473363939">QR kodu Arama</translation>
@@ -587,6 +590,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5232485538978018676">Yönetilen Hesapla Oturum Açın</translation>
 <translation id="5234764350956374838">Kapat</translation>
 <translation id="5245322853195994030">Senkronizasyonu iptal et</translation>
+<translation id="5271265092610673171">{count,plural, =1{Zorunlu bir alan boş. Kaydetmeden önce bu alanı doldurun.}other{Bazı zorunlu alanlar boş. Kaydetmeden önce bu alanları doldurun.}}</translation>
 <translation id="5271549068863921519">Şifreyi kaydet</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> hesabı kaldırılsın mı?</translation>
 <translation id="5300589172476337783">Göster</translation>
@@ -700,6 +704,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6066301408025741299">İptal etmek için dokunun.</translation>
 <translation id="6071409777669089905">Sekmenin Sabitlemesini Kaldır</translation>
 <translation id="6084848228346514841">Sekme Seçin</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> olarak oturum açtınız. Ayarları açar.</translation>
 <translation id="6103540626693881831">Cihaz Üzerinde Şifreleme</translation>
 <translation id="6119050551270742952">Geçerli Web sayfası Gizli modda</translation>
 <translation id="6122191549521593678">Çevrimiçi</translation>
@@ -1129,6 +1134,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> şifre silinsin mi?</translation>
 <translation id="9100610230175265781">Parola gerekli</translation>
 <translation id="9107664647686727385">Güvenliği ihlal edilmiş şifreleri kontrol edin</translation>
+<translation id="9120217828624527905">Tam Sayfa Çevirisine Geç</translation>
 <translation id="9124387962554796433">Google; Arama ve diğer Google hizmetlerini kişiselleştirmek için geçmişinizi kullanabilir.</translation>
 <translation id="9137526406337347448">Google Hizmetleri</translation>
 <translation id="9148126808321036104">Tekrar oturum açın</translation>

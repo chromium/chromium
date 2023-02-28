@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">iiri</translation>
 <translation id="4124935795427217608">Ükssarvik</translation>
 <translation id="4131235941541910880">Teisaldage ebavajalikud üksused prügikasti</translation>
+<translation id="4134804435730168042">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiveerige pärast seadme seadistust</translation>
 <translation id="4153015322587141338">Paremklõpsake failil ja tehke valik „<ph name="PIN_COMMAND" />“, et riiulil olevatele failidele kiirelt juurde pääseda.</translation>
 <translation id="4157569377477607576">Administraatori reegel ei soovita:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> on teisaldatud.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">„<ph name="FILE_NAME" />“ kustutatakse ja te ei saa seda taastada.</translation>
 <translation id="4418686080762064601">Looge oma failide jaoks otsetee</translation>
 <translation id="4425149324548788773">Minu ketas</translation>
+<translation id="4432921877815220091">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktiveerige pärast seadme seadistust, võrku haldab teie administraator</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, ühenda</translation>
 <translation id="4442424173763614572">DNS-i otsing nurjus</translation>
 <translation id="4462159676511157176">Kohandatud nimeserverid</translation>
@@ -613,8 +615,10 @@
 <translation id="5911887972742538906">Linuxi rakenduse installimisel ilmnes viga.</translation>
 <translation id="5912396950572065471">Vorming</translation>
 <translation id="5913638992615760742">Kopeerimine ebaõnnestus, ootamatu viga: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Saadaval on uued otsingufunktsioonid</translation>
 <translation id="5926082595146149752">hollandi (Holland), USA rahvusvahelise arvutiklaviatuuriga</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktiveerige pärast seadme seadistust</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> üksust</translation>
 <translation id="5957366693331451795">Chromeboxid</translation>
 <translation id="5982621672636444458">Sortimisvalikud</translation>
@@ -761,6 +765,7 @@
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;” – &lt;em&gt;otsi Drive'ist&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kannada, foneetiline</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Autentimisserveri identiteedi kinnitamiseks puudub „Teema alternatiivse nime vaste“ või „Domeenisufiksi vaste“.</translation>
 <translation id="7165320105431587207">Võrgu seadistamine ebaõnnestus</translation>
 <translation id="7170041865419449892">Vahemikust väljas</translation>
 <translation id="7180611975245234373">Värskenda</translation>
@@ -936,6 +941,7 @@
 <translation id="8487700953926739672">Võrguühenduseta saadaval</translation>
 <translation id="8492972329130824181">Kodune võrk pole saadaval. Ühenduse loomiseks tuleb lubada mobiilse andmeside rändlus.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> üksuse ekstraktimine …</translation>
+<translation id="8502913769543567768">Võrk <ph name="NETWORK_INDEX" />, võrke kokku <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktiveerige pärast seadme seadistust, võrku haldab teie administraator</translation>
 <translation id="8521441079177373948">Ühendkuningriik</translation>
 <translation id="853494022971700746">prantsuse (Prantsusmaa)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>

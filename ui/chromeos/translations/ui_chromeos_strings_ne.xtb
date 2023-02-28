@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">आइरिस</translation>
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
 <translation id="4131235941541910880">आफूलाई नचाहिने फाइलहरू सारेर ट्र्यासमा लैजानुहोस्</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्</translation>
 <translation id="4153015322587141338">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा दायाँ क्लिक गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
 <translation id="4157569377477607576">एड्मिनले तोकेको नीतिअनुसार निम्न कार्य गर्न सिफारिस गरिँदैन:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> सारियो।</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" मेटाइने छ र तपाईं यसलाई रिस्टोर गर्न सक्नु हुने छैन।</translation>
 <translation id="4418686080762064601">आफ्ना फाइलहरूको सर्टकट बनाउनुहोस्</translation>
 <translation id="4425149324548788773">मेरो ड्राइभ</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्, तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
 <translation id="4442424173763614572">DNS लुकअप असफल भयो</translation>
 <translation id="4462159676511157176">अनुकुल नाम सर्भरहरू</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">प्रतिलिपि गर्न सकिएन, अनपेक्षित त्रुटि: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">सं. रा. अमेरिकी अन्तर्राष्ट्रिय PC ढाँचाको डच (नेदरल्यान्ड) किबोर्ड</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">विकल्पहरू क्रमबद्ध गर्नुहोस्</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ड्राइभमा खोज्नुहोस्&lt;/em&gt;</translation>
 <translation id="7135561821015524160">कन्नड फोनेटिक</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">"विषयको वैकल्पिक नामसँग मिल्दोजुल्दो" वा "डोमेन सफिक्ससँग मिल्दोजुल्दो" जानकारी छुटेको हुनाले प्रमाणीकरण सर्भरको पहिचान पुष्टि गर्न सकिएन</translation>
 <translation id="7165320105431587207">नेटवर्क कन्फिगर गर्न असफल</translation>
 <translation id="7170041865419449892">सीमाभन्दा बाहिर</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
 <translation id="8492972329130824181">घरको नेटवर्क उपलब्ध छैन। कनेक्ट गर्न मोबाइल डेटा रोमिङ अन गर्नु पर्ने हुन्छ।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु सङ्कलन गरिँदै छ...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्, तपाईंका एड्मिनले व्यवस्थापन गर्नुभएको</translation>
 <translation id="8521441079177373948">बेलायत</translation>
 <translation id="853494022971700746">फ्रान्सेली (फ्रान्स)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>

@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">स्कॅनर शोधत आहे</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3268178239013324452">अयशस्वी झाले - दार उघडे आहे</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" /> कडे डॉक करा</translation>
 <translation id="3275729367986477355">अवतार इमेज</translation>
 <translation id="3283504360622356314">{0,plural, =1{फाइल संपादित करा}other{फाइल संपादित करा}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3435896845095436175">सुरू करा</translation>
+<translation id="345256797477978759">स्क्रीनच्या <ph name="DIRECTION" /> आणखी मोठ्या भागात विंडो डॉक करा</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> पैकी <ph name="PRINTED_PAGES" /> पेज प्रिंट केली.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> पेज स्कॅन करत आहे. <ph name="PERCENTAGE_VALUE" />% पूर्ण झाले.</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">बॅटरी पूर्ण चार्ज</translation>
 <translation id="3600339377155080675">स्क्रीन मिरर करा</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
+<translation id="360282891121575443">शेअर केलेल्या अल्बममधील फोटो हे इतर वापरकर्ते अपडेट करू शकतात. दररोज बदला हे सध्या अल्बममध्ये नसलेले वॉलपेपर दाखवू शकते.</translation>
 <translation id="3603829704940252505">अवतार</translation>
 <translation id="3604713164406837697">वॉलपेपर बदला</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
 <translation id="3606583719724308068">HTTPS वेबसाइटवर लेटन्सी जास्त आहे</translation>
 <translation id="361575905210396100">तुमच्या फीडबॅकबद्दल धन्यवाद</translation>
 <translation id="3632579075709132555">गोपनीयता स्क्रीन टॉगल करा</translation>
+<translation id="3639846061339007994">सर्वात वरती</translation>
 <translation id="3651050199673793219">तापमान युनिट निवडा</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> चाचणी</translation>
 <translation id="370665806235115550">लोड करीत आहे...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">पूर्ण</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की दाबली</translation>
 <translation id="435692326371619097">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APN हे मोबाइल नेटवर्क आणि इंटरनेट यांदरम्यान कनेक्शन जोडतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">आणखी लहान बाजूला डॉक करा</translation>
 <translation id="4378373042927530923">रन झाले नाही</translation>
 <translation id="4378551569595875038">कनेक्ट होतय...</translation>
 <translation id="4382484599443659549">पीडीएफ</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ब्राउझर टॅब</translation>
 <translation id="6692996468359469499">तुमच्या निवडीशी संबंधित माहिती मिळवा</translation>
+<translation id="6698459586333070823">शेअर केलेले अल्बम हे इतर वापरकर्ते अपडेट करू शकतात</translation>
 <translation id="6704062477274546131">DNS रिझोल्युशन</translation>
 <translation id="6723839937902243910">सामर्थ्य</translation>
 <translation id="6723847290197874913">कीबोर्ड बॅकलाइट</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">कॅमेरा किंवा फाईल मधील विद्यमान फोटो</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">प्रोफाइल फोटो</translation>
+<translation id="7171919371520438592">स्क्रीनच्या <ph name="DIRECTION" /> आणखी लहान भागात विंडो डॉक करा</translation>
 <translation id="7172721935181587524">एक इमेज</translation>
 <translation id="7177485034254901881">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर रिमोट पद्धतीने डिव्हाइस काँफिगर करू शकतात.</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">अटॅच करा</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
 <translation id="8208861521865154048">लाभ</translation>
+<translation id="8210733748736414123">तळाशी</translation>
 <translation id="8226628635270268143">तुमचे आवडते फोटो आणि अल्बम निवडा</translation>
 <translation id="8227119283605456246">फाईल संलग्न करा</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>
 <translation id="8364946094152050673">रिकामे नेम सर्व्हर</translation>
 <translation id="8372477600026034341">अतिरिक्त होस्ट</translation>
+<translation id="8380114448424469341">स्क्रीनच्या <ph name="DIRECTION" /> अर्ध्या भागात विंडो डॉक करा</translation>
 <translation id="8395584934117017006">हे <ph name="DEVICE_TYPE" /> एंटरप्राइझद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="8398927464629426868">ज्या गतीने डिव्हाइस सध्या चार्ज किंवा डिस्चार्ज होत आहे</translation>
 <translation id="8410244574650205435">आपोआप डिटेक्ट केले</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google सेवा</translation>
 <translation id="9138630967333032450">डावीकडे शिफ्ट करा</translation>
 <translation id="9149391708638971077">मेमरी चाचणी रन करा</translation>
+<translation id="9157515863513902090">मोठ्या बाजूला डॉक करा</translation>
 <translation id="9173638680043580060">एका मिनिटापेक्षा कमी वेळ शिल्लक आहे</translation>
 <translation id="917720651393141712">चाचणी करा</translation>
 <translation id="9188992814426075118">तुमचा कीबोर्ड तुमच्या वॉलपेपरशी आपोआप जुळवून घेऊ शकतो</translation>

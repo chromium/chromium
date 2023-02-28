@@ -589,6 +589,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu ng toggle sa pag-resize</translation>
+<translation id="2365355378251437925">Ilagay ang <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Antas</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">I-personalize ang iyong mga tool sa pagiging accessible sa mga setting ng Chrome</translation>
@@ -876,6 +877,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="317878711435188021">Alamin kung kailan mo aktibong ginagamit ang device na ito</translation>
 <translation id="3180358318770512945">Pagiging magulang</translation>
 <translation id="3187306450550410410">Mga flexible na work arrangement</translation>
+<translation id="3187380004437786923">Pamahalaan ang mga pagbabayad</translation>
 <translation id="3187472288455401631">Pagsukat ng ad</translation>
 <translation id="3190736958609431397">Huwag subaybayan</translation>
 <translation id="319282854780294203">Mga social network</translation>
@@ -1271,6 +1273,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4154664944169082762">Mga fingerprint</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4165986682804962316">Mga setting ng site</translation>
+<translation id="4169535189173047238">Huwag payagan</translation>
 <translation id="4171400957073367226">Hindi wasto ang signature sa pag-verify</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Palaging ipakita</translation>
@@ -3333,6 +3336,7 @@ Mga karagdagang detalye:
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="962484866189421427">Maaaring subukan ng content na itong mag-install ng mga mapanlinlang na app na nagpapanggap na ibang bagay o nangongolekta ng data na maaaring gamitin para subaybayan ka. <ph name="BEGIN_LINK" />Ipakita pa rin<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Lahat ng user</translation>
 <translation id="964050462028070434">Pamahalaan ang Mga Password at Passkey…</translation>
 <translation id="96680173638229310">Mga sasakyan</translation>
 <translation id="969892804517981540">Official Build</translation>

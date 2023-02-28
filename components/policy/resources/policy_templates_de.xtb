@@ -738,6 +738,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wenn die Richtlinie konfiguriert ist, schlägt die Installation von <ph name="PLUGIN_VM_NAME" /> fehl, wenn der freie Speicherplatz auf dem Gerät nicht dem in der Richtlinie angegebenen Mindestwert entspricht.</translation>
 <translation id="1686952487081322272">Schnellinfo deaktivieren</translation>
 <translation id="1690383938831887552">Verhindern, dass Signed HTTP Exchanges geladen werden</translation>
+<translation id="1692990221685273468">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung die Einschränkungen der Trust-Anchors, die aus dem Trust-Shop geladen wurden, erzwingt.</translation>
 <translation id="169467210981344373">Globales HTTP-Authentication-Cache deaktivieren</translation>
 <translation id="1698810555265314018">Steuert beim Drucken gerasteter PDFs in <ph name="PRODUCT_NAME" /> die Druckbildauflösung.
 
@@ -2822,13 +2823,6 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3589193811812796052">Verhindern, dass WebAssembly-Module ursprungsübergreifend gesendet werden</translation>
 <translation id="3591527072193107424">Funktion für die Unterstützung älterer Browser aktivieren.</translation>
 <translation id="3591584750136265240">Verhalten der Log-in-Authentifizierung konfigurieren</translation>
-<translation id="359203136434560942">Dadurch wird die Liste der Bilder konfiguriert, die auf dem Bildschirmschoner für den Sperrbildschirm angezeigt werden sollen.
-
-Jedes Listenelement verweist auf ein Bild, das auf dem Bildschirmschoner angezeigt werden soll. Das Element muss eine URL zum Bild und den SHA-256-Hashwert der Bilddatei zur Bestätigung enthalten. Das Bildformat muss JPEG sein. Das <ph name="PRODUCT_OS_NAME" />-Gerät lädt diese Bilder herunter und pflegt einen lokalen Cache dieser Verweise.
-
-Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.
-
-Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bildverweise enthält, wird der Bildschirmschoner auf dem Sperrbildschirm unabhängig von dem in der Richtlinie <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> festgelegten Wert nicht angezeigt.</translation>
 <translation id="3593905652755912452">Bei deaktivierten Formularsteuerelementen wird die alte Ereignisweiterleitung verwendet.</translation>
 <translation id="3596112486106491038">Befehlszeilenzugriff auf virtuellen Maschinen aktivieren</translation>
 <translation id="3603469950773500315">Einschränkungen von <ph name="CORS" />-Prüfungen in der neuen <ph name="CORS" />-Implementierung erlauben, wodurch Erweiterungen kompatibles Verhalten beibehalten können und <ph name="PRODUCT_NAME" /> angegebene Header ohne <ph name="CORS" />-Prüfungen senden kann.
@@ -3847,7 +3841,6 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 <translation id="4624417808625504735">Verwendung von JIT durch JavaScript auf diesen Websites blockieren</translation>
 <translation id="46321462262887935">Tasten der obersten Reihe als Funktionstasten nutzen (Nutzer kann dies ändern)</translation>
 <translation id="4632343302005518762">Verarbeitung der gelisteten Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
-<translation id="4632566332417930481">Nutzung der Entwicklertools für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, nicht zulassen und Nutzung der Entwicklertools in anderen Kontexten zulassen</translation>
 <translation id="4636354638176939375">Erstellung von betreuten Nutzern deaktivieren</translation>
 <translation id="4646626362889216307">Wenn die Richtlinie konfiguriert ist, ermöglicht sie das Zusammenführen der ausgewählten Richtlinien, wenn diese aus unterschiedlichen Quellen stammen, mit gleichem Bereich und gleicher Ebene. Dabei werden die Schlüssel des Wörterbuchs auf der ersten Ebene aus jeder Quelle zusammengeführt. Der Schlüssel aus der Quelle mit der höchsten Priorität hat Vorrang.
 
@@ -3974,7 +3967,6 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
           Ist die Richtlinie nicht konfiguriert, ist "Mono-Audio" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="4768446404233019970">Cipher Suites von 3DES in TLS aktivieren</translation>
 <translation id="4770334626033858263">Konfigurationseinstellungen, die bestimmen, wie der Eltern-Zugangscode generiert und bestätigt wird.</translation>
-<translation id="4772431363738215349">URL, über die das Bildschirmschonerbild heruntergeladen werden kann.</translation>
 <translation id="4773997835955617342">Ändert die vorgeschlagene <ph name="KRB5_CONFIG" />-Konfiguration für die neuen, manuell erstellten Tickets.
 
       Wenn diese Richtlinie aktiviert ist, wird der Wert der Richtlinie „KerberosCustomPrefilledConfig“ als vorgeschlagene Konfiguration angewendet und im Authentifizierungsdialogfeld von Kerberos unter „Erweitert“ angezeigt.
@@ -4557,7 +4549,6 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
 
       Wenn sie auf "False" gesetzt ist, ist die Portweiterleitung zu Crostini-Containern deaktiviert.</translation>
 <translation id="538108065117008131">Verarbeitung der folgenden Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
-<translation id="5382211603538487131">SHA-256-Hash des Image.</translation>
 <translation id="538768040137709073">Hiermit wird die Funktion "Geteilte Zwischenablage" aktiviert. Mit ihr kann Text zwischen Chrome-Computern und einem Android-Gerät geteilt werden, solange die Synchronisierung aktiviert und der Nutzer angemeldet ist.
 
           Wird diese Richtlinie auf "true" gesetzt, können Chrome-Nutzer Text zwischen Geräten teilen.
@@ -4766,13 +4757,6 @@ Dies wurde in M112 entfernt.</translation>
 <translation id="5535256585099022933">Zeitintervall für den Neustart festlegen</translation>
 <translation id="553806128266843748">Boolescher Parameter, der angibt, ob die Drosselung aktiviert ist.</translation>
 <translation id="5540885720415375851">Erkennung lokaler Geräte zulassen</translation>
-<translation id="5545132877693005604">Mit dieser Richtlinie wird die Liste der Bilder konfiguriert, die als Bildschirmschoner auf dem Anmeldebildschirm angezeigt werden sollen.
-
-Jedes Listenelement verweist auf ein Bild, das als Bildschirmschoner erscheint. Das Element selbst muss eine URL zum Bild und den SHA-256-Hashwert der Bilddatei zur Bestätigung enthalten. Das Bildformat muss JPEG sein. Das <ph name="PRODUCT_OS_NAME" />-Gerät lädt diese Bilder herunter und legt einen lokalen Cache dieser Verweise an.
-
-Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.
-
-Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bildverweise enthält, wird der Bildschirmschoner nicht auf dem Anmeldebildschirm angezeigt, unabhängig von dem in der Richtlinie <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> festgelegten Wert.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hohen Kontrast auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="555077880566103058">Automatische Ausführung des Plug-ins "<ph name="FLASH_PLUGIN_NAME" />" für alle Websites zulassen</translation>
@@ -4839,6 +4823,7 @@ Wenn die Richtlinie nicht konfiguriert ist, können keine Domains auf „file://
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Melden des Speicherstatus auf Geräten aktivieren</translation>
 <translation id="5608114828230655271">Standardverhalten des Geräts</translation>
+<translation id="5611869109049836323">Einschränkungen in lokal hinzugefügten Trust-Anchors erzwingen</translation>
 <translation id="5614865701790130558">Ereignisse für richtlinienbasierte Erweiterungsinstallationen protokollieren</translation>
 <translation id="5618398258385745432">Die entsprechende Einstellung wurde verwendet, bevor die erneute Authentifizierung bei der Ansicht von Passwörtern aktiviert wurde. Seither haben die Einstellung und folglich auch diese Richtlinie keinen Einfluss auf das Verhalten von Chrome. Aktuell werden Passwörter auf der Einstellungsseite des Passwortmanagers nicht als Klartext angezeigt. Dies bedeutet, dass die Einstellungsseite nur einen Platzhalter enthält und das Passwort in Chrome nur dann angezeigt wird, wenn der Nutzer auf "Anzeigen" klickt und sich gegebenenfalls noch einmal authentifiziert. Die ursprüngliche Beschreibung der Richtlinie findest du unten.
 
@@ -6694,6 +6679,7 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 <translation id="7323896582714668701">Zusätzliche Befehlszeilenparameter für <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Chrome daran hindern, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="7326394567531622570">Ähnlich wie bei den Werkseinstellungen (Wert 2); hier wird jedoch versucht, die Log-in-Tokens zu übernehmen, sodass der Nutzer sich nicht noch einmal anmelden muss.</translation>
+<translation id="7331387825106440104">Einschränkungen in lokal hinzugefügten Trust-Anchors nicht erzwingen</translation>
 <translation id="7331962793961469250">Wenn die Option auf "True" gesetzt ist, erscheint Werbung für Chrome Web Store-Apps nicht auf der "Neuer Tab"-Seite. Wenn sie auf "False" eingestellt oder nicht konfiguriert ist, so erscheint Chrome Web Store-Werbung auf der "Neuer Tab"-Seite.</translation>
 <translation id="7332963785317884918">Diese Richtlinie ist veraltet. <ph name="PRODUCT_OS_NAME" /> verwendet immer die "RemoveLRU"-Bereinigungsstrategie.
 
@@ -8298,6 +8284,17 @@ Die Richtlinie ist eine Zuordnung von Konfigurations-IDs zu VM-Konfigurationen. 
 <translation id="8854571659927427063">Wenn die Richtlinie aktiviert ist, werden Lesezeichen bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden bei der ersten Ausführung keine Lesezeichen importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für Lesezeichen wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
+<translation id="8854703425882848037">Mit X.509-Zertifikaten können Einschränkungen wie Namensbeschränkungen in Erweiterungen in das Zertifikat codiert werden. RFC 5280 gibt an, dass die Durchsetzung solcher Einschränkungen für Trust-Anchor-Zertifikate optional ist. Ab <ph name="PRODUCT_NAME" /> 112 werden solche Einschränkungen in Zertifikaten, die aus dem Shop für Plattformzertifikate geladen werden, erzwungen.
+
+Diese Richtlinie lässt sich vorübergehend deaktivieren, falls Unternehmen Probleme mit den in ihre privaten Root-Zertifikate codierten Einschränkungen haben. In diesem Fall kann diese Richtlinie verwendet werden, um die Erzwingung der Einschränkungen vorübergehend zu deaktivieren und die Probleme mit dem Zertifikat zu beheben.
+
+Wenn diese Richtlinie nicht konfiguriert oder aktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> Einschränkungen, die in aus dem Trust-Shop der Plattform geladenen Trust-Anchors codiert sind.
+
+Wenn diese Richtlinie deaktiviert ist, erzwingt <ph name="PRODUCT_NAME" /> keine Einschränkungen, die in aus dem Trust-Shop der Plattform geladenen Trust-Anchors codiert sind.
+
+Diese Richtlinie hat keine Auswirkungen, wenn die Richtlinie <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> deaktiviert ist.
+
+Diese Richtlinie wird voraussichtlich in Version 115 von <ph name="PRODUCT_NAME" /> entfernt.</translation>
 <translation id="8855929790177853633">Bildquelle des Bildschirmschoners des Nutzers.</translation>
 <translation id="8858642179038618439">YouTube-Sicherheitsmodus erzwingen</translation>
 <translation id="8860342862142842017">Erzwingung der Zertifikatstransparenz für eine Liste mit subjectPublicKeyInfo-Hashes deaktivieren</translation>

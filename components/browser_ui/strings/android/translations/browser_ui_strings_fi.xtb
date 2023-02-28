@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Mykistä ääniä toistavat sivustot</translation>
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3628308229821498208">Ehdotetut haut</translation>
+<translation id="3636279694100170143">Avaamasi sivustot voivat vahvistaa, että olet oikea käyttäjä</translation>
+<translation id="3649190289964910441">Avaamasi sivusto voi tallentaa Chromeen tietoja, jotka vahvistavat, että olet todellinen käyttäjä. Kun jatkat selaamista, sivustot voivat tarkistaa ensimmäiseltä sivustolta Chromen avulla, oletko luotettava käyttäjä.</translation>
 <translation id="3744111561329211289">Taustasynkronointi</translation>
 <translation id="3763247130972274048">Ohita 10 sekuntia kaksoisnapauttamalla videota vasemmalle tai oikealle</translation>
 <translation id="3794286421982011626">Avaamasi sivusto voi tallentaa tietoja toiminnastasi, jotta se toimii odotetulla tavalla – esimerkiksi pitääksesi sinut kirjautuneena sivustolle tai tallentaaksesi tuotteita ostoskoriin. Sivustot tallentavat usein nämä tiedot väliaikaisesti laitteellesi.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Vanhempasi hallinnoima</translation>
 <translation id="4670064810192446073">Virtuaalitodellisuus</translation>
 <translation id="4751476147751820511">Liike- tai valotunnistimet</translation>
+<translation id="477781522763920796">Asetus toimii paljastamatta henkilöllisyyttäsi tai sallimatta sivustojen nähdä selaushistoriaasi.</translation>
 <translation id="4779083564647765204">Lähennä</translation>
 <translation id="4811450222531576619">Lisätietoa lähteestä ja aiheesta</translation>
 <translation id="4836046166855586901">Kysy aina, kun sivusto pyytää lupaa nähdä, käytätkö tätä laitetta aktiivisesti</translation>
@@ -324,6 +327,7 @@
 <translation id="7016516562562142042">Sallittu nykyisellä hakukoneella</translation>
 <translation id="702275896380648118">Tämä sivusto päättelee, mistä pidät, ja ehdottaa sitten mainoksia muille sivustoille. Se myös saa mainosaiheesi Chromesta, jotta voit nähdä osuvampia mainoksia.</translation>
 <translation id="702463548815491781">Suositellaan käytettäväksi, kun TalkBack tai Kytkimen käyttö on päällä</translation>
+<translation id="7050519587566342213">Selaus on sujuvampaa, sillä sinuun luotetaan todennäköisemmin sivustojen välillä.</translation>
 <translation id="7053983685419859001">Estä</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 valittu}other{# valittu}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> valittu. Toimintoja on käytettävissä näytön yläosassa.</translation>

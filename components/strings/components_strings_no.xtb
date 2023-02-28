@@ -877,6 +877,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="317878711435188021">vite når du bruker denne enheten aktivt</translation>
 <translation id="3180358318770512945">Barneoppdragelse</translation>
 <translation id="3187306450550410410">Fleksibel arbeidshverdag</translation>
+<translation id="3187380004437786923">Administrer betalinger</translation>
 <translation id="3187472288455401631">Annonsemålinger</translation>
 <translation id="3190736958609431397">Slutt å spore</translation>
 <translation id="319282854780294203">Sosiale nettverk</translation>
@@ -1272,6 +1273,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4154664944169082762">Fingeravtrykk</translation>
 <translation id="4159784952369912983">Fiolett</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>
+<translation id="4169535189173047238">Ikke tillat</translation>
 <translation id="4171400957073367226">Ugyldig bekreftelsessignatur</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Vis alltid</translation>
@@ -3333,6 +3335,7 @@ Mer informasjon:
 <translation id="950736567201356821">Tre hull topp</translation>
 <translation id="961663415146723894">Innbinding bunn</translation>
 <translation id="962484866189421427">Dette innholdet kan prøve å installere villedende apper som gir seg ut for å være noe annet, eller samle inn data som kan brukes til å spore deg. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Alle brukere</translation>
 <translation id="964050462028070434">Administrer passord og tilgangsnøkler…</translation>
 <translation id="96680173638229310">Biler og kjøretøy</translation>
 <translation id="969892804517981540">Offisiell delversjon</translation>

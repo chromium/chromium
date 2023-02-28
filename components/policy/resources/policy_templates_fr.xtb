@@ -741,6 +741,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si cette règle est configurée, mais que l'espace disque libre sur l'appareil est inférieur à celui requis, le plug-in <ph name="PLUGIN_VM_NAME" /> ne peut pas non plus être installé.</translation>
 <translation id="1686952487081322272">Désactiver Réponses rapides</translation>
 <translation id="1690383938831887552">Empêcher le chargement de Signed HTTP Exchange</translation>
+<translation id="1692990221685273468">Détermine si l'outil de vérification des certificats intégré applique des contraintes encodées dans les ancres de confiance chargées depuis le magasin de confiance de la plate-forme.</translation>
 <translation id="169467210981344373">Désactiver le cache d'authentification HTTP à portée globale</translation>
 <translation id="1698810555265314018">Contrôle la résolution des images imprimées lorsque <ph name="PRODUCT_NAME" /> imprime les PDF après rastérisation.
 
@@ -2830,13 +2831,6 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3589193811812796052">Empêcher l'envoi des modules WebAssembly en multi-origine</translation>
 <translation id="3591527072193107424">Activer la fonctionnalité Legacy Browser Support.</translation>
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
-<translation id="359203136434560942">Configure la liste des images que l'économiseur d'écran doit afficher pour l'écran de verrouillage.
-
-Chaque élément de la liste renvoie à une image que l'économiseur d'écran doit afficher. L'élément doit inclure une URL vers l'image et la valeur de hachage SHA-256 du fichier image à des fins de vérification. L'image doit être au format JPEG. L'appareil <ph name="PRODUCT_OS_NAME" /> téléchargera ces images et conservera un cache local de ces références.
-
-Cette règle n'aura aucune incidence si la règle <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> est définie sur "False".
-
-Si cette règle n'est pas configurée ou si la liste ne contient aucune référence d'image valide, l'économiseur d'écran ne s'affiche pas pour l'écran de verrouillage, quelle que soit la valeur définie dans la règle <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="3596112486106491038">Activer l'accès par ligne de commande aux machines virtuelles</translation>
 <translation id="3603469950773500315">Permet d'atténuer les contrôles <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" />. Les extensions peuvent ainsi conserver un comportement compatible, et <ph name="PRODUCT_NAME" /> peut envoyer les en-têtes spécifiés sans contrôles <ph name="CORS" />.
@@ -3865,7 +3859,6 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent modifier la list
 <translation id="4624417808625504735">Empêcher JavaScript d'utiliser le JIT sur ces sites</translation>
 <translation id="46321462262887935">Considérer les touches supérieures comme des touches de fonction, mais autoriser l'utilisateur à modifier ce paramètre</translation>
 <translation id="4632343302005518762">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu répertoriés</translation>
-<translation id="4632566332417930481">Interdire l'utilisation des outils pour les développeurs avec les extensions installées par la stratégie d'entreprise, mais autoriser l'utilisation des outils pour les développeurs dans les autres cas</translation>
 <translation id="4636354638176939375">Désactiver la création d'utilisateurs supervisés</translation>
 <translation id="4646626362889216307">Cette règle permet de fusionner les règles sélectionnées lorsqu'elles proviennent de sources différentes, et si le niveau et les champs d'application sont les mêmes. Cette fusion concerne les clés de premier niveau du dictionnaire provenant de chaque source. La clé qui prévaut est celle dont la source présente la plus haute priorité.
 
@@ -3992,7 +3985,6 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
           Si cette règle n'est pas définie, l'audio mono est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4768446404233019970">Activer les suites de chiffrement 3DES dans TLS</translation>
 <translation id="4770334626033858263">Configuration utilisée pour générer et valider le code d'accès parental.</translation>
-<translation id="4772431363738215349">URL depuis laquelle l'image de l'économiseur d'écran peut être téléchargée.</translation>
 <translation id="4773997835955617342">Modifie la configuration suggérée de <ph name="KRB5_CONFIG" /> pour les nouvelles demandes créées manuellement.
 
       Si cette règle est activée, la valeur de la règle "KerberosCustomPrefilledConfig" est appliquée en tant que configuration suggérée et figure dans la section "Paramètres avancés" de la boîte de dialogue d'authentification Kerberos.
@@ -4574,7 +4566,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle est définie sur "False", le transfert de port dans les conteneurs Crostini sera désactivé.</translation>
 <translation id="538108065117008131">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenus suivants.</translation>
-<translation id="5382211603538487131">Hachage SHA-256 de l'image.</translation>
 <translation id="538768040137709073">Permet d'activer la fonctionnalité de presse-papiers partagé, qui donne la possibilité aux utilisateurs d'envoyer du texte entre un ordinateur de bureau Chrome et un appareil Android lorsque la synchronisation est activée et que l'utilisateur est connecté.
 
           Si cette règle est définie sur "True", la possibilité d'envoyer du texte entre deux appareils est activée pour les utilisateurs de Chrome.
@@ -4786,13 +4777,6 @@ Cette API a été supprimée dans M112.</translation>
 <translation id="5535256585099022933">Définir l'intervalle du redémarrage</translation>
 <translation id="553806128266843748">Flag booléen spécifiant si la limitation est activée.</translation>
 <translation id="5540885720415375851">Autoriser la détection des appareils en local</translation>
-<translation id="5545132877693005604">Configure la liste des images que l'économiseur d'écran doit afficher pour l'écran de connexion.
-
-Chaque élément de la liste renvoie à une image que l'économiseur d'écran doit afficher. L'élément doit inclure une URL vers l'image et la valeur de hachage SHA-256 du fichier image à des fins de vérification. L'image doit être au format JPEG. L'appareil <ph name="PRODUCT_OS_NAME" /> téléchargera ces images et conservera un cache local de ces références.
-
-Cette règle n'aura aucune incidence si la règle <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> est définie sur "False".
-
-Si cette règle n'est pas configurée ou si la liste ne contient aucune référence d'image valide, l'économiseur d'écran ne s'affiche pas pour l'écran de connexion, quelle que soit la valeur définie dans la règle <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Activer le contraste élevé sur l'écran de connexion</translation>
 <translation id="555077880566103058">Autoriser tous les sites à exécuter le plug-in "<ph name="FLASH_PLUGIN_NAME" />" automatiquement</translation>
@@ -4859,6 +4843,7 @@ Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL fi
 <translation id="5601503069213153581">Code</translation>
 <translation id="5607021831414604820">Activer les rapports sur l'état de stockage de l'appareil</translation>
 <translation id="5608114828230655271">Comportement par défaut de l'appareil</translation>
+<translation id="5611869109049836323">Appliquer des contraintes dans les ancres de confiance ajoutées localement</translation>
 <translation id="5614865701790130558">Enregistrer des événements pour les installations d'extensions basées sur des règles</translation>
 <translation id="5618398258385745432">Ce paramètre était utilisé avant la mise en œuvre de la règle impliquant une nouvelle authentification après consultation du mot de passe. Depuis lors, le paramètre et la règle correspondante sont sans effet sur le fonctionnement de Chrome. Chrome fonctionne actuellement comme si cette règle était définie sur la désactivation de l'affichage des mots de passe en texte clair dans la page des paramètres du gestionnaire de mots de passe. Cela signifie que la page des paramètres contient seulement un espace réservé, et que l'utilisateur doit cliquer sur "Afficher" (et saisir une nouvelle fois son mot de passe, si nécessaire) pour que Chrome affiche le mot de passe. La description initiale de la règle figure ci-dessous.
 
@@ -6725,6 +6710,7 @@ Cette règle remplace la règle <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLI
 <translation id="7323896582714668701">Paramètres de ligne de commande supplémentaires pour <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Empêcher Chrome de bloquer les navigations vers des protocoles externes dans un iFrame en bac à sable</translation>
 <translation id="7326394567531622570">Semblable à l'option "Nettoyer" (valeur 2), celle-ci essaie de conserver les jetons de connexion pour éviter à l'utilisateur de devoir se reconnecter.</translation>
+<translation id="7331387825106440104">Ne pas appliquer de contraintes dans les ancres de confiance ajoutées localement</translation>
 <translation id="7331962793961469250">Si cette option est définie sur "True", les publicités pour les applications Chrome Web Store ne s'affichent pas sur la page Nouvel onglet.
 
 Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicités s'affichent sur la page Nouvel onglet.</translation>
@@ -8320,6 +8306,31 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
 <translation id="8854571659927427063">Si cette règle est activée, les favoris enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les favoris ne sont pas importés lors de la première exécution.
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant aux favoris sera ou ne sera pas cochée, suivant la configuration de cette règle.</translation>
+<translation id="8854703425882848037">Les certificats X.509 peuvent encoder des contraintes, telles que des contraintes de nom,
+dans les extensions du certificat. RFC 5280 spécifie que l'application de ces
+contraintes sur les certificats d'ancres de confiance est facultative. À partir de
+<ph name="PRODUCT_NAME" /> 112, de telles contraintes
+dans les certificats chargées à partir du magasin de certificats de la plate-forme seront désormais
+appliquées.
+
+Cette règle existe en tant que désactivation temporaire, au cas où une entreprise rencontre
+des problèmes avec les contraintes encodées dans ses racines privées. Dans ce cas, cette
+règle peut être utilisée pour désactiver temporairement l'application des contraintes
+tout en corrigeant les problèmes de certificat.
+
+Si cette règle n'est pas configurée ou qu'elle est activée,
+<ph name="PRODUCT_NAME" /> appliquera
+des contraintes encodées dans les ancres de confiance chargées à partir du magasin de confiance de la plate-forme.
+
+Lorsque cette règle est désactivée,
+<ph name="PRODUCT_NAME" /> n'appliquera pas
+les contraintes encodées dans les ancres de confiance chargées depuis le magasin de confiance de la plate-forme.
+
+Cette règle n'a aucun effet si la
+règle <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> est désactivée.
+
+Cette règle sera supprimée de la
+version 115 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8855929790177853633">Source de l'image de l'économiseur d'écran de l'utilisateur.</translation>
 <translation id="8858642179038618439">Forcer le mode sécurisé de YouTube</translation>
 <translation id="8860342862142842017">Désactiver l'application des règles de transparence des certificats pour une liste de hachages subjectPublicKeyInfo</translation>

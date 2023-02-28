@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1254424942107648268">മുമ്പത്തേത് കണ്ടെത്തുക</translation>
 <translation id="1258491128795710625">പുതിയതെന്താണ്</translation>
+<translation id="1264156759663453185">ഭാഗിക വിവർത്തനത്തിനായി തിരഞ്ഞെടുത്ത ടെക്‌സ്‌റ്റ് വളരെ വലുതാണ്.</translation>
 <translation id="1265739287306757398">എങ്ങനെയെന്നറിയുക</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
@@ -128,7 +129,6 @@
 <translation id="1832848789136765277">സമന്വയിപ്പിക്കുന്ന ഡാറ്റ നിങ്ങൾക്ക് എപ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കാൻ ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="1870148520156231997">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
 <translation id="1872096359983322073">ടോർച്ച്</translation>
-<translation id="1886370402958071554">വിലാസം ഇല്ലാതാക്കുക</translation>
 <translation id="1891796056033961979">നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകളും ക്രമീകരണവും മറ്റും ഈ സ്ക്രീനിൽ നിന്ന് ലഭ്യമാണ്.</translation>
 <translation id="1894023287452300670">ഇവിടെ നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="1911619930368729126">Google ഡ്രൈവിലേക്ക് അപ്‌ലോഡ് ചെയ്യുക</translation>
@@ -704,6 +704,7 @@
 <translation id="6066301408025741299">റദ്ദാക്കുന്നതിന് ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="6071409777669089905">ടാബ് അൺപിൻ ചെയ്യുക</translation>
 <translation id="6084848228346514841">ടാബുകൾ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="6103540626693881831">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
 <translation id="6119050551270742952">നിലവിലെ വെബ്‌പേജ് അദൃശ്യ മോഡിലാണ്</translation>
 <translation id="6122191549521593678">ഓൺലൈൻ</translation>
@@ -1133,6 +1134,7 @@
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> പാസ്‌വേഡുകൾ ഇല്ലാതാക്കണോ?</translation>
 <translation id="9100610230175265781">പാസ്‌ഫ്രെയ്‌സ് ആവശ്യമാണ്</translation>
 <translation id="9107664647686727385">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ കണ്ടെത്താൻ പരിശോധിക്കുക</translation>
+<translation id="9120217828624527905">പൂർണ്ണ പേജ് വിവർത്തനത്തിലേക്ക് മാറുക</translation>
 <translation id="9124387962554796433">Search-ഉം മറ്റ് Google സേവനങ്ങളും വ്യക്തിപരമാക്കാൻ Google നിങ്ങളുടെ ചരിത്രം ഉപയോഗിച്ചേക്കാം.</translation>
 <translation id="9137526406337347448">Google സേവനങ്ങൾ</translation>
 <translation id="9148126808321036104">വീണ്ടും പ്രവേശിക്കുക</translation>

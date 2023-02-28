@@ -198,8 +198,8 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5527463683072221100">Fungua PDF katika Chromium</translation>
 <translation id="5614091477838198795">Kinapokuwa kimewashwa, utaondolewa pia katika akaunti ya Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Sasisho la Chromium linapatikana}=1{Sasisho la Chromium linapatikana}other{Sasisho la Chromium limekuwepo kwa siku #}}</translation>
-<translation id="5634636535844844681">Chromium inahitaji Windows 7 au toleo jipya zaidi.</translation>
 <translation id="5653831366781983928">Tafadhali zima kisha uwashe Chromium sasa</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Onyesha Chromium katika lugha hii</translation>
 <translation id="5862307444128926510">Karibu kwenye Chromium</translation>
 <translation id="5883558403894052917">Chromium imegundua kwamba vipengee hivi vina programu hasidi:</translation>
@@ -342,10 +342,12 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8266560134891435528">Chromium imeshindwa kukagua manenosiri yako kwa sababu hujaingia katika akaunti</translation>
 <translation id="8276522524898344151">Chromium inajaribu kunakili manenosiri.</translation>
 <translation id="8290862415967981663">Huenda faili hii ni hatari, kwa hivyo Chromium imeizuia.</translation>
+<translation id="8325404639443959713">Fanya mengi ukitumia Chromium</translation>
 <translation id="8330519371938183845">Ingia katika akaunti ili usawazishe na uweke mapendeleo kwenye Chromium katika vifaa vyako vyote</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ilikuwa ikitumia Chromium awali</translation>
 <translation id="8357820681460164151">Ili uweze kufikia vitu vyako vya kivinjari cha Chromium kwenye vifaa vyako vyote, ingia katika akaunti kisha uwashe kipengele cha kusawazisha.</translation>
 <translation id="8360718212975266891">Ili upate masasisho yajayo ya Chromium, utahitaji kutumia toleo la Windows 10 au toleo jipya zaidi. Kompyuta hii inatumia toleo la Windows 8.</translation>
+<translation id="8370517070665726704">Hakimiliki <ph name="YEAR" /> Google LLC. Haki zote zimehifadhiwa.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Fungua Chromium upya ndani ya siku moja}other{Fungua Chromium upya ndani ya siku #}}</translation>
 <translation id="8453117565092476964">Kumbukumbu ya kisakinishi imeharibika au ni batili. Tafadhali pakua Chromium tena.</translation>
 <translation id="8463672209299734063">Si lazima: Tusaidie kuboresha utendaji na vipengele vya Mfumo wa Uendeshaji wa Chromium kwa kutuma kiotomatiki data ya matumizi na uchunguzi kwa Google.</translation>
@@ -381,6 +383,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="9158494823179993217">Msimamizi wa mfumo unaotumia ameweka mipangilio ya Chromium ifungue kivinjari mbadala ili ufikie<ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Fungua tena ili usasishe &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Badilisha Chromium upendavyo</translation>
 <translation id="93478295209880648">Huenda Chromium isifanye kazi vizuri kwa sababu haitumiki tena kwenye Windows XP au Windows Vista</translation>
 <translation id="942598560705308788">Vyeti vinavyodhibitiwa na Chromium</translation>
 <translation id="965162752251293939">Ni nani anayetumia Chromium?</translation>

@@ -2830,13 +2830,6 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3589193811812796052">Impedisci che i moduli WebAssembly vengano inviati tra origini</translation>
 <translation id="3591527072193107424">Attiva la funzionalità Supporto dei browser precedenti.</translation>
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
-<translation id="359203136434560942">Consente di configurare l'elenco di immagini da visualizzare nel salvaschermo per la schermata di blocco.
-
-Ogni voce dell'elenco fa riferimento a un'immagine da visualizzare nel salvaschermo. Per la verifica, la voce deve avere come membri un URL che rimanda all'immagine e il valore hash SHA-256 del file immagine. Il formato dell'immagine deve essere JPEG. Il dispositivo <ph name="PRODUCT_OS_NAME" /> scaricherà queste immagini e gestirà una cache locale di questi riferimenti.
-
-Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> viene impostato su false.
-
-Se questo criterio non viene configurato o se l'elenco non contiene riferimenti a immagini validi, il salvaschermo per la schermata di blocco non verrà visualizzato, a prescindere dal valore impostato nel criterio <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">Verrà utilizzato il comportamento precedente per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
 <translation id="3596112486106491038">Attiva l'accesso alla riga di comando delle macchine virtuali</translation>
 <translation id="3603469950773500315">Consente di attivare le mitigazioni dei controlli <ph name="CORS" /> nella nuova implementazione <ph name="CORS" />, consentendo alle estensioni di mantenere un comportamento compatibile e a <ph name="PRODUCT_NAME" /> di inviare le intestazioni specificate senza controlli <ph name="CORS" />.
@@ -3856,7 +3849,6 @@ Se il criterio non è configurato, gli utenti possono modificare l'elenco di app
 <translation id="4624417808625504735">Impedisci a JavaScript di utilizzare JIT su questi siti</translation>
 <translation id="46321462262887935">Imposta i tasti della fila superiore come tasti funzione, ma consenti la modifica da parte degli utenti</translation>
 <translation id="4632343302005518762">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i tipi di contenuti elencati</translation>
-<translation id="4632566332417930481">Non consentire l'utilizzo degli Strumenti per sviluppatori per le estensioni installate in base a norme aziendali; consenti l'utilizzo degli Strumenti per sviluppatori in altri contesti</translation>
 <translation id="4636354638176939375">Disattiva la creazione di utenti supervisionati</translation>
 <translation id="4646626362889216307">L'impostazione di questo criterio consente di unire i criteri selezionati quando provengono da origini diverse, con stesso ambito e livello. L'unione avviene tra le chiavi di primo livello del dizionario di ogni origine. Avrà la priorità la chiave proveniente dall'origine con la priorità massima.
 
@@ -3990,7 +3982,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
           Se questo criterio non viene impostato, inizialmente l'audio in formato mono è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4768446404233019970">Attiva le suite di crittografia 3DES in TLS</translation>
 <translation id="4770334626033858263">La configurazione usata per generare e verificare il codice accesso genitori.</translation>
-<translation id="4772431363738215349">L'URL da cui è possibile scaricare l'immagine del salvaschermo.</translation>
 <translation id="4773997835955617342">Consente di modificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
 
       Se questo criterio viene attivato, il valore del criterio "KerberosCustomPrefilledConfig" viene applicato come configurazione suggerita e viene mostrato nella sezione "Avanzate" della finestra di dialogo dell'autenticazione Kerberos.
@@ -4578,7 +4569,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio viene impostato su False, il port forwarding nei container Crostini viene disattivato.</translation>
 <translation id="538108065117008131">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuto.</translation>
-<translation id="5382211603538487131">L'hash SHA-256 dell'immagine.</translation>
 <translation id="538768040137709073">Consente di attivare la funzione Appunti condivisi che permette agli utenti di inviare testi tra computer desktop Chrome e un dispositivo Android quando la sincronizzazione è attivata e l'utente ha effettuato l'accesso.
 
           Se il criterio è impostato su true, la funzionalità di invio testi tra dispositivi è attivata per gli utenti Chrome.
@@ -4787,13 +4777,6 @@ Questo criterio è stato rimosso nella versione M112.</translation>
 <translation id="5535256585099022933">Imposta l'intervallo di tempo per il riavvio</translation>
 <translation id="553806128266843748">Un flag booleano che indica se la limitazione è attiva o meno.</translation>
 <translation id="5540885720415375851">Consenti rilevamento dei dispositivi locali</translation>
-<translation id="5545132877693005604">Consente di configurare l'elenco di immagini da visualizzare nel salvaschermo per la schermata di accesso.
-
-Ogni voce dell'elenco fa riferimento a un'immagine da visualizzare nel salvaschermo. Per la verifica, la voce deve avere come membri un URL che rimanda all'immagine e il valore hash SHA-256 del file immagine. Il formato dell'immagine deve essere JPEG. Il dispositivo <ph name="PRODUCT_OS_NAME" /> scaricherà queste immagini e gestirà una cache locale di questi riferimenti.
-
-Questo criterio non avrà alcun effetto se il criterio <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> viene impostato su false.
-
-Se questo criterio non viene configurato o se l'elenco non contiene riferimenti a immagini validi, il salvaschermo per la schermata di accesso non verrà visualizzato, a prescindere dal valore impostato nel criterio <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Attiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="555077880566103058">Consenti l'esecuzione automatica del plug-in <ph name="FLASH_PLUGIN_NAME" /> in tutti i siti</translation>

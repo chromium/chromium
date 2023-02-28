@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Ser etter skannere</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="3268178239013324452">Mislykket – luken er åpen</translation>
+<translation id="3275506277319227640">Dokk på <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Brukerbilde</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediger filen}other{Rediger filene}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3435896845095436175">Aktivér</translation>
+<translation id="345256797477978759">Forankre vinduet på den <ph name="DIRECTION" /> større delen av skjermen</translation>
 <translation id="3456078764689556234">Skrev ut side <ph name="PRINTED_PAGES" /> av <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Skanner side <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" /> % fullført.</translation>
 <translation id="3459509316159669723">Utskrift</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Batteriet er fullt</translation>
 <translation id="3600339377155080675">Skjermspeiling</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
+<translation id="360282891121575443">Bilder i delte album kan oppdateres av andre brukere. Endring daglig kan vise bakgrunner som ikke er i albumet for øyeblikket.</translation>
 <translation id="3603829704940252505">Brukerbilde</translation>
 <translation id="3604713164406837697">Endre bakgrunn</translation>
 <translation id="360565022852130722">Wifi-nettverket er sikret med den svake protokollen WEP 802.1x</translation>
 <translation id="3606583719724308068">Høy tidsforsinkelse til HTTPS-nettsteder</translation>
 <translation id="361575905210396100">Takk for tilbakemeldingen</translation>
 <translation id="3632579075709132555">Personvernskjerm av/på</translation>
+<translation id="3639846061339007994">øvre</translation>
 <translation id="3651050199673793219">Velg en temperaturenhet</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />test</translation>
 <translation id="370665806235115550">Laster inn ...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Full</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-tasten trykkes på</translation>
 <translation id="435692326371619097">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Fest på mindre side</translation>
 <translation id="4378373042927530923">Ikke kjørt</translation>
 <translation id="4378551569595875038">Kobler til …</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659594942844771486">Fane</translation>
 <translation id="6692996468359469499">Få informasjon tilknyttet det du har merket</translation>
+<translation id="6698459586333070823">Delte album kan oppdateres av andre brukere</translation>
 <translation id="6704062477274546131">DNS-konvertering</translation>
 <translation id="6723839937902243910">Strøm</translation>
 <translation id="6723847290197874913">Bakgrunnsbelysning for tastatur</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Eksisterende bilde fra kamera eller fil</translation>
 <translation id="7162487448488904999">Galleri</translation>
 <translation id="7170236477717446850">Profilbilde</translation>
+<translation id="7171919371520438592">Dokk vinduet i den <ph name="DIRECTION" /> mindre delen av skjermen</translation>
 <translation id="7172721935181587524">1 bilde</translation>
 <translation id="7177485034254901881"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" />. Administratorer kan konfigurere enheten eksternt.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Tilknytt</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
+<translation id="8210733748736414123">nedre</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>
 <translation id="8227119283605456246">Legg ved fil</translation>
 <translation id="8230672074305416752">Kunne ikke pinge gatewayen for standardnettverket</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Legg til en konto for multipålogging. Alle påloggede kontoer kan brukes uten passord, så denne funksjonen burde bare brukes med pålitelige kontoer.</translation>
 <translation id="8364946094152050673">Tomme navnetjenere</translation>
 <translation id="8372477600026034341">Tilleggsverter</translation>
+<translation id="8380114448424469341">Forankre vinduet på <ph name="DIRECTION" /> halvdel av skjermen</translation>
 <translation id="8395584934117017006">Denne <ph name="DEVICE_TYPE" />-enheten er bedriftsadministrert</translation>
 <translation id="8398927464629426868">Hvor raskt enheten lades eller utlades for øyeblikket</translation>
 <translation id="8410244574650205435">Identifisert automatisk</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9138630967333032450">Venstre Shift</translation>
 <translation id="9149391708638971077">Kjør minnetest</translation>
+<translation id="9157515863513902090">Fest på større side</translation>
 <translation id="9173638680043580060">Mindre enn et minutt igjen</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Tastaturet kan matche bakgrunnen automatisk</translation>

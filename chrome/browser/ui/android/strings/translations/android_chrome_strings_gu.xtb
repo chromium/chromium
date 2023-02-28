@@ -355,6 +355,7 @@
 <translation id="2951071800649516099">પછીથી વાંચવા માટે, તમારી વાંચન સૂચિમાં પેજ ઉમેરો</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> પેજ}one{વાંચ્યા વગરનું <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}other{વાંચ્યા વગરના <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> પેજ}}</translation>
 <translation id="2961210776189273067">શીર્ષક</translation>
+<translation id="296370266220139811">સમય બચાવો અને ઓછું ટાઇપ કરો</translation>
 <translation id="2979025552038692506">પસંદ કરેલ છૂપું ટૅબ</translation>
 <translation id="2979639724566107830">નવી વિંડોમાં ખોલો</translation>
 <translation id="2981364137500752533">તમે વધુમાં વધુ 5 વિન્ડો ખોલી શકો છો.</translation>
@@ -482,6 +483,7 @@
 <translation id="3578874072190212775">કપટ સામે લડવામાં અને બૉટને લોકોથી અલગ પાડવામાં સાઇટને સહાય કરો</translation>
 <translation id="3587482841069643663">બધા</translation>
 <translation id="3587596251841506391">વેબ પર સુરક્ષા સુધારવા સહાય કરો</translation>
+<translation id="3597179440835065298">બહેતર સૂચનો મેળવો</translation>
 <translation id="3602290021589620013">પ્રીવ્યૂ કરો</translation>
 <translation id="3616113530831147358">ઑડિઓ</translation>
 <translation id="3622349720008044802">વિન્ડો મેનેજ કરો</translation>
@@ -747,6 +749,7 @@
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5011311129201317034"><ph name="SITE" />, કનેક્ટ કરવા માગે છે</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">છેલ્લી 15 મિનિટ</translation>
 <translation id="5032430150487044192">QR કોડ બનાવી શકતા નથી</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
 <translation id="5040262127954254034">પ્રાઇવસી</translation>
@@ -882,6 +885,7 @@
 <translation id="5813552293717797987">આ બ્રાઉઝર <ph name="PARENT_NAME_1" /> અને <ph name="PARENT_NAME_2" /> દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="5814131985548525293">શરૂ કરવા માટે અહીં ટાઇપ કરો અથવા વૉઇસ આઇકન પર ટૅપ કરો</translation>
 <translation id="5814749351757353073">તમારી મનપસંદ સાઇટ સાથે જોડાયેલા રહો</translation>
+<translation id="5822875253699806474">અન્ય ડિવાઇસ પર તમે મુલાકાત લીધેલી સાઇટ પર ઝડપથી પાછા જવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5833984609253377421">લિંક શેર કરો</translation>
 <translation id="5834764604050996579">કોઈ QR કોડને સ્કૅન કરવા માટે, Chromeને તમારા કૅમેરાનો ઉપયોગ કરવા દો</translation>
@@ -1136,6 +1140,7 @@
 <translation id="7088681679121566888">Chrome અપ ટૂ ડેટ છે</translation>
 <translation id="7105047059074518658">તમામ ડિવાઇસ પર વધુ સરળતાથી બ્રાઉઝ કરવા માટે સાઇન ઇન કરો</translation>
 <translation id="7106762743910369165">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે</translation>
+<translation id="7116588989735740310">અન્ય ડિવાઇસ પર તમે મુલાકાત લીધેલી સાઇટ પર પાછા જવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="7130504491556983216">જ્યારે તમે વેબ બ્રાઉઝ કરશો, ત્યારે રુચિઓની સૂચિ અહીં દેખાશે</translation>
 <translation id="7138678301420049075">અન્ય</translation>
 <translation id="7146622961999026732">આ સાઇટ અને ઍપ તમારા માટે મહત્ત્વના લાગી રહ્યાં છે:</translation>
@@ -1214,6 +1219,7 @@
 <translation id="751961395872307827">સાઇટ સાથે કનેક્ટ કરી શકાતું નથી</translation>
 <translation id="752220631458524187">તમારું કામ પૂર્ણ થાય ત્યારે એટલે ડિસ્કનેક્ટ કરો</translation>
 <translation id="7523960634226602883">Google Lensનો ઉપયોગ કરીને તમારા કૅમેરા વડે શોધો</translation>
+<translation id="7539698981064401140">તમારા ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="7562080006725997899">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="756809126120519699">Chrome ડેટા સાફ કર્યો</translation>
 <translation id="7577900504646297215">રુચિઓ મેનેજ કરો</translation>
@@ -1396,6 +1402,7 @@
 <translation id="8461694314515752532">તમારા પોતાના સિંક પાસફ્રેઝ સાથે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો</translation>
 <translation id="8466613982764129868">ખાતરી કરો કે <ph name="TARGET_DEVICE_NAME" />ને ઇન્ટરનેટ સાથે કનેક્ટ કરેલું છે</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
+<translation id="847433688444405067">સમગ્ર ડિવાઇસ પર બ્રાઉઝ કરો</translation>
 <translation id="8481980314595922412">અજમાયશની સુવિધાઓ ચાલુ છે</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ઇતિહાસ પેજ ખોલો</translation>
@@ -1449,6 +1456,7 @@
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8746155870861185046">હાઇલાઇટ કરેલી ટેક્સ્ટ શેર કરો</translation>
+<translation id="874726034427945498">તમારા ઍડ્રેસ બારમાં બહેતર સૂચનો જોવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="8748850008226585750">સામગ્રીઓ છુપાવેલ છે</translation>
 <translation id="8756969031206844760">પાસવર્ડ અપડેટ કરીએ?</translation>
 <translation id="8765470054473112089">જ્યારે તમે ઍડ્રેસ બાર અથવા શોધ બૉક્સમાં ટાઇપ કરો છો, ત્યારે બહેતર સૂચનો મેળવવા માટે Chrome તમે જે ટાઇપ કરો છો તેને તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે. આ સુવિધા છૂપા મોડમાં કામ કરતી નથી.</translation>
@@ -1514,6 +1522,7 @@
 <translation id="9070377983101773829">વૉઇસ શોધ શરૂ કરો</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9081543426177426948">છૂપા મોડમાં તમે મુલાકાત લો છો એ સાઇટ સચવાતી નથી</translation>
+<translation id="9084103763810123431">અન્ય ડિવાઇસ પર બ્રાઉઝ કરવાનું ચાલુ રાખવા માટે, તમારા ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="9086302186042011942">સમન્વય કરી રહ્યું છે</translation>
 <translation id="9086455579313502267">નેટવર્ક ઍક્સેસ કરવામાં અક્ષમ છે</translation>
 <translation id="9099220545925418560">તમારા બ્રાઉઝિંગ ઇતિહાસના આધારે. આ સેટિંગ બંધ છે.</translation>

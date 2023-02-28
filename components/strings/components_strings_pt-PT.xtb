@@ -487,6 +487,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2108755909498034140">Reiniciar o computador</translation>
 <translation id="2111166930115883695">Prima a barra de espaço.</translation>
 <translation id="2112529237938317174">Mostrar detalhes da autorização</translation>
+<translation id="2113232594265919362">Está a ver este aviso porque este site não suporta HTTPS e está no Programa de Proteção avançada da Google. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Cartão</translation>
 <translation id="2114841414352855701">Ignorada porque foi substituída por <ph name="POLICY_NAME" /> .</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
@@ -877,6 +878,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="317878711435188021">Saber quando está a utilizar ativamente este dispositivo.</translation>
 <translation id="3180358318770512945">Parentalidade</translation>
 <translation id="3187306450550410410">Condições de trabalho flexíveis</translation>
+<translation id="3187380004437786923">Gerir pagamentos</translation>
 <translation id="3187472288455401631">Medição de anúncios</translation>
 <translation id="3190736958609431397">Desativar monitorização</translation>
 <translation id="319282854780294203">Redes sociais</translation>
@@ -1209,6 +1211,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3990250421422698716">Separar conjuntos</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
 <translation id="399952081411886534">Outras funcionalidades que tornam os anúncios mais privados</translation>
+<translation id="4000598935132966791">Saiba mais sobre restrições de sites em navegadores geridos</translation>
 <translation id="4006465311664329701">Métodos de pagamento, ofertas e endereços com o Google Pay</translation>
 <translation id="4009243425692662128">O conteúdo das páginas que imprime é enviado para o Google Cloud ou terceiros para análise. Por exemplo, pode ser analisado quanto a dados confidenciais.</translation>
 <translation id="4010758435855888356">Permitir o acesso ao armazenamento?</translation>
@@ -1272,6 +1275,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4154664944169082762">Impressões digitais</translation>
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
+<translation id="4169535189173047238">Não permitir</translation>
 <translation id="4171400957073367226">Assinatura de verificação incorreta</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Mostrar sempre</translation>
@@ -2165,6 +2169,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Rever a configuração do proxy, da firewall e do DNS seguro<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Agrafo duplo à esquerda</translation>
+<translation id="6367196786591004737">Elimine a entrada</translation>
 <translation id="6370022303958842211">Ações de acesso ao dispositivo, como inícios de sessão (incluindo motivos de início de sessão falhados), fins de sessão, bloqueios e desbloqueios</translation>
 <translation id="6374865374745447009">gestão de janelas</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
@@ -2309,6 +2314,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferência</translation>
 <translation id="6753269504797312559">Valor da política</translation>
+<translation id="6753434778807740853">Eliminar entrada <ph name="ENTRY_VOICEOVER" /></translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">O dispositivo entrou em suspensão.</translation>
 <translation id="6767985426384634228">Pretende atualizar o endereço?</translation>
@@ -2321,6 +2327,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="678982761784843853">IDs de conteúdo protegido</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
 <translation id="679355240208270552">Ignorado porque a pesquisa predefinida não está ativada pela política.</translation>
+<translation id="6794049111359324414">Permitir que a app <ph name="APP_NAME" /> configure redes Wi-Fi?</translation>
 <translation id="6794951432696553238">Confirme os seus cartões mais rapidamente ao utilizar o Windows Hello a partir de agora.</translation>
 <translation id="6798460514924505775">Envelope Chou 3</translation>
 <translation id="6805030849054648206">Envelope B6/C4</translation>
@@ -3334,6 +3341,7 @@ Detalhes adicionais:
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="961663415146723894">Encadernar parte inferior</translation>
 <translation id="962484866189421427">Este conteúdo poderá tentar instalar aplicações fraudulentas que se fazem passar por algo diferente ou que recolhem dados que podem ser utilizados para o monitorizar. <ph name="BEGIN_LINK" />Mostrar, mesmo assim<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Todos os utilizadores</translation>
 <translation id="964050462028070434">Gerir palavras-passe e chaves de acesso…</translation>
 <translation id="96680173638229310">Carros e veículos</translation>
 <translation id="969892804517981540">Compilação oficial</translation>
@@ -3359,6 +3367,7 @@ Detalhes adicionais:
     &lt;li&gt;Experimente desinstalar ou desativar o "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Experimente estabelecer ligação a outra rede&lt;/li&gt;
     &lt;/ul&gt;</translation>
+<translation id="993612073656736454">Esta app está a pedir autorização para configurar novas redes Wi-Fi. Após a configuração, o dispositivo <ph name="DEVICE_TYPE" /> liga-se automaticamente às redes Wi-Fi participantes. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Do Google Pay</translation>
 </translationbundle>

@@ -47,6 +47,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="1254117744268754948">Qovluq seçin</translation>
 <translation id="1254424942107648268">Öncəkini tapın</translation>
 <translation id="1258491128795710625">Yeniliklər</translation>
+<translation id="1264156759663453185">Seçilmiş mətn qismən tərcümə üçün çox böyükdür.</translation>
 <translation id="1265739287306757398">Məlumat əldə edin</translation>
 <translation id="1272079795634619415">Dayandırın</translation>
 <translation id="1275718070701477396">Seçilib</translation>
@@ -177,6 +178,7 @@ Yalnız parolunuzu bilən kimsə şifrələnmiş datanızı oxuya bilər. Bu par
 <translation id="2268044343513325586">Silin</translation>
 <translation id="2273327106802955778">Ətraflı menyu</translation>
 <translation id="2286505070150039482">Vurğulanmış Mətn</translation>
+<translation id="2287614783861766820">{count,plural, =1{Bu ünvan bu cihazdan silinəcək.}other{Bu ünvanlar bu cihazdan silinəcək.}}</translation>
 <translation id="2299218006564889602">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir.</translation>
 <translation id="2302742851632557585">Vebsaytda parolu dəyişin</translation>
 <translation id="2316709634732130529">Təklif Edilmiş Paroldan İstifadə Edin</translation>
@@ -458,6 +460,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4324952538601951430">Yadda saxladığınız əlfəcinlər, parollar, ayarlar və s. indi buradadır</translation>
 <translation id="4334428914252001502">1 oxunmamış məqalə.</translation>
 <translation id="4338650699862464074">Daxil olduğunuz səhifələrin linklərini Google'a göndərir.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Bu ünvan bu və digər giriş edilən cihazlardan silinəcək.}other{Bu ünvanlar bu və digər giriş edilən cihazlardan silinəcək.}}</translation>
 <translation id="4343046787186034850">Kamera və Mikrofona giriş icazəsi verilib</translation>
 <translation id="4359125752503270327">Bu səhifə başqa tətbiqdə açılacaq.</translation>
 <translation id="4375040482473363939">QR kod Axtarışı</translation>
@@ -587,6 +590,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5232485538978018676">İdarə olunan hesab ilə daxil olun</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>
 <translation id="5245322853195994030">Sinxronizasiyanı Ləğv Edin</translation>
+<translation id="5271265092610673171">{count,plural, =1{Lazımi sahə boşdur. Yadda saxlamazdan əvvəl doldurun.}other{Bəzi lazımi sahələr boşdur. Yadda saxlamazdan əvvəl doldurun.}}</translation>
 <translation id="5271549068863921519">Şifrəni yadda saxlayın</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> hesabı silinsin?</translation>
 <translation id="5300589172476337783">Göstərin</translation>
@@ -700,6 +704,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6066301408025741299">Ləğv etmək üçün tıklayın.</translation>
 <translation id="6071409777669089905">Tabı sancmayın</translation>
 <translation id="6084848228346514841">Tablar seçin</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> kimi daxil olunub. Ayarları açır.</translation>
 <translation id="6103540626693881831">Cihazda Şifrələmə</translation>
 <translation id="6119050551270742952">Hazırkı veb səhifə anonim rejimdədir</translation>
 <translation id="6122191549521593678">Onlayn</translation>
@@ -1129,6 +1134,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> Parol silinsin?</translation>
 <translation id="9100610230175265781">Parol tələb olunur</translation>
 <translation id="9107664647686727385">Oğurlanmış parolların olub-olmadığını yoxlayın</translation>
+<translation id="9120217828624527905">Tam səhifə tərcüməsinə dəyişin</translation>
 <translation id="9124387962554796433">Google Axtarış və digər Google xidmətlərini fərdiləşdirmək üçün tarixçənizi istifadə edə bilər.</translation>
 <translation id="9137526406337347448">Google Xidmətləri</translation>
 <translation id="9148126808321036104">Yenidən daxil olun</translation>

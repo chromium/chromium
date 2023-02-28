@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">አቃፊ ይምረጡ</translation>
 <translation id="1254424942107648268">ቀዳሚውን አግኝ</translation>
 <translation id="1258491128795710625">ምን አዲስ ነገር አለ</translation>
+<translation id="1264156759663453185">የተመረጠው ጽሁፍ በከፊል ለመተርጎም እጅግ ብዙ ነው።</translation>
 <translation id="1265739287306757398">እንዴት እንደሆነ ይወቁ</translation>
 <translation id="1272079795634619415">አቁም</translation>
 <translation id="1275718070701477396">የተመረጡ</translation>
@@ -700,6 +701,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6066301408025741299">ይቅር ለማለት መታ ያድርጉ።</translation>
 <translation id="6071409777669089905">ትርን ንቀል</translation>
 <translation id="6084848228346514841">ትሮችን ይምረጡ</translation>
+<translation id="6100617279104942061">እንደ <ph name="USER_EMAIL" /> ሆነው ገብተዋል። ቅንብሮችን ይከፍታል።</translation>
 <translation id="6103540626693881831">በመሳሪያ ላይ ምስጠራ</translation>
 <translation id="6119050551270742952">የአሁኑ ድረ-ገጽ ማንነት በማያሳውቅ ላይ ነው</translation>
 <translation id="6122191549521593678">መስመር ላይ</translation>
@@ -1129,6 +1131,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> የይለፍ ቃላት ይሰረዙ?</translation>
 <translation id="9100610230175265781">የይለፍ ሐረግ ያስፈልጋል</translation>
 <translation id="9107664647686727385">የተጠለፉ የይለፍ ቃላትን ይፈትሹ</translation>
+<translation id="9120217828624527905">ወደ ሙሉ ገጽ ትርጉም ይቀይሩ</translation>
 <translation id="9124387962554796433">Google ፍለጋን እና ሌሎች የGoogle አገልግሎቶችን ግላዊነት ለማላበስ ሲል ታሪክዎን ሊጠቀም ይችላል።</translation>
 <translation id="9137526406337347448">Google አገልግሎቶች</translation>
 <translation id="9148126808321036104">እንደገና ይግቡ</translation>

@@ -196,8 +196,8 @@
 <translation id="5527463683072221100">Chromium で PDF を開く</translation>
 <translation id="5614091477838198795">オンにすると、Chromium からもログアウトします</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium のアップデートが利用可能です}=1{Chromium のアップデートが利用可能です}other{Chromium のアップデートが利用可能になってから # 日経過しています}}</translation>
-<translation id="5634636535844844681">Chromium のご利用には Windows 7 以上が必要です。</translation>
 <translation id="5653831366781983928">今すぐ Chromium を再起動してください</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium をこの言語で表示</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5883558403894052917">Chromium で次のアイテムに不正なソフトウェアが含まれていることが検出されました。</translation>
@@ -339,10 +339,12 @@
 <translation id="8266560134891435528">ログインしていないため、Chromium でパスワードを確認できません</translation>
 <translation id="8276522524898344151">Chromium がパスワードをコピーしようとしています。</translation>
 <translation id="8290862415967981663">このファイルは危険なファイルの可能性があるため、Chromium でブロックしました。</translation>
+<translation id="8325404639443959713">Chromium でもっと便利に</translation>
 <translation id="8330519371938183845">ログインすると、同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="8340674089072921962">Chromium の前回の使用者は <ph name="USER_EMAIL_ADDRESS" /> です</translation>
 <translation id="8357820681460164151">お使いのすべてのデバイスで Chromium ブラウザの設定やデータを使用するには、ログインして同期を有効にしてください</translation>
 <translation id="8360718212975266891">今後、Chromium のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8 が実行されています。</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8417404458978023919">{0,plural, =1{1 日以内に Chromium を再起動してください}other{# 日以内に Chromium を再起動してください}}</translation>
 <translation id="8453117565092476964">インストーラ アーカイブが壊れているか無効です。Chromium をダウンロードし直してください。</translation>
 <translation id="8463672209299734063">任意: 診断と使用状況のデータを Google に自動送信して、Chromium OS の機能とパフォーマンスの改善に協力する。</translation>
@@ -378,6 +380,7 @@
 <translation id="9158494823179993217">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに代替ブラウザを開くよう Chromium を設定しています。</translation>
 <translation id="9185526690718004400">再起動して Chromium を更新(&amp;C)</translation>
 <translation id="9190841055450128916">Chromium（mDNS インバウンド）</translation>
+<translation id="924957577793602335">Chromium を独自にカスタマイズ</translation>
 <translation id="93478295209880648">Windows XP と Windows Vista はサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
 <translation id="942598560705308788">Chromium で管理されている証明書</translation>
 <translation id="965162752251293939">Chromium はどなたが使用しますか？</translation>

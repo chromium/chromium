@@ -589,6 +589,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Đổi kích thước trình đơn bật/tắt</translation>
+<translation id="2365355378251437925">Nhập <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Mức độ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Cá nhân hóa các công cụ hỗ trợ tiếp cận của bạn trong phần cài đặt Chrome</translation>
@@ -876,6 +877,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="317878711435188021">Biết khi bạn đang sử dụng thiết bị này</translation>
 <translation id="3180358318770512945">Nuôi dạy con</translation>
 <translation id="3187306450550410410">Bố trí công việc linh hoạt</translation>
+<translation id="3187380004437786923">Quản lý các khoản thanh toán</translation>
 <translation id="3187472288455401631">Đo lường quảng cáo</translation>
 <translation id="3190736958609431397">Bỏ theo dõi</translation>
 <translation id="319282854780294203">Mạng xã hội</translation>
@@ -1271,6 +1273,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4154664944169082762">Dấu vân tay</translation>
 <translation id="4159784952369912983">Tím</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>
+<translation id="4169535189173047238">Không cho phép</translation>
 <translation id="4171400957073367226">Chữ ký xác minh không hợp lệ</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Luôn hiển thị</translation>
@@ -3334,6 +3337,7 @@ Thông tin chi tiết bổ sung:
 <translation id="950736567201356821">Đục 3 lỗ trên cùng</translation>
 <translation id="961663415146723894">Đóng gáy dưới cùng</translation>
 <translation id="962484866189421427">Nội dung này có thể tìm cách cài đặt ứng dụng lừa đảo giả mạo nội dung khác hoặc thu thập dữ liệu có thể được dùng để theo dõi bạn. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Tất cả người dùng</translation>
 <translation id="964050462028070434">Quản lý mật khẩu và mã xác thực…</translation>
 <translation id="96680173638229310">Ô tô và xe cộ</translation>
 <translation id="969892804517981540">Phiên bản Chính thức</translation>

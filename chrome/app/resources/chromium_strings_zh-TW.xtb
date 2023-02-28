@@ -196,8 +196,8 @@
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
 <translation id="5614091477838198795">如果啟用此選項，系統也會將你從 Chromium 登出</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發布 # 天}}</translation>
-<translation id="5634636535844844681">Chromium 僅支援 Windows 7 以上版本的作業系統。</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">將 Chromium 的介面文字設為這種語言</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5883558403894052917">Chromium 偵測到下列項目含有惡意軟體：</translation>
@@ -345,6 +345,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 先前使用的是 Chromium</translation>
 <translation id="8357820681460164151">如要透過所有裝置存取你的 Chromium 瀏覽器資料，請登入並開啟同步功能</translation>
 <translation id="8360718212975266891">如要取得日後的 Chromium 更新，必須使用 Windows 10 以上版本。這部電腦目前版本為 Windows 8。</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已毀損或無效，請重新下載 Chromium。</translation>
 <translation id="8463672209299734063">選用：自動將診斷資訊和使用資料傳送給 Google，協助改善 Chromium OS 的功能與效能。</translation>

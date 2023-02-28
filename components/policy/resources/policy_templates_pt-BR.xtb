@@ -1281,6 +1281,15 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_ENABLED_P
 <translation id="2168397434410358693">Intervalo de inatividade no funcionamento com alimentação CA</translation>
 <translation id="217013996107840632">Parâmetros de linha de comando para fazer a mudança do navegador alternativo.</translation>
 <translation id="2170233653554726857">Ativar otimização WPAD</translation>
+<translation id="2172528612637587749">Configura a lista de imagens que vão ser mostradas no protetor da tela de bloqueio.
+
+Cada item precisa ser um URL relacionado a um arquivo de imagem. O formato da imagem precisa ser JPEG, e o tamanho do arquivo não pode exceder 8 MB. Imagens não suportadas e URLs inválidos serão ignorados. O dispositivo <ph name="PRODUCT_OS_NAME" /> vai fazer o download dessas imagens e mantê-las em um cache local.
+
+O número de imagens a serem mostradas no protetor de tela é limitado a 25. Somente os 25 primeiros URLs da lista serão usados.
+
+Esta política não tem efeito quando a <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> é definida como falsa.
+
+Se a política for deixada sem definição ou se a lista não tiver referências de imagem válidas, o protetor da tela de bloqueio não vai ser mostrado, independente do valor definido na <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="2175353308236295184">Objeto de configuração JSON específico do app com um conjunto de pares de chave-valor, por exemplo, '"managedConfiguration": { "key1": value1, "key2": value2 }'. As chaves são definidas no manifesto do app.</translation>
 <translation id="2176115444876446233">Impede que os usuários coletem o rastreamento de desempenho do sistema.</translation>
 <translation id="2177696016354404697">Sempre desativar a tela de privacidade</translation>
@@ -2852,13 +2861,6 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3589193811812796052">Impedir módulos WebAssembly de serem enviados em origem cruzada</translation>
 <translation id="3591527072193107424">Ativa o recurso "Suporte a navegadores legados".</translation>
 <translation id="3591584750136265240">Configura o comportamento de autenticação de login</translation>
-<translation id="359203136434560942">Configura a lista de imagens que vão ser mostradas no protetor da tela de bloqueio.
-
-Cada item da lista faz referência a uma imagem que será mostrada no protetor de tela. O item precisa ter um URL para a imagem e o valor de hash SHA-256 do arquivo de imagem para verificação. O formato da imagem precisa ser JPEG. O dispositivo <ph name="PRODUCT_OS_NAME" /> vai fazer o download dessas imagens e manter um cache local das referências.
-
-Esta política não terá efeito se a <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> for definida como falsa.
-
-Se a política for deixada sem definição ou se a lista não tiver referências de imagem válidas, o protetor da tela de bloqueio não vai ser mostrado, independente do valor definido na <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">O comportamento antigo para envio de eventos em controles de formulário desativados vai ser usado.</translation>
 <translation id="3596112486106491038">Ativar o acesso à linha de comando de máquinas virtuais</translation>
 <translation id="3603469950773500315">Ative as mitigações de verificação de <ph name="CORS" /> na nova implementação de <ph name="CORS" />, permitindo que as extensões mantenham um comportamento compatível e permitindo que o <ph name="PRODUCT_NAME" /> envie cabeçalhos especificados sem verificações de <ph name="CORS" />.
@@ -3502,6 +3504,15 @@ Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode
           Se esta política não for definida, o clique automático ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4212181786686887763">O URL no qual o download da imagem do plano de fundo pode ser feito.</translation>
 <translation id="4224610387358583899">Tempo de espera para bloqueio de tela</translation>
+<translation id="4225083820650584375">Configura a lista de imagens que vão ser mostradas no protetor da tela de login.
+
+Cada item precisa ser um URL relacionado a um arquivo de imagem. O formato da imagem precisa ser JPEG, e o tamanho do arquivo não pode exceder 8 MB. Imagens não suportadas e URLs inválidos serão ignorados. O dispositivo <ph name="PRODUCT_OS_NAME" /> vai fazer o download dessas imagens e mantê-las em um cache local.
+
+O número de imagens a serem mostradas no protetor de tela é limitado a 25. Somente os 25 primeiros URLs da lista serão usados.
+
+Esta política não terá efeito se a <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> for definida como falsa.
+
+Se a política for deixada sem definição ou se a lista não tiver referências de imagem válidas, o protetor da tela de login não vai ser mostrado, independente do valor definido na <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="42267415200641481">Se a política for definida como verdadeira, a resolução de DNS (getaddrinfo()) poderá ser executada fora do processo de rede, dependendo da configuração do sistema e das flags de recursos.
 
       Se a política for definida como falsa, a resolução de DNS do sistema (getaddrinfo()) será executada no processo de rede, e não no navegador. Isso pode forçar a desativação do sandbox do serviço de rede, prejudicando a segurança do <ph name="PRODUCT_NAME" />.
@@ -3891,7 +3902,6 @@ Se a política for deixada sem definição, os usuários poderão mudar a lista 
 <translation id="4624417808625504735">Bloquear o uso de JIT pelo JavaScript nestes sites</translation>
 <translation id="46321462262887935">Tratar teclas da linha superior como teclas de função, mas permitir que os usuários façam mudanças</translation>
 <translation id="4632343302005518762">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo listados</translation>
-<translation id="4632566332417930481">Não permite o uso das Ferramentas para Desenvolvedores em extensões instaladas por uma política corporativa; permite o uso das Ferramentas para desenvolvedores em outros contextos</translation>
 <translation id="4636354638176939375">Desativar a criação de usuários supervisionados</translation>
 <translation id="4646626362889216307">Se a política for definida, será possível mesclar as políticas selecionadas quando elas vierem de origens diferentes com os mesmos escopos e níveis. Essa mesclagem ocorre nas chaves de primeiro nível do dicionário de cada origem. A chave da origem de maior prioridade tem precedência.
 
@@ -4024,7 +4034,6 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
           Se esta política não for definida, o áudio mono ficará desativado inicialmente, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
 <translation id="4768446404233019970">Ativar pacotes de criptografia 3DES em TLS</translation>
 <translation id="4770334626033858263">Configuração usada para gerar e verificar o código de acesso do familiar responsável.</translation>
-<translation id="4772431363738215349">O URL em que o download da imagem do protetor de tela pode ser feito.</translation>
 <translation id="4773997835955617342">Muda a configuração sugerida do <ph name="KRB5_CONFIG" /> para os novos tíquetes criados manualmente.
 
       Se esta política for ativada, o valor da "KerberosCustomPrefilledConfig" será aplicado como a configuração sugerida e mostrado na seção "Avançado" da caixa de diálogo de autenticação Kerberos.
@@ -4627,7 +4636,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se esta política for definida como falsa, o encaminhamento de portas em contêineres Crostini será desativado.</translation>
 <translation id="538108065117008131">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> lide com os seguintes tipos de conteúdo.</translation>
-<translation id="5382211603538487131">Hash SHA-256 da imagem.</translation>
 <translation id="538768040137709073">Ativar o recurso de área de transferência compartilhada, que permite que os usuários enviem texto entre computadores Chrome e um dispositivo Android quando a sincronização está ativada e o usuário está conectado.
 
           Se esta política for definida como verdadeira, a capacidade de enviar texto entre dispositivos ficará ativada para o usuário do Chrome.
@@ -4836,13 +4844,6 @@ A remoção foi feita na versão M112.</translation>
 <translation id="5535256585099022933">Configurar o intervalo de tempo para reinicialização</translation>
 <translation id="553806128266843748">Uma sinalização booleana indicando se a limitação está ativada.</translation>
 <translation id="5540885720415375851">Permitir a detecção de dispositivos locais</translation>
-<translation id="5545132877693005604">Configura a lista de imagens que vão ser mostradas no protetor da tela de login.
-
-Cada item da lista faz referência a uma imagem que será mostrada no protetor de tela. O item precisa ter um URL para a imagem e o valor de hash SHA-256 do arquivo de imagem para verificação. O formato da imagem precisa ser JPEG. O dispositivo <ph name="PRODUCT_OS_NAME" /> vai fazer o download dessas imagens e manter um cache local das referências.
-
-Esta política não terá efeito se a <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> for definida como falsa.
-
-Se a política for deixada sem definição ou se a lista não tiver referências de imagem válidas, o protetor da tela de login não vai ser mostrado, independente do valor definido na <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Ativar o alto contraste na tela de login</translation>
 <translation id="555077880566103058">Permitir que todos os sites executem o plug-in <ph name="FLASH_PLUGIN_NAME" /> automaticamente</translation>

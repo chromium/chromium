@@ -2861,13 +2861,6 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3589193811812796052">Cegah modul WebAssembly dikirim lintas asal</translation>
 <translation id="3591527072193107424">Mengaktifkan fitur Dukungan Browser Lama.</translation>
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
-<translation id="359203136434560942">Mengonfigurasi daftar gambar yang akan ditampilkan di screensaver untuk layar kunci.
-
-Setiap item daftar merujuk ke gambar yang akan ditampilkan di screensaver. Item harus memiliki URL gambar, anggota dan nilai hash SHA-256 file gambar untuk verifikasi. Format gambar harus JPEG. Perangkat <ph name="PRODUCT_OS_NAME" /> akan mendownload gambar ini dan mempertahankan cache lokal dari referensi ini.
-
-Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> disetel ke salah (false).
-
-Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang valid, screensaver untuk layar kunci tidak akan ditampilkan, terlepas dari nilai yang disetel dalam kebijakan <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">Perilaku lama pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
 <translation id="3596112486106491038">Aktifkan akses command line mesin virtual</translation>
 <translation id="3603469950773500315">Mengaktifkan mitigasi pemeriksaan <ph name="CORS" /> dalam implementasi <ph name="CORS" /> baru, sehingga memungkinkan Ekstensi tetap kompatibel dan mengizinkan <ph name="PRODUCT_NAME" /> mengirim header tertentu tanpa pemeriksaan <ph name="CORS" />.
@@ -3901,7 +3894,6 @@ Jika kebijakan tidak disetel, pengguna akan diizinkan mengubah daftar aplikasi t
 <translation id="4624417808625504735">Memblokir JavaScript agar tidak menggunakan JIT di situs ini</translation>
 <translation id="46321462262887935">Perlakukan tombol baris atas sebagai tombol fungsi, tetapi izinkan pengguna mengubahnya</translation>
 <translation id="4632343302005518762">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten yang tercantum</translation>
-<translation id="4632566332417930481">Larang penggunaan Developer Tools pada ekstensi yang diinstal oleh kebijakan perusahaan, izinkan penggunaan Developer Tools dalam konteks lainnya</translation>
 <translation id="4636354638176939375">Nonaktifkan pembuatan pengguna yang diawasi</translation>
 <translation id="4646626362889216307">Jika kebijakan disetel, penggabungan kebijakan yang dipilih akan memungkinkan jika kebijakan tersebut berasal dari sumber yang berbeda, dengan cakupan dan level yang sama. Penggabungan ini ada di kunci level pertama kamus dari setiap sumber. Kunci yang berasal dari sumber prioritas tertinggi akan diutamakan.
 
@@ -4033,7 +4025,6 @@ Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, li
           Jika kebijakan ini tidak ditetapkan, audio mono mula-mula akan dinonaktifkan, tetapi dapat diaktifkan oleh pengguna kapan saja.</translation>
 <translation id="4768446404233019970">Mengaktifkan cipher suite 3DES di TLS</translation>
 <translation id="4770334626033858263">Konfigurasi yang digunakan untuk membuat dan memverifikasi Kode Akses Orang Tua.</translation>
-<translation id="4772431363738215349">URL tempat gambar screensaver dapat didownload.</translation>
 <translation id="4773997835955617342">Mengubah konfigurasi <ph name="KRB5_CONFIG" /> yang disarankan untuk tiket baru yang dibuat secara manual.
 
       Jika kebijakan ini disetel ke aktif, nilai kebijakan 'KerberosCustomPrefilledConfig' akan diterapkan sebagai konfigurasi yang disarankan dan akan ditampilkan di bagian "Lanjutan" pada dialog autentikasi Kerberos.
@@ -4640,7 +4631,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan ini disetel ke Salah (False), penerusan port ke penampung Crostini akan dinonaktifkan.</translation>
 <translation id="538108065117008131">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten berikut.</translation>
-<translation id="5382211603538487131">Hash SHA-256 gambar.</translation>
 <translation id="538768040137709073">Mengaktifkan fitur Papan Klip Bersama yang memungkinkan pengguna mengirim pesan teks antara Desktop Chrome dan perangkat Android saat Sinkronisasi diaktifkan dan pengguna Login.
 
           Jika kebijakan ini ditetapkan ke true, kemampuan mengirim pesan teks antarperangkat bagi pengguna Chrome akan diaktifkan.
@@ -4849,13 +4839,6 @@ Hal ini dihapus di M112.</translation>
 <translation id="5535256585099022933">Menyetel interval waktu untuk peluncuran kembali</translation>
 <translation id="553806128266843748">Tanda boolean menunjukkan jika throttling diaktifkan.</translation>
 <translation id="5540885720415375851">Izinkan penemuan perangkat lokal</translation>
-<translation id="5545132877693005604">Mengonfigurasi daftar gambar yang akan ditampilkan di screensaver untuk layar login.
-
-Setiap item daftar merujuk ke gambar yang akan ditampilkan di screensaver. Item harus memiliki URL gambar, anggota dan nilai hash SHA-256 file gambar untuk verifikasi. Format gambar harus JPEG. Perangkat <ph name="PRODUCT_OS_NAME" /> akan mendownload gambar ini dan mempertahankan cache lokal dari referensi ini.
-
-Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> disetel ke salah (false).
-
-Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang valid, screensaver untuk layar login tidak akan ditampilkan, terlepas dari nilai yang disetel dalam kebijakan <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Mengaktifkan kontras tinggi di layar login</translation>
 <translation id="555077880566103058">Izinkan semua situs menjalankan plugin <ph name="FLASH_PLUGIN_NAME" /> secara otomatis</translation>

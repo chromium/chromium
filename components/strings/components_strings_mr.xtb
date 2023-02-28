@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2361263712565360498">२७५ x ३९५ मिमी</translation>
 <translation id="236340516568226369">आकार बदलण्याच्या टॉगलचा मेनू</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> एंटर करा</translation>
 <translation id="2367567093518048410">दर्जा</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करा</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे वापरता याविषयी जाणून घ्या</translation>
 <translation id="3180358318770512945">पालकत्व</translation>
 <translation id="3187306450550410410">कर्मचाऱ्याच्या सोयीनुसार काम करण्याच्या सुविधा</translation>
+<translation id="3187380004437786923">पेमेंट व्यवस्थापित करा</translation>
 <translation id="3187472288455401631">जाहिरात मापन</translation>
 <translation id="3190736958609431397">माग ठेवणे रद्द करा</translation>
 <translation id="319282854780294203">सोशल नेटवर्क</translation>
@@ -1270,6 +1272,7 @@
 <translation id="4154664944169082762">बोटाचा ठसा</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4165986682804962316">साइट सेटिंग्ज</translation>
+<translation id="4169535189173047238">अनुमती देऊ नका</translation>
 <translation id="4171400957073367226">खराब पडताळणी स्वाक्षरी</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">नेहमी दर्शवा</translation>
@@ -3333,6 +3336,7 @@
 <translation id="950736567201356821">ट्रिपल पंच टॉप</translation>
 <translation id="961663415146723894">बाइंड बॉटम</translation>
 <translation id="962484866189421427">हा आशय काहीतरी दुसरे असण्याची बतावणी करणारी फसवी ॲप्स इंस्टॉल करण्याचा किंवा तुमचा माग ठेवण्यासाठी वापरला जाऊ शकणारा डेटा गोळा करण्याचा प्रयत्न करू शकतो. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">सर्व वापरकर्ते</translation>
 <translation id="964050462028070434">पासवर्ड आणि पासकी व्यवस्थापित करा…</translation>
 <translation id="96680173638229310">ऑटो आणि वाहने</translation>
 <translation id="969892804517981540">अधिकृत बिल्ड</translation>

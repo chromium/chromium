@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">ಫೋಲ್ಡರ್ ಆರಿಸಿ</translation>
 <translation id="1254424942107648268">ಹಿಂದಿನದು ಹುಡುಕಿ</translation>
 <translation id="1258491128795710625">ಹೊಸತೇನಿದೆ</translation>
+<translation id="1264156759663453185">ಆಯ್ಕೆಮಾಡಿದ ಪಠ್ಯವು ಭಾಗಶಃ ಅನುವಾದಕ್ಕೆ ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ.</translation>
 <translation id="1265739287306757398">ಹೇಗೆ ಎಂಬುದನ್ನು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="1272079795634619415">ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1275718070701477396">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
@@ -128,7 +129,6 @@
 <translation id="1832848789136765277">ನಿಮ್ಮ ಸಿಂಕ್ ಡೇಟಾವನ್ನು ನೀವು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗುವ ಹಾಗೆ ನೋಡಿಕೊಳ್ಳಲು, ಅದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="1870148520156231997">ಪಾಸ್‌ವರ್ಡ್‌ ತೋರಿಸಿ</translation>
 <translation id="1872096359983322073">ಟಾರ್ಚ್</translation>
-<translation id="1886370402958071554">ವಿಳಾಸವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="1891796056033961979">ಉಳಿಸಲಾದ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಹಾಗೂ ಇತ್ಯಾದಿಗಳು ಈ ಸ್ಕ್ರೀನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ.</translation>
 <translation id="1894023287452300670">ಬೆಲೆಯನ್ನು ಇಲ್ಲಿ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="1911619930368729126">Google ಡ್ರೈವ್‌ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
@@ -322,6 +322,7 @@
 <translation id="3244271242291266297">ಮಿಮೀ</translation>
 <translation id="3245744387817103524">ನಿಮ್ಮ ಬದಲಾವಣೆಯನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> ರಲ್ಲಿ <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
+<translation id="3264775633254836593">ಆಟೋಫಿಲ್ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="3268451620468152448">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="3272527697863656322">ರದ್ದುಮಾಡಿ</translation>
 <translation id="3277021493514034324">ಸೈಟ್‌ ವಿಳಾಸವನ್ನು ನಕಲಿಸಲಾಗಿದೆ</translation>
@@ -427,6 +428,7 @@
 <translation id="408404951701638773">ಇದೀಗ ಹುಡುಕಾಟ ಪಟ್ಟಿಯನ್ನು ತಲುಪುವುದು ಸುಲಭವಾಗಿದೆ</translation>
 <translation id="4092655288299341041">ಸಹಾಯವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4101942614374785540">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈಗ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ (<ph name="ACCOUNT" />) ಸಂಗ್ರಹಿಸಲಾಗಿದೆ. ನೀವು ಸೈನ್ ಇನ್ ಮಾಡುವಾಗ ನೀವು ಅವುಗಳನ್ನು ಬಳಸಬಹುದು. ಇದನ್ನು ಆಫ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
+<translation id="4105841739161771091">{count,plural, =1{ವಿಳಾಸವನ್ನು ಅಳಿಸಿ}one{ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಿ}other{ವಿಳಾಸಗಳನ್ನು ಅಳಿಸಿ}}</translation>
 <translation id="4108998448622696017">ಆಪಾಯಕಾರಿ ಘಟನೆಗಳು ಸಂಭವಿಸಿದಾಗ, ಅವುಗಳನ್ನು ಪತ್ತೆಹಚ್ಚುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
 <translation id="411254640334432676">ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="4112644173421521737">ಹುಡುಕಿ</translation>
@@ -704,6 +706,7 @@
 <translation id="6066301408025741299">ರದ್ದುಮಾಡಲು ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="6071409777669089905">ಟ್ಯಾಬ್ ಅನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6084848228346514841">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="6103540626693881831">ಸಾಧನದಲ್ಲಿನ ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="6119050551270742952">ಪ್ರಸ್ತುತ ವೆಬ್ ಪುಟವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿದೆ</translation>
 <translation id="6122191549521593678">ಆನ್‌ಲೈನ್</translation>
@@ -738,6 +741,7 @@
 <translation id="6324669097367352121">ಸೈನ್ ಇನ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="6337234675334993532">ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="633809752005859102">ನಿಜವಾಗಿಯೂ ಯಾವುದೋ ತಪ್ಪು ಸಂಭವಿಸಿದೆ. ನಾವು ಅದರ ಕುರಿತು ಕ್ರಮ ಕೈಗೊಳ್ಳುತ್ತೇವೆ.</translation>
+<translation id="6340285871011301182">ಭಾಗಶಃ ಅನುವಾದವು ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="6342069812937806050">ಇದೀಗ</translation>
 <translation id="6344783595350022745">ಪಠ್ಯವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="6346549652287021269">ಹೊಸ ಡೌನ್‌ಲೋಡ್‌ ಪ್ರಾರಂಭಿಸುವುದೇ?</translation>
@@ -848,6 +852,7 @@
 <translation id="6914583639806229067">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="6914783257214138813">ರಫ್ತು ಮಾಡಲಾದ ಫೈಲ್ ಅನ್ನು ನೋಡುವ ಯಾರಿಗಾದರೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="6930799952781667037">ಈ ಭಾಷೆಯನ್ನು ಬದಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
+<translation id="6939941780796374211">ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆಗಳು</translation>
 <translation id="6944369514868857500">ಬೇರೊಂದು ಖಾತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>
@@ -943,6 +948,7 @@
 <translation id="7738120385185846461">ಸಮಸ್ಯೆಯನ್ನು ವರದಿಮಾಡಿ…</translation>
 <translation id="7741325291586284254">ಹೊಸ ಅದೃಶ್ಯ ಟ್ಯಾಬ್ ಪುಟ</translation>
 <translation id="7744394900930577716">ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
+<translation id="7749790401023484470">ನೀವು ಯಾವುದೇ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆ ಮಾಡಿಲ್ಲ.</translation>
 <translation id="7756478488453921771">ಮೆನು → ಸೆಟ್ಟಿಂಗ್‌ಗಳು → ಪಾವತಿ ವಿಧಾನಗಳು</translation>
 <translation id="7765158879357617694">ಸರಿಸು</translation>
 <translation id="7772032839648071052">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -1057,6 +1063,7 @@
 <translation id="8534481786647257214">Google+ ಪೋಸ್ಟ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="8548878600947630424">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ...</translation>
 <translation id="8558480467877843976">ಇದೀಗ ನೀವು ಸಂದೇಶಗಳು, ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು ಮತ್ತು ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಲಿಂಕ್‌ಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿದಾಗ ಅಥವಾ ಟ್ಯಾಪ್ ಮಾಡಿದಾಗ, ಯಾವಾಗ ಬೇಕಾದರೂ Chrome ಅನ್ನು ಬಳಸಬಹುದು.</translation>
+<translation id="8585679456315406468">ಟಿಪ್ಪಣಿಗಳು ಗರಿಷ್ಠ 1000 ಅಕ್ಷರಗಳನ್ನು ಉಳಿಸಬಲ್ಲವು.</translation>
 <translation id="8588404856427128947">ಆಫ್</translation>
 <translation id="8591976964826315682">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="8605219856220328675">ಟ್ಯಾಬ್ ಮುಚ್ಚಿ.</translation>
@@ -1133,6 +1140,7 @@
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಅಳಿಸಬೇಕೆ?</translation>
 <translation id="9100610230175265781">ಪಾಸ್‌ಫ್ರೇಸ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="9107664647686727385">ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸುತ್ತದೆ</translation>
+<translation id="9120217828624527905">ಸಂಪೂರ್ಣ ಪುಟದ ಅನುವಾದಕ್ಕೆ ಬದಲಿಸಿ</translation>
 <translation id="9124387962554796433">Search ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು Google ಬಳಸಬಹುದು.</translation>
 <translation id="9137526406337347448">Google ಸೇವೆಗಳು</translation>
 <translation id="9148126808321036104">ಪುನಃ ಸೈನ್ ಇನ್  ಆಗಿ</translation>

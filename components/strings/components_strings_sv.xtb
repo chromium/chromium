@@ -589,6 +589,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Ändra storlek på menyn för att aktivera och inaktivera</translation>
+<translation id="2365355378251437925">Ange <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Nivå</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Anpassa tillgänglighetsverktygen i Chrome-inställningarna</translation>
@@ -876,6 +877,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="317878711435188021">Veta när du använder enheten aktivt</translation>
 <translation id="3180358318770512945">Föräldraskap</translation>
 <translation id="3187306450550410410">Flexibla arbetsarrangemang</translation>
+<translation id="3187380004437786923">Hantera betalningar</translation>
 <translation id="3187472288455401631">Annonsmätning</translation>
 <translation id="3190736958609431397">Ta bort bevakning</translation>
 <translation id="319282854780294203">Sociala nätverk</translation>
@@ -1271,6 +1273,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4154664944169082762">Fingeravtryck</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4165986682804962316">Webbplatsinställningar</translation>
+<translation id="4169535189173047238">Tillåt inte</translation>
 <translation id="4171400957073367226">Felaktig verifieringssignatur</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Visa alltid</translation>
@@ -3334,6 +3337,7 @@ Mer information:
 <translation id="950736567201356821">Tre hål högst upp</translation>
 <translation id="961663415146723894">Bindning längst ned</translation>
 <translation id="962484866189421427">Bedrägliga appar som inte gör vad de påstås göra eller insamling av data som används för att spåra dig skulle kunna installeras via innehållet. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Alla användare</translation>
 <translation id="964050462028070434">Hantera lösenord och nycklar …</translation>
 <translation id="96680173638229310">Bilar och fordon</translation>
 <translation id="969892804517981540">Officiell version</translation>

@@ -502,6 +502,11 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="3633097874324966332">Odprite nastavitve Bluetootha, če želite seznaniti napravo.</translation>
 <translation id="3638400994746983214">Preklop zaslona za zasebnost. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Posodobitev bi že morali izvesti</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        od <ph name="START_TIME" /> do
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Izberite za več podrobnosti v Google Koledarju.</translation>
 <translation id="3659444876902283058">(Dan <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Še približno <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Priklopite napravo v vir napajanja.</translation>
@@ -1467,9 +1472,9 @@ Nova namestitev</translation>
 <translation id="8850991929411075241">Iskanje + Esc</translation>
 <translation id="8853703225951107899">Vaše kode PIN ali gesla še vedno ni bilo mogoče preveriti. Opomba: Če ste nedavno spremenili geslo, uporabite staro. Novo geslo bo začelo veljati, ko se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za celozaslonski način</translation>
-<translation id="8858369206579825206">Nastavitve zasebnosti</translation>
 <translation id="8870509716567206129">Aplikacija ne podpira načina razdeljenega zaslona.</translation>
 <translation id="8874184842967597500">Ni povezano</translation>
+<translation id="8876148469852588625">Dogodek <ph name="EVENT_POSITION" /> od <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Preverjanje povezave</translation>
 <translation id="8877788021141246043">Nastavi opomnik</translation>
 <translation id="8878886163241303700">Razširjanje zaslona</translation>

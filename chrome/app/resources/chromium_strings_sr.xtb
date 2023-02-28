@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">Отварајте PDF-ове у Chromium-у</translation>
 <translation id="5614091477838198795">Када је ово укључено, бићете и одјављени из Chromium-а</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ажурирање за Chromium је доступно}=1{Ажурирање за Chromium је доступно}one{Ажурирање за Chromium је доступно већ # дан}few{Ажурирање за Chromium је доступно већ # дана}other{Ажурирање за Chromium је доступно већ # дана}}</translation>
-<translation id="5634636535844844681">За Chromium је потребан Windows 7 или новија верзија.</translation>
 <translation id="5653831366781983928">Рестартујте Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Приказуј Chromium на овом језику</translation>
 <translation id="5862307444128926510">Добро дошли у Chromium</translation>
 <translation id="5883558403894052917">Chromium је открио малвер у овим ставкама:</translation>
@@ -342,12 +342,15 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8266560134891435528">Chromium не може да вам проверава лозинке зато што нисте пријављени</translation>
 <translation id="8276522524898344151">Chromium покушава да копира лозинке.</translation>
 <translation id="8290862415967981663">Ова датотека је можда опасна, па ју је Chromium блокирао.</translation>
+<translation id="8325404639443959713">Урадите више уз Chromium</translation>
 <translation id="8330519371938183845">Пријавите се да бисте синхронизовали и персонализовали Chromium на свим уређајима</translation>
 <translation id="8340674089072921962">Корисник <ph name="USER_EMAIL_ADDRESS" /> је претходно користио Chromium</translation>
 <translation id="8357820681460164151">Да бисте приступали Chromium прегледачу на свим уређајима, пријавите се, па укључите синхронизацију</translation>
 <translation id="8360718212975266891">Да бисте добијали будућа Chromium ажурирања, треба вам Windows 10 или новија верзија. Овај рачунар користи Windows 8.</translation>
+<translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Поново покрените Chromium за један дан}one{Поново покрените Chromium за # дан}few{Поново покрените Chromium за # дана}other{Поново покрените Chromium за # дана}}</translation>
 <translation id="8453117565092476964">Архива програма за инсталацију је оштећена или неважећа. Преузмите Chromium поново.</translation>
+<translation id="8458614432758743027">За Chromium је потребан Windows 10 или новија верзија.</translation>
 <translation id="8463672209299734063">Опционално: Аутоматски шаљите Google-у дијагностику и податке о коришћењу да бисте нам помогли да побољшамо функције и учинак Chromium ОС-а.</translation>
 <translation id="8493179195440786826">Chromium је застарео</translation>
 <translation id="8550334526674375523">Овај пословни профил је потпуно одвојен од личног профила.</translation>
@@ -381,6 +384,7 @@ Chromium не може да врати подешавања.</translation>
 <translation id="9158494823179993217">Администратор система је конфигурисао Chromium да отвара алтернативни прегледач за приступ URL-у <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Поново покрени да би се &amp;Chromium ажурирао</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Прилагодите Chromium себи</translation>
 <translation id="93478295209880648">Chromium можда неће исправно функционисати зато што више није подржан на Windows XP-у или Windows Vista-и</translation>
 <translation id="942598560705308788">Сертификати којима управља Chromium</translation>
 <translation id="965162752251293939">Ко користи Chromium?</translation>

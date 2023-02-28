@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">İrland</translation>
 <translation id="4124935795427217608">Tək buynuzlu at</translation>
 <translation id="4131235941541910880">Lazımsız elementləri zibil qutusuna köçürün</translation>
+<translation id="4134804435730168042">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cihaz ayarlamasından sonra aktiv edin</translation>
 <translation id="4153015322587141338">Fayla sağ düymə ilə toxunun və rəfdəki fayllarınıza sürətli giriş üçün "<ph name="PIN_COMMAND" />" seçimini edin.</translation>
 <translation id="4157569377477607576">Administrator siyasəti tövsiyə etmir:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> köçürülüb.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" silinəcək və onu bərpa edə bilməyəcəksiniz.</translation>
 <translation id="4418686080762064601">Fayllarınız üçün qısayol yaradın</translation>
 <translation id="4425149324548788773">Diskim</translation>
+<translation id="4432921877815220091">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cihaz ayarlamasından sonra aktiv edin, Administrator idarə edir</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
 <translation id="4442424173763614572">DNS sistemi uğursuz oldu</translation>
 <translation id="4462159676511157176">Fərdi ad serverləri</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Kopyalamaq alınmadı, gözlənilməz xəta:<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">ABŞ Beynəlxalq kompüter klaviaturası ilə Holland dili (Niderland)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cihaz ayarlamasından sonra aktiv edin</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> element</translation>
 <translation id="5957366693331451795">Chromebox cihazları</translation>
 <translation id="5982621672636444458">Çeşidləmə variantları</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Diskdə axtarın&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada Fonetikası</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">İdentifikasiya serverinin həqiqiliyini doğrulamaq üçün "Subyektin alternativ ad uyğunluğu" və ya "Domen şəkilçisi uyğunluğu" çatışmır</translation>
 <translation id="7165320105431587207">Şəbəkəni konfiqurasiya etmək uğursuz oldu</translation>
 <translation id="7170041865419449892">Xətdən kənar</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
@@ -933,6 +937,7 @@
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
 <translation id="8492972329130824181">Ev şəbəkəsi əlçatan deyil. Qoşulmaq üçün mobil data rouminqi aktiv edilməlidir.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> element çıxarılır...</translation>
+<translation id="8502913769543567768">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cihaz ayarlamasından sonra aktiv edin, Administrator idarə edir</translation>
 <translation id="8521441079177373948">Böyük Britaniya</translation>
 <translation id="853494022971700746">Fransız (Fransa)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>

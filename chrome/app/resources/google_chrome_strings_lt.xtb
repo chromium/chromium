@@ -130,6 +130,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3245429137663807393">Jei taip pat bendrinate „Chrome“ naudojimo ataskaitas, į tas ataskaitas įtraukiami URL, kuriais lankėtės</translation>
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3286538390144397061">Paleisti iš naujo dabar</translation>
+<translation id="3293912612584488930">Padarykite daugiau naudodami „Chrome“</translation>
 <translation id="3360895254066713204">„Chrome“ pagalbos priemonė</translation>
 <translation id="3379938682270551431">{0,plural, =0{„Chrome“ bus paleista iš naujo dabar}=1{„Chrome“ bus paleista iš naujo po 1 sekundės}one{„Chrome“ bus paleista iš naujo po # sekundės}few{„Chrome“ bus paleista iš naujo po # sekundžių}many{„Chrome“ bus paleista iš naujo po # sekundės}other{„Chrome“ bus paleista iš naujo po # sekundžių}}</translation>
 <translation id="3396977131400919238">Diegimo metu įvyko operacinės sistemos klaida. Atsisiųskite „Google Chrome“ dar kartą.</translation>
@@ -413,7 +414,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8989968390305463310">Naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį automatiškai ištrina jūsų pomėgius. Pomėgiai gali būti atnaujinami, kol jų nepašalinate.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Pasiekiamas „Chrome“ naujinys}=1{Pasiekiamas „Chrome“ naujinys}one{„Chrome“ naujinys pasiekiamas # dieną}few{„Chrome“ naujinys pasiekiamas # dienas}many{„Chrome“ naujinys pasiekiamas # dienos}other{„Chrome“ naujinys pasiekiamas # dienų}}</translation>
 <translation id="9053892488859122171">„ChromeOS Flex“ sistema</translation>
-<translation id="9067395829937117663">Kad būtų galima naudoti „Google Chrome“, reikalinga 7 ar naujesnės versijos „Windows“.</translation>
 <translation id="911206726377975832">Ar ištrinti naršymo duomenis?</translation>
 <translation id="9138603949443464873">Norėdami pritaikyti pakeitimus, paleiskite „Chrome“ iš naujo</translation>
 <translation id="9195993889682885387">„Chrome“ gali numatyti jūsų pomėgius pagal pastarųjų kelių savaičių naršymo istoriją. Ši informacija lieka jūsų įrenginyje.</translation>

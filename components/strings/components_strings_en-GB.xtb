@@ -877,6 +877,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="317878711435188021">Know when you're actively using this device</translation>
 <translation id="3180358318770512945">Parenting</translation>
 <translation id="3187306450550410410">Flexible work arrangements</translation>
+<translation id="3187380004437786923">Manage payments</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="319282854780294203">Social networks</translation>
@@ -1272,6 +1273,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4154664944169082762">Fingerprints</translation>
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4165986682804962316">Site settings</translation>
+<translation id="4169535189173047238">Don't allow</translation>
 <translation id="4171400957073367226">Bad verification signature</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Always show</translation>

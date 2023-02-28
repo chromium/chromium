@@ -47,6 +47,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1254117744268754948">Kies vouer</translation>
 <translation id="1254424942107648268">Vind vorige</translation>
 <translation id="1258491128795710625">Wat's nuut</translation>
+<translation id="1264156759663453185">Die geselekteerde teks is te groot vir gedeeltelike vertaling.</translation>
 <translation id="1265739287306757398">Vind uit hoe</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Gekies</translation>
@@ -177,6 +178,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2268044343513325586">Verfyn</translation>
 <translation id="2273327106802955778">Meer-kieslys</translation>
 <translation id="2286505070150039482">Gemerkte teks</translation>
+<translation id="2287614783861766820">{count,plural, =1{Hierdie adres sal op hierdie toestel uitgevee word.}other{Hierdie adresse sal op hierdie toestel uitgevee word.}}</translation>
 <translation id="2299218006564889602">Jou wagwoorde word op jou toestel geënkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="2302742851632557585">Verander wagwoord op webwerf</translation>
 <translation id="2316709634732130529">Gebruik voorgestelde wagwoord</translation>
@@ -458,6 +460,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4324952538601951430">Jou gestoorde boekmerke, wagwoorde, instellings, en meer is nou hier</translation>
 <translation id="4334428914252001502">1 ongeleesde artikel.</translation>
 <translation id="4338650699862464074">Stuur URL'e van bladsye wat jy besoek na Google toe.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Hierdie adres sal op hierdie en jou ander aangemelde toestelle uitgevee word.}other{Hierdie adresse sal op hierdie en jou ander aangemelde toestelle uitgevee word.}}</translation>
 <translation id="4343046787186034850">Kamera- en mikrofoontoegang word toegelaat</translation>
 <translation id="4359125752503270327">Hierdie bladsy sal in 'n ander program oopmaak.</translation>
 <translation id="4375040482473363939">QR-kodesoektog</translation>
@@ -587,6 +590,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="5232485538978018676">Meld met bestuurde rekening aan</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5245322853195994030">Kanselleer sinkronisering</translation>
+<translation id="5271265092610673171">{count,plural, =1{’n Vereiste veld is leeg. Vul dit in voordat jy stoor.}other{Sommige vereiste velde is leeg. Vul hulle in voordat jy stoor.}}</translation>
 <translation id="5271549068863921519">Stoor wagwoord</translation>
 <translation id="5295239312320826323">Verwyder <ph name="USER_EMAIL" /> se rekening?</translation>
 <translation id="5300589172476337783">Wys</translation>
@@ -700,6 +704,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6066301408025741299">Tik om te kanselleer.</translation>
 <translation id="6071409777669089905">Ontspeld oortjie</translation>
 <translation id="6084848228346514841">Kies oortjies</translation>
+<translation id="6100617279104942061">Aangemeld as <ph name="USER_EMAIL" />. Maak instellings oop.</translation>
 <translation id="6103540626693881831">Enkripsie op toestel</translation>
 <translation id="6119050551270742952">Huidige webbladsy is op incognito</translation>
 <translation id="6122191549521593678">Aanlyn</translation>
@@ -1129,6 +1134,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9098541895599151034">Vee <ph name="NUMBER_OF_ACCOUNTS" /> wagwoorde uit?</translation>
 <translation id="9100610230175265781">Wagwoordfrase word vereis</translation>
 <translation id="9107664647686727385">Gaan na vir gekompromitteerde wagwoorde</translation>
+<translation id="9120217828624527905">Skakel oor na volbladvertaling</translation>
 <translation id="9124387962554796433">Google kan dalk jou geskiedenis gebruik om Search en ander Google-dienste te personaliseer.</translation>
 <translation id="9137526406337347448">Google-dienste</translation>
 <translation id="9148126808321036104">Meld weer aan …</translation>

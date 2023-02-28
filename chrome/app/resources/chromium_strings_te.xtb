@@ -194,8 +194,8 @@
 <translation id="5527463683072221100">Chromiumలో PDFలను తెరవండి</translation>
 <translation id="5614091477838198795">దీన్ని ఆన్ చేసినప్పుడు, మీరు Chromium నుండి కూడా సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="5623402015214259806">{0,plural, =0{ఒక Chromium అప్‌డేట్ అందుబాటులో ఉంది}=1{ఒక Chromium అప్‌డేట్ అందుబాటులో ఉంది}other{ఒక Chromium అప్‌డేట్ # రోజులుగా అందుబాటులో ఉంది}}</translation>
-<translation id="5634636535844844681">Chromiumకి Windows 7 లేదా అంతకంటే ఆధునికమైనది ఉండటం ఆవశ్యకం.</translation>
 <translation id="5653831366781983928">దయచేసి ఇప్పుడు Chromiumను మళ్ళీ ప్రారంభించండి</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumను ఈ భాషలో ప్రదర్శించు</translation>
 <translation id="5862307444128926510">Chromiumకు స్వాగతం</translation>
 <translation id="5883558403894052917">ఈ ఐటెమ్‌లు మాల్‌వేర్‌ను కలిగి ఉన్నట్టుగా Chromium కనుగొన్నది:</translation>
@@ -336,12 +336,15 @@
 <translation id="8266560134891435528">మీరు సైన్ ఇన్ చేయనందున Chromium మీ పాస్‌వర్డ్‌లను చెక్ చేయలేదు</translation>
 <translation id="8276522524898344151">పాస్‌వర్డ్‌లను కాపీ చేయడానికి Chromium ప్రయత్నిస్తోంది.</translation>
 <translation id="8290862415967981663">ఈ ఫైల్ అపాయకరం కావచ్చు, కాబట్టి Chromium దీన్ని బ్లాక్ చేసింది.</translation>
+<translation id="8325404639443959713">Chromiumతో మరెన్నో చేయండి</translation>
 <translation id="8330519371938183845">మీ పరికరాల అంతటా Chromiumను సింక్ చేయడానికి, వ్యక్తిగతీకరించడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> మునుపు Chromiumని ఉపయోగించింది</translation>
 <translation id="8357820681460164151">మీ అన్ని పరికరాలలో మీ Chromium బ్రౌజర్ సంబంధిత అంశాలను యాక్సెస్ చేయడానికి, సైన్ ఇన్ చేసి, ఆపై సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="8360718212975266891">భవిష్యత్తు Chromium అప్‌డేట్‌లను పొందడానికి, మీకు Windows 10 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ Windows 8ను ఉపయోగిస్తోంది.</translation>
+<translation id="8370517070665726704">కాపీరైట్ <ph name="YEAR" /> Google LLC. సర్వ హక్కులు ప్రత్యేకించబడ్డాయి.</translation>
 <translation id="8417404458978023919">{0,plural, =1{ఒక రోజులోపు Chromiumను తిరిగి ప్రారంభించండి}other{# రోజులలోపు Chromiumను తిరిగి ప్రారంభించండి}}</translation>
 <translation id="8453117565092476964">ఇన్‌స్టాలర్ ఆర్కైవ్ పాడైంది లేదా చెల్లదు. దయచేసి Chromiumను మళ్లీ డౌన్‌లోడ్ చేయండి.</translation>
+<translation id="8458614432758743027">Chromiumకు Windows 10 లేదా అంతకంటే ఆధునికమైన వెర్షన్ అవసరం.</translation>
 <translation id="8463672209299734063">ఆప్షనల్: Googleకు సమస్య విశ్లేషణ, అలాగే వినియోగ డేటాను ఆటోమేటిక్‌గా పంపడం ద్వారా ChromiumOS ఫీచర్‌లను, ఇంకా పనితీరును మెరుగుపరచడంలో సహాయపడండి.</translation>
 <translation id="8493179195440786826">Chromium కాలం చెల్లినది</translation>
 <translation id="8550334526674375523">ఈ వర్క్ ప్రొఫైల్, మీ వ్యక్తిగత ప్రొఫైల్ నుండి పూర్తిగా భిన్నంగా ఉంది.</translation>
@@ -375,6 +378,7 @@
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />‌ను యాక్సెస్ చేయడం కోసం ఒక ప్రత్యామ్నాయ బ్రౌజర్‌ను తెరిచే విధంగా Chromiumను మీ సిస్టమ్ నిర్వాహకులు కాన్ఫిగర్ చేశారు.</translation>
 <translation id="9185526690718004400">&amp;Chromiumను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Chromiumను మీకు అనుకూలంగా ఉండే విధంగా వ్యక్తిగతీకరించుకోండి</translation>
 <translation id="93478295209880648">Chromiumకి ఇప్పుడు Windows XP లేదా Windows Vistaలో మద్దతు లేనందున ఇది సరిగ్గా పని చేయకపోవచ్చు</translation>
 <translation id="942598560705308788">Chromium ద్వారా మేనేజ్ చేయబడే సర్టిఫికెట్‌లు</translation>
 <translation id="965162752251293939">Chromiumను ఎవరు ఉపయోగిస్తున్నారు?</translation>

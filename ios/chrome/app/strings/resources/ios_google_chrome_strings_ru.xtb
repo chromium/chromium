@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Чтобы выйти из аккаунта Google на всех сайтах, <ph name="BEGIN_LINK" />выйдите из Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Браузеру Chrome не удалось проверить наличие обновлений. Повторите попытку позже.</translation>
 <translation id="2732745070297234559">Браузеру Chrome не удается проверить все пароли. Повторите попытку завтра.</translation>
+<translation id="2736805085127235148">Включите уведомления Chrome на своем устройстве.</translation>
 <translation id="2767464022270041271">Нет сохраненных паролей. Чтобы Google Менеджер паролей мог проверять пароли, сохраните их.</translation>
 <translation id="2869959624320573933">Вход в Chrome</translation>
 <translation id="2957447865124070833">Выберите <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Последняя версия Google Chrome уже установлена</translation>
 <translation id="7939179037291298976">В настройках iPhone выберите "Настройки паролей &gt; Chrome"</translation>
 <translation id="8022947259858476807">Сделайте Chrome браузером по умолчанию, чтобы открывать ссылки, выполнять поиск прямо из виджетов и автозаполнять пароли в других приложениях.</translation>
+<translation id="804638182476029347">Разрешите уведомления Chrome, чтобы получать оповещения о скидках</translation>
 <translation id="81358522153858150">Chrome теперь поддерживает правила для пользователей, применимые к вашему управляемому аккаунту</translation>
 <translation id="8160472928944011082">Не удается обновить Chrome</translation>
 <translation id="8357607116237445042">Удалить данные Chrome с этого устройства?</translation>

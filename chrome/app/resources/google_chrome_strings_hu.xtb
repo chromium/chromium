@@ -126,6 +126,7 @@
 <translation id="3245429137663807393">Ha a Chrome használati jelentéseit is megosztja, ezek a jelentések tartalmazzák az Ön által felkeresett URL-eket.</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3286538390144397061">Újraindítás most</translation>
+<translation id="3293912612584488930">Hozzon ki többet a Chrome-ból</translation>
 <translation id="3360895254066713204">Chrome segéd</translation>
 <translation id="3379938682270551431">{0,plural, =0{A Chrome most újraindul}=1{A Chrome 1 másodpercen belül újraindul}other{A Chrome # másodpercen belül újraindul}}</translation>
 <translation id="3396977131400919238">Az operációs rendszer hibát jelzett a telepítés során.</translation>
@@ -405,7 +406,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8989968390305463310">Böngészési előzményei határozzák meg az Ön számára megjelenő hirdetéseket és az alább látható módon felmért érdeklődési köröket. Adatai védelme érdekében a Chrome havi rendszerességgel automatikusan törli az Ön érdeklődési köreit. Az érdeklődési körök frissülhetnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Rendelkezésre áll egy Chrome-frissítés}=1{Rendelkezésre áll egy Chrome-frissítés}other{# napja rendelkezésre áll egy Chrome-frissítés}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex rendszer</translation>
-<translation id="9067395829937117663">A Google Chrome futtatásához Windows 7 vagy újabb verzió szükséges.</translation>
 <translation id="911206726377975832">Törli a böngészési adatait is?</translation>
 <translation id="9138603949443464873">A módosítások alkalmazásához indítsa újra a Chrome-ot</translation>
 <translation id="9195993889682885387">A Chrome meg tudja becsülni az Ön érdeklődési köreit a legutóbbi pár hétben végzett böngészési tevékenységei alapján. Ezek az információk nem hagyják el az eszközt.</translation>

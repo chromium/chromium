@@ -92,6 +92,7 @@
 <translation id="7118091470949186573">Du kan nu bruge Chromium, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="7165402419892018581">Vælg Chromium for Autofyld</translation>
 <translation id="7175400662502680481">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Adgangskodeadministrator anbefaler, at du ændrer det nu.</translation>
+<translation id="7192111075364461693">Chromium-notifikationer er i øjeblikket deaktiveret i enhedsindstillingerne.</translation>
 <translation id="7208566199746267865">Med Chromium sparer du tid ved at gøre alle dine konti tilgængelige online. Du kan tilføje eller fjerne konti under Indstillinger.</translation>
 <translation id="725427773388857052">Chromium kan hjælpe med at beskytte dig mod brud på datasikkerheden, usikre websites og meget mere.</translation>
 <translation id="7255976941681861701">Lær den nye Chromium-menu at kende</translation>
@@ -132,6 +133,7 @@ Ting, du skal overveje:
   • Hvis du aktiverer synkronisering, kan metrics også omfatte oplysninger om de webadresser, du besøger.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Denne konto og data, som ikke er gemt, fjernes fra Chromium.</translation>
 <translation id="894437814105052438">Når du er logget ud, synkroniserer Chromium ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>
+<translation id="8963279154877372067">Tillad Chromium-notifikationer for at få underretninger om prisfald</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
 <translation id="9059693977935746710">Du behøver ikke at huske denne adgangskode. Den gemmes i Adgangskodeadministrator for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>

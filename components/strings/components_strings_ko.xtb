@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">계속</translation>
 <translation id="2361263712565360498">275x395mm</translation>
 <translation id="236340516568226369">크기 변경 전환 메뉴</translation>
+<translation id="2365355378251437925"><ph name="FIELD" />을(를) 입력하세요.</translation>
 <translation id="2367567093518048410">수준</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome 설정에서 접근성 도구 맞춤설정</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">사용자가 현재 기기를 사용 중인지 확인합니다.</translation>
 <translation id="3180358318770512945">육아</translation>
 <translation id="3187306450550410410">유연 근무</translation>
+<translation id="3187380004437786923">결제 관리</translation>
 <translation id="3187472288455401631">광고 측정</translation>
 <translation id="3190736958609431397">추적 취소</translation>
 <translation id="319282854780294203">사회 연결망</translation>
@@ -1271,6 +1273,7 @@
 <translation id="4154664944169082762">지문</translation>
 <translation id="4159784952369912983">보라색</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
+<translation id="4169535189173047238">허용 안함</translation>
 <translation id="4171400957073367226">잘못된 인증 서명입니다.</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">항상 표시</translation>
@@ -3332,6 +3335,7 @@
 <translation id="950736567201356821">상단 3공 펀칭</translation>
 <translation id="961663415146723894">하단 바인드</translation>
 <translation id="962484866189421427">이 콘텐츠에서 다른 앱인 것처럼 가장하거나 사용자를 추적하는 데 사용될 수 있는 데이터를 수집하는 사기성 앱을 설치할 수도 있습니다. <ph name="BEGIN_LINK" />그래도 표시하기<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">모든 사용자</translation>
 <translation id="964050462028070434">비밀번호 및 패스키 관리…</translation>
 <translation id="96680173638229310">자동차 및 개인 이동 수단</translation>
 <translation id="969892804517981540">공식 빌드</translation>

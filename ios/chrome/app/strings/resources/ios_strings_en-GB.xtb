@@ -117,7 +117,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
-<translation id="173842016780303328">Partial translation failed.</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
 <translation id="1753905327828125965">Most Visited</translation>
@@ -130,7 +129,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1870148520156231997">Reveal password</translation>
 <translation id="1872096359983322073">Torch</translation>
-<translation id="1886370402958071554">Delete address</translation>
 <translation id="1891796056033961979">Your saved bookmarks, passwords, settings and more are available from this screen.</translation>
 <translation id="1894023287452300670">Track price here</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
@@ -245,7 +243,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2747003861858887689">Previous field</translation>
 <translation id="2749231692441336879">Following <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">just now</translation>
-<translation id="2768727608073497433">The selected text is empty.</translation>
 <translation id="2773292004659987824">Incognito Search</translation>
 <translation id="277771892408211951">Select language</translation>
 <translation id="2780046210906776326">No Email Accounts</translation>
@@ -392,6 +389,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3789841737615482174">Install</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803696231112616155">Offer to translate this site</translation>
+<translation id="3803967590068704619">This address is saved in your Google Account (<ph name="USER_EMAIL" />). You can use this address across Google products on any device.</translation>
 <translation id="3810973564298564668">Manage</translation>
 <translation id="3818293389945649617">Find Next</translation>
 <translation id="3819183753496523827">You're offline. Check your Internet connection and try again.</translation>
@@ -745,6 +743,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6342069812937806050">Just now</translation>
 <translation id="6344783595350022745">Clear Text</translation>
 <translation id="6346549652287021269">Start new download?</translation>
+<translation id="6347953390226388422">{count,plural, =1{This address will be deleted from your Google Account (<ph name="USER_EMAIL" />) and from this device.}other{These addresses will be deleted from your Google Account (<ph name="USER_EMAIL" />) and from this device.}}</translation>
 <translation id="634878792104344809">Sync your passwords, history and more on all of your devices</translation>
 <translation id="6361848730467328243">Follow <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">No Incognito Tabs</translation>

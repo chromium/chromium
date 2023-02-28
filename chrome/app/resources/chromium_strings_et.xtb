@@ -196,8 +196,8 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="5527463683072221100">Ava PDF-id Chromiumis</translation>
 <translation id="5614091477838198795">Kui see on sisse lülitatud, logitakse teid ka Chromiumist välja</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromiumi värskendus on saadaval}=1{Chromiumi värskendus on saadaval}other{Chromiumi värskendus on # päeva saadaval olnud}}</translation>
-<translation id="5634636535844844681">Chromium vajab operatsioonisüsteemi Windows 7 või uuemat versiooni.</translation>
 <translation id="5653831366781983928">Käivitage Chromium kohe uuesti</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Kuva Chromium selles keeles</translation>
 <translation id="5862307444128926510">Tere tulemast Chromiumi</translation>
 <translation id="5883558403894052917">Chromium leidis, et need üksused sisaldavad pahavara:</translation>
@@ -339,12 +339,15 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8266560134891435528">Chromium ei saa teie paroole kontrollida, kuna te pole sisse logitud</translation>
 <translation id="8276522524898344151">Chromium üritab kopeerida paroole.</translation>
 <translation id="8290862415967981663">Chromium blokeeris faili, kuna see võib olla ohtlik.</translation>
+<translation id="8325404639443959713">Tehke Chromiumiga rohkem</translation>
 <translation id="8330519371938183845">Logige sisse, et Chromium kõigis oma seadmetes sünkroonida ja isikupärastada</translation>
 <translation id="8340674089072921962">Kasutaja <ph name="USER_EMAIL_ADDRESS" /> kasutas varem Chromiumi</translation>
 <translation id="8357820681460164151">Selleks et oma Chromiumi brauseri sisule kõigis oma seadmetes juurde pääseda, logige sisse ja lülitage siis sisse sünkroonimine</translation>
 <translation id="8360718212975266891">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi Windows 10 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi Windows 8.</translation>
+<translation id="8370517070665726704">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Käivitage Chromium uuesti päeva jooksul}other{Käivitage Chromium uuesti # päeva jooksul}}</translation>
 <translation id="8453117565092476964">Installeri arhiiv on rikutud või kehtetu. Laadige Chromium uuesti alla.</translation>
+<translation id="8458614432758743027">Chromium vajab operatsioonisüsteemi Windows 10 või uuemat versiooni.</translation>
 <translation id="8463672209299734063">Valikuline. Aidake Chromium OS-i funktsioone ning toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid.</translation>
 <translation id="8493179195440786826">Chromium on aegunud</translation>
 <translation id="8550334526674375523">See tööprofiil on teie isiklikust profiilist täielikult eraldi.</translation>
@@ -378,6 +381,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9158494823179993217">Teie süsteemiadministraator on konfigureerinud Chromiumi avama alternatiivset brauserit, et saada juurdepääs lehele <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Taaskäivitage &amp;Chromiumi värskendamiseks</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Isikupärastage Chromium</translation>
 <translation id="93478295209880648">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam Windows XP-s ega Windows Vistas</translation>
 <translation id="942598560705308788">Chromiumi hallatavad sertifikaadid</translation>
 <translation id="965162752251293939">Kes kasutab Chromiumi?</translation>

@@ -502,6 +502,11 @@
 <translation id="3633097874324966332">သင်၏စက်နှင့် တွဲချိတ်ရန် ဘလူးတုသ်ဆက်တင်များ ဖွင့်ပါ</translation>
 <translation id="3638400994746983214">အချက်အလက်လုံခြုံမှု ဖန်သားပြင်ကို အဖွင့်အပိတ်လုပ်ရန်။ <ph name="STATE_TEXT" />။</translation>
 <translation id="3649505501900178324">အပ်ဒိတ် ရက်လွန်နေသည်</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />၊
+        <ph name="START_TIME" /> မှ
+        <ph name="END_TIME" />၊
+        <ph name="TIME_ZONE" />။ နောက်ထပ်အသေးစိတ်များအတွက် Google Calendar တွင်ရွေးပါ။</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" /> ရက်)</translation>
 <translation id="3659814201068740063"><ph name="TIME_LEFT" /> ခန့် ကျန်သည် (<ph name="PERCENTAGE" />%)။
 စက်ကို အားသွင်းပါ။</translation>
@@ -549,6 +554,7 @@
 <translation id="3925540965556789199"><ph name="DATE" />၊ အစီအစဉ်များ ဖွင့်နေသည်။</translation>
 <translation id="3932043219784172185">ချိတ်ဆက်ထားသော စက်မရှိပါ</translation>
 <translation id="3934456833412894880">အလိုက်သင့်အားသွင်းခြင်းကို ဖွင့်ထားသည်။ သင့်ဘက်ထရီ သက်တမ်းကြာရှည်စေရန် ၈၀% တွင် ရပ်နေမည်ဖြစ်ပြီး အလိုရှိသောအချိန်တွင် အားအပြည့်သွင်းပါမည်။</translation>
+<translation id="3936620957945677513"><ph name="EVENT_SUMMARY" /> အစီအစဉ်တွင် ပါဝင်ရန် Enter ခလုတ်နှိပ်ပါ</translation>
 <translation id="3943857333388298514">ကူးဖြည့်ရန်</translation>
 <translation id="394485226368336402">အသံဆက်တင်များ</translation>
 <translation id="3945319193631853098">စနစ်ထည့်သွင်းခြင်း အပြီးသတ်ရန် တို့ပါ</translation>
@@ -1466,9 +1472,9 @@
 <translation id="8850991929411075241">ရှာဖွေမှု+Esc</translation>
 <translation id="8853703225951107899">သင့်ပင်နံပါတ် သို့မဟုတ် စကားဝှက်ကို စစ်ဆေး၍မရနိုင်သေးပါ။ မှတ်ချက် - လတ်တလောတွင် သင့်စကားဝှက်ကို ပြောင်းထားပါက စကားဝှက်အဟောင်းကို သုံးပါ။ ထွက်ပြီးသည့်အခါ စကားဝှက်အသစ်ကို အသုံးပြုပါမည်။</translation>
 <translation id="8855885154700222542">မျက်နှာပြင်ပြည့် ခလုတ်</translation>
-<translation id="8858369206579825206">ကိုယ်ရေးအချက်အလက် လုံခြုံမှုဆိုင်ရာ ထိန်းချုပ်မှုများ</translation>
 <translation id="8870509716567206129">အက်ပ်သည် မျက်နှာပြင်ခွဲပြခြင်းကို ပံ့ပိုးမထားပါ။</translation>
 <translation id="8874184842967597500">ချိတ်ဆက် မထား</translation>
+<translation id="8876148469852588625">အစီအစဉ် <ph name="EVENT_TOTAL_COUNT" /> ခုအနက် <ph name="EVENT_POSITION" /> ခု</translation>
 <translation id="8876661425082386199">သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပါ</translation>
 <translation id="8877788021141246043">သတိပေးချက် သတ်မှတ်ပါ</translation>
 <translation id="8878886163241303700">မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>

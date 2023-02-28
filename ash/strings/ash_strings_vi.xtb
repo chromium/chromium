@@ -279,6 +279,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2429753432712299108">Thiết bị Bluetooth "<ph name="DEVICE_NAME" />" muốn được phép ghép nối. Trước khi chấp nhận, vui lòng xác nhận rằng mã xác nhận này đã hiển thị trên thiết bị đó: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
 <translation id="243878895369688216">Mở hôm qua</translation>
+<translation id="2440978926514840421">Đã ghi ảnh GIF</translation>
 <translation id="2441427462554639370">Quá trình ghi đã kết thúc do dung lượng lưu trữ còn quá thấp</translation>
 <translation id="24452542372838207">Mở rộng thông báo</translation>
 <translation id="2449089818483227734">Pin yếu</translation>
@@ -549,6 +550,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Đang tải sự kiện.</translation>
 <translation id="3932043219784172185">Không có thiết bị nào được kết nối</translation>
 <translation id="3934456833412894880">Tính năng Sạc thích ứng đang bật Pin của bạn sẽ giữ ở mức 80% để kéo dài thời lượng pin và sạc đầy khi bạn cần.</translation>
+<translation id="3936620957945677513">Nhấn Enter để tham gia sự kiện <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Dán</translation>
 <translation id="394485226368336402">Cài đặt âm thanh</translation>
 <translation id="3945319193631853098">Nhấn để hoàn tất quá trình thiết lập</translation>
@@ -1466,7 +1468,6 @@ Mới cài đặt</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Hệ thống vẫn chưa xác minh được mã PIN hoặc mật khẩu của bạn. Lưu ý: Nếu bạn đổi mật khẩu gần đây, hãy dùng mật khẩu cũ. Bạn có thể dùng mật khẩu mới sau khi đăng xuất.</translation>
 <translation id="8855885154700222542">Phím toàn màn hình</translation>
-<translation id="8858369206579825206">Chế độ kiểm soát quyền riêng tư</translation>
 <translation id="8870509716567206129">Ứng dụng không hỗ trợ chế độ chia đôi màn hình.</translation>
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8876661425082386199">Kiểm tra kết nối của bạn</translation>

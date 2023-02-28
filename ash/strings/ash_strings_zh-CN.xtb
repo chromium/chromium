@@ -279,6 +279,7 @@
 <translation id="2429753432712299108">蓝牙设备“<ph name="DEVICE_NAME" />”需要配对许可。在接受之前，请确保该设备上显示以下配对密钥：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="243878895369688216">昨天打开过</translation>
+<translation id="2440978926514840421">已完成 GIF 录制</translation>
 <translation id="2441427462554639370">已停止录制，因为存储空间严重不足</translation>
 <translation id="24452542372838207">展开通知</translation>
 <translation id="2449089818483227734">电池电量低</translation>
@@ -1464,7 +1465,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
 <translation id="8855885154700222542">全屏键</translation>
-<translation id="8858369206579825206">隐私控制</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8876661425082386199">请检查您的网络连接状况</translation>

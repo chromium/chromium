@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Demp werwe wat klank speel</translation>
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3628308229821498208">Voorgestelde soektogte</translation>
+<translation id="3636279694100170143">Werwe wat jy besoek kan bevestig dat jy ’n werklike gebruiker is en nie ’n bot nie</translation>
+<translation id="3649190289964910441">’n Werf wat jy besoek, kan inligting in Chrome stoor wat bekragtig dat jy ’n werklike gebruiker is. Terwyl jy aanhou blaai, kan werwe met Chrome kontroleer en van die eerste werf af verifieer dat jy waarskynlik ’n vertroude gebruiker is.</translation>
 <translation id="3744111561329211289">Agtergrondsinkronisering</translation>
 <translation id="3763247130972274048">Dubbeltik links of regs op video om 10 s. oor te slaan</translation>
 <translation id="3794286421982011626">’n Werf wat jy besoek, kan inligting stoor oor wat jy besig is om te doen sodat dit kan werk soos jy sou verwag – byvoorbeeld, om jou by ’n werf aangemeld te hou of items in jou inkopiemandjie te stoor. Werwe stoor hierdie inligting dikwels tydelik op jou toestel.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Deur jou ouer bestuur</translation>
 <translation id="4670064810192446073">Virtuele realiteit</translation>
 <translation id="4751476147751820511">Beweging- of ligsensors</translation>
+<translation id="477781522763920796">Hierdie instelling werk sonder om jou te identifiseer of werwe toe te laat om jou blaaigeskiedenis te sien.</translation>
 <translation id="4779083564647765204">Zoem</translation>
 <translation id="4811450222531576619">Kom meer te wete oor bron en onderwerp</translation>
 <translation id="4836046166855586901">Vra as 'n werf wil weet wanneer jy hierdie toestel aktief gebruik</translation>
@@ -324,6 +327,7 @@
 <translation id="7016516562562142042">Toegelaat vir huidige soekenjin</translation>
 <translation id="702275896380648118">Hierdie werf bepaal van watter dinge jy hou, en stel dan advertensies aan ander werwe voor. Hierdie werf kry ook jou advertensieonderwerpe van Chrome af om vir jou relevanter advertensies te wys.</translation>
 <translation id="702463548815491781">Aanbeveel wanneer TalkBack of Skakelaartoegang aan is</translation>
+<translation id="7050519587566342213">Die blaai-ervaring is gladder omdat jy meer waarskynlik van een werf na die ander vertrou sal word.</translation>
 <translation id="7053983685419859001">Blokkeer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 gekies}other{# gekies}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> gekies. Opsies is naby aan die bokant van die skerm beskikbaar</translation>

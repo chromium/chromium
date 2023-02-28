@@ -364,7 +364,7 @@
 <translation id="4092890906744441904">愛爾蘭文</translation>
 <translation id="4124935795427217608">獨角獸</translation>
 <translation id="4131235941541910880">將不需要的項目移至垃圾桶</translation>
-<translation id="4134804435730168042">第 <ph name="NETWORK_INDEX" /> 個網路，共 <ph name="NETWORK_COUNT" /> 個網路，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在裝置完成設定後啟用</translation>
+<translation id="4134804435730168042">第 <ph name="NETWORK_INDEX" /> 個網絡，總共 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，喺裝置完成設定之後啟用</translation>
 <translation id="4153015322587141338">在檔案上按一下右鍵，然後選取 [<ph name="PIN_COMMAND" />]，以便在捷徑列中快速存取檔案。</translation>
 <translation id="4157569377477607576">管理員政策不建議：</translation>
 <translation id="4159731583141908892">已移動 <ph name="FILE_NAME" />。</translation>
@@ -407,7 +407,7 @@
 <translation id="4414834425328380570">系統將刪除「<ph name="FILE_NAME" />」，而且無法還原。</translation>
 <translation id="4418686080762064601">為檔案建立捷徑</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
-<translation id="4432921877815220091">第 <ph name="NETWORK_INDEX" /> 個網路，共 <ph name="NETWORK_COUNT" /> 個網路，<ph name="NETWORK_NAME" />，在裝置完成設定後啟用，由管理員管理</translation>
+<translation id="4432921877815220091">第 <ph name="NETWORK_INDEX" /> 個網絡，總共 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，喺裝置完成設定之後啟用，由管理員管理</translation>
 <translation id="4439427728133035643">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，連接</translation>
 <translation id="4442424173763614572">DNS 查詢失敗</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
@@ -617,7 +617,7 @@
 <translation id="5913638992615760742">複製作業失敗，發生未預期的錯誤：<ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">荷蘭文 (荷蘭)，美國國際 (PC) 鍵盤</translation>
 <translation id="5932901536148835538">Chromebit</translation>
-<translation id="5948255720516436063">第 <ph name="NETWORK_INDEX" /> 個網路，共 <ph name="NETWORK_COUNT" /> 個網路，<ph name="NETWORK_NAME" />，在裝置完成設定後啟用</translation>
+<translation id="5948255720516436063">第 <ph name="NETWORK_INDEX" /> 個網絡，總共 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，喺裝置完成設定之後啟用</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序選項</translation>
@@ -764,6 +764,7 @@
 <translation id="7126604456862387217">「&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;」- 搜尋雲端硬碟</translation>
 <translation id="7135561821015524160">卡納達文 (拼音)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">缺少「主體替代名稱配對」或「域名尾碼配對」，因此無法對驗證伺服器身分進行驗證</translation>
 <translation id="7165320105431587207">無法設定網絡</translation>
 <translation id="7170041865419449892">超出範圍</translation>
 <translation id="7180611975245234373">重新整理</translation>
@@ -939,7 +940,7 @@
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="8492972329130824181">無法使用住宅網絡，您必須啟用流動數據漫遊服務才能連線。</translation>
 <translation id="8499098729323186194">正在解壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
-<translation id="8502913769543567768">第 <ph name="NETWORK_INDEX" /> 個網路，共 <ph name="NETWORK_COUNT" /> 個網路，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，在裝置完成設定後啟用，由管理員管理</translation>
+<translation id="8502913769543567768">第 <ph name="NETWORK_INDEX" /> 個網絡，總共 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，喺裝置完成設定之後啟用，由管理員管理</translation>
 <translation id="8521441079177373948">英文</translation>
 <translation id="853494022971700746">法文 (法國)</translation>
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳情</translation>

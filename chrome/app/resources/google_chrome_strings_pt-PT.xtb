@@ -154,6 +154,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">O ChromeOS Flex não conseguiu sincronizar os dados devido a um erro de início de sessão.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
+<translation id="3809772425479558446">O Google Chrome requer o Windows 10 ou superior.</translation>
 <translation id="3835168907083856002">Esta ação cria um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="386202838227397562">Feche todas as janelas do Google Chrome e tente novamente.</translation>
 <translation id="3865754807470779944">A versão <ph name="PRODUCT_VERSION" /> do Chrome está instalada.</translation>
@@ -406,7 +407,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8989968390305463310">O seu histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina automaticamente os seus interesses todos os meses. Os interesses podem ser atualizados, a menos que os remova.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Está disponível uma atualização do Chrome}=1{Está disponível uma atualização do Chrome}other{Está disponível uma atualização do Chrome há # dias}}</translation>
 <translation id="9053892488859122171">Sistema do ChromeOS Flex</translation>
-<translation id="9067395829937117663">O Google Chrome requer o Windows 7 ou superior.</translation>
 <translation id="911206726377975832">Eliminar também os seus dados de navegação?</translation>
 <translation id="9138603949443464873">Para aplicar as alterações, reinicie o Chrome.</translation>
 <translation id="9195993889682885387">O Chrome pode estimar os seus interesses com base no seu histórico de navegação das últimas semanas. Estas informações ficam no seu dispositivo.</translation>

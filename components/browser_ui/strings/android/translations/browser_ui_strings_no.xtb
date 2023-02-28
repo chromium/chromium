@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Kutt lyden for nettsteder som spiller av lyd</translation>
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3628308229821498208">Foreslåtte søk</translation>
+<translation id="3636279694100170143">Nettsteder du besøker, kan bekrefte at du er en ekte bruker og ikke en robot</translation>
+<translation id="3649190289964910441">Nettsteder du besøker, kan lagre informasjon i Chrome for å bekrefte at du er en ekte bruker. Etter hvert som du fortsetter å surfe, kan nettsteder sjekke med Chrome og bekrefte fra det første nettstedet at du sannsynligvis er en pålitelig bruker.</translation>
 <translation id="3744111561329211289">Bakgrunnssynkronisering</translation>
 <translation id="3763247130972274048">Dobbelttrykk på venstre eller høyre side av videoen for å hoppe 10 sekunder</translation>
 <translation id="3794286421982011626">Et nettsted du besøker, kan lagre informasjon om hva du gjør, slik at det fungerer som forventet – for eksempel for å holde deg pålogget på et nettsted eller for å lagre varer i handlekurven din. Ofte lagrer nettsteder denne informasjonen midlertidig på enheten din.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Administreres av foreldrene dine</translation>
 <translation id="4670064810192446073">Virtuell virkelighet</translation>
 <translation id="4751476147751820511">Bevegelses- eller lyssensorer</translation>
+<translation id="477781522763920796">Denne innstillingen fungerer uten at du blir identifisert eller kan la nettsteder se nettleserloggen din.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Finn ut mer om kilden og emnet</translation>
 <translation id="4836046166855586901">Spør når nettsteder vil vite når du bruker denne enheten aktivt</translation>
@@ -324,6 +327,7 @@
 <translation id="7016516562562142042">tillatt for den aktive søkemotoren</translation>
 <translation id="702275896380648118">Dette nettstedet avgjør hva du liker, og foreslår deretter annonser til andre nettsteder. Dette nettstedet henter også annonseemnene dine fra Chrome for å kunne vise deg mer relevante annonser.</translation>
 <translation id="702463548815491781">Anbefalt når TalkBack eller brytertilgang er på</translation>
+<translation id="7050519587566342213">Surfingen går jevnere, siden du er mer pålitelig fra ett nettsted til et annet.</translation>
 <translation id="7053983685419859001">Blokkér</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 er valgt}other{# er valgt}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> er valgt. Du finner alternativer oppe på skjermen</translation>

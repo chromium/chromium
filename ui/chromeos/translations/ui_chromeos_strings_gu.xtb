@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">આઇરિશ</translation>
 <translation id="4124935795427217608">યુનિકોર્ન - એક કાલ્પનિક પાંખવાળો ઘોડો</translation>
 <translation id="4131235941541910880">તમને જરૂર ન હોય તેવી આઇટમ ટ્રેશમાં ખસેડો</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ડિવાઇસનું સેટઅપ કર્યા પછી સક્રિય કરો</translation>
 <translation id="4153015322587141338">ફાઇલ પર રાઇટ-ક્લિક કરો અને શેલ્ફમાં તમારી ફાઇલોને ઝડપથી ઍક્સેસ કરવા માટે "<ph name="PIN_COMMAND" />" પસંદ કરો.</translation>
 <translation id="4157569377477607576">ઍડમિનિસ્ટ્રેટર પૉલિસી આમ કરવાનો સુઝાવ આપતી નથી:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ખસેડી.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" ડિલીટ કરવામાં આવશે અને તમે તેને રિસ્ટોર કરી શકશો નહીં.</translation>
 <translation id="4418686080762064601">તમારી ફાઇલો માટે શૉર્ટકટ બનાવો</translation>
 <translation id="4425149324548788773">મારી ડ્રાઇવ</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, ડિવાઇસનું સેટઅપ કર્યા પછી સક્રિય કરો, તમારા ઍડમિનિસ્ટ્રેટર દ્વારા સંચાલિત</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, કનેક્ટ કરો</translation>
 <translation id="4442424173763614572">DNS લુકઅપ નિષ્ફળ ગયું</translation>
 <translation id="4462159676511157176">કસ્ટમ નામ સર્વર્સ</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">કૉપિ ઑપરેશન નિષ્ફળ થયું, અનપેક્ષિત ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">ડચ (નેધરલૅન્ડ), યુએસ આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, ડિવાઇસનું સેટઅપ કર્યા પછી સક્રિય કરો</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> આઇટમ</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">સૉર્ટ કરવા માટેના વિકલ્પો</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;Driveમાં શોધો&lt;/em&gt;</translation>
 <translation id="7135561821015524160">કન્નડ ફોનેટિક</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">સર્વરની ઓળખના પ્રમાણીકરણને માન્ય કરવા માટે 'વિષયના વૈકલ્પિક નામનો મેળ' અથવા 'ડોમેન સફિક્સનો મેળ' ખૂટે છે</translation>
 <translation id="7165320105431587207">નેટવર્ક ગોઠવવામાં નિષ્ફળ</translation>
 <translation id="7170041865419449892">પહોંચ બહાર</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
@@ -934,6 +938,7 @@
 <translation id="8487700953926739672">ઑફલાઇન ઉપલબ્ધ</translation>
 <translation id="8492972329130824181">હોમ નેટવર્ક ઉપલબ્ધ નથી. કનેક્ટ કરવા માટે મોબાઇલ ડેટા રોમિંગની સુવિધા ચાલુ કરવી આવશ્યક છે.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> આઇટમને એક્સટ્રેક્ટ કરી રહ્યાં છીએ...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ડિવાઇસનું સેટઅપ કર્યા પછી સક્રિય કરો, તમારા ઍડમિનિસ્ટ્રેટર દ્વારા સંચાલિત</translation>
 <translation id="8521441079177373948">યુકે</translation>
 <translation id="853494022971700746">ફ્રેન્ચ (ફ્રાન્સ)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />માંથી નેટવર્ક <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, વિગતો</translation>

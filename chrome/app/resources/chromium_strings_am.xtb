@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">PDFዎችን በChromium ውስጥ ክፈት</translation>
 <translation id="5614091477838198795">ሲበራ ከChromium ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="5623402015214259806">{0,plural, =0{የChromium ዝማኔ ይገኛል}=1{የChromium ዝማኔ ይገኛል}one{አንድ የChromium ዝማኔ ለ# ቀኖች ነበር}other{አንድ የChromium ዝማኔ ለ# ቀኖች ነበር}}</translation>
-<translation id="5634636535844844681">Chromium Windows 7 ወይም ከዚያ በላይ ያስፈልገዋል።</translation>
 <translation id="5653831366781983928">እባክዎ Chromium ን አህን ዳግም ያስጀምሩ</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumን በዚህ ቋንቋ አሳይ</translation>
 <translation id="5862307444128926510">ወደ Chromium እንኳን በደህና መጡ</translation>
 <translation id="5883558403894052917">Chromium እነዚህ ንጥሎች ተንኮል አዘል ዌር እንደያዙ አግኝቷል፦</translation>
@@ -345,6 +345,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ከዚህ ቀደም Chromiumን እየተጠቀመ ነበር</translation>
 <translation id="8357820681460164151">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን የChromium አሳሽ ነገሮች ለመድረስ ይግቡ፣ ከዚያ ስምረትን ያብሩ</translation>
 <translation id="8360718212975266891">የወደፊት የChromium ዝማኔዎችን ለማግኘት Windows 10 ወይም ከዚያ በላይ ያስፈልግዎታል። ይህ ኮምፒውተር Windows 8 እየተጠቀመ ነው።</translation>
+<translation id="8370517070665726704">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
 <translation id="8417404458978023919">{0,plural, =1{በአንድ ቀን ውስጥ Chromiumን ዳግም አስጀምር}one{በ# ቀኖች ውስጥ Chromiumን ዳግም አስጀምር}other{በ# ቀኖች ውስጥ Chromiumን ዳግም አስጀምር}}</translation>
 <translation id="8453117565092476964">የጫኚው መዝገብ ተበላሽቷል ወይም ትክክል አይደለም። እባክዎ Chromiumን እንደገና ያውርዱ።</translation>
 <translation id="8463672209299734063">ከተፈለገ፦ የምርመራ እና የአጠቃቀም ውሂብ ወደ Google በራስ-ሰር በመላክ የChromiumOS ባህሪያትን እና አፈጻጸምን እንዲሻሻል ያግዙ።</translation>

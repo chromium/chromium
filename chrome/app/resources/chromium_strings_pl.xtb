@@ -194,8 +194,8 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5527463683072221100">Otwieranie plików PDF w Chromium</translation>
 <translation id="5614091477838198795">Jeśli ta opcja jest włączona, zostaniesz też wylogowany(-a) z Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Dostępna jest aktualizacja Chromium}=1{Dostępna jest aktualizacja Chromium}few{Aktualizacja Chromium jest dostępna od # dni}many{Aktualizacja Chromium jest dostępna od # dni}other{Aktualizacja Chromium jest dostępna od # dnia}}</translation>
-<translation id="5634636535844844681">Chromium wymaga systemu Windows 7 lub nowszego.</translation>
 <translation id="5653831366781983928">Uruchom Chromium ponownie</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Wyświetlaj Chromium w tym języku</translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
 <translation id="5883558403894052917">Przeglądarka Chromium wykryła w tych elementach złośliwe oprogramowanie:</translation>
@@ -342,6 +342,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8340674089072921962">Użytkownik <ph name="USER_EMAIL_ADDRESS" /> wcześniej używał Chromium</translation>
 <translation id="8357820681460164151">Aby mieć dostęp do danych z Chromium na wszystkich swoich urządzeniach, zaloguj się i włącz synchronizację</translation>
 <translation id="8360718212975266891">Aby w przyszłości otrzymywać aktualizacje Chromium, musisz mieć system Windows 10 lub nowszy. Na tym komputerze jest zainstalowany system Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Ponowne uruchomienie Chromium nastąpi w ciągu 1 dnia}few{Ponowne uruchomienie Chromium nastąpi w ciągu # dni}many{Ponowne uruchomienie Chromium nastąpi w ciągu # dni}other{Ponowne uruchomienie Chromium nastąpi w ciągu # dnia}}</translation>
 <translation id="8453117565092476964">Archiwum instalatora jest uszkodzone lub nieprawidłowe. Pobierz Chromium ponownie.</translation>
 <translation id="8463672209299734063">Opcjonalnie: pomóż ulepszyć funkcje i działanie systemu operacyjnego Chromium, automatycznie wysyłając do Google dane diagnostyczne i dane o korzystaniu.</translation>

@@ -198,8 +198,8 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5527463683072221100">Otevírat soubory PDF v Chromiu</translation>
 <translation id="5614091477838198795">Když zapnete tuto možnost, budete také odhlášeni z Chromia</translation>
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozici aktualizace prohlížeče Chromium}=1{Je k dispozici aktualizace prohlížeče Chromium}few{Již # dny je k dispozici aktualizace prohlížeče Chromium}many{Již # dne je k dispozici aktualizace prohlížeče Chromium}other{Již # dní je k dispozici aktualizace prohlížeče Chromium}}</translation>
-<translation id="5634636535844844681">Chromium vyžaduje systém Windows 7 nebo vyšší.</translation>
 <translation id="5653831366781983928">Restartujte Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobrazit Chromium v tomto jazyce</translation>
 <translation id="5862307444128926510">Vítejte v prohlížeči Chromium</translation>
 <translation id="5883558403894052917">Prohlížeč Chromium zjistil, že tyto položky obsahují malware:</translation>
@@ -342,10 +342,12 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8266560134891435528">Chromium nemůže zkontrolovat vaše hesla, protože nejste přihlášeni</translation>
 <translation id="8276522524898344151">Chromium se pokouší zkopírovat hesla.</translation>
 <translation id="8290862415967981663">Tento soubor může být nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
+<translation id="8325404639443959713">Využívejte Chromium efektivněji</translation>
 <translation id="8330519371938183845">Po přihlášení si budete moci Chromium synchronizovat a upravit na různých zařízeních</translation>
 <translation id="8340674089072921962">Před vámi prohlížeč Chromium používal uživatel <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8357820681460164151">Pokud ke svým údajům v prohlížeči Chromium chcete mít přístup na všech zařízeních, přihlaste se a poté zapněte synchronizaci</translation>
 <translation id="8360718212975266891">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Do jednoho dne Chromium restartujte}few{Do # dní Chromium restartujte}many{Do # dne Chromium restartujte}other{Do # dní Chromium restartujte}}</translation>
 <translation id="8453117565092476964">Archiv instalačního programu je poškozený nebo neplatný. Stáhněte prosím Chromium znovu.</translation>
 <translation id="8463672209299734063">Volitelné: Pomozte se zlepšováním funkcí a výkonu operačního systému ChromiumOS tím, že budete do Googlu automaticky odesílat diagnostické údaje a údaje o využití.</translation>
@@ -381,6 +383,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="9158494823179993217">Administrátor systému nakonfiguroval prohlížeč Chromium tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>
 <translation id="9185526690718004400">Znovu spustit a aktualizovat &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Přizpůsobte si Chromium</translation>
 <translation id="93478295209880648">Prohlížeč Chromium nemusí fungovat správně, protože v systémech Windows XP a Windows Vista již není podporován</translation>
 <translation id="942598560705308788">Certifikáty spravované prohlížečem Chromium</translation>
 <translation id="965162752251293939">Kdo Chromium používá?</translation>

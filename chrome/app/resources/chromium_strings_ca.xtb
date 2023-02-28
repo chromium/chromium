@@ -196,8 +196,8 @@
 <translation id="5527463683072221100">Obre els fitxers PDF a Chromium</translation>
 <translation id="5614091477838198795">Si aquesta opció està activada, també se't tancarà la sessió de Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hi ha una actualització de Chromium disponible}=1{Hi ha una actualització de Chromium disponible}other{Fa # dies que hi ha una actualització de Chromium disponible}}</translation>
-<translation id="5634636535844844681">Chromium requereix Windows 7 o una versió posterior.</translation>
 <translation id="5653831366781983928">Reinicia Chromium ara</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostra Chromium en aquest idioma</translation>
 <translation id="5862307444128926510">Us donem la benvinguda a Chromium</translation>
 <translation id="5883558403894052917">Chromium ha detectat que aquests elements contenen programari maliciós:</translation>
@@ -340,10 +340,12 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8266560134891435528">Chromium no pot comprovar les teves contrasenyes perquè no tens la sessió iniciada</translation>
 <translation id="8276522524898344151">Chromium està provant de copiar les contrasenyes.</translation>
 <translation id="8290862415967981663">Chromium ha bloquejat aquest fitxer perquè pot ser perillós.</translation>
+<translation id="8325404639443959713">Treu més profit de Chromium</translation>
 <translation id="8330519371938183845">Inicia la sessió per sincronitzar i personalitzar Chromium en tots els teus dispositius</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chromium</translation>
 <translation id="8357820681460164151">Per accedir al teu contingut del navegador Chromium des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització</translation>
 <translation id="8360718212975266891">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 dia}other{Reinicia Chromium en # dies}}</translation>
 <translation id="8453117565092476964">L'arxiu d'instal·lació està malmès o no és vàlid. Torneu a baixar Chromium.</translation>
 <translation id="8463672209299734063">Opcional: ajuda a millorar les funcions i el rendiment de Chromium OS enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
@@ -379,6 +381,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="9158494823179993217">L'administrador del sistema ha configurat Chromium perquè obri un navegador alternatiu per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reinicia per actualitzar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Personalitza Chromium</translation>
 <translation id="93478295209880648">Pot ser que Chromium no funcioni correctament perquè ja no és compatible amb Windows XP ni Windows Vista</translation>
 <translation id="942598560705308788">Certificats gestionats per Chromium</translation>
 <translation id="965162752251293939">Qui està utilitzant Chromium?</translation>

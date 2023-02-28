@@ -589,6 +589,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menú de commutadors per canviar la mida</translation>
+<translation id="2365355378251437925">Introdueix <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Nivell</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personalitza les eines d'accessibilitat a la configuració de Chrome</translation>
@@ -876,6 +877,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="317878711435188021">Saber quan estàs utilitzant aquest dispositiu de manera activa</translation>
 <translation id="3180358318770512945">Criança dels fills</translation>
 <translation id="3187306450550410410">Treball flexible</translation>
+<translation id="3187380004437786923">Gestiona els pagaments</translation>
 <translation id="3187472288455401631">Mesurament d'anuncis</translation>
 <translation id="3190736958609431397">Deixa de fer el seguiment</translation>
 <translation id="319282854780294203">Xarxes socials</translation>
@@ -1271,6 +1273,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4154664944169082762">Empremtes</translation>
 <translation id="4159784952369912983">Porpra</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
+<translation id="4169535189173047238">No permetis</translation>
 <translation id="4171400957073367226">La signatura de verificació és incorrecta</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Mostra sempre</translation>
@@ -1833,7 +1836,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5510766032865166053">És possible que s'hagi mogut o s'hagi suprimit.</translation>
 <translation id="5513528801833998679">Utilitza l'inici de sessió del dispositiu</translation>
 <translation id="5515388687005870733">55 x 85 mm</translation>
-<translation id="5518670652865028077">Arts i entreteniment</translation>
+<translation id="5518670652865028077">Art i entreteniment</translation>
 <translation id="5519516356611866228">Amb els meus canvis</translation>
 <translation id="5523118979700054094">Nom de la política</translation>
 <translation id="5525755241743357906">El fitxer s'ha copiat o mogut</translation>
@@ -3333,6 +3336,7 @@ Detalls addicionals:
 <translation id="950736567201356821">Encunyació triple a la part superior</translation>
 <translation id="961663415146723894">Enquadernació per la part inferior</translation>
 <translation id="962484866189421427">Pot ser que aquest contingut provi d'instal·lar aplicacions enganyoses que es facin passar per d'altres o que recullin dades que podrien utilitzar-se per fer un seguiment de la teva activitat. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Tots els usuaris</translation>
 <translation id="964050462028070434">Gestiona les contrasenyes i les claus d'accés…</translation>
 <translation id="96680173638229310">Automòbils i vehicles</translation>
 <translation id="969892804517981540">Compilació oficial</translation>

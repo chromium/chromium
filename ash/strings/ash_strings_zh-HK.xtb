@@ -279,6 +279,7 @@
 <translation id="2429753432712299108">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限。接受要求前，請確認裝置顯示以下密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="243878895369688216">昨天開啟過</translation>
+<translation id="2440978926514840421">已錄製 GIF</translation>
 <translation id="2441427462554639370">儲存空間嚴重不足，因此已停止錄影</translation>
 <translation id="24452542372838207">展開通知</translation>
 <translation id="2449089818483227734">低電量</translation>
@@ -1465,7 +1466,6 @@
 <translation id="8850991929411075241">搜尋鍵 + Esc 鍵</translation>
 <translation id="8853703225951107899">系統仍然無法驗證您的 PIN 或密碼。注意：如果您最近變更過密碼，請嘗試使用舊密碼，新密碼會在您登出後立即生效。</translation>
 <translation id="8855885154700222542">全螢幕鍵</translation>
-<translation id="8858369206579825206">私隱權設定</translation>
 <translation id="8870509716567206129">應用程式不支援分割畫面。</translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8876661425082386199">請檢查連線</translation>

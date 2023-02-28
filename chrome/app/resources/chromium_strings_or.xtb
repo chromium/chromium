@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">Chromiumରେ PDFଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="5614091477838198795">ଚାଲୁ ଥିବା ସମୟରେ, ଆପଣ Chromiumରୁ ମଧ୍ୟ ସାଇନ ଆଉଟ ହୋଇଯିବେ</translation>
 <translation id="5623402015214259806">{0,plural, =0{ଏକ Chromium ଅପ୍‌ଡେଟ୍‍ ଉପଲବ୍ଧ ଅଛି}=1{ଏକ Chromium ଅପ୍‌ଡେଟ୍‍ ଉପଲବ୍ଧ ଅଛି}other{# ଦିନ ପାଇଁ ଏକ Chromium ଅପ୍‌ଡେଟ୍‌ ଉପଲବ୍ଧ ଅଛି}}</translation>
-<translation id="5634636535844844681">Chromium ପାଇଁ Windows 7 କିମ୍ବା ଏହାଠାରୁ ଉଚ୍ଚତର ସଂସ୍କରଣ ଆବଶ୍ୟକତା ହୋ‍ଇଥାଏ।</translation>
 <translation id="5653831366781983928">ଦୟାକରି ବର୍ତ୍ତମାନ Chromium ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumକୁ ଏହି ଭାଷାରେ ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="5862307444128926510">Chromiumକୁ ସ୍ଵାଗତ</translation>
 <translation id="5883558403894052917">ଏହି ଆଇଟମଗୁଡ଼ିକରେ ମାଲୱେର୍ ଥିବା Chromium ଜାଣିବାକୁ ପାଇଛି:</translation>
@@ -341,10 +341,12 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8266560134891435528">ଆପଣ ସାଇନ୍ ଇନ୍ କରିନଥିବା ଯୋଗୁଁ Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="8276522524898344151">Chromium ପାସୱାର୍ଡଗୁଡ଼ିକ କପି କରିବାକୁ ଚେଷ୍ଟା କରୁଛି।</translation>
 <translation id="8290862415967981663">ଏହି ଫାଇଲ୍‌ଟି ହୁଏତ ବିପଜ୍ଜନକ ହୋଇପାରେ, ତେଣୁ ଏହାକୁ Chromium ବ୍ଲକ୍ କରିଛି।</translation>
+<translation id="8325404639443959713">Chromium ସହ ଆହୁରି ଅନେକ କିଛି କରନ୍ତୁ</translation>
 <translation id="8330519371938183845">ସିଙ୍କରେ ସାଇନ୍‌ କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସ୍‌ରେ Chromiumକୁ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>
 <translation id="8340674089072921962">ପୂର୍ବରୁ <ph name="USER_EMAIL_ADDRESS" /> Chromium ବ୍ୟବହାର କରୁଥିଲା</translation>
 <translation id="8357820681460164151">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର Chromium ବ୍ରାଉଜର ଷ୍ଟଫଗୁଡ଼ିକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ସାଇନ ଇନ କରି ତା’ପରେ ସିଙ୍କ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="8360718212975266891">ଭବିଷ୍ୟତରେ Chromiumର ଅପଡେଟଗୁଡ଼ିକ ପାଇବା ପାଇଁ, ଆପଣ Windows 10 କିମ୍ବା ତା'ପରର ସଂସ୍କରଣ ଆବଶ୍ୟକ କରିବେ। ଏହି କମ୍ପ୍ୟୁଟରରେ Windows 8 ବ୍ୟବହାର କରାଯାଉଛି।</translation>
+<translation id="8370517070665726704">କପିରାଇଟ୍ <ph name="YEAR" /> Google LLC। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="8417404458978023919">{0,plural, =1{ଗୋଟିଏ ଦିନ ମଧ୍ୟରେ Chromium ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ}other{# ଦିନ ମଧ୍ୟରେ Chromium ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ}}</translation>
 <translation id="8453117565092476964">ଇନ୍‌ଷ୍ଟଲର୍‌ ଆର୍କାଇଭ୍‍ ଖରାପ ହୋ‍ଇଯାଇଛି କିମ୍ବା ଅବୈଧ ଅଟେ। ଦୟାକରି Chromium ପୁଣି ଡାଉନ୍‌ଲୋଡ୍‌ କରନ୍ତୁ।</translation>
 <translation id="8463672209299734063">ଇଚ୍ଛାଧୀନ: Googleକୁ ସ୍ୱଚାଳିତ ଭାବେ ଡାଏଗ୍ନୋଷ୍ଟିକ ଏବଂ ବ୍ୟବହାର ଡାଟା ପଠାଇ ChromiumOSର ଫିଚର ଓ ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
@@ -380,6 +382,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="9158494823179993217"><ph name="TARGET_URL_HOSTNAME" />କୁ ଆକ୍ସେସ୍‌ କରିବା ପାଇଁ ଏକ ବିକଳ୍ପ ବ୍ରାଉଜର୍‌ ଖୋଲିବାକୁ ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ବ୍ୟବସ୍ଥାପକ Chromium କନ୍‌ଫିଗର୍‌ କରିଛନ୍ତି।</translation>
 <translation id="9185526690718004400">&amp;Chromium ଅପଡେଟ୍ କରିବା ପାଇଁ ପୁଣି ଲଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Chromiumକୁ ଆପଣଙ୍କ ନିଜର ବ୍ରାଉଜର କରନ୍ତୁ</translation>
 <translation id="93478295209880648">Chromium ହୁଏତ ସଠିକ୍ ଭାବେ କାର୍ଯ୍ୟ କରି ନପାରେ କାରଣ ଏହା ଆଉ Windows XP କିମ୍ବା Windows Vistaରେ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="942598560705308788">Chromium ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଥିବା ସାର୍ଟିଫିକେଟଗୁଡ଼ିକ</translation>
 <translation id="965162752251293939">କିଏ Chromium ବ୍ୟବହାର କରୁଛନ୍ତି?</translation>

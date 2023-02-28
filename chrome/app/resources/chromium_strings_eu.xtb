@@ -198,8 +198,8 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5527463683072221100">Ireki PDFak Chromium-en</translation>
 <translation id="5614091477838198795">Aktibatuta dagoenean, Chromium-eko saioa ere amaituko da</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium arakatzailearen eguneratze bat dago erabilgarri}=1{Chromium arakatzailearen eguneratze bat dago erabilgarri}other{Chromium arakatzailearen eguneratze batek # egun daramatza erabilgarri}}</translation>
-<translation id="5634636535844844681">Windows 7 edo sistema berriagoa behar da Chromium erabiltzeko.</translation>
 <translation id="5653831366781983928">Berrabiarazi Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Bistaratu Chromium hizkuntza honetan</translation>
 <translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
 <translation id="5883558403894052917">Elementuok malwarea dutela hauteman du Chromium-ek:</translation>
@@ -341,10 +341,12 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8266560134891435528">Chromium-ek ezin ditu egiaztatu pasahitzak saioa hasi ez duzulako</translation>
 <translation id="8276522524898344151">Pasahitzak kopiatzen saiatzen ari da Chromium.</translation>
 <translation id="8290862415967981663">Baliteke fitxategia arriskutsua izatea; horregatik, blokeatu egin du Chromium-ek.</translation>
+<translation id="8325404639443959713">Egin gauza gehiago Chromium-ekin</translation>
 <translation id="8330519371938183845">Hasi saioa Chromium gailu guztietan sinkronizatu eta pertsonalizatzeko</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> Chromium erabiltzen ari da lehendik ere</translation>
 <translation id="8357820681460164151">Chromium arakatzaileko gauzak gailu guztietan atzitzeko, hasi saioa eta aktibatu sinkronizazioa</translation>
 <translation id="8360718212975266891">Etorkizunean Chromium-en eguneratzeak eskuratzeko, Windows 10 edo bertsio berriago bat beharko duzu. Ordenagailua Windows 8 erabiltzen ari da.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Berrabiarazi Chromium egun bateko epean}other{Berrabiarazi Chromium # eguneko epean}}</translation>
 <translation id="8453117565092476964">Instalatzailearen artxiboa hondatuta dago edo baliogabea da. Deskargatu Chromium berriro.</translation>
 <translation id="8463672209299734063">Aukerakoa: lagundu Chromium OS-ren eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
@@ -380,6 +382,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="9158494823179993217">Sistemaren administratzailearen konfigurazioaren arabera, Chromium-ek beste arakatzaile bat ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>
 <translation id="9185526690718004400">Abiaraz ezazu berriro &amp;Chromium eguneratzeko</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Pertsonalizatu Chromium</translation>
 <translation id="93478295209880648">Chromium-ek agian ez du behar bezala funtzionatuko, jada ez baita bateragarria Windows XP eta Windows Vista-rekin</translation>
 <translation id="942598560705308788">Chromium-ek kudeatutako ziurtagiriak</translation>
 <translation id="965162752251293939">Nor erabiltzen ari da Chromium?</translation>

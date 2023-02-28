@@ -47,6 +47,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1254117744268754948">Alegeți dosarul</translation>
 <translation id="1254424942107648268">Anteriorul</translation>
 <translation id="1258491128795710625">Noutăți</translation>
+<translation id="1264156759663453185">Textul selectat este prea mare pentru o traducere parțială.</translation>
 <translation id="1265739287306757398">Află cum</translation>
 <translation id="1272079795634619415">Oprește</translation>
 <translation id="1275718070701477396">Selectat</translation>
@@ -128,7 +129,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1832848789136765277">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la datele sincronizate</translation>
 <translation id="1870148520156231997">Afișează parola</translation>
 <translation id="1872096359983322073">Lanternă</translation>
-<translation id="1886370402958071554">Șterge adresa</translation>
 <translation id="1891796056033961979">Marcajele salvate, parolele, setările și multe altele sunt disponibile de pe acest ecran.</translation>
 <translation id="1894023287452300670">Urmărește prețul aici</translation>
 <translation id="1911619930368729126">Încarcă în Google Drive</translation>
@@ -704,6 +704,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6066301408025741299">Atinge pentru a anula.</translation>
 <translation id="6071409777669089905">Anulează fixarea filei</translation>
 <translation id="6084848228346514841">Selectează file</translation>
+<translation id="6100617279104942061">Te-ai conectat ca <ph name="USER_EMAIL" />. Deschide setările.</translation>
 <translation id="6103540626693881831">Criptare pe dispozitiv</translation>
 <translation id="6119050551270742952">Pagina web actuală este în modul Incognito</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1133,6 +1134,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9098541895599151034">Ștergi <ph name="NUMBER_OF_ACCOUNTS" /> parole?</translation>
 <translation id="9100610230175265781">Este necesară o expresie de acces</translation>
 <translation id="9107664647686727385">Verifică dacă există parole compromise</translation>
+<translation id="9120217828624527905">Comută la traducerea întregii pagini</translation>
 <translation id="9124387962554796433">Google poate folosi istoricul pentru a personaliza Căutarea și alte servicii Google.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Conectează-te din nou</translation>

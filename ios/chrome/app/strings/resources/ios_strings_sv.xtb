@@ -47,6 +47,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1254117744268754948">Välj mapp</translation>
 <translation id="1254424942107648268">Hitta föregående</translation>
 <translation id="1258491128795710625">Nyheter</translation>
+<translation id="1264156759663453185">Den valda texten är för lång för delvis översättning.</translation>
 <translation id="1265739287306757398">Läs mer</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1275718070701477396">Markerad</translation>
@@ -177,6 +178,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2268044343513325586">Finjustera</translation>
 <translation id="2273327106802955778">Mer-menyn</translation>
 <translation id="2286505070150039482">Markerad text</translation>
+<translation id="2287614783861766820">{count,plural, =1{Adressen raderas från enheten.}other{Dessa adresser raderas från enheten.}}</translation>
 <translation id="2299218006564889602">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering.</translation>
 <translation id="2302742851632557585">Ändra lösenordet på webbplatsen</translation>
 <translation id="2316709634732130529">Använd det föreslagna lösenordet</translation>
@@ -458,6 +460,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4324952538601951430">Nu finns dina sparade bokmärken, lösenord, inställningar och annat här</translation>
 <translation id="4334428914252001502">1 oläst artikel.</translation>
 <translation id="4338650699862464074">Skickar webbadresser till sidor du besöker till Google.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Adressen raderas från den här enheten och dina andra inloggade enheter.}other{Adresserna raderas från den här enheten och dina andra inloggade enheter.}}</translation>
 <translation id="4343046787186034850">Kamera- och mikrofonåtkomst har tillåtits</translation>
 <translation id="4359125752503270327">Sidan öppnas i en annan app.</translation>
 <translation id="4375040482473363939">Sök med QR-koder</translation>
@@ -587,6 +590,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5232485538978018676">Logga in med ett hanterat konto</translation>
 <translation id="5234764350956374838">Stäng</translation>
 <translation id="5245322853195994030">Avbryt synkronisering</translation>
+<translation id="5271265092610673171">{count,plural, =1{Ett obligatoriskt fält är tomt. Fyll i det innan du sparar.}other{Vissa obligatoriska fält är tomma. Fyll i dem innan du sparar.}}</translation>
 <translation id="5271549068863921519">Spara lösenord</translation>
 <translation id="5295239312320826323">Vill du ta bort kontot <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Visa</translation>
@@ -700,6 +704,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
 <translation id="6071409777669089905">Lossa flik</translation>
 <translation id="6084848228346514841">Välj flikar</translation>
+<translation id="6100617279104942061">Inloggad som <ph name="USER_EMAIL" />. Öppnar inställningarna.</translation>
 <translation id="6103540626693881831">Kryptering på enheten</translation>
 <translation id="6119050551270742952">Webbsidan är i inkognitoläge</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1129,6 +1134,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9098541895599151034">Vill du radera <ph name="NUMBER_OF_ACCOUNTS" /> lösenord?</translation>
 <translation id="9100610230175265781">Lösenfras krävs</translation>
 <translation id="9107664647686727385">Sök efter utsatta lösenord</translation>
+<translation id="9120217828624527905">Byt till översättning av hela sidan</translation>
 <translation id="9124387962554796433">Google kan anpassa Sök och andra Google-tjänster utifrån historiken.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Logga in igen</translation>

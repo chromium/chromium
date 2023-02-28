@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2361263712565360498">275 x 395 мм</translation>
 <translation id="236340516568226369">Меню с бутони за преоразмеряване</translation>
+<translation id="2365355378251437925">Въведете <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Ниво</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Персонализиране на инструментите за достъпност в настройките на Chrome</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">Информация за това дали устройството се използва активно</translation>
 <translation id="3180358318770512945">Отглеждане на деца</translation>
 <translation id="3187306450550410410">Гъвкави режими на работа</translation>
+<translation id="3187380004437786923">Управление на плащанията</translation>
 <translation id="3187472288455401631">Измерване на рекламите</translation>
 <translation id="3190736958609431397">Спиране на проследяването</translation>
 <translation id="319282854780294203">Социални мрежи</translation>
@@ -1271,6 +1273,7 @@
 <translation id="4154664944169082762">Пръстови отпечатъци</translation>
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
+<translation id="4169535189173047238">Забраняване</translation>
 <translation id="4171400957073367226">Невалиден подпис за потвърждаване</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Показване винаги</translation>
@@ -3333,6 +3336,7 @@
 <translation id="950736567201356821">Тройно перфориране в горната част</translation>
 <translation id="961663415146723894">Подвързване на долната част</translation>
 <translation id="962484866189421427">Въпросното съдържание може да се опита да инсталира измамни приложения, които се представят за нещо друго или събират данни, които може да се използват за проследяването ви. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Всички потребители</translation>
 <translation id="964050462028070434">Управление на паролите и кодовете за достъп…</translation>
 <translation id="96680173638229310">Автомобили и превозни средства</translation>
 <translation id="969892804517981540">Официално издание</translation>

@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">Адкрываць PDF-файлы ў Chromium</translation>
 <translation id="5614091477838198795">Калі гэты параметр уключаны, будзе выконвацца таксама выхад з вашага ўліковага запісу ў Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ёсць абнаўленне Chromium}=1{Ёсць абнаўленне Chromium}one{Абнаўленне Chromium выйшла # дзень таму}few{Абнаўленне Chromium выйшла # дні таму}many{Абнаўленне Chromium выйшла # дзён таму}other{Абнаўленне Chromium выйшла # дня таму}}</translation>
-<translation id="5634636535844844681">Для браўзера Chromium патрабуецца Windows 7 або навейшая версія.</translation>
 <translation id="5653831366781983928">Перазапусціце Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Паказваць інтэрфейс браўзера Chromium на гэтай мове</translation>
 <translation id="5862307444128926510">Вас вітае Chromium</translation>
 <translation id="5883558403894052917">Браўзер Chromium выявіў, што наступныя элементы змяшчаюць шкоднае ПЗ:</translation>
@@ -341,10 +341,12 @@
 <translation id="8266560134891435528">Chromium не можа праверыць вашы паролі, пакуль вы не ўвойдзеце ва ўліковы запіс</translation>
 <translation id="8276522524898344151">Chromium спрабуе скапіраваць паролі.</translation>
 <translation id="8290862415967981663">Файл можа быць небяспечным, таму Chromium заблакіраваў яго.</translation>
+<translation id="8325404639443959713">Больш магчымасцей для Chromium</translation>
 <translation id="8330519371938183845">Увайдзіце ў Chromium, каб сінхранізаваць і персаналізаваць яго на сваіх прыладах</translation>
 <translation id="8340674089072921962">Карыстальнік <ph name="USER_EMAIL_ADDRESS" /> раней выкарыстоўваў Chromium</translation>
 <translation id="8357820681460164151">Каб мець доступ да даных Chromium на ўсіх сваіх прыладах, увайдзіце ва ўліковы запіс, а затым уключыце сінхранізацыю.</translation>
 <translation id="8360718212975266891">Каб і далей атрымліваць абнаўленні Chromium, усталюйце Windows 10 ці пазнейшую версію. На гэтым камп'ютары выкарыстоўваецца Windows 8.</translation>
+<translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Усе правы абароненыя.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Перазапусціце Chromium на працягу дня}one{Перазапусціце Chromium на працягу # дня}few{Перазапусціце Chromium на працягу # дзён}many{Перазапусціце Chromium на працягу # дзён}other{Перазапусціце Chromium на працягу # дня}}</translation>
 <translation id="8453117565092476964">Архіў усталёўшчыка пашкоджаны або мае няправільны фармат. Спампуйце Chromium зноў.</translation>
 <translation id="8463672209299734063">Дапамагаць паляпшаць функцыі і прадукцыйнасць Chromium OS шляхам аўтаматычнай адпраўкі ў Google даных пра выкарыстанне і дыягностыку (неабавязкова).</translation>
@@ -380,6 +382,7 @@
 <translation id="9158494823179993217">Ваш сістэмны адміністратар наладзіў Chromium, каб адкрыць альтэрнатыўны браўзер для доступу да <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Перазапусціць, каб абнавіць &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Дастасуйце Chromium да сваіх мэт</translation>
 <translation id="93478295209880648">Браўзер Chromium больш не падтрымліваецца на Windows XP і Windows Vista, таму можа працаваць няправільна</translation>
 <translation id="942598560705308788">Сертыфікаты, якімі кіруе Chromium</translation>
 <translation id="965162752251293939">Хто выкарыстоўвае Chromium?</translation>

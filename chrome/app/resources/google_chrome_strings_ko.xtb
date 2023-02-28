@@ -130,6 +130,7 @@
 <translation id="3245429137663807393">Chrome 사용 보고서를 공유하면, 내가 방문한 URL이 이 보고서에 포함됩니다.</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
+<translation id="3293912612584488930">Chrome 한층 더 활용하기</translation>
 <translation id="3360895254066713204">Chrome 도우미</translation>
 <translation id="3379938682270551431">{0,plural, =0{지금 Chrome이 다시 시작됩니다}=1{1초 후 Chrome이 다시 시작됩니다}other{#초 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="3396977131400919238">설치 중 운영체제 오류가 발생했습니다. Chrome을 다시 다운로드하세요.</translation>
@@ -413,7 +414,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex 시스템</translation>
-<translation id="9067395829937117663">Chrome은 Windows 7 이상 버전에서 사용할 수 있습니다.</translation>
 <translation id="911206726377975832">인터넷 사용 기록도 삭제하시겠습니까?</translation>
 <translation id="9138603949443464873">변경사항을 적용하려면 Chrome을 다시 실행하세요.</translation>
 <translation id="9195993889682885387">Chrome은 지난 몇 주간의 방문 기록을 토대로 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>

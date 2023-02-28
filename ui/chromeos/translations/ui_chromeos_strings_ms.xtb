@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Ireland</translation>
 <translation id="4124935795427217608">Unikorn</translation>
 <translation id="4131235941541910880">Alihkan item yang tidak diperlukan ke sampah</translation>
+<translation id="4134804435730168042">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktifkan selepas persediaan peranti</translation>
 <translation id="4153015322587141338">Klik kanan fail dan pilih "<ph name="PIN_COMMAND" />" untuk mendapatkan akses pantas kepada fail dalam rak.</translation>
 <translation id="4157569377477607576">Dasar pentadbir tidak mengesyorkan:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> dialihkan.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" akan dipadam dan anda tidak akan dapat memulihkan fail itu.</translation>
 <translation id="4418686080762064601">Buat pintasan untuk fail anda</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
+<translation id="4432921877815220091">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Aktifkan selepas persediaan peranti, Diurus oleh Pentadbir anda</translation>
 <translation id="4439427728133035643">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Sambung</translation>
 <translation id="4442424173763614572">Carian DNS gagal</translation>
 <translation id="4462159676511157176">Nama pelayan tersuai</translation>
@@ -613,8 +615,10 @@
 <translation id="5911887972742538906">Ralat telah berlaku semasa pemasangan aplikasi Linux anda.</translation>
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Operasi salin gagal, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Ciri carian baharu tersedia</translation>
 <translation id="5926082595146149752">Belanda (Belanda) dengan papan kekunci PC Antarabangsa AS</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Aktifkan selepas persediaan peranti</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Pilihan isihan</translation>
@@ -761,6 +765,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;cari di Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Fonetik Kannada</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">'Padanan nama alternatif subjek' atau 'Padanan akhiran domain' tiada untuk mengesahkan identiti pelayan pengesahan</translation>
 <translation id="7165320105431587207">Gagal mengkonfigurasi rangkaian</translation>
 <translation id="7170041865419449892">Di luar lingkungan</translation>
 <translation id="7180611975245234373">Muat semula</translation>
@@ -936,6 +941,7 @@
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
 <translation id="8492972329130824181">Rangkaian rumah tidak tersedia. Perayauan data mudah alih mesti didayakan untuk menyambung kepada Internet.</translation>
 <translation id="8499098729323186194">Mengekstrak <ph name="NUMBER_OF_ITEMS" /> item...</translation>
+<translation id="8502913769543567768">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Aktifkan selepas persediaan peranti, Diurus oleh Pentadbir anda</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">Perancis (Perancis)</translation>
 <translation id="8540608333167683902">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Butiran</translation>

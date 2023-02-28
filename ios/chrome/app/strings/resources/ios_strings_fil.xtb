@@ -47,6 +47,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="1254117744268754948">Pumili ng Folder</translation>
 <translation id="1254424942107648268">Hanapin ang Nakaraan</translation>
 <translation id="1258491128795710625">Ano'ng Bago</translation>
+<translation id="1264156759663453185">Masyadong malaki ang napiling text para sa bahagyang pagsasalin.</translation>
 <translation id="1265739287306757398">Alamin kung paano</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275718070701477396">Pinili</translation>
@@ -177,6 +178,7 @@ Ang sinumang may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na d
 <translation id="2268044343513325586">Pinuhin</translation>
 <translation id="2273327106802955778">Higit pang menu</translation>
 <translation id="2286505070150039482">Naka-highlight na Text</translation>
+<translation id="2287614783861766820">{count,plural, =1{Made-delete ang address na ito sa device na ito.}one{Made-delete ang mga address na ito sa device na ito.}other{Made-delete ang mga address na ito sa device na ito.}}</translation>
 <translation id="2299218006564889602">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager.</translation>
 <translation id="2302742851632557585">Palitan ang Password sa Website</translation>
 <translation id="2316709634732130529">Gamitin ang Iminumungkahing Password</translation>
@@ -458,6 +460,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4324952538601951430">Narito na ngayon ang mga naka-save mong bookmark, password, setting, at higit pa</translation>
 <translation id="4334428914252001502">1 hindi pa nababasang artikulo.</translation>
 <translation id="4338650699862464074">Magpadala ng mga URL ng mga page na binibisita mo sa Google.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Made-delete ang address na ito mula rito at sa iyong iba pang naka-sign in na device.}one{Made-delete ang mga address na ito mula rito at sa iyong iba pang naka-sign in na device}other{Made-delete ang mga address na ito mula rito at sa iyong iba pang naka-sign in na device}}</translation>
 <translation id="4343046787186034850">Pinapayagan ang Access sa Camera at Mikropono</translation>
 <translation id="4359125752503270327">Magbubukas ang page na ito sa ibang application.</translation>
 <translation id="4375040482473363939">Paghahanap ng QR code</translation>
@@ -587,6 +590,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5232485538978018676">Mag-sign in sa Pinapamahalaang Account</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
 <translation id="5245322853195994030">Kanselahin ang Pag-sync</translation>
+<translation id="5271265092610673171">{count,plural, =1{Walang laman ang isang nire-require na field. Sagutan ito bago i-save.}one{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}other{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}}</translation>
 <translation id="5271549068863921519">I-save ang password</translation>
 <translation id="5295239312320826323">Alisin ang account na <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Ipakita</translation>
@@ -700,6 +704,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6066301408025741299">Pindutin upang kanselahin.</translation>
 <translation id="6071409777669089905">I-unpin ang Tab</translation>
 <translation id="6084848228346514841">Pumili ng Mga Tab</translation>
+<translation id="6100617279104942061">Naka-sign in bilang <ph name="USER_EMAIL" />. Binubuksan ang mga setting.</translation>
 <translation id="6103540626693881831">On-device na Pag-encrypt</translation>
 <translation id="6119050551270742952">Nasa Incognito ang Kasalukuyang Webpage</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1129,6 +1134,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9098541895599151034">Mag-delete ng <ph name="NUMBER_OF_ACCOUNTS" /> (na) Password?</translation>
 <translation id="9100610230175265781">Kinakailangan ang passphrase</translation>
 <translation id="9107664647686727385">Tingnan kung may mga nakompromisong password</translation>
+<translation id="9120217828624527905">Lumipat sa Pagsasalin ng Buong Page</translation>
 <translation id="9124387962554796433">Puwedeng gamitin ng Google ang iyong history para i-personalize ang Search at iba pang serbisyo ng Google.</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>

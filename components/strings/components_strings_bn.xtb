@@ -590,6 +590,7 @@
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2361263712565360498">২৭৫ x ৩৯৫ মিমি</translation>
 <translation id="236340516568226369">টগল মেনু উইন্ডোর সাইজ পরিবর্তন করুন</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> লিখুন</translation>
 <translation id="2367567093518048410">স্তর</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দমতো তৈরি করুন</translation>
@@ -877,6 +878,7 @@
 <translation id="317878711435188021">জানতে চায় আপনি সক্রিয়ভাবে কখন এই ডিভাইস ব্যবহার করেন</translation>
 <translation id="3180358318770512945">বাচ্চার লালনপালন করা</translation>
 <translation id="3187306450550410410">কাজের ফ্লেক্সিবল ব্যবস্থা</translation>
+<translation id="3187380004437786923">পেমেন্ট ম্যানেজ করুন</translation>
 <translation id="3187472288455401631">বিজ্ঞাপন পরিমাপ</translation>
 <translation id="3190736958609431397">ট্র্যাক করার বিকল্প বন্ধ করুন</translation>
 <translation id="319282854780294203">সোশ্যাল নেটওয়ার্ক</translation>
@@ -1272,6 +1274,7 @@
 <translation id="4154664944169082762">আঙ্গুলের ছাপ</translation>
 <translation id="4159784952369912983">বেগুনি</translation>
 <translation id="4165986682804962316">সাইটের সেটিংস</translation>
+<translation id="4169535189173047238">অনুমতি দেবেন না</translation>
 <translation id="4171400957073367226">খারাপ যাচাইকরণের স্বাক্ষর</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">সর্বদা দেখান</translation>
@@ -3333,6 +3336,7 @@
 <translation id="950736567201356821">উপরে তিনটি পাঞ্চ</translation>
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
 <translation id="962484866189421427">এই কন্টেন্টটি প্রতারণামূলক অ্যাপ ইনস্টল করে দিতে পারে যেগুলি অন্যান্য আপের থেকে আলাদা করা যায় না অথবা যেগুলি এমন ডেটা সংগ্রহ করে যা দিয়ে আপনার উপরে নজর রাখা যাবে। <ph name="BEGIN_LINK" />তবুও এটি দেখতে চাই<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">সকল ব্যবহারকারী</translation>
 <translation id="964050462028070434">পাসওয়ার্ড ও 'পাসকী' ম্যানেজ করুন…</translation>
 <translation id="96680173638229310">অটো ও যানবাহন</translation>
 <translation id="969892804517981540">অফিসিয়াল বিল্ড</translation>

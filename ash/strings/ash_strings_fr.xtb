@@ -548,6 +548,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, Chargement des événements.</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934456833412894880">La recharge adaptative est activée. Votre batterie restera à 80 % pour prolonger son autonomie, et se chargera complètement lorsque vous en aurez besoin.</translation>
+<translation id="3936620957945677513">Appuyez sur Entrée pour participer à l'événement <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Coller</translation>
 <translation id="394485226368336402">Paramètres audio</translation>
 <translation id="3945319193631853098">Appuyez pour terminer la configuration</translation>
@@ -1464,7 +1465,6 @@ Nouvelle installation</translation>
 <translation id="8850991929411075241">Recherche+Échap</translation>
 <translation id="8853703225951107899">Impossible de valider votre code ou votre mot de passe pour la deuxième fois. Remarque : si vous avez modifié votre mot de passe récemment, utilisez l'ancien. Votre nouveau mot de passe ne sera appliqué qu'une fois que vous serez déconnecté.</translation>
 <translation id="8855885154700222542">Touche de plein écran</translation>
-<translation id="8858369206579825206">Paramètres de confidentialité</translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8876661425082386199">Vérifier votre connexion</translation>

@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
+<translation id="3275506277319227640"><ph name="DIRECTION" /> mahkamlash</translation>
 <translation id="3275729367986477355">Avatar rasmi</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylni tahrirlash}other{Fayllarni tahrirlash}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3435896845095436175">Yoqish</translation>
+<translation id="345256797477978759">Oynani ekranning katta qismi <ph name="DIRECTION" /> mahkamlash</translation>
 <translation id="3456078764689556234">Sahifa chop etildi: <ph name="PRINTED_PAGES" /> / <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" /> ta sahifa skanerlandi. <ph name="PERCENTAGE_VALUE" />% tugallandi.</translation>
 <translation id="3459509316159669723">Chop etish</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
 <translation id="3600339377155080675">Ekran aksi</translation>
 <translation id="3602290021589620013">Razm solish</translation>
+<translation id="360282891121575443">Umumiy albomlardagi suratlar boshqa foydalanuvchilar tomonidan yangilanishi mumkin. Kundalik yangilash albomda boʻlmagan fon rasmlarini chiqarishi mumkin.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Fon rasmini almashtirish</translation>
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
 <translation id="3606583719724308068">HTTPS saytlarga ulanishda yuqori kechikish</translation>
 <translation id="361575905210396100">Fikr-mulohazangiz uchun rahmat</translation>
 <translation id="3632579075709132555">Maxfiylik ekrani tugmasi</translation>
+<translation id="3639846061339007994">tepasiga</translation>
 <translation id="3651050199673793219">Harorat birligini tanlang</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> sinovi</translation>
 <translation id="370665806235115550">Yuklanmoqda…</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Toʻliq</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tugmasi bosildi</translation>
 <translation id="435692326371619097">Tarmoq APN sozlamalarini boshqarish. APN sozlamalari mobil tarmoq va internet orasida aloqani taʼminlaydi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Kichik qismiga mahkamlash</translation>
 <translation id="4378373042927530923">Ishga tushmadi</translation>
 <translation id="4378551569595875038">Ulanmoqda...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659594942844771486">Varaq</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
+<translation id="6698459586333070823">Umumiy albomlar boshqa foydalanuvchilar tomonidan yangilanishi mumkin</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
 <translation id="6723839937902243910">Quvvat</translation>
 <translation id="6723847290197874913">Klaviatura orqa chirogʻi</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Kamera yoki galereyadan olingan surat</translation>
 <translation id="7162487448488904999">Galereya</translation>
 <translation id="7170236477717446850">Profil rasmi</translation>
+<translation id="7171919371520438592">Oynani ekranning kichik qismi <ph name="DIRECTION" /> mahkamlash</translation>
 <translation id="7172721935181587524">1 ta rasm</translation>
 <translation id="7177485034254901881">Bu <ph name="DEVICE_TYPE" /> qurilmasi <ph name="MANAGER" /> domenida boshqariladi. Administratorlar qurilmani masofadan sozlashi mumkin.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Biriktirish</translation>
 <translation id="8206859287963243715">Uyali</translation>
 <translation id="8208861521865154048">Imtiyozlar</translation>
+<translation id="8210733748736414123">pastiga</translation>
 <translation id="8226628635270268143">Sevimli suratlar va albomlaringizni tanlang</translation>
 <translation id="8227119283605456246">Fayl biriktirish</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Bir nechta hisobga kirish tizimiga hisob qo‘shish. Kirish bajarilgan hisoblarni ko‘rish uchun parol so‘ralmaydi, shuning uchun bu funksiyadan faqat ishonchli hisoblarda foydalanish kerak.</translation>
 <translation id="8364946094152050673">Nom serverlari kiritilmagan</translation>
 <translation id="8372477600026034341">Qoʻshimcha hostlar</translation>
+<translation id="8380114448424469341">Oynani yarim ekran <ph name="DIRECTION" /> mahkamlash</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> korporativ domen boshqaruvida</translation>
 <translation id="8398927464629426868">Qurilmaning quvvat olish yoki sarflash darajasi</translation>
 <translation id="8410244574650205435">Avtomatik aniqlandi</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9138630967333032450">Chap shift</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
+<translation id="9157515863513902090">Katta qismiga mahkamlash</translation>
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Klaviatura ranglari fon rasmiga avtomatik moslanishi mumkin</translation>

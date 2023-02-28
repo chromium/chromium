@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">ஐரிஷ்</translation>
 <translation id="4124935795427217608">கொம்புக் குதிரை</translation>
 <translation id="4131235941541910880">தேவைப்படாதவற்றை நீக்கவும்</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" />ல் <ph name="NETWORK_INDEX" />வது நெட்வொர்க், <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, சாதன அமைவிற்குப் பிறகு செயல்படுத்தவும்</translation>
 <translation id="4153015322587141338">ஃபைலை வலது கிளிக் செய்து "<ph name="PIN_COMMAND" />" என்பதைத் தேர்ந்தெடுக்கவும், இதன் மூலம் ஷெல்ஃபிலுள்ள ஃபைல்களுக்கான விரைவு அணுகலைப் பெறலாம்.</translation>
 <translation id="4157569377477607576">இவற்றை நிர்வாகக் கொள்கை பரிந்துரைக்கவில்லை:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> நகர்த்தப்பட்டது.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" நீக்கப்படும். உங்களால் அதை மீட்டெடுக்க முடியாது.</translation>
 <translation id="4418686080762064601">உங்கள் ஃபைல்களுக்கான ஷார்ட்கட்டை உருவாக்குதல்</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" />ல் <ph name="NETWORK_INDEX" />வது நெட்வொர்க், <ph name="NETWORK_NAME" />, சாதன அமைவிற்குப் பிறகு செயல்படுத்தவும், உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="4439427728133035643">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, இணை</translation>
 <translation id="4442424173763614572">DNS தேடுதல் தோல்வி</translation>
 <translation id="4462159676511157176">பிரத்தியேகப் பெயர் சேவையகங்கள்</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">நகலெடுக்க முடியவில்லை, எதிர்பாராத பிழை: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">டச்சு (நெதர்லாந்து) - யூஎஸ் சர்வதேச PC கீபோர்டு</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" />ல் <ph name="NETWORK_INDEX" />வது நெட்வொர்க், <ph name="NETWORK_NAME" />, சாதன அமைவிற்குப் பிறகு செயல்படுத்தவும்</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் </translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">வரிசைப்படுத்தல் விருப்பங்கள்</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;இயக்ககத்தில் தேடு&lt;/em&gt;</translation>
 <translation id="7135561821015524160">கன்னட ஒலிப்புமுறை</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">அங்கீகாரச் சேவையகத்தின் அடையாளத்தைச் சரிபார்க்கத் தேவையான 'சான்றிதழின் மாற்றுப் பெயர் பொருத்தம்' அல்லது 'டொமைனின் பிற்பாதிக்கான பொருத்தம்' இல்லை</translation>
 <translation id="7165320105431587207">நெட்வொர்க் உள்ளமைவு தோல்வியடைந்தது</translation>
 <translation id="7170041865419449892">வரம்பிற்கு வெளியே உள்ளது</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">ஆஃப்லைனில் இருக்கிறது</translation>
 <translation id="8492972329130824181">வீட்டு நெட்வொர்க் கிடைக்கவில்லை. இணைக்க மொபைல் டேட்டா ரோமிங்கை இயக்க வேண்டும்.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்களைப் பிரித்தெடுக்கிறது...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" />ல் <ph name="NETWORK_INDEX" />வது நெட்வொர்க், <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, சாதன அமைவிற்குப் பிறகு செயல்படுத்தவும், உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="8521441079177373948">யு.கே.</translation>
 <translation id="853494022971700746">ஃபிரெஞ்சு (ஃபிரான்ஸ்)</translation>
 <translation id="8540608333167683902">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>

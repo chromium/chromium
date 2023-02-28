@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">選擇資料夾</translation>
 <translation id="1254424942107648268">尋找上一個相符的項目</translation>
 <translation id="1258491128795710625">新功能</translation>
+<translation id="1264156759663453185">所選文字內容太長，因此無法翻譯。</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已選取</translation>
@@ -128,7 +129,6 @@
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
-<translation id="1886370402958071554">刪除地址</translation>
 <translation id="1891796056033961979">你可以在這個畫面查看已儲存的書籤、密碼、設定和其他內容。</translation>
 <translation id="1894023287452300670">追蹤這個地區的價格</translation>
 <translation id="1911619930368729126">上傳至 Google 雲端硬碟</translation>
@@ -704,6 +704,7 @@
 <translation id="6066301408025741299">輕觸即可取消。</translation>
 <translation id="6071409777669089905">取消固定分頁</translation>
 <translation id="6084848228346514841">選取分頁</translation>
+<translation id="6100617279104942061">目前登入的帳戶是 <ph name="USER_EMAIL" />。開啟設定。</translation>
 <translation id="6103540626693881831">裝置端加密</translation>
 <translation id="6119050551270742952">目前的網頁處於無痕模式</translation>
 <translation id="6122191549521593678">線上</translation>
@@ -1133,6 +1134,7 @@
 <translation id="9098541895599151034">要刪除 <ph name="NUMBER_OF_ACCOUNTS" /> 個密碼嗎？</translation>
 <translation id="9100610230175265781">請提供通關密語</translation>
 <translation id="9107664647686727385">檢查是否有遭外洩的密碼</translation>
+<translation id="9120217828624527905">切換成整頁翻譯</translation>
 <translation id="9124387962554796433">Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9148126808321036104">重新登入</translation>

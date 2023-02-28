@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">Выбор папки</translation>
 <translation id="1254424942107648268">Найти предыдущую</translation>
 <translation id="1258491128795710625">Что нового</translation>
+<translation id="1264156759663453185">Выбран слишком длинный отрывок текста.</translation>
 <translation id="1265739287306757398">Подробнее</translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1275718070701477396">Выбрано</translation>
@@ -128,7 +129,6 @@
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
 <translation id="1870148520156231997">Показать пароль</translation>
 <translation id="1872096359983322073">Вспышка</translation>
-<translation id="1886370402958071554">Удалить адрес</translation>
 <translation id="1891796056033961979">Здесь теперь хранятся ваши закладки, пароли, настройки и многое другое.</translation>
 <translation id="1894023287452300670">Отслеживайте цены здесь</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
@@ -704,6 +704,7 @@
 <translation id="6066301408025741299">Нажмите, чтобы отменить загрузку</translation>
 <translation id="6071409777669089905">Открепить вкладку</translation>
 <translation id="6084848228346514841">Выбрать вкладки</translation>
+<translation id="6100617279104942061">Вы вошли как <ph name="USER_EMAIL" />. Открывает настройки.</translation>
 <translation id="6103540626693881831">Шифрование на устройстве</translation>
 <translation id="6119050551270742952">Открыто в режиме инкогнито</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -872,7 +873,7 @@
 <translation id="7099761977003084116">Недавние вкладки</translation>
 <translation id="7102005569666697658">Скачивание… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Скрыть</translation>
-<translation id="7108762695052995889">Перейти на сайт</translation>
+<translation id="7108762695052995889">Открыть сайт</translation>
 <translation id="7133798577887235672">Полное имя</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
 <translation id="7162168282402939716">Разблокировать вкладки инкогнито с помощью: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
@@ -1133,6 +1134,7 @@
 <translation id="9098541895599151034">Удалить выбранные пароли (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Необходима кодовая фраза</translation>
 <translation id="9107664647686727385">Определяет раскрытые пароли</translation>
+<translation id="9120217828624527905">Перейти к переводу всей страницы</translation>
 <translation id="9124387962554796433">Google может использовать вашу историю для персонализации Поиска и других сервисов.</translation>
 <translation id="9137526406337347448">Сервисы Google</translation>
 <translation id="9148126808321036104">Повторите вход</translation>

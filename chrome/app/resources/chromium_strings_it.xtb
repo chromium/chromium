@@ -196,8 +196,8 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5527463683072221100">Apri PDF in Chromium</translation>
 <translation id="5614091477838198795">Se attivi l'opzione, uscirai anche da Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{È disponibile un aggiornamento di Chromium}=1{È disponibile un aggiornamento di Chromium}other{È disponibile un aggiornamento di Chromium da # giorni}}</translation>
-<translation id="5634636535844844681">Chromium richiede Windows 7 o versioni successive.</translation>
 <translation id="5653831366781983928">Riavvia subito Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visualizza Chromium in questa lingua</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5883558403894052917">Chromium ha rilevato che i seguenti elementi contengono malware:</translation>
@@ -344,8 +344,10 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8340674089072921962">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> utilizzava in precedenza Chromium</translation>
 <translation id="8357820681460164151">Per accedere ai tuoi contenuti del browser Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione</translation>
 <translation id="8360718212975266891">Per ricevere gli aggiornamenti futuri di Chromium, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Riavvia Chromium entro un giorno}other{Riavvia Chromium entro # giorni}}</translation>
 <translation id="8453117565092476964">L'archivio di installazione è danneggiato o non valido. Scarica di nuovo Chromium.</translation>
+<translation id="8458614432758743027">Chromium richiede Windows 10 o versioni successive.</translation>
 <translation id="8463672209299734063">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di Chromium OS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
 <translation id="8493179195440786826">Chromium non è aggiornato</translation>
 <translation id="8550334526674375523">Questo profilo di lavoro è completamente separato dal tuo profilo personale.</translation>

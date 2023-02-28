@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">আইরিশ</translation>
 <translation id="4124935795427217608">ইউনিকর্ন</translation>
 <translation id="4131235941541910880">অপ্রয়োজনীয় আইটেম ট্র্যাশে সরান</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন</translation>
 <translation id="4153015322587141338">কোনও ফাইলে রাইট-ক্লিক করুন এবং শেল্ফে আপনার ফাইল দ্রুত অ্যাক্সেস করার জন্য "<ph name="PIN_COMMAND" />" বিকল্পটি বেছে নিন।</translation>
 <translation id="4157569377477607576">অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী এটি করা যাবে না:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> সরানো হয়েছে।</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" মুছে ফেলা হবে এবং আপনি আর এটি ফিরিয়ে আনতে পারবেন না।</translation>
 <translation id="4418686080762064601">আপনার ফাইলের একটি শর্টকাট তৈরি করুন</translation>
 <translation id="4425149324548788773">আমার ড্রাইভ</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, কানেক্ট করুন</translation>
 <translation id="4442424173763614572">ডিএনএস খোঁজ ব্যর্থ হয়েছে</translation>
 <translation id="4462159676511157176">কাস্টম নাম সার্ভার</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">কপি করা যায়নি, অপ্রত্যাশিত সমস্যা হয়েছে: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">ডাচ (নেদারল্যান্ডস) ভাষায় ইউএস ইন্টারন্যাশনাল পিসি কীবোর্ড</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টি আইটেম</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">বাছাই বিকল্পগুলি</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ড্রাইভে খুঁজুন&lt;/em&gt;</translation>
 <translation id="7135561821015524160">কন্নড় ফোনেটিক</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">যাচাইকরণ সার্ভারের পরিচয় যাচাই করতে 'সাবজেক্টের বিকল্প নামের সাথে মিল আছে' বা 'ডোমেন সাফিক্সের সাথে মিল আছে' এমন বিষয় নেই</translation>
 <translation id="7165320105431587207">নেটওয়ার্ক কনফিগার করা যায়নি</translation>
 <translation id="7170041865419449892">নির্দিষ্ট তারিখের বাইরে</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
 <translation id="8492972329130824181">হোম নেটওয়ার্ক উপলভ্য নেই। কানেক্ট করতে, মোবাইলে ডেটা রোমিং অবশ্যই চালু থাকতে হবে।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />টি আইটেম এক্সট্র্যাক্ট করা হচ্ছে...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ডিভাইস সেট-আপ করার পর চালু করুন, আপনার অ্যাডমিনিস্ট্রেটর দ্বারা ম্যানেজ করা হয়</translation>
 <translation id="8521441079177373948">যুক্তরাজ্য</translation>
 <translation id="853494022971700746">ফরাসি (ফ্রান্স)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>

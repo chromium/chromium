@@ -198,8 +198,8 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5527463683072221100">Open PDFs in Chromium</translation>
 <translation id="5614091477838198795">When on, you'll also be signed out of Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{A Chromium update is available}=1{A Chromium update is available}other{A Chromium update has been available for # days}}</translation>
-<translation id="5634636535844844681">Chromium requires Windows 7 or higher.</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
@@ -346,6 +346,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> was previously using Chromium</translation>
 <translation id="8357820681460164151">To access your Chromium browser across all your devices, sign in, then turn on sync</translation>
 <translation id="8360718212975266891">To get future Chromium updates, you'll need Windows 10 or later. This computer is using Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Relaunch Chromium within a day}other{Relaunch Chromium within # days}}</translation>
 <translation id="8453117565092476964">The installer archive is corrupted or invalid. Please download Chromium again.</translation>
 <translation id="8463672209299734063">Optional: Help improve Chromium OS features and performance by automatically sending diagnostic and usage data to Google.</translation>

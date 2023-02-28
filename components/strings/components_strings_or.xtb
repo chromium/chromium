@@ -303,7 +303,7 @@
 <translation id="1641976391427233992">ଏତିକି ସମୟ ପର୍ଯ୍ୟନ୍ତ ଆଉଟପୁଟକୁ ବିଳମ୍ବ କରନ୍ତୁ</translation>
 <translation id="164212631332220697">ଚେକଆଉଟ୍ କରିବା ସମୟରେ <ph name="CARD_DETAIL" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="1642410292376109062">"Google ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ" ବଟନ୍, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
-<translation id="1644574205037202324">ଇତିବୃତ୍ତି</translation>
+<translation id="1644574205037202324">ଇତିହାସ</translation>
 <translation id="1645368109819982629">ଅସମର୍ଥିତ ପ୍ରୋଟୋକଲ୍</translation>
 <translation id="1650602712345345441">ଆପଣଙ୍କ Chrome ସେଟିଂସ୍ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2361263712565360498">275 x 395 ମିମି</translation>
 <translation id="236340516568226369">ଟୋଗଲ୍ ମେନୁକୁ ରିସାଇଜ୍ କରନ୍ତୁ</translation>
+<translation id="2365355378251437925"><ph name="FIELD" />ରେ ଲେଖନ୍ତୁ</translation>
 <translation id="2367567093518048410">ସ୍ତର</translation>
 <translation id="2380886658946992094">ଆଇନ</translation>
 <translation id="2383455408879745299">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ଆକ୍ସେସିବିଲିଟୀ ଟୁଲଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ୍ କରନ୍ତୁ</translation>
@@ -874,6 +875,7 @@
 <translation id="317878711435188021">ଆପଣ କେତେବେଳେ ଏହି ଡିଭାଇସକୁ ସକ୍ରିୟ ଭାବରେ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3180358318770512945">ପ୍ୟାରେଣ୍ଟିଂ</translation>
 <translation id="3187306450550410410">ସୁବିଧାଜନକ କାର୍ଯ୍ୟ ବ୍ୟବସ୍ଥାଗୁଡ଼ିକ</translation>
+<translation id="3187380004437786923">ପେମେଣ୍ଟଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3187472288455401631">ବିଜ୍ଞାପନ ପରିମାପ</translation>
 <translation id="3190736958609431397">ଅନଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="319282854780294203">ସୋସିଆଲ ନେଟୱାର୍କଗୁଡ଼ିକ</translation>
@@ -1268,6 +1270,7 @@
 <translation id="4154664944169082762">ଟିପଚିହ୍ନ</translation>
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
 <translation id="4165986682804962316">ସାଇଟ୍‍ ସେଟିଂସ୍‌</translation>
+<translation id="4169535189173047238">ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="4171400957073367226">ଖରାପ ଯାଞ୍ଚକରଣ ଦସ୍ତଖତ</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">ସର୍ବଦା ଦେଖାନ୍ତୁ</translation>
@@ -3330,6 +3333,7 @@
 <translation id="950736567201356821">ଉପର ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
 <translation id="961663415146723894">ତଳ ପଟରେ ବାଇଣ୍ଡ</translation>
 <translation id="962484866189421427">ଏହି ବିଷୟବସ୍ତୁ ପ୍ରତାରଣାତ୍ମକ ଆପ୍ସ ଇନ୍‍ଷ୍ଟଲ୍‍ କରିପାରେ ଯାହା ଅନ୍ୟ କିଛି ହେବାର ଛଳନା କରନ୍ତି କିମ୍ବା ଏପରି ଡାଟା ସଂଗ୍ରହ କରିପାରନ୍ତି ଯାହା ଆପଣଙ୍କୁ ଟ୍ରାକ୍‍ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">ସମସ୍ତ ୟୁଜର</translation>
 <translation id="964050462028070434">ପାସୱାର୍ଡ ଏବଂ ପାସକୀ'ଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ…</translation>
 <translation id="96680173638229310">ଅଟୋ ଏବଂ ଯାନବାହନ</translation>
 <translation id="969892804517981540">ଅଫିସିଆଲ୍ ବିଲ୍ଡ</translation>

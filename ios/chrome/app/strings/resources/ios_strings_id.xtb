@@ -47,6 +47,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="1254117744268754948">Pilih Folder</translation>
 <translation id="1254424942107648268">Temukan Sebelumnya</translation>
 <translation id="1258491128795710625">Yang Baru</translation>
+<translation id="1264156759663453185">Teks yang dipilih terlalu besar untuk terjemahan sebagian.</translation>
 <translation id="1265739287306757398">Pelajari Caranya</translation>
 <translation id="1272079795634619415">Berhenti</translation>
 <translation id="1275718070701477396">Dipilih</translation>
@@ -177,6 +178,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2268044343513325586">Saring</translation>
 <translation id="2273327106802955778">Menu lainnya</translation>
 <translation id="2286505070150039482">Teks yang Ditandai</translation>
+<translation id="2287614783861766820">{count,plural, =1{Alamat ini akan dihapus dari perangkat ini.}other{Alamat ini akan dihapus dari perangkat ini.}}</translation>
 <translation id="2299218006564889602">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google.</translation>
 <translation id="2302742851632557585">Ubah Sandi di Situs</translation>
 <translation id="2316709634732130529">Gunakan Sandi yang Disarankan</translation>
@@ -458,6 +460,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4324952538601951430">Bookmark, sandi, setelan, dan lainnya yang Anda simpan kini ada di sini</translation>
 <translation id="4334428914252001502">1 artikel belum dibaca.</translation>
 <translation id="4338650699862464074">Mengirimkan URL halaman yang Anda buka ke Google.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Alamat ini akan dihapus dari perangkat ini dan perangkat lain yang Anda gunakan untuk login.}other{Alamat ini akan dihapus dari perangkat ini dan perangkat lain yang Anda gunakan untuk login.}}</translation>
 <translation id="4343046787186034850">Akses Kamera dan Mikrofon Diizinkan</translation>
 <translation id="4359125752503270327">Halaman ini akan dibuka di aplikasi lain.</translation>
 <translation id="4375040482473363939">Telusuri kode QR</translation>
@@ -587,6 +590,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5232485538978018676">Login dengan Akun Terkelola</translation>
 <translation id="5234764350956374838">Tutup</translation>
 <translation id="5245322853195994030">Batalkan Sinkronisasi</translation>
+<translation id="5271265092610673171">{count,plural, =1{Kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}other{Beberapa kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}}</translation>
 <translation id="5271549068863921519">Simpan sandi</translation>
 <translation id="5295239312320826323">Hapus akun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
@@ -700,6 +704,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6066301408025741299">Ketuk untuk membatalkan.</translation>
 <translation id="6071409777669089905">Lepaskan Tab</translation>
 <translation id="6084848228346514841">Pilih Tab</translation>
+<translation id="6100617279104942061">Login sebagai <ph name="USER_EMAIL" />. Membuka setelan.</translation>
 <translation id="6103540626693881831">Enkripsi di Perangkat</translation>
 <translation id="6119050551270742952">Halaman Web saat ini sedang dalam Mode Samaran</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -1129,6 +1134,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9098541895599151034">Hapus <ph name="NUMBER_OF_ACCOUNTS" /> Sandi?</translation>
 <translation id="9100610230175265781">Frasa sandi diwajibkan</translation>
 <translation id="9107664647686727385">Periksa sandi yang telah dibobol</translation>
+<translation id="9120217828624527905">Beralih ke Terjemahan Halaman Penuh</translation>
 <translation id="9124387962554796433">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya.</translation>
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>

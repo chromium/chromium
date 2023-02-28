@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">PDF файлдарын Chromium'да ачуу</translation>
 <translation id="5614091477838198795">Күйгүзүлсө, Chromium'дан да чыгарыласыз</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium'дун жаңы версиясы жеткиликтүү}=1{Chromium'дун жаңы версиясы жеткиликтүү}other{Chromium'дун жаңы версиясы # күндөн бери жеткиликтүү}}</translation>
-<translation id="5634636535844844681">Chromium'га Windows 7 же жаңыраак версиясы талап кылынат.</translation>
 <translation id="5653831366781983928">Chromium'ду азыр өчүрүп күйгүзүңүз</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium ушул тилде көрүнсүн</translation>
 <translation id="5862307444128926510">Chromium'га кош келиңиз</translation>
 <translation id="5883558403894052917">Chromium төмөнкүлөрдө кесепеттүү программанын болгонун аныктады:</translation>
@@ -342,10 +342,12 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8266560134891435528">Chromium сырсөздөрүңүздү текшере албайт, анткени аккаунтуңузга кирген жоксуз</translation>
 <translation id="8276522524898344151">Chromium сырсөздөрдү көчүрүүгө аракет кылып жатат.</translation>
 <translation id="8290862415967981663">Бул файл кооптуу болушу мүмкүн, ошондуктан Chromium аны бөгөттөп койду.</translation>
+<translation id="8325404639443959713">Chromium менен көбүрөөк иш аткарыңыз</translation>
 <translation id="8330519371938183845">Chromium'ду бардык түзмөктөрүңүздө шайкештирип, жекелештирүү үчүн аккаунтуңузга кириңиз</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> мурда Chromium'ду пайдаланчу</translation>
 <translation id="8357820681460164151">Chromium серепчисиндеги файлдарды бардык түзмөктөрүңүздө колдонуу үчүн аккаунтуңузга кирип, шайкештирүүнү күйгүзүңүз</translation>
 <translation id="8360718212975266891">Chromium жаңыртууларын алып туруу үчүн Windows 10 же андан кийинки версиясын орнотушуңуз керек. Бул компьютерде Windows 8 версиясы колдонулууда.</translation>
+<translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Баардык укуктар корголгон.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium 1 күндүн ичинде кайра иштетилет}other{Chromium # күндүн ичинде кайра иштетилет}}</translation>
 <translation id="8453117565092476964">Орноткуч архиви бузулган же жараксыз. Chromium'ду кайра жүктөп алыңыз.</translation>
 <translation id="8463672209299734063">Кошумча: Google'га мүчүлүштүктөрдү аныктоо жана колдонуу статистикасы жөнүндө автоматтык түрдө кабарлоо менен ChromiumOS'тун функцияларын жана өндүрүмдүүлүгүн өркүндөтүүгө жардам бериңиз.</translation>
@@ -381,6 +383,7 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="9158494823179993217">Тутумуңуздун администратору Chromium'ду <ph name="TARGET_URL_HOSTNAME" /> шилтемесин кошумча серепчиде ачылгыдай кылып конфигурациялады.</translation>
 <translation id="9185526690718004400">&amp;Chromium'ду жаңыртуу үчүн кайра иштетиңиз</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Chromium'ду каалагандай ыңгайлаштырып алыңыз</translation>
 <translation id="93478295209880648">Chromium туура эмес иштеши мүмкүн, себеби ал Windows XP же Windows Vista'да мындан ары колдоого алынбайт.</translation>
 <translation id="942598560705308788">Chromium башкарган тастыктамалар</translation>
 <translation id="965162752251293939">Chromium'ду ким колдонуп жатат?</translation>

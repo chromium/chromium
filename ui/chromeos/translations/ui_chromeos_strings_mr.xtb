@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">आयरिश</translation>
 <translation id="4124935795427217608">युनिकॉर्न</translation>
 <translation id="4131235941541910880">तुम्हाला नको असलेले आयटम हे ट्रॅश मध्ये हलवा</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिव्हाइस सेटअप केल्यानंतर ॲक्टिव्हेट होते</translation>
 <translation id="4153015322587141338">फाइलवर राइट-क्लिक करा आणि शेल्फमधील तुमच्या फाइल झटपट अ‍ॅक्सेस करण्यासाठी "<ph name="PIN_COMMAND" />" निवडा.</translation>
 <translation id="4157569377477607576">अ‍ॅडमिनिस्ट्रेटर धोरणाची शिफारस केली जात नाही:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" हटवली जाईल आणि तुम्ही ती रिस्टोअर करू शकणार नाही.</translation>
 <translation id="4418686080762064601">तुमच्या फाइलसाठी शॉर्टकट तयार करणे</translation>
 <translation id="4425149324548788773">माझा ड्राइव्ह</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, डिव्हाइस सेटअप केल्यानंतर ॲक्टिव्हेट होते, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
 <translation id="4442424173763614572">DNS लुकअप अयश्सवी</translation>
 <translation id="4462159676511157176">कस्टम नाव सर्व्हर</translation>
@@ -615,6 +617,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5913638992615760742">कॉपी ऑपरेशन करता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">यूएस आंतरराष्ट्रीय पीसी कीबोर्डसह डच (नेदरलँड)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, डिव्हाइस सेटअप केल्यानंतर ॲक्टिव्हेट होते</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> आयटम</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">क्रमवारी पर्याय</translation>
@@ -761,6 +764,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ड्राइव्ह शोधा&lt;/em&gt;</translation>
 <translation id="7135561821015524160">कन्नड फोनेटिक</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">ऑथेंटिकेशन सर्व्हर ओळख प्रमाणित करण्यासाठी 'विषयाच्या पर्यायी नावाची जुळणी' किंवा 'डोमेन सफिक्स जुळणी' उपलब्ध नाही</translation>
 <translation id="7165320105431587207">नेटवर्क कॉंफिगर करण्यात अयशस्वी</translation>
 <translation id="7170041865419449892">रेंजच्या बाहेर</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
@@ -936,6 +940,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8487700953926739672">ऑफलाइन उपलब्ध</translation>
 <translation id="8492972329130824181">होम नेटवर्क उपलब्ध नाही. कनेक्ट करण्यासाठी मोबाइल डेटा रोमिंग सुरू करणे आवश्यक आहे.</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> आयटम काढत आहे...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिव्हाइस सेटअप केल्यानंतर ॲक्टिव्हेट होते, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="8521441079177373948">यूके</translation>
 <translation id="853494022971700746">फ्रेंच (फ्रान्स)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>

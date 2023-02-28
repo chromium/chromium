@@ -876,6 +876,7 @@
 <translation id="317878711435188021">知道你使用這部裝置的時間</translation>
 <translation id="3180358318770512945">子女教養</translation>
 <translation id="3187306450550410410">彈性工作安排</translation>
+<translation id="3187380004437786923">管理付款</translation>
 <translation id="3187472288455401631">廣告評估功能</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="319282854780294203">社群網路</translation>
@@ -1271,6 +1272,7 @@
 <translation id="4154664944169082762">指紋</translation>
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4165986682804962316">網站設定</translation>
+<translation id="4169535189173047238">不允許</translation>
 <translation id="4171400957073367226">驗證簽名無效</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">一律顯示</translation>
@@ -3333,6 +3335,7 @@
 <translation id="950736567201356821">三孔 (頂端)</translation>
 <translation id="961663415146723894">裝訂 (底部)</translation>
 <translation id="962484866189421427">這項內容可能會試圖讓你安裝身分不實的欺騙性應用程式，或是收集可用於追蹤你的資料。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">所有使用者</translation>
 <translation id="964050462028070434">管理密碼和密碼金鑰…</translation>
 <translation id="96680173638229310">汽車與車輛</translation>
 <translation id="969892804517981540">正式版本</translation>

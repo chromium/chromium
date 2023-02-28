@@ -355,6 +355,7 @@
 <translation id="2951071800649516099">後で読めるようにページをリーディング リストに追加します</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 件の未読ページ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 件の未読ページ}}</translation>
 <translation id="2961210776189273067">敬称</translation>
+<translation id="296370266220139811">時間と入力の手間を省く</translation>
 <translation id="2979025552038692506">選択したシークレット タブ</translation>
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
 <translation id="2981364137500752533">同時に開くことができるウィンドウは最大 5 つです。</translation>
@@ -482,6 +483,7 @@
 <translation id="3578874072190212775">サイトが不正行為に対処し bot と人間を区別するのに役立ちます</translation>
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3587596251841506391">ウェブ上のセキュリティ強化に協力する</translation>
+<translation id="3597179440835065298">最適な検索候補を表示</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3622349720008044802">ウィンドウの管理</translation>
@@ -747,6 +749,7 @@
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> が接続を要求しています</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">過去 15 分間</translation>
 <translation id="5032430150487044192">QR コードを作成できません</translation>
 <translation id="5039804452771397117">許可する</translation>
 <translation id="5040262127954254034">プライバシー</translation>
@@ -882,6 +885,7 @@
 <translation id="5813552293717797987">このブラウザは、<ph name="PARENT_NAME_1" /> と <ph name="PARENT_NAME_2" /> によって管理されています。</translation>
 <translation id="5814131985548525293">始めるにはここに入力するかマイクのアイコンをタップします</translation>
 <translation id="5814749351757353073">お気に入りのサイトの最新情報をチェックしよう</translation>
+<translation id="5822875253699806474">過去にアクセスしたサイトにすばやく戻るには、タブと履歴を同期します</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833984609253377421">リンクを共有</translation>
 <translation id="5834764604050996579">QR コードをスキャンするには、Chrome にカメラの使用を許可してください</translation>
@@ -1136,6 +1140,7 @@
 <translation id="7088681679121566888">Chrome は最新の状態です</translation>
 <translation id="7105047059074518658">複数のデバイスでスムーズにブラウジングするにはログインしてください</translation>
 <translation id="7106762743910369165">お使いのブラウザは組織によって管理されています</translation>
+<translation id="7116588989735740310">他のデバイスでアクセスしたサイトに戻るには、タブと履歴を同期します</translation>
 <translation id="7130504491556983216">ウェブを閲覧すると、こちらに興味 / 関心のリストが表示されます。</translation>
 <translation id="7138678301420049075">その他</translation>
 <translation id="7146622961999026732">以下のサイトやアプリは重要な可能性があります。</translation>
@@ -1214,6 +1219,7 @@
 <translation id="751961395872307827">サイトに接続できません</translation>
 <translation id="752220631458524187">完了したら取り外してください</translation>
 <translation id="7523960634226602883">Google レンズを使ってカメラで検索します</translation>
+<translation id="7539698981064401140">タブと履歴を同期</translation>
 <translation id="7562080006725997899">閲覧データの消去</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>
 <translation id="7577900504646297215">興味のあるトピックを管理</translation>
@@ -1225,6 +1231,7 @@
 <translation id="7596558890252710462">オペレーティング システム</translation>
 <translation id="7605594153474022051">同期が機能していません</translation>
 <translation id="7612619742409846846">Google にログイン済みのユーザー</translation>
+<translation id="7612989789287281429">ログインしています…</translation>
 <translation id="7616551326690708776">ハイライト表示のテンプレートを選択します。</translation>
 <translation id="7619072057915878432">ネットワーク障害が発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="7626032353295482388">Chrome へようこそ</translation>
@@ -1395,6 +1402,7 @@
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> がインターネットに接続していることを確認してください</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
+<translation id="847433688444405067">複数のデバイスでブラウジング</translation>
 <translation id="8481980314595922412">試用版機能はオンになっています</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">履歴ページを開く</translation>
@@ -1448,6 +1456,7 @@
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8746155870861185046">選択箇所を共有</translation>
+<translation id="874726034427945498">アドレスバーに最適な検索候補が表示されるようにするには、タブと履歴を同期します</translation>
 <translation id="8748850008226585750">メッセージは非表示です</translation>
 <translation id="8756969031206844760">パスワードを更新しますか？</translation>
 <translation id="8765470054473112089">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容がデフォルトの検索エンジンに送信され、より関連性の高い検索候補が表示されます。シークレット モードの場合、この設定はオフになっています。</translation>
@@ -1513,6 +1522,7 @@
 <translation id="9070377983101773829">音声検索を開始</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">シークレット モードでは、アクセスしたサイトは保存されません</translation>
+<translation id="9084103763810123431">別のデバイスでブラウジングを続けるには、タブと履歴を同期します</translation>
 <translation id="9086302186042011942">同期しています</translation>
 <translation id="9086455579313502267">ネットワークにアクセスできません</translation>
 <translation id="9099220545925418560">閲覧履歴に基づいて特定されます。この設定はオフになっています。</translation>

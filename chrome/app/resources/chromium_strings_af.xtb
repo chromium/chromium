@@ -198,8 +198,8 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5527463683072221100">Maak PDF's in Chromium oop</translation>
 <translation id="5614091477838198795">Wanneer dit aan is, sal jy ook by Chromium afgemeld word</translation>
 <translation id="5623402015214259806">{0,plural, =0{'n Chromium-opdatering is beskikbaar}=1{'n Chromium-opdatering is beskikbaar}other{'n Chromium-opdatering is al # dae lank beskikbaar}}</translation>
-<translation id="5634636535844844681">Chromium vereis Windows 7 of nuwer.</translation>
 <translation id="5653831366781983928">Herbegin Chromium asseblief nou</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Wys Chromium in hierdie taal</translation>
 <translation id="5862307444128926510">Welkom by Chromium</translation>
 <translation id="5883558403894052917">Chromium het bevind dat hierdie items wanware bevat:</translation>
@@ -342,10 +342,12 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8266560134891435528">Chromium kan nie jou wagwoorde nagaan nie, want jy is nie aangemeld nie</translation>
 <translation id="8276522524898344151">Chromium probeer tans om wagwoorde te kopieer.</translation>
 <translation id="8290862415967981663">Hierdie lêer kan gevaarlik wees en daarom het Chromium dit geblokkeer.</translation>
+<translation id="8325404639443959713">Doen meer met Chromium</translation>
 <translation id="8330519371938183845">Meld aan om Chromium op al jou toestelle te sinkroniseer en personaliseer</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chromium gebruik</translation>
 <translation id="8357820681460164151">Meld aan en skakel dan sinkronisering aan om op al jou toestelle toegang tot jou Chromium-blaaiergoed te kry.</translation>
 <translation id="8360718212975266891">Jy het Windows 10 of nuwer nodig om in die toekoms Chromium-opdaterings te kry. Hierdie rekenaar gebruik Windows 8.</translation>
+<translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Herbegin Chromium binne 'n dag}other{Herbegin Chromium binne # dae}}</translation>
 <translation id="8453117565092476964">Die installeerderargief is korrup of ongeldig. Laai Chromium asseblief weer af.</translation>
 <translation id="8463672209299734063">Opsioneel: Help om Chromium-bedryfstelsel se kenmerke en werkverrigting beter te maak deur outomaties diagnostiese en gebruiksdata na Google toe te stuur.</translation>
@@ -381,6 +383,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="9158494823179993217">Jou stelseladministrateur het Chromium opgestel om 'n alternatiewe blaaier oop te maak om na <ph name="TARGET_URL_HOSTNAME" /> toe te gaan.</translation>
 <translation id="9185526690718004400">Begin weer om &amp;Chromium op te dateer</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Maak Chromium jou eie</translation>
 <translation id="93478295209880648">Chromium sal dalk nie reg werk nie omdat dit nie meer in Windows XP en Windows Vista gesteun word nie</translation>
 <translation id="942598560705308788">Sertifikate wat deur Chromium bestuur word</translation>
 <translation id="965162752251293939">Wie gebruik tans Chromium?</translation>

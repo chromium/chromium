@@ -47,6 +47,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1254117744268754948">Mapes izvēle</translation>
 <translation id="1254424942107648268">Atrast iepriekšējo</translation>
 <translation id="1258491128795710625">Jaunumi</translation>
+<translation id="1264156759663453185">Atlasītais teksts ir pārāk liels, lai izmantotu daļēju tulkošanu.</translation>
 <translation id="1265739287306757398">Uzzināt, kā to izdarīt</translation>
 <translation id="1272079795634619415">Apturēt</translation>
 <translation id="1275718070701477396">Atlasīta</translation>
@@ -700,6 +701,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6066301408025741299">Pieskarieties, lai atceltu.</translation>
 <translation id="6071409777669089905">Atspraust cilni</translation>
 <translation id="6084848228346514841">Atlasiet cilnes</translation>
+<translation id="6100617279104942061">Pierakstījies kā <ph name="USER_EMAIL" />. Tiek atvērti iestatījumi.</translation>
 <translation id="6103540626693881831">Šifrēšana ierīcē</translation>
 <translation id="6119050551270742952">Šajā lapā esat inkognito</translation>
 <translation id="6122191549521593678">Tiešsaistē</translation>
@@ -1129,6 +1131,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9098541895599151034">Vai dzēst paroles (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9100610230175265781">Jāievada ieejas frāze.</translation>
 <translation id="9107664647686727385">Uzlauztu paroļu pārbaude</translation>
+<translation id="9120217828624527905">Pārslēgšanās uz visas lapas tulkošanu</translation>
 <translation id="9124387962554796433">Google var izmantot jūsu vēsturi, lai personalizētu pakalpojumu Meklēšana un citus Google pakalpojumus.</translation>
 <translation id="9137526406337347448">Google pakalpojumi</translation>
 <translation id="9148126808321036104">Pierakstieties vēlreiz</translation>

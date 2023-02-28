@@ -47,6 +47,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1254117744268754948">Valg av mappe</translation>
 <translation id="1254424942107648268">Finn forrige</translation>
 <translation id="1258491128795710625">Hva er nytt?</translation>
+<translation id="1264156759663453185">Den valgte teksten er for stor for delvis oversettelse.</translation>
 <translation id="1265739287306757398">Finn ut hvordan</translation>
 <translation id="1272079795634619415">Stopp</translation>
 <translation id="1275718070701477396">Valgt</translation>
@@ -128,7 +129,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1832848789136765277">For å sikre at du alltid har tilgang til de synkroniserte dataene dine, må du bekrefte at det er deg</translation>
 <translation id="1870148520156231997">Vis passordet</translation>
 <translation id="1872096359983322073">Lommelykt</translation>
-<translation id="1886370402958071554">Slett adressen</translation>
 <translation id="1891796056033961979">Lagrede bokmerker, passord, innstillinger med mer er tilgjengelig på denne skjermen.</translation>
 <translation id="1894023287452300670">Spor prisen her</translation>
 <translation id="1911619930368729126">Last opp til Google Disk</translation>
@@ -389,6 +389,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3789841737615482174">Installer</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803696231112616155">Tilby å oversette dette nettstedet</translation>
+<translation id="3803967590068704619">Denne adressen er lagret i Google-kontoen din (<ph name="USER_EMAIL" />). Du kan bruke denne adressen på alle Google-produkter på hvilken som helst enhet.</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3818293389945649617">Finn neste</translation>
 <translation id="3819183753496523827">Du er uten nett. Sjekk internettilkoblingen din, og prøv på nytt.</translation>
@@ -704,6 +705,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6066301408025741299">Trykk for å avbryte.</translation>
 <translation id="6071409777669089905">Løsne fanen</translation>
 <translation id="6084848228346514841">Velg faner</translation>
+<translation id="6100617279104942061">Logget på som <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
 <translation id="6103540626693881831">Kryptering på enheten</translation>
 <translation id="6119050551270742952">Den gjeldende nettsiden er på inkognito</translation>
 <translation id="6122191549521593678">Pålogget</translation>
@@ -741,6 +743,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6342069812937806050">Akkurat nå</translation>
 <translation id="6344783595350022745">Klar tekst</translation>
 <translation id="6346549652287021269">Vil du starte en ny nedlasting?</translation>
+<translation id="6347953390226388422">{count,plural, =1{Denne adressen slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}other{Disse adressene slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}}</translation>
 <translation id="634878792104344809">Synkroniser blant annet passord og logg på alle enhetene dine</translation>
 <translation id="6361848730467328243">Følg <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Ingen inkognitofaner</translation>
@@ -1133,6 +1136,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9098541895599151034">Vil du slette <ph name="NUMBER_OF_ACCOUNTS" /> passord?</translation>
 <translation id="9100610230175265781">Det kreves en passordfrase</translation>
 <translation id="9107664647686727385">Sjekk om du har passord som er utsatt for sikkerhetsbrudd</translation>
+<translation id="9120217828624527905">Bytt til oversettelse av hele siden</translation>
 <translation id="9124387962554796433">Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg.</translation>
 <translation id="9137526406337347448">Google-tjenester</translation>
 <translation id="9148126808321036104">Logg på igjen</translation>

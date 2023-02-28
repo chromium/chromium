@@ -198,8 +198,8 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5527463683072221100">Abrir PDF en Chromium</translation>
 <translation id="5614091477838198795">Se activas esta opción, tamén se pechará a túa sesión en Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hai unha actualización de Chromium dispoñible}=1{Hai unha actualización de Chromium dispoñible}other{Hai unha actualización de Chromium que leva dispoñible # días}}</translation>
-<translation id="5634636535844844681">Chromium require Windows 7 ou unha versión posterior.</translation>
 <translation id="5653831366781983928">Reinicia Chromium agora</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostrar Chromium neste idioma</translation>
 <translation id="5862307444128926510">Dámosche a benvida a Chromium</translation>
 <translation id="5883558403894052917">Chromium detectou que os seguintes elementos conteñen software malicioso:</translation>
@@ -341,10 +341,12 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8266560134891435528">Chromium non puido comprobar os teus contrasinais porque non iniciaches sesión</translation>
 <translation id="8276522524898344151">Chromium está tentando copiar os contrasinais.</translation>
 <translation id="8290862415967981663">Este ficheiro pode ser perigoso, así que Chromium bloqueouno.</translation>
+<translation id="8325404639443959713">Tira máis proveito de Chromium</translation>
 <translation id="8330519371938183845">Inicia sesión para sincronizar e personalizar Chromium nos teus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estaba utilizando Chromium previamente</translation>
 <translation id="8357820681460164151">Se queres acceder ás túas cousas do navegador Chromium desde calquera dos teus dispositivos, inicia sesión e activa a sincronización</translation>
 <translation id="8360718212975266891">Se queres recibir actualizacións de Chromium no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 día}other{Reinicia Chromium en # días}}</translation>
 <translation id="8453117565092476964">O arquivo do instalador está danado ou non é válido. Volve descargar Chromium.</translation>
 <translation id="8463672209299734063">Opcional: Axuda a mellorar as funcións e o rendemento de Chromium OS enviando automaticamente datos de uso e diagnóstico a Google.</translation>
@@ -380,6 +382,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="9158494823179993217">A persoa que administra o teu sistema configurou Chromium para abrir outro navegador co obxectivo de acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reiniciar para actualizar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Personaliza Chromium</translation>
 <translation id="93478295209880648">É posible que Chromium non funcione correctamente porque xa non admite Windows XP nin Windows Vista</translation>
 <translation id="942598560705308788">Certificados que xestiona Chromium</translation>
 <translation id="965162752251293939">Quen está utilizando Chromium?</translation>

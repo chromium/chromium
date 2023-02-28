@@ -355,6 +355,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="2951071800649516099">Magdagdag ng mga pahina sa iyong listahan ng babasahin para sa ibang pagkakataon</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page ang hindi pa nababasa}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page ang hindi pa nababasa}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> na page ang hindi pa nababasa}}</translation>
 <translation id="2961210776189273067">Pamagat</translation>
+<translation id="296370266220139811">Makatipid sa oras at pag-type</translation>
 <translation id="2979025552038692506">Napiling Tab na Incognito</translation>
 <translation id="2979639724566107830">Buksan ng bagong window</translation>
 <translation id="2981364137500752533">Puwede kang magkaroon ng hanggang 5 window.</translation>
@@ -482,6 +483,7 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3578874072190212775">Tulungan ang mga site na labanan ang panloloko at matukoy ang mga bot kumpara sa mga tao</translation>
 <translation id="3587482841069643663">Lahat</translation>
 <translation id="3587596251841506391">Pahusayin ang seguridad sa web</translation>
+<translation id="3597179440835065298">Makakuha ng mas magandang suhestyon</translation>
 <translation id="3602290021589620013">I-preview</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Pamahalaan ang mga window</translation>
@@ -747,6 +749,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5011311129201317034">Gustong kumonekta ng <ph name="SITE" /></translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Nakalipas na 15 minuto</translation>
 <translation id="5032430150487044192">Hindi magawa ang QR Code</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5040262127954254034">Privacy</translation>
@@ -882,6 +885,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5813552293717797987">Pinapamahalaan ni <ph name="PARENT_NAME_1" /> at <ph name="PARENT_NAME_2" /> ang browser na ito.</translation>
 <translation id="5814131985548525293">Mag-type dito o i-tap ang icon na boses para magsimula</translation>
 <translation id="5814749351757353073">Makipagsabayan sa mga paborito mong site</translation>
+<translation id="5822875253699806474">Para mabilis na makabalik sa mga site na binisita mo, i-sync ang iyong mga tab at history</translation>
 <translation id="583281660410589416">Hindi-alam</translation>
 <translation id="5833984609253377421">Ibahagi ang link</translation>
 <translation id="5834764604050996579">Para mag-scan ng QR Code, payagang gamitin ng Chrome ang iyong camera</translation>
@@ -1136,6 +1140,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7088681679121566888">Updated ang Chrome</translation>
 <translation id="7105047059074518658">Mag-sign in para mag-browse nang mas madali sa lahat ng device</translation>
 <translation id="7106762743910369165">Pinapamahalaan ng iyong organisasyon ang browser mo</translation>
+<translation id="7116588989735740310">Para makabalik sa mga site na binisita mo sa iba pang device, i-sync ang iyong mga tab at history</translation>
 <translation id="7130504491556983216">May lalabas na listahan ng mga interes dito habang nagba-browse ka sa web</translation>
 <translation id="7138678301420049075">Iba pa</translation>
 <translation id="7146622961999026732">Mukhang mahalaga sa iyo ang mga site at app na ito:</translation>
@@ -1214,6 +1219,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="751961395872307827">Hindi makakonekta sa site</translation>
 <translation id="752220631458524187">Magdiskonekta kapag tapos ka na</translation>
 <translation id="7523960634226602883">Maghanap sa pamamagitan ng iyong camera gamit ang Google Lens</translation>
+<translation id="7539698981064401140">I-sync ang iyong mga tab at history</translation>
 <translation id="7562080006725997899">Kini-clear ang data sa pag-browse</translation>
 <translation id="756809126120519699">Na-clear ang data ng Chrome</translation>
 <translation id="7577900504646297215">Pamahalaan ang mga interes</translation>
@@ -1396,6 +1402,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8461694314515752532">I-encrypt ang naka-sync na data gamit ang iyong sariling passphrase sa pag-sync</translation>
 <translation id="8466613982764129868">Tiyaking nakakonekta ang <ph name="TARGET_DEVICE_NAME" /> sa internet</translation>
 <translation id="8473863474539038330">Mga address at higit pa</translation>
+<translation id="847433688444405067">Mag-browse sa lahat ng device</translation>
 <translation id="8481980314595922412">Naka-on ang mga feature ng trial</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Buksan ang page ng history</translation>
@@ -1449,6 +1456,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
 <translation id="8746155870861185046">Ibahagi ang naka-highlight</translation>
+<translation id="874726034427945498">Para makakita ng mas magagandang suhestyon sa address bar mo, i-sync ang iyong mga tab at history</translation>
 <translation id="8748850008226585750">Nakatago ang mga content</translation>
 <translation id="8756969031206844760">I-update ang password?</translation>
 <translation id="8765470054473112089">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chrome kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
@@ -1514,6 +1522,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="9070377983101773829">Simulan ang paghahanap gamit ang boses</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Hindi nase-save sa Incognito ang mga site na binibisita mo</translation>
+<translation id="9084103763810123431">Para patuloy na mag-browse sa ibang device, i-sync ang iyong mga tab at history</translation>
 <translation id="9086302186042011942">Nagsi-sync</translation>
 <translation id="9086455579313502267">Hindi magawang ma-access ang network</translation>
 <translation id="9099220545925418560">Batay sa iyong history ng pag-browse. Naka-off ang setting na ito.</translation>

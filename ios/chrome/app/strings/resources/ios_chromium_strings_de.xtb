@@ -91,6 +91,7 @@
 <translation id="7118091470949186573">Du kannst jetzt Chromium jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="7165402419892018581">Chromium für Autofill auswählen</translation>
 <translation id="7175400662502680481">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
+<translation id="7192111075364461693">Chromium-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
 <translation id="7208566199746267865">Mit Chromium sparst du Zeit, da du deine Konten im Web verwenden kannst. In den Einstellungen hast du die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="725427773388857052">Chromium kann helfen, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="7255976941681861701">Das neue Chromium-Menü</translation>
@@ -129,6 +130,7 @@ Wichtige Hinweise:
   • Falls du die Synchronisierung aktivierst, können die Messwerte auch Informationen zu den von dir besuchten URLs enthalten.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>
 <translation id="894437814105052438">Wenn du dich abmeldest, synchronisiert Chromium keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
+<translation id="8963279154877372067">Chromium-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
 <translation id="9022552996538154597">In Chromium anmelden</translation>
 <translation id="9059693977935746710">Du musst dir dieses Passwort nicht merken. Es wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>

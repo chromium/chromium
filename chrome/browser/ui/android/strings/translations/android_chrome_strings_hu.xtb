@@ -355,6 +355,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="2951071800649516099">Oldalak felvétele az olvasólistára, hogy később elolvashassa őket</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> olvasatlan oldal}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olvasatlan oldal}}</translation>
 <translation id="2961210776189273067">Cím</translation>
+<translation id="296370266220139811">Időmegtakarítás és kevesebb gépelés</translation>
 <translation id="2979025552038692506">Kiválasztott inkognitó lap</translation>
 <translation id="2979639724566107830">Megnyitás új ablakban</translation>
 <translation id="2981364137500752533">Legfeljebb öt ablak lehet nyitva.</translation>
@@ -482,6 +483,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="3578874072190212775">Segíthet a webhelyeknek a csalás elleni küzdelemben, valamint abban, hogy megkülönböztethessék a robotokat az emberektől</translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3587596251841506391">Legyen biztonságos a böngészés</translation>
+<translation id="3597179440835065298">Relevánsabb javaslatokat kaphat</translation>
 <translation id="3602290021589620013">Előnézet</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Ablakok kezelése</translation>
@@ -747,6 +749,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5005498671520578047">Jelszó másolása</translation>
 <translation id="5011311129201317034">A(z) <ph name="SITE" /> csatlakozni szeretne</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Elmúlt 15 perc</translation>
 <translation id="5032430150487044192">Nem lehet létrehozni a QR-kódot.</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5040262127954254034">Adatvédelem</translation>
@@ -882,6 +885,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5813552293717797987">Ezt a böngészőt <ph name="PARENT_NAME_1" /> és <ph name="PARENT_NAME_2" /> kezeli.</translation>
 <translation id="5814131985548525293">Ide írhat, vagy koppintson a hangalapú keresés ikonjára az indításhoz</translation>
 <translation id="5814749351757353073">Naprakész lehet a kedvenc webhelyeivel</translation>
+<translation id="5822875253699806474">Ha gyorsan szeretne visszatérni a felkeresett webhelyekhez, szinkronizálja lapjait és előzményeit.</translation>
 <translation id="583281660410589416">Ismeretlen</translation>
 <translation id="5833984609253377421">Link megosztása</translation>
 <translation id="5834764604050996579">QR-kód beolvasásához engedélyezze a kamera használatát a Chrome számára</translation>
@@ -1136,6 +1140,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7088681679121566888">A Chrome naprakész</translation>
 <translation id="7105047059074518658">Jelentkezzen be, hogy egyszerűbben böngészhessen eszközökön átnyúlóan</translation>
 <translation id="7106762743910369165">Böngészőjét a szervezete kezeli.</translation>
+<translation id="7116588989735740310">A más eszközökön felkeresett webhelyekhez való visszatéréshez szinkronizálja lapjait és előzményeit.</translation>
 <translation id="7130504491556983216">Az érdeklődési köröket tartalmazó lista itt jelenik majd meg az interneten való böngészés folyományaként</translation>
 <translation id="7138678301420049075">Egyéb</translation>
 <translation id="7146622961999026732">Úgy tűnik, ezek a webhelyek és alkalmazások fontosak Önnek:</translation>
@@ -1214,6 +1219,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="751961395872307827">Nem lehet csatlakozni a webhelyhez</translation>
 <translation id="752220631458524187">Válassza le eszközét, ha végzett</translation>
 <translation id="7523960634226602883">Keresés a kamerájával a Google Lens segítségével</translation>
+<translation id="7539698981064401140">Lapok és előzmények szinkronizálása</translation>
 <translation id="7562080006725997899">Böngészési adatok törlése</translation>
 <translation id="756809126120519699">Chrome-adatok törölve</translation>
 <translation id="7577900504646297215">Érdeklődési körök kezelése</translation>
@@ -1396,6 +1402,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8461694314515752532">A szinkronizált adatok titkosítása saját összetett szinkronizálási jelszóval</translation>
 <translation id="8466613982764129868">Győződjön meg arról, hogy a(z) <ph name="TARGET_DEVICE_NAME" /> eszköz csatlakozik az internethez</translation>
 <translation id="8473863474539038330">Címek és egyebek</translation>
+<translation id="847433688444405067">Böngészés több eszközön</translation>
 <translation id="8481980314595922412">A próbafunkciók be vannak kapcsolva</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Az Előzmények oldal megnyitása</translation>
@@ -1449,6 +1456,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8712637175834984815">Értem</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8746155870861185046">Kiemelés megosztása</translation>
+<translation id="874726034427945498">Ha jobb javaslatokat szeretne látni a címsávban, szinkronizálja lapjait és előzményeit.</translation>
 <translation id="8748850008226585750">Tartalom elrejtve</translation>
 <translation id="8756969031206844760">Szeretné frissíteni a jelszót?</translation>
 <translation id="8765470054473112089">Amikor Ön beír valamit a címsávba vagy a keresőmezőbe, a Chrome a beírt szöveget elküldi az alapértelmezett keresőmotornak, hogy jobb javaslatokat biztosítson. Inkognitóban ki van kapcsolva ez a funkció.</translation>
@@ -1514,6 +1522,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="9070377983101773829">Hangalapú keresés indítása</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">A rendszer inkognitó módban nem menti a meglátogatott webhelyeket</translation>
+<translation id="9084103763810123431">Ha másik eszközön szeretné folytatni a böngészést, szinkronizálja a lapjait és az előzményeit.</translation>
 <translation id="9086302186042011942">Szinkronizálás</translation>
 <translation id="9086455579313502267">Nem sikerült elérni a hálózatot</translation>
 <translation id="9099220545925418560">A böngészési előzményei alapján. Ez a beállítás ki van kapcsolva.</translation>

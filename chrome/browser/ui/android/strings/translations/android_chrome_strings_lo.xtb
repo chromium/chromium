@@ -355,6 +355,7 @@
 <translation id="2951071800649516099">ເພີ່ມໜ້າໃສ່ລາຍຊື່ການອ່ານສຳລັບພາຍຫຼັງ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ໜ້າທີ່ຍັງບໍ່ໄດ້ອ່ານ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ໜ້າທີ່ຍັງບໍ່ໄດ້ອ່ານ}}</translation>
 <translation id="2961210776189273067">ຊື່</translation>
+<translation id="296370266220139811">ປະຢັດເວລາ ແລະ ພິມໜ້ອຍລົງ</translation>
 <translation id="2979025552038692506">ແຖບບໍ່ເປີດເຜີຍຕົວຕົນທີ່ເລືອກໄວ້</translation>
 <translation id="2979639724566107830">ເປີດໃນໜ້າຈໍໃໝ່</translation>
 <translation id="2981364137500752533">ທ່ານສາມາດເປີດໄດ້ສູງສຸດ 5 ໜ້າຈໍ.</translation>
@@ -482,6 +483,7 @@
 <translation id="3578874072190212775">ຊ່ວຍເວັບໄຊສູ້ກັບການສໍ້ໂກງ ແລະ ແຍກບັອດອອກຈາກຄົນ</translation>
 <translation id="3587482841069643663">ທັງໝົດ</translation>
 <translation id="3587596251841506391">ຊ່ວຍປັບປຸງຄວາມປອດໄພໃນເວັັບ</translation>
+<translation id="3597179440835065298">ຮັບການແນະນຳທີ່ດີຂຶ້ນ</translation>
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3616113530831147358">ສຽງ</translation>
 <translation id="3622349720008044802">ຈັດການໜ້າຈໍ</translation>
@@ -747,6 +749,7 @@
 <translation id="5005498671520578047">ອັດ​ສຳ​ເນົາ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ຕ້ອງການເຊື່ອມຕໍ່</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">15 ນາທີຜ່ານມາ</translation>
 <translation id="5032430150487044192">ບໍ່ສາມາດສ້າງລະຫັດ QR ໄດ້</translation>
 <translation id="5039804452771397117">ອະ​ນຸ​ຍາດ​</translation>
 <translation id="5040262127954254034">ຄວາມ​ເປັນ​ສ່ວນ​ຕົວ</translation>
@@ -882,6 +885,7 @@
 <translation id="5813552293717797987">ໂປຣແກຣມທ່ອງເວັບນີ້ແມ່ນຈັດການໂດຍ <ph name="PARENT_NAME_1" /> ແລະ <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">ພິມຢູ່ບ່ອນນີ້ ຫຼື ແຕະໄອຄອນສຽງເພື່ອເລີ່ມຕົ້ນ</translation>
 <translation id="5814749351757353073">ຕິດຕາມເວັບໄຊທີ່ທ່ານມັກ</translation>
+<translation id="5822875253699806474">ເພື່ອກັບຄືນໄປຫາເວັບໄຊທີ່ທ່ານໄດ້ເຂົ້າເບິ່ງຢ່າງໄວວາ, ໃຫ້ຊິ້ງຂໍ້ມູນແຖບ ແລະປະຫວັດຂອງທ່ານ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
 <translation id="5833984609253377421">ແບ່ງປັນລິ້ງ</translation>
 <translation id="5834764604050996579">ເພື່ອສະແກນລະຫັດ QR, ກະລຸນາອະນຸຍາດໃຫ້ Chrome ໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານກ່ອນ</translation>
@@ -1136,6 +1140,7 @@
 <translation id="7088681679121566888">Chrome ໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="7105047059074518658">ເຂົ້າສູ່ລະບົບເພື່ອທ່ອງເວັບຂ້າມອຸປະກອນໄດ້ງ່າຍຂຶ້ນ</translation>
 <translation id="7106762743910369165">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານໄດ້ຮັບການຈັດການໂດຍອົງການຈັດຕັ້ງຂອງທ່ານ</translation>
+<translation id="7116588989735740310">ເພື່ອກັບຄືນຫາເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຢູ່ອຸປະກອນອື່ນ, ໃຫ້ຊິ້ງແຖບ ແລະ ປະຫວັດຂອງທ່ານ</translation>
 <translation id="7130504491556983216">ລາຍຊື່ຂອງຄວາມສົນໃຈຈະປາກົດຢູ່ບ່ອນນີ້ໃນເວລາທີ່ທ່ານທ່ອງເວັບ</translation>
 <translation id="7138678301420049075">ອື່ນໆ</translation>
 <translation id="7146622961999026732">ເວັບໄຊ ແລະ ແອັບເຫຼົ່ານີ້ປາກົດວ່າສຳຄັນຕໍ່ກັບທ່ານ:</translation>
@@ -1214,6 +1219,7 @@
 <translation id="751961395872307827">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເວັບໄຊໄດ້</translation>
 <translation id="752220631458524187">ຕັດການເຊື່ອມຕໍ່ເມື່ອທ່ານສຳເລັດແລ້ວ</translation>
 <translation id="7523960634226602883">ຊອກຫາດ້ວຍກ້ອງຂອງທ່ານໂດຍໃຊ້ Google Lens</translation>
+<translation id="7539698981064401140">ຊິ້ງແຖບ ແລະ ປະຫວັດຂອງທ່ານ</translation>
 <translation id="7562080006725997899">ກຳ​ລັງລຶບຂໍ້​ມູນການທ່ອງເນັດ</translation>
 <translation id="756809126120519699">ລຶບລ້າງຂໍ້ມູນ Chrome ແລ້ວ</translation>
 <translation id="7577900504646297215">ຈັດການຄວາມສົນໃຈ</translation>
@@ -1396,6 +1402,7 @@
 <translation id="8461694314515752532">ເຂົ້າລະຫັດຂໍ້ມູນທີ່ຊິ້ງດ້ວຍລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນຂອງທ່ານເອງ</translation>
 <translation id="8466613982764129868">ກວດໃຫ້ແນ່ໃຈວ່າ <ph name="TARGET_DEVICE_NAME" /> ເຊື່ອມຕໍ່ກັບອິນເຕີເນັດ</translation>
 <translation id="8473863474539038330">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
+<translation id="847433688444405067">ເລືອກເບິ່ງທົ່ວອຸປະກອນຕ່າງໆ</translation>
 <translation id="8481980314595922412">ຄຸນສົມບັດທົດລອງໃຊ້ເປີດຢູ່</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ເປີດໜ້າປະຫວັດ</translation>
@@ -1449,6 +1456,7 @@
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8746155870861185046">ແບ່ງປັນໄຮໄລ້</translation>
+<translation id="874726034427945498">ເພື່ອເບິ່ງການແນະນຳທີ່ດີຂຶ້ນໃນແຖບທີ່ຢູ່ຂອງທ່ານ, ໃຫ້ຊິ້ງແຖບ ແລະ ປະຫວັດຂອງທ່ານ</translation>
 <translation id="8748850008226585750">ເນື້ອຫາຖືກເຊື່ອງໄວ້</translation>
 <translation id="8756969031206844760">ອັບເດດລະຫັດຜ່ານບໍ?</translation>
 <translation id="8765470054473112089">ເມື່ອທ່ານພິມໃນແຖບທີ່ຢູ່ ຫຼື ກ່ອງຊອກຫາ, Chrome ຈະສົ່ງສິ່ງທີ່ທ່ານພິມໄປຫາໂປຣແກຣມຊອກຫາຄ່າເລີ່ມຕົ້ນຂອງທ່ານເພື່ອຮັບການແນະນຳທີ່ດີຍິ່ງຂຶ້ນ. ສິ່ງນີ້ຖືກປິດໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ.</translation>
@@ -1514,6 +1522,7 @@
 <translation id="9070377983101773829">ເລີ່ມ​ການຄົ້ນຫາ​ສຽງ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">ເວັບໄຊທີ່ທ່ານເຂົ້າແມ່ນບໍ່ໄດ້ບັນທຶກໄວ້ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="9084103763810123431">ເພື່ອສືບຕໍ່ການເລືອກເບິ່ງຢູ່ອຸປະກອນອື່ນ, ໃຫ້ຊິ້ງແຖບ ແລະ ປະຫວັດຂອງທ່ານ</translation>
 <translation id="9086302186042011942">ກໍາລັງຊິງຄ໌</translation>
 <translation id="9086455579313502267">ບໍ່​ສາ​ມາດ​ເຂົ້າ​ຫາເຄືອ​ຂ່າຍໄດ້</translation>
 <translation id="9099220545925418560">ອີງຕາມປະຫວັດການທ່ອງເວັບຂອງທ່ານ. ການຕັ້ງຄ່ານີ້ປິດຢູ່.</translation>

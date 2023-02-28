@@ -125,6 +125,7 @@
 <translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
+<translation id="3293912612584488930">Chrome でもっと便利に</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
 <translation id="3396977131400919238">インストール中にオペレーティング システム エラーが発生しました。Google Chrome をダウンロード直してください。</translation>
@@ -404,7 +405,6 @@
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex システム</translation>
-<translation id="9067395829937117663">Google Chrome のご利用には Windows 7 以上が必要です。</translation>
 <translation id="911206726377975832">閲覧データも削除しますか？</translation>
 <translation id="9138603949443464873">変更を適用するには Chrome を再起動してください</translation>
 <translation id="9195993889682885387">Chrome は、過去数週間の閲覧履歴に基づいてユーザーの興味 / 関心を推定する場合があります。この情報はユーザーのデバイスに保存されます。</translation>

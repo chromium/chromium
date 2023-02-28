@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">انتخاب پوشه</translation>
 <translation id="1254424942107648268">یافتن قبلی</translation>
 <translation id="1258491128795710625">ویژگی‌های جدید</translation>
+<translation id="1264156759663453185">نوشتار انتخاب‌شده برای ترجمه جزئی خیلی زیاد است.</translation>
 <translation id="1265739287306757398">با نحوه انجام کار آشنا شوید</translation>
 <translation id="1272079795634619415">توقف</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">فیلتر</translation>
 <translation id="2273327106802955778">منوی بیشتر</translation>
 <translation id="2286505070150039482">نوشتار برجسته‌شده</translation>
+<translation id="2287614783861766820">{count,plural, =1{این نشانی از این دستگاه حذف خواهد شد.}one{این نشانی از این دستگاه حذف خواهد شد.}other{این نشانی‌ها از این دستگاه حذف خواهند شد.}}</translation>
 <translation id="2299218006564889602">‏گذرواژه‌هایتان قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌شود.</translation>
 <translation id="2302742851632557585">گذرواژه را در وب‌سایت تغییر دهید</translation>
 <translation id="2316709634732130529">استفاده از گذرواژه پیشنهادی</translation>
@@ -458,6 +460,7 @@
 <translation id="4324952538601951430">اکنون نشانک‌ها، گذرواژه‌ها، تنظیمات، و دیگر موارد ذخیره‌شده در اینجا هستند</translation>
 <translation id="4334428914252001502">۱ مقاله خوانده‌نشده.</translation>
 <translation id="4338650699862464074">‏نشانی وب صفحه‌هایی را که بازدید می‌کنید برای Google ارسال می‌کند.</translation>
+<translation id="4342054591427973606">{count,plural, =1{این نشانی از این دستگاه و دیگر دستگاه‌های وارد‌شده به حسابتان حذف خواهد شد.}one{این نشانی از این دستگاه و دیگر دستگاه‌های وارد‌شده به حسابتان حذف خواهد شد.}other{این نشانی‌ها از این دستگاه و دیگر دستگاه‌های وارد‌شده به حسابتان حذف خواهند شد.}}</translation>
 <translation id="4343046787186034850">دسترسی به دوربین و میکروفون مجاز است</translation>
 <translation id="4359125752503270327">این صفحه در برنامه دیگری باز می‌شود.</translation>
 <translation id="4375040482473363939">جستجوی رمزینه پاسخ‌سریع</translation>
@@ -587,6 +590,7 @@
 <translation id="5232485538978018676">ورود به سیستم با «حساب مدیریت‌شده»</translation>
 <translation id="5234764350956374838">رد کردن</translation>
 <translation id="5245322853195994030">لغو همگام‌سازی</translation>
+<translation id="5271265092610673171">{count,plural, =1{یکی‌از فیلدهای الزامی خالی است. آن را قبل‌از ذخیره کردن پر کنید.}one{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}other{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}}</translation>
 <translation id="5271549068863921519">ذخیره گذرواژه</translation>
 <translation id="5295239312320826323">حساب <ph name="USER_EMAIL" /> برداشته شود؟</translation>
 <translation id="5300589172476337783">نمایش</translation>
@@ -700,6 +704,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6066301408025741299">برای لغو ضربه بزنید.</translation>
 <translation id="6071409777669089905">برداشتن سنجاق برگه</translation>
 <translation id="6084848228346514841">انتخاب برگه‌ها</translation>
+<translation id="6100617279104942061">به‌عنوان <ph name="USER_EMAIL" /> به سیستم وارد شده‌اید. تنظیمات را باز می‌کند.</translation>
 <translation id="6103540626693881831">رمزگذاری درون‌دستگاهی</translation>
 <translation id="6119050551270742952">صفحه وب کنونی در حالت ناشناس است</translation>
 <translation id="6122191549521593678">آنلاین</translation>
@@ -1129,6 +1134,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> گذرواژه حذف شود؟</translation>
 <translation id="9100610230175265781">گذرعبارت لازم است</translation>
 <translation id="9107664647686727385">بررسی برای وجود گذرواژه‌های لورفته</translation>
+<translation id="9120217828624527905">رفتن به «ترجمه کامل صفحه»</translation>
 <translation id="9124387962554796433">‏Google ممکن است از سابقه شما برای شخصی‌سازی «جستجو» و دیگر سرویس‌های Google استفاده کند.</translation>
 <translation id="9137526406337347448">‏سرویس‌های Google</translation>
 <translation id="9148126808321036104">ورود مجدد به سیستم</translation>

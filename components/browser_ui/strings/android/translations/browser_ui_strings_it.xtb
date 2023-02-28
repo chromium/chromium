@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Disattiva l'audio nei siti che riproducono suoni</translation>
 <translation id="3602290021589620013">Anteprima</translation>
 <translation id="3628308229821498208">Ricerche suggerite</translation>
+<translation id="3636279694100170143">I siti che visiti possono confermare che sei un utente reale e non un bot</translation>
+<translation id="3649190289964910441">Un sito che visiti può salvare su Chrome informazioni che confermano che sei un utente reale. Mentre continui a navigare, i siti possono controllare su Chrome e verificare dal primo sito visitato che probabilmente sei un utente attendibile.</translation>
 <translation id="3744111561329211289">Sincronizzazione in background</translation>
 <translation id="3763247130972274048">Tocca due volte il video a sinistra o a destra per saltare di 10 secondi</translation>
 <translation id="3794286421982011626">Un sito che visiti può salvare informazioni su ciò che stai facendo affinché possa funzionare come ti aspetteresti, ad esempio per mantenere l'accesso al sito o salvare gli articoli nel tuo carrello degli acquisti. Spesso i siti salvano temporaneamente queste informazioni sul dispositivo.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Gestito da un genitore</translation>
 <translation id="4670064810192446073">Realtà virtuale</translation>
 <translation id="4751476147751820511">Sensori di movimento o della luce</translation>
+<translation id="477781522763920796">Questa impostazione funziona senza identificarti e senza consentire ai siti di accedere alla tua cronologia di navigazione.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Scopri la fonte e l'argomento</translation>
 <translation id="4836046166855586901">Chiedi conferma quando un sito vuole sapere quando usi attivamente questo dispositivo</translation>
@@ -258,6 +261,7 @@
 <translation id="5740126560802162366">I siti possono salvare dati sul dispositivo</translation>
 <translation id="5771720122942595109">Autorizzazione <ph name="PERMISSION_1" /> bloccata</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
+<translation id="5810805850857689118">Questa azione cancellerà tutti i dati e i cookie di <ph name="ORIGIN" /> e di tutti i siti secondari</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5876056640971328065">Metti in pausa il video</translation>
 <translation id="5884085660368669834">Preferenza sito</translation>
@@ -324,6 +328,7 @@
 <translation id="7016516562562142042">Consentita per il motore di ricerca corrente</translation>
 <translation id="702275896380648118">Questo sito stabilisce i tuoi interessi per poi suggerire annunci ad altri siti. Questo sito riceve anche gli argomenti degli annunci da Chrome per mostrarti annunci più pertinenti.</translation>
 <translation id="702463548815491781">Consigliata quando TalkBack o Switch Access sono attivi</translation>
+<translation id="7050519587566342213">La navigazione è più fluida perché è più probabile che venga confermata la tua attendibilità da un sito all'altro.</translation>
 <translation id="7053983685419859001">Blocca</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento selezionato}other{# elementi selezionati}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> elementi selezionati. Opzioni disponibili nella parte superiore dello schermo</translation>
@@ -409,6 +414,7 @@
 <translation id="8514955299594277296">Non consentire ai siti di salvare dati sul dispositivo (opzione non consigliata)</translation>
 <translation id="851751545965956758">Impedisci ai siti di connettersi ai dispositivi</translation>
 <translation id="8525306231823319788">Schermo intero</translation>
+<translation id="8528440122773422556">Questa azione cancellerà tutti i dati e i cookie memorizzati da tutti i siti in <ph name="ORIGIN" /> o dalla relativa app nella schermata Home</translation>
 <translation id="8541410041357371550">Questo sito riceve gli argomenti degli annunci da Chrome per mostrarti annunci più pertinenti</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> sito <ph name="FPS_OWNER" />}other{Cookie consentiti per <ph name="FPS_MEMBERS_COUNT" /> siti <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Consentita (opzione consigliata)</translation>
@@ -437,6 +443,7 @@
 <translation id="8986362086234534611">Elimina</translation>
 <translation id="8990043154272859344">Uscirai da tutti i siti</translation>
 <translation id="9019902583201351841">Gestito dai genitori</translation>
+<translation id="9039697262778250930">Il tuo account potrebbe essere disconnesso da questi siti</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Questo sito fa parte di un gruppo che può vedere le tue attività. Il gruppo è definito da <ph name="FPS_OWNER" /></translation>
 <translation id="9106233582039520022">Vuoi eliminare i cookie?</translation>

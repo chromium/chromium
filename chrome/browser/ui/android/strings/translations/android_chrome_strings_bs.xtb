@@ -925,6 +925,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="6002122790816966947">Vaši uređaji</translation>
 <translation id="6005538289190791541">Prijedlog za lozinku</translation>
 <translation id="6011308810877101166">Poboljšanje prijedloga za pretraživanje</translation>
+<translation id="6026538407078977628">Proširi na cijeli zaslon</translation>
 <translation id="6039379616847168523">Pređite na sljedeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
@@ -1197,6 +1198,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7437998757836447326">Odjava iz Chromea</translation>
 <translation id="7443901082822119557">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na različitim web lokacijama, npr. radi personaliziranja oglasa. Moguće je da će funkcije na nekim web lokacijama prestati s radom.</translation>
 <translation id="7453467225369441013">Odjavljuje vas s većine stranica Nećete biti odjavljeni s Google računa.</translation>
+<translation id="7453810262525006706">Sažmi u bočni prikaz</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
 <translation id="7455988709578031708">Na osnovu vaše historije pregledanja. Postavka je uključena.</translation>
 <translation id="7456774706094330779">Prošireno predučitavanje</translation>

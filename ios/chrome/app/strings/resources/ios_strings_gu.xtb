@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">ફોલ્ડર પસંદ કરો</translation>
 <translation id="1254424942107648268">પાછલી શોધો</translation>
 <translation id="1258491128795710625">નવું શું છે</translation>
+<translation id="1264156759663453185">પસંદ કરેલી ટેક્સ્ટ આંશિક અનુવાદ માટે ખૂબ મોટી છે.</translation>
 <translation id="1265739287306757398">જાણો કેવી રીતે</translation>
 <translation id="1272079795634619415">રોકો</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">સુધારો</translation>
 <translation id="2273327106802955778">વધુ મેનૂ</translation>
 <translation id="2286505070150039482">હાઇલાઇટ કરેલી ટેક્સ્ટ</translation>
+<translation id="2287614783861766820">{count,plural, =1{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}one{આ ડિવાઇસમાંથી આ સરનામું ડિલીટ કરવામાં આવશે.}other{આ ડિવાઇસમાંથી આ સરનામા ડિલીટ કરવામાં આવશે.}}</translation>
 <translation id="2299218006564889602">તમારા પાસવર્ડને Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં તેમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="2302742851632557585">વેબસાઇટ પર પાસવર્ડ બદલો</translation>
 <translation id="2316709634732130529">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
@@ -458,6 +460,7 @@
 <translation id="4324952538601951430">તમારા સાચવેલા બુકમાર્ક, પાસવર્ડ, સેટિંગ અને બીજી ઘણી વસ્તુઓ હવે અહીં છે</translation>
 <translation id="4334428914252001502">1 વાંચ્યા વગરનો લેખ.</translation>
 <translation id="4338650699862464074">તમે મુલાકાત લો તે પેજના URLs Googleને મોકલે છે.</translation>
+<translation id="4342054591427973606">{count,plural, =1{આ સરનામું આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}one{આ સરનામું આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}other{આ સરનામા આમાંથી અને તમે સાઇન ઇન કર્યું હોય એવા અન્ય ડિવાઇસમાંથી ડિલીટ કરવામાં આવશે.}}</translation>
 <translation id="4343046787186034850">કૅમેરા અને માઇક્રોફોનના ઍક્સેસની મંજૂરી આપવામાં આવી છે</translation>
 <translation id="4359125752503270327">આ પેજ બીજી અ‍ૅપ્લિકેશનમાં ખુલશે.</translation>
 <translation id="4375040482473363939">QR કોડ શોધો</translation>
@@ -587,6 +590,7 @@
 <translation id="5232485538978018676">મેનેજ કરેલા એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
 <translation id="5245322853195994030">સિંક કરવાનું રદ કરો</translation>
+<translation id="5271265092610673171">{count,plural, =1{ફરજિયાત ભરવા માટેનું ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}one{ફરજિયાત ભરવા માટેના કેટલાક ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}other{ફરજિયાત ભરવા માટેના કેટલાક ફીલ્ડ ખાલી છે. સાચવતા પહેલાં તેને ભરો.}}</translation>
 <translation id="5271549068863921519">પાસવર્ડ સાચવો</translation>
 <translation id="5295239312320826323">એકાઉન્ટ <ph name="USER_EMAIL" /> કાઢી નાખીએ?</translation>
 <translation id="5300589172476337783">બતાવો</translation>
@@ -700,6 +704,7 @@
 <translation id="6066301408025741299">રદ કરવા માટે ટેપ કરો.</translation>
 <translation id="6071409777669089905">ટૅબને અનપિન કરો</translation>
 <translation id="6084848228346514841">કોઈ ટૅબ પસંદ કરો</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયાં. સેટિંગ ખોલે છે.</translation>
 <translation id="6103540626693881831">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
 <translation id="6119050551270742952">વર્તમાન વેબપેજ છૂપા મોડમાં છે</translation>
 <translation id="6122191549521593678">ઓનલાઇન</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9098541895599151034">શું પાસવર્ડ <ph name="NUMBER_OF_ACCOUNTS" /> ડિલીટ કરીએ?</translation>
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>
 <translation id="9107664647686727385">ચેડાં કરાયેલા પાસવર્ડ ચેક કરો</translation>
+<translation id="9120217828624527905">આખા પેજના અનુવાદ પર સ્વિચ કરો</translation>
 <translation id="9124387962554796433">Search અને Googleની અન્ય સેવાઓને મનપસંદ બનાવવા માટે, Google તમારા ઇતિહાસનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="9137526406337347448">Google સેવાઓ</translation>
 <translation id="9148126808321036104">ફરીથી સાઇન ઇન કરો </translation>

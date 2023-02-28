@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Selleks et oma Google'i kontolt kõikidel veebisaitidel välja logida, <ph name="BEGIN_LINK" />logige välja Chrome'ist<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
 <translation id="2732745070297234559">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
+<translation id="2736805085127235148">Chrome’i märguanded on praegu teie seadme seadetes välja lülitatud.</translation>
 <translation id="2767464022270041271">Salvestatud paroole ei ole. Google'i paroolihaldur saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="2869959624320573933">Logige Chromeʼi sisse</translation>
 <translation id="2957447865124070833">Valige <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome on ajakohane</translation>
 <translation id="7939179037291298976">Avage oma iPhone'i seadetes valik „Password Options” ja tehke valik „Chrome“.</translation>
 <translation id="8022947259858476807">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chrome'i</translation>
+<translation id="804638182476029347">Hinnaalanduse märguannete saamiseks lubage Chrome’i märguanded</translation>
 <translation id="81358522153858150">Chrome toetab nüüd hallatud konto puhul kasutajareegleid</translation>
 <translation id="8160472928944011082">Chrome'i ei saa värskendada</translation>
 <translation id="8357607116237445042">Valige, kas soovite oma Chrome'i andmed sellest seadmest kustutada või need säilitada</translation>

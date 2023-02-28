@@ -2854,13 +2854,6 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>
-<translation id="359203136434560942">Configura la lista de imágenes que se mostrarán en el protector de pantalla de la pantalla de bloqueo.
-
-Cada elemento de la lista hace referencia a una imagen que se mostrará en el protector de pantalla. El elemento debe tener como miembros una URL a la imagen y el valor de hash SHA-256 del archivo de imagen para la verificación. El formato de imagen debe ser JPEG. El dispositivo <ph name="PRODUCT_OS_NAME" /> descargará estas imágenes y mantendrá una caché local de estas referencias.
-
-Esta política no tendrá ningún efecto si estableces la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> como falsa.
-
-Si no estableces esta política, o la lista no contiene referencias de imagen válidas, no se mostrará el protector de pantalla para la pantalla de bloqueo, independientemente del valor establecido en la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">Usar el comportamiento anterior de envío de eventos en los controles de formularios inhabilitados</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de la máquina virtual</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />, lo que permite que las extensiones mantengan su compatibilidad y que <ph name="PRODUCT_NAME" /> envíe encabezados específicos sin las comprobaciones de <ph name="CORS" />.
@@ -3893,7 +3886,6 @@ Si no estableces la política, los usuarios podrán cambiar la lista de apps fij
 <translation id="4624417808625504735">Impedir que JavaScript utilice JIT en estos sitios</translation>
 <translation id="46321462262887935">Tratar las teclas de la fila superior como teclas de función, pero permitir que el usuario las modifique</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que figuran en la lista</translation>
-<translation id="4632566332417930481">No permitir el uso de las Herramientas para desarrolladores en extensiones instaladas por una política empresarial; permitir el uso de las Herramientas para desarrolladores en otros contextos</translation>
 <translation id="4636354638176939375">Inhabilitar la creación de usuarios supervisados</translation>
 <translation id="4646626362889216307">Si estableces la política, se podrán combinar las políticas seleccionadas cuando provienen de diferentes fuentes, con los mismos alcances y niveles. Esta acción combina las claves de primer nivel del diccionario de cada fuente. Prevalecerá la clave que provenga de la fuente de mayor prioridad.
 
@@ -4020,7 +4012,6 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
           Si no la estableces, el audio mono estará inicialmente inhabilitado, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4768446404233019970">Habilitar los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">La configuración que se usa para generar y verificar el código de acceso parental.</translation>
-<translation id="4772431363738215349">La URL desde la cual se puede descargar la imagen del protector de pantalla.</translation>
 <translation id="4773997835955617342">Cambia la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
 
       Si habilitas esta política, el valor de la política "KerberosCustomPrefilledConfig" se aplicará como la configuración sugerida y se mostrará en la sección "Configuración avanzada" del diálogo de autenticación de Kerberos.
@@ -4629,7 +4620,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si la estableces como falsa, se inhabilitará la redirección de puertos a los contenedores de Crostini.</translation>
 <translation id="538108065117008131">Permitir que <ph name="PRODUCT_FRAME_NAME" /> maneje los siguientes tipos de contenido.</translation>
-<translation id="5382211603538487131">El hash SHA-256 de la imagen.</translation>
 <translation id="538768040137709073">Habilita la función de portapapeles compartido, que permite que los usuarios compartan texto entre computadoras de escritorios con Chrome y dispositivos Android cuando está habilitada la sincronización y el usuario accedió a su cuenta.
 
           Si se establece la política como verdadera, el usuario de Chrome podrá compartir texto entre dispositivos.
@@ -4837,13 +4827,6 @@ Esto se quitó en M112.</translation>
 <translation id="5535256585099022933">Establecer el lapso para el reinicio</translation>
 <translation id="553806128266843748">Una función experimental booleana que indica si está habilitada la limitación de la red.</translation>
 <translation id="5540885720415375851">Permite el descubrimiento de dispositivos locales</translation>
-<translation id="5545132877693005604">Configura la lista de imágenes que se mostrarán en el protector de pantalla de la pantalla de acceso.
-
-Cada elemento de la lista hace referencia a una imagen que se mostrará en el protector de pantalla. El elemento debe tener como miembros una URL a la imagen y el valor de hash SHA-256 del archivo de imagen para la verificación. El formato de imagen debe ser JPEG. El dispositivo <ph name="PRODUCT_OS_NAME" /> descargará estas imágenes y mantendrá una caché local de estas referencias.
-
-Esta política no tendrá ningún efecto si estableces la política <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> como falsa.
-
-Si no estableces esta política, o la lista no contiene referencias de imagen válidas, no se mostrará el protector de pantalla para la pantalla de acceso, independientemente del valor establecido en la política <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Habilita el contraste alto en la pantalla de acceso</translation>
 <translation id="555077880566103058">Permitir que todos los sitios ejecuten el complemento <ph name="FLASH_PLUGIN_NAME" /> de manera automática</translation>

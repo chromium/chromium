@@ -589,6 +589,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2361263712565360498">275 × 395 mm</translation>
 <translation id="236340516568226369">Méretváltó menü</translation>
+<translation id="2365355378251437925">A(z) <ph name="FIELD" /> megadása kötelező</translation>
 <translation id="2367567093518048410">Szint</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Személyre szabhatja a kisegítő lehetőségeket a Chrome beállításaiban.</translation>
@@ -874,6 +875,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="317878711435188021">megtudni, hogy Ön mikor használja aktívan ezt az eszközt</translation>
 <translation id="3180358318770512945">Gyereknevelés</translation>
 <translation id="3187306450550410410">Rugalmas munkaidő</translation>
+<translation id="3187380004437786923">Fizetések kezelése</translation>
 <translation id="3187472288455401631">Hirdetésmérés</translation>
 <translation id="3190736958609431397">Nyomon követés megszüntetése</translation>
 <translation id="319282854780294203">Közösségi hálózatok</translation>
@@ -1269,6 +1271,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4154664944169082762">Ujjlenyomatok</translation>
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4165986682804962316">Webhelybeállítások</translation>
+<translation id="4169535189173047238">Tiltás</translation>
 <translation id="4171400957073367226">Hibás igazoló aláírás.</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Mindig mutassa</translation>
@@ -3332,6 +3335,7 @@ További részletek:
 <translation id="950736567201356821">Három lyuk felül</translation>
 <translation id="961663415146723894">Kötés alul</translation>
 <translation id="962484866189421427">Ez a tartalom megtévesztő alkalmazásokat telepíthet, amelyek más alkalmazásnak tettethetik magukat, illetve az Ön nyomon követésére alkalmas adatokat gyűjthetnek. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Minden felhasználó</translation>
 <translation id="964050462028070434">Jelszavak és azonosítókulcsok kezelése…</translation>
 <translation id="96680173638229310">Autók és más járművek</translation>
 <translation id="969892804517981540">Hivatalos verzió</translation>

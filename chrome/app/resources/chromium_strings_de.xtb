@@ -196,8 +196,8 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5527463683072221100">PDFs in Chromium öffnen</translation>
 <translation id="5614091477838198795">Wenn aktiviert, wirst du auch aus Chromium abgemeldet</translation>
 <translation id="5623402015214259806">{0,plural, =0{Ein Chromium-Update ist verfügbar}=1{Ein Chromium-Update ist verfügbar}other{Ein Chromium-Update ist seit # Tagen verfügbar}}</translation>
-<translation id="5634636535844844681">Für Chromium ist Windows 7 oder höher erforderlich.</translation>
 <translation id="5653831366781983928">Starte Chromium jetzt neu</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium in dieser Sprache anzeigen</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
 <translation id="5883558403894052917">Chromium hat festgestellt, dass diese Elemente Malware enthalten:</translation>
@@ -343,6 +343,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hat zuvor Chromium verwendet</translation>
 <translation id="8357820681460164151">Wenn du auf allen deinen Geräten auf deine Chromium-Browserinhalte zugreifen möchtest, melde dich an und aktiviere die Synchronisierung</translation>
 <translation id="8360718212975266891">Du benötigst Windows 10 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird Windows 8 ausgeführt.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium innerhalb eines Tages neu starten}other{Chromium innerhalb von # Tagen neu starten}}</translation>
 <translation id="8453117565092476964">Das Installationsarchiv ist beschädigt oder ungültig. Bitte lade Chromium erneut herunter.</translation>
 <translation id="8463672209299734063">Optional: Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chromium OS zu verbessern.</translation>

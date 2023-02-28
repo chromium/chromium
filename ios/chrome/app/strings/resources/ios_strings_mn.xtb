@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">Хавтсыг сонгох</translation>
 <translation id="1254424942107648268">Өмнөх мөрийг олох</translation>
 <translation id="1258491128795710625">Шинэ юм юу байна</translation>
+<translation id="1264156759663453185">Сонгосон текст хэсэгчилсэн орчуулгын хувьд хэт том байна.</translation>
 <translation id="1265739287306757398">Заавар харах</translation>
 <translation id="1272079795634619415">Зогс</translation>
 <translation id="1275718070701477396">Сонгогдсон</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">Боловсронгуй болгох</translation>
 <translation id="2273327106802955778">Дэлгэрэнгүй цэс</translation>
 <translation id="2286505070150039482">Тодруулсан текст</translation>
+<translation id="2287614783861766820">{count,plural, =1{Энэ хаягийг энэ төхөөрөмжөөс устгана.}other{Эдгээр хаягийг энэ төхөөрөмжөөс устгана.}}</translation>
 <translation id="2299218006564889602">Таны нууц үгнүүдийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө төхөөрөмж дээр тань шифрлэдэг.</translation>
 <translation id="2302742851632557585">Нууц үгээ вебсайт дээр өөрчлөх</translation>
 <translation id="2316709634732130529">Санал болгосон нууц үгийг ашиглах</translation>
@@ -458,6 +460,7 @@
 <translation id="4324952538601951430">Таны хадгалсан хавчуурга, нууц үг, тохиргоо болон бусад зүйл одоо энд байна</translation>
 <translation id="4334428914252001502">Уншаагүй 1 нийтлэл.</translation>
 <translation id="4338650699862464074">Таны зочилсон хуудасны URL-г Google-д илгээдэг.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Энэ хаягийг энэ болон таны бусад нэвтэрсэн төхөөрөмжөөс устгана.}other{Эдгээр хаягийг энэ болон таны бусад нэвтэрсэн төхөөрөмжөөс устгана}}</translation>
 <translation id="4343046787186034850">Камер болон микрофоны хандалтыг зөвшөөрсөн</translation>
 <translation id="4359125752503270327">Энэ хуудас өөр апп-д нээгдэх болно.</translation>
 <translation id="4375040482473363939">QR кодоор хайх</translation>
@@ -586,6 +589,7 @@
 <translation id="5232485538978018676">Тохиргоо хийгдсэн бүртгэлээр нэвтрэх</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="5245322853195994030">Синкийг цуцлах</translation>
+<translation id="5271265092610673171">{count,plural, =1{Заавал бөглөх хэсэг хоосон байна. Хадгалахаасаа өмнө үүнийг бөглөнө үү.}other{Заавал бөглөх зарим хэсэг хоосон байна. Хадгалахаасаа өмнө тэдгээрийг бөглөнө үү.}}</translation>
 <translation id="5271549068863921519">Нууц үгийг хадгал</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> бүртгэлийг хасах уу?</translation>
 <translation id="5300589172476337783">Харуулах</translation>
@@ -699,6 +703,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6066301408025741299">Устгахаар дарна уу</translation>
 <translation id="6071409777669089905">Табыг бэхэлснийг болиулах</translation>
 <translation id="6084848228346514841">Таб сонгох</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" />-р нэвтэрсэн. Тохиргоог нээнэ.</translation>
 <translation id="6103540626693881831">Төхөөрөмж дээрх шифрлэлт</translation>
 <translation id="6119050551270742952">Одоогийн веб хуудас нууцлалтай байна</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -1128,6 +1133,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> нууц үгийг устгах уу?</translation>
 <translation id="9100610230175265781">Нэвтрэх үг шаардлагатай</translation>
 <translation id="9107664647686727385">Алдагдсан нууц үгнүүдийг шалгана</translation>
+<translation id="9120217828624527905">Хуудасны бүрэн орчуулга руу сэлгэнэ үү</translation>
 <translation id="9124387962554796433">Хайлт болон Google-н бусад үйлчилгээг хувийн болгохын тулд Google таны түүхийг ашиглаж магадгүй.</translation>
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9148126808321036104">Дансандаа дахин нэвтрэх</translation>

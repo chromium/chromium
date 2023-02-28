@@ -355,6 +355,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="2951071800649516099">Pridėkite puslapių prie skaitymo sąrašo, kad galėtumėte perskaityti juos vėliau</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neskaitytas puslapis}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytas puslapis}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityti puslapiai}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityto puslapio}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytų puslapių}}</translation>
 <translation id="2961210776189273067">Kreipinys / titulas</translation>
+<translation id="296370266220139811">Taupykite laiką vesdami mažiau teksto</translation>
 <translation id="2979025552038692506">Pasirinktas inkognito skirtukas</translation>
 <translation id="2979639724566107830">Atidaryti naujame lange</translation>
 <translation id="2981364137500752533">Gali būti iki penkių langų.</translation>
@@ -482,6 +483,7 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3578874072190212775">Padėkite svetainėms išvengti apgaulių ir atskirti robotus nuo žmonių</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3587596251841506391">Padėti gerinti saugą žiniatinkl.</translation>
+<translation id="3597179440835065298">Gaukite geresnių pasiūlymų</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3616113530831147358">Garsas</translation>
 <translation id="3622349720008044802">Langų tvarkymas</translation>
@@ -747,6 +749,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> nori prisijungti</translation>
 <translation id="5016205925109358554">Su užraitais</translation>
+<translation id="5017529052065664584">Pastarosios penkiolika minučių</translation>
 <translation id="5032430150487044192">Nepavyko sukurti QR kodo</translation>
 <translation id="5039804452771397117">Leisti</translation>
 <translation id="5040262127954254034">Privatumas</translation>
@@ -882,6 +885,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5813552293717797987">Šią naršyklę tvarko: <ph name="PARENT_NAME_1" /> ir <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Įveskite čia arba palieskite balso piktogramą, kad pradėtumėte</translation>
 <translation id="5814749351757353073">Stebėkite mėgstamiausias svetaines</translation>
+<translation id="5822875253699806474">Jei norite sparčiai grįžti į svetaines, kuriose lankėtės, sinchronizuokite skirtukus ir istoriją</translation>
 <translation id="583281660410589416">Nežinoma</translation>
 <translation id="5833984609253377421">Bendrinti nuorodą</translation>
 <translation id="5834764604050996579">Jei norite nuskaityti QR kodą, leiskite „Chrome“ naudoti jūsų fotoaparatą</translation>
@@ -1136,6 +1140,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7088681679121566888">„Chrome“ atnaujinta</translation>
 <translation id="7105047059074518658">Prisijunkite, kad galėtumėte lengviau naršyti skirtingais įrenginiais</translation>
 <translation id="7106762743910369165">Jūsų naršyklę tvarko jūsų organizacija</translation>
+<translation id="7116588989735740310">Grįžkite į svetaines, kuriose lankėtės kitais įrenginiais, sinchronizuodami skirtukus ir istoriją</translation>
 <translation id="7130504491556983216">Pomėgių sąrašas bus rodomas čia jums naršant žiniatinklyje</translation>
 <translation id="7138678301420049075">Kitas</translation>
 <translation id="7146622961999026732">Panašu, kad toliau nurodytos svetainės ir programos jums yra svarbios.</translation>
@@ -1214,6 +1219,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="751961395872307827">Nepavyksta prisijungti prie svetainės</translation>
 <translation id="752220631458524187">Baigę atsijunkite</translation>
 <translation id="7523960634226602883">Ieškoti naudojant fotoaparatą ir „Google Lens“</translation>
+<translation id="7539698981064401140">Skirtukų ir istorijos sinchronizavimas</translation>
 <translation id="7562080006725997899">Naršymo duomenų išvalymas</translation>
 <translation id="756809126120519699">Išvalyti „Chrome“ duomenys</translation>
 <translation id="7577900504646297215">Tvarkyti pomėgius</translation>
@@ -1396,6 +1402,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8461694314515752532">Šifruokite sinchronizuojamus duomenis taikydami savo sinchronizavimo slaptafrazę</translation>
 <translation id="8466613982764129868">Įsitikinkite, kad įrenginys „<ph name="TARGET_DEVICE_NAME" />“ prijungtas prie interneto</translation>
 <translation id="8473863474539038330">Adresai ir dar daugiau</translation>
+<translation id="847433688444405067">Naršymas įrenginiuose</translation>
 <translation id="8481980314595922412">Bandomosios funkcijos įjungtos</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Atidaryti istorijos puslapį</translation>
@@ -1449,6 +1456,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8746155870861185046">Bendrinti paryškinimą</translation>
+<translation id="874726034427945498">Jei norite adreso juostoje matyti geresnius pasiūlymus, sinchronizuokite skirtukus ir istoriją</translation>
 <translation id="8748850008226585750">Turinys paslėptas</translation>
 <translation id="8756969031206844760">Atnaujinti slaptažodį?</translation>
 <translation id="8765470054473112089">Kai įvedate tekstą adreso juostoje ar paieškos laukelyje, „Chrome“ siunčia tai, ką įvedate, į numatytąjį paieškos variklį, kad gautų geresnių pasiūlymų. Ši funkcija inkognito režimu išjungta.</translation>
@@ -1514,6 +1522,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="9070377983101773829">Pradėti paiešką balsu</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Svetainės, kuriose lankotės, nėra saugomos inkognito režimu</translation>
+<translation id="9084103763810123431">Jei norite toliau naršyti kitame įrenginyje, sinchronizuokite skirtukus ir istoriją</translation>
 <translation id="9086302186042011942">Sinchronizuojama</translation>
 <translation id="9086455579313502267">Nepavyko pasiekti tinklo</translation>
 <translation id="9099220545925418560">Pagrįsta jūsų naršymo istorija. Šis nustatymas išjungtas.</translation>

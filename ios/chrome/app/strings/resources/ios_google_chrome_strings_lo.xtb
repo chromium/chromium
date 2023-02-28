@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="2732745070297234559">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>
+<translation id="2736805085127235148">ຕອນນີ້ການແຈ້ງເຕືອນ Chrome ປິດຢູ່ໃນການຕັ້ງຄ່າອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="2767464022270041271">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດກວດສອບລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ທ່ານບັນທຶກພວກມັນໄດ້.</translation>
 <translation id="2869959624320573933">ເຂົ້າສູ່ລະບົບຫາ Chrome</translation>
 <translation id="2957447865124070833">ເລືອກ <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
 <translation id="7939179037291298976">ຈາກການຕັ້ງຄ່າ iPhone ຂອງທ່ານ, ໃຫ້ເປີດ "ຕົວເລືອກລະຫັດຜ່ານ" ແລະ ເລືອກ "Chrome"</translation>
 <translation id="8022947259858476807">ໃຊ້ Chrome ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອເປີດລິ້ງ, ຊອກຫາຈາກວິດເຈັດ ແລະ ການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດໃນແອັບອື່ນໆ</translation>
+<translation id="804638182476029347">ອະນຸຍາດການແຈ້ງເຕືອນ Chrome ເພື່ອຮັບການແຈ້ງເຕືອນການຫຼຸດລາຄາ</translation>
 <translation id="81358522153858150">ຕອນນີ້ Chrome ຮອງຮັບນະໂຍບາຍຜູ້ໃຊ້ສຳລັບບັນຊີທີ່ມີການຈັດການຂອງທ່ານແລ້ວ</translation>
 <translation id="8160472928944011082">Chrome ບໍ່ສາມາດອັບເດດໄດ້</translation>
 <translation id="8357607116237445042">ເລືອກວ່າຈະລຶບລ້າງຂໍ້ມູນ Chrome ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ເກັບມັນໄວ້</translation>

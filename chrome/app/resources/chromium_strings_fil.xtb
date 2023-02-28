@@ -198,8 +198,8 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5527463683072221100">Magbukas ng mga PDF sa Chromium</translation>
 <translation id="5614091477838198795">Kapag naka-on, masa-sign out ka rin sa Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{May available na update sa Chromium}=1{May available na update sa Chromium}one{# araw nang may available na update sa Chromium}other{# na araw nang may available na update sa Chromium}}</translation>
-<translation id="5634636535844844681">Kailangan ng Chromium ng Windows 7 o mas bago.</translation>
 <translation id="5653831366781983928">Paki-restart ang Chromium ngayon</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Ipakita ang Chromium sa wikang ito</translation>
 <translation id="5862307444128926510">Maligayang Pagdating sa Chromium</translation>
 <translation id="5883558403894052917">Napag-alaman ng Chromium na naglalaman ng malware ang mga item na ito:</translation>
@@ -342,10 +342,12 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="8266560134891435528">Hindi masusuri ng Chromium ang iyong mga password dahil hindi ka naka-sign in</translation>
 <translation id="8276522524898344151">Sinusubukan ng Chromium na kopyahin ang mga password.</translation>
 <translation id="8290862415967981663">Maaaring mapanganib ang file na ito, kaya na-block ito ng Chromium.</translation>
+<translation id="8325404639443959713">Makagawa ng mas marami sa Chromium</translation>
 <translation id="8330519371938183845">Mag-sign in para i-sync at i-personalize ang Chromium sa lahat ng iyong device</translation>
 <translation id="8340674089072921962">Chromium ang dating ginagamit ng <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8357820681460164151">Para ma-access ang iyong mga bagay sa Chromium browser sa lahat ng device mo, mag-sign in, pagkatapos ay i-on ang pag-sync</translation>
 <translation id="8360718212975266891">Para makatanggap ng mga update sa Chromium sa hinaharap, kakailanganin mo ng Windows 10 o mas bago. Gumagamit ng Windows 8 ang computer na ito.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Muling ilunsad ang Chromium sa loob ng isang araw}one{Muling ilunsad ang Chromium sa loob ng # araw}other{Muling ilunsad ang Chromium sa loob ng # na araw}}</translation>
 <translation id="8453117565092476964">Sira o di-wasto ang archive ng installer. Mangyaring i-download muli ang Chromium.</translation>
 <translation id="8463672209299734063">Opsyonal: Tumulong na pahusayin ang mga feature at performance ng ChromiumOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng data ng diagnostic at paggamit.</translation>
@@ -381,6 +383,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9158494823179993217">Na-configure ng iyong system administrator ang Chromium na magbukas ng alternatibong browser para i-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Ilunsad ulit para ma-update ang Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Gawing iyo ang Chromium</translation>
 <translation id="93478295209880648">Maaaring hindi gumana nang maayos ang Chromium dahil hindi na ito sinusuportahan sa Windows XP o Windows Vista</translation>
 <translation id="942598560705308788">Mga certificate na pinapamahalaan ng Chromium</translation>
 <translation id="965162752251293939">Sino ang gumagamit ng Chromium?</translation>

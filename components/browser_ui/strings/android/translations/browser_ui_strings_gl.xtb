@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Silencia sitios que reproducen son</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3628308229821498208">Buscas suxeridas</translation>
+<translation id="3636279694100170143">Os sitios que visites poderán verificar que es un usuario real e non un bot</translation>
+<translation id="3649190289964910441">Calquera sitio que visites poderá gardar información con Chrome que confirme que es un usuario real. A medida que navegues, os sitios poderán facer comprobacións con Chrome e verificar, desde o primeiro sitio, que é probable que sexas un usuario de confianza.</translation>
 <translation id="3744111561329211289">Sincronización en segundo plano</translation>
 <translation id="3763247130972274048">Toca dúas veces cara á esquerda ou á dereita no vídeo para saltar 10 s</translation>
 <translation id="3794286421982011626">Os sitios que visitas poden gardar información sobre o que fas para poder funcionar da forma que esperas (por exemplo, para manter a sesión iniciada ou gardar artigos no carro da compra). Con frecuencia, os sitios gardan esta información no teu dispositivo temporalmente.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Xestionado por teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
+<translation id="477781522763920796">Esta opción de configuración non te identifica nin permite que os sitios vexan o teu historial de navegación.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4811450222531576619">Obtén información sobre esta fonte e este tema</translation>
 <translation id="4836046166855586901">Pregúntache sempre que un sitio quere saber se estás utilizando este dispositivo de maneira activa</translation>
@@ -324,6 +327,7 @@
 <translation id="7016516562562142042">Permitido para o motor de busca actual</translation>
 <translation id="702275896380648118">Este sitio determina o que che gusta e logo suxírelles anuncios a outros sitios. Este sitio tamén obtén os teus temas de anuncios de Chrome para mostrarche anuncios máis relevantes.</translation>
 <translation id="702463548815491781">Recoméndase cando están activadas as funcións TalkBack ou Acceso con interruptores</translation>
+<translation id="7050519587566342213">A navegación é máis fluída porque, ao pasar dun sitio ao outro, é máis probable que se te considere un usuario de confianza.</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento seleccionado}other{# elementos seleccionados}}</translation>
 <translation id="7087918508125750058">Elementos seleccionados: <ph name="ITEM_COUNT" />. Hai opcións dispoñibles na parte superior da pantalla</translation>

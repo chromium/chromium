@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">将播放声音的网站静音</translation>
 <translation id="3602290021589620013">预览</translation>
 <translation id="3628308229821498208">建议的搜索</translation>
+<translation id="3636279694100170143">您访问的网站可以验证您是真实用户而非机器人</translation>
+<translation id="3649190289964910441">您访问的网站可将信息保存在 Chrome 中，以用来验证您是真实用户。随着您继续浏览，其他网站可通过从 Chrome 中获取第一个网站提供的信息，确认您可能是受信任的用户。</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
 <translation id="3794286421982011626">您访问的网站可以保存与您正在进行的浏览活动有关的信息，以便网站能按预期运行 - 例如，以便保持您在网站上的登录状态或者保存您的购物车内的商品。网站通常会将这类信息暂时保存在您的设备上。</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4670064810192446073">虚拟现实</translation>
 <translation id="4751476147751820511">动态传感器或光传感器</translation>
+<translation id="477781522763920796">此设置运行时不会识别您的身份，也不会允许网站查看您的浏览记录。</translation>
 <translation id="4779083564647765204">缩放</translation>
 <translation id="4811450222531576619">了解其来源和主题</translation>
 <translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
@@ -324,6 +327,7 @@
 <translation id="7016516562562142042">允许当前搜索引擎使用</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>
+<translation id="7050519587566342213">浏览过程更加顺畅，因为当您从一个网站前往另一个网站时更有可能受到信任。</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已选择 1 项}other{已选择 # 项}}</translation>
 <translation id="7087918508125750058">已选择 <ph name="ITEM_COUNT" /> 项。选项位于屏幕顶部附近</translation>

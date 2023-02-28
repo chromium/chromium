@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">若要在所有网站上退出您的 Google 帐号，请<ph name="BEGIN_LINK" />退出 Chrome<ph name="END_LINK" />。</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2732745070297234559">Chrome 无法检查所有密码。请明天再试。</translation>
+<translation id="2736805085127235148">目前，在您的设备设置中，Chrome 通知功能处于关闭状态。</translation>
 <translation id="2767464022270041271">尚未保存任何密码。您需要先保存密码，然后才能使用 Google 密码管理工具的密码检查功能。</translation>
 <translation id="2869959624320573933">登录 Chrome</translation>
 <translation id="2957447865124070833">选择 <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
 <translation id="7939179037291298976">在 iPhone 的“设置”中，打开“密码选项”，然后选择“Chrome”</translation>
 <translation id="8022947259858476807">默认使用 Chrome 来打开链接、在微件中执行搜索以及在其他应用中自动填充密码</translation>
+<translation id="804638182476029347">开启 Chrome 通知功能后才能接收降价提醒</translation>
 <translation id="81358522153858150">Chrome 现在支持为您的受管理帐号设置用户规范</translation>
 <translation id="8160472928944011082">Chrome 无法更新</translation>
 <translation id="8357607116237445042">请选择是要清除还是要保留您在此设备上存储的 Chrome 数据</translation>

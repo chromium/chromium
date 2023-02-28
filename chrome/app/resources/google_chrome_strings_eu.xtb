@@ -129,6 +129,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3245429137663807393">Chrome-ren erabilera-txostenak ere partekatzen badituzu, bisitatzen dituzun URLak agertuko dira txosten horietan</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3286538390144397061">Berrabiarazi orain</translation>
+<translation id="3293912612584488930">Egin gauza gehiago Chrome-rekin</translation>
 <translation id="3360895254066713204">Chrome laguntzailea</translation>
 <translation id="3379938682270551431">{0,plural, =0{Orain berrabiaraziko da Chrome}=1{1 segundo barru berrabiaraziko da Chrome}other{# segundo barru berrabiaraziko da Chrome}}</translation>
 <translation id="3396977131400919238">Sistema-eragilean errore bat gertatu da instalatu bitartean. Deskargatu Google Chrome berriro.</translation>
@@ -412,7 +413,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8989968390305463310">Agertzen zaizkizun iragarkietan eta behean estimatutako interesetan eragina du arakatze-historiak. Zure pribatutasuna babesteko, Chrome-k automatikoki ezabatzen ditu zure interesak hilero. Interesak eguneratu egin daitezke, haiek kendu ezean.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome arakatzailearen eguneratze bat dago erabilgarri}=1{Chrome arakatzailearen eguneratze bat dago erabilgarri}other{Chrome arakatzailearen eguneratze batek # egun daramatza erabilgarri}}</translation>
 <translation id="9053892488859122171">ChromeOS Flex sistema</translation>
-<translation id="9067395829937117663">Windows 7 edo sistema berriagoa behar da Google Chrome erabiltzeko.</translation>
 <translation id="911206726377975832">Arakatze-datuak ere ezabatu nahi dituzu?</translation>
 <translation id="9138603949443464873">Aldaketak aplikatzeko, berrabiarazi Chrome</translation>
 <translation id="9195993889682885387">Azken asteetako arakatze-historian oinarrituta estima ditzake gutxi gorabehera zure interesak Chrome-k. Informazio hori gailuan gelditzen da.</translation>

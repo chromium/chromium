@@ -31,6 +31,7 @@
 <translation id="2689064829982324496">Du kannst dich auf allen Websites aus deinem Google-Konto abmelden, indem du dich <ph name="BEGIN_LINK" />von Chrome abmeldest<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="2732745070297234559">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
+<translation id="2736805085127235148">Chrome-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
 <translation id="2767464022270041271">Keine gespeicherten Passwörter. Der Google Passwortmanager kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2957447865124070833">Wähle <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> aus</translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
 <translation id="7939179037291298976">Rufe in den Einstellungen deines iPhones den Punkt „Passwortoptionen“ auf und wähle „Chromium“ aus</translation>
 <translation id="8022947259858476807">Standardmäßig Chrome verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
+<translation id="804638182476029347">Chrome-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
 <translation id="81358522153858150">Chrome unterstützt jetzt Nutzerrichtlinien für dein verwaltetes Konto</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
 <translation id="8357607116237445042">Möchtest du deine Chrome-Daten von diesem Gerät löschen oder sie behalten?</translation>

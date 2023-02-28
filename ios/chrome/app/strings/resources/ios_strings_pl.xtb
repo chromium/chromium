@@ -117,7 +117,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="1700629756560807968">Wybrane: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1715515772563243997">Jeśli ufasz stronie <ph name="SITE" />, możesz użyć zapisanego hasła, aby się zalogować.</translation>
-<translation id="173842016780303328">Nie udało się przetłumaczyć części tekstu.</translation>
 <translation id="1740468249224277719">Kliknij dwukrotnie, by zainstalować.</translation>
 <translation id="1752547299766512813">Zapisuj hasła</translation>
 <translation id="1753905327828125965">Najczęstsze</translation>
@@ -130,7 +129,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1832848789136765277">Aby zapewnić sobie stały dostęp do zsynchronizowanych danych, potwierdź swoją tożsamość</translation>
 <translation id="1870148520156231997">Pokaż hasło</translation>
 <translation id="1872096359983322073">Latarka</translation>
-<translation id="1886370402958071554">Usuń adres</translation>
 <translation id="1891796056033961979">Zapisane zakładki, hasła, ustawienia i inne dane są dostępne na tym ekranie.</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
 <translation id="1911619930368729126">Prześlij na Dysk Google</translation>
@@ -245,7 +243,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2747003861858887689">Poprzednie pole</translation>
 <translation id="2749231692441336879">Obserwujesz: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">przed chwilą</translation>
-<translation id="2768727608073497433">Zaznaczony tekst jest pusty.</translation>
 <translation id="2773292004659987824">Wyszukiwanie incognito</translation>
 <translation id="277771892408211951">Wybierz język</translation>
 <translation id="2780046210906776326">Brak kont e-mail</translation>

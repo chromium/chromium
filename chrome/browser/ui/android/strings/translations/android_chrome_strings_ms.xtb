@@ -355,6 +355,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="2951071800649516099">Tambahkan halaman pada senarai bacaan anda untuk kemudian</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> halaman belum dibaca}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> halaman belum dibaca}}</translation>
 <translation id="2961210776189273067">Tajuk</translation>
+<translation id="296370266220139811">Jimatkan masa dan kurangkan menaip</translation>
 <translation id="2979025552038692506">Tab Inkognito yang Dipilih</translation>
 <translation id="2979639724566107830">Buka dalam tetingkap baharu</translation>
 <translation id="2981364137500752533">Anda boleh membuka sehingga 5 tetingkap.</translation>
@@ -482,6 +483,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="3578874072190212775">Bantu laman memerangi penipuan dan membezakan bot daripada orang</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587596251841506391">Tingkatkan keselamatan pada web</translation>
+<translation id="3597179440835065298">Dapatkan cadangan yang lebih baik</translation>
 <translation id="3602290021589620013">Pratonton</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3622349720008044802">Urus tetingkap</translation>
@@ -747,6 +749,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5005498671520578047">Salin kata laluan</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ingin menyambung</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">15 minit yang lalu</translation>
 <translation id="5032430150487044192">Tidak dapat membuat Kod QR</translation>
 <translation id="5039804452771397117">Benarkan</translation>
 <translation id="5040262127954254034">Privasi</translation>
@@ -882,6 +885,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5813552293717797987">Penyemak imbas ini diurus oleh <ph name="PARENT_NAME_1" /> dan <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Ketik di sini atau ketik ikon suara untuk bermula</translation>
 <translation id="5814749351757353073">Ikuti perkembangan laman kegemaran anda</translation>
+<translation id="5822875253699806474">Untuk segera kembali kepada laman yang telah anda lawati, segerakkan tab dan sejarah anda</translation>
 <translation id="583281660410589416">Tidak diketahui</translation>
 <translation id="5833984609253377421">Kongsi pautan</translation>
 <translation id="5834764604050996579">Untuk mengimbas Kod QR, benarkan Chrome menggunakan kamera anda</translation>
@@ -921,6 +925,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="6002122790816966947">Peranti anda</translation>
 <translation id="6005538289190791541">Kata laluan yang disyorkan</translation>
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
+<translation id="6026538407078977628">Kembangkan kepada skrin penuh</translation>
 <translation id="6039379616847168523">Lompat ke tab seterusnya</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="604124094241169006">Automatik</translation>
@@ -1136,6 +1141,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7088681679121566888">Chrome sudah dikemas kini</translation>
 <translation id="7105047059074518658">Log masuk untuk menyemak imbas dengan lebih mudah di seluruh peranti</translation>
 <translation id="7106762743910369165">Penyemak imbas anda diurus oleh organisasi anda</translation>
+<translation id="7116588989735740310">Untuk kembali kepada laman yang telah anda lawati pada peranti lain, segerakkan tab dan sejarah anda</translation>
 <translation id="7130504491556983216">Senarai minat akan dipaparkan di sini semasa anda menyemak imbas web</translation>
 <translation id="7138678301420049075">Lain-lain</translation>
 <translation id="7146622961999026732">Tapak dan apl ini nampaknya penting kepada anda:</translation>
@@ -1192,6 +1198,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7437998757836447326">Log keluar dari Chrome</translation>
 <translation id="7443901082822119557">Semasa dalam mod inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman yang berlainan, contohnya, untuk memeribadikan iklan. Ciri pada sesetengah laman mungkin rosak.</translation>
 <translation id="7453467225369441013">Mengelog anda keluar daripada kebanyakan tapak. Anda tidak akan dilog keluar daripada Akaun Google anda.</translation>
+<translation id="7453810262525006706">Kuncupkan kepada pandangan sisi</translation>
 <translation id="7454641608352164238">Tidak cukup ruang</translation>
 <translation id="7455988709578031708">Berdasarkan sejarah penyemakan imbas anda. Tetapan ini dihidupkan.</translation>
 <translation id="7456774706094330779">Pramuat lanjutan</translation>
@@ -1214,6 +1221,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="751961395872307827">Tidak dapat menyambung ke tapak</translation>
 <translation id="752220631458524187">Putuskan sambungan apabila anda sudah selesai</translation>
 <translation id="7523960634226602883">Cari dengan kamera anda menggunakan Google Lens</translation>
+<translation id="7539698981064401140">Segerakkan tab dan sejarah anda</translation>
 <translation id="7562080006725997899">Mengosongkan data penyemakan imbas</translation>
 <translation id="756809126120519699">Data Chrome dikosongkan</translation>
 <translation id="7577900504646297215">Urus minat</translation>
@@ -1396,6 +1404,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8461694314515752532">Sulitkan data yang disegerakkan dengan ungkapan laluan penyegerakan anda sendiri</translation>
 <translation id="8466613982764129868">Pastikan <ph name="TARGET_DEVICE_NAME" /> disambungkan ke Internet</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
+<translation id="847433688444405067">Semak imbas merentas peranti</translation>
 <translation id="8481980314595922412">Ciri percubaan dihidupkan</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Buka halaman sejarah</translation>
@@ -1449,6 +1458,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8746155870861185046">Kongsi serlahan</translation>
+<translation id="874726034427945498">Untuk melihat cadangan yang lebih baik dalam bar alamat anda, segerakkan tab dan sejarah anda</translation>
 <translation id="8748850008226585750">Kandungan tersembunyi</translation>
 <translation id="8756969031206844760">Kemas kini kata laluan?</translation>
 <translation id="8765470054473112089">Apabila anda menaip dalam bar alamat atau kotak carian, Chrome menghantar perkara yang anda taip ke enjin carian lalai anda untuk mendapatkan cadangan yang lebih baik. Tetapan ini dimatikan dalam Inkognito.</translation>
@@ -1514,6 +1524,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="9070377983101773829">Mulakan carian suara</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Laman yang anda lawati tidak disimpan dalam Inkognito</translation>
+<translation id="9084103763810123431">Untuk terus menyemak imbas pada peranti lain, segerakkan tab dan sejarah anda</translation>
 <translation id="9086302186042011942">Menyegerak</translation>
 <translation id="9086455579313502267">Tidak dapat mengakses rangkaian</translation>
 <translation id="9099220545925418560">Berdasarkan sejarah penyemakan imbas anda. Tetapan ini dimatikan.</translation>

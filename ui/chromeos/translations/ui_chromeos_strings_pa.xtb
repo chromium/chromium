@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">ਆਇਰਸ਼</translation>
 <translation id="4124935795427217608">ਇੱਕ ਸਿੰਗ ਵਾਲਾ ਘੋੜਾ</translation>
 <translation id="4131235941541910880">ਆਪਣੀਆਂ ਬੇਲੋੜੀਆਂ ਆਈਟਮਾਂ ਰੱਦੀ ਵਿੱਚ ਲਿਜਾਓ</translation>
+<translation id="4134804435730168042">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ਡੀਵਾਈਸ ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="4153015322587141338">ਫ਼ਾਈਲ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਸ਼ੈਲਫ ਵਿੱਚ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਤਤਕਾਲ ਪਹੁੰਚ ਕਰਨ ਲਈ "<ph name="PIN_COMMAND" />" ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="4157569377477607576">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਇਨ੍ਹਾਂ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ।</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ ਅਤੇ ਤੁਸੀਂ ਉਸਨੂੰ ਮੁੜ-ਬਹਾਲ ਨਹੀਂ ਕਰ ਸਕੋਗੇ।</translation>
 <translation id="4418686080762064601">ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਲਈ ਕੋਈ ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
 <translation id="4425149324548788773">My Drive</translation>
+<translation id="4432921877815220091">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ਡੀਵਾਈਸ ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="4439427728133035643">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="4442424173763614572">DNS ਲੁਕਅੱਪ ਅਸਫਲ ਹੋ ਗਿਆ</translation>
 <translation id="4462159676511157176">ਨਾਮ ਸਰਵਰ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
@@ -612,8 +614,10 @@
 <translation id="5911887972742538906">ਤੁਹਾਡੀ Linux ਐਪਲੀਕੇਸ਼ਨ ਦੀ ਸਥਾਪਨਾ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="5912396950572065471">ਫਾਰਮੈਟ</translation>
 <translation id="5913638992615760742">ਕਾਪੀ ਕਰਨ ਦੀ ਕਾਰਵਾਈ ਅਸਫਲ ਰਹੀ, ਅਣਕਿਆਸੀ ਗੜਬੜ: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">ਨਵੀਆਂ ਖੋਜ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਉਪਲਬਧ ਹਨ</translation>
 <translation id="5926082595146149752">ਸੰਯੁਕਤ ਰਾਜ ਅੰਤਰਰਾਸ਼ਟਰੀ PC ਕੀ-ਬੋਰਡ ਨਾਲ ਡੱਚ (ਨੀਦਰਲੈਂਡ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, ਡੀਵਾਈਸ ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ਵਿਕਲਪ ਕ੍ਰਮਬੱਧ ਕਰੋ</translation>
@@ -760,6 +764,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ਡਰਾਈਵ ਖੋਜੋ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">ਕੰਨੜ ਧੁਨੀਆਤਮਿਕ</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">ਪ੍ਰਮਾਣੀਕਰਨ ਸਰਵਰ ਪਛਾਣ ਨੂੰ ਪ੍ਰਮਾਣਿਤ ਕਰਨ ਲਈ 'ਵਿਸ਼ੇ ਸੰਬੰਧੀ ਵਿਕਲਪਿਕ ਨਾਮ ਦਾ ਮਿਲਾਨ' ਜਾਂ 'ਡੋਮੇਨ ਪਿਛੇਤਰ ਦਾ ਮਿਲਾਨ' ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="7165320105431587207">ਨੈੱਟਵਰਕ ਨੂੰ ਸੰਰੂਪਿਤ ਕਰਨ ਨਹੀਂ ਕਰ ਸਕਿਆ</translation>
 <translation id="7170041865419449892">ਸੀਮਾ ਤੋਂ ਬਾਹਰ</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
@@ -935,6 +940,7 @@
 <translation id="8487700953926739672">ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ</translation>
 <translation id="8492972329130824181">ਘਰੇਲੂ ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਨਹੀਂ ਹੈ। ਕਨੈਕਟ ਕਰਨ ਲਈ ਮੋਬਾਈਲ ਡਾਟਾ ਰੋਮਿੰਗ ਦਾ ਚਾਲੂ ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਐਕਸਟਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="8502913769543567768">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ਡੀਵਾਈਸ ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ, ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8521441079177373948">ਯੂਕੇ</translation>
 <translation id="853494022971700746">ਫਰਾਂਸੀਸੀ (ਫ਼ਰਾਂਸ)</translation>
 <translation id="8540608333167683902">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਵੇਰਵੇ</translation>

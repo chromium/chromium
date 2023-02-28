@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2361263712565360498">۳۹۵ × ۲۷۵ میلی‌متر</translation>
 <translation id="236340516568226369">منوی فعال/غیرفعال کردن دکمه‌های تغییر اندازه</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> را وارد کنید</translation>
 <translation id="2367567093518048410">سطح</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">‏شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات Chrome</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">بداند چه زمانی به‌صورت فعال از این دستگاه استفاده می‌کنید</translation>
 <translation id="3180358318770512945">فرزندداری</translation>
 <translation id="3187306450550410410">ساعات کاری انعطاف‌پذیر</translation>
+<translation id="3187380004437786923">مدیریت پرداخت‌ها</translation>
 <translation id="3187472288455401631">سنجش آگهی</translation>
 <translation id="3190736958609431397">لغو پیگیری</translation>
 <translation id="319282854780294203">شبکه اجتماعی</translation>
@@ -1271,6 +1273,7 @@
 <translation id="4154664944169082762">اثر انگشت</translation>
 <translation id="4159784952369912983">بنفش</translation>
 <translation id="4165986682804962316">تنظیمات سایت</translation>
+<translation id="4169535189173047238">اجازه داده نشود</translation>
 <translation id="4171400957073367226">امضای تأیید نامناسب</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">همیشه نشان داده شود</translation>
@@ -3333,6 +3336,7 @@
 <translation id="950736567201356821">سه سوراخ در بالا</translation>
 <translation id="961663415146723894">به‌هم چسباندن از پایین</translation>
 <translation id="962484866189421427">این محتوا ممکن است برنامه‌های فریب‌دهنده‌ای نصب کند که وانمود می‌کنند برنامه دیگری هستند یا اینکه داده‌هایی برای ردیابی شما جمع‌آوری می‌کنند. <ph name="BEGIN_LINK" />درهرصورت نشان داده شود<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">همه کاربران</translation>
 <translation id="964050462028070434">مدیریت گذرواژه‌ها و گذرکلیدها…</translation>
 <translation id="96680173638229310">خودرو و وسیله نقلیه</translation>
 <translation id="969892804517981540">ساخت رسمی</translation>

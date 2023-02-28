@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">Chromium-ൽ PDF-കൾ തുറക്കുക</translation>
 <translation id="5614091477838198795">ഓണായിരിക്കുമ്പോൾ, Chromium-ൽ നിന്ന് നിങ്ങളും സൈൻ ഔട്ട് ആകും</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}=1{Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}other{# ദിവസമായി Chromium-ത്തിനൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}}</translation>
-<translation id="5634636535844844681">Chromium-ത്തിന് Windows 7 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്.</translation>
 <translation id="5653831366781983928">Chromium ഇപ്പോൾ റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">ഈ ഭാഷയിൽ Chromium പ്രദർശിപ്പിക്കുക</translation>
 <translation id="5862307444128926510">Chromium-ത്തിലേക്ക് സ്വാഗതം</translation>
 <translation id="5883558403894052917">ഈ ഇനങ്ങളിൽ മാൽവെയർ അടങ്ങുന്നതായി Chromium കണ്ടെത്തി:</translation>
@@ -347,6 +347,7 @@
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> മുമ്പ് Chromium ഉപയോഗിച്ചിട്ടുണ്ട്</translation>
 <translation id="8357820681460164151">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും Chromium ബ്രൗസർ ഉള്ളടക്കം ആക്സസ് ചെയ്യാൻ, സൈൻ ഇൻ ചെയ്ത ശേഷം സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="8360718212975266891">ഭാവിയിൽ Chromium അപ്‌ഡേറ്റുകൾ ലഭിക്കാൻ, നിങ്ങൾക്ക് Windows 10 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ള പതിപ്പ് ആവശ്യമാണ്. ഈ കമ്പ്യൂട്ടർ Windows 8 ആണ് ഉപയോഗിക്കുന്നത്.</translation>
+<translation id="8370517070665726704">പകർപ്പവകാശം <ph name="YEAR" /> Google LLC. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‍തം.</translation>
 <translation id="8417404458978023919">{0,plural, =1{ഒരു ദിവസത്തിനുള്ളിൽ Chromium വീണ്ടും സമാരംഭിക്കുക}other{# ദിവസത്തിനുള്ളിൽ Chromium വീണ്ടും സമാരംഭിക്കുക}}</translation>
 <translation id="8453117565092476964">ഇൻസ്റ്റാളർ ആർക്കൈവ് കേടായതാണ് അല്ലെങ്കിൽ അസാധുവാണ്. Chromium വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക.</translation>
 <translation id="8463672209299734063">ഓപ്ഷണൽ: പ്രശ്നനിർണ്ണയ, ഉപയോഗ ഡാറ്റ സ്വയമേവ Google-ന് അയച്ച് ChromiumOS ഫീച്ചറുകളും പ്രകടനവും മെച്ചപ്പെടുത്താൻ സഹായിക്കുക.</translation>

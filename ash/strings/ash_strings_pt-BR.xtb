@@ -502,6 +502,11 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3633097874324966332">Abra as configurações do Bluetooth se quiser parear o dispositivo</translation>
 <translation id="3638400994746983214">Alternar tela de privacidade. <ph name="STATE_TEXT" /></translation>
 <translation id="3649505501900178324">Atualização atrasada</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> a
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Selecione para mostrar mais detalhes no Google Agenda.</translation>
 <translation id="3659444876902283058">(dia <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Tempo restante: cerca de <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Conecte o dispositivo a uma fonte de energia.</translation>
@@ -549,6 +554,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />. Carregando eventos.</translation>
 <translation id="3932043219784172185">Nenhum dispositivo conectado</translation>
 <translation id="3934456833412894880">O carregamento adaptável está ativado. Sua bateria vai parar em 80% para prolongar a vida útil e será totalmente carregada quando você precisar.</translation>
+<translation id="3936620957945677513">Pressione "Enter" para participar do evento <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="394485226368336402">Configurações de áudio</translation>
 <translation id="3945319193631853098">Toque para concluir a configuração</translation>
@@ -1466,9 +1472,9 @@ Nova instalação</translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>
 <translation id="8853703225951107899">Ainda não foi possível verificar seu PIN ou sua senha. Observação: se você mudou a senha recentemente, use a antiga. A nova senha será aplicada depois que você sair.</translation>
 <translation id="8855885154700222542">Tecla de tela cheia</translation>
-<translation id="8858369206579825206">Controles de privacidade</translation>
 <translation id="8870509716567206129">O app não é compatível com a divisão de tela.</translation>
 <translation id="8874184842967597500">Não conectado</translation>
+<translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Verifique sua conexão</translation>
 <translation id="8877788021141246043">Definir um lembrete</translation>
 <translation id="8878886163241303700">Tela ampla</translation>

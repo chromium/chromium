@@ -47,6 +47,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="1254117744268754948">Chọn thư mục</translation>
 <translation id="1254424942107648268">Tìm nội dung khớp ở trước</translation>
 <translation id="1258491128795710625">Tính năng mới</translation>
+<translation id="1264156759663453185">Lượng nội dung bạn chọn quá lớn nên không thể dịch một phần.</translation>
 <translation id="1265739287306757398">Tìm hiểu cách thức</translation>
 <translation id="1272079795634619415">Dừng</translation>
 <translation id="1275718070701477396">Đã chọn</translation>
@@ -177,6 +178,7 @@ Chỉ những người có cụm mật khẩu của bạn mới đọc được 
 <translation id="2268044343513325586">Tinh chỉnh</translation>
 <translation id="2273327106802955778">Menu khác</translation>
 <translation id="2286505070150039482">Văn bản được đánh dấu</translation>
+<translation id="2287614783861766820">{count,plural, =1{Địa chỉ này sẽ bị xoá khỏi thiết bị này.}other{Các địa chỉ này sẽ bị xoá khỏi thiết bị này.}}</translation>
 <translation id="2299218006564889602">Mật khẩu của bạn được mã hoá trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google.</translation>
 <translation id="2302742851632557585">Đổi mật khẩu trên trang web</translation>
 <translation id="2316709634732130529">Sử dụng mật khẩu đề xuất</translation>
@@ -458,6 +460,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="4324952538601951430">Dấu trang, mật khẩu, chế độ cài đặt và các nội dung khác mà bạn đã lưu giờ sẽ ở đây</translation>
 <translation id="4334428914252001502">1 bài viết chưa đọc.</translation>
 <translation id="4338650699862464074">Gửi URL của các trang bạn truy cập cho Google.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Địa chỉ này sẽ bị xoá khỏi thiết bị hiện tại cũng như các thiết bị đã đăng nhập khác.}other{Các địa chỉ này sẽ bị xoá khỏi thiết bị hiện tại cũng như các thiết bị đã đăng nhập khác.}}</translation>
 <translation id="4343046787186034850">Đã cho phép truy cập máy ảnh và micrô</translation>
 <translation id="4359125752503270327">Trang này sẽ mở trong ứng dụng khác.</translation>
 <translation id="4375040482473363939">Tìm kiếm mã QR</translation>
@@ -587,6 +590,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5232485538978018676">Đăng nhập bằng Tài khoản được quản lý</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5245322853195994030">Hủy đồng bộ hóa</translation>
+<translation id="5271265092610673171">{count,plural, =1{Trường bắt buộc đang trống. Hãy điền vào trường này trước khi lưu.}other{Một số trường bắt buộc vẫn đang trống. Hãy điền vào các trường này trước khi lưu.}}</translation>
 <translation id="5271549068863921519">Lưu mật khẩu</translation>
 <translation id="5295239312320826323">Xóa tài khoản <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
@@ -700,6 +704,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="6066301408025741299">Nhấn để hủy.</translation>
 <translation id="6071409777669089905">Bỏ ghim thẻ</translation>
 <translation id="6084848228346514841">Chọn các thẻ</translation>
+<translation id="6100617279104942061">Đã đăng nhập bằng <ph name="USER_EMAIL" />. Mở phần cài đặt.</translation>
 <translation id="6103540626693881831">Mã hoá trên thiết bị</translation>
 <translation id="6119050551270742952">Trang web hiện tại đang ở chế độ ẩn danh</translation>
 <translation id="6122191549521593678">Trực tuyến</translation>
@@ -1129,6 +1134,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9098541895599151034">Xoá <ph name="NUMBER_OF_ACCOUNTS" /> mật khẩu?</translation>
 <translation id="9100610230175265781">Yêu cầu cụm mật khẩu</translation>
 <translation id="9107664647686727385">Kiểm tra để tìm mật khẩu bị lộ</translation>
+<translation id="9120217828624527905">Chuyển sang Dịch toàn bộ trang</translation>
 <translation id="9124387962554796433">Google có thể sử dụng nhật ký hoạt động của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp hơn với bạn.</translation>
 <translation id="9137526406337347448">Dịch vụ của Google</translation>
 <translation id="9148126808321036104">Đăng nhập lại</translation>

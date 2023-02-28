@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">Куржун тандоо</translation>
 <translation id="1254424942107648268">Мурункуну табуу</translation>
 <translation id="1258491128795710625">Эмне жаңылык</translation>
+<translation id="1264156759663453185">Тандалган текст өтө чоң.</translation>
 <translation id="1265739287306757398">Үйрөнүп алыңыз</translation>
 <translation id="1272079795634619415">Токтотуу</translation>
 <translation id="1275718070701477396">Тандалган</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">Мыктылоо</translation>
 <translation id="2273327106802955778">"Дагы" менюсу</translation>
 <translation id="2286505070150039482">Бөлүнүп көрсөтүлгөн текст</translation>
+<translation id="2287614783861766820">{count,plural, =1{Бул дарек ушул түзмөктөн өчүрүлөт.}other{Бул даректер ушул түзмөктөн өчүрүлөт.}}</translation>
 <translation id="2299218006564889602">Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрүңүз түзмөгүңүздө шифрленет.</translation>
 <translation id="2302742851632557585">Вебсайттагы сырсөзүңүздү өзгөртүңүз</translation>
 <translation id="2316709634732130529">Сунушталган сырсөздү колдонуу</translation>
@@ -458,6 +460,7 @@
 <translation id="4324952538601951430">Сакталган кыстармалар, сырсөздөр, параметрлер жана башкалар эми ушул жерде болот</translation>
 <translation id="4334428914252001502">1 окула элек макала.</translation>
 <translation id="4338650699862464074">Баш баккан барактарыңыздын URL'дерин Google'га жөнөтөт.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Бул дарек аккаунтка кирип турган ушул жана башка түзмөктөрдөн өчүрүлөт.}other{Бул даректер аккаунтка кирип турган ушул жана башка түзмөктөрдөн өчүрүлөт.}}</translation>
 <translation id="4343046787186034850">Камера менен микрофонду колдонууга уруксат берилди</translation>
 <translation id="4359125752503270327">Бул барак башка колдонмодо ачылат.</translation>
 <translation id="4375040482473363939">QR кодду издөө</translation>
@@ -587,6 +590,7 @@
 <translation id="5232485538978018676">Башкарылган аккаунт менен кирүү</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
 <translation id="5245322853195994030">Шайкештештирүүнү жокко чыгаруу</translation>
+<translation id="5271265092610673171">{count,plural, =1{Милдеттүү талаа бош калды. Сактоодон мурда аны толтуруңуз.}other{Милдеттүү айрым талаалар бош калды. Сактоодон мурда аларды толтуруңуз.}}</translation>
 <translation id="5271549068863921519">Сырсөздү сактоо</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> аккаунту өчүрүлсүнбү?</translation>
 <translation id="5300589172476337783">Көрсөтүү</translation>
@@ -700,6 +704,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6066301408025741299">Жокко чыгаруу үчүн таптаңыз.</translation>
 <translation id="6071409777669089905">Өтмөктү бошотуу</translation>
 <translation id="6084848228346514841">Өтмөктөрдү тандоо</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> катары кирдиңиз. Параметрлерди ачат.</translation>
 <translation id="6103540626693881831">Түзмөктө шифрлөө</translation>
 <translation id="6119050551270742952">Учурдагы веб-баракча Жашыруун режимде</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -1129,6 +1134,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> сырсөз жок кылынсынбы?</translation>
 <translation id="9100610230175265781">Купуя сөз айкашы талап кылынат</translation>
 <translation id="9107664647686727385">Уурдалган сырсөздөрдү текшерет</translation>
+<translation id="9120217828624527905">Толук баракты которууга өтүү</translation>
 <translation id="9124387962554796433">Издөө жана башка Google кызматтарын жекелештирүү үчүн Google таржымалыңызды колдонушу мүмкүн.</translation>
 <translation id="9137526406337347448">Google кызматтары</translation>
 <translation id="9148126808321036104">Кайра кириңиз</translation>

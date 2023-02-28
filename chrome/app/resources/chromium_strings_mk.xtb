@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">Отворај PDF-формат во Chromium</translation>
 <translation id="5614091477838198795">Кога е вклучено, ќе се одјавите и од Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Достапно е ажурирање за Chromium}=1{Достапно е ажурирање за Chromium}one{Достапно е ажурирање за Chromium веќе # ден}other{Достапно е ажурирање за Chromium веќе # дена}}</translation>
-<translation id="5634636535844844681">Chromium бара Windows 7 или понова верзија.</translation>
 <translation id="5653831366781983928">Рестартирајте го Chromium сега</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Прикажи го Chromium на овој јазик</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
 <translation id="5883558403894052917">Chromium откри дека овие ставки содржат злонамерен софтвер:</translation>
@@ -342,10 +342,12 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8266560134891435528">Chromium не може да ги провери вашите лозинки бидејќи не сте најавени</translation>
 <translation id="8276522524898344151">Chromium се обидува да копира лозинки.</translation>
 <translation id="8290862415967981663">Датотекава може да биде опасна, па затоа Chromium ја блокираше.</translation>
+<translation id="8325404639443959713">Извлечете го максимумот од Chromium</translation>
 <translation id="8330519371938183845">Најавете се за да го синхронизирате и персонализирате Chromium на сите ваши уреди</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> претходно користеше Chromium</translation>
 <translation id="8357820681460164151">За да пристапувате до вашите работи на прелистувачот Chromium на сите уреди, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="8360718212975266891">За да добивате идни ажурирања на Chromium, потребен ви е Windows 10 или понова верзија. Компјутеров користи Windows 8.</translation>
+<translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Рестартирајте го Chromium во рок од еден ден}one{Рестартирајте го Chromium во рок од # ден}other{Рестартирајте го Chromium во рок од # дена}}</translation>
 <translation id="8453117565092476964">Архивата на инсталаторот е оштетена или невалидна. Преземете го Chromium повторно.</translation>
 <translation id="8463672209299734063">Незадолжително: помогнете да се подобрат функциите и изведбата на Chromium OS со автоматско испраќање дијагностички податоци и податоци за користењето до Google.</translation>
@@ -381,6 +383,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="9158494823179993217">Администраторот на системот го конфигурирал Chromium да отвора друг прелистувач за пристап до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Рестартирајте за да се ажурира &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Направете го Chromium свој</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно затоа што веќе не е поддржан на Windows XP или Windows Vista</translation>
 <translation id="942598560705308788">Сертификати управувани од Chromium</translation>
 <translation id="965162752251293939">Кој користи Chromium?</translation>

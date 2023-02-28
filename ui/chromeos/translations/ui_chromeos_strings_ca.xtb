@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irlandès</translation>
 <translation id="4124935795427217608">Unicorn</translation>
 <translation id="4131235941541910880">Mou els elements que no necessitis a la paperera</translation>
+<translation id="4134804435730168042">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activa després de la configuració del dispositiu</translation>
 <translation id="4153015322587141338">Fes clic amb el botó dret en un fitxer i selecciona <ph name="PIN_COMMAND" /> per accedir ràpidament als teus fitxers al prestatge.</translation>
 <translation id="4157569377477607576">La política de l'administrador no recomana:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> s'ha mogut.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570"><ph name="FILE_NAME" /> se suprimirà i no el podràs restaurar.</translation>
 <translation id="4418686080762064601">Crea una drecera per als fitxers</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
+<translation id="4432921877815220091">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Activa després de la configuració del dispositiu, Gestionada pel teu administrador</translation>
 <translation id="4439427728133035643">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, connecta</translation>
 <translation id="4442424173763614572">La cerca de DNS ha fallat</translation>
 <translation id="4462159676511157176">Servidors de noms personalitzats</translation>
@@ -615,6 +617,7 @@
 <translation id="5913638992615760742">L'operació de còpia ha fallat; s'ha produït un error inesperat: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">Neerlandès (Països Baixos) amb teclat internacional dels EUA (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Activa després de la configuració del dispositiu</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elements</translation>
 <translation id="5957366693331451795">dispositius Chromebox</translation>
 <translation id="5982621672636444458">Ordena les opcions</translation>
@@ -761,6 +764,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;": &lt;em&gt;cerca a Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada fonètic</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Cal emplenar els camps "Nom alternatiu d'assumpte coincident" o "Sufix de domini coincident" per validar la identitat del servidor d'autenticació</translation>
 <translation id="7165320105431587207">No s'ha pogut configurar la xarxa</translation>
 <translation id="7170041865419449892">Fora de l'interval</translation>
 <translation id="7180611975245234373">Actualitza</translation>
@@ -936,6 +940,7 @@
 <translation id="8487700953926739672">Disponible sense connexió</translation>
 <translation id="8492972329130824181">La xarxa domèstica no està disponible. La itinerància de dades mòbils ha d'estar activada per poder connectar-t'hi.</translation>
 <translation id="8499098729323186194">S'estan extraient <ph name="NUMBER_OF_ITEMS" /> elements...</translation>
+<translation id="8502913769543567768">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Activa després de la configuració del dispositiu, Gestionada pel teu administrador</translation>
 <translation id="8521441079177373948">Regne Unit</translation>
 <translation id="853494022971700746">Francès (França)</translation>
 <translation id="8540608333167683902">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>

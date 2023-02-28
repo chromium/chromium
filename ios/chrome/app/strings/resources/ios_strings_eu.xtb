@@ -47,6 +47,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1254117744268754948">Aukeratu karpeta</translation>
 <translation id="1254424942107648268">Bilatu aurrekoa</translation>
 <translation id="1258491128795710625">Berritasunak</translation>
+<translation id="1264156759663453185">Hautatutako testua luzeegia da itzulpen partziala erabiltzeko.</translation>
 <translation id="1265739287306757398">Lortu argibideak</translation>
 <translation id="1272079795634619415">Gelditu</translation>
 <translation id="1275718070701477396">Hautatua</translation>
@@ -177,6 +178,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="2268044343513325586">Mugatu</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
 <translation id="2286505070150039482">Nabarmendutako testua</translation>
+<translation id="2287614783861766820">{count,plural, =1{Helbidea gailutik ezabatuko da.}other{Helbideak gailutik ezabatuko dira.}}</translation>
 <translation id="2299218006564889602">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>
 <translation id="2302742851632557585">Aldatu pasahitza webgunean</translation>
 <translation id="2316709634732130529">Erabili iradokitako pasahitza</translation>
@@ -458,6 +460,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4324952538601951430">Orain, hemen dituzu gordetako laster-markak, pasahitzak, ezarpenak eta beste</translation>
 <translation id="4334428914252001502">Irakurri gabeko artikulu bat.</translation>
 <translation id="4338650699862464074">Bisitatzen dituzun orrien URLak bidaltzen dizkio Google-ri.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Helbidea gailu honetatik eta saioa hasita daukaten beste gailuetatik ezabatuko da.}other{Helbideak gailu honetatik eta saioa hasita daukaten beste gailuetatik ezabatuko dira.}}</translation>
 <translation id="4343046787186034850">Kamerarako eta mikrofonorako sarbideak gaituta daude</translation>
 <translation id="4359125752503270327">Beste aplikazio batean irekiko da orri hau.</translation>
 <translation id="4375040482473363939">QR kode bidezko bilaketa</translation>
@@ -587,6 +590,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5232485538978018676">Hasi saioa kontu kudeatu batekin</translation>
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5245322853195994030">Utzi sinkronizazioa bertan behera</translation>
+<translation id="5271265092610673171">{count,plural, =1{Derrigorrezko eremu bat hutsik dago. Bete ezazu gorde aurretik.}other{Derrigorrezko eremu batzuk hutsik daude. Bete itzazu gorde aurretik.}}</translation>
 <translation id="5271549068863921519">Gorde pasahitza</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> kontua kendu nahi duzu?</translation>
 <translation id="5300589172476337783">Erakutsi</translation>
@@ -700,6 +704,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6066301408025741299">Sakatu bertan behera uzteko</translation>
 <translation id="6071409777669089905">Kendu aingura fitxari</translation>
 <translation id="6084848228346514841">Hautatu fitxak</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> gisa hasi duzu saioa. Ezarpenak irekitzen ditu.</translation>
 <translation id="6103540626693881831">Gailuan bertan enkriptatzeko aukera</translation>
 <translation id="6119050551270742952">Web-orri hau ezkutuko moduan dago</translation>
 <translation id="6122191549521593678">Konektatu</translation>
@@ -1129,6 +1134,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> pasahitz ezabatu nahi dituzu?</translation>
 <translation id="9100610230175265781">Pasaesaldia behar da</translation>
 <translation id="9107664647686727385">Egiaztatu ea badagoen pasahitzik arriskuan</translation>
+<translation id="9120217828624527905">Itzuli orri osoa</translation>
 <translation id="9124387962554796433">Baliteke Google-k historia erabiltzea Bilaketa eta Google-ren beste zerbitzu batzuk pertsonalizatzeko.</translation>
 <translation id="9137526406337347448">Google-ren zerbitzuak</translation>
 <translation id="9148126808321036104">Hasi saioa berriro</translation>

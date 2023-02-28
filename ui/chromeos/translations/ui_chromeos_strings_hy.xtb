@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">իռլանդերեն</translation>
 <translation id="4124935795427217608">Միաեղջյուր</translation>
 <translation id="4131235941541910880">Ոչ պետքական ֆայլերը տեղափոխեք աղբարկղ</translation>
+<translation id="4134804435730168042">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />։ Ակտիվացրեք՝ սարքը կարգավորելուց հետո</translation>
 <translation id="4153015322587141338">Ֆայլերը դարակում արագ բացելու համար մկնիկի աջ կոճակով սեղմեք ֆայլի վրա և ընտրեք «<ph name="PIN_COMMAND" />»։</translation>
 <translation id="4157569377477607576">Ադմինիստրատորը խորհուրդ չի տալիս՝</translation>
 <translation id="4159731583141908892">Տեղափոխվեց <ph name="FILE_NAME" /> տարր։</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570"><ph name="FILE_NAME" /> ֆայլը կջնջվի, և դուք չեք կարողանա վերականգնել այն։</translation>
 <translation id="4418686080762064601">Ստեղծեք դյուրանցում ձեր ֆայլերի համար</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
+<translation id="4432921877815220091">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />։ Ակտիվացրեք՝ սարքը կարգավորելուց հետո։ Կառավարվում է ադմինիստրատորի կողմից</translation>
 <translation id="4439427728133035643">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
 <translation id="4442424173763614572">DNS սերվերը որոնելիս սխալ տեղի ունեցավ</translation>
 <translation id="4462159676511157176">Անունների այլ սերվերներ</translation>
@@ -614,6 +616,7 @@
 <translation id="5913638992615760742">Չհաջողվեց պատճենել։ Անսպասելի սխալ առաջացավ՝ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">հոլանդերեն (Նիդեռլանդներ)՝ ԱՄՆ միջազգային համակարգչային ստեղնաշարով</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />։ Ակտիվացրեք՝ սարքը կարգավորելուց հետո</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> տարր</translation>
 <translation id="5957366693331451795">Chromebox սարքեր</translation>
 <translation id="5982621672636444458">Տեսակավորման ընտրանքներ</translation>
@@ -760,6 +763,7 @@
 <translation id="7126604456862387217">«&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;» - &lt;em&gt;որոնել Drive-ում&lt;/em&gt;</translation>
 <translation id="7135561821015524160">կաննադա (հնչյունային)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Սերվերի իսկությունը հնարավոր չէ հաստատել, քանի որ «Սուբյեկտի այլընտրանքային անվան համընկնում» կամ «Տիրույթի վերջածանցի համընկնում» դաշտերը լրացված չեն</translation>
 <translation id="7165320105431587207">Չհաջողվեց կազմաձևել ցանցը</translation>
 <translation id="7170041865419449892">Ծածկույթից դուրս</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
@@ -935,6 +939,7 @@
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
 <translation id="8492972329130824181">Տնային ցանցը հասանելի չէ։ Կապ ապահովելու համար անհրաժեշտ է միացնել տվյալների ռոումինգը։</translation>
 <translation id="8499098729323186194">Տարրերը (<ph name="NUMBER_OF_ITEMS" />) արտահանվում են…</translation>
+<translation id="8502913769543567768">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />։ Ակտիվացրեք՝ սարքը կարգավորելուց հետո։ Կառավարվում է ադմինիստրատորի կողմից</translation>
 <translation id="8521441079177373948">ՄԹ</translation>
 <translation id="853494022971700746">ֆրանսերեն (Ֆրանսիա)</translation>
 <translation id="8540608333167683902">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>

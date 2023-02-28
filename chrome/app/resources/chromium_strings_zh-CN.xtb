@@ -196,8 +196,8 @@
 <translation id="5527463683072221100">在 Chromium 中打开 PDF 文件</translation>
 <translation id="5614091477838198795">当此设置处于开启状态时，关闭所有窗口的操作也会致使您退出 Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{有一项可用的 Chromium 更新}=1{有一项可用的 Chromium 更新}other{有一项可用的 Chromium 更新（已发布 # 天）}}</translation>
-<translation id="5634636535844844681">Chromium 仅支持 Windows 7 或更高版本的操作系统。</translation>
 <translation id="5653831366781983928">请立即重启 Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以这种语言显示 Chromium</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5883558403894052917">Chromium 发现这些内容包含恶意软件：</translation>
@@ -344,6 +344,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 之前使用的是 Chromium</translation>
 <translation id="8357820681460164151">如需在您的所有设备上访问自己的 Chromium 浏览器信息，请登录您的帐号，然后开启同步功能</translation>
 <translation id="8360718212975266891">若要接收后续 Chromium 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
+<translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="8417404458978023919">{0,plural, =1{请于 1 天内重新启动 Chromium}other{请于 # 天内重新启动 Chromium}}</translation>
 <translation id="8453117565092476964">安装程序归档损坏或无效。请重新下载 Chromium。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>

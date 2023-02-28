@@ -154,6 +154,7 @@
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
+<translation id="3809772425479558446">Google Chrome zahtijeva Windows 10 ili noviju verziju.</translation>
 <translation id="3835168907083856002">Izradit će se novi profil u Chromeu za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Zatvorite sve Google Chrome prozore i pokušajte ponovo.</translation>
 <translation id="3865754807470779944">Instalirana je Chromeova verzija <ph name="PRODUCT_VERSION" /></translation>
@@ -406,7 +407,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="8989968390305463310">Vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chrome automatski kontinuirano briše vaše interese svakog mjeseca. Interesi se mogu osvježiti ako ih ne uklonite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea dostupno je # dana}few{Ažuriranje Chromea dostupno je # dana}other{Ažuriranje Chromea dostupno je # dana}}</translation>
 <translation id="9053892488859122171">Sustav ChromeOS Flex</translation>
-<translation id="9067395829937117663">Google Chrome zahtijeva Windows 7 ili noviju verziju.</translation>
 <translation id="911206726377975832">Izbrisati i podatke o pregledavanju?</translation>
 <translation id="9138603949443464873">Da bi se vaše promjene primijenile, ponovo pokrenite Chrome</translation>
 <translation id="9195993889682885387">Chrome može procijeniti vaše interese na temelju vaše povijesti pregledavanja iz posljednjih nekoliko tjedana. Te informacije ostaju na vašem uređaju.</translation>

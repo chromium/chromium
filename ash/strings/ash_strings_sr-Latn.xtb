@@ -502,6 +502,11 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3633097874324966332">Otvorite podešavanja Bluetooth-a da biste uparili uređaj</translation>
 <translation id="3638400994746983214">Uključuje/isključuje ekran za privatnost. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Ažurirajte isteklo</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        od <ph name="START_TIME" /> do
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Izaberite da biste videli više detalja u Google kalendaru.</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. dan od <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Preostalo je oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Priključite uređaj na napajanje.</translation>
@@ -549,6 +554,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, događaji se učitavaju.</translation>
 <translation id="3932043219784172185">Nema povezanih uređaja</translation>
 <translation id="3934456833412894880">Prilagodljivo punjenje je uključeno. Baterija će ostati na 80% da produži trajanje baterije, a napuniće se do kraja kada vam treba.</translation>
+<translation id="3936620957945677513">Pritisnite Enter da biste ušli na događaj <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Nalepi</translation>
 <translation id="394485226368336402">Podešavanja zvuka</translation>
 <translation id="3945319193631853098">Dodirnite da biste dovršili podešavanje</translation>
@@ -1467,9 +1473,9 @@ Novo instaliranje</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Verifikacija PIN-a ili lozinke još uvek nije uspela. Napomena: Ako ste nedavno promenili lozinku, koristite staru. Nova lozinka će biti primenjena kada se odjavite.</translation>
 <translation id="8855885154700222542">Taster za ceo ekran</translation>
-<translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podeljeni ekran.</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
+<translation id="8876148469852588625"><ph name="EVENT_POSITION" />. događaj od <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Proverite vezu</translation>
 <translation id="8877788021141246043">Podesi podsetnik</translation>
 <translation id="8878886163241303700">Prošireni ekran</translation>

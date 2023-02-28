@@ -279,6 +279,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2429753432712299108">Bluetooth-toestel "<ph name="DEVICE_NAME" />" soek toestemming om saam te bind. Voor jy aanvaar, bevestig asseblief dat hierdie wagwoordsleutel op daardie toestel gewys word: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Wys wagwoord</translation>
 <translation id="243878895369688216">Gister oopgemaak</translation>
+<translation id="2440978926514840421">GIF-opname is geneem</translation>
 <translation id="2441427462554639370">Opname het geëindig omdat skyfspasie gevaarlik min was</translation>
 <translation id="24452542372838207">Vou kennisgewing uit</translation>
 <translation id="2449089818483227734">Battery is byna pap</translation>
@@ -550,6 +551,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />; laai tans geleenthede.</translation>
 <translation id="3932043219784172185">Geen toestel is gekoppel nie</translation>
 <translation id="3934456833412894880">Aanpasbare laaiproses is aan. Jou battery sal op 80% bly om batterylewe te verleng, en heeltemal laai wanneer jy dit nodig het.</translation>
+<translation id="3936620957945677513">Druk Enter om by die geleentheid <ph name="EVENT_SUMMARY" /> aan te sluit</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="394485226368336402">Oudio-instellings</translation>
 <translation id="3945319193631853098">Tik om opstelling te voltooi</translation>
@@ -1467,7 +1469,6 @@ Nuwe installasie</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Jou PIN of wagwoord kon steeds nie geverifieer word nie. Let wel: As jy jou wagwoord onlangs verander het, moet jy jou ou wagwoord gebruik. Jou nuwe wagwoord sal van toepassing wees sodra jy afmeld.</translation>
 <translation id="8855885154700222542">Volskermsleutel</translation>
-<translation id="8858369206579825206">Privaatheidkontroles</translation>
 <translation id="8870509716567206129">Program steun nie verdeelde skerm nie.</translation>
 <translation id="8874184842967597500">Nie gekoppel nie</translation>
 <translation id="8876661425082386199">Gaan jou verbinding na</translation>

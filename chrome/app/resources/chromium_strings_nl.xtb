@@ -198,8 +198,8 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5527463683072221100">Pdf's openen in Chromium</translation>
 <translation id="5614091477838198795">Als de schakelaar aanstaat, word je ook uitgelogd van Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Er is een Chromium-update beschikbaar}=1{Er is een Chromium-update beschikbaar}other{Er is al # dagen een Chromium-update beschikbaar}}</translation>
-<translation id="5634636535844844681">Voor Chromium is Windows 7 of hoger vereist.</translation>
 <translation id="5653831366781983928">Chromium nu opnieuw opstarten</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium bekijken in deze taal</translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
 <translation id="5883558403894052917">Chromium heeft vastgesteld dat deze items malware bevatten:</translation>
@@ -341,10 +341,12 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8266560134891435528">Chromium kan je wachtwoorden niet checken omdat je niet bent ingelogd.</translation>
 <translation id="8276522524898344151">Chromium probeert wachtwoorden te kopiëren.</translation>
 <translation id="8290862415967981663">Dit bestand kan gevaarlijk zijn en is daarom door Chromium geblokkeerd.</translation>
+<translation id="8325404639443959713">Doe meer met Chromium</translation>
 <translation id="8330519371938183845">Log in om Chromium op al je apparaten te synchroniseren en te personaliseren</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> maakte eerder gebruik van Chromium</translation>
 <translation id="8357820681460164151">Log in en zet synchronisatie aan voor toegang tot je Chromium-browsergegevens op al je apparaten</translation>
 <translation id="8360718212975266891">Als je toekomstige Chromium-updates wilt krijgen, heb je Windows 10 of hoger nodig. Deze computer gebruikt Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Start Chromium binnen een dag opnieuw}other{Start Chromium binnen # dagen opnieuw}}</translation>
 <translation id="8453117565092476964">Het archief van het installatieprogramma is beschadigd of ongeldig. Download Chromium opnieuw.</translation>
 <translation id="8463672209299734063">Optioneel: Help de functies en prestaties van Chromium OS te verbeteren door automatisch diagnostische en gebruiksgegevens naar Google te sturen.</translation>
@@ -380,6 +382,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="9158494823179993217">Je systeembeheerder heeft geconfigureerd dat Chromium een alternatieve browser opent voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Opnieuw starten om &amp;Chromium te updaten</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Personaliseer Chromium</translation>
 <translation id="93478295209880648">Chromium werkt mogelijk niet naar behoren omdat dit niet langer wordt ondersteund op Windows XP en Windows Vista</translation>
 <translation id="942598560705308788">Certificaten beheerd door Chromium</translation>
 <translation id="965162752251293939">Wie gebruikt Chromium?</translation>

@@ -126,6 +126,7 @@
 <translation id="3245429137663807393">Jos jaat myös Chromen käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3286538390144397061">Käynnistä uudelleen</translation>
+<translation id="3293912612584488930">Tee enemmän Chromella</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käynnistetään uudelleen nyt}=1{Chrome käynnistetään uudelleen 1 sekunnin kuluttua}other{Chrome käynnistetään uudelleen # sekunnin kuluttua.}}</translation>
 <translation id="3396977131400919238">Asennuksessa havaittiin käyttöjärjestelmävirhe. Lataa Google Chrome uudelleen.</translation>
@@ -405,7 +406,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-päivitys on saatavilla}=1{Chrome-päivitys on saatavilla}other{Chrome-päivitys on ollut saatavilla # vuorokauden ajan}}</translation>
 <translation id="9053892488859122171">ChromeOS Flexin järjestelmä</translation>
-<translation id="9067395829937117663">Google Chrome edellyttää Windows 7:ää tai uudempaa versiota.</translation>
 <translation id="911206726377975832">Poistetaanko myös selailutiedot?</translation>
 <translation id="9138603949443464873">Ota muutokset käyttöön käynnistämällä Chrome uudelleen</translation>
 <translation id="9195993889682885387">Chrome voi arvioida kiinnostuksen kohteitasi muutaman viime viikon selaushistoriasi perusteella. Tiedot pysyvät laitteellasi.</translation>

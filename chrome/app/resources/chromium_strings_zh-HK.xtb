@@ -198,8 +198,8 @@
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
 <translation id="5614091477838198795">開啟時，您亦將會從 Chromium 登出</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發佈 # 天}}</translation>
-<translation id="5634636535844844681">Chromium 只能在 Windows 7 或以上作業系統中執行。</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">以此語言顯示 Chromium</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5883558403894052917">Chromium 發現以下項目含有惡意軟件：</translation>
@@ -341,11 +341,12 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8266560134891435528">由於您尚未登入帳戶，因此 Chromium 無法檢查密碼</translation>
 <translation id="8276522524898344151">Chromium 正在嘗試複製密碼。</translation>
 <translation id="8290862415967981663">此檔案可能不安全，因此 Chromium 已封鎖此檔案。</translation>
-<translation id="8325404639443959713">Chromium 讓你事半功倍</translation>
+<translation id="8325404639443959713">使用 Chromium 讓您事半功倍</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
 <translation id="8357820681460164151">如要透過所有裝置存取 Chromium 瀏覽器資料，請登入並開啟同步處理功能</translation>
 <translation id="8360718212975266891">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8。</translation>
+<translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已損毀或無效，請重新下載 Chromium。</translation>
 <translation id="8463672209299734063">可選用：將診斷和使用情況資料自動傳送給 Google，協助改善 Chromium 作業系統的功能和效能。</translation>
@@ -381,7 +382,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
 <translation id="9185526690718004400">重新啟動以更新 &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
-<translation id="924957577793602335">享有個人化的 Chromium 體驗</translation>
+<translation id="924957577793602335">自訂屬於您的 Chromium</translation>
 <translation id="93478295209880648">由於 Chromium 將不再支援 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
 <translation id="942598560705308788">由 Chromium 管理的憑證</translation>
 <translation id="965162752251293939">誰在使用 Chromium？</translation>

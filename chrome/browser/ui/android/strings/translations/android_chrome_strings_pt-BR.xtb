@@ -355,6 +355,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="2951071800649516099">Adicionar páginas à lista de leitura para mais tarde</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página não lida}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> página não lida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas não lidas}}</translation>
 <translation id="2961210776189273067">Título</translation>
+<translation id="296370266220139811">Economize tempo e digite menos</translation>
 <translation id="2979025552038692506">Guia anônima selecionada</translation>
 <translation id="2979639724566107830">Abrir em uma nova janela</translation>
 <translation id="2981364137500752533">Você pode ter até cinco janelas.</translation>
@@ -482,6 +483,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="3578874072190212775">Ajude os sites a lutar contra fraudes e a distinguir robôs de pessoas</translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3587596251841506391">Ajudar a melhorar a segurança na Web</translation>
+<translation id="3597179440835065298">Receba sugestões melhores</translation>
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3616113530831147358">Áudio</translation>
 <translation id="3622349720008044802">Gerenciar janelas</translation>
@@ -748,6 +750,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5005498671520578047">Copiar senha</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> deseja se conectar</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">Últimos 15 minutos</translation>
 <translation id="5032430150487044192">Não é possível criar o código QR</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5040262127954254034">Privacidade</translation>
@@ -883,6 +886,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5813552293717797987">Este navegador é gerenciado por <ph name="PARENT_NAME_1" /> e <ph name="PARENT_NAME_2" />.</translation>
 <translation id="5814131985548525293">Digite aqui ou toque no ícone de voz para começar</translation>
 <translation id="5814749351757353073">Acompanhe seus sites favoritos</translation>
+<translation id="5822875253699806474">Para voltar rapidamente aos sites visitados, sincronize as guias e o histórico</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833984609253377421">Compartilhar link</translation>
 <translation id="5834764604050996579">Para ler um código QR, permita que o Chrome use sua câmera</translation>
@@ -922,6 +926,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="6002122790816966947">Seus dispositivos</translation>
 <translation id="6005538289190791541">Senha sugerida</translation>
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
+<translation id="6026538407078977628">Abrir em tela cheia</translation>
 <translation id="6039379616847168523">Ir para a próxima guia</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>
@@ -1137,6 +1142,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7088681679121566888">O Chrome está atualizado</translation>
 <translation id="7105047059074518658">Faça login para facilitar a navegação em vários dispositivos</translation>
 <translation id="7106762743910369165">O navegador é gerenciado pela sua organização</translation>
+<translation id="7116588989735740310">Para voltar aos sites que você visitou em outros dispositivos, sincronize as guias e o histórico</translation>
 <translation id="7130504491556983216">Uma lista de interesses vai aparecer aqui conforme você navega na Web</translation>
 <translation id="7138678301420049075">Outro</translation>
 <translation id="7146622961999026732">Estes sites e apps parecem importantes para você:</translation>
@@ -1193,6 +1199,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7437998757836447326">Sair do Google Chrome</translation>
 <translation id="7443901082822119557">Na navegação anônima, os sites não podem usar os cookies para ver sua atividade de navegação em outros sites, por exemplo, para personalizar anúncios. Os recursos de alguns sites podem falhar.</translation>
 <translation id="7453467225369441013">Desconecta você da maioria dos sites, mas não da sua Conta do Google.</translation>
+<translation id="7453810262525006706">Fechar na visualização lateral</translation>
 <translation id="7454641608352164238">Espaço insuficiente</translation>
 <translation id="7455988709578031708">Com base no seu histórico de navegação. Esta configuração está ativada.</translation>
 <translation id="7456774706094330779">Pré-carregamento estendido</translation>
@@ -1215,6 +1222,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="751961395872307827">Não foi possível se conectar ao site</translation>
 <translation id="752220631458524187">Desconecte o smartphone quando terminar</translation>
 <translation id="7523960634226602883">Pesquisar com a câmera usando o Lens</translation>
+<translation id="7539698981064401140">Sincronize as guias e o histórico</translation>
 <translation id="7562080006725997899">Limpando dados de navegação</translation>
 <translation id="756809126120519699">Dados do Chrome apagados</translation>
 <translation id="7577900504646297215">Gerenciar interesses</translation>
@@ -1397,6 +1405,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8461694314515752532">Criptografar dados sincronizados com sua própria senha longa de sincronização</translation>
 <translation id="8466613982764129868">Verifique se o <ph name="TARGET_DEVICE_NAME" /> está conectado à Internet</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
+<translation id="847433688444405067">Navegue em vários dispositivos</translation>
 <translation id="8481980314595922412">Os recursos de teste estão ativados</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abrir Histórico</translation>
@@ -1450,6 +1459,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8746155870861185046">Compartilhar texto em destaque</translation>
+<translation id="874726034427945498">Sincronize as guias e o histórico para conferir sugestões melhores na barra de endereço</translation>
 <translation id="8748850008226585750">Conteúdo oculto</translation>
 <translation id="8756969031206844760">Atualizar senha?</translation>
 <translation id="8765470054473112089">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chrome envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
@@ -1515,6 +1525,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="9070377983101773829">Iniciar pesquisa por voz</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9081543426177426948">Os sites que você acessa não são salvos no modo de navegação anônima</translation>
+<translation id="9084103763810123431">Para continuar navegando em outro dispositivo, sincronize as guias e o histórico</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9086455579313502267">Não foi possível acessar a rede</translation>
 <translation id="9099220545925418560">Com base no seu histórico de navegação. Esta configuração está desativada.</translation>

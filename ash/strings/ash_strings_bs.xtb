@@ -502,6 +502,11 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3633097874324966332">Otvorite postavke Bluetootha da uparite uređaj</translation>
 <translation id="3638400994746983214">Uključite/isključite ekran za privatnost. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Rok za ažuriranje je prekoračen</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        od <ph name="START_TIME" /> do
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Odaberite za više pojedinosti u Google kalendaru.</translation>
 <translation id="3659444876902283058">(Dan <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Preostalo je oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Povežite uređaj na napajanje.</translation>
@@ -1467,9 +1472,9 @@ Nova instalacija</translation>
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Potvrđivanje PIN-a ili lozinke i dalje nije uspjelo. Napomena: Ako ste nedavno promijenili lozinku, koristite staru. Nova lozinka će se primijeniti nakon što se odjavite.</translation>
 <translation id="8855885154700222542">Tipka za prikaz preko cijelog ekrana</translation>
-<translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava dijeljenje ekrana.</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
+<translation id="8876148469852588625">Događaj <ph name="EVENT_POSITION" /> od <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Provjerite stanje veze</translation>
 <translation id="8877788021141246043">Postavite podsjetnik</translation>
 <translation id="8878886163241303700">Prošireni ekran</translation>

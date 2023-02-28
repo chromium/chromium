@@ -198,8 +198,8 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="5527463683072221100">Otvoriť súbory PDF v prehliadači Chromium</translation>
 <translation id="5614091477838198795">Keď zapnete túto možnosť, systém vás odhlási aj z prehliadača Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozícii aktualizácia prehliadača Chromium}=1{Je k dispozícii aktualizácia prehliadača Chromium}few{Aktualizácia prehliadača Chromium je k dispozícii už # dni}many{Aktualizácia prehliadača Chromium je k dispozícii už # dňa}other{Aktualizácia prehliadača Chromium je k dispozícii už # dní}}</translation>
-<translation id="5634636535844844681">Chromium vyžaduje Windows 7 alebo vyšší.</translation>
 <translation id="5653831366781983928">Reštartujte Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobraziť Chromium v tomto jazyku</translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
 <translation id="5883558403894052917">Prehliadač Chromium zistil, že tieto položky obsahujú malvér:</translation>
@@ -342,12 +342,15 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8266560134891435528">Chromium nemôže skontrolovať heslá, pretože ste sa neprihlásili</translation>
 <translation id="8276522524898344151">Chromium sa pokúša kopírovať heslá.</translation>
 <translation id="8290862415967981663">Tento súbor môže byť nebezpečný, a preto ho prehliadač Chromium zablokoval.</translation>
+<translation id="8325404639443959713">S prehliadačom Chromium môžete robiť viac</translation>
 <translation id="8330519371938183845">Po prihlásení budete môcť Chromium synchronizovať a prispôsobiť v rôznych zariadeniach.</translation>
 <translation id="8340674089072921962">Účet <ph name="USER_EMAIL_ADDRESS" /> predtým používal Chromium</translation>
 <translation id="8357820681460164151">Ak chcete získať prístup k obsahu prehliadača Chromium vo všetkých svojich zariadeniach, prihláste sa a zapnite synchronizáciu</translation>
 <translation id="8360718212975266891">Ak chcete v budúcnosti dostávať aktualizácie prehliadača Chromium, budete potrebovať systém Windows 10 alebo novší. Tento počítač používa Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium znova spustite do jedného dňa}few{Chromium znova spustite do # dní}many{Chromium znova spustite do # dňa}other{Chromium znova spustite do # dní}}</translation>
 <translation id="8453117565092476964">Archív inštalácie je poškodený alebo neplatný. Stiahnite prehliadač Chromium znova.</translation>
+<translation id="8458614432758743027">Chromium vyžaduje systém Windows 10 alebo novší.</translation>
 <translation id="8463672209299734063">Nepovinné: Pomôžte zlepšovať funkcie a výkonnosť systému Chromium OS automatickým odosielaním diagnostík a údajov o využití Googlu</translation>
 <translation id="8493179195440786826">Prehliadač Chromium je zastaraný</translation>
 <translation id="8550334526674375523">Tento pracovný profil je úplne oddelený od vášho osobného.</translation>
@@ -381,6 +384,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="9158494823179993217">Správca systému nakonfiguroval Chromium, aby web <ph name="TARGET_URL_HOSTNAME" /> otváral v alternatívnom prehliadači.</translation>
 <translation id="9185526690718004400">Znova spustiť a aktualizovať Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Upravte Chromium podľa seba</translation>
 <translation id="93478295209880648">Chromium nemusí fungovať správne, pretože v systémoch Windows XP a Windows Vista už nie je podporovaný</translation>
 <translation id="942598560705308788">Certifikáty, ktoré spravuje Chromium</translation>
 <translation id="965162752251293939">Kto používa Chromium?</translation>

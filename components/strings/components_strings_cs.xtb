@@ -589,6 +589,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2361263712565360498">275 × 395 mm</translation>
 <translation id="236340516568226369">Nabídka změny velikosti</translation>
+<translation id="2365355378251437925">Vyplňte pole <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Úroveň</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Přizpůsobte si v nastavení Chromu nástroje pro usnadnění přístupu</translation>
@@ -873,6 +874,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="317878711435188021">Zjišťovat, kdy aktivně používáte toto zařízení</translation>
 <translation id="3180358318770512945">Rodičovství</translation>
 <translation id="3187306450550410410">Pružné uspořádání práce</translation>
+<translation id="3187380004437786923">Spravovat platby</translation>
 <translation id="3187472288455401631">Měření reklam</translation>
 <translation id="3190736958609431397">Zrušit sledování</translation>
 <translation id="319282854780294203">Sociální sítě</translation>
@@ -1267,6 +1269,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4154664944169082762">Digitální otisky</translation>
 <translation id="4159784952369912983">Nachová</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
+<translation id="4169535189173047238">Nepovolovat</translation>
 <translation id="4171400957073367226">Chybný ověřovací podpis</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Vždy zobrazovat</translation>
@@ -3328,6 +3331,7 @@ Další podrobnosti:
 <translation id="950736567201356821">Tři díry nahoře</translation>
 <translation id="961663415146723894">Vazba dole</translation>
 <translation id="962484866189421427">Tento obsah by se mohl pokusit instalovat klamavé aplikace, které se vydávají za něco jiného nebo shromažďují data ke sledování vaší aktivity. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Všichni uživatelé</translation>
 <translation id="964050462028070434">Spravovat hesla a přístupové klíče…</translation>
 <translation id="96680173638229310">Automobily a vozidla</translation>
 <translation id="969892804517981540">Oficiální sestavení</translation>

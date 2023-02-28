@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">ෆෝල්ඩරය තෝරන්න</translation>
 <translation id="1254424942107648268">පෙර සොයන්න</translation>
 <translation id="1258491128795710625">අලුත් මොනවාද</translation>
+<translation id="1264156759663453185">තෝරන ලද පෙළ අර්ධ පරිවර්තනය සඳහා විශාල වැඩියි.</translation>
 <translation id="1265739287306757398">කෙසේදැයි දැන ගන්න</translation>
 <translation id="1272079795634619415">නවතන්න</translation>
 <translation id="1275718070701477396">තෝරාගත්</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">පිරිපහදු කරන්න</translation>
 <translation id="2273327106802955778">තව මෙනුව</translation>
 <translation id="2286505070150039482">උද්දීපනය කළ පෙළ</translation>
+<translation id="2287614783861766820">{count,plural, =1{මෙම ලිපිනය මෙම උපාංගයෙන් මකනු ඇත.}one{මෙම ලිපින මෙම උපාංගයෙන් මකනු ඇත.}other{මෙම ලිපින මෙම උපාංගයෙන් මකනු ඇත.}}</translation>
 <translation id="2299218006564889602">ඔබගේ මුරපදය Google මුරපද කළමනාකරු වෙත සුරැකීමට පෙර ඔබගේ උපාංගයේ සංකේතනය කර ඇත.</translation>
 <translation id="2302742851632557585">වෙබ් අඩවිය මත මුරපදය වෙනස් කරන්න</translation>
 <translation id="2316709634732130529">යෝජිත මුරපදය භාවිත කරන්න</translation>
@@ -458,6 +460,7 @@
 <translation id="4324952538601951430">ඔබේ සුරැකි පිටුසන්, මුරපද, සැකසීම්, සහ තවත් දේ දැන් මෙහි ඇත</translation>
 <translation id="4334428914252001502">1 නොකියවූ ලිපියක්.</translation>
 <translation id="4338650699862464074">Google වෙත ඔබ පිවිසෙන පිටු URL යවයි.</translation>
+<translation id="4342054591427973606">{count,plural, =1{මෙම ලිපිනය මෙයින් සහ ඔබේ අනෙකුත් පුරනය වී ඇති උපාංගවලින් මකනු ඇත.}one{මෙම ලිපින මෙයින් සහ ඔබේ අනෙකුත් පුරනය වී ඇති උපාංගවලින් මකනු ඇත.}other{මෙම ලිපින මෙයින් සහ ඔබේ අනෙකුත් පුරනය වී ඇති උපාංගවලින් මකනු ඇත.}}</translation>
 <translation id="4343046787186034850">කැමරා සහ මයික්‍රෆෝන ප්‍රවේශයට ඉඩ දෙන ලදී</translation>
 <translation id="4359125752503270327">මෙම පිටුව වෙනත් යෙදුමක විවෘත වනු ඇත.</translation>
 <translation id="4375040482473363939">QR කේතය සෙවීම</translation>
@@ -587,6 +590,7 @@
 <translation id="5232485538978018676">කළමනාකරණය කරන ලද ගිණුම සමගින් පුරන්න</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
 <translation id="5245322853195994030">සමමුහූර්තය අවලංගු කරන්න</translation>
+<translation id="5271265092610673171">{count,plural, =1{අවශ්‍ය ක්ෂේත්‍රයක් හිස් වේ. සුරැකීමට පෙර එය පුරවන්න.}one{සමහර අවශ්‍ය ක්ෂේත්‍ර හිස් වේ. සුරැකීමට පෙර ඒවා පුරවන්න.}other{සමහර අවශ්‍ය ක්ෂේත්‍ර හිස් වේ. සුරැකීමට පෙර ඒවා පුරවන්න.}}</translation>
 <translation id="5271549068863921519">රහස්වචනය සුරකින්න</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> ගිණුම ඉවත් කරන්නද?</translation>
 <translation id="5300589172476337783">පෙන්වන්න</translation>
@@ -700,6 +704,7 @@
 <translation id="6066301408025741299">අවලංගු කිරීමට තට්ටු කරන්න.</translation>
 <translation id="6071409777669089905">පටිත්ත ගලවන්න</translation>
 <translation id="6084848228346514841">ටැබ තෝරන්න</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> ලෙස පුරනය වී ඇත. සැකසීම් විවෘත කරයි.</translation>
 <translation id="6103540626693881831">උපාංගයේ සංකේතනය</translation>
 <translation id="6119050551270742952">වත්මන් වෙබ් පිටු අප්‍රසිද්ධ මත තිබේ</translation>
 <translation id="6122191549521593678">සබැඳි</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9098541895599151034">මුරපද <ph name="NUMBER_OF_ACCOUNTS" />ක් මකන්න ද?</translation>
 <translation id="9100610230175265781">රහස් පදය අවශ්‍යයි</translation>
 <translation id="9107664647686727385">අවදානමට පත් වූ මුරපද සඳහා පරීක්ෂා කරන්න</translation>
+<translation id="9120217828624527905">පූර්ණ පිටු පරිවර්තනය වෙත මාරු වන්න</translation>
 <translation id="9124387962554796433">සෙවීම සහ අනෙකුත් Google සේවා පුද්ගලිකකරණය කිරීමට Google ඔබගේ ඉතිහාසය භාවිත කළ හැකිය</translation>
 <translation id="9137526406337347448">Google සේවා</translation>
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>

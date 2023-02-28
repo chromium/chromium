@@ -47,6 +47,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1254117744268754948">Sélectionner un dossier</translation>
 <translation id="1254424942107648268">Rechercher la précédente</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
+<translation id="1264156759663453185">Le texte sélectionné est trop volumineux pour une traduction partielle.</translation>
 <translation id="1265739287306757398">En savoir plus</translation>
 <translation id="1272079795634619415">Arrêter</translation>
 <translation id="1275718070701477396">Sélectionnée</translation>
@@ -177,6 +178,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
 <translation id="2286505070150039482">Texte en surbrillance</translation>
+<translation id="2287614783861766820">{count,plural, =1{Cette adresse sera supprimée de cet appareil.}one{Cette adresse sera supprimée de cet appareil.}other{Ces adresses seront supprimées de cet appareil.}}</translation>
 <translation id="2299218006564889602">Vos mots de passe sont chiffrés sur votre appareil avant d'être enregistrés dans le Gestionnaire de mots de passe Google.</translation>
 <translation id="2302742851632557585">Changer de mot de passe sur le site Web</translation>
 <translation id="2316709634732130529">Utiliser le mot de passe suggéré</translation>
@@ -458,6 +460,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4324952538601951430">Retrouvez ici vos favoris, vos mots de passe et vos paramètres enregistrés, etc.</translation>
 <translation id="4334428914252001502">1 article non lu.</translation>
 <translation id="4338650699862464074">Envoie à Google les URL des pages que vous consultez.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Cette adresse sera supprimée de cet appareil et des autres appareils connectés à votre compte.}one{Cette adresse sera supprimée de cet appareil et des autres appareils connectés à votre compte.}other{Ces adresses seront supprimées de cet appareil et des autres appareils connectés à votre compte.}}</translation>
 <translation id="4343046787186034850">Accès à la caméra et au micro autorisé</translation>
 <translation id="4359125752503270327">Cette page va s'ouvrir dans une autre application.</translation>
 <translation id="4375040482473363939">Rechercher via un code QR</translation>
@@ -587,6 +590,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5232485538978018676">Se connecter avec un compte géré</translation>
 <translation id="5234764350956374838">Ignorer</translation>
 <translation id="5245322853195994030">Annuler la synchronisation</translation>
+<translation id="5271265092610673171">{count,plural, =1{Renseignez le champ obligatoire avant d'enregistrer.}one{Renseignez le champ obligatoire avant d'enregistrer.}other{Renseignez les champs obligatoires avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" /> ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -700,6 +704,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
 <translation id="6071409777669089905">Retirer l'onglet</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
+<translation id="6100617279104942061">Connecté en tant que <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
 <translation id="6119050551270742952">La page Web actuelle est en mode navigation privée</translation>
 <translation id="6122191549521593678">En ligne</translation>
@@ -1130,6 +1135,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9098541895599151034">Supprimer <ph name="NUMBER_OF_ACCOUNTS" /> mots de passe ?</translation>
 <translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
 <translation id="9107664647686727385">Pour vérifier la présence de mots de passe compromis</translation>
+<translation id="9120217828624527905">Passer à la traduction complète de la page</translation>
 <translation id="9124387962554796433">Google pourra utiliser votre historique pour personnaliser la recherche et d'autres de ses services.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9148126808321036104">Nouvelle connexion</translation>

@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Írska klávesnica</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4131235941541910880">Položky, ktoré nepotrebujete, presuňte do koša</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivovať po nastavení zariadenia</translation>
 <translation id="4153015322587141338">Ak chcete mať rýchly prístup k súboru na poličke, kliknite naň pravým tlačidlom a vyberte <ph name="PIN_COMMAND" />.</translation>
 <translation id="4157569377477607576">Pravidlá správcu neodporúčajú:</translation>
 <translation id="4159731583141908892">Súbor <ph name="FILE_NAME" /> bol presunutý.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">Súbor <ph name="FILE_NAME" /> bude odstránený a nebudete ho môcť obnoviť.</translation>
 <translation id="4418686080762064601">Vytvorenie skratky k súborom</translation>
 <translation id="4425149324548788773">Môj disk</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivovať po nastavení zariadenia, ovláda váš správca</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, pripojenie</translation>
 <translation id="4442424173763614572">Vyhľadanie DNS zlyhalo</translation>
 <translation id="4462159676511157176">Vlastné menné servery</translation>
@@ -613,8 +615,10 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5911887972742538906">Pri inštalácii aplikácie pre Linux sa vyskytla chyba.</translation>
 <translation id="5912396950572065471">Formát</translation>
 <translation id="5913638992615760742">Kopírovanie zlyhalo, neočakávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">K dispozícii sú nové funkcie výsledkov vyhľadávania</translation>
 <translation id="5926082595146149752">Holandská klávesnica (Holandsko) s americkou klávesnicou s medzinárodným rozložením klávesov (PC)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivovať po nastavení zariadenia</translation>
 <translation id="5955954492236143329">Počet položiek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxy</translation>
 <translation id="5982621672636444458">Usporiadať možnosti</translation>
@@ -761,6 +765,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;hľadať na Disku&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannadská fonetická klávesnica</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Na potvrdenie overenia identity servera chýba položka Zhoda alternatívneho názvu subjektu alebo Zhoda prípony domény.</translation>
 <translation id="7165320105431587207">Sieť sa nepodarilo nakonfigurovať</translation>
 <translation id="7170041865419449892">Mimo rozsah</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
@@ -936,6 +941,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8487700953926739672">K dispozícii offline</translation>
 <translation id="8492972329130824181">Domáca sieť nie je k dispozícii. Ak sa chcete pripojiť, musíte zapnúť mobilný dátový roaming.</translation>
 <translation id="8499098729323186194">Extrahujú sa položky (<ph name="NUMBER_OF_ITEMS" />)…</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivovať po nastavení zariadenia, ovláda váš správca</translation>
 <translation id="8521441079177373948">Anglická klávesnica</translation>
 <translation id="853494022971700746">Francúzska (Francúzsko) klávesnica</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>

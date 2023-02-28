@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">Irlandês</translation>
 <translation id="4124935795427217608">Unicórnio</translation>
 <translation id="4131235941541910880">Mova os itens desnecessários para a lixeira</translation>
+<translation id="4134804435730168042">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ativar após a configuração do dispositivo</translation>
 <translation id="4153015322587141338">Clique com o botão direito do mouse em um arquivo e selecione "<ph name="PIN_COMMAND" />" para ter acesso rápido a ele pela estante.</translation>
 <translation id="4157569377477607576">A política do administrador não recomenda o seguinte:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> movido.</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">O item "<ph name="FILE_NAME" />" vai ser excluído e não poderá ser restaurado.</translation>
 <translation id="4418686080762064601">Criar um atalho para seus arquivos</translation>
 <translation id="4425149324548788773">Meu Drive</translation>
+<translation id="4432921877815220091">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ativar após a configuração do dispositivo, gerenciada pelo administrador</translation>
 <translation id="4439427728133035643">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, conectada</translation>
 <translation id="4442424173763614572">A busca de DNS falhou</translation>
 <translation id="4462159676511157176">Servidores de nome personalizados</translation>
@@ -613,8 +615,10 @@
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação do aplicativo Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">Falha na operação de cópia, erro inesperado: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Novos recursos de pesquisa disponíveis</translation>
 <translation id="5926082595146149752">Holandês (Países Baixos) com teclado internacional de PC dos EUA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ativar após a configuração do dispositivo</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> itens</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Opções de classificação</translation>
@@ -761,6 +765,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;pesquisar no Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Canará (fonético)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Não há "Correspondência do nome alternativo do assunto" ou "Correspondência do sufixo de domínio" para validar a identidade do servidor de autenticação</translation>
 <translation id="7165320105431587207">Falha ao configurar rede</translation>
 <translation id="7170041865419449892">Fora de alcance</translation>
 <translation id="7180611975245234373">Atualizar</translation>
@@ -936,6 +941,7 @@
 <translation id="8487700953926739672">Disponível off-line</translation>
 <translation id="8492972329130824181">A rede doméstica não está disponível. Ative o roaming de dados móveis para se conectar.</translation>
 <translation id="8499098729323186194">Extraindo <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
+<translation id="8502913769543567768">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ativar após a configuração do dispositivo, gerenciada pelo administrador</translation>
 <translation id="8521441079177373948">Reino Unido</translation>
 <translation id="853494022971700746">Francês (França)</translation>
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>

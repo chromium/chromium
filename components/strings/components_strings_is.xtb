@@ -589,6 +589,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Breyta stærð breytivalmyndar</translation>
+<translation id="2365355378251437925">Sláðu inn <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Stig</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Þú getur sérsniðið aðgengisverkfærin þín í stillingum Chrome</translation>
@@ -876,6 +877,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="317878711435188021">Vita hvenær þú notar þetta tæki</translation>
 <translation id="3180358318770512945">Uppeldi</translation>
 <translation id="3187306450550410410">Sveigjanlegur vinnutími</translation>
+<translation id="3187380004437786923">Stjórna greiðslum</translation>
 <translation id="3187472288455401631">Auglýsingamælingar</translation>
 <translation id="3190736958609431397">Hætta að vakta</translation>
 <translation id="319282854780294203">Netsamfélög</translation>
@@ -1271,6 +1273,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4154664944169082762">Fingraför</translation>
 <translation id="4159784952369912983">Purpurarauður</translation>
 <translation id="4165986682804962316">Vefsvæðastillingar</translation>
+<translation id="4169535189173047238">Ekki leyfa</translation>
 <translation id="4171400957073367226">Röng staðfestingarundirskrift</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Sýna alltaf</translation>
@@ -3333,6 +3336,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="950736567201356821">Þrjú göt efst</translation>
 <translation id="961663415146723894">Bundið neðst</translation>
 <translation id="962484866189421427">Þetta efni gæti verið að reyna að setja upp villandi forrit sem virðast vera eitthvað annað en þau eru eða safna gögnum sem má nota til að fylgjast með þér. <ph name="BEGIN_LINK" />Sýna samt<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Allir notendur</translation>
 <translation id="964050462028070434">Stjórna aðgangsorðum og aðgangslyklum…</translation>
 <translation id="96680173638229310">Bílar og ökutæki</translation>
 <translation id="969892804517981540">Opinber smíði</translation>

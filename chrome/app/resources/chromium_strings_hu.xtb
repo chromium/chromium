@@ -196,8 +196,8 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5527463683072221100">PDF-fájlok megnyitása a Chromiumban</translation>
 <translation id="5614091477838198795">Amikor be van kapcsolva, a Chromiumból is kijelentkezteti Önt a rendszer</translation>
 <translation id="5623402015214259806">{0,plural, =0{Rendelkezésre áll egy Chromium-frissítés}=1{Rendelkezésre áll egy Chromium-frissítés}other{# napja rendelkezésre áll egy Chromium-frissítés}}</translation>
-<translation id="5634636535844844681">A Chromium futtatásához Windows 7 vagy újabb verzió szükséges.</translation>
 <translation id="5653831366781983928">Indítsa újra a Chromiumot most</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">A Chromium megjelenítése ezen a nyelven</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
 <translation id="5883558403894052917">A Chromium rosszindulatú programot talált a következő elemekben:</translation>
@@ -338,10 +338,12 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8266560134891435528">A Chromium nem tudja ellenőrizni az Ön jelszavait, mert nincs bejelentkezve</translation>
 <translation id="8276522524898344151">A Chromium megpróbálkozik a jelszavak másolásával.</translation>
 <translation id="8290862415967981663">Ez a fájl veszélyes lehet, ezért a Chromium letiltotta.</translation>
+<translation id="8325404639443959713">Hozzon ki többet a Chromiumból</translation>
 <translation id="8330519371938183845">Jelentkezzen be, hogy szinkronizálhassa és személyre szabhassa a Chromiumot minden eszközén</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> előzőleg Chromiumot használt</translation>
 <translation id="8357820681460164151">Ha szeretne minden eszközén hozzáférni Chromium böngészőhöz tartozó anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="8360718212975266891">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8 operációs rendszer fut.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
 <translation id="8417404458978023919">{0,plural, =1{A Chromiumot 1 napon belül újra kell indítani}other{A Chromiumot # napon belül újra kell indítani}}</translation>
 <translation id="8453117565092476964">A telepítő tömörített állománya megsérült vagy érvénytelen. Kérjük, töltse le újra a Chromium böngészőt.</translation>
 <translation id="8463672209299734063">Nem kötelező: Hozzájárulhat a ChromiumOS funkcióinak és teljesítményének javításához azzal, hogy automatikusan elküldi a diagnosztikai és használati adatokat a Google-nak.</translation>
@@ -377,6 +379,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="9158494823179993217">Rendszergazdája úgy állította be a Chromiumot, hogy másik böngészőt nyisson meg a(z) <ph name="TARGET_URL_HOSTNAME" /> eléréséhez.</translation>
 <translation id="9185526690718004400">Indítsa újra a Chromium frissítéshez</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Tegye sajátjává a Chromiumot</translation>
 <translation id="93478295209880648">Előfordulhat, hogy a Chromium nem működik majd megfelelően, mert a továbbiakban már nem támogatja a következő rendszereket: Windows XP és Windows Vista</translation>
 <translation id="942598560705308788">A Chromium által kezelt tanúsítványok</translation>
 <translation id="965162752251293939">Ki használja a Chromiumot?</translation>

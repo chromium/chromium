@@ -355,6 +355,7 @@
 <translation id="2951071800649516099">पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा वेबपेजहरू हाल्नुहोस्</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> वटा पेज पढ्न बाँकी छ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> वटा पेज पढ्न बाँकी छ}}</translation>
 <translation id="2961210776189273067">सम्बोधन</translation>
+<translation id="296370266220139811">कम टाइप गरी समय बचाउनुहोस्</translation>
 <translation id="2979025552038692506">चयन गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2979639724566107830">नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="2981364137500752533">तपाईं बढीमा ५ वटा विन्डो खोल्न सक्नुहुन्छ।</translation>
@@ -482,6 +483,7 @@
 <translation id="3578874072190212775">साइटहरूलाई ठगी रोकथाम गर्न र बट तथा मान्छेहरूबिचको फरक छुट्याउन मद्दत गर्नुहोस्</translation>
 <translation id="3587482841069643663">सबै</translation>
 <translation id="3587596251841506391">वेब प्रयोग गर्ने सबै जनालाई सुरक्षित रहन मद्दत गर्नुहोस्</translation>
+<translation id="3597179440835065298">अझ राम्रा सुझावहरू प्राप्त गर्नु…</translation>
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
 <translation id="3616113530831147358">अडियो</translation>
 <translation id="3622349720008044802">विन्डोहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -746,6 +748,7 @@
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> जडान गर्न चाहन्छ</translation>
 <translation id="5016205925109358554">सेरिफ</translation>
+<translation id="5017529052065664584">पछिल्लो १५ मिनेट</translation>
 <translation id="5032430150487044192">QR कोड सिर्जना गर्न सकिएन</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
 <translation id="5040262127954254034">गोपनीयता</translation>
@@ -881,6 +884,7 @@
 <translation id="5813552293717797987"><ph name="PARENT_NAME_1" /> र <ph name="PARENT_NAME_2" /> यो ब्राउजर व्यवस्थापन गर्नुहुन्छ।</translation>
 <translation id="5814131985548525293">सुरु गर्न यहाँ टाइप गर्नुहोस् वा माइक्रोफोनको आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="5814749351757353073">आफ्ना मन पर्ने साइटहरू फलो गर्नुहोस्</translation>
+<translation id="5822875253699806474">आफूले खोलेका साइटहरू छिटोछरितो रूपमा फेरि खोल्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक सेयर गर्नुहोस्</translation>
 <translation id="5834764604050996579">QR कोड स्क्यान गर्न Chrome लाई तपाईंको क्यामेरा प्रयोग गर्ने अनुमति दिनुहोस्</translation>
@@ -1135,6 +1139,7 @@
 <translation id="7088681679121566888">Chrome अपडेट छ</translation>
 <translation id="7105047059074518658">तपाईं विभिन्न डिभाइसमा सजिलै ब्राउज गर्न चाहनुहुन्छ भने साइन इन गर्नुहोस्</translation>
 <translation id="7106762743910369165">तपाईंको संगठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
+<translation id="7116588989735740310">आफूले अन्य डिभाइसमा खोलेका साइटहरू फेरि खोल्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="7130504491556983216">तपाईंले वेब ब्राउज गरेपछि रुचिहरूको सूची यहाँ देखिने छ</translation>
 <translation id="7138678301420049075">अन्य</translation>
 <translation id="7146622961999026732">यी साइट र एपहरू तपाईंका लागि महत्त्वपूर्ण हुन सक्छन्:</translation>
@@ -1213,6 +1218,7 @@
 <translation id="751961395872307827">साइटमा जडान गर्न सकिँदैन</translation>
 <translation id="752220631458524187">आफ्नो काम सकिएपछि डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="7523960634226602883">Google लेन्स प्रयोग गरी आफ्नो क्यामेरामार्फत खोज्नुहोस्</translation>
+<translation id="7539698981064401140">आफ्ना ट्याब र हिस्ट्री सिंक गर्नु…</translation>
 <translation id="7562080006725997899">ब्राउजिङ डेटा मेटाउँदै</translation>
 <translation id="756809126120519699">Chrome को डेटालाई खाली गरियो</translation>
 <translation id="7577900504646297215">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -1395,6 +1401,7 @@
 <translation id="8461694314515752532">सिंक गरिएको डेटालाई तपाईंको आफ्नै सिंक पासफ्रेजमार्फत इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="8466613982764129868"><ph name="TARGET_DEVICE_NAME" /> इन्टरनेटमा जोडिएको कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="8473863474539038330">ठेगाना र थप कुराहरू</translation>
+<translation id="847433688444405067">सबै डिभाइसहरूमा ब्राउज गर्नुहोस्</translation>
 <translation id="8481980314595922412">ट्रायल सुविधाहरू अन गरिएका छन्</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहासको पृष्ठ खोल्नुहोस्</translation>
@@ -1448,6 +1455,7 @@
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8746155870861185046">हाइलाइट गरिएको टेक्स्ट सेयर गर्नुहोस्</translation>
+<translation id="874726034427945498">एड्रेस बारमा अझ राम्रा सुझावहरू प्राप्त गर्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="8748850008226585750">सामग्रीहरू लुकाइएका छन्</translation>
 <translation id="8756969031206844760">पासवर्ड अद्यावधिक गर्ने हो?</translation>
 <translation id="8765470054473112089">तपाईंले एड्रेस बार वा खोज बाकसमा टाइप गर्दा तपाईंलाई अझ राम्रा सुझावहरू देखाउन सकियोस् भन्नाका लागि Chrome ले तपाईंले टाइप गर्ने कुरा तपाईंको डिफल्ट सर्च इन्जिनमा पठाउँछ। इन्कोग्निटो मोडमा यो सुविधा अफ हुन्छ।</translation>
@@ -1513,6 +1521,7 @@
 <translation id="9070377983101773829">आवाज खोजी सुरु गर्नुहोस्</translation>
 <translation id="9074739597929991885">ब्लुटुथ</translation>
 <translation id="9081543426177426948">इन्कोग्निटो मोडमा ब्राउज गर्दा तपाईंले खोल्ने साइटहरूको विवरण सेभ गरिँदैन</translation>
+<translation id="9084103763810123431">अर्को डिभाइसमा ब्राउज गरिराख्न आफ्ना ट्याब र हिस्ट्री सिंक गर्नुहोस्</translation>
 <translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9086455579313502267">सञ्जाल पहुँच गर्न सकेन</translation>
 <translation id="9099220545925418560">तपाईंको ब्राउजिङ हिस्ट्रीका आधारमा। यो सेटिङ अफ छ।</translation>

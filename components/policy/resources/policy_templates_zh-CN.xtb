@@ -2811,13 +2811,6 @@
 <translation id="3589193811812796052">禁止跨源发送 WebAssembly 模块</translation>
 <translation id="3591527072193107424">启用“旧版浏览器支持”功能。</translation>
 <translation id="3591584750136265240">配置登录身份验证行为</translation>
-<translation id="359203136434560942">以列表形式配置锁屏状态时显示的屏保图片。
-
-每个列表项都会引用要在屏保中显示的某张图片。每个列表项都必须包含以下内容：相应图片的网址，以及用于进行验证的图片文件 SHA-256 哈希值。图片格式必须是 JPEG。<ph name="PRODUCT_OS_NAME" /> 设备会下载这些图片，并保留上述引用的本地缓存。
-
-如果 <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。
-
-如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为锁定屏幕显示屏保。</translation>
 <translation id="3593905652755912452">系统将使用针对已停用的表单控件分派事件的旧行为。</translation>
 <translation id="3596112486106491038">启用虚拟机命令行访问权限</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能，从而允许扩展程序保持兼容的行为，并允许 <ph name="PRODUCT_NAME" /> 无需进行 <ph name="CORS" /> 检查便可发送指定标头。
@@ -3836,7 +3829,6 @@
 <translation id="4624417808625504735">禁止 JavaScript 在这些网站上使用 JIT</translation>
 <translation id="46321462262887935">将顶行中的按键用作功能键，但允许用户更改此设置</translation>
 <translation id="4632343302005518762">允许 <ph name="PRODUCT_FRAME_NAME" />处理列出的内容类型</translation>
-<translation id="4632566332417930481">禁止在由企业政策安装的扩展程序中使用开发者工具，允许在其他情境中使用开发者工具</translation>
 <translation id="4636354638176939375">禁止创建受监督用户</translation>
 <translation id="4646626362889216307">通过设置此政策，您可以允许合并来自多个不同来源并具有相同范围及级别的所选政策。这项合并操作会涵盖每个来源中的字典的第一级密钥。系统会优先应用来自优先级最高的来源的密钥。
 
@@ -3963,7 +3955,6 @@
           如果未设置此政策，则“单声道音频”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="4768446404233019970">在传输层安全协议 (TLS) 中启用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用于生成和验证家长访问码的配置。</translation>
-<translation id="4772431363738215349">可供下载相应屏保图片的网址。</translation>
 <translation id="4773997835955617342">旨在为手动创建的新票据更改建议的 <ph name="KRB5_CONFIG" /> 配置。
 
       如果此政策已启用，系统会使用“KerberosCustomPrefilledConfig”政策的值作为建议的配置，并会将其显示在 Kerberos 身份验证对话框内的“高级”部分中。
@@ -4544,7 +4535,6 @@
 
       如果此政策设为 False，系统会禁止将端口转发到 Crostini 容器。</translation>
 <translation id="538108065117008131">允许“<ph name="PRODUCT_FRAME_NAME" />”处理以下内容类型。</translation>
-<translation id="5382211603538487131">相应图片的 SHA-256 哈希值。</translation>
 <translation id="538768040137709073">启用“共享剪贴板”功能，以允许已启用同步的已登录用户在 Chrome 桌面版和 Android 设备之间发送文字。
 
           如果此政策设为 true，面向 Chrome 用户提供的跨设备发送文字的功能将处于启用状态。
@@ -4751,13 +4741,6 @@
 <translation id="5535256585099022933">设置重新启动时间间隔</translation>
 <translation id="553806128266843748">一个布尔值标记，用于表明是否启用节流功能。</translation>
 <translation id="5540885720415375851">允许使用“本地设备发现”功能</translation>
-<translation id="5545132877693005604">以列表形式配置要在为登录界面设定的屏保中显示的图片。
-
-每个列表项都会引用要在屏保中显示的某张图片。每个列表项都必须包含以下元素：相应图片的网址，以及用于进行验证的图片文件 SHA-256 哈希值。图片格式必须是 JPEG。<ph name="PRODUCT_OS_NAME" /> 设备会下载这些图片，并保留所涉引用的本地缓存。
-
-如果 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。
-
-如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为登录界面显示屏保。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登录屏幕上启用高对比度模式</translation>
 <translation id="555077880566103058">允许所有网站自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>

@@ -194,8 +194,8 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5527463683072221100">PDF fayllarni Chromium bilan ochish</translation>
 <translation id="5614091477838198795">Bu yoqilsa, Chromium dasturida ham hisobingizdan chiqasiz</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium uchun yangilanish mavjud}=1{Chromium uchun yangilanish mavjud}other{Chromium uchun yangilanish mavjud (# kun)}}</translation>
-<translation id="5634636535844844681">Chromium brauzeri ishlashi uchun kompyuterda Windows 7 yoki undan yangiroq versiyadagi operatsion tizim o‘rnatilgan bo‘lishi lozim.</translation>
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium shu tilda ko‘rsatilsin</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5883558403894052917">Chromium tarkibida zararli dasturi bor quyidagi fayllarni aniqladi:</translation>
@@ -343,6 +343,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hisobi avvallari Chromium’da ishlatilgan</translation>
 <translation id="8357820681460164151">Chromium brauzeridagi axborotlardan barcha qurilmalaringizda foydalanish uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="8360718212975266891">Chromium yangilanishlari Windows 10 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: Windows 8.</translation>
+<translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromiumni 1 kun ichida qayta ishga tushiring}other{Chromiumni # kun ichida qayta ishga tushiring}}</translation>
 <translation id="8453117565092476964">O‘rnatish dasturi arxivi shikastlangan. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="8463672209299734063">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromiumOS tizimini takomillashtirishga yordam bering.</translation>

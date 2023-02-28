@@ -739,6 +739,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si se le asigna un valor, la instalación de <ph name="PLUGIN_VM_NAME" /> fallará si el dispositivo tiene menos espacio disponible en disco del requerido por la política.</translation>
 <translation id="1686952487081322272">Inhabilitar Respuestas rápidas</translation>
 <translation id="1690383938831887552">Evitar que se cargue contenido Signed HTTP Exchange</translation>
+<translation id="1692990221685273468">Determina si el verificador de certificados integrado implementará obligatoriamente las restricciones codificadas en las anclas de confianza cargadas desde el almacén de confianza de la plataforma.</translation>
 <translation id="169467210981344373">Inhabilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1698810555265314018">Controla la resolución de impresión de imágenes cuando <ph name="PRODUCT_NAME" /> imprime PDFs con rasterización.
 
@@ -2839,13 +2840,6 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3589193811812796052">Evitar que los módulos de WebAssembly se envíen a otros orígenes</translation>
 <translation id="3591527072193107424">Habilitar la función de compatibilidad con navegadores antiguos.</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de la autenticación de inicio de sesión</translation>
-<translation id="359203136434560942">Configura la lista de imágenes que se mostrarán en el salvapantallas de la pantalla de bloqueo.
-
-Cada elemento de la lista hace referencia a una imagen que se mostrará en el salvapantallas. El elemento debe contener una URL a la imagen y el valor de hash SHA-256 del archivo de imagen para que pueda verificarse. El formato de las imágenes debe ser JPEG. El dispositivo <ph name="PRODUCT_OS_NAME" /> descargará estas imágenes y conservará una caché local de estas referencias.
-
-Esta política no tendrá ningún efecto si se le asigna el valor false a la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.
-
-Si no se define esta política o si la lista no contiene ninguna referencia a una imagen válida, no se mostrará el salvapantallas de la pantalla de bloqueo, independientemente del valor que se haya definido en la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">Se usará el comportamiento anterior de envío de eventos en controles de formulario inhabilitados.</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de las máquinas virtuales</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />. Así, las extensiones continúan siendo compatibles y <ph name="PRODUCT_NAME" /> puede enviar encabezados definidos sin comprobaciones de <ph name="CORS" />.
@@ -3875,7 +3869,6 @@ Si no se establece la política, los usuarios podrán cambiar la lista de aplica
 <translation id="4624417808625504735">Impedir que JavaScript use JIT en estos sitios</translation>
 <translation id="46321462262887935">Tratar las teclas de la fila superior como teclas de función, pero permitir que el usuario cambie este ajuste</translation>
 <translation id="4632343302005518762">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido mostrados</translation>
-<translation id="4632566332417930481">No permite el uso de las herramientas para desarrolladores en extensiones instaladas por la política de empresa, pero sí permite su uso en otros contextos</translation>
 <translation id="4636354638176939375">Inhabilitar la creación de usuarios supervisados</translation>
 <translation id="4646626362889216307">Si se establece la política, se permitirá la combinación de las políticas seleccionadas cuando procedan de fuentes distintas, con los mismos permisos y el mismo nivel. Esta combinación está en las claves de primer nivel del diccionario de cada fuente. La clave procedente de la fuente con más prioridad prevalecerá.
 
@@ -4002,7 +3995,6 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
           Si no se le asigna ningún valor, el audio en mono se inhabilitará al inicio, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4768446404233019970">Habilitar los paquetes de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">Configuración que se utiliza para generar y verificar códigos de acceso parental.</translation>
-<translation id="4772431363738215349">La URL desde la que se puede descargar el salvapantallas.</translation>
 <translation id="4773997835955617342">Cambia la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
 
       Si se habilita esta política, el valor de la política KerberosCustomPrefillConfig se aplicará como configuración sugerida y se mostrará en la sección Configuración avanzada del cuadro de diálogo de autenticación de Kerberos.
@@ -4587,7 +4579,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Si se le asigna el valor "false", se inhabilitará la redirección de puertos a contenedores de Crostini.</translation>
 <translation id="538108065117008131">Permitir que <ph name="PRODUCT_FRAME_NAME" /> gestione los tipos de contenido que se indican a continuación.</translation>
-<translation id="5382211603538487131">El hash SHA-256 de la imagen.</translation>
 <translation id="538768040137709073">Habilita la función de portapapeles compartido, que permite a los usuarios enviar texto entre versiones de Chrome para ordenador y dispositivos Android cuando la sincronización está habilitada y el usuario ha iniciado sesión.
 
           Si se asigna el valor "True" a esta política, se habilita la capacidad de enviar texto entre dispositivos para los usuarios de Chrome.
@@ -4797,13 +4788,6 @@ Se eliminó en la versión M112.</translation>
 <translation id="5535256585099022933">Definir el intervalo de tiempo para el reinicio</translation>
 <translation id="553806128266843748">Un indicador booleano que especifica si las limitaciones de ancho de banda están habilitadas.</translation>
 <translation id="5540885720415375851">Permitir descubrimiento de dispositivos locales</translation>
-<translation id="5545132877693005604">Configura la lista de imágenes que se mostrarán en el salvapantallas de la pantalla de inicio de sesión.
-
-Cada elemento de la lista hace referencia a una imagen que se mostrará en el salvapantallas. El elemento debe contener una URL a la imagen y el valor de hash SHA-256 del archivo de imagen para que pueda verificarse. El formato de las imágenes debe ser JPEG. El dispositivo <ph name="PRODUCT_OS_NAME" /> descargará estas imágenes y conservará una caché local de estas referencias.
-
-Esta política no tendrá ningún efecto si se asigna el valor false a la política <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.
-
-Si no se establece esta política o si la lista no contiene ninguna referencia a una imagen válida, no se mostrará el salvapantallas de la pantalla de inicio de sesión, independientemente del valor que se haya definido en la política <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Habilitar el contraste alto en la pantalla de inicio de sesión</translation>
 <translation id="555077880566103058">Permitir que todos los sitios ejecuten automáticamente el complemento <ph name="FLASH_PLUGIN_NAME" /></translation>
@@ -4870,6 +4854,7 @@ Si no se establece la política, ningún dominio podrá acceder a URLs file:// e
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5607021831414604820">Habilitar los informes sobre el estado del almacenamiento del dispositivo</translation>
 <translation id="5608114828230655271">Comportamiento predeterminado del dispositivo</translation>
+<translation id="5611869109049836323">Implementar obligatoriamente restricciones en las anclas de confianza añadidas de forma local</translation>
 <translation id="5614865701790130558">Registrar eventos de instalación de extensiones basados en políticas</translation>
 <translation id="5618398258385745432">La opción asociada se utilizó antes de que se introdujese la nueva autenticación para ver las contraseñas. Desde entonces, la opción y, por lo tanto, esta política, no han afectado al comportamiento de Chrome. El comportamiento actual de Chrome es el mismo que si se hubiese establecido la política para inhabilitar la visualización de las contraseñas sin cifrar en la página de configuración del gestor de contraseñas. Esto significa que la página de configuración incluye un solo marcador de posición y Chrome solo muestra la contraseña cuando el usuario hace clic en "Mostrar"(y al volver a autenticarse, si procede). A continuación se muestra la descripción original de la política.
 
@@ -6783,6 +6768,7 @@ Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR
 <translation id="7323896582714668701">Parámetros de línea de comandos adicionales para <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Impedir que Chrome bloquee el acceso a protocolos externos dentro de iframes en entornos aislados</translation>
 <translation id="7326394567531622570">Similar a Wipe (valor 2), pero intenta conservar los tokens de inicio de sesión para que el usuario no tenga que volver a iniciar sesión.</translation>
+<translation id="7331387825106440104">No implementar obligatoriamente restricciones en las anclas de confianza añadidas de forma local</translation>
 <translation id="7331962793961469250">Si se establece en "true", las promociones de aplicaciones de Chrome Web Store no aparecerán en la página Nueva pestaña.
 
       Si se establece en "false" o si no se establece, las promociones de aplicaciones de Chrome Web Store aparecerán en la página Nueva pestaña.</translation>
@@ -8395,6 +8381,17 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 <translation id="8854571659927427063">Si se asigna el valor "Habilitada" a esta política, se importarán los marcadores del navegador predeterminado anterior al ejecutarse por primera vez. Si se le asigna el valor "Inhabilitada" o no se le asigna ninguno, no se importará ningún marcador al ejecutarse por primera vez.
 
       Los usuarios pueden abrir un cuadro de diálogo de importación y la casilla de marcadores aparecerá marcada o desmarcada en función del valor de esta política.</translation>
+<translation id="8854703425882848037">Los certificados X.509 pueden codificar restricciones, como restricciones de nombres, en extensiones del certificado. RFC 5280 especifica que implementar obligatoriamente estas restricciones en los certificados de anclas de confianza es opcional. A partir de la versión 112 de <ph name="PRODUCT_NAME" />, se implementarán obligatoriamente estas restricciones en los certificados cargados desde el almacén de certificados de la plataforma.
+
+Esta política es un mecanismo temporal para inhabilitar dicha implementación si una empresa tiene problemas con las restricciones codificadas en sus certificados raíz privados. En ese caso, esta política se puede usar para inhabilitar temporalmente la implementación obligatoria de las restricciones mientras esa empresa soluciona los problemas con los certificados.
+
+Si esta política se habilita o no se define, <ph name="PRODUCT_NAME" /> implementará obligatoriamente las restricciones codificadas en anclas de confianza cargadas desde el almacén de confianza de la plataforma.
+
+Si esta política se inhabilita, <ph name="PRODUCT_NAME" /> no implementará obligatoriamente las restricciones codificadas en anclas de confianza cargadas desde el almacén de confianza de la plataforma.
+
+Esta política no tendrá efecto si la política <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> está inhabilitada.
+
+Se prevé que esta política se elimine en la versión 115 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8855929790177853633">Fuente de la imagen del salvapantallas del usuario.</translation>
 <translation id="8858642179038618439">Forzar el modo de seguridad de YouTube</translation>
 <translation id="8860342862142842017">Inhabilitar los requisitos de la transparencia en los certificados en una lista de hashes subjectPublicKeyInfo</translation>

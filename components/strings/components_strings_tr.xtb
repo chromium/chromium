@@ -589,6 +589,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Yeniden boyutlandırma açma/kapatma menüsü</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> girin</translation>
 <translation id="2367567093518048410">Düzey</translation>
 <translation id="2380886658946992094">Hukuk</translation>
 <translation id="2383455408879745299">Chrome ayarlarında erişilebilirlik araçlarınızı kişiselleştirin</translation>
@@ -876,6 +877,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="317878711435188021">Bu cihazı etkin olarak kullandığınızda bilgilendirilmek istiyor</translation>
 <translation id="3180358318770512945">Ebeveynlik</translation>
 <translation id="3187306450550410410">Esnek çalışma düzenlemeleri</translation>
+<translation id="3187380004437786923">Ödemeleri yönet</translation>
 <translation id="3187472288455401631">Reklam ölçümü</translation>
 <translation id="3190736958609431397">Takibi bırak</translation>
 <translation id="319282854780294203">Sosyal ağlar</translation>
@@ -1271,6 +1273,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4154664944169082762">Parmak izleri</translation>
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
+<translation id="4169535189173047238">İzin verme</translation>
 <translation id="4171400957073367226">Geçersiz doğrulama imzası</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Her zaman göster</translation>
@@ -3334,6 +3337,7 @@ Ek ayrıntılar:
 <translation id="950736567201356821">Üstte üçlü delik</translation>
 <translation id="961663415146723894">Alttan bağlı</translation>
 <translation id="962484866189421427">Bu içerik başka bir şeyi taklit eden aldatıcı uygulamalar yükleyebilir veya sizi izlemek için kullanılabilecek veriler toplayabilir. <ph name="BEGIN_LINK" />Yine de göster<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Tüm kullanıcılar</translation>
 <translation id="964050462028070434">Şifreleri ve şifre anahtarlarını yönetin…</translation>
 <translation id="96680173638229310">Arabalar ve taşıtlar</translation>
 <translation id="969892804517981540">Resmi Derleme</translation>

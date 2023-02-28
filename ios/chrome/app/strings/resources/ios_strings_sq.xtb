@@ -47,6 +47,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1254117744268754948">Zgjidh dosjen</translation>
 <translation id="1254424942107648268">Gjej të mëparshmin</translation>
 <translation id="1258491128795710625">Më të rejat</translation>
+<translation id="1264156759663453185">Teksti i zgjedhur është shumë i madh për përkthim të pjesshëm.</translation>
 <translation id="1265739287306757398">Mëso se si</translation>
 <translation id="1272079795634619415">Ndalo</translation>
 <translation id="1275718070701477396">Përzgjedhur</translation>
@@ -177,6 +178,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2268044343513325586">Ripërpuno</translation>
 <translation id="2273327106802955778">Menyja "Më shumë"</translation>
 <translation id="2286505070150039482">Teksti i theksuar</translation>
+<translation id="2287614783861766820">{count,plural, =1{Kjo adresë do të fshihet nga kjo pajisje.}other{Këto adresa do të fshihen nga kjo pajisje.}}</translation>
 <translation id="2299218006564889602">Fjalëkalimet enkriptohen në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve të Google".</translation>
 <translation id="2302742851632557585">Ndryshoje fjalëkalimin në faqen e internetit</translation>
 <translation id="2316709634732130529">Përdor fjalëkalimin e sugjeruar</translation>
@@ -458,6 +460,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4324952538601951430">Faqeshënuesit e ruajtur, fjalëkalimet, cilësimet etj. janë tani këtu</translation>
 <translation id="4334428914252001502">1 artikull i palexuar.</translation>
 <translation id="4338650699862464074">Dërgon te Google URL-të e faqeve që ti viziton.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Kjo adresë do të fshihet nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar.}other{Këto adresa do të fshihen nga kjo pajisje dhe nga pajisjet e tjera ku je identifikuar.}}</translation>
 <translation id="4343046787186034850">Lejohet qasja te "Kamera" dhe "Mikrofoni"</translation>
 <translation id="4359125752503270327">Kjo faqe do të hapet në një aplikacion tjetër.</translation>
 <translation id="4375040482473363939">Kërkim me kod QR</translation>
@@ -587,6 +590,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5232485538978018676">Identifikohu me llogari të menaxhuar</translation>
 <translation id="5234764350956374838">Hiq</translation>
 <translation id="5245322853195994030">Anulo sinkronizimin</translation>
+<translation id="5271265092610673171">{count,plural, =1{Një fushë e detyrueshme është bosh. Plotësoje para se ta ruash.}other{Disa fusha të detyrueshme janë bosh. Plotësoji para se t'i ruash.}}</translation>
 <translation id="5271549068863921519">Ruaj fjalëkalimin</translation>
 <translation id="5295239312320826323">Do ta heqësh llogarinë <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Shfaq</translation>
@@ -700,6 +704,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6066301408025741299">Prek lehtë për të anuluar.</translation>
 <translation id="6071409777669089905">Zhgozhdo skedën</translation>
 <translation id="6084848228346514841">Zgjidh skedat</translation>
+<translation id="6100617279104942061">Identifikuar si <ph name="USER_EMAIL" />. Hap cilësimet.</translation>
 <translation id="6103540626693881831">Enkriptimi në pajisje</translation>
 <translation id="6119050551270742952">Faqja aktuale e uebit është në modalitetin "e fshehtë"</translation>
 <translation id="6122191549521593678">Në linjë</translation>
@@ -1129,6 +1134,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9098541895599151034">Të fshihen <ph name="NUMBER_OF_ACCOUNTS" /> fjalëkalime?</translation>
 <translation id="9100610230175265781">Kërkohet shprehja e kalimit</translation>
 <translation id="9107664647686727385">Kontrollo për fjalëkalime të komprometuara</translation>
+<translation id="9120217828624527905">Kalo te përkthimi në faqe të plotë</translation>
 <translation id="9124387962554796433">Google mund ta përdorë historikun tënd për të personalizuar "Kërko" dhe shërbime të tjera të Google.</translation>
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9148126808321036104">Identifikohu sërish</translation>

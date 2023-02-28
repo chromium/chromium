@@ -130,6 +130,7 @@
 <translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>
+<translation id="3293912612584488930">Урадите више уз Chrome</translation>
 <translation id="3360895254066713204">Chrome помоћник</translation>
 <translation id="3379938682270551431">{0,plural, =0{Поново ћемо покренути Chrome}=1{Поново ћемо покренути Chrome за 1 секунду}one{Поново ћемо покренути Chrome за # секунду}few{Поново ћемо покренути Chrome за # секунде}other{Поново ћемо покренути Chrome за # секунди}}</translation>
 <translation id="3396977131400919238">Током инсталације је дошло до грешке у оперативном систему. Преузмите Google Chrome поново.</translation>
@@ -157,6 +158,7 @@
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">Chrome OS Flex није успео да синхронизује податке због грешке при пријављивању.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
+<translation id="3809772425479558446">За Google Chrome је потребан Windows 10 или новија верзија.</translation>
 <translation id="3835168907083856002">Овим ће се направити нов Chrome профил за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Затворите све прозоре Google Chrome прегледача и покушајте поново.</translation>
 <translation id="3865754807470779944">Инсталирана је верзија Chrome-а <ph name="PRODUCT_VERSION" /></translation>
@@ -413,7 +415,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8989968390305463310">Историја прегледања утиче на огласе који вам се приказују и интересовања процењена у наставку. Ради заштите приватности Chrome аутоматски брише интересовања сваког месеца чим постану доступна. Интересовања могу да се освежавају ако их не уклоните.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ажурирање за Chrome је доступно}=1{Ажурирање за Chrome је доступно}one{Ажурирање за Chrome је доступно већ # дан}few{Ажурирање за Chrome је доступно већ # дана}other{Ажурирање за Chrome је доступно већ # дана}}</translation>
 <translation id="9053892488859122171">Chrome OS Flex систем</translation>
-<translation id="9067395829937117663">За Google Chrome је потребан Windows 7 или новија верзија.</translation>
 <translation id="911206726377975832">Желите ли да избришете и податке прегледања?</translation>
 <translation id="9138603949443464873">Да бисте применили промене, поново покрените Chrome</translation>
 <translation id="9195993889682885387">Chrome може да процени интересовања на основу историје прегледања из последњих неколико недеља. Те информације остају на уређају.</translation>

@@ -158,6 +158,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="3795971588916395511">Google Chrome OS</translation>
+<translation id="3809772425479558446">Za Google Chrome potrebujete Windows 10 ali novejšega.</translation>
 <translation id="3835168907083856002">S tem bo ustvarjen novi profil v Chromu za uporabnika <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="386202838227397562">Zaprite vsa okna brskalnika Google Chrome in poskusite znova.</translation>
 <translation id="3865754807470779944">Nameščen je Chrome različice <ph name="PRODUCT_VERSION" /></translation>
@@ -414,7 +415,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8989968390305463310">Zgodovina brskanja vpliva na prikazane oglase in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti samodejno izbriše vaša zanimanja. Zanimanja se lahko osvežujejo, razen če jih odstranite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Posodobitev za Chrome je na voljo}=1{Posodobitev za Chrome je na voljo}one{Posodobitev za Chrome je na voljo že # dan}two{Posodobitev za Chrome je na voljo že # dneva}few{Posodobitev za Chrome je na voljo že # dni}other{Posodobitev za Chrome je na voljo že # dni}}</translation>
 <translation id="9053892488859122171">Sistem ChromeOS Flex</translation>
-<translation id="9067395829937117663">Za Google Chrome potrebujete Windows 7 ali novejši.</translation>
 <translation id="911206726377975832">Ali želite izbrisati tudi podatke brskanja?</translation>
 <translation id="9138603949443464873">Če želite uporabiti spremembe, znova zaženite Chrome</translation>
 <translation id="9195993889682885387">Chrome lahko oceni vaša zanimanja glede na vašo zgodovino brskanja zadnjih nekaj tednov. Ti podatki so shranjeni v vaši napravi.</translation>

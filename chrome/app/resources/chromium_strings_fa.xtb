@@ -195,8 +195,8 @@
 <translation id="5527463683072221100">‏باز کردن فایل‌های PDF در Chromium</translation>
 <translation id="5614091477838198795">‏وقتی روشن باشد، از سیستم Chromium نیز خارج خواهید شد</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏به‌روزرسانی Chromium دردسترس است}=1{‏به‌روزرسانی Chromium دردسترس است}one{‏به‌روزرسانی Chromium از # روز پیش دردسترس است}other{‏به‌روزرسانی Chromium از # روز پیش دردسترس است}}</translation>
-<translation id="5634636535844844681">‏Chromium به Windows 7 یا بالاتر نیاز دارد.</translation>
 <translation id="5653831366781983928">‏لطفاً اکنون Chromium را بازراه‌اندازی کنید</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏نمایش Chromium به این زبان</translation>
 <translation id="5862307444128926510">‏به Chromium خوش آمدید</translation>
 <translation id="5883558403894052917">‏Chromium متوجه شده است که این موارد حاوی بدافزار هستند:</translation>
@@ -338,10 +338,12 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8266560134891435528">‏چون به سیستم وارد نشده‌اید، Chromium نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="8276522524898344151">‏Chromium می‌خواهد گذرواژه‌ها را کپی کند.</translation>
 <translation id="8290862415967981663">‏این فایل ممکن است خطرناک باشد، بنابراین Chromium آن را مسدود کرده است.</translation>
+<translation id="8325404639443959713">‏انجام کارهای بیشتر با Chromium</translation>
 <translation id="8330519371938183845">‏برای همگام‌سازی و شخصی‌سازی Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید</translation>
 <translation id="8340674089072921962">‏<ph name="USER_EMAIL_ADDRESS" /> قبلاً از Chromium استفاده می‌کرد</translation>
 <translation id="8357820681460164151">‏برای دسترسی به چیزهایتان در مرورگر Chromium در همه دستگاه‌هایتان، به سیستم وارد شوید، سپس همگام‌سازی را روشن کنید</translation>
 <translation id="8360718212975266891">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید Windows 10 یا بالاتر داشته باشید. این رایانه از Windows 8 استفاده می‌کند.</translation>
+<translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏Chromium را ظرف یک روز راه‌اندازی مجدد کنید}one{‏Chromium را ظرف # روز راه‌اندازی مجدد کنید}other{‏Chromium را ظرف # روز راه‌اندازی مجدد کنید}}</translation>
 <translation id="8453117565092476964">‏بایگانی نصب‌کننده خراب یا نامعتبر است. لطفاً Chromium را دوباره را بارگیری کنید.</translation>
 <translation id="8463672209299734063">‏اختیاری: با ارسال خودکار داده‌های استفاده و عیب‌یابی به Google، به بهبود ویژگی‌ها و عملکرد ChromiumOS کمک کنید.</translation>
@@ -377,6 +379,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="9158494823179993217">‏سرپرست سیستم شما برای باز شدن مرورگر جایگزین برای دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Chromium را پیکربندی کرده است.</translation>
 <translation id="9185526690718004400">‏راه‌اندازی مجدد برای به‌روزرسانی Chromium</translation>
 <translation id="9190841055450128916">‏Chromium‏ (mDNS ورودی)</translation>
+<translation id="924957577793602335">‏شخصی‌سازی کردن Chromium</translation>
 <translation id="93478295209880648">‏Chromium ممکن است درست کار نکند زیرا دیگر در Windows XP یا Windows Vista پشتیبانی نمی‌شود</translation>
 <translation id="942598560705308788">‏گواهینامه‌های تحت‌مدیریت Chromium</translation>
 <translation id="965162752251293939">‏چه‌کسی از Chromium استفاده می‌کند؟</translation>

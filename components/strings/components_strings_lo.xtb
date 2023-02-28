@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2361263712565360498">275 x 395 ມມ</translation>
 <translation id="236340516568226369">ປັບຂະໜາດເມນູສະ​ຫຼັບ</translation>
+<translation id="2365355378251437925">ປ້ອນ <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">ລະ​ດັບ</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">ປັບແຕ່ງເຄື່ອງມືການຊ່ວຍເຂົ້າເຖິງຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome ໃຫ້ເປັນແບບສ່ວນຕົວ</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">ຮູ້ເມື່ອທ່ານກຳລັງໃຊ້ອຸປະກອນນີ້ຢູ່</translation>
 <translation id="3180358318770512945">ການລ້ຽງດູ</translation>
 <translation id="3187306450550410410">ການຈັດກຽມງານທີ່ຍືດຍຸ່ນ</translation>
+<translation id="3187380004437786923">ຈັດການການຈ່າຍເງິນ</translation>
 <translation id="3187472288455401631">ການວັດແທກໂຄສະນາ</translation>
 <translation id="3190736958609431397">ເຊົາຕິດຕາມ</translation>
 <translation id="319282854780294203">ເຄືອຂ່າຍສັງຄົມ</translation>
@@ -1271,6 +1273,7 @@
 <translation id="4154664944169082762">ລາຍນີ້ວມື</translation>
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>
+<translation id="4169535189173047238">ບໍ່ອະນຸຍາດ</translation>
 <translation id="4171400957073367226">ລາຍເຊັນການຢື​ນ​ຢັນບໍ່​ດີ</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">ສະ​ແດງ​ຢູ່ສະ​ເຫມີ​</translation>
@@ -3333,6 +3336,7 @@
 <translation id="950736567201356821">ເຈາະຮູຢູ່ເທິງສຸດສາມຮູ</translation>
 <translation id="961663415146723894">ຫຍິບເຫຼັ້ມລຸ່ມສຸດ</translation>
 <translation id="962484866189421427">ເນື້ອຫານີ້ອາດຈະພະຍາຍາມຕິດຕັ້ງແອັບຫຼອກລວງທີ່ປອມເປັນສິ່ງອື່ນ ຫຼື ເກັບກຳຂໍ້ມູນທີ່ອາດຈະຖືກໃຊ້ເພື່ອຕິດຕາມທ່ານ. <ph name="BEGIN_LINK" />ຢືນຢັນການສະແດງ<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">ຜູ້ໃຊ້ທັງໝົດ</translation>
 <translation id="964050462028070434">ຈັດການລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານ…</translation>
 <translation id="96680173638229310">ລົດຍົນ ແລະ ພາຫະນະ</translation>
 <translation id="969892804517981540">ສ້າງເປັນທາງການ</translation>

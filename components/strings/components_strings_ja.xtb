@@ -84,6 +84,7 @@
 <translation id="1178821169867863726">12x16 インチ</translation>
 <translation id="1181037720776840403">削除</translation>
 <translation id="1186201132766001848">パスワードを確認</translation>
+<translation id="1195073053842921378">この住所をこのデバイスから削除します</translation>
 <translation id="1195558154361252544">許可したサイトを除くすべてのサイトで通知を自動的にブロックします</translation>
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="1201402288615127009">次へ</translation>
@@ -588,6 +589,7 @@
 <translation id="2359808026110333948">続行</translation>
 <translation id="2361263712565360498">275x395 mm</translation>
 <translation id="236340516568226369">切り替えメニューのサイズ変更</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> を入力してください</translation>
 <translation id="2367567093518048410">レベル</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome の設定でユーザー補助ツールをカスタマイズします</translation>
@@ -875,6 +877,7 @@
 <translation id="317878711435188021">このデバイスのアクティブ状態の検出</translation>
 <translation id="3180358318770512945">育児</translation>
 <translation id="3187306450550410410">フレックスタイム制</translation>
+<translation id="3187380004437786923">お支払いを管理</translation>
 <translation id="3187472288455401631">広告の測定</translation>
 <translation id="3190736958609431397">トラッキングを停止</translation>
 <translation id="319282854780294203">ソーシャル ネットワーク</translation>
@@ -1270,6 +1273,7 @@
 <translation id="4154664944169082762">指紋</translation>
 <translation id="4159784952369912983">パープル</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
+<translation id="4169535189173047238">許可しない</translation>
 <translation id="4171400957073367226">確認用の署名に問題があります</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">常に表示</translation>
@@ -3333,6 +3337,7 @@
 <translation id="950736567201356821">3 穴パンチ（上）</translation>
 <translation id="961663415146723894">製本（下綴じ）</translation>
 <translation id="962484866189421427">このコンテンツを表示すると、詐欺的なアプリ（他のものに成りすましたり、ユーザーの追跡などに使用可能なデータを収集したりするアプリ）のインストールが試行される可能性があります。<ph name="BEGIN_LINK" />危険性を理解したうえで表示する<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">すべてのユーザー</translation>
 <translation id="964050462028070434">パスワードとパスキーを管理...</translation>
 <translation id="96680173638229310">自動車、乗り物</translation>
 <translation id="969892804517981540">Official Build</translation>

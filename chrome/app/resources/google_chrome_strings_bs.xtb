@@ -158,6 +158,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex nije sinhronizirao vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
+<translation id="3809772425479558446">Google Chrome zahtijeva Windows 10 ili noviju verziju.</translation>
 <translation id="3835168907083856002">Ovim će se kreirati novi Chrome profil za korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">Zatvorite sve prozore Google Chromea i pokušajte ponovo.</translation>
 <translation id="3865754807470779944">Verzija Chromea <ph name="PRODUCT_VERSION" /> je instalirana</translation>
@@ -414,7 +415,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8989968390305463310">Vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chrome automatski briše vaša interesovanja na mjesečnoj osnovi. Interesovanja se mogu osvježiti ukoliko ih ne uklonite.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea je dostupno # dan}few{Ažuriranje Chromea je dostupno # dana}other{Ažuriranje Chromea je dostupno # dana}}</translation>
 <translation id="9053892488859122171">Sistem ChromeOS Flex</translation>
-<translation id="9067395829937117663">Za Google Chrome je potreban Windows 7 ili novija verzija.</translation>
 <translation id="911206726377975832">Također izbrisati podatke pregledanja?</translation>
 <translation id="9138603949443464873">Da primijenite promjene, ponovo pokrenite Chrome</translation>
 <translation id="9195993889682885387">Chrome može procijeniti vaša interesovanja na osnovu historije pregledanja tokom proteklih nekoliko sedmica. Ta informacija ostaje na vašem uređaju.</translation>

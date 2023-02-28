@@ -615,6 +615,7 @@
 <translation id="5911887972742538906">Med nameščanjem aplikacije za Linux je prišlo do napake.</translation>
 <translation id="5912396950572065471">Oblika</translation>
 <translation id="5913638992615760742">Operacija kopiranja ni uspela, nepričakovana napaka: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Na voljo so nove oblike iskanja</translation>
 <translation id="5926082595146149752">nizozemščina (Nizozemska) z mednarodno angleško tipkovnico (ZDA – za računalnike s sistemom Windows)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktiviranje po nastavitvi naprave</translation>
@@ -764,6 +765,7 @@
 <translation id="7126604456862387217">»&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;« – &lt;em&gt;iskanje v storitvi Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">kanareščina (fonetična)</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Manjka »Ujemanje nadomestnega imena subjekta« ali »Ujemanje pripone domene« za preverjanje identitete strežnika za preverjanje pristnosti.</translation>
 <translation id="7165320105431587207">Omrežja ni bilo mogoče konfigurirati</translation>
 <translation id="7170041865419449892">Zunaj dosega</translation>
 <translation id="7180611975245234373">Osveži</translation>

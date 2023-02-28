@@ -2823,13 +2823,6 @@ Zorg dat je dit beleid niet altijd toepast, vooral niet tijdens productie-implem
 <translation id="3589193811812796052">Voorkomen dat WebAssembly-modules cross-origin worden verstuurd</translation>
 <translation id="3591527072193107424">Zet de functie Ondersteuning voor oudere browsers aan.</translation>
 <translation id="3591584750136265240">Het verificatiegedrag voor inloggen configureren</translation>
-<translation id="359203136434560942">Hiermee wordt de lijst met afbeeldingen ingesteld die worden getoond in de screensaver voor het vergrendelscherm.
-
-Elk item op de lijst verwijst naar een afbeelding die wordt getoond in de screensaver. Het item moet de volgende elementen bevatten: een URL naar de afbeelding en de SHA-256-hash-waarde voor verificatie van het afbeeldingsbestand. De bestandsindeling moet jpeg zijn. Het <ph name="PRODUCT_OS_NAME" />-apparaat downloadt deze afbeeldingen en slaat de verwijzingen op in een lokaal cachegeheugen.
-
-Dit beleid heeft geen effect als het beleid <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> is ingesteld op False.
-
-Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbeeldingen bevat, wordt op het vergrendelscherm geen screensaver getoond, ongeacht de waarde die is ingesteld in het beleid <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">Het oude gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gebruikt.</translation>
 <translation id="3596112486106491038">Opdrachtregeltoegang tot virtuele machines aanzetten</translation>
 <translation id="3603469950773500315">Zet <ph name="CORS" />-controlebeperkingen voor de nieuwe <ph name="CORS" />-implementatie aan, waardoor extensies geschikt gedrag kunnen behouden en <ph name="PRODUCT_NAME" /> toestemming heeft om opgegeven headers te sturen zonder <ph name="CORS" />-controle.
@@ -3847,7 +3840,6 @@ Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps 
 <translation id="4624417808625504735">Voorkomen dat JavaScript op deze sites JIT kan gebruiken</translation>
 <translation id="46321462262887935">Toetsen op de bovenste rij gebruiken als functietoetsen, maar de gebruiker toestaan dit te wijzigen</translation>
 <translation id="4632343302005518762"><ph name="PRODUCT_FRAME_NAME" /> toestaan de vermelde soorten content te verwerken.</translation>
-<translation id="4632566332417930481">Gebruik van hulpprogramma's voor ontwikkelaars uitzetten voor extensies die zijn geïnstalleerd op basis van het bedrijfsbeleid, maar toestaan in andere contexten</translation>
 <translation id="4636354638176939375">Gebruikers met beperkte rechten maken uitzetten</translation>
 <translation id="4646626362889216307">Als je het beleid instelt, kunnen de geselecteerde beleidsregels worden samengevoegd als ze afkomstig zijn van verschillende bronnen en hetzelfde bereik en niveau hebben. Dit samenvoegen vindt plaats in de sleutels op het eerste niveau van het woordenboek uit elke bron. De waarde die afkomstig is van de bron met de hoogste prioriteit, krijgt voorrang.
 
@@ -3974,7 +3966,6 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
           Als dit beleid niet is ingesteld, staat de functie voor monogeluid in eerste instantie uit, maar kan de gebruiker deze op elk gewenst moment aanzetten.</translation>
 <translation id="4768446404233019970">3DES cipher suites aanzetten in TLS</translation>
 <translation id="4770334626033858263">De configuratie die is gebruikt om de toegangscode voor ouders te genereren en te verifiëren.</translation>
-<translation id="4772431363738215349">De URL waar de afbeelding voor de screensaver kan worden gedownload.</translation>
 <translation id="4773997835955617342">Hiermee wordt de voorgestelde <ph name="KRB5_CONFIG" />-configuratie voor de nieuwe handmatig gemaakte tickets gewijzigd.
 
       Als je dit beleid toepast, wordt de waarde van het beleid KerberosCustomPrefilledConfig toegepast als voorgestelde configuratie en getoond in het gedeelte Geavanceerd van het dialoogvenster voor Kerberos-verificatie.
@@ -4557,7 +4548,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 
       Als dit beleid is ingesteld op False, is poortdoorschakeling naar Crostini-containers uitgezet.</translation>
 <translation id="538108065117008131"><ph name="PRODUCT_FRAME_NAME" /> toestaan de volgende soorten content te verwerken.</translation>
-<translation id="5382211603538487131">De SHA-256-hash van de afbeelding.</translation>
 <translation id="538768040137709073">Zet de functie Gedeeld klembord aan, waarmee gebruikers tekst kunnen sturen tussen Chrome-desktops en een Android-apparaat als de synchronisatie is aangezet en de gebruiker is ingelogd.
 
           Als dit beleid is ingesteld op True, kunnen Chrome-gebruikers tekst tussen apparaten sturen.
@@ -4767,13 +4757,6 @@ Dit is verwijderd in M112.</translation>
 <translation id="5535256585099022933">Het tijdsinterval voor herstarten instellen</translation>
 <translation id="553806128266843748">Een Booleaanse markering die aangeeft of throttling aanstaat.</translation>
 <translation id="5540885720415375851">Toestaan dat lokale apparaten worden gevonden</translation>
-<translation id="5545132877693005604">Hiermee wordt de lijst met afbeeldingen ingesteld die worden getoond in de screensaver voor het inlogscherm.
-
-Elk item op de lijst verwijst naar een afbeelding die wordt getoond in de screensaver. Het item moet de volgende elementen bevatten: een URL naar de afbeelding en de SHA-256-hash-waarde voor verificatie van het afbeeldingsbestand. De bestandsindeling moet jpeg zijn. Het <ph name="PRODUCT_OS_NAME" />-apparaat downloadt deze afbeeldingen en slaat de verwijzingen op in een lokaal cachegeheugen.
-
-Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> is ingesteld op False.
-
-Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbeeldingen bevat, wordt op het inlogscherm geen screensaver getoond, ongeacht de waarde die is ingesteld in het beleid <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hoog contrast op het inlogscherm aanzetten</translation>
 <translation id="555077880566103058">Alle sites toestaan om de <ph name="FLASH_PLUGIN_NAME" />-plug-in automatisch uit te voeren</translation>

@@ -117,7 +117,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1689333818294560261">Slapyvardis</translation>
 <translation id="1700629756560807968">Pasirinkta: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1715515772563243997">Jei pasitikite <ph name="SITE" />, prisijungdami galite naudoti išsaugotą slaptažodį.</translation>
-<translation id="173842016780303328">Nepavyko išversti dalies teksto.</translation>
 <translation id="1740468249224277719">Dukart palieskite, kad įdiegtumėte.</translation>
 <translation id="1752547299766512813">Išs. slaptažod.</translation>
 <translation id="1753905327828125965">Dažniausiai lankomi</translation>
@@ -179,6 +178,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2268044343513325586">Patikslinti</translation>
 <translation id="2273327106802955778">Daugiau meniu</translation>
 <translation id="2286505070150039482">Paryškintas tekstas</translation>
+<translation id="2287614783861766820">{count,plural, =1{Šis adresas bus ištrintas iš šio įrenginio.}one{Šie adresai bus ištrinti iš šio įrenginio.}few{Šie adresai bus ištrinti iš šio įrenginio.}many{Šie adresai bus ištrinti iš šio įrenginio.}other{Šie adresai bus ištrinti iš šio įrenginio.}}</translation>
 <translation id="2299218006564889602">Jūsų slaptažodžiai šifruojami įrenginyje prieš išsaugant juos „Google“ slaptažodžių tvarkytuvėje</translation>
 <translation id="2302742851632557585">Pakeisti slaptažodį svetainėje</translation>
 <translation id="2316709634732130529">Naudoti siūl. slapt.</translation>
@@ -243,7 +243,6 @@ Svetainės negali naudoti slapukų, kad sužinotų apie naršymo veiklą skirtin
 <translation id="2747003861858887689">Ankstesnis laukas</translation>
 <translation id="2749231692441336879">Stebima: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2764831210418622012">ką tik</translation>
-<translation id="2768727608073497433">Pasirinktas tekstas tuščias.</translation>
 <translation id="2773292004659987824">Paieška inkognito režimu</translation>
 <translation id="277771892408211951">Kalbos pasirinkimas</translation>
 <translation id="2780046210906776326">Nėra el. pašto pask.</translation>
@@ -461,6 +460,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4324952538601951430">Jūsų išsaugotos žymės, slaptažodžiai, nustatymai ir kita dabar yra čia</translation>
 <translation id="4334428914252001502">1 neskaitytas straipsnis.</translation>
 <translation id="4338650699862464074">Siunčiami „Google“ puslapių, kuriuose lankotės, URL.</translation>
+<translation id="4342054591427973606">{count,plural, =1{Šis adresas bus ištrintas iš šio ir kitų įrenginių, kuriuose esate prisijungę.}one{Šie adresai bus ištrinti iš šio ir kitų įrenginių, kuriuose esate prisijungę.}few{Šie adresai bus ištrinti iš šio ir kitų įrenginių, kuriuose esate prisijungę.}many{Šie adresai bus ištrinti iš šio ir kitų įrenginių, kuriuose esate prisijungę.}other{Šie adresai bus ištrinti iš šio ir kitų įrenginių, kuriuose esate prisijungę.}}</translation>
 <translation id="4343046787186034850">Leidžiama pasiekti vaizdo kamerą ir mikrofoną</translation>
 <translation id="4359125752503270327">Šis puslapis bus atidarytas kitoje programoje.</translation>
 <translation id="4375040482473363939">QR kodo paieška</translation>
@@ -590,6 +590,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5232485538978018676">Prisijunkite naudodami valdomą paskyrą</translation>
 <translation id="5234764350956374838">Atsisakyti</translation>
 <translation id="5245322853195994030">Atšaukti sinchronizavimą</translation>
+<translation id="5271265092610673171">{count,plural, =1{Būtinas laukas tuščias. Užpildykite jį prieš išsaugodami.}one{Kai kurie būtini laukai tušti. Užpildykite juos prieš išsaugodami.}few{Kai kurie būtini laukai tušti. Užpildykite juos prieš išsaugodami.}many{Kai kurie būtini laukai tušti. Užpildykite juos prieš išsaugodami.}other{Kai kurie būtini laukai tušti. Užpildykite juos prieš išsaugodami.}}</translation>
 <translation id="5271549068863921519">Išsaugoti slaptažodį</translation>
 <translation id="5295239312320826323">Pašalinti paskyrą <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Rodyti</translation>

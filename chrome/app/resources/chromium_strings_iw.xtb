@@ -194,8 +194,8 @@
 <translation id="5527463683072221100">‏פתיחה של קובצי PDF ב-Chromium</translation>
 <translation id="5614091477838198795">‏כשההגדרה מופעלת, תתבצע יציאה גם מ-Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}one{‏עדכון של Chromium זמין כבר # ימים}two{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
-<translation id="5634636535844844681">‏כדי להשתמש ב-Chromium יש צורך ב-Windows מגרסה 7 ואילך.</translation>
 <translation id="5653831366781983928">‏יש להפעיל מחדש את Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏הצגת Chromium בשפה זו</translation>
 <translation id="5862307444128926510">‏ברוכים הבאים ל-Chromium‏</translation>
 <translation id="5883558403894052917">‏מערכת Chromium גילתה שהפריטים האלה מכילים תוכנה זדונית:</translation>
@@ -343,6 +343,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8340674089072921962">‏בכתובת <ph name="USER_EMAIL_ADDRESS" /> השתמשו בעבר ב-Chromium</translation>
 <translation id="8357820681460164151">‏כדי לגשת אל פריטים שונים בדפדפן Chromium שלך מכל המכשירים, צריך להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="8360718212975266891">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.</translation>
+<translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="8417404458978023919">{0,plural, =1{‏צריך להפעיל מחדש את Chromium בתוך יום אחד}one{‏צריך להפעיל מחדש את Chromium בתוך # ימים}two{‏צריך להפעיל מחדש את Chromium בתוך # ימים}other{‏צריך להפעיל מחדש את Chromium בתוך # ימים}}</translation>
 <translation id="8453117565092476964">‏הארכיון של המתקין פגום או שאינו חוקי. יש להוריד שוב את Chromium.</translation>
 <translation id="8463672209299734063">‏אופציונלי: שליחה אוטומטית של נתוני אבחון ונתוני שימוש במכשיר אל Google תעזור לשפר את התכונות ואת הביצועים של ChromiumOS.</translation>

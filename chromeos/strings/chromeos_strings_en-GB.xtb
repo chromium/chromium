@@ -238,6 +238,7 @@
 <translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="3268178239013324452">Failed – Door open</translation>
+<translation id="3275506277319227640">Dock on <ph name="DIRECTION" /></translation>
 <translation id="3275729367986477355">Avatar image</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit files}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
@@ -253,6 +254,7 @@
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3435896845095436175">Enable</translation>
+<translation id="345256797477978759">Dock window on the <ph name="DIRECTION" /> larger portion of the screen</translation>
 <translation id="3456078764689556234">Printed page <ph name="PRINTED_PAGES" /> out of <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Scanning page <ph name="PAGE_NUM" />. <ph name="PERCENTAGE_VALUE" />% completed.</translation>
 <translation id="3459509316159669723">Printing</translation>
@@ -273,12 +275,14 @@
 <translation id="3595596368722241419">Battery full</translation>
 <translation id="3600339377155080675">Screen mirror</translation>
 <translation id="3602290021589620013">Preview</translation>
+<translation id="360282891121575443">Photos in shared albums can be updated by other users. Change daily might show wallpapers not currently in the album.</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Change wallpaper</translation>
 <translation id="360565022852130722">Wi-Fi network is secured with weak protocol WEP 802.1x</translation>
 <translation id="3606583719724308068">High latency to HTTPS websites</translation>
 <translation id="361575905210396100">Thanks for your feedback</translation>
 <translation id="3632579075709132555">Privacy screen toggle</translation>
+<translation id="3639846061339007994">top</translation>
 <translation id="3651050199673793219">Select a temperature unit</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> test</translation>
 <translation id="370665806235115550">Loading...</translation>
@@ -353,6 +357,7 @@
 <translation id="4311195029067684288">Full</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> key pressed</translation>
 <translation id="435692326371619097">Manage network APN settings. APNs establish a connection between a mobile network and the Internet. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="4370033095251616914">Dock on smaller side</translation>
 <translation id="4378373042927530923">Not run</translation>
 <translation id="4378551569595875038">Connecting...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -629,6 +634,7 @@
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
+<translation id="6698459586333070823">Shared albums can be updated by other users</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Keyboard backlight</translation>
@@ -674,6 +680,7 @@
 <translation id="7155171745945906037">Existing photo from camera or file</translation>
 <translation id="7162487448488904999">Gallery</translation>
 <translation id="7170236477717446850">Profile picture</translation>
+<translation id="7171919371520438592">Dock window on the <ph name="DIRECTION" /> smaller portion of the screen</translation>
 <translation id="7172721935181587524">1 image</translation>
 <translation id="7177485034254901881">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />. Administrators may remotely configure the device.</translation>
 <translation id="7180611975245234373">Refresh</translation>
@@ -778,6 +785,7 @@
 <translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
+<translation id="8210733748736414123">bottom</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
 <translation id="8227119283605456246">Attach file</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
@@ -795,6 +803,7 @@
 <translation id="8352772353338965963">Add an account to multiple sign-in. All signed-in accounts can be accessed without a password, so this feature should only be used with trusted accounts.</translation>
 <translation id="8364946094152050673">Empty name servers</translation>
 <translation id="8372477600026034341">Extra hosts</translation>
+<translation id="8380114448424469341">Dock window on the <ph name="DIRECTION" /> half of the screen</translation>
 <translation id="8395584934117017006">This <ph name="DEVICE_TYPE" /> is enterprise managed</translation>
 <translation id="8398927464629426868">The rate at which the device is currently charging or discharging</translation>
 <translation id="8410244574650205435">Automatically detected</translation>
@@ -887,6 +896,7 @@
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9138630967333032450">Left shift</translation>
 <translation id="9149391708638971077">Run memory test</translation>
+<translation id="9157515863513902090">Dock on larger side</translation>
 <translation id="9173638680043580060">Less than a minute remaining</translation>
 <translation id="917720651393141712">Test</translation>
 <translation id="9188992814426075118">Your keyboard can automatically match your wallpaper</translation>

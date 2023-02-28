@@ -877,6 +877,7 @@
 <translation id="317878711435188021">לדעת מתי המכשיר הזה משמש אותך באופן פעיל</translation>
 <translation id="3180358318770512945">הורות</translation>
 <translation id="3187306450550410410">הסדרי עבודה גמישים</translation>
+<translation id="3187380004437786923">ניהול התשלומים</translation>
 <translation id="3187472288455401631">מדידת המודעות</translation>
 <translation id="3190736958609431397">ביטול המעקב</translation>
 <translation id="319282854780294203">רשתות חברתיות</translation>
@@ -1272,6 +1273,7 @@
 <translation id="4154664944169082762">טביעות אצבע</translation>
 <translation id="4159784952369912983">סגול</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
+<translation id="4169535189173047238">לא לאפשר</translation>
 <translation id="4171400957073367226">חתימת אימות לא חוקית</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> ‏- <ph name="RESULT_OWNER" /> ‏- <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">להציג תמיד</translation>
@@ -3339,6 +3341,7 @@ Del</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>
 <translation id="961663415146723894">כריכה בקצה התחתון</translation>
 <translation id="962484866189421427">ייתכן שבתוכן הזה יש קוד להתקנת אפליקציות מטעות שמתחזות למשהו אחר או שאוספות נתונים המאפשרים לעקוב אחריך. <ph name="BEGIN_LINK" />אני רוצה לראות בכל זאת<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">כל המשתמשים</translation>
 <translation id="964050462028070434">ניהול של סיסמאות ומפתחות גישה…</translation>
 <translation id="96680173638229310">כלי רכב</translation>
 <translation id="969892804517981540">גרסה רשמית</translation>

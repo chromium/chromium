@@ -126,6 +126,7 @@
 <translation id="3245429137663807393">Si també comparteixes els informes d'ús de Chrome, aquests informes inclouen els URL que visites</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
+<translation id="3293912612584488930">Treu més profit de Chrome</translation>
 <translation id="3360895254066713204">Aplicació d'ajuda de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome es reiniciarà ara}=1{Chrome es reiniciarà d'aquí a 1 segon}other{Chrome es reiniciarà d'aquí a # segons}}</translation>
 <translation id="3396977131400919238">S'ha produït un error en el sistema operatiu durant la instal·lació. Torna a baixar Google Chrome.</translation>
@@ -405,7 +406,6 @@
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hi ha una actualització de Chrome disponible}=1{Hi ha una actualització de Chrome disponible}other{Fa # dies que hi ha una actualització de Chrome disponible}}</translation>
 <translation id="9053892488859122171">Sistema ChromeOS Flex</translation>
-<translation id="9067395829937117663">Google Chrome requereix Windows 7 o una versió posterior.</translation>
 <translation id="911206726377975832">També voleu suprimir les dades de navegació?</translation>
 <translation id="9138603949443464873">Torna a iniciar Chrome perquè s'apliquin els canvis</translation>
 <translation id="9195993889682885387">Chrome pot estimar els teus interessos basant-se en l'historial de navegació de les darreres setmanes. Aquesta informació es queda al teu telèfon.</translation>

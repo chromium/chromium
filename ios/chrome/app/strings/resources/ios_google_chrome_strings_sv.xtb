@@ -31,6 +31,7 @@
 <translation id="2689064829982324496"><ph name="BEGIN_LINK" />Logga ut från Chrome<ph name="END_LINK" /> om du vill logga ut från Google-kontot på alla webbplatser.</translation>
 <translation id="2695886661449553974">Chrome kunde inte söka efter uppdateringar. Försök igen senare.</translation>
 <translation id="2732745070297234559">Chrome kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
+<translation id="2736805085127235148">Chrome-aviseringar är i nuläget inaktiverade i enhetsinställningarna.</translation>
 <translation id="2767464022270041271">Inga sparade lösenord. Google Lösenordshantering kan bara kontrollera dina lösenord om du sparar dem.</translation>
 <translation id="2869959624320573933">Logga in i Chrome</translation>
 <translation id="2957447865124070833">Välj <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
@@ -114,6 +115,7 @@
 <translation id="7855730255114109580">Google Chrome behöver inte uppdateras</translation>
 <translation id="7939179037291298976">Öppna Lösenordsalternativ i inställningarna på iPhone och välj Chrome</translation>
 <translation id="8022947259858476807">Använd Chrome som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
+<translation id="804638182476029347">Tillåt Chrome-aviseringar om sänkt pris</translation>
 <translation id="81358522153858150">Chrome har nu stöd för användarpolicyer för dina hanterade konton</translation>
 <translation id="8160472928944011082">Uppdatering inte möjlig</translation>
 <translation id="8357607116237445042">Välj om din data i Chrome ska raderas från den här enheten eller vara kvar</translation>

@@ -502,6 +502,11 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3633097874324966332">Ak chcete zariadenie spárovať, otvorte nastavenia rozhrania Bluetooth</translation>
 <translation id="3638400994746983214">Prepnúť obrazovku ochrany súkromia. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Termín aktualizácie ubehol</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        <ph name="START_TIME" /> do
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Výberom zobrazíte v Kalendári Google ďalšie podrobnosti.</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. deň z <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Približný zostávajúci čas: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
 Pripojte svoje zariadenie k napájaniu.</translation>
@@ -549,6 +554,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, načítavajú sa udalosti.</translation>
 <translation id="3932043219784172185">Nie je pripojené žiadne zariadenie</translation>
 <translation id="3934456833412894880">Je zapnuté adaptívne nabíjanie. Batéria zostane nabitá na 80 %, čím sa predĺži jej výdrž, a úplne sa nabije, keď to budete potrebovať.</translation>
+<translation id="3936620957945677513">Ak sa chcete pripojiť k udalosti <ph name="EVENT_SUMMARY" />, stlačte Enter</translation>
 <translation id="3943857333388298514">Prilepiť</translation>
 <translation id="394485226368336402">Nastavenia zvuku</translation>
 <translation id="3945319193631853098">Klepnutím dokončite nastavovanie</translation>
@@ -1465,9 +1471,9 @@ Nová inštalácia</translation>
 <translation id="8850991929411075241">Hľadať+Esc</translation>
 <translation id="8853703225951107899">Váš kód PIN alebo heslo sa stále nepodarilo overiť. Poznámka: Ak ste nedávno zmenili svoje heslo, použite predchádzajúce. Nové heslo bude uplatnené až po odhlásení.</translation>
 <translation id="8855885154700222542">Kláves celej obrazovky</translation>
-<translation id="8858369206579825206">Nastavenia ochrany súkromia</translation>
 <translation id="8870509716567206129">Aplikácia nepodporuje rozdelenú obrazovku.</translation>
 <translation id="8874184842967597500">Nepripojené</translation>
+<translation id="8876148469852588625"><ph name="EVENT_POSITION" />. udalosť z <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Skontrolujte pripojenie</translation>
 <translation id="8877788021141246043">Nastaviť pripomenutie</translation>
 <translation id="8878886163241303700">Rozšírenie obrazovky</translation>

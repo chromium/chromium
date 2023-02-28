@@ -196,8 +196,8 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="5527463683072221100">PDF-ləri Chromium'da açın</translation>
 <translation id="5614091477838198795">Aktiv olduqda, Chromium'dan da çıxacaqsınız</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium güncəlləməsi əlçatandır}=1{Chromium güncəlləməsi əlçatandır}other{Chromium güncəlləməsi # gün ərzində əlçatan olub}}</translation>
-<translation id="5634636535844844681">Chromium Windows 7 və ya daha yeni versiya tələb edir.</translation>
 <translation id="5653831366781983928">Chromium'u indi başladın</translation>
+<translation id="5690427481109656848">Google MMC</translation>
 <translation id="5698481217667032250">Chromium'u bu dildə görüntüləyin</translation>
 <translation id="5862307444128926510">Chromium'a xoş gəlmisiniz</translation>
 <translation id="5883558403894052917">Chromium bu elementlərdə zərərli proqram olduğunu aşkar edib:</translation>
@@ -337,10 +337,12 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8266560134891435528">Hesaba daxil olmadığınız üçün Chromium parollarınızı yoxlaya bilmir</translation>
 <translation id="8276522524898344151">Chromium parolları kopyalamağa çalışır.</translation>
 <translation id="8290862415967981663">Bu fayl təklükəli ola bilər, bu səbəbdən Chromium onu blok etdi.</translation>
+<translation id="8325404639443959713">Chromium ilə daha çox iş görün</translation>
 <translation id="8330519371938183845">Chromium'u cihazlarda sinxronizasiya etmək və fərdiləşdirmək üçün daxil olun</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> əvvəl Chromium istifadə edirdi</translation>
 <translation id="8357820681460164151">Bütün cihazlarınızda Chromium brauzerinin elementlərinə giriş etmək üçün daxil olun və sinxronizasiyanı aktiv edin</translation>
 <translation id="8360718212975266891">Chromium güncəlləmələrini əldə etmək üçün Windows 10 və ya daha yeni versiya tələb olunur. Bu kompüter Windows 8 istifadə edir.</translation>
+<translation id="8370517070665726704">Müəllif hüquqları <ph name="YEAR" /> Google MMC. Bütün hüquqlar qorunur.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium'u bir gün ərzində yenidən başladın}other{Chromium'u # gün ərzində yenidən başladın}}</translation>
 <translation id="8453117565092476964">Quraşdırıcı arxivi zədələnib və ya yanlışdır. Lütfən, Chromium'u yenidən endirin.</translation>
 <translation id="8463672209299734063">İstəyə görə: Diaqnostika və istifadəçi datasını avtomatik Google'a göndərməklə ChromiumOS funksiyalarını təkmilləşdirməyə yardım edin.</translation>
@@ -376,6 +378,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="9158494823179993217">Sistem administratoru Chromium'u <ph name="TARGET_URL_HOSTNAME" /> ünvanına daxil olmaq məqsədilə alternativ brauzer açmaq üçün konfiqurasiya edib.</translation>
 <translation id="9185526690718004400">&amp;Chromium'u güncəlləmək üçün yenidən başladın</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Chromium-u fərdiləşdirin</translation>
 <translation id="93478295209880648">Chromium düzgün işləməyə bilər, çünki daha Windows XP və ya Windows Vista'da dəstəklənmir</translation>
 <translation id="942598560705308788">Chromium tərəfindən idarə olunan sertifikatlar</translation>
 <translation id="965162752251293939">Chromium'u kim istifadə edir?</translation>

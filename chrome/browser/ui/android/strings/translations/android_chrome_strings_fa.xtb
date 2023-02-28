@@ -355,6 +355,7 @@
 <translation id="2951071800649516099">صفحه‌ها را برای خواندن در فرصتی دیگر به فهرست خواندن اضافه کنید</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> صفحه خوانده‌نشده}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحه خوانده‌نشده}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحه خوانده‌نشده}}</translation>
 <translation id="2961210776189273067">عنوان</translation>
+<translation id="296370266220139811">صرفه‌جویی در زمان و تایپ کمتر</translation>
 <translation id="2979025552038692506">برگه ناشناس انتخاب‌شده</translation>
 <translation id="2979639724566107830">باز کردن در پنجرهٔ جدید</translation>
 <translation id="2981364137500752533">حداکثر ۵ پنجره می‌توانید داشته باشید.</translation>
@@ -482,6 +483,7 @@
 <translation id="3578874072190212775">کمک به سایت‌ها در مبارزه با تقلب و تشخیص روبات‌ها از افراد</translation>
 <translation id="3587482841069643663">همه</translation>
 <translation id="3587596251841506391">به بهبود امنیت وب کمک کنید</translation>
+<translation id="3597179440835065298">دریافت پیشنهادهای بهتر</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
 <translation id="3616113530831147358">صوتی</translation>
 <translation id="3622349720008044802">مدیریت پنجره‌ها</translation>
@@ -747,6 +749,7 @@
 <translation id="5005498671520578047">کپی گذرواژه</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> می‌خواهد مرتبط شود</translation>
 <translation id="5016205925109358554">Serif</translation>
+<translation id="5017529052065664584">۱۵ دقیقه اخیر</translation>
 <translation id="5032430150487044192">رمزینه پاسخ‌سریع ایجاد نمی‌شود</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5040262127954254034">حریم خصوصی</translation>
@@ -882,6 +885,7 @@
 <translation id="5813552293717797987">این مرورگر را <ph name="PARENT_NAME_1" /> و <ph name="PARENT_NAME_2" /> مدیریت می‌کنند.</translation>
 <translation id="5814131985548525293">برای شروع، اینجا تایپ کنید یا روی نماد صدا ضربه بزنید</translation>
 <translation id="5814749351757353073">از سایت‌های محبوبتان باخبر باشید</translation>
+<translation id="5822875253699806474">برای برگشتن سریع به سایت‌هایی که بازدید کرده‌اید، برگه‌ها و سابقه را همگام‌سازی کنید</translation>
 <translation id="583281660410589416">ناشناس</translation>
 <translation id="5833984609253377421">هم‌رسانی پیوند</translation>
 <translation id="5834764604050996579">‏برای اسکن کردن رمزینه پاسخ‌سریع، به Chrome اجازه دهید از دوربین استفاده کند</translation>
@@ -1136,6 +1140,7 @@
 <translation id="7088681679121566888">‏Chrome به‌روز است</translation>
 <translation id="7105047059074518658">برای مرور آسان‌تر در دستگاه‌ها به سیستم وارد شوید</translation>
 <translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
+<translation id="7116588989735740310">برای برگشتن به سایت‌هایی که بازدید کرده‌اید در دستگاه‌های دیگر، برگه‌ها و سابقه را همگام‌سازی کنید</translation>
 <translation id="7130504491556983216">وقتی وب را مرور می‌کنید، فهرستی از علایق شما در اینجا نشان داده خواهد شد</translation>
 <translation id="7138678301420049075">دیگر</translation>
 <translation id="7146622961999026732">به‌نظر می‌رسد این سایت‌ها و برنامه‌ها برای شما مهم هستند:</translation>
@@ -1214,6 +1219,7 @@
 <translation id="751961395872307827">نمی‌توان به این سایت متصل شد</translation>
 <translation id="752220631458524187">وقتی کارتان تمام شد، اتصال را قطع کنید</translation>
 <translation id="7523960634226602883">‏جستجو با دوربین ازطریق «لنز Google»</translation>
+<translation id="7539698981064401140">همگام‌سازی برگه‌ها و سابقه</translation>
 <translation id="7562080006725997899">پاک کردن داده‌های مرور</translation>
 <translation id="756809126120519699">‏داده‌های Chrome پاک شد</translation>
 <translation id="7577900504646297215">مدیریت علایق</translation>
@@ -1396,6 +1402,7 @@
 <translation id="8461694314515752532">رمزگذاری داده‌های همگام‌سازی‌شده با گذرعبارت همگام‌سازی خودتان</translation>
 <translation id="8466613982764129868">مطمئن شوید <ph name="TARGET_DEVICE_NAME" /> به اینترنت متصل باشد</translation>
 <translation id="8473863474539038330">نشانی‌ها و سایر موارد</translation>
+<translation id="847433688444405067">مرور بین دستگاه‌ها</translation>
 <translation id="8481980314595922412">ویژگی‌های آزمایشی روشن است</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">باز کردن صفحه سابقه</translation>
@@ -1449,6 +1456,7 @@
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
+<translation id="874726034427945498">برای دیدن پیشنهادهای بهتر در نوار نشانی، برگه‌ها و سابقه را همگام‌سازی کنید</translation>
 <translation id="8748850008226585750">محتوا پنهان است</translation>
 <translation id="8756969031206844760">گذرواژه به‌روزرسانی شود؟</translation>
 <translation id="8765470054473112089">‏وقتی در نوار نشانی یا چارگوش جستجو تایپ می‌کنید، Chrome آنچه تایپ می‌کنید را به موتور جستجوی پیش‌فرض شما ارسال می‌کند تا پیشنهادهای بهتری دریافت کند. این ویژگی در «حالت ناشناس» خاموش است.</translation>
@@ -1514,6 +1522,7 @@
 <translation id="9070377983101773829">شروع جستجوی گفتاری</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9081543426177426948">سایت‌هایی که بازدید می‌کنید در «حالت ناشناس» ذخیره نمی‌شود</translation>
+<translation id="9084103763810123431">برای ادامه مرور در دستگاهی دیگر، برگه‌ها و سابقه را همگام‌سازی کنید</translation>
 <translation id="9086302186042011942">همگام‌سازی</translation>
 <translation id="9086455579313502267">دسترسی به شبکه امکان‌پذیر نیست</translation>
 <translation id="9099220545925418560">براساس سابقه مرور شما. این تنظیم خاموش است.</translation>

@@ -502,6 +502,11 @@
 <translation id="3633097874324966332">Отворите подешавања Bluetooth-а да бисте упарили уређај</translation>
 <translation id="3638400994746983214">Укључује/искључује екран за приватност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Ажурирајте истекло</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />
+        <ph name="EVENT_SUMMARY" />,
+        од <ph name="START_TIME" /> до
+        <ph name="END_TIME" />,
+        <ph name="TIME_ZONE" />. Изаберите да бисте видели више детаља у Google календару.</translation>
 <translation id="3659444876902283058">(<ph name="CURRENT_DAY" />. дан од <ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Преостало је око <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Прикључите уређај на напајање.</translation>
@@ -549,6 +554,7 @@
 <translation id="3925540965556789199"><ph name="DATE" />, догађаји се учитавају.</translation>
 <translation id="3932043219784172185">Нема повезаних уређаја</translation>
 <translation id="3934456833412894880">Прилагодљиво пуњење је укључено. Батерија ће остати на 80% да продужи трајање батерије, а напуниће се до краја када вам треба.</translation>
+<translation id="3936620957945677513">Притисните Enter да бисте ушли на догађај <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Налепи</translation>
 <translation id="394485226368336402">Подешавања звука</translation>
 <translation id="3945319193631853098">Додирните да бисте довршили подешавање</translation>
@@ -1467,9 +1473,9 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">Верификација PIN-а или лозинке још увек није успела. Напомена: Ако сте недавно променили лозинку, користите стару. Нова лозинка ће бити примењена када се одјавите.</translation>
 <translation id="8855885154700222542">Тастер за цео екран</translation>
-<translation id="8858369206579825206">Контроле приватности</translation>
 <translation id="8870509716567206129">Апликација не подржава подељени екран.</translation>
 <translation id="8874184842967597500">Није повезано</translation>
+<translation id="8876148469852588625"><ph name="EVENT_POSITION" />. догађај од <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Проверите везу</translation>
 <translation id="8877788021141246043">Подеси подсетник</translation>
 <translation id="8878886163241303700">Проширени екран</translation>

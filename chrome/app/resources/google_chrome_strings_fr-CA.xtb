@@ -129,6 +129,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
+<translation id="3293912612584488930">Faites-en plus avec Chrome</translation>
 <translation id="3360895254066713204">Aide de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome va maintenant redémarrer}=1{Chrome redémarrera dans 1 seconde}one{Chrome redémarrera dans # seconde}other{Chrome redémarrera dans # secondes}}</translation>
 <translation id="3396977131400919238">Une erreur de système d'exploitation s'est produite pendant l'installation. Veuillez télécharger de nouveau Google Chrome.</translation>
@@ -412,7 +413,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8989968390305463310">Votre historique de navigation a une incidence sur les annonces que vous voyez ainsi que sur les centres d'intérêt tels qu'ils sont estimés ci-dessous. Afin de protéger votre confidentialité, Chrome supprime automatiquement et de façon continue vos centres d'intérêt chaque mois. Les centres d'intérêt peuvent être actualisés à moins que vous ne les retiriez.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est proposée}=1{Une mise à jour de Chrome est proposée}one{Une mise à jour de Chrome est proposée depuis # jour}other{Une mise à jour de Chrome est proposée depuis # jours}}</translation>
 <translation id="9053892488859122171">Système Chrome OS Flex</translation>
-<translation id="9067395829937117663">Google Chrome requiert Windows 7 ou une version ultérieure.</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation?</translation>
 <translation id="9138603949443464873">Pour appliquer vos modifications, relancez Google Chrome</translation>
 <translation id="9195993889682885387">Chrome peut estimer vos centres intérêt en fonction de votre historique de navigation au cours des dernières semaines. Ces renseignements restent sur votre appareil.</translation>

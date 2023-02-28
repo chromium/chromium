@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2361263712565360498">275 x 395 મિમી</translation>
 <translation id="236340516568226369">કદ બદલવા માટેના ટૉગલ ધરાવતું મેનૂ</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> દાખલ કરો</translation>
 <translation id="2367567093518048410">સ્તર</translation>
 <translation id="2380886658946992094">કાનૂની</translation>
 <translation id="2383455408879745299">Chrome સેટિંગમાં તમારા ઍક્સેસિબિલિટીના સાધનો મનગમતા બનાવો</translation>
@@ -876,6 +877,7 @@
 <translation id="317878711435188021">તમે સક્રિય રૂપે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તેના વિશે જાણકારી મેળવવી</translation>
 <translation id="3180358318770512945">પાલન-પોષણ</translation>
 <translation id="3187306450550410410">અનુકૂળતા અનુસાર કામ કરવાની વ્યવસ્થા</translation>
+<translation id="3187380004437786923">ચુકવણીઓને મેનેજ કરો</translation>
 <translation id="3187472288455401631">જાહેરાતના પરફોર્મન્સનું માપન</translation>
 <translation id="3190736958609431397">ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="319282854780294203">સોશિયલ નેટવર્ક</translation>
@@ -1271,6 +1273,7 @@
 <translation id="4154664944169082762">ફિંગરપ્રીંટ્સ</translation>
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
+<translation id="4169535189173047238">મંજૂરી આપશો નહીં</translation>
 <translation id="4171400957073367226">ખોટી ચકાસણી સહી</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">હંમેશા બતાવો</translation>
@@ -3333,6 +3336,7 @@
 <translation id="950736567201356821">ઉપરની બાજુએ ત્રણ કાણાં પાડો</translation>
 <translation id="961663415146723894">નીચેની બાજુએ જોડો</translation>
 <translation id="962484866189421427">આ કન્ટેન્ટ કદાચ ભ્રામક ઍપ ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરે છે કે જે પોતાની ખોટી ઓળખ આપે છે અથવા તમને ટ્રૅક કરવા માટે ઉપયોગમાં લઈ શકાય તેવો ડેટા મેળવે છે. <ph name="BEGIN_LINK" />તો પણ બતાવો<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">બધા વપરાશકર્તાઓ</translation>
 <translation id="964050462028070434">પાસવર્ડ અને પાસકી મેનેજ કરો…</translation>
 <translation id="96680173638229310">ઑટો અને વાહનો</translation>
 <translation id="969892804517981540">આધિકારિક બિલ્ડ</translation>

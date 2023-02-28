@@ -364,6 +364,7 @@
 <translation id="4092890906744441904">ଆଇରିଶ୍</translation>
 <translation id="4124935795427217608">ୟୁନିକର୍ନ</translation>
 <translation id="4131235941541910880">ଆପଣ ଆବଶ୍ୟକ କରୁନଥିବା ଆଇଟମଗୁଡ଼ିକୁ ଟ୍ରାସକୁ ମୁଭ କରନ୍ତୁ</translation>
+<translation id="4134804435730168042"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="4153015322587141338">ସେଲ୍ଫରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ ଏକ ଫାଇଲରେ ଡାହାଣ-କ୍ଲିକ କରନ୍ତୁ ଏବଂ "<ph name="PIN_COMMAND" />"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="4157569377477607576">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଏହା ସୁପାରିଶ କରେ ନାହିଁ:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଇଛି।</translation>
@@ -406,6 +407,7 @@
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" ଡିଲିଟ ହୋଇଯିବ ଏବଂ ଆପଣ ଏହାକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
 <translation id="4418686080762064601">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକ ପାଇଁ ଏକ ସର୍ଟକଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="4425149324548788773">ମୋ ଡ୍ରାଇଭ୍</translation>
+<translation id="4432921877815220091"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4442424173763614572">DNS ଲୁକ୍‍ଅପ୍ ବିଫଳ ହୋଇଛି</translation>
 <translation id="4462159676511157176">କଷ୍ଟମ୍ ନାମ ସର୍ଭର୍</translation>
@@ -609,6 +611,7 @@
 <translation id="5913638992615760742">କପି କାର୍ଯ୍ୟ ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5926082595146149752">US ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଡଚ୍ (ନେଦରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5948255720516436063"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ସଜାଇବା ବିକଳ୍ପଗୁଡ଼ିକ</translation>
@@ -755,6 +758,7 @@
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ଡ୍ରାଇଭ୍‍‍ରେ ଖୋଜନ୍ତୁ&lt;/em&gt;</translation>
 <translation id="7135561821015524160">କନ୍ନଡ଼ ଫୋନେଟିକ୍</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">ସର୍ଭର ପରିଚୟ ପ୍ରମାଣୀକରଣକୁ ବୈଧ କରିବା ପାଇଁ 'ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ ନାମ ସହ ମେଳ' କିମ୍ବା 'ଡୋମେନ ସଫିକ୍ସ ସହ ମେଳ' ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="7165320105431587207">ନେଟ୍‍ୱର୍କ କନ୍‌ଫିଗର୍‌ କରିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="7170041865419449892">ପରିସର ବାହାରେ</translation>
 <translation id="7180611975245234373">ରିଫ୍ରେଶ୍</translation>
@@ -930,6 +934,7 @@
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
 <translation id="8492972329130824181">ହୋମ୍ ନେଟୱାର୍କ ଉପଲବ୍ଧ ନାହିଁ। ସଂଯୋଗ କରିବାକୁ ମୋବାଇଲ ଡାଟା ରୋମିଂ ନିଶ୍ଚିତ ରୂପେ ସକ୍ଷମ ହୋଇଥିବା ଆବଶ୍ୟକ।</translation>
 <translation id="8499098729323186194"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି...</translation>
+<translation id="8502913769543567768"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ଡିଭାଇସ ସେଟଅପ ପରେ ସକ୍ରିୟ କରନ୍ତୁ, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8521441079177373948">UK</translation>
 <translation id="853494022971700746">ଫରାସୀ (ଫ୍ରାନ୍ସ)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>

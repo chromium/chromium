@@ -614,6 +614,7 @@
 <translation id="5911887972742538906">Si è verificato un errore durante l'installazione dell'applicazione Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">Operazione di copia non riuscita, errore imprevisto: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="5918480239180455431">Nuove funzionalità di ricerca disponibili</translation>
 <translation id="5926082595146149752">Olandese (Paesi Bassi) con tastiera PC internazionale USA</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Attiva dopo la configurazione del dispositivo</translation>
@@ -763,6 +764,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" - &lt;em&gt;cerca in Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Kannada fonetica</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">Manca "Corrispondenza nome alternativo del soggetto" o "Corrispondenza suffisso di dominio" per la conferma dell'identità del server di autenticazione</translation>
 <translation id="7165320105431587207">Impossibile configurare la rete</translation>
 <translation id="7170041865419449892">Fuori dal raggio d'azione</translation>
 <translation id="7180611975245234373">Aggiorna</translation>

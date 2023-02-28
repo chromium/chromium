@@ -194,8 +194,8 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5527463683072221100">Abrir archivos PDF en Chromium</translation>
 <translation id="5614091477838198795">Si activas esta opción, saldrás de Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Hay una actualización de Chromium disponible}=1{Hay una actualización de Chromium disponible}other{Hay una actualización de Chromium disponible hace # días}}</translation>
-<translation id="5634636535844844681">Para usar Chromium, se requiere Windows 7 o versiones posteriores.</translation>
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostrar Chromium en este idioma</translation>
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
 <translation id="5883558403894052917">Chromium detectó que estos elementos contienen software malicioso:</translation>
@@ -334,10 +334,12 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8266560134891435528">Chromium no puede revisar las contraseñas porque no accediste a tu cuenta</translation>
 <translation id="8276522524898344151">Chromium está intentando copiar contraseñas.</translation>
 <translation id="8290862415967981663">Chromium bloqueó este archivo porque podría ser peligroso.</translation>
+<translation id="8325404639443959713">Aprovecha Chromium al máximo</translation>
 <translation id="8330519371938183845">Accede para sincronizar y personalizar Chromium en todos tus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>
 <translation id="8357820681460164151">A fin de ver el contenido de tu navegador Chromium en todos tus dispositivos, accede a tu cuenta y activa la sincronización</translation>
 <translation id="8360718212975266891">Para obtener las próximas actualizaciones de Chromium, necesitarás Windows 10 o versiones posteriores. Esta computadora usa Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en el transcurso de un día}other{Reinicia Chromium en el transcurso de # días}}</translation>
 <translation id="8453117565092476964">El instalador está dañado o no es válido. Descarga Chromium nuevamente.</translation>
 <translation id="8463672209299734063">Opcional: Para ayudarnos a mejorar las funciones y el rendimiento de Chromium OS, envía automáticamente datos de uso y diagnóstico a Google.</translation>
@@ -373,6 +375,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9158494823179993217">El administrador del sistema configuró Chromium de manera que abriera un navegador alternativo para acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reiniciar para actualizar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (tráfico mDNS entrante)</translation>
+<translation id="924957577793602335">Personaliza Chromium a tu medida</translation>
 <translation id="93478295209880648">Es posible que Chromium no funcione correctamente porque ya no es compatible con Windows XP ni Windows Vista</translation>
 <translation id="942598560705308788">Certificados administrados por Chromium</translation>
 <translation id="965162752251293939">¿Quién usa Chromium?</translation>

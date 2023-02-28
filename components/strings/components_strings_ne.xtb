@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2361263712565360498">२७५ x ३९५ मि.मि.</translation>
 <translation id="236340516568226369">आकार बदल्ने टगल मेनु</translation>
+<translation id="2365355378251437925"><ph name="FIELD" /> हाल्नुहोस्</translation>
 <translation id="2367567093518048410">चरण</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Chrome का सेटिङमा गई एस्सेसिबिलिटी टुलहरू आफूले चाहेको जस्तो बनाउनुहोस्</translation>
@@ -873,6 +874,7 @@
 <translation id="317878711435188021">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्छ भन्ने कुराको जानकारी</translation>
 <translation id="3180358318770512945">लालनपालन</translation>
 <translation id="3187306450550410410">पायक पर्ने समयमा काम गर्ने सुविधा</translation>
+<translation id="3187380004437786923">भुक्तानी व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3187472288455401631">विज्ञापनको पर्फर्मेन्स मापन</translation>
 <translation id="3190736958609431397">ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="319282854780294203">सामाजिक सञ्जालहरू</translation>
@@ -1268,6 +1270,7 @@
 <translation id="4154664944169082762">औँलाछापहरू</translation>
 <translation id="4159784952369912983">बैजनी</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
+<translation id="4169535189173047238">अनुमति नदिनुहोस्</translation>
 <translation id="4171400957073367226">खराब रूजू हस्ताक्षर।</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">सधैँ देखाउनुहोस्</translation>
@@ -3330,6 +3333,7 @@
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>
 <translation id="962484866189421427">यो सामग्रीले आफूलाई अर्कै रूपमा प्रस्तुत गर्ने भ्रामक अनुप्रयोगहरूको स्थापना गर्न वा तपाईंलाई ट्र्याक गर्ने कार्यमा प्रयोग गर्न सकिने डेटाको सङ्कलन गर्ने प्रयास गर्न सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">सबै प्रयोगकर्ताहरू</translation>
 <translation id="964050462028070434">पासवर्ड तथा पासकीहरू व्यवस्थापन गर्नुहोस्…</translation>
 <translation id="96680173638229310">सवारी साधनहरू</translation>
 <translation id="969892804517981540">आधिकारिक निर्माण</translation>

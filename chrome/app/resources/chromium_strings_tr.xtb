@@ -194,8 +194,8 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5527463683072221100">PDF'leri Chromium'da aç</translation>
 <translation id="5614091477838198795">Etkin durumdayken Chromium oturumunuz da kapatılır</translation>
 <translation id="5623402015214259806">{0,plural, =0{Bir Chromium güncellemesi var}=1{Bir Chromium güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chromium güncellemesi var}}</translation>
-<translation id="5634636535844844681">Chromium, Windows 7 veya daha sonraki bir sürümü gerektirir.</translation>
 <translation id="5653831366781983928">Lütfen Chromium'u şimdi yeniden başlatın</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5883558403894052917">Chromium, aşağıdaki öğelerde kötü amaçlı yazılım tespit etti:</translation>
@@ -337,10 +337,12 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8266560134891435528">Oturum açmadığınız için Chromium, şifrelerinizi kontrol edemiyor</translation>
 <translation id="8276522524898344151">Chromium şifreleri kopyalamaya çalışıyor.</translation>
 <translation id="8290862415967981663">Bu dosya tehlikeli olabileceği için Chromium tarafından engellendi.</translation>
+<translation id="8325404639443959713">Chromium ile daha fazla şey yapın</translation>
 <translation id="8330519371938183845">Chromium'u cihazlarınız arasında senkronize etmek ve kişiselleştirmek için oturum açın</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> önceden Chromium kullanıyordu</translation>
 <translation id="8357820681460164151">Chromium öğelerinize tüm cihazlarınızda erişmek için oturum açın ve senkronizasyonu etkinleştirin</translation>
 <translation id="8360718212975266891">Gelecekteki Chromium güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8 kullanıyor.</translation>
+<translation id="8370517070665726704">Telif hakkı <ph name="YEAR" /> Google LLC. Tüm hakları saklıdır.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium'u bir gün içinde yeniden başlatın}other{Chromium'u # gün içinde yeniden başlatın}}</translation>
 <translation id="8453117565092476964">Yükleyici arşivi bozuk veya geçersiz. Lütfen Chromium'u yeniden indirin.</translation>
 <translation id="8463672209299734063">İsteğe bağlı: Teşhis ve kullanım verilerini Google'a otomatik olarak göndererek ChromiumOS özelliklerini ve performansını iyileştirmeye yardımcı olun.</translation>
@@ -376,6 +378,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="9158494823179993217">Sistem yöneticiniz, Chromium'u, <ph name="TARGET_URL_HOSTNAME" /> sitesini alternatif bir tarayıcıda açacak şekilde yapılandırmış.</translation>
 <translation id="9185526690718004400">&amp;Chromium'u güncellemek için yeniden başlat</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Chromium'u kendinize uyarlayın</translation>
 <translation id="93478295209880648">Chromium artık Windows XP veya Windows Vista üzerinde desteklenmediği için doğru şekilde çalışmayabilir</translation>
 <translation id="942598560705308788">Chromium tarafından yönetilen sertifikalar</translation>
 <translation id="965162752251293939">Chromium'u kim kullanıyor?</translation>

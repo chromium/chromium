@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">फोल्डर रोज्नुहोस्</translation>
 <translation id="1254424942107648268">अघिल्लो भेट्टाउनुहोस्</translation>
 <translation id="1258491128795710625">नयाँ के छ</translation>
+<translation id="1264156759663453185">आंशिक रूपमा अनुवाद गर्नका लागि चयन गरिएको टेक्स्ट ज्यादै लामो भयो।</translation>
 <translation id="1265739287306757398">कसरी गर्ने भनी सिक्नुहोस्</translation>
 <translation id="1272079795634619415">रोक्नुहोस्</translation>
 <translation id="1275718070701477396">चयन गरिएको</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">परिशुद्ध</translation>
 <translation id="2273327106802955778">थप मेनु</translation>
 <translation id="2286505070150039482">हाइलाइट गरिएको टेक्स्ट</translation>
+<translation id="2287614783861766820">{count,plural, =1{यो डिभाइसबाट यो ठेगाना मेटाइने छ।}other{यो डिभाइसबाट यी ठेगानाहरू मेटाइने छन्।}}</translation>
 <translation id="2299218006564889602">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ।</translation>
 <translation id="2302742851632557585">वेबसाइटमा गई पासवर्ड बदल्नुहोस्</translation>
 <translation id="2316709634732130529">सुझाव दिइएको पासवर्ड प्रयोग गर्नुहोस्</translation>
@@ -458,6 +460,7 @@
 <translation id="4324952538601951430">तपाईंले सेभ गर्नुभएका बुकमार्क, पासवर्ड, सेटिङ र अन्य कुराहरू अब यहाँ देखिन्छन्</translation>
 <translation id="4334428914252001502">१ वटा नपढिएको लेख।</translation>
 <translation id="4338650699862464074">यसले Google मा तपाईं जाने पृष्ठका URL हरू पठाउँछ।</translation>
+<translation id="4342054591427973606">{count,plural, =1{यो डिभाइस र तपाईंले साइन इन गरेका अन्य डिभाइसबाट यो ठेगाना मेटाइने छ।}other{यो डिभाइस र तपाईंले साइन इन गरेका अन्य डिभाइसबाट यी ठेगानाहरू मेटाइने छन्।}}</translation>
 <translation id="4343046787186034850">क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="4359125752503270327">यो पृष्ठ अर्को एपमा खुल्नेछ।</translation>
 <translation id="4375040482473363939">QR कोड खोज्नुहोस्‌</translation>
@@ -587,6 +590,7 @@
 <translation id="5232485538978018676">व्यवस्थापन गरिएको खातामार्फत साइन इन गर्नुहोस्</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
 <translation id="5245322853195994030">सिंक गर्ने कार्य रद्द गर्नुहोस्</translation>
+<translation id="5271265092610673171">{count,plural, =1{भर्नु पर्ने एउटा फिल्ड खाली छाडिएको छ। सो फिल्डमा भरेपछि मात्र सेभ गर्नुहोस्।}other{भर्नु पर्ने केही फिल्डहरू खाली छाडिएका छन्। ती फिल्डहरूमा भरेपछि मात्र सेभ गर्नुहोस्।}}</translation>
 <translation id="5271549068863921519">पासवर्ड बचत गर्नुहोस्</translation>
 <translation id="5295239312320826323">खाता <ph name="USER_EMAIL" /> हटाउने हो?</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
@@ -700,6 +704,7 @@
 <translation id="6066301408025741299">रद्द गर्न ट्याप गर्नुहोस्।</translation>
 <translation id="6071409777669089905">ट्याब अनपिन गर्नुहोस्</translation>
 <translation id="6084848228346514841">ट्याबहरू चयन गर्नुहोस्</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> का नामबाट साइन इन गरिएको छ। यसले सेटिङ खोल्छ।</translation>
 <translation id="6103540626693881831">डिभाइसमै चल्ने इन्क्रिप्सन</translation>
 <translation id="6119050551270742952">हालको वेबपृष्ठ इन्कोग्निटो मोडमा छ</translation>
 <translation id="6122191549521593678">अनलाइन</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> वटा खाताका पासवर्डहरू मेटाउने हो?</translation>
 <translation id="9100610230175265781">पासफ्रेज आवश्यक छ</translation>
 <translation id="9107664647686727385">अरूले पासवर्डहरू देखेका छन् कि छैनन् भनी जाँच्नुहोस्</translation>
+<translation id="9120217828624527905">पूरै पेज अनुवाद गर्ने विकल्प प्रयोग गर्नुहोस्</translation>
 <translation id="9124387962554796433">Google ले Search तथा Google का अन्य सेवाहरूमा तपाईंका आवश्यकताअनुसारका सुविधा उपलब्ध गराउन तपाईंको गतिविधिसम्बन्धी इतिहास प्रयोग गर्न सक्छ।</translation>
 <translation id="9137526406337347448">Google का सेवाहरू</translation>
 <translation id="9148126808321036104">पुन: साइन इन गर्नुहोस्</translation>

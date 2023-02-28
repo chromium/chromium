@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">ফ’ল্ডাৰ বাছনি কৰক</translation>
 <translation id="1254424942107648268">পূৰ্বৱৰ্তী ষ্ট্ৰিং বিচাৰক</translation>
 <translation id="1258491128795710625">নতুন কি আছে</translation>
+<translation id="1264156759663453185">বাছনি কৰা পাঠটো আংশিক অনুবাদৰ বাবে বেছি ডাঙৰ।</translation>
 <translation id="1265739287306757398">কেনেকৈ কৰিব জানক</translation>
 <translation id="1272079795634619415">বন্ধ কৰক</translation>
 <translation id="1275718070701477396">বাছনি কৰা আছে</translation>
@@ -177,6 +178,7 @@
 <translation id="2268044343513325586">পৰিষ্কৰণ</translation>
 <translation id="2273327106802955778">অধিক বিকল্পৰ মেনু</translation>
 <translation id="2286505070150039482">হাইলাইট কৰা পাঠ</translation>
+<translation id="2287614783861766820">{count,plural, =1{এই ঠিকনাটো এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}one{এই ঠিকনাসমূহ এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}other{এই ঠিকনাসমূহ এই ডিভাইচটোৰ পৰা মচি পেলোৱা হ’ব।}}</translation>
 <translation id="2299218006564889602">Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হয়।</translation>
 <translation id="2302742851632557585">ৱেবছাইটত পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="2316709634732130529">চুপাৰিছ কৰা পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
@@ -458,6 +460,7 @@
 <translation id="4324952538601951430">আপোনাৰ ছেভ কৰি ৰখা বুকমাৰ্ক, পাছৱৰ্ড, ছেটিঙ আৰু বহুতো বস্তু এতিয়া ইয়াত আছে</translation>
 <translation id="4334428914252001502">১টা নপঢ়া প্ৰবন্ধ।</translation>
 <translation id="4338650699862464074">আপুনি চোৱা পৃষ্ঠাসমূহৰ ইউআৰএলবোৰ Googleলৈ পঠিয়ায়।</translation>
+<translation id="4342054591427973606">{count,plural, =1{এই ঠিকনাটো এইটো আৰু আপুনি ছাইন-ইন কৰা আন ডিভাইচসমূহৰ পৰা মচি পেলোৱা হ’ব।}one{এই ঠিকনাসমূহ এইটো আৰু আপুনি ছাইন-ইন কৰা আন ডিভাইচসমূহৰ পৰা মচি পেলোৱা হ’ব।}other{এই ঠিকনাসমূহ এইটো আৰু আপুনি ছাইন-ইন কৰা আন ডিভাইচসমূহৰ পৰা মচি পেলোৱা হ’ব।}}</translation>
 <translation id="4343046787186034850">কেমেৰা আৰু মাইক্ৰ’ফ’ন এক্সেছৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="4359125752503270327">এই পৃষ্ঠাটো অন্য এটা এপ্লিকেশ্বনত খুলিব।</translation>
 <translation id="4375040482473363939">কিউআৰ ক’ড স্কেন কৰক</translation>
@@ -587,6 +590,7 @@
 <translation id="5232485538978018676">পৰিচালিত একাউণ্টৰ জৰিয়তে ছাইন ইন কৰক</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
 <translation id="5245322853195994030">ছিংক বাতিল কৰক</translation>
+<translation id="5271265092610673171">{count,plural, =1{এটা আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে এইটো পূৰ কৰক।}one{কিছুমান আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে সেইবোৰ পূৰ কৰক।}other{কিছুমান আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে সেইবোৰ পূৰ কৰক।}}</translation>
 <translation id="5271549068863921519">পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> একাউণ্টটো আঁতৰাবনে?</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
@@ -700,6 +704,7 @@
 <translation id="6066301408025741299">বাতিল কৰিবলৈ টিপক।</translation>
 <translation id="6071409777669089905">টেবটো আনপিন কৰক</translation>
 <translation id="6084848228346514841">টেব বাছনি কৰক</translation>
+<translation id="6100617279104942061"><ph name="USER_EMAIL" /> হিচাপে ছাইন ইন কৰিছে। ছেটিং খোলে।</translation>
 <translation id="6103540626693881831">অন-ডিভাইচ এনক্ৰিপশ্বন</translation>
 <translation id="6119050551270742952">বৰ্তমানৰ ৱেবপৃষ্ঠাটো ইনক’গনিট’ত আছে</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
@@ -1129,6 +1134,7 @@
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> টা পাছৱৰ্ড মচিবনে?</translation>
 <translation id="9100610230175265781">পাছফ্ৰেজ আৱশ্যক</translation>
 <translation id="9107664647686727385">পাছৱৰ্ড হেক কৰা হৈছেনে নাই পৰীক্ষা কৰক</translation>
+<translation id="9120217828624527905">সম্পূৰ্ণ পৃষ্ঠাৰ অনুবাদলৈ সলনি কৰক</translation>
 <translation id="9124387962554796433">Googleএ Search আৰু অন্য Google সেৱাসমূহ ব্যক্তিগতকৃত কৰিবলৈ আপোনাৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="9137526406337347448">Google সেৱা</translation>
 <translation id="9148126808321036104">আকৌ ছাইন ইন কৰক</translation>

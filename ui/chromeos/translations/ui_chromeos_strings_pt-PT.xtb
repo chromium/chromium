@@ -615,6 +615,7 @@
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação da sua aplicação para Linux.</translation>
 <translation id="5912396950572065471">Formato</translation>
 <translation id="5913638992615760742">Falha na operação de cópia, erro inesperado: <ph name="ERROR_MESSAGE" />.</translation>
+<translation id="5918480239180455431">Novas funcionalidades de pesquisa disponíveis</translation>
 <translation id="5926082595146149752">Neerlandês (Países Baixos) com o teclado de PC americano internacional</translation>
 <translation id="5932901536148835538">Chromebit</translation>
 <translation id="5948255720516436063">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Ativar após a configuração do dispositivo</translation>
@@ -764,6 +765,7 @@
 <translation id="7126604456862387217">"&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;" – &lt;em&gt;pesquisar no Google Drive&lt;/em&gt;</translation>
 <translation id="7135561821015524160">Fonética canarim</translation>
 <translation id="714034171374937760">Chromebase</translation>
+<translation id="7162080671816799010">A "Correspondência do nome alternativo do assunto" ou a "Correspondência do sufixo do domínio" estão em falta para validar a identidade do servidor de autenticação</translation>
 <translation id="7165320105431587207">Não foi possível configurar a rede</translation>
 <translation id="7170041865419449892">Fora de alcance</translation>
 <translation id="7180611975245234373">Atualizar</translation>

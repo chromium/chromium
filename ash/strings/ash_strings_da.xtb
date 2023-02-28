@@ -549,6 +549,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="3925540965556789199"><ph name="DATE" /> – indlæser begivenhederne.</translation>
 <translation id="3932043219784172185">Der er ikke nogen forbundne enheder</translation>
 <translation id="3934456833412894880">Adaptiv opladning er aktiveret. Dit batteri oplades til 80 % for at forlænge batteritiden og oplades helt, når du har brug for det.</translation>
+<translation id="3936620957945677513">Tryk på Enter for at deltage i begivenheden <ph name="EVENT_SUMMARY" /></translation>
 <translation id="3943857333388298514">Indsæt</translation>
 <translation id="394485226368336402">Lydindstillinger</translation>
 <translation id="3945319193631853098">Tryk for at afslutte konfigurationen</translation>
@@ -1466,7 +1467,6 @@ Installeret for nylig</translation>
 <translation id="8850991929411075241">Søg+Esc</translation>
 <translation id="8853703225951107899">Din pin- eller adgangskode kan stadig ikke bekræftes. Bemærk! Hvis du har ændret din adgangskode for nylig, skal du bruge din gamle adgangskode. Den nye adgangskode anvendes, når du har logget ud.</translation>
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
-<translation id="8858369206579825206">Privatlivsindstillinger</translation>
 <translation id="8870509716567206129">Appen understøtter ikke opdelt skærm.</translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>
 <translation id="8876661425082386199">Tjek din forbindelse</translation>

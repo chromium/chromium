@@ -198,8 +198,8 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5527463683072221100">Öppna PDF-filer i Chromium</translation>
 <translation id="5614091477838198795">När inställningen är aktiverad loggas du också ut från Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Det finns en uppdatering för Chromium}=1{Det finns en uppdatering för Chromium}other{Det finns en uppdatering för Chromium sedan # dagar}}</translation>
-<translation id="5634636535844844681">För Chromium krävs Windows 7 eller senare.</translation>
 <translation id="5653831366781983928">Starta om Chromium nu</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig programvara:</translation>
@@ -342,10 +342,12 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8266560134891435528">Chromium kan inte kontrollera dina lösenord eftersom du inte är inloggad</translation>
 <translation id="8276522524898344151">Lösenorden i Chromium kopieras.</translation>
 <translation id="8290862415967981663">Filen kan vara farlig och har blockerats av Chromium.</translation>
+<translation id="8325404639443959713">Gör mer med Chromium</translation>
 <translation id="8330519371938183845">Genom att logga in kan du synkronisera och anpassa Chromium på alla enheter du använder</translation>
 <translation id="8340674089072921962">Chromium användes tidigare av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8357820681460164151">Logga in och aktivera synkronisering om du vill få tillgång till saker i webbläsaren Chromium på olika enheter.</translation>
 <translation id="8360718212975266891">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Chromium. På den här datorn används Windows 8.</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Starta om Chromium inom en dag}other{Starta om Chromium inom # dagar}}</translation>
 <translation id="8453117565092476964">Arkivet för installationsfilen är skadat eller ogiltigt. Ladda ned Chromium igen.</translation>
 <translation id="8463672209299734063">Valfritt: Skicka diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chromium OS.</translation>
@@ -381,6 +383,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9158494823179993217">Systemadministratören har konfigurerat Chromium så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i en annan webbläsare.</translation>
 <translation id="9185526690718004400">Starta om för att uppdatera &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="924957577793602335">Anpassa Chromium</translation>
 <translation id="93478295209880648">Chromium kanske inte fungerar ordentligt eftersom den inte längre stöds på Windows XP och Windows Vista</translation>
 <translation id="942598560705308788">Certifikat som hanteras av Chromium</translation>
 <translation id="965162752251293939">Vem ska använda Chromium?</translation>

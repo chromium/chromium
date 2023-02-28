@@ -129,6 +129,7 @@
 <translation id="3245429137663807393">Se, ademais, compartes os informes de uso de Chrome, neles inclúense os URL que visitas</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
+<translation id="3293912612584488930">Tira máis proveito de Chrome</translation>
 <translation id="3360895254066713204">Axudante de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome reiniciarase agora}=1{Chrome reiniciarase en 1 segundo}other{Chrome reiniciarase en # segundos}}</translation>
 <translation id="3396977131400919238">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Google Chrome.</translation>
@@ -412,7 +413,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
 <translation id="9053892488859122171">Sistema Chrome OS Flex</translation>
-<translation id="9067395829937117663">Google Chrome require Windows 7 ou unha versión posterior.</translation>
 <translation id="911206726377975832">Queres eliminar tamén os teus datos de navegación?</translation>
 <translation id="9138603949443464873">Para aplicar os cambios, reinicia Chrome</translation>
 <translation id="9195993889682885387">Chrome pode facer unha estimación dos teus intereses a partir do teu historial de navegación das últimas semanas. Esa información non sae do teu dispositivo.</translation>

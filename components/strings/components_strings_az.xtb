@@ -589,6 +589,7 @@
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Keçirmə menyusunun ölçüsünü dəyişdirin</translation>
+<translation id="2365355378251437925">Daxil edin: <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Səviyyə</translation>
 <translation id="2380886658946992094">Hüquqi</translation>
 <translation id="2383455408879745299">Chrome ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
@@ -874,6 +875,7 @@
 <translation id="317878711435188021">Bu cihazdan nə zaman aktiv şəkildə istifadə etdiyinizi bilmək</translation>
 <translation id="3180358318770512945">Valideynlik</translation>
 <translation id="3187306450550410410">Çevik iş mühiti</translation>
+<translation id="3187380004437786923">Ödənişləri idarə edin</translation>
 <translation id="3187472288455401631">Reklam ölçülməsi</translation>
 <translation id="3190736958609431397">İzləməyin</translation>
 <translation id="319282854780294203">Sosial şəbəkələr</translation>
@@ -1267,6 +1269,7 @@
 <translation id="4154664944169082762">Barmaq izi</translation>
 <translation id="4159784952369912983">Bənövşəyi</translation>
 <translation id="4165986682804962316">Sayt ayarları</translation>
+<translation id="4169535189173047238">İcazə verməyin</translation>
 <translation id="4171400957073367226">Pis doğrulama imzası</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Həmişə göstərin</translation>
@@ -3329,6 +3332,7 @@
 <translation id="950736567201356821">Yuxarıdan üçlü deşik açın</translation>
 <translation id="961663415146723894">Aşağıdan uclarını qovuşdurun</translation>
 <translation id="962484866189421427">Bu kontent başqa tətbiqə oxşayan və ya Sizi izləmək məqsədilə data əldə edən aldadıcı tətbiqləri quraşdırmağa cəhd edə bilər. <ph name="BEGIN_LINK" />İstənilən halda göstərin<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Bütün istifadəçilər</translation>
 <translation id="964050462028070434">Parolları və Giriş Açarlarını idarə edin…</translation>
 <translation id="96680173638229310">Avtomobillər və nəqliyyat vasitələri</translation>
 <translation id="969892804517981540">Rəsmi Quruluş</translation>

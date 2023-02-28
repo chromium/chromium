@@ -145,6 +145,8 @@
 <translation id="3600792891314830896">Stlmiť weby, ktoré prehrávajú zvuk</translation>
 <translation id="3602290021589620013">Ukážka</translation>
 <translation id="3628308229821498208">Navrhované vyhľadávania</translation>
+<translation id="3636279694100170143">Weby, ktoré navštevujete, môžu overiť, že ste skutočný používateľ a nie robot</translation>
+<translation id="3649190289964910441">Web, ktorý navštívite, môže pomocou Chromu uložiť informácie potvrdzujúce, že ste skutočný používateľ. Pri ďalšom prehliadaní môžu weby pomocou Chromu overovať informácie z prvého webu, že ste zrejme dôveryhodný používateľ.</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím doľava alebo doprava preskočíte vo videu o 10 s</translation>
 <translation id="3794286421982011626">Web, ktorý navštívite, môže uchovávať informácie o tom, čo robíte, aby fungoval podľa očakávaní. Vďaka tomu na ňom napríklad môže zostať prihlásený váš účet alebo môžete ukladať položky do nákupného košíka. Weby tieto informácie často ukladajú dočasne vo vašom zariadení.</translation>
@@ -197,6 +199,7 @@
 <translation id="4645575059429386691">Spravované vaším rodičom</translation>
 <translation id="4670064810192446073">Virtuálna realita</translation>
 <translation id="4751476147751820511">Senzory pohybu alebo svetla</translation>
+<translation id="477781522763920796">Toto nastavenie funguje bez identifikácie vašej totožnosti, pričom weby neuvidia vašu históriu prehliadania.</translation>
 <translation id="4779083564647765204">Lupa</translation>
 <translation id="4811450222531576619">Ďalšie informácie o príslušnom zdroji a téme</translation>
 <translation id="4836046166855586901">Opýtať sa, keď chce web zistiť, či aktívne používate toto zariadenie</translation>
@@ -258,6 +261,7 @@
 <translation id="5740126560802162366">Weby môžu ukladať údaje vo vašom zariadení</translation>
 <translation id="5771720122942595109">Blokované: <ph name="PERMISSION_1" /></translation>
 <translation id="5804241973901381774">Povolenia</translation>
+<translation id="5810805850857689118">Táto akcia vymaže všetky údaje a súbory cookie domény <ph name="ORIGIN" /> a všetkých jej webov</translation>
 <translation id="5860033963881614850">Vypnuté</translation>
 <translation id="5876056640971328065">Pozastaviť video</translation>
 <translation id="5884085660368669834">Predvoľba webu</translation>
@@ -324,6 +328,7 @@
 <translation id="7016516562562142042">Povolené v aktuálnom vyhľadávači</translation>
 <translation id="702275896380648118">Tento web určuje, čo sa vám páči, a potom navrhuje reklamy iným webom. Dostáva aj témy reklám od Chromu, aby vám zobrazoval relevantnejšie reklamy.</translation>
 <translation id="702463548815491781">Odporúčané, keď je zapnutá aplikácia TalkBack alebo prístup s prepínačmi</translation>
+<translation id="7050519587566342213">Ako používateľ sa pre weby stanete dôveryhodnejší, takže prehliadanie bude plynulejšie.</translation>
 <translation id="7053983685419859001">Blokovať</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 vybratá položka}few{# vybraté položky}many{Niekoľko (#) vybratých položiek}other{# vybratých položiek}}</translation>
 <translation id="7087918508125750058">Vybrané: <ph name="ITEM_COUNT" />.  Možnosti sú k dispozícii v hornej časti obrazovky.</translation>
@@ -409,6 +414,7 @@
 <translation id="8514955299594277296">Nepovoliť webom ukladať dáta v zariadení (neodporúča sa)</translation>
 <translation id="851751545965956758">Brániť webom pripájať sa k zariadeniam</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
+<translation id="8528440122773422556">Táto akcia vymaže všetky údaje a súbory cookie uložené všetkými webmi domény <ph name="ORIGIN" /> alebo jej aplikáciou na ploche</translation>
 <translation id="8541410041357371550">Tento web dostáva aj témy reklám od Chromu, aby vám zobrazoval relevantnejšie reklamy</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{Boli povolené súbory cookie pre <ph name="FPS_MEMBERS_COUNT" /> web vlastníka <ph name="FPS_OWNER" />}few{Boli povolené súbory cookie pre <ph name="FPS_MEMBERS_COUNT" /> weby vlastníka <ph name="FPS_OWNER" />}many{Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> sites}other{Boli povolené súbory cookie pre <ph name="FPS_MEMBERS_COUNT" /> webov vlastníka <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Povolené (odporúčané)</translation>
@@ -437,6 +443,7 @@
 <translation id="8986362086234534611">Odstrániť</translation>
 <translation id="8990043154272859344">Systém vás odhlási zo všetkých webov</translation>
 <translation id="9019902583201351841">Spravované vašimi rodičmi</translation>
+<translation id="9039697262778250930">Váš účet môže byť odhlásený z týchto webov</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Tento web je v skupine, ktorej sa zobrazuje vaša aktivita. Skupina je definovaná vlastníkom <ph name="FPS_OWNER" />.</translation>
 <translation id="9106233582039520022">Chcete odstrániť súbory cookie?</translation>

@@ -487,6 +487,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2108755909498034140">Znova zaženite računalnik</translation>
 <translation id="2111166930115883695">Pritisnite preslednico, če želite igrati.</translation>
 <translation id="2112529237938317174">Prikaz podrobnosti dovoljenja</translation>
+<translation id="2113232594265919362">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS, vi pa uporabljate Googlov program dodatne zaščite. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Kartica</translation>
 <translation id="2114841414352855701">Prezrto, ker je to preglasil pravilnik <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Kuverta C5</translation>
@@ -877,6 +878,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="317878711435188021">Vedeti, kdaj aktivno uporabljate to napravo.</translation>
 <translation id="3180358318770512945">Starševstvo</translation>
 <translation id="3187306450550410410">Prožne oblike dela</translation>
+<translation id="3187380004437786923">Upravljanje plačil</translation>
 <translation id="3187472288455401631">Merjenje oglasov</translation>
 <translation id="3190736958609431397">Prekliči spremljanje</translation>
 <translation id="319282854780294203">Družbena omrežja</translation>
@@ -1209,6 +1211,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3990250421422698716">Zamik v načinu dela »jog«</translation>
 <translation id="3992684624889376114">O tej strani</translation>
 <translation id="399952081411886534">Druge funkcije, ki poskrbijo za večjo zasebnost oglasov</translation>
+<translation id="4000598935132966791">Preberite več o omejitvah spletnega mesta v upravljanih brskalnikih.</translation>
 <translation id="4006465311664329701">Plačilna sredstva, ponudbe in naslovi z Googlom Pay</translation>
 <translation id="4009243425692662128">Vsebina natisnjenih strani je poslana v Google Cloud ali drugim ponudnikom v analizo. Lahko je na primer pregledana glede tega, ali vsebuje občutljive podatke.</translation>
 <translation id="4010758435855888356">Želite odobriti dostop do shrambe?</translation>
@@ -1272,6 +1275,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4154664944169082762">Prstni odtisi</translation>
 <translation id="4159784952369912983">Vijolična</translation>
 <translation id="4165986682804962316">Nastavitve spletnega mesta</translation>
+<translation id="4169535189173047238">Ne dovoli</translation>
 <translation id="4171400957073367226">Neveljavni podpis za preverjanje</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Vedno pokaži</translation>
@@ -3335,6 +3339,7 @@ Dodatne podrobnosti:
 <translation id="950736567201356821">Trojno luknjanje zgoraj</translation>
 <translation id="961663415146723894">Vezava spodaj</translation>
 <translation id="962484866189421427">Ta vsebina lahko poskusi namestiti zavajajoče aplikacije, ki se izdajajo za kaj drugega ali zbirajo podatke, s katerimi vas je mogoče spremljati. <ph name="BEGIN_LINK" />Vseeno pokaži<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Vsi uporabniki</translation>
 <translation id="964050462028070434">Upravljanje gesel in ključev za dostop …</translation>
 <translation id="96680173638229310">Avtomobili in vozila</translation>
 <translation id="969892804517981540">Uradna različica</translation>

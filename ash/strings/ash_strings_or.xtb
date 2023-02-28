@@ -288,6 +288,7 @@
 <translation id="2475982808118771221">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="2484513351006226581">କୀ'ବୋର୍ଡ ଲେଆଉଟ୍‌କୁ ସ୍ଵିଚ୍ କରିବା ପାଇଁ <ph name="KEYBOARD_SHORTCUT" /> ଦବାନ୍ତୁ।</translation>
+<translation id="2487915095798731898">ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="2501920221385095727">ଷ୍ଟିକି କୀ'ଗୁଡ଼ିକ</translation>
 <translation id="2509468283778169019">CAPS LOCK ଅନ୍ ଅଛି</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -548,6 +549,7 @@
 <translation id="3925540965556789199"><ph name="DATE" />, ଇଭେଣ୍ଟଗୁଡ଼ିକ ଲୋଡ ହେଉଛି।</translation>
 <translation id="3932043219784172185">କୌଣସି ଡିଭାଇସ ସଂଯୋଗ କରାଯାଇନାହିଁ</translation>
 <translation id="3934456833412894880">ଆଡେପ୍ଟିଭ ଚାର୍ଜିଂ ଚାଲୁ ଅଛି। ବ୍ୟାଟେରୀ ଲାଇଫକୁ ବଢ଼ାଇବା ପାଇଁ ଆପଣଙ୍କ ବ୍ୟାଟେରୀ 80%ରେ ରହିବ ଏବଂ ଆପଣ ଆବଶ୍ୟକ କଲେ ଏହା ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ ଚାର୍ଜ ହୋଇଯିବ।</translation>
+<translation id="3936620957945677513"><ph name="EVENT_SUMMARY" /> ଇଭେଣ୍ଟରେ ଯୋଗ ଦେବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="3943857333388298514">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="394485226368336402">ଅଡିଓ ସେଟିଂସ୍‍</translation>
 <translation id="3945319193631853098">ସେଟ୍ ଅପ୍ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ ଟାପ୍ କରନ୍ତୁ</translation>
@@ -1464,7 +1466,6 @@
 <translation id="8850991929411075241">Search+Esc</translation>
 <translation id="8853703225951107899">ଆପଣଙ୍କ PIN କିମ୍ବା ପାସୱାର୍ଡକୁ ଏବେ ବି ଯାଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ଧ୍ୟାନ ଦିଅନ୍ତୁ: ଯଦି ଆପଣ ଆପଣଙ୍କ ପାସୱାର୍ଡକୁ ବର୍ତ୍ତମାନ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି, ତେବେ ପୁରୁଣା ପାସୱାର୍ଡ ବ୍ୟବହାର କରନ୍ତୁ। ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିବା ପରେ ଆପଣଙ୍କ ନୂଆ ପାସୱାର୍ଡ ଲାଗୁ ହେବ।</translation>
 <translation id="8855885154700222542">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ୍‌ କୀ</translation>
-<translation id="8858369206579825206">ଗୋପନୀୟତା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
 <translation id="8870509716567206129">ଆପ୍‍ ସ୍ପ୍ଲିଟ୍‍-ସ୍କ୍ରୀନକୁ ସମର୍ଥନ କରେନାହିଁ।</translation>
 <translation id="8874184842967597500">ସଂଯୁକ୍ତ ନାହିଁ</translation>
 <translation id="8876661425082386199">ଆପଣଙ୍କର ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ</translation>

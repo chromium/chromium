@@ -194,8 +194,8 @@
 <translation id="5527463683072221100">Открывать PDF-файлы в Chromium</translation>
 <translation id="5614091477838198795">Также выполняется выход из Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Доступно обновление Chromium}=1{Доступно обновление Chromium}one{Обновление Chromium доступно # день}few{Обновление Chromium доступно # дня}many{Обновление Chromium доступно # дней}other{Обновление Chromium доступно # дня}}</translation>
-<translation id="5634636535844844681">Для работы Chromium необходима ОС Windows 7 или более поздней версии.</translation>
 <translation id="5653831366781983928">Перезапустите Chromium</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Отображать Chromium на этом языке</translation>
 <translation id="5862307444128926510">Добро пожаловать в Chromium</translation>
 <translation id="5883558403894052917">Браузер Chromium обнаружил, что эти объекты содержат вредоносное ПО:</translation>
@@ -340,6 +340,7 @@
 <translation id="8340674089072921962">Адрес <ph name="USER_EMAIL_ADDRESS" /> уже использовался в Chromium</translation>
 <translation id="8357820681460164151">Чтобы получить доступ к данным в браузере Chromium на всех своих устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="8360718212975266891">На вашем компьютере используется Windows 8. Чтобы получать обновления Chromium, установите на устройство Windows 10 или более поздней версии.</translation>
+<translation id="8370517070665726704">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Перезапустите Chromium в течение дня}one{Перезапустите Chromium в течение # дня}few{Перезапустите Chromium в течение # дней}many{Перезапустите Chromium в течение # дней}other{Перезапустите Chromium в течение # дня}}</translation>
 <translation id="8453117565092476964">Установочный архив поврежден. Скачайте Chromium ещё раз.</translation>
 <translation id="8463672209299734063">Автоматически отправлять данные об использовании и диагностике в Google, чтобы помогать нам повышать производительность и улучшать функции Chromium OS (необязательно)</translation>

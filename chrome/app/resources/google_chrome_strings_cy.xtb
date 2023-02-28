@@ -130,6 +130,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3245429137663807393">Os ydych hefyd yn rhannu adroddiadau defnydd Chrome, mae'r adroddiadau hynny'n cynnwys y cyfeiriadau URL rydych yn ymweld â nhw</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3286538390144397061">Ailddechrau Nawr</translation>
+<translation id="3293912612584488930">Gwneud rhagor gyda Chrome</translation>
 <translation id="3360895254066713204">Helpwr Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Bydd Chrome yn ail-lansio nawr}=1{Bydd Chrome yn ail-lansio mewn 1 eiliad}two{Bydd Chrome yn ail-lansio mewn # eiliad}few{Bydd Chrome yn ail-lansio mewn # eiliad}many{Bydd Chrome yn ail-lansio mewn # eiliad}other{Bydd Chrome yn ail-lansio mewn # eiliad}}</translation>
 <translation id="3396977131400919238">Bu gwall system weithredu wrth osod. Lawrlwythwch Google Chrome eto.</translation>
@@ -413,7 +414,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8989968390305463310">Mae eich hanes pori yn effeithio ar yr hysbysebion rydych yn eu gweld a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu'ch diddordebau yn awtomatig bob mis. Gall diddordebau ail-lwytho oni bai eich bod yn eu tynnu.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Mae diweddariad Chrome ar gael}=1{Mae diweddariad Chrome ar gael}two{Mae diweddariad Chrome wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chrome wedi bod ar gael ers # diwrnod}}</translation>
 <translation id="9053892488859122171">System ChromeOS Flex</translation>
-<translation id="9067395829937117663">Mae Chrome yn gofyn am Windows 7 neu uwch.</translation>
 <translation id="911206726377975832">Dileu eich data pori hefyd?</translation>
 <translation id="9138603949443464873">Er mwyn gweithredu eich newidiadau, ail-lansiwch Chrome</translation>
 <translation id="9195993889682885387">Gall Chrome amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori o'r ychydig wythnosau diwethaf. Mae'r wybodaeth hon yn aros ar eich dyfais.</translation>

@@ -589,6 +589,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Menu d'activation/de désactivation du redimensionnement</translation>
+<translation id="2365355378251437925">Saisir <ph name="FIELD" /></translation>
 <translation id="2367567093518048410">Niveau</translation>
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2383455408879745299">Personnalisez vos outils d'accessibilité dans les paramètres Chrome</translation>
@@ -876,6 +877,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="317878711435188021">Savoir si vous utilisez activement cet appareil</translation>
 <translation id="3180358318770512945">Éducation des enfants</translation>
 <translation id="3187306450550410410">Aménagement du temps de travail</translation>
+<translation id="3187380004437786923">Gérer les paiements</translation>
 <translation id="3187472288455401631">Mesure des performances des annonces</translation>
 <translation id="3190736958609431397">Ne plus suivre</translation>
 <translation id="319282854780294203">Réseaux sociaux</translation>
@@ -1271,6 +1273,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4154664944169082762">Empreintes</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
+<translation id="4169535189173047238">Interdire</translation>
 <translation id="4171400957073367226">Signature de validation non valide.</translation>
 <translation id="4171489848299289778"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_OWNER" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="4172051516777682613">Toujours afficher</translation>
@@ -3334,6 +3337,7 @@ Informations supplémentaires :
 <translation id="950736567201356821">Triple perforation en haut</translation>
 <translation id="961663415146723894">Reliure en bas</translation>
 <translation id="962484866189421427">Ce contenu peut essayer d'installer des applications trompeuses se faisant passer pour d'autres, ou de collecter des données afin de vous surveiller. <ph name="BEGIN_LINK" />Je souhaite y accéder malgré tout.<ph name="END_LINK" /></translation>
+<translation id="963837307749850257">Tous les utilisateurs</translation>
 <translation id="964050462028070434">Gérer les mots de passe et les clés d'accès…</translation>
 <translation id="96680173638229310">Automobiles et véhicules</translation>
 <translation id="969892804517981540">Build officiel</translation>

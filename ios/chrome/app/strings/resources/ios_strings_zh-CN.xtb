@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">选择文件夹</translation>
 <translation id="1254424942107648268">查找上一个</translation>
 <translation id="1258491128795710625">新变化</translation>
+<translation id="1264156759663453185">所选文字太多，无法进行局部翻译。</translation>
 <translation id="1265739287306757398">了解如何操作</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已选择</translation>
@@ -128,7 +129,6 @@
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
 <translation id="1870148520156231997">显示密码</translation>
 <translation id="1872096359983322073">闪光灯</translation>
-<translation id="1886370402958071554">删除此地址</translation>
 <translation id="1891796056033961979">此屏幕中会显示您已保存的书签、密码、设置等信息。</translation>
 <translation id="1894023287452300670">在此处跟踪价格</translation>
 <translation id="1911619930368729126">上传到Google云端硬盘</translation>
@@ -704,6 +704,7 @@
 <translation id="6066301408025741299">点按可取消。</translation>
 <translation id="6071409777669089905">取消固定标签页</translation>
 <translation id="6084848228346514841">选择标签页</translation>
+<translation id="6100617279104942061">您目前登录的帐号为 <ph name="USER_EMAIL" />。打开“设置”。</translation>
 <translation id="6103540626693881831">设备上加密</translation>
 <translation id="6119050551270742952">当前网页处于无痕模式</translation>
 <translation id="6122191549521593678">在线</translation>
@@ -1133,6 +1134,7 @@
 <translation id="9098541895599151034">删除 <ph name="NUMBER_OF_ACCOUNTS" /> 个密码？</translation>
 <translation id="9100610230175265781">必须提供密码</translation>
 <translation id="9107664647686727385">检查是否有已泄露的密码</translation>
+<translation id="9120217828624527905">切换为整页翻译</translation>
 <translation id="9124387962554796433">Google 可能会使用您的历史记录为您提供个性化的 Google 搜索和其他 Google 服务。</translation>
 <translation id="9137526406337347448">Google 服务</translation>
 <translation id="9148126808321036104">重新登录</translation>

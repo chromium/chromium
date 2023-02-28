@@ -130,6 +130,7 @@
 <translation id="3245429137663807393">ប្រសិនបើអ្នកចែករំលែករបាយការណ៍ប្រើប្រាស់ Chrome ផងដែររបាយការណ៍ទាំងនោះរួមបញ្ចូល URL ដែលអ្នកចូលមើល</translation>
 <translation id="3282568296779691940">ចូលទៅ Chrome</translation>
 <translation id="3286538390144397061">ចាប់ផ្ដើមឡើងវិញឥឡូវនេះ</translation>
+<translation id="3293912612584488930">ធ្វើបានកាន់តែច្រើនតាមរយៈ Chrome</translation>
 <translation id="3360895254066713204">ជំនួយការ Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ឥឡូវនេះ}=1{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ក្នុងរយៈពេល 1 វិនាទីទៀត}other{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ក្នុងរយៈពេល # វិនាទីទៀត}}</translation>
 <translation id="3396977131400919238">កំហុសឆ្គងប្រព័ន្ធប្រតិបត្តិការបានកើតឡើងកំឡុងពេលតំឡើង។ សូមទាញយក Google Chrome ម្តងទៀត។</translation>
@@ -157,6 +158,7 @@
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
 <translation id="3785324443014631273">ChromeOS Flex មិនអាចធ្វើ​សម​កាល​កម្មទិន្នន័យរបស់អ្នកបានទេ ដោយសារមានបញ្ហាក្នុងការចូលគណនី។</translation>
 <translation id="3795971588916395511">Google ChromeOS</translation>
+<translation id="3809772425479558446">Google Chrome តម្រូវឱ្យ​មានកំណែ Windows 10 ឡើងទៅ។</translation>
 <translation id="3835168907083856002">សកម្មភាពនេះនឹងបង្កើតកម្រងព័ត៌មាន Chrome ថ្មីសម្រាប់ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="386202838227397562">សូមបិទផ្ទាំង Google Chrome ទាំងអស់ ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="3865754807470779944">Chrome កំណែ <ph name="PRODUCT_VERSION" /> ត្រូវបានដំឡើង</translation>
@@ -413,7 +415,6 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8989968390305463310">ប្រវត្តិរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​មានឥទ្ធិពលលើ​ការផ្សាយពាណិជ្ជកម្មដែល​អ្នកឃើញ និង​ចំណាប់អារម្មណ៍​ដូចដែលបានប៉ាន់ស្មាន​ខាងក្រោម។ ដើម្បី​ការពារ​ឯកជនភាព​របស់អ្នក Chrome លុបចំណាប់អារម្មណ៍​របស់អ្នក​ដោយស្វ័យប្រវត្តិ​ជាបន្តបន្ទាប់​រៀងរាល់ខែ។ ចំណាប់អារម្មណ៍​អាចផ្ទុក​ឡើងវិញ ប្រសិនបើអ្នក​មិនដកវាចេញទេ។</translation>
 <translation id="8999208279178790196">{0,plural, =0{មាន​កំណែថ្មី​របស់ Chrome ហើយ}=1{មាន​កំណែថ្មី​របស់ Chrome ហើយ}other{មាន​កំណែថ្មី​របស់ Chrome រយៈពេល # ថ្ងៃហើយ}}</translation>
 <translation id="9053892488859122171">ប្រព័ន្ធ ChromeOS Flex</translation>
-<translation id="9067395829937117663">Google Chrome តម្រូវឲ្យមានប្រព័ន្ធប្រតិបត្តិការ Windows 7 ឬខ្ពស់ជាងនេះ។</translation>
 <translation id="911206726377975832">លុបទិន្នន័យរុករករបស់អ្នកផងដែរ?</translation>
 <translation id="9138603949443464873">ដើម្បី​អនុវត្ត​ការផ្លាស់ប្ដូររបស់អ្នក សូម​ចាប់ផ្ដើម​ Chrome ឡើងវិញ</translation>
 <translation id="9195993889682885387">Chrome អាចប៉ាន់ស្មាន​អំពីចំណាប់អារម្មណ៍​របស់អ្នក ដោយផ្អែកលើ​ប្រវត្តិ​រុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ពីពីរបីសប្ដាហ៍​ចុងក្រោយ។ ព័ត៌មាននេះ​ស្ថិតនៅលើ​ឧបករណ៍​របស់អ្នក។</translation>

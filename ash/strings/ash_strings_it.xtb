@@ -502,6 +502,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3633097874324966332">Apri le impostazioni Bluetooth per accoppiare il dispositivo</translation>
 <translation id="3638400994746983214">Attiva/disattiva Schermata sulla privacy. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Aggiornamento scaduto</translation>
+<translation id="3653999174677652346"><ph name="EVENT_POSITION" />, <ph name="EVENT_SUMMARY" />, dalle ore <ph name="START_TIME" /> alle ore <ph name="END_TIME" />, <ph name="TIME_ZONE" />. Seleziona per avere maggiori dettagli in Google Calendar.</translation>
 <translation id="3659444876902283058">(giorno <ph name="CURRENT_DAY" />/<ph name="TOTAL_DAYS" />)</translation>
 <translation id="3659814201068740063">Tempo rimanente: circa <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
 Collega il dispositivo all'alimentazione.</translation>
@@ -1467,9 +1468,9 @@ Nuova installazione</translation>
 <translation id="8850991929411075241">Tasto di ricerca+ESC</translation>
 <translation id="8853703225951107899">Non è stato di nuovo possibile verificare il PIN o la password. Nota: se hai modificato la password di recente, usa la password precedente. La nuova password verrà applicata quando uscirai dall'account.</translation>
 <translation id="8855885154700222542">Tasto schermo intero</translation>
-<translation id="8858369206579825206">Controlli per la privacy</translation>
 <translation id="8870509716567206129">L'app non supporta la modalità Schermo diviso.</translation>
 <translation id="8874184842967597500">Non connesso</translation>
+<translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> di <ph name="EVENT_TOTAL_COUNT" /></translation>
 <translation id="8876661425082386199">Controlla la connessione</translation>
 <translation id="8877788021141246043">Imposta un promemoria</translation>
 <translation id="8878886163241303700">Estensione schermo</translation>

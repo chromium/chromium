@@ -47,6 +47,7 @@
 <translation id="1254117744268754948">選擇資料夾</translation>
 <translation id="1254424942107648268">尋找上一個相符的項目</translation>
 <translation id="1258491128795710625">新功能</translation>
+<translation id="1264156759663453185">所選文字內容太長，因此無法翻譯。</translation>
 <translation id="1265739287306757398">操作說明</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1275718070701477396">已選取</translation>
@@ -128,7 +129,6 @@
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
 <translation id="1870148520156231997">顯示密碼</translation>
 <translation id="1872096359983322073">閃光燈</translation>
-<translation id="1886370402958071554">刪除地址</translation>
 <translation id="1891796056033961979">您儲存嘅書籤、密碼、設定同其他內容會喺呢度顯示。</translation>
 <translation id="1894023287452300670">在此處追蹤價格</translation>
 <translation id="1911619930368729126">上載至「Google 雲端硬碟」</translation>
@@ -178,7 +178,7 @@
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
 <translation id="2286505070150039482">突顯的文字</translation>
-<translation id="2287614783861766820">{count,plural, =1{這個地址將從這部裝置中刪除。}other{這些地址將從這部裝置中刪除。}}</translation>
+<translation id="2287614783861766820">{count,plural, =1{此地址將會從此裝置上刪除。}other{這些地址將會從此裝置上刪除。}}</translation>
 <translation id="2299218006564889602">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具。</translation>
 <translation id="2302742851632557585">變更網站上的密碼</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
@@ -460,7 +460,7 @@
 <translation id="4324952538601951430">您儲存的書籤、密碼、設定和其他內容現在會在此處顯示</translation>
 <translation id="4334428914252001502">1 篇未讀嘅文章。</translation>
 <translation id="4338650699862464074">將您瀏覽的網頁網址傳送給 Google。</translation>
-<translation id="4342054591427973606">{count,plural, =1{這個地址將從這部裝置和其他已登入帳戶的裝置中刪除。}other{這些地址將從這部裝置和其他已登入帳戶的裝置中刪除。}}</translation>
+<translation id="4342054591427973606">{count,plural, =1{此地址將從此裝置和其他已登入的裝置中刪除。}other{這些地址將從此裝置和其他已登入的裝置中刪除。}}</translation>
 <translation id="4343046787186034850">已允許存取攝錄機和麥克風</translation>
 <translation id="4359125752503270327">此網頁將會在其他應用程式中開啟。</translation>
 <translation id="4375040482473363939">二維條碼搜尋</translation>
@@ -590,7 +590,7 @@
 <translation id="5232485538978018676">使用受管理的帳戶登入</translation>
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5245322853195994030">取消同步處理</translation>
-<translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
+<translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請填寫後再儲存。}other{部分必填欄位沒有內容，請填寫後再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
 <translation id="5295239312320826323">要移除帳戶 <ph name="USER_EMAIL" /> 嗎？</translation>
 <translation id="5300589172476337783">顯示</translation>
@@ -704,6 +704,7 @@
 <translation id="6066301408025741299">輕按以取消。</translation>
 <translation id="6071409777669089905">取消固定分頁</translation>
 <translation id="6084848228346514841">選取分頁</translation>
+<translation id="6100617279104942061">已使用 <ph name="USER_EMAIL" /> 的身分登入。開啟設定。</translation>
 <translation id="6103540626693881831">裝置內置加密</translation>
 <translation id="6119050551270742952">目前的網頁已處於無痕模式</translation>
 <translation id="6122191549521593678">在線</translation>
@@ -1131,6 +1132,7 @@
 <translation id="9098541895599151034">要刪除 <ph name="NUMBER_OF_ACCOUNTS" /> 個密碼嗎？</translation>
 <translation id="9100610230175265781">請輸入複雜密碼</translation>
 <translation id="9107664647686727385">檢查是否有被盜用的密碼</translation>
+<translation id="9120217828624527905">切換至「完整頁面翻譯」</translation>
 <translation id="9124387962554796433">Google 可能會使用您的記錄，為您提供個人化的搜尋服務和其他 Google 服務。</translation>
 <translation id="9137526406337347448">Google 服務</translation>
 <translation id="9148126808321036104">重新登入</translation>

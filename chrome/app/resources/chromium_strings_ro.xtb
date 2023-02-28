@@ -196,8 +196,8 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5527463683072221100">Deschide fișierele PDF în Chromium</translation>
 <translation id="5614091477838198795">Când opțiunea este activată, te vei deconecta de la Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Este disponibilă o actualizare Chromium}=1{Este disponibilă o actualizare Chromium}few{O actualizare Chromium este disponibilă de # zile}other{O actualizare Chromium este disponibilă de # de zile}}</translation>
-<translation id="5634636535844844681">Chromium necesită Windows 7 sau o versiune ulterioară.</translation>
 <translation id="5653831366781983928">Repornește Chromium acum</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afișează Chromium în această limbă</translation>
 <translation id="5862307444128926510">Bun venit la Chromium</translation>
 <translation id="5883558403894052917">Chromium a descoperit că următoarele elemente conțin programe malware:</translation>
@@ -344,6 +344,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> a folosit Chromium anterior</translation>
 <translation id="8357820681460164151">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="8360718212975266891">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.</translation>
+<translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Relansează Chromium în cel mult o zi}few{Relansează Chromium în cel mult # zile}other{Relansează Chromium în cel mult # de zile}}</translation>
 <translation id="8453117565092476964">Arhiva programului de instalare este deteriorată sau nevalidă. Descărcați din nou Chromium.</translation>
 <translation id="8463672209299734063">Opțional: contribuie la îmbunătățirea funcțiilor și a performanței sistemului de operare Chromium, trimițând automat la Google date de diagnosticare și de utilizare.</translation>

@@ -279,6 +279,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2429753432712299108">Bluetooth-laite <ph name="DEVICE_NAME" /> pyytää lupaa laiteparin muodostamiseen. Ennen kuin hyväksyt pyynnön, varmista, että laitteella näkyy tämä avain: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="243878895369688216">Avattu eilen</translation>
+<translation id="2440978926514840421">GIF-tallenne otettu</translation>
 <translation id="2441427462554639370">Tallennus päättyi, koska tallennustila on erittäin vähissä</translation>
 <translation id="24452542372838207">Laajenna ilmoitus</translation>
 <translation id="2449089818483227734">Akku vähissä</translation>
@@ -549,6 +550,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="3925540965556789199">Ladataan tapahtumia (<ph name="DATE" />).</translation>
 <translation id="3932043219784172185">Ei yhdistettyjä laitteita</translation>
 <translation id="3934456833412894880">Mukautuva lataus on päällä. Akun varaus pysyy 80 %:ssa akunkeston pidentämiseksi. Akku ladataan täyteen tarvittaessa.</translation>
+<translation id="3936620957945677513">Liity tapahtumaan <ph name="EVENT_SUMMARY" /> painamalla Enter</translation>
 <translation id="3943857333388298514">Liitä</translation>
 <translation id="394485226368336402">Ääniasetukset</translation>
 <translation id="3945319193631853098">Viimeistele käyttöönotto napauttamalla</translation>
@@ -1465,7 +1467,6 @@ Uusi asennus</translation>
 <translation id="8850991929411075241">Haku+Esc</translation>
 <translation id="8853703225951107899">PIN-koodiasi tai salasanaasi ei voitu vieläkään vahvistaa. Huom. Jos vaihdoit salasanasi äskettäin, käytä vanhaa salasanaa. Uusi salasana otetaan käyttöön kirjauduttuasi ulos.</translation>
 <translation id="8855885154700222542">Koko näyttö ‑näppäin</translation>
-<translation id="8858369206579825206">Yksityisyysasetukset</translation>
 <translation id="8870509716567206129">Sovellus ei tue jaetun näytön tilaa.</translation>
 <translation id="8874184842967597500">Ei yhdistetty</translation>
 <translation id="8876661425082386199">Tarkista yhteys</translation>
