@@ -89,6 +89,7 @@ class GrpcHttpConnectionClient {
   std::unique_ptr<chromeos::libassistant::StreamingWriteQueue<
       ::assistant::api::StreamHttpConnectionRequest>>
       write_queue_ GUARDED_BY(write_queue_lock_);
+  bool is_shutting_down_ GUARDED_BY(write_queue_lock_) = false;
 
   // `http_connection` owns itself and will be deleted when `Close()` is called.
   // When clean up `http_connections_`, will call `Close()` on the elements.

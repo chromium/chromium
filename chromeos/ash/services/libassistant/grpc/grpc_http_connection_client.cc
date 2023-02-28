@@ -89,12 +89,7 @@ GrpcHttpConnectionClient::~GrpcHttpConnectionClient() {
 
   {
     base::AutoLock lock(write_queue_lock_);
-    if (call_ && write_queue_) {
-      // Request the server to prepare for shutdown.
-      StreamHttpConnectionRequest request;
-      request.set_command(StreamHttpConnectionRequest::UNREGISTER);
-      write_queue_->ScheduleWrite(std::move(request));
-    }
+    is_shutting_down_ = true;
   }
 
   if (call_) {
@@ -159,6 +154,10 @@ void GrpcHttpConnectionClient::CleanUp() {
 void GrpcHttpConnectionClient::ScheduleRequest(
     StreamHttpConnectionRequest request) {
   base::AutoLock lock(write_queue_lock_);
+  if (is_shutting_down_) {
+    return;
+  }
+
   if (write_queue_) {
     write_queue_->ScheduleWrite(std::move(request));
   }
@@ -168,6 +167,13 @@ void GrpcHttpConnectionClient::ScheduleRequest(
 void GrpcHttpConnectionClient::OnRpcWriteAvailable(
     grpc::ClientContext* context,
     StreamingWriter<StreamHttpConnectionRequest>* writer) {
+  {
+    base::AutoLock lock(write_queue_lock_);
+    if (is_shutting_down_) {
+      return;
+    }
+  }
+
   if (!init_request_sent_) {
     DVLOG(1) << "Sending GrpcHttpConnectionClient registration request.";
     init_request_sent_ = true;
@@ -178,9 +184,12 @@ void GrpcHttpConnectionClient::OnRpcWriteAvailable(
     return;
   }
 
-  base::AutoLock lock(write_queue_lock_);
-  if (write_queue_) {
-    write_queue_->OnRpcWriteAvailable(writer);
+  {
+    base::AutoLock lock(write_queue_lock_);
+
+    if (write_queue_) {
+      write_queue_->OnRpcWriteAvailable(writer);
+    }
   }
 }
 
