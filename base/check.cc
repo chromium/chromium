@@ -190,12 +190,9 @@ CheckError::~CheckError() {
   delete log_message_;
 
   // Make sure we crash even if LOG(FATAL) has been overridden.
-  // TODO(crbug.com/1409729): Include Windows here too. This is done in steps to
-  // prevent backsliding on platforms where this goes through CQ.
-  // Windows is blocked by:
-  //   * All/RenderProcessHostWriteableFileDeathTest.
-  //       PassUnsafeWriteableExecutableFile/2
-  if (is_fatal && !BUILDFLAG(IS_WIN)) {
+  // TODO(crbug.com/1409729): Remove severity checking in the destructor when
+  // LOG(FATAL) is [[noreturn]] and can't be overridden.
+  if (is_fatal) {
     base::ImmediateCrash();
   }
 }
