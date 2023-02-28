@@ -12,10 +12,6 @@ rootWebArea focusable
 ++++++++++++++genericContainer ignored
 ++++++++genericContainer ignored
 ++++++++++listBox ignored invisible
-++++++++++++genericContainer ignored invisible
-++++++++++++++listBoxOption focusable ignored invisible
-++++++++++++++listBoxOption focusable ignored invisible
-++++++++++++++listBoxOption focusable ignored invisible
 ++++++genericContainer
 ++++++++genericContainer ignored
 ++++++++++comboBoxMenuButton collapsed value='Option 1' haspopup=listbox
