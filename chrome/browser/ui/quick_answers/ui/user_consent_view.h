@@ -27,6 +27,8 @@ namespace quick_answers {
 // information if any of these two strings are empty.
 class UserConsentView : public views::View {
  public:
+  static constexpr char kWidgetName[] = "UserConsentViewWidget";
+
   UserConsentView(const gfx::Rect& anchor_view_bounds,
                   const std::u16string& intent_type,
                   const std::u16string& intent_text,
