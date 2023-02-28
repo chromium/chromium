@@ -325,24 +325,25 @@ bool PathOwnedByUser(const base::FilePath& path) {
 
   base::stat_wrapper_t stat_info = {};
   if (base::File::Lstat(path.value().c_str(), &stat_info) != 0) {
-    DPLOG(ERROR) << "Failed to get information on path " << path.value();
+    VPLOG(1) << "Failed to get information on path " << path.value();
     return false;
   }
 
   if (S_ISLNK(stat_info.st_mode)) {
-    DLOG(ERROR) << "Path " << path.value() << " is a symbolic link.";
+    VLOG(1) << "Path " << path.value() << " is a symbolic link.";
     return false;
   }
 
   if (stat_info.st_uid != user_uid) {
-    DLOG(ERROR) << "Path " << path.value() << " is owned by the wrong user.";
+    VLOG(1) << "Path " << path.value() << " is owned by the wrong user. (Was "
+            << stat_info.st_uid << ", expected " << user_uid << ".)";
     return false;
   }
 
   return true;
 }
 
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_WIN)
 
