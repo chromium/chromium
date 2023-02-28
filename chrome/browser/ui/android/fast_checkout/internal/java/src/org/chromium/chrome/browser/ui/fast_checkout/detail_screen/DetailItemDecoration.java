@@ -60,13 +60,13 @@ public class DetailItemDecoration extends RecyclerView.ItemDecoration {
      */
     private static @DrawableRes int getBackgroundDrawable(int position, int itemCount) {
         if (position == 0) {
-            return R.drawable.fast_checkout_item_background_top;
+            return R.drawable.fast_checkout_background_top;
         }
 
         if (position == itemCount - 1) {
-            return R.drawable.fast_checkout_item_background_bottom;
+            return R.drawable.fast_checkout_background_bottom;
         }
 
-        return R.drawable.fast_checkout_list_view_background_middle;
+        return R.drawable.fast_checkout_background_middle;
     }
 }
