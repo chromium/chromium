@@ -1108,8 +1108,16 @@ var defaultTests = [
   },
 
   function collectFrameCountingData() {
+    let extraWindow;
     promisify(
         chrome.autotestPrivate.startFrameCounting, /*bucketSizeInSeconds=*/1)
+        .then(function() {
+          // Create a browser window after start api call.
+          return new Promise(resolve => {
+            extraWindow = window.open("about:blank");
+            resolve();
+          });
+        })
         .then(function() {
           // Minimize/restore to trigger screen updates.
           return promisify(minimizeBrowserWindow);
@@ -1122,10 +1130,13 @@ var defaultTests = [
               chrome.autotestPrivate.stopFrameCounting);
         })
         .then(function(data) {
+          extraWindow.close();
           chrome.test.assertTrue(data.length >= 0);
           chrome.test.succeed();
         })
         .catch(function(err) {
+          if (extraWindow)
+            extraWindow.close();
           chrome.test.fail(err);
         });
   },

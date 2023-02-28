@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 
@@ -31,11 +32,13 @@ FrameCounter::~FrameCounter() = default;
 
 void FrameCounter::AddFrameSink(const FrameSinkId& frame_sink_id,
                                 mojom::CompositorFrameSinkType type,
-                                bool is_root) {
+                                bool is_root,
+                                base::StringPiece debug_label) {
   DCHECK(!base::Contains(frame_sink_data_, frame_sink_id));
 
   auto per_sink_data = mojom::FrameCountingPerSinkData::New(
-      type, is_root, std::string(), 0, std::vector<uint16_t>());
+      type, is_root, static_cast<std::string>(debug_label), 0,
+      std::vector<uint16_t>());
   per_sink_data->presented_frames.reserve(kMaxFrameRecords);
 
   frame_sink_data_[frame_sink_id] = std::move(per_sink_data);
@@ -85,8 +88,16 @@ void FrameCounter::SetFrameSinkType(const FrameSinkId& frame_sink_id,
 }
 
 void FrameCounter::SetFrameSinkDebugLabel(const FrameSinkId& frame_sink_id,
-                                          std::string debug_label) {
-  frame_sink_data_[frame_sink_id]->debug_label = std::move(debug_label);
+                                          base::StringPiece debug_label) {
+  // SetFrameSinkDebugLabel could happen before a frame sink is created. Ignore
+  // the call and the debug label info will be added when AddFrameSink is
+  // called.
+  auto it = frame_sink_data_.find(frame_sink_id);
+  if (it == frame_sink_data_.end()) {
+    return;
+  }
+
+  it->second->debug_label = static_cast<std::string>(debug_label);
 }
 
 }  // namespace viz
