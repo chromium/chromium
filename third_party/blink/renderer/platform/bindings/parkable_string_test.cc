@@ -90,8 +90,7 @@ class ParkableStringTest : public testing::TestWithParam<bool> {
       EXPECT_GT(task_environment_.GetPendingMainThreadTaskCount(), 0u);
     }
 
-    if (base::FeatureList::IsEnabled(features::kDelayFirstParkingOfStrings) &&
-        !first_aging_done_) {
+    if (!first_aging_done_) {
       task_environment_.FastForwardBy(
           ParkableStringManager::kFirstParkingDelay);
       first_aging_done_ = true;
@@ -573,7 +572,6 @@ TEST_P(ParkableStringTest, LockParkedString) {
 
 TEST_P(ParkableStringTest, DelayFirstParkingOfString) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kDelayFirstParkingOfStrings);
 
   auto& manager = ParkableStringManager::Instance();
   EXPECT_EQ(0u, manager.Size());
@@ -582,9 +580,7 @@ TEST_P(ParkableStringTest, DelayFirstParkingOfString) {
   ParkableString parkable(MakeLargeString().Impl());
   ASSERT_FALSE(parkable.Impl()->is_parked());
   EXPECT_EQ(1u, manager.Size());
-
-  // When under the kDelayFirstParkingOfStrings experiment this is how long it
-  // will take for the first aging to happen.
+  // Should age after this point.
   task_environment_.FastForwardBy(ParkableStringManager::kFirstParkingDelay);
 
   // String is aged but not parked.
@@ -1108,16 +1104,8 @@ TEST_P(ParkableStringTest, NoPrematureAging) {
   EXPECT_EQ(ParkableStringImpl::Age::kYoung,
             parkable.Impl()->age_for_testing());
 
-  // What would be a premature aging depends on |kDelayFirstParkingOfStrings|.
-  // Under the feature the regular aging interval is not enough.
-  if (base::FeatureList::IsEnabled(features::kDelayFirstParkingOfStrings)) {
-    task_environment_.FastForwardBy(
-        base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
-  } else {
-    // Outside of the feature use half the regular aging interval.
-    task_environment_.FastForwardBy(
-        base::Seconds(ParkableStringManager::kAgingIntervalInSeconds / 2));
-  }
+  task_environment_.FastForwardBy(
+      base::Seconds(ParkableStringManager::kAgingIntervalInSeconds));
 
   // Since not enough time elapsed not aging was done.
   EXPECT_EQ(ParkableStringImpl::Age::kYoung,

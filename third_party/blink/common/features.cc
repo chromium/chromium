@@ -844,13 +844,6 @@ BASE_FEATURE(kUseSnappyForParkableStrings,
              "UseSnappyForParkableStrings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabling this will delay the first aging of strings by 60 seconds instead of
-// the default. See comment around the use of the feature for the logic behind
-// the delay.
-BASE_FEATURE(kDelayFirstParkingOfStrings,
-             "DelayFirstParkingOfStrings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool ParkableStringsUseSnappy() {
   return base::FeatureList::IsEnabled(kUseSnappyForParkableStrings);
 }

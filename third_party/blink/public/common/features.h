@@ -357,7 +357,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCompressParkableStrings);
 BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSnappyForParkableStrings);
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelayFirstParkingOfStrings);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
