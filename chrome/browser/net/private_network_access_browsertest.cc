@@ -1477,8 +1477,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
     </body>
   </html>
   )";
-  base::WriteFile(temp_dir.GetPath().AppendASCII(kPageFile), kContents,
-                  sizeof(kContents) - 1);
+  base::WriteFile(temp_dir.GetPath().AppendASCII(kPageFile), kContents);
 
   extensions::ExtensionBuilder builder("test");
   builder.SetPath(temp_dir.GetPath())
