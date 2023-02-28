@@ -31,6 +31,7 @@ import './device_page/per_device_touchpad.js';
 import './device_page/per_device_touchpad_subsection.js';
 import './device_page/pointers.js';
 import './device_page/power.js';
+import './device_page/keyboard_remap_modifier_key_row.js';
 import './device_page/storage.js';
 import './device_page/storage_external.js';
 import './device_page/storage_external_entry.js';
@@ -161,6 +162,7 @@ export {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './devi
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {MetaKey, ModifierKey} from './device_page/input_device_settings_types.js';
+export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
 export {SettingsPerDeviceKeyboardRemapKeysElement} from './device_page/per_device_keyboard_remap_keys.js';
 export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_device_keyboard_subsection.js';

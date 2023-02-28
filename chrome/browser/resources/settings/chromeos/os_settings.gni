@@ -56,6 +56,7 @@ web_component_files = [
   "chromeos/device_page/per_device_touchpad_subsection.ts",
   "chromeos/device_page/pointers.ts",
   "chromeos/device_page/power.ts",
+  "chromeos/device_page/keyboard_remap_modifier_key_row.ts",
   "chromeos/device_page/storage.ts",
   "chromeos/device_page/storage_external.ts",
   "chromeos/device_page/storage_external_entry.ts",

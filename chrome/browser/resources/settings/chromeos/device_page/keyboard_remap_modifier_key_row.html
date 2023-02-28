@@ -1,0 +1,47 @@
+<style include="settings-shared">
+  #header {
+    display: flex;
+  }
+
+  .key-container {
+    align-items: center;
+    border-radius: 5px;
+    box-sizing: border-box;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    font-weight: 500;
+    height: 28px;
+    justify-content: center;
+    margin-inline-end: 8px;
+    min-width: 28px;
+    padding-inline: 8px;
+  }
+
+  :host([key-state='default-remapping']) .key-container {
+    background-color: var(--cros-button-icon-color-secondary-disabled);
+    border: none;
+    box-shadow: 0 1px 1px var(--cros-button-icon-color-secondary-disabled);
+  }
+
+  :host([key-state='modifier-remapped']) .key-container {
+    background-color: var(--cros-highlight-color);
+    border: none;
+    box-shadow: 0 1px 1px var(--cros-highlight-color);
+  }
+
+  .settings-box {
+    justify-content: space-between;
+  }
+</style>
+<div class="settings-box">
+  <div>
+    <div id="keyLabel"
+        class="start key-container"
+        aria-hidden="true">[[keyLabel]]</div>
+  </div>
+  <settings-dropdown-menu id="keyDropdown"
+      label="[[keyLabel]]"
+      pref="{{pref}}"
+      menu-options="[[menuOptions]]">
+  </settings-dropdown-menu>
+</div>
