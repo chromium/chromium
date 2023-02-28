@@ -253,6 +253,27 @@ struct SignificantFields {
   }
 };
 
+// For debugging.
+std::ostream& operator<<(std::ostream& os,
+                         const SignificantFields& significant_fields) {
+  os << u"SignificantFields(";
+  if (significant_fields.username) {
+    os << u"username=" << significant_fields.username->name;
+  }
+  if (significant_fields.password) {
+    os << " password=" << significant_fields.password->name;
+  }
+  if (significant_fields.new_password) {
+    os << " new_password=" << significant_fields.new_password->name;
+  }
+  if (significant_fields.confirmation_password) {
+    os << " confirmation_password="
+       << significant_fields.confirmation_password->name;
+  }
+  os << ")";
+  return os;
+}
+
 // Returns true if |field| is in |significant_fields|.
 bool IsFieldInSignificantFields(const SignificantFields& significant_fields,
                                 const FormFieldData* field) {
@@ -868,6 +889,9 @@ void SetFields(const SignificantFields& significant_fields,
   }
 
   if (significant_fields.confirmation_password) {
+    DCHECK(significant_fields.new_password)
+        << "Lone confirmation field (no new password field)"
+        << significant_fields;
     password_form->confirmation_password_element =
         significant_fields.confirmation_password->name;
     password_form->confirmation_password_element_renderer_id =
