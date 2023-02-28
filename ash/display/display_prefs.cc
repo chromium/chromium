@@ -212,8 +212,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
           continue;
         ids.push_back(id);
       }
-      display::DisplayIdList list =
-          display::GenerateDisplayIdList(ids.begin(), ids.end());
+      display::DisplayIdList list = display::GenerateDisplayIdList(ids);
       layout_store->RegisterLayoutForDisplayIdList(list, std::move(layout));
     }
   }

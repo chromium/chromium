@@ -477,11 +477,10 @@ class RenderTextTest : public testing::Test {
   std::vector<FontSpan> GetFontSpans() {
     test_api()->EnsureLayout();
 
-    const internal::TextRunList* run_list = GetHarfBuzzRunList();
     std::vector<FontSpan> spans;
-    std::transform(
-        run_list->runs().begin(), run_list->runs().end(),
-        std::back_inserter(spans), [this](const auto& run) {
+    base::ranges::transform(
+        GetHarfBuzzRunList()->runs(), std::back_inserter(spans),
+        [this](const auto& run) {
           return FontSpan(
               run->font_params.font,
               Range(test_api()->DisplayIndexToTextIndex(run->range.start()),

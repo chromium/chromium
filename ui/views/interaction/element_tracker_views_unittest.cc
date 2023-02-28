@@ -4,13 +4,13 @@
 
 #include "ui/views/interaction/element_tracker_views.h"
 
-#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,10 +112,10 @@ class ElementEventWatcher {
 ElementTrackerViews::ViewList ElementsToViews(
     ui::ElementTracker::ElementList elements) {
   ElementTrackerViews::ViewList result;
-  std::transform(elements.begin(), elements.end(), std::back_inserter(result),
-                 [](ui::TrackedElement* element) {
-                   return element->AsA<TrackedElementViews>()->view();
-                 });
+  base::ranges::transform(elements, std::back_inserter(result),
+                          [](ui::TrackedElement* element) {
+                            return element->AsA<TrackedElementViews>()->view();
+                          });
   return result;
 }
 

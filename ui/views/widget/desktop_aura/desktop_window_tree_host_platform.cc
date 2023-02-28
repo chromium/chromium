@@ -4,7 +4,6 @@
 
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -228,8 +228,9 @@ DesktopWindowTreeHostPlatform* DesktopWindowTreeHostPlatform::GetHostForWidget(
 // static
 std::vector<aura::Window*> DesktopWindowTreeHostPlatform::GetAllOpenWindows() {
   std::vector<aura::Window*> windows(open_windows().size());
-  std::transform(open_windows().begin(), open_windows().end(), windows.begin(),
-                 DesktopWindowTreeHostPlatform::GetContentWindowForWidget);
+  base::ranges::transform(
+      open_windows(), windows.begin(),
+      DesktopWindowTreeHostPlatform::GetContentWindowForWidget);
   return windows;
 }
 

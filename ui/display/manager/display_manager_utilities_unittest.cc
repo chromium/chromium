@@ -16,12 +16,12 @@ TEST(DisplayUtilitiesTest, GenerateDisplayIdList) {
   DisplayIdList list;
   {
     int64_t ids[] = {10, 1};
-    list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
+    list = GenerateDisplayIdList(ids);
     EXPECT_EQ(1, list[0]);
     EXPECT_EQ(10, list[1]);
 
     int64_t three_ids[] = {10, 5, 1};
-    list = GenerateDisplayIdList(std::begin(three_ids), std::end(three_ids));
+    list = GenerateDisplayIdList(three_ids);
     ASSERT_EQ(3u, list.size());
     EXPECT_EQ(1, list[0]);
     EXPECT_EQ(5, list[1]);
@@ -29,12 +29,12 @@ TEST(DisplayUtilitiesTest, GenerateDisplayIdList) {
   }
   {
     int64_t ids[] = {10, 100};
-    list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
+    list = GenerateDisplayIdList(ids);
     EXPECT_EQ(10, list[0]);
     EXPECT_EQ(100, list[1]);
 
     int64_t three_ids[] = {10, 100, 1000};
-    list = GenerateDisplayIdList(std::begin(three_ids), std::end(three_ids));
+    list = GenerateDisplayIdList(three_ids);
     ASSERT_EQ(3u, list.size());
     EXPECT_EQ(10, list[0]);
     EXPECT_EQ(100, list[1]);
@@ -43,17 +43,17 @@ TEST(DisplayUtilitiesTest, GenerateDisplayIdList) {
   {
     ScopedSetInternalDisplayIds set_internal(100);
     int64_t ids[] = {10, 100};
-    list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
+    list = GenerateDisplayIdList(ids);
     EXPECT_EQ(100, list[0]);
     EXPECT_EQ(10, list[1]);
 
     std::swap(ids[0], ids[1]);
-    list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
+    list = GenerateDisplayIdList(ids);
     EXPECT_EQ(100, list[0]);
     EXPECT_EQ(10, list[1]);
 
     int64_t three_ids[] = {10, 100, 1000};
-    list = GenerateDisplayIdList(std::begin(three_ids), std::end(three_ids));
+    list = GenerateDisplayIdList(three_ids);
     ASSERT_EQ(3u, list.size());
     EXPECT_EQ(100, list[0]);
     EXPECT_EQ(10, list[1]);
@@ -62,17 +62,17 @@ TEST(DisplayUtilitiesTest, GenerateDisplayIdList) {
   {
     ScopedSetInternalDisplayIds set_internal(10);
     int64_t ids[] = {10, 100};
-    list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
+    list = GenerateDisplayIdList(ids);
     EXPECT_EQ(10, list[0]);
     EXPECT_EQ(100, list[1]);
 
     std::swap(ids[0], ids[1]);
-    list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
+    list = GenerateDisplayIdList(ids);
     EXPECT_EQ(10, list[0]);
     EXPECT_EQ(100, list[1]);
 
     int64_t three_ids[] = {10, 100, 1000};
-    list = GenerateDisplayIdList(std::begin(three_ids), std::end(three_ids));
+    list = GenerateDisplayIdList(three_ids);
     ASSERT_EQ(3u, list.size());
     EXPECT_EQ(10, list[0]);
     EXPECT_EQ(100, list[1]);
@@ -83,13 +83,13 @@ TEST(DisplayUtilitiesTest, GenerateDisplayIdList) {
 TEST(DisplayUtilitiesTest, DisplayIdListToString) {
   {
     int64_t ids[] = {10, 1, 16};
-    DisplayIdList list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
+    DisplayIdList list = GenerateDisplayIdList(ids);
     EXPECT_EQ("1,10,16", DisplayIdListToString(list));
   }
   {
     ScopedSetInternalDisplayIds set_internal(16);
     int64_t ids[] = {10, 1, 16};
-    DisplayIdList list = GenerateDisplayIdList(std::begin(ids), std::end(ids));
+    DisplayIdList list = GenerateDisplayIdList(ids);
     EXPECT_EQ("16,1,10", DisplayIdListToString(list));
   }
 }

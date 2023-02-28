@@ -163,15 +163,12 @@ bool ComputeBoundary(const Display& display_a,
 }
 
 DisplayIdList CreateDisplayIdList(const Displays& list) {
-  return GenerateDisplayIdList(
-      list.begin(), list.end(),
-      [](const Display& display) { return display.id(); });
+  return GenerateDisplayIdList(list, &Display::id);
 }
 
 DisplayIdList CreateDisplayIdList(const DisplayInfoList& updated_displays) {
-  return GenerateDisplayIdList(
-      updated_displays.begin(), updated_displays.end(),
-      [](const display::ManagedDisplayInfo& info) { return info.id(); });
+  return GenerateDisplayIdList(updated_displays,
+                               &display::ManagedDisplayInfo::id);
 }
 
 void SortDisplayIdList(DisplayIdList* ids) {

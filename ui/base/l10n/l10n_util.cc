@@ -4,7 +4,6 @@
 
 #include "ui/base/l10n/l10n_util.h"
 
-#include <algorithm>
 #include <cstdlib>
 #include <iterator>
 #include <memory>
@@ -23,6 +22,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -526,9 +526,8 @@ std::string GetApplicationLocaleInternalNonMac(const std::string& pref_locale) {
   const std::vector<std::string>& languages = l10n_util::GetLocaleOverrides();
   if (!languages.empty()) {
     candidates.reserve(candidates.size() + languages.size());
-    std::transform(languages.begin(), languages.end(),
-                   std::back_inserter(candidates),
-                   &base::i18n::GetCanonicalLocale);
+    base::ranges::transform(languages, std::back_inserter(candidates),
+                            &base::i18n::GetCanonicalLocale);
   } else {
     // If no override was set, defer to ICU
     candidates.push_back(base::i18n::GetConfiguredLocale());

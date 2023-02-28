@@ -180,10 +180,7 @@ MultipleDisplayState DisplayChangeObserver::GetStateForDisplayIds(
   if (display_states.size() == 1)
     return MULTIPLE_DISPLAY_STATE_SINGLE;
   DisplayIdList list =
-      GenerateDisplayIdList(display_states.begin(), display_states.end(),
-                            [](const DisplaySnapshot* display_state) {
-                              return display_state->display_id();
-                            });
+      GenerateDisplayIdList(display_states, &DisplaySnapshot::display_id);
   return display_manager_->ShouldSetMirrorModeOn(
              list, /*should_check_hardware_mirroring=*/true)
              ? MULTIPLE_DISPLAY_STATE_MULTI_MIRROR
