@@ -284,6 +284,26 @@ keeps the Omaha registry entry
 `pv` value. Additionally, the updater replaces the Omaha uninstall command line
 with its own.
 
+The updater takes over the COM registration for the following classes:
+* GoogleUpdate3WebUserClass
+* GoogleUpdate3WebSystemClass
+* GoogleUpdate3WebServiceClass
+* PolicyStatusUserClass
+* PolicyStatusSystemClass
+* ProcessLauncherClass
+
+The updater replaces `GoogleUpdate.exe` in the `Google\Update` directory with a
+copy of `updater.exe`. This is to allow the updater to handle handoffs from
+legacy Omaha installers that invoke `Google\Update\GoogleUpdate.exe`. All other
+legacy directories under `Google\Update` are removed.
+
+The updater removes the following Omaha registrations:
+* For system installations only: Removes the GoogleUpdate services "gupdate" and
+  "gupdatem".
+* For user installations only: Removes the GoogleUpdate run value in the
+  registry at `HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`.
+* Removes the Omaha Core and UA tasks.
+
 ### Installer User Interface
 During installation, the user is presented with a UI that displays the progress
 of the download and installation. The user may close the dialog, which cancels
