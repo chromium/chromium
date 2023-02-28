@@ -41,7 +41,6 @@ if (is_chromeos_ash) {
     "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js",
     "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js",
     "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js",
-    "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js",
     "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js",
     "chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js",
     "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js",
@@ -56,6 +55,20 @@ if (is_chromeos_ash) {
     "ui/events/mojom/event.mojom-webui.js",
     "ui/latency/mojom/latency_info.mojom-webui.js",
   ]
+
+  mojo_ts_files = [ "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.ts" ]
+
+  preprocess_if_expr("copy_mojo_ts") {
+    visibility = [ ":build_ts" ]
+
+    in_folder = root_gen_dir
+    out_folder = "$target_gen_dir/preprocessed"
+    in_files = mojo_ts_files
+
+    deps = [
+      "//chromeos/ash/services/hotspot_config/public/mojom:mojom_ts__generator",
+    ]
+  }
 }
 
 # Move all the files out of mojom-webui to the expected location.
@@ -84,7 +97,6 @@ preprocess_if_expr("copy_mojo") {
       "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/cellular_setup/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/device_sync/public/mojom:mojom_js__generator",
-      "//chromeos/ash/services/hotspot_config/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_js__generator",
       "//chromeos/services/network_config/public/mojom:mojom_js__generator",
@@ -106,6 +118,9 @@ ts_library("build_ts") {
   allow_js = true
 
   in_files = mojo_js_files
+  if (is_chromeos_ash) {
+    in_files += mojo_ts_files
+  }
 
   definitions = [ "$tsc_folder/mojo/public/js/bindings.d.ts" ]
 
@@ -113,6 +128,9 @@ ts_library("build_ts") {
     ":copy_bindings_dts",
     ":copy_mojo",
   ]
+  if (is_chromeos_ash) {
+    extra_deps += [ ":copy_mojo_ts" ]
+  }
 
   path_mappings = [ "//resources/mojo/*|" +
                     rebase_path("$root_gen_dir/ui/webui/resources/tsc/mojo/*",

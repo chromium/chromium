@@ -21,17 +21,17 @@ preprocess_if_expr("preprocess") {
 }
 
 copy("copy_files") {
-  deps =
-      [ "//chromeos/ash/services/hotspot_config/public/mojom:mojom_webui_js" ]
-  sources = [ "$root_gen_dir/mojom-webui/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.js" ]
+  deps = [
+    "//chromeos/ash/services/hotspot_config/public/mojom:mojom_ts__generator",
+  ]
+  sources = [ "$root_gen_dir/chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom-webui.ts" ]
   outputs = [ "$preprocessed_dir/{{source_file_part}}" ]
 }
 
 ts_library("build_ts") {
-  allow_js = true
   root_dir = preprocessed_dir
   out_dir = "$root_gen_dir/ash/webui/common/resources/preprocessed/hotspot"
-  in_files = ts_files + [ "cros_hotspot_config.mojom-webui.js" ]
+  in_files = ts_files + [ "cros_hotspot_config.mojom-webui.ts" ]
   composite = true
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [
