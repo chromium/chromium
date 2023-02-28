@@ -1063,23 +1063,21 @@ void ForEachServiceWithPrefix(
 }
 
 [[nodiscard]] bool DeleteService(const std::wstring& service_name) {
-  SC_HANDLE scm = ::OpenSCManager(
-      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE);
-  if (!scm) {
+  ScopedScHandle scm(::OpenSCManager(
+      nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
+  if (!scm.IsValid()) {
     return false;
   }
 
-  SC_HANDLE service = ::OpenService(scm, service_name.c_str(), DELETE);
-  bool is_service_deleted = !service;
+  ScopedScHandle service(
+      ::OpenService(scm.Get(), service_name.c_str(), DELETE));
+  bool is_service_deleted = !service.IsValid();
   if (!is_service_deleted) {
     is_service_deleted =
-        ::DeleteService(service)
+        ::DeleteService(service.Get())
             ? true
             : ::GetLastError() == ERROR_SERVICE_MARKED_FOR_DELETE;
-
-    ::CloseServiceHandle(service);
   }
-  ::CloseServiceHandle(scm);
 
   if (!DeleteRegValue(HKEY_LOCAL_MACHINE, UPDATER_KEY, service_name)) {
     return false;
