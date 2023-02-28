@@ -349,6 +349,7 @@ BOOL canProcessCrossOriginIframes() {
                              (SuggestionsAvailableCompletion)completion {
   DCHECK_EQ(_webState, webState);
   if (!GetPageURLAndCheckTrustLevel(webState, nullptr)) {
+    completion(NO);
     return;
   }
   web::WebFrame* frame =
