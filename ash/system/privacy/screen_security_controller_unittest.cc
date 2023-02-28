@@ -122,7 +122,8 @@ TEST_P(ScreenSecurityControllerTest, NotifyScreenCaptureStopNoNotification) {
   Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 }
 
-// Tests that screen capture notifications show with video conference enabled.
+// Tests that screen capture notifications do not show with video conference
+// enabled.
 TEST_P(ScreenSecurityControllerTest,
        ScreenCaptureShowsNotificationWithVideoConference) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -130,10 +131,6 @@ TEST_P(ScreenSecurityControllerTest,
 
   Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::DoNothing(), base::RepeatingClosure(), std::u16string());
-
-  EXPECT_TRUE(FindNotification(kScreenAccessNotificationId));
-
-  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 
   EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 }

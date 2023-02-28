@@ -156,6 +156,12 @@ void ScreenSecurityController::OnScreenAccessStart(
     base::OnceClosure stop_callback,
     const base::RepeatingClosure& source_callback,
     const std::u16string& access_app_name) {
+  // Don't send screen access notifications, because the VideoConferenceTray
+  // serves as the notifier for this.
+  if (features::IsVideoConferenceEnabled()) {
+    return;
+  }
+
   screen_access_stop_callbacks_.emplace_back(std::move(stop_callback));
   change_source_callback_ = source_callback;
 
@@ -173,15 +179,17 @@ void ScreenSecurityController::OnScreenAccessStart(
 }
 
 void ScreenSecurityController::OnScreenAccessStop() {
+  if (features::IsVideoConferenceEnabled()) {
+    return;
+  }
+
   StopAllSessions(/*is_screen_access=*/true);
 }
 
 void ScreenSecurityController::OnRemotingScreenShareStart(
     base::OnceClosure stop_callback) {
   // Don't send screen share notifications, because the VideoConferenceTray
-  // serves as the notifier for screen share. As for screen capture, continue to
-  // show these notifications for now, although they may end up in the
-  // `VideoConferenceTray` as well. See b/269486186 for details.
+  // serves as the notifier for screen share.
   if (features::IsVideoConferenceEnabled()) {
     return;
   }
