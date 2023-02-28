@@ -93,6 +93,56 @@ bool InterestGroup::Size::operator==(const Size& other) const {
   return width == other.width && height == other.height;
 }
 
+InterestGroup::InterestGroup() = default;
+
+InterestGroup::InterestGroup(
+    base::Time expiry,
+    url::Origin owner,
+    std::string name,
+    double priority,
+    bool enable_bidding_signals_prioritization,
+    absl::optional<base::flat_map<std::string, double>> priority_vector,
+    absl::optional<base::flat_map<std::string, double>>
+        priority_signals_overrides,
+    absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+        seller_capabilities,
+    SellerCapabilitiesType all_sellers_capabilities,
+    blink::mojom::InterestGroup::ExecutionMode execution_mode,
+    absl::optional<GURL> bidding_url,
+    absl::optional<GURL> bidding_wasm_helper_url,
+    absl::optional<GURL> daily_update_url,
+    absl::optional<GURL> trusted_bidding_signals_url,
+    absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
+    absl::optional<std::string> user_bidding_signals,
+    absl::optional<std::vector<InterestGroup::Ad>> ads,
+    absl::optional<std::vector<InterestGroup::Ad>> ad_components,
+    absl::optional<base::flat_map<std::string, InterestGroup::Size>> ad_sizes,
+    absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+        size_groups)
+    : expiry(expiry),
+      owner(std::move(owner)),
+      name(std::move(name)),
+      priority(priority),
+      enable_bidding_signals_prioritization(
+          enable_bidding_signals_prioritization),
+      priority_vector(std::move(priority_vector)),
+      priority_signals_overrides(std::move(priority_signals_overrides)),
+      seller_capabilities(std::move(seller_capabilities)),
+      all_sellers_capabilities(all_sellers_capabilities),
+      execution_mode(execution_mode),
+      bidding_url(std::move(bidding_url)),
+      bidding_wasm_helper_url(std::move(bidding_wasm_helper_url)),
+      daily_update_url(std::move(daily_update_url)),
+      trusted_bidding_signals_url(std::move(trusted_bidding_signals_url)),
+      trusted_bidding_signals_keys(std::move(trusted_bidding_signals_keys)),
+      user_bidding_signals(std::move(user_bidding_signals)),
+      ads(std::move(ads)),
+      ad_components(std::move(ad_components)),
+      ad_sizes(std::move(ad_sizes)),
+      size_groups(std::move(size_groups)) {}
+
+InterestGroup::~InterestGroup() = default;
+
 // The logic in this method must be kept in sync with ValidateBlinkInterestGroup
 // in blink/renderer/modules/ad_auction/. The tests for this logic are also
 // there, so they can be compared against each other.

@@ -76,6 +76,38 @@ struct BLINK_COMMON_EXPORT InterestGroup {
     bool operator==(const Size& other) const;
   };
 
+  InterestGroup();
+
+  // Constructor takes arguments by value. They're unlikely to be independently
+  // useful at the point of construction, so caller can std::move() them when
+  // invoking the constructor.
+  InterestGroup(
+      base::Time expiry,
+      url::Origin owner,
+      std::string name,
+      double priority,
+      bool enable_bidding_signals_prioritization,
+      absl::optional<base::flat_map<std::string, double>> priority_vector,
+      absl::optional<base::flat_map<std::string, double>>
+          priority_signals_overrides,
+      absl::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
+          seller_capabilities,
+      SellerCapabilitiesType all_sellers_capabilities,
+      ExecutionMode execution_mode,
+      absl::optional<GURL> bidding_url,
+      absl::optional<GURL> bidding_wasm_helper_url,
+      absl::optional<GURL> daily_update_url,
+      absl::optional<GURL> trusted_bidding_signals_url,
+      absl::optional<std::vector<std::string>> trusted_bidding_signals_keys,
+      absl::optional<std::string> user_bidding_signals,
+      absl::optional<std::vector<InterestGroup::Ad>> ads,
+      absl::optional<std::vector<InterestGroup::Ad>> ad_components,
+      absl::optional<base::flat_map<std::string, InterestGroup::Size>> ad_sizes,
+      absl::optional<base::flat_map<std::string, std::vector<std::string>>>
+          size_groups);
+
+  ~InterestGroup();
+
   // Checks for validity. Performs same checks as IsBlinkInterestGroupValid().
   // Automatically checked when passing InterestGroups over Mojo.
   bool IsValid() const;
@@ -111,7 +143,7 @@ struct BLINK_COMMON_EXPORT InterestGroup {
   absl::optional<base::flat_map<std::string, std::vector<std::string>>>
       size_groups;
 
-  static_assert(__LINE__ == 114, R"(
+  static_assert(__LINE__ == 146, R"(
 If modifying InterestGroup fields, make sure to also modify:
 
 * IsValid(), EstimateSize(), and IsEqualForTesting() in this class

@@ -946,16 +946,22 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
           absl::nullopt,
       absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
     return JoinInterestGroupAndVerify(
-        {
-            .expiry = base::Time(),
-            .owner = owner,
-            .name = name,
-            .priority = priority,
-            .execution_mode = execution_mode,
-            .bidding_url = bidding_url,
-            .ads = ads,
-            .ad_components = ad_components,
-        },
+        blink::InterestGroup(
+            /*expiry=*/base::Time(), owner, name, priority,
+            /*enable_bidding_signals_prioritization=*/false,
+            /*priority_vector=*/absl::nullopt,
+            /*priority_signals_overrides=*/absl::nullopt,
+            /*seller_capabilities=*/absl::nullopt,
+            /*all_sellers_capabilities=*/
+            {}, execution_mode, std::move(bidding_url),
+            /*bidding_wasm_helper_url=*/absl::nullopt,
+            /*daily_update_url=*/absl::nullopt,
+            /*trusted_bidding_signals_url=*/absl::nullopt,
+            /*trusted_bidding_signals_keys=*/absl::nullopt,
+            /*user_bidding_signals=*/absl::nullopt, std::move(ads),
+            std::move(ad_components),
+            /*ad_sizes=*/{},
+            /*size_groups=*/{}),
         execution_target);
   }
 
@@ -2669,18 +2675,31 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   EXPECT_EQ(
       kSuccess,
-      JoinInterestGroupAndVerify({
-          .expiry = base::Time(),
-          .owner = origin,
-          .name = "cars",
-          .all_sellers_capabilities = blink::SellerCapabilities::kLatencyStats,
-          .ad_sizes =
-              {{{"size_1",
-                 blink::InterestGroup::Size(
-                     150, blink::InterestGroup::Size::LengthUnit::kPixels, 75,
-                     blink::InterestGroup::Size::LengthUnit::kPixels)}}},
-          .size_groups = {{{"group_1", {"size_1"}}}},
-      }));
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+          /*priority_vector=*/absl::nullopt,
+          /*priority_signals_overrides=*/absl::nullopt,
+          /*seller_capabilities=*/{},
+          /*all_sellers_capabilities=*/
+          blink::SellerCapabilities::kLatencyStats, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/absl::nullopt,
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/absl::nullopt,
+          /*trusted_bidding_signals_url=*/absl::nullopt,
+          /*trusted_bidding_signals_keys=*/absl::nullopt,
+          /*user_bidding_signals=*/absl::nullopt,
+          /*ads=*/absl::nullopt,
+          /*ad_components=*/absl::nullopt,
+          /*ad_sizes=*/
+          {{{"size_1",
+             blink::InterestGroup::Size(
+                 150, blink::InterestGroup::Size::LengthUnit::kPixels, 75,
+                 blink::InterestGroup::Size::LengthUnit::kPixels)}}},
+          /*size_groups=*/{{{"group_1", {"size_1"}}}})));
 
   WaitForAccessObserved({});
 
@@ -7580,26 +7599,37 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
 
   ASSERT_EQ(
       kSuccess,
-      JoinInterestGroupAndVerify({
-          .expiry = base::Time(),
-          .owner = bidder_origin,
-          .name = "cars",
-          .enable_bidding_signals_prioritization = true,
-          .priority_vector = {{{"foo", 2}, {"bar", -11}}},
-          .priority_signals_overrides = {{{"foo", 1}}},
-          .bidding_url = https_server_->GetURL(
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/bidder_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/true,
+          /*priority_vector=*/{{{"foo", 2}, {"bar", -11}}},
+          /*priority_signals_overrides=*/{{{"foo", 1}}},
+          /*seller_capabilities=*/absl::nullopt,
+          /*all_sellers_capabilities=*/
+          {}, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL(
               kBidderHost, "/interest_group/bidding_argument_validator.js"),
-          .daily_update_url = https_server_->GetURL(
-              kBidderHost, "/not_found_daily_update_url.json"),
-          .trusted_bidding_signals_url = https_server_->GetURL(
-              kBidderHost, "/interest_group/trusted_bidding_signals.json"),
-          .trusted_bidding_signals_keys = {{"key1"}},
-          .user_bidding_signals = R"({"some":"json","stuff":{"here":[1,2]}})",
-          .ads = {{{GURL("https://example.com/render"),
-                    R"({"ad":"metadata","here":[1,2,3]})"}}},
-          .ad_components = {{{GURL("https://example.com/render-component"),
-                              /*metadata=*/absl::nullopt}}},
-      }));
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/
+          https_server_->GetURL(kBidderHost,
+                                "/not_found_daily_update_url.json"),
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL(kBidderHost,
+                                "/interest_group/trusted_bidding_signals.json"),
+          /*trusted_bidding_signals_keys=*/{{"key1"}},
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/
+          {{{GURL("https://example.com/render"),
+             R"({"ad":"metadata","here":[1,2,3]})"}}},
+          /*ad_components=*/
+          {{{GURL("https://example.com/render-component"),
+             /*metadata=*/absl::nullopt}}},
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   // For `directFromSellerSignals` to work, we need to navigate to a page that
   // declares the subresource bundle resources we pass to those fields.
@@ -7702,25 +7732,37 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   ASSERT_EQ(
       kSuccess,
-      JoinInterestGroupAndVerify({
-          .expiry = base::Time(),
-          .owner = bidder_origin,
-          .name = "cars",
-          .enable_bidding_signals_prioritization = true,
-          .priority_vector = {{{"foo", 2}, {"bar", -11}}},
-          .bidding_url = https_server_->GetURL(
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/bidder_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/true,
+          /*priority_vector=*/{{{"foo", 2}, {"bar", -11}}},
+          /*priority_signals_overrides=*/{{{"foo", 1}}},
+          /*seller_capabilities=*/absl::nullopt,
+          /*all_sellers_capabilities=*/
+          {}, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL(
               kBidderHost, "/interest_group/bidding_argument_validator.js"),
-          .daily_update_url = https_server_->GetURL(
-              kBidderHost, "/not_found_daily_update_url.json"),
-          .trusted_bidding_signals_url = https_server_->GetURL(
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/
+          https_server_->GetURL(kBidderHost,
+                                "/not_found_daily_update_url.json"),
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL(
               kBidderHost, "/interest_group/trusted_bidding_signals_v1.json"),
-          .trusted_bidding_signals_keys = {{"key1"}},
-          .user_bidding_signals = R"({"some":"json","stuff":{"here":[1,2]}})",
-          .ads = {{{GURL("https://example.com/render"),
-                    R"({"ad":"metadata","here":[1,2,3]})"}}},
-          .ad_components = {{{GURL("https://example.com/render-component"),
-                              /*metadata=*/absl::nullopt}}},
-      }));
+          /*trusted_bidding_signals_keys=*/{{"key1"}},
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/
+          {{{GURL("https://example.com/render"),
+             R"({"ad":"metadata","here":[1,2,3]})"}}},
+          /*ad_components=*/
+          {{{GURL("https://example.com/render-component"),
+             /*metadata=*/absl::nullopt}}},
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   // For `directFromSellerSignals` to work, we need to navigate to a page that
   // declares the subresource bundle resources we pass to those fields.
@@ -7837,27 +7879,40 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
     ASSERT_EQ(
         kSuccess,
-        JoinInterestGroupAndVerify({
-            .expiry = base::Time(),
-            .owner = bidder_origin,
-            .name = "cars",
-            .priority_vector = {{{"FOO", 2}}},
-            .priority_signals_overrides = {{{"FOO", 1}}},
-            .bidding_url = https_server_->GetURL(
+        JoinInterestGroupAndVerify(blink::InterestGroup(
+            /*expiry=*/base::Time(),
+            /*owner=*/bidder_origin,
+            /*name=*/"cars",
+            /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+            /*priority_vector=*/{{{"FOO", 2}}},
+            /*priority_signals_overrides=*/{{{"FOO", 1}}},
+            /*seller_capabilities=*/absl::nullopt,
+            /*all_sellers_capabilities=*/
+            {}, /*execution_mode=*/
+            blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+            /*bidding_url=*/
+            https_server_->GetURL(
                 kBidderHost,
                 "/interest_group/"
                 "component_auction_bidding_argument_validator.js"),
-            .daily_update_url = https_server_->GetURL(
-                kBidderHost, "/not_found_daily_update_url.json"),
-            .trusted_bidding_signals_url = https_server_->GetURL(
+            /*bidding_wasm_helper_url=*/absl::nullopt,
+            /*daily_update_url=*/
+            https_server_->GetURL(kBidderHost,
+                                  "/not_found_daily_update_url.json"),
+            /*trusted_bidding_signals_url=*/
+            https_server_->GetURL(
                 kBidderHost, "/interest_group/trusted_bidding_signals.json"),
-            .trusted_bidding_signals_keys = {{"key1"}},
-            .user_bidding_signals = R"({"some":"json","stuff":{"here":[1,2]}})",
-            .ads = {{{GURL("https://example.com/render"),
-                      R"({"ad":"metadata","here":[1,2,3]})"}}},
-            .ad_components = {{{GURL("https://example.com/render-component"),
-                                /*metadata=*/absl::nullopt}}},
-        }));
+            /*trusted_bidding_signals_keys=*/{{"key1"}},
+            /*user_bidding_signals=*/
+            R"({"some":"json","stuff":{"here":[1,2]}})",
+            /*ads=*/
+            {{{GURL("https://example.com/render"),
+               R"({"ad":"metadata","here":[1,2,3]})"}}},
+            /*ad_components=*/
+            {{{GURL("https://example.com/render-component"),
+               /*metadata=*/absl::nullopt}}},
+            /*ad_sizes=*/{},
+            /*size_groups=*/{})));
 
     // For `directFromSellerSignals` to work, we need to navigate to a page that
     // declares the subresource bundle resources we pass to those fields.
@@ -8746,23 +8801,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
 
   ASSERT_EQ(
       kSuccess,
-      JoinInterestGroupAndVerify({
-          .expiry = base::Time(),
-          .owner = test_origin,
-          .name = "cars",
-          .priority_vector = {{{"one", 2}}},
-          .priority_signals_overrides = {{{"two", 1}}},
-          .bidding_url = https_server_->GetURL(
-              "a.test", "/interest_group/bidding_logic.js"),
-          .daily_update_url =
-              https_server_->GetURL("a.test", kDailyUpdateUrlPath),
-          .trusted_bidding_signals_url = https_server_->GetURL(
-              "a.test", "/interest_group/trusted_bidding_signals.json"),
-          .trusted_bidding_signals_keys = {{"key1"}},
-          .user_bidding_signals = R"({"some":"json","stuff":{"here":[1,2]}})",
-          .ads = {{{GURL("https://example.com/render"),
-                    R"({"ad":"metadata","here":[1,2,3]})"}}},
-      }));
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+          /*priority_vector=*/{{{"one", 1}}},
+          /*priority_signals_overrides=*/{{{"two", 2}}},
+          /*seller_capabilities=*/absl::nullopt,
+          /*all_sellers_capabilities=*/
+          {}, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/
+          https_server_->GetURL("a.test", kDailyUpdateUrlPath),
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL("a.test",
+                                "/interest_group/trusted_bidding_signals.json"),
+          /*trusted_bidding_signals_keys=*/{{"key1"}},
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/
+          {{{GURL("https://example.com/render"),
+             R"({"ad":"metadata","here":[1,2,3]})"}}},
+          /*ad_components=*/absl::nullopt,
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
@@ -8813,21 +8878,33 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   ASSERT_EQ(
       kSuccess,
-      JoinInterestGroupAndVerify({
-          .expiry = base::Time(),
-          .owner = test_origin,
-          .name = "cars",
-          .bidding_url = https_server_->GetURL(
-              "a.test", "/interest_group/bidding_logic.js"),
-          .daily_update_url =
-              https_server_->GetURL("a.test", kDailyUpdateUrlPath),
-          .trusted_bidding_signals_url = https_server_->GetURL(
-              "a.test", "/interest_group/trusted_bidding_signals.json"),
-          .trusted_bidding_signals_keys = {{"key1"}},
-          .user_bidding_signals = R"({"some":"json","stuff":{"here":[1,2]}})",
-          .ads = {{{GURL("https://example.com/render"),
-                    R"({"ad":"metadata","here":[1,2,3]})"}}},
-      }));
+      JoinInterestGroupAndVerify(blink::InterestGroup(
+          /*expiry=*/base::Time(),
+          /*owner=*/test_origin,
+          /*name=*/"cars",
+          /*priority=*/0.0, /*enable_bidding_signals_prioritization=*/false,
+          /*priority_vector=*/absl::nullopt,
+          /*priority_signals_overrides=*/absl::nullopt,
+          /*seller_capabilities=*/absl::nullopt,
+          /*all_sellers_capabilities=*/
+          {}, /*execution_mode=*/
+          blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+          /*bidding_url=*/
+          https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+          /*bidding_wasm_helper_url=*/absl::nullopt,
+          /*daily_update_url=*/
+          https_server_->GetURL("a.test", kDailyUpdateUrlPath),
+          /*trusted_bidding_signals_url=*/
+          https_server_->GetURL("a.test",
+                                "/interest_group/trusted_bidding_signals.json"),
+          /*trusted_bidding_signals_keys=*/{{"key1"}},
+          /*user_bidding_signals=*/R"({"some":"json","stuff":{"here":[1,2]}})",
+          /*ads=*/
+          {{{GURL("https://example.com/render"),
+             R"({"ad":"metadata","here":[1,2,3]})"}}},
+          /*ad_components=*/absl::nullopt,
+          /*ad_sizes=*/{},
+          /*size_groups=*/{})));
 
   EXPECT_EQ("done", UpdateInterestGroupsInJS());
 
