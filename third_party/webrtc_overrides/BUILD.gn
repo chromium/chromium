@@ -29,6 +29,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:ice_transport_interface",
   "//third_party/webrtc/api:libjingle_logging_api",
   "//third_party/webrtc/api:libjingle_peerconnection_api",
+  "//third_party/webrtc/api:location",
   "//third_party/webrtc/api:make_ref_counted",
   "//third_party/webrtc/api:media_stream_interface",
   "//third_party/webrtc/api:packet_socket_factory",
@@ -236,6 +237,7 @@ source_set("task_queue_factory") {
   configs += [ "//third_party/webrtc:library_impl_config" ]
   deps = [
     "//base",
+    "//third_party/webrtc/api:location",
     "//third_party/webrtc/api/metronome",
     "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/api/task_queue:pending_task_safety_flag",

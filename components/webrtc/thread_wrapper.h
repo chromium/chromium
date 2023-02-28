@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
+#include "third_party/webrtc_overrides/api/location.h"
 #include "third_party/webrtc_overrides/coalesced_tasks.h"
 
 namespace webrtc {
@@ -91,15 +92,6 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // CurrentThread::DestructionObserver implementation.
   void WillDestroyCurrentMessageLoop() override;
 
-  // TaskQueueBase overrides.
-  void PostTask(absl::AnyInvocable<void() &&> task) override;
-  void PostDelayedTask(absl::AnyInvocable<void() &&> task,
-                       webrtc::TimeDelta delay) override;
-  void PostDelayedHighPrecisionTask(absl::AnyInvocable<void() &&> task,
-                                    webrtc::TimeDelta delay) override;
-
-  void BlockingCall(rtc::FunctionView<void()> functor) override;
-
   // Following methods are not supported. They are overriden just to
   // ensure that they are not called (each of them contain NOTREACHED
   // in the body). Some of this methods can be implemented if it
@@ -119,6 +111,18 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
 
   explicit ThreadWrapper(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  // rtc::Thread overrides.
+  void BlockingCallImpl(rtc::FunctionView<void()> functor,
+                        const webrtc::Location& location) override;
+  // TaskQueueBase overrides.
+  void PostTaskImpl(absl::AnyInvocable<void() &&> task,
+                    const PostTaskTraits& traits,
+                    const Location& location) override;
+  void PostDelayedTaskImpl(absl::AnyInvocable<void() &&> task,
+                           TimeDelta delay,
+                           const PostDelayedTaskTraits& traits,
+                           const Location& location) override;
 
   void ProcessPendingSends();
 
