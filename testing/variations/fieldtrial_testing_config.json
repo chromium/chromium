@@ -6537,6 +6537,21 @@
             ]
         }
     ],
+    "IdentityStatusConsistencyAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IdentityStatusConsistency"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdentityStatusConsistencyIOS": [
         {
             "platforms": [
