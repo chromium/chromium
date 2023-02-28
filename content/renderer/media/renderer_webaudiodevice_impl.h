@@ -77,9 +77,6 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
     return current_sink_params_;
   }
 
-  // Create and initialize an instance of AudioRendererSink.
-  void CreateAudioRendererSink();
-
   // Creates a new sink and return its device status. If the status is OK,
   // replace the existing sink with the new one.
   media::OutputDeviceStatus CreateSinkAndGetDeviceStatus() override;
@@ -108,6 +105,10 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   void SendLogMessage(const std::string& message);
 
+  // Create and initialize an instance of AudioRendererSink. Should only be
+  // called when `sink_` is nullptr.
+  void CreateAudioRendererSink();
+
   // This is queried from the underlying sink device and then modified according
   // to the WebAudio renderer's needs.
   media::AudioParameters current_sink_params_;
@@ -127,7 +128,6 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   // blink::WebAudioDevice implementation are called on the same thread.
   base::ThreadChecker thread_checker_;
 
-  // When non-NULL, we are started.  When NULL, we are stopped.
   scoped_refptr<media::AudioRendererSink> sink_;
 
   // Used to suspend |sink_| usage when silence has been detected for too long.
@@ -145,6 +145,9 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   bool is_rendering_ = false;
 
   CreateSilentSinkCallback create_silent_sink_cb_;
+
+  // Used to indicate if device is stopped.
+  bool is_stopped_ = true;
 
   FRIEND_TEST_ALL_PREFIXES(RendererWebAudioDeviceImplTest,
                            CreateSinkAndGetDeviceStatus_HealthyDevice);
