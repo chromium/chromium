@@ -1,0 +1,12 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
+index 68b77e0e9b487..b3fb2577e169f 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/optional.hpp
+@@ -7,6 +7,7 @@
+ #include <new>
+ #include <stdexcept>
+ #include <type_traits>
++#include <utility>
+ 
+ #include <cstdint>
+ #include <cassert>
