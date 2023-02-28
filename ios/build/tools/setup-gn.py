@@ -362,6 +362,10 @@ def Main(args):
       '--config-path', default=os.path.expanduser('~/.setup-gn'),
       help='path to the user config file (default: %(default)s)')
   parser.add_argument(
+      '--project-config-path', default=os.path.join(default_root, os.pardir,
+          '.setup-gn'),
+      help='path to the project config file (default: %(default)s)')
+  parser.add_argument(
       '--system-config-path', default=os.path.splitext(__file__)[0] + '.config',
       help='path to the default config file (default: %(default)s)')
   parser.add_argument(
@@ -377,6 +381,7 @@ def Main(args):
   settings.read([
       args.system_config_path,
       args.config_path,
+      args.project_config_path,
   ])
 
   # Add private sections corresponding to --import argument.
