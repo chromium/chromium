@@ -216,7 +216,6 @@ class CC_EXPORT RenderSurfaceImpl {
 
   void ResetPropertyChangedFlags();
   bool SurfacePropertyChanged() const;
-  bool SurfacePropertyChangedOnlyFromDescendant() const;
   bool AncestorPropertyChanged() const;
   void NoteAncestorPropertyChanged();
   bool HasDamageFromeContributingContent() const;

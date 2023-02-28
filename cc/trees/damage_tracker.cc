@@ -203,11 +203,10 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
 
   contributing_surfaces_.clear();
 
-  if (render_surface->SurfacePropertyChangedOnlyFromDescendant()) {
+  if (render_surface->SurfacePropertyChanged() &&
+      !render_surface->AncestorPropertyChanged()) {
     damage_for_this_update_ = DamageAccumulator();
     damage_for_this_update_.Union(render_surface->content_rect());
-    // True if there is surface property change from descendant.
-    has_damage_from_contributing_content_ |= !damage_for_this_update_.IsEmpty();
   } else {
     // TODO(shawnsingh): can we clamp this damage to the surface's content rect?
     // (affects performance, but not correctness)
@@ -222,6 +221,12 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
       damage_for_this_update_ = DamageAccumulator();
       damage_for_this_update_.Union(damage_rect);
     }
+  }
+
+  // True if there is surface property change from descendant (clip_rect or
+  // content_rect).
+  if (render_surface->SurfacePropertyChanged()) {
+    has_damage_from_contributing_content_ |= !damage_for_this_update_.IsEmpty();
   }
 
   // Damage accumulates until we are notified that we actually did draw on that
@@ -452,7 +457,8 @@ void DamageTracker::AccumulateDamageFromRenderSurface(
     damage_for_this_update_.Union(surface_rect_in_target_space);
   }
 
-  if (surface_is_new || render_surface->SurfacePropertyChanged()) {
+  if (surface_is_new || render_surface->SurfacePropertyChanged() ||
+      render_surface->AncestorPropertyChanged()) {
     // The entire surface contributes damage.
     damage_for_this_update_.Union(surface_rect_in_target_space);
 
