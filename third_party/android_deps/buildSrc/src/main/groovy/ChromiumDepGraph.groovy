@@ -123,8 +123,7 @@ class ChromiumDepGraph {
             cpePrefix: 'cpe:/a:bouncycastle:legion-of-the-bouncy-castle:1.68',
             url: 'https://github.com/bcgit/bc-java',
             licensePath: 'licenses/Bouncy_Castle-2015.txt',
-            licenseName: 'MIT',
-            overrideLatest: true),
+            licenseName: 'MIT'),
         org_codehaus_mojo_animal_sniffer_annotations: new PropertyOverride(
             url: 'http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/',
             description: 'Animal Sniffer Annotations allow marking methods which Animal Sniffer should ignore ' +
@@ -161,13 +160,11 @@ class ChromiumDepGraph {
         net_bytebuddy_byte_buddy: new PropertyOverride(
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0',
-            overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         net_bytebuddy_byte_buddy_agent: new PropertyOverride(
             url: 'https://github.com/raphw/byte-buddy',
             licenseUrl: 'https://raw.githubusercontent.com/raphw/byte-buddy/master/LICENSE',
-            licenseName: 'Apache 2.0',
-            overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         net_sf_kxml_kxml2: new PropertyOverride(
             licenseUrl: 'https://raw.githubusercontent.com/stefanhaustein/kxml2/master/license.txt',
             licenseName: 'MIT'),
@@ -199,8 +196,7 @@ class ChromiumDepGraph {
         org_objenesis_objenesis: new PropertyOverride(
             url: 'http://objenesis.org/index.html',
             licenseUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-            licenseName: 'Apache 2.0',
-            overrideLatest: true),
+            licenseName: 'Apache 2.0'),
         org_ow2_asm_asm: new PropertyOverride(
             licenseUrl: 'https://gitlab.ow2.org/asm/asm/raw/master/LICENSE.txt',
             licenseName: 'BSD'),
