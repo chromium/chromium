@@ -176,7 +176,9 @@ group("gn_all") {
     deps += [
       "//components/viz:viz_unittests",
       "//content/shell:content_shell",
+      "//gpu:gpu_unittests",
       "//storage:storage_unittests",
+      "//ui/gl:gl_unittests",
     ]
   }
 
@@ -192,7 +194,6 @@ group("gn_all") {
       "//content/test:content_unittests",
       "//device:device_unittests",
       "//gpu:gpu_benchmark",
-      "//gpu:gpu_unittests",
       "//ipc:ipc_tests",
       "//media:media_unittests",
       "//media/capture:capture_unittests",
@@ -210,7 +211,6 @@ group("gn_all") {
       "//tools/imagediff",
       "//ui/display:display_unittests",
       "//ui/events:events_unittests",
-      "//ui/gl:gl_unittests",
       "//ui/latency:latency_unittests",
       "//ui/native_theme:native_theme_unittests",
       "//ui/touch_selection:ui_touch_selection_unittests",
