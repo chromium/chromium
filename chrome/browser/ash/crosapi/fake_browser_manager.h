@@ -45,6 +45,7 @@ class FakeBrowserManager : public BrowserManager {
   void NewFullscreenWindow(const GURL& url,
                            NewFullscreenWindowCallback callback) override;
   void GetFeedbackData(GetFeedbackDataCallback callback) override;
+  void InitializeAndStartIfNeeded() override;
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;

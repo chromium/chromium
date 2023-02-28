@@ -11,9 +11,12 @@
 #include <vector>
 
 #include "ash/test/ash_test_helper.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -25,8 +28,16 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/test_kiosk_extension_builder.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/fake_browser_manager.h"
+#include "chrome/browser/ash/crosapi/idle_service_ash.h"
+#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/extensions/test_external_cache.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
@@ -35,12 +46,19 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
+#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/app_window/test_app_window_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -51,6 +69,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -72,6 +92,8 @@ constexpr char kSecondaryAppId[] = "aaaabbbbaaaabbbbaaaabbbbaaaabbbb";
 constexpr char kExtraSecondaryAppId[] = "aaaaccccaaaaccccaaaaccccaaaacccc";
 
 constexpr char kTestUserAccount[] = "user@test";
+
+constexpr char kCwsUrl[] = "http://cws/";
 
 enum class LaunchState {
   kNotStarted,
@@ -357,95 +379,52 @@ extensions::AppWindow* CreateAppWindow(Profile* profile,
   return app_window;
 }
 
-}  // namespace
-
-// Tests without creating `StartupAppLauncher` object.
-class StartupAppLauncherNoCreateTest
-    : public extensions::ExtensionServiceTestBase,
-      public KioskAppManager::Overrides {
+// This class overrides some of the behaviour of `KioskAppManager`, which is the
+// `KioskAppManagerBase` implementation for ChromeApp kiosk.
+// Notably it injects its own `ExternalCache` implementation and overrides the
+// construction on an `AppSession` object.
+class ScopedKioskAppManagerOverrides : public KioskAppManager::Overrides {
  public:
-  StartupAppLauncherNoCreateTest()
-      : extensions::ExtensionServiceTestBase(
-            std::make_unique<content::BrowserTaskEnvironment>(
-                content::BrowserTaskEnvironment::REAL_IO_THREAD)) {}
-
-  StartupAppLauncherNoCreateTest(const StartupAppLauncherNoCreateTest&) =
-      delete;
-  StartupAppLauncherNoCreateTest& operator=(
-      const StartupAppLauncherNoCreateTest&) = delete;
-  ~StartupAppLauncherNoCreateTest() override = default;
-
-  // testing::Test:
-  void SetUp() override {
-    ash_test_helper_.SetUp();
-
-    UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
-    command_line_.GetProcessCommandLine()->AppendSwitch(
-        switches::kForceAppMode);
-    command_line_.GetProcessCommandLine()->AppendSwitch(switches::kAppId);
-
+  ScopedKioskAppManagerOverrides() {
     KioskAppManager::InitializeForTesting(this);
-
-    extensions::ExtensionServiceTestBase::SetUp();
-
-    // This should be called after KioskAppManager is created in
-    // ExtensionServiceTestBase::SetUp().
-    InitializePrimaryAppState();
-
-    InitializeEmptyExtensionService();
-    external_apps_loader_handler_ = std::make_unique<TestKioskLoaderVisitor>(
-        browser_context(), registry(), service());
-    CreateAndInitializeKioskAppsProviders(external_apps_loader_handler_.get());
-
-    extensions::TestEventRouter* event_router =
-        extensions::CreateAndUseTestEventRouter(browser_context());
-    app_launch_tracker_ =
-        std::make_unique<AppLaunchTracker>(kTestPrimaryAppId, event_router);
+    CHECK(temp_dir_.CreateUniqueTempDir());
   }
 
-  void TearDown() override {
-    external_cache_ = nullptr;
+  chromeos::TestExternalCache* external_cache() { return external_cache_; }
+  bool AppSessionInitialized() { return kiosk_app_session_initialized_; }
 
-    primary_app_provider_->ServiceShutdown();
-    secondary_apps_provider_->ServiceShutdown();
-    external_apps_loader_handler_.reset();
+  void InitializePrimaryAppState() {
+    // Inject test kiosk app data to prevent KioskAppManager from attempting to
+    // load it.
+    // TODO(tbarzic): Introducing a test KioskAppData class that overrides app
+    //     data load logic, and injecting a KioskAppData object factory to
+    //     KioskAppManager would be a cleaner solution here.
+    KioskAppManager::Get()->AddAppForTest(
+        kTestPrimaryAppId, AccountId::FromUserEmail(kTestUserAccount),
+        GURL(kCwsUrl),
+        /*required_platform_version=*/"");
 
-    app_launch_tracker_.reset();
+    accounts_settings_helper_ = std::make_unique<ScopedCrosSettingsTestHelper>(
+        /*create_service=*/false);
+    accounts_settings_helper_->ReplaceDeviceSettingsProviderWithStub();
 
-    accounts_settings_helper_.reset();
+    base::Value::Dict account;
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kTestUserAccount);
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                policy::DeviceLocalAccount::TYPE_KIOSK_APP);
+    account.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
+                kTestPrimaryAppId);
+    base::Value::List accounts;
+    accounts.Append(std::move(account));
 
-    extensions::ExtensionServiceTestBase::TearDown();
+    accounts_settings_helper_->Set(kAccountsPrefDeviceLocalAccounts,
+                                   base::Value(std::move(accounts)));
 
-    ash_test_helper_.TearDown();
-  }
-
-  // KioskAppManager::Overrides:
-  std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
-      chromeos::ExternalCacheDelegate* delegate,
-      bool always_check_updates) override {
-    auto cache = std::make_unique<chromeos::TestExternalCache>(
-        delegate, always_check_updates);
-    external_cache_ = cache.get();
-    return cache;
-  }
-
-  std::unique_ptr<AppSessionAsh> CreateAppSession() override {
-    EXPECT_FALSE(kiosk_app_session_initialized_);
-    kiosk_app_session_initialized_ = true;
-    return nullptr;
-  }
-
- protected:
-  // Note: These tests should not actually create files, so the actual returned
-  // path is not too important. Still, putting it under the test's temp dir, in
-  // case something unexpectedly tries to do file I/O with the file paths
-  // returned here.
-  std::string GetExtensionPath(const std::string& app_id) {
-    return temp_dir()
-        .GetPath()
-        .AppendASCII("test_crx_file")
-        .AppendASCII(app_id)
-        .value();
+    // Set auto-launch kiosk
+    accounts_settings_helper_->SetString(
+        kAccountsPrefDeviceLocalAccountAutoLoginId, kTestUserAccount);
+    accounts_settings_helper_->SetInteger(
+        kAccountsPrefDeviceLocalAccountAutoLoginDelay, 0);
   }
 
   [[nodiscard]] AssertionResult DownloadPrimaryApp(
@@ -490,6 +469,118 @@ class StartupAppLauncherNoCreateTest
     return AssertionSuccess();
   }
 
+  // KioskAppManager::Overrides:
+  std::unique_ptr<chromeos::ExternalCache> CreateExternalCache(
+      chromeos::ExternalCacheDelegate* delegate,
+      bool always_check_updates) override {
+    auto cache = std::make_unique<chromeos::TestExternalCache>(
+        delegate, always_check_updates);
+    external_cache_ = cache.get();
+    return cache;
+  }
+
+  std::unique_ptr<AppSessionAsh> CreateAppSession() override {
+    EXPECT_FALSE(kiosk_app_session_initialized_);
+    kiosk_app_session_initialized_ = true;
+    return nullptr;
+  }
+
+ private:
+  // Note: These tests should not actually create files, so the actual returned
+  // path is not too important. Still, putting it under the test's temp dir, in
+  // case something unexpectedly tries to do file I/O with the file paths
+  // returned here.
+  std::string GetExtensionPath(const std::string& app_id) {
+    return temp_dir_.GetPath()
+        .AppendASCII("test_crx_file")
+        .AppendASCII(app_id)
+        .value();
+  }
+
+  base::ScopedTempDir temp_dir_;
+  std::unique_ptr<ScopedCrosSettingsTestHelper> accounts_settings_helper_;
+
+  chromeos::TestExternalCache* external_cache_;
+  bool kiosk_app_session_initialized_ = false;
+};
+
+}  // namespace
+
+using crosapi::mojom::AppInstallParamsPtr;
+using crosapi::mojom::ChromeKioskInstallResult;
+using crosapi::mojom::ChromeKioskLaunchController;
+using crosapi::mojom::ChromeKioskLaunchResult;
+
+// Tests without creating `StartupAppLauncher` object.
+class StartupAppLauncherNoCreateTest
+    : public extensions::ExtensionServiceTestBase {
+ public:
+  StartupAppLauncherNoCreateTest()
+      : extensions::ExtensionServiceTestBase(
+            std::make_unique<content::BrowserTaskEnvironment>(
+                content::BrowserTaskEnvironment::REAL_IO_THREAD)) {}
+
+  StartupAppLauncherNoCreateTest(const StartupAppLauncherNoCreateTest&) =
+      delete;
+  StartupAppLauncherNoCreateTest& operator=(
+      const StartupAppLauncherNoCreateTest&) = delete;
+  ~StartupAppLauncherNoCreateTest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    ash_test_helper_.SetUp();
+
+    UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+    command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kForceAppMode);
+    command_line_.GetProcessCommandLine()->AppendSwitch(switches::kAppId);
+
+    extensions::ExtensionServiceTestBase::SetUp();
+
+    kiosk_app_manager_overrides_.InitializePrimaryAppState();
+
+    InitializeEmptyExtensionService();
+    external_apps_loader_handler_ = std::make_unique<TestKioskLoaderVisitor>(
+        browser_context(), registry(), service());
+    CreateAndInitializeKioskAppsProviders(external_apps_loader_handler_.get());
+
+    extensions::TestEventRouter* event_router =
+        extensions::CreateAndUseTestEventRouter(browser_context());
+    app_launch_tracker_ =
+        std::make_unique<AppLaunchTracker>(kTestPrimaryAppId, event_router);
+  }
+
+  void TearDown() override {
+    primary_app_provider_->ServiceShutdown();
+    secondary_apps_provider_->ServiceShutdown();
+    external_apps_loader_handler_.reset();
+
+    app_launch_tracker_.reset();
+
+    extensions::ExtensionServiceTestBase::TearDown();
+
+    ash_test_helper_.TearDown();
+  }
+
+ protected:
+  chromeos::TestExternalCache* external_cache() {
+    return kiosk_app_manager_overrides_.external_cache();
+  }
+
+  ScopedKioskAppManagerOverrides& kiosk_app_manager_overrides() {
+    return kiosk_app_manager_overrides_;
+  }
+
+  [[nodiscard]] AssertionResult DownloadPrimaryApp(
+      const TestKioskExtensionBuilder& app_builder) {
+    return kiosk_app_manager_overrides_.DownloadPrimaryApp(app_builder);
+  }
+
+  [[nodiscard]] AssertionResult DownloadPrimaryApp(const std::string& app_id,
+                                                   const std::string& version) {
+    return kiosk_app_manager_overrides_.DownloadPrimaryApp(app_id, version);
+  }
+
   [[nodiscard]] AssertionResult FinishPrimaryAppInstall(
       const TestKioskExtensionBuilder& app_builder) {
     const std::string& id = app_builder.extension_id();
@@ -511,7 +602,8 @@ class StartupAppLauncherNoCreateTest
 
   [[nodiscard]] AssertionResult DownloadAndInstallPrimaryApp(
       const TestKioskExtensionBuilder& app_builder) {
-    AssertionResult download_result = DownloadPrimaryApp(app_builder);
+    AssertionResult download_result =
+        kiosk_app_manager_overrides_.DownloadPrimaryApp(app_builder);
     if (!download_result) {
       return download_result;
     }
@@ -544,38 +636,6 @@ class StartupAppLauncherNoCreateTest
     return AssertionSuccess();
   }
 
- private:
-  void InitializePrimaryAppState() {
-    // Inject test kiosk app data to prevent KioskAppManager from attempting to
-    // load it.
-    // TODO(tbarzic): Introducing a test KioskAppData class that overrides app
-    //     data load logic, and injecting a KioskAppData object factory to
-    //     KioskAppManager would be a cleaner solution here.
-    KioskAppManager::Get()->AddAppForTest(
-        kTestPrimaryAppId, AccountId::FromUserEmail(kTestUserAccount),
-        GURL("http://cws/"), "");
-
-    accounts_settings_helper_ = std::make_unique<ScopedCrosSettingsTestHelper>(
-        false /*create_service*/);
-    accounts_settings_helper_->ReplaceDeviceSettingsProviderWithStub();
-
-    base::Value::Dict account;
-    account.Set(kAccountsPrefDeviceLocalAccountsKeyId, kTestUserAccount);
-    account.Set(kAccountsPrefDeviceLocalAccountsKeyType,
-                policy::DeviceLocalAccount::TYPE_KIOSK_APP);
-    account.Set(kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                kTestPrimaryAppId);
-    base::Value::List accounts;
-    accounts.Append(std::move(account));
-
-    accounts_settings_helper_->Set(kAccountsPrefDeviceLocalAccounts,
-                                   base::Value(std::move(accounts)));
-    accounts_settings_helper_->SetString(
-        kAccountsPrefDeviceLocalAccountAutoLoginId, kTestUserAccount);
-    accounts_settings_helper_->SetInteger(
-        kAccountsPrefDeviceLocalAccountAutoLoginDelay, 0);
-  }
-
   void CreateAndInitializeKioskAppsProviders(TestKioskLoaderVisitor* visitor) {
     primary_app_provider_ = std::make_unique<extensions::ExternalProviderImpl>(
         visitor,
@@ -604,20 +664,20 @@ class StartupAppLauncherNoCreateTest
   }
 
  protected:
+  bool AppSessionInitialized() {
+    return kiosk_app_manager_overrides_.AppSessionInitialized();
+  }
+
   TestAppLaunchDelegate startup_launch_delegate_;
 
   std::unique_ptr<AppLaunchTracker> app_launch_tracker_;
   std::unique_ptr<TestKioskLoaderVisitor> external_apps_loader_handler_;
 
-  chromeos::TestExternalCache* external_cache_ = nullptr;
-
-  bool kiosk_app_session_initialized_ = false;
-
  private:
   AshTestHelper ash_test_helper_;
   base::test::ScopedCommandLine command_line_;
 
-  std::unique_ptr<ScopedCrosSettingsTestHelper> accounts_settings_helper_;
+  ScopedKioskAppManagerOverrides kiosk_app_manager_overrides_;
 
   std::unique_ptr<extensions::ExternalProviderImpl> primary_app_provider_;
   std::unique_ptr<extensions::ExternalProviderImpl> secondary_apps_provider_;
@@ -628,18 +688,18 @@ class StartupAppLauncherNoCreateTest
 // Tests that extension download backoff is reduced during Chrome app Kiosk
 // launch.
 TEST_F(StartupAppLauncherNoCreateTest, ExtensionDownloadBackoffReduced) {
-  ASSERT_TRUE(external_cache_);
-  EXPECT_FALSE(external_cache_->backoff_policy().has_value());
+  ASSERT_TRUE(external_cache());
+  EXPECT_FALSE(external_cache()->backoff_policy().has_value());
 
   auto startup_app_launcher = std::make_unique<StartupAppLauncher>(
       profile(), kTestPrimaryAppId, /*should_skip_install=*/false,
       &startup_launch_delegate_);
 
-  ASSERT_TRUE(external_cache_->backoff_policy().has_value());
-  EXPECT_EQ(external_cache_->backoff_policy()->maximum_backoff_ms, 3000);
+  ASSERT_TRUE(external_cache()->backoff_policy().has_value());
+  EXPECT_EQ(external_cache()->backoff_policy()->maximum_backoff_ms, 3000);
 
   startup_app_launcher.reset();
-  EXPECT_FALSE(external_cache_->backoff_policy().has_value());
+  EXPECT_FALSE(external_cache()->backoff_policy().has_value());
 }
 
 // Tests with `StartupAppLauncher` object created.
@@ -673,9 +733,9 @@ class StartupAppLauncherTest : public StartupAppLauncherNoCreateTest {
 TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
   InitializeLauncherWithNetworkReady();
 
-  ASSERT_TRUE(external_cache_);
+  ASSERT_TRUE(external_cache());
   EXPECT_EQ(std::set<std::string>({kTestPrimaryAppId}),
-            external_cache_->pending_downloads());
+            external_cache()->pending_downloads());
 
   EXPECT_TRUE(external_apps_loader_handler_->pending_crx_files().empty());
   EXPECT_TRUE(external_apps_loader_handler_->pending_update_urls().empty());
@@ -695,7 +755,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
@@ -705,7 +765,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppLaunchFlow) {
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
 
-  EXPECT_TRUE(kiosk_app_session_initialized_);
+  EXPECT_TRUE(AppSessionInitialized());
 }
 
 TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
@@ -725,7 +785,7 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
 
   // Primary app cache checks finished after the startup app launcher reports
   // it's ready should be ignored - i.e. startup app launcher should not attempt
@@ -746,7 +806,7 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
 
-  EXPECT_TRUE(kiosk_app_session_initialized_);
+  EXPECT_TRUE(AppSessionInitialized());
 }
 
 TEST_F(StartupAppLauncherTest,
@@ -767,7 +827,7 @@ TEST_F(StartupAppLauncherTest,
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
@@ -779,7 +839,7 @@ TEST_F(StartupAppLauncherTest,
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
 
-  EXPECT_TRUE(kiosk_app_session_initialized_);
+  EXPECT_TRUE(AppSessionInitialized());
 
   // Primary app cache checks finished after the app launch
   // it's ready should be ignored - i.e. startup app launcher should not attempt
@@ -796,10 +856,10 @@ TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
   base::HistogramTester histogram;
   InitializeLauncherWithNetworkReady();
 
-  ASSERT_TRUE(external_cache_);
+  ASSERT_TRUE(external_cache());
   EXPECT_EQ(std::set<std::string>({kTestPrimaryAppId}),
-            external_cache_->pending_downloads());
-  ASSERT_TRUE(external_cache_->SimulateExtensionDownloadFailed(
+            external_cache()->pending_downloads());
+  ASSERT_TRUE(external_cache()->SimulateExtensionDownloadFailed(
       kTestPrimaryAppId,
       extensions::ExtensionDownloaderDelegate::Error::CRX_FETCH_FAILED));
 
@@ -812,7 +872,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppDownloadFailure) {
   EXPECT_EQ(KioskAppLaunchError::Error::kUnableToDownload,
             startup_launch_delegate_.launch_error());
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
 
   histogram.ExpectUniqueSample(
       kKioskPrimaryAppInstallErrorHistogram,
@@ -835,7 +895,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppCrxInstallFailure) {
   EXPECT_EQ(KioskAppLaunchError::Error::kUnableToInstall,
             startup_launch_delegate_.launch_error());
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
 }
 
 TEST_F(StartupAppLauncherTest, PrimaryAppNotKioskEnabled) {
@@ -857,7 +917,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppNotKioskEnabled) {
   EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,
             startup_launch_delegate_.launch_error());
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
 }
 
 TEST_F(StartupAppLauncherTest, PrimaryAppIsExtension) {
@@ -878,7 +938,7 @@ TEST_F(StartupAppLauncherTest, PrimaryAppIsExtension) {
   EXPECT_EQ(KioskAppLaunchError::Error::kNotKioskEnabled,
             startup_launch_delegate_.launch_error());
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
 }
 
 TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
@@ -909,7 +969,7 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
 
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
@@ -925,7 +985,7 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
             LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
-  EXPECT_TRUE(kiosk_app_session_initialized_);
+  EXPECT_TRUE(AppSessionInitialized());
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
@@ -957,7 +1017,7 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
@@ -965,7 +1025,7 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
             LaunchState::kLaunchSucceeded);
   EXPECT_EQ(1, app_launch_tracker_->kiosk_launch_count());
 
-  EXPECT_TRUE(kiosk_app_session_initialized_);
+  EXPECT_TRUE(AppSessionInitialized());
 
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
@@ -996,7 +1056,7 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
 
   // Primary app cache checks finished after the startup app launcher reports
   // it's ready should be ignored - i.e. startup app launcher should not attempt
@@ -1018,7 +1078,7 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kTestPrimaryAppId));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
 
-  EXPECT_TRUE(kiosk_app_session_initialized_);
+  EXPECT_TRUE(AppSessionInitialized());
 }
 
 TEST_F(StartupAppLauncherTest, OfflineInstallPreCachedExtension) {
@@ -1028,7 +1088,8 @@ TEST_F(StartupAppLauncherTest, OfflineInstallPreCachedExtension) {
   scoped_refptr<const extensions::Extension> primary_app =
       primary_app_builder.Build();
 
-  ASSERT_TRUE(PrecachePrimaryApp(kTestPrimaryAppId, "1.0"));
+  ASSERT_TRUE(kiosk_app_manager_overrides().PrecachePrimaryApp(
+      kTestPrimaryAppId, "1.0"));
 
   startup_app_launcher_->Initialize();
 
@@ -1056,7 +1117,8 @@ TEST_F(StartupAppLauncherTest,
   scoped_refptr<const extensions::Extension> primary_app =
       primary_app_builder.Build();
 
-  ASSERT_TRUE(PrecachePrimaryApp(kTestPrimaryAppId, "1.0"));
+  ASSERT_TRUE(kiosk_app_manager_overrides().PrecachePrimaryApp(
+      kTestPrimaryAppId, "1.0"));
 
   startup_app_launcher_->Initialize();
 
@@ -1104,7 +1166,8 @@ TEST_F(StartupAppLauncherTest,
   TestKioskExtensionBuilder secondary_extension_builder(
       Manifest::TYPE_PLATFORM_APP, kSecondaryAppId);
 
-  ASSERT_TRUE(PrecachePrimaryApp(kTestPrimaryAppId, "1.0"));
+  ASSERT_TRUE(kiosk_app_manager_overrides().PrecachePrimaryApp(
+      kTestPrimaryAppId, "1.0"));
 
   startup_app_launcher_->Initialize();
 
@@ -1200,7 +1263,7 @@ TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
   EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
             LaunchState::kReadyToLaunch);
 
-  EXPECT_FALSE(kiosk_app_session_initialized_);
+  EXPECT_FALSE(AppSessionInitialized());
   startup_app_launcher_->LaunchApp();
   CreateAppWindow(profile(), primary_app_builder);
 
@@ -1212,7 +1275,7 @@ TEST_F(StartupAppLauncherTest, IgnoreSecondaryAppsSecondaryApps) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(kSecondaryAppId));
   EXPECT_FALSE(registry()->GetInstalledExtension(kExtraSecondaryAppId));
 
-  EXPECT_TRUE(kiosk_app_session_initialized_);
+  EXPECT_TRUE(AppSessionInitialized());
 }
 
 TEST_F(StartupAppLauncherTest, SecondaryAppCrxInstallFailureTriggersRetry) {
@@ -1522,6 +1585,230 @@ TEST_F(StartupAppLauncherTest, RestartLauncherShouldNotCrash) {
   startup_app_launcher_->RestartLauncher();
 
   ASSERT_NO_FATAL_FAILURE(startup_app_launcher_->ContinueWithNetworkReady());
+}
+
+class FakeChromeKioskLaunchController : public ChromeKioskLaunchController {
+ public:
+  void SetInstallResult(ChromeKioskInstallResult result) {
+    install_result_ = result;
+  }
+  void SetLaunchResult(ChromeKioskLaunchResult result) {
+    launch_result_ = result;
+  }
+
+  mojo::PendingRemote<ChromeKioskLaunchController> BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  // `ChromeKioskLaunchController`
+  void InstallKioskApp(AppInstallParamsPtr params,
+                       InstallKioskAppCallback callback) override {
+    std::move(callback).Run(install_result_);
+  }
+
+  void LaunchKioskApp(const std::string& app_id,
+                      bool is_network_ready,
+                      LaunchKioskAppCallback callback) override {
+    std::move(callback).Run(launch_result_);
+  }
+
+ private:
+  mojo::Receiver<ChromeKioskLaunchController> receiver_{this};
+  ChromeKioskInstallResult install_result_ = ChromeKioskInstallResult::kUnknown;
+  ChromeKioskLaunchResult launch_result_ = ChromeKioskLaunchResult::kUnknown;
+};
+
+class StartupAppLauncherUsingLacrosTest : public testing::Test {
+ public:
+  StartupAppLauncherUsingLacrosTest()
+      : fake_user_manager_(new FakeChromeUserManager()),
+        scoped_user_manager_(base::WrapUnique(fake_user_manager_)) {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kChromeKioskEnableLacros);
+  }
+
+  void SetUp() override {
+    ASSERT_TRUE(testing_profile_manager_.SetUp());
+    LoginState::Initialize();
+    crosapi::IdleServiceAsh::DisableForTesting();
+    profile_ = testing_profile_manager_.CreateTestingProfile("Default");
+    crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+    const AccountId account_id(AccountId::FromUserEmail(kTestUserAccount));
+    fake_user_manager().AddKioskAppUser(account_id);
+    fake_user_manager().LoginUser(account_id);
+    kiosk_app_manager_ = std::make_unique<KioskAppManager>();
+    kiosk_app_manager_overrides_.InitializePrimaryAppState();
+    RegisterFakeCrosapi();
+    ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabledInChromeKioskSession());
+  }
+
+  void TearDown() override {
+    startup_app_launcher_.reset();
+    kiosk_app_manager_.reset();
+    crosapi_manager_.reset();
+    LoginState::Shutdown();
+  }
+
+ protected:
+  KioskAppLauncher& launcher() { return *startup_app_launcher_; }
+
+  crosapi::FakeBrowserManager& fake_browser_manager() {
+    return browser_manager_;
+  }
+
+  chromeos::TestExternalCache* external_cache() {
+    return kiosk_app_manager_overrides_.external_cache();
+  }
+
+  ScopedKioskAppManagerOverrides& kiosk_app_manager_overrides() {
+    return kiosk_app_manager_overrides_;
+  }
+
+  FakeChromeKioskLaunchController& chrome_kiosk_launch_controller() {
+    return launch_controller_;
+  }
+
+  Profile* profile() { return profile_; }
+
+  void CreateStartupAppLauncher(bool should_skip_install = false) {
+    startup_app_launcher_ = std::make_unique<StartupAppLauncher>(
+        profile(), kTestPrimaryAppId, should_skip_install,
+        &startup_launch_delegate_);
+    startup_app_launcher_->AddObserver(&startup_launch_delegate_);
+  }
+
+  void InitializeLauncherWithNetworkReady() {
+    startup_launch_delegate_.set_network_ready(true);
+    startup_app_launcher_->Initialize();
+    EXPECT_TRUE(startup_launch_delegate_.ExpectNoLaunchStateChanges());
+  }
+
+  void AdvanceUntilAppInstalling() {
+    CreateStartupAppLauncher();
+    InitializeLauncherWithNetworkReady();
+
+    ASSERT_TRUE(external_cache());
+    EXPECT_EQ(std::set<std::string>({kTestPrimaryAppId}),
+              external_cache()->pending_downloads());
+
+    TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+                                                  kTestPrimaryAppId);
+    ASSERT_TRUE(
+        kiosk_app_manager_overrides().DownloadPrimaryApp(primary_app_builder));
+
+    EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+              LaunchState::kInstallingApp);
+  }
+
+  void AdvanceUntilAppInstalled() {
+    chrome_kiosk_launch_controller().SetInstallResult(
+        ChromeKioskInstallResult::kSuccess);
+    AdvanceUntilAppInstalling();
+
+    EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+              LaunchState::kReadyToLaunch);
+  }
+
+  TestAppLaunchDelegate startup_launch_delegate_;
+
+ private:
+  FakeChromeUserManager& fake_user_manager() { return *fake_user_manager_; }
+
+  void RegisterFakeCrosapi() {
+    crosapi::CrosapiManager::Get()
+        ->crosapi_ash()
+        ->chrome_app_kiosk_service()
+        ->BindLaunchController(launch_controller_.BindNewPipeAndPassRemote());
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
+  Profile* profile_;
+  FakeChromeUserManager* fake_user_manager_;
+  user_manager::ScopedUserManager scoped_user_manager_;
+  FakeChromeKioskLaunchController launch_controller_;
+  crosapi::FakeBrowserManager browser_manager_;
+
+  ScopedKioskAppManagerOverrides kiosk_app_manager_overrides_;
+  std::unique_ptr<KioskAppManager> kiosk_app_manager_;
+  std::unique_ptr<KioskAppLauncher> startup_app_launcher_;
+
+  base::AutoReset<bool> set_lacros_enabled_ =
+      crosapi::browser_util::SetLacrosEnabledForTest(true);
+  base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
+      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
+};
+
+TEST_F(StartupAppLauncherUsingLacrosTest, InstallFlowShouldLaunchLacros) {
+  CreateStartupAppLauncher();
+  InitializeLauncherWithNetworkReady();
+
+  ASSERT_TRUE(external_cache());
+  EXPECT_EQ(std::set<std::string>({kTestPrimaryAppId}),
+            external_cache()->pending_downloads());
+
+  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+                                                kTestPrimaryAppId);
+  ASSERT_TRUE(
+      kiosk_app_manager_overrides().DownloadPrimaryApp(primary_app_builder));
+
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kInstallingApp);
+
+  // Validate that lacros is indeed running
+  EXPECT_TRUE(fake_browser_manager().IsRunning());
+}
+
+TEST_F(StartupAppLauncherUsingLacrosTest,
+       ShouldRespectInstallSuccessFromCrosapi) {
+  chrome_kiosk_launch_controller().SetInstallResult(
+      ChromeKioskInstallResult::kSuccess);
+  AdvanceUntilAppInstalling();
+
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kReadyToLaunch);
+}
+
+TEST_F(StartupAppLauncherUsingLacrosTest,
+       ShouldRespectInstallFailureFromCrosapi) {
+  chrome_kiosk_launch_controller().SetInstallResult(
+      ChromeKioskInstallResult::kPrimaryAppInstallFailed);
+  AdvanceUntilAppInstalling();
+
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchFailed);
+  EXPECT_EQ(startup_launch_delegate_.launch_error(),
+            KioskAppLaunchError::Error::kUnableToInstall);
+}
+
+TEST_F(StartupAppLauncherUsingLacrosTest,
+       ShouldRespectLaunchSuccessFromCrosapi) {
+  AdvanceUntilAppInstalled();
+
+  chrome_kiosk_launch_controller().SetLaunchResult(
+      ChromeKioskLaunchResult::kSuccess);
+  launcher().LaunchApp();
+
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchSucceeded);
+}
+
+TEST_F(StartupAppLauncherUsingLacrosTest,
+       ShouldRespectLaunchFailureFromCrosapi) {
+  AdvanceUntilAppInstalled();
+
+  chrome_kiosk_launch_controller().SetLaunchResult(
+      ChromeKioskLaunchResult::kUnableToLaunch);
+  launcher().LaunchApp();
+
+  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
+            LaunchState::kLaunchFailed);
+  EXPECT_EQ(startup_launch_delegate_.launch_error(),
+            KioskAppLaunchError::Error::kUnableToLaunch);
 }
 
 }  // namespace ash

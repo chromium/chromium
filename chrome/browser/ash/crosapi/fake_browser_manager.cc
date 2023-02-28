@@ -77,6 +77,10 @@ void FakeBrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
   }
 }
 
+void FakeBrowserManager::InitializeAndStartIfNeeded() {
+  StartRunning();
+}
+
 void FakeBrowserManager::OnSessionStateChanged() {}
 
 }  // namespace crosapi

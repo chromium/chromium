@@ -238,7 +238,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // NOTE: If InitializeAndStartIfNeeded finds Lacros disabled, it unloads
   // Lacros via BrowserLoader::Unload, which also deletes the user data
   // directory.
-  void InitializeAndStartIfNeeded();
+  virtual void InitializeAndStartIfNeeded();
 
   // Returns true if keep-alive is enabled.
   bool IsKeepAliveEnabled() const;
