@@ -32,7 +32,7 @@ chrome.webRequest.onBeforeRequest.addListener(function(details) {
     return {};
 
   chrome.test.assertEq('/native_bindings/simple.html', url.pathname);
-  chrome.test.assertTrue(url.port != '');
+  chrome.test.assertNe('', url.port);
   chrome.test.assertEq('example.com:' + url.port, url.host);
   var newUrl = url.origin + '/native_bindings/simple2.html';
   return {redirectUrl: newUrl};

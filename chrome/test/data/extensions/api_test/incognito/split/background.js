@@ -148,7 +148,7 @@ chrome.test.getConfig(function(config) {
     // Tests that we can set cookies in both processes.
     function setDocumentCookie() {
       document.cookie = "k=v";
-      chrome.test.assertTrue(document.cookie.indexOf("k=v") != -1);
+      chrome.test.assertNe(-1, document.cookie.indexOf("k=v"));
       chrome.test.succeed();
     }
   ]);

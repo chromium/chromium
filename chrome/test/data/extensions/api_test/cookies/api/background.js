@@ -45,7 +45,7 @@ var TEST_BASIC_EXPIRED_COOKIE = {
 };
 
 function expectValidCookie(cookie) {
-  chrome.test.assertTrue(cookie != null, 'Expected cookie not set.');
+  chrome.test.assertNe(null, cookie, 'Expected cookie not set.');
 }
 
 function expectNullCookie(cookie) {

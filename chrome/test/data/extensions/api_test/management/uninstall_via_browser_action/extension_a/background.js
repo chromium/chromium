@@ -11,8 +11,8 @@ chrome.browserAction.onClicked.addListener(() => {
     var extension = items.find(item => {
       return item.name == 'ExtensionB';
     });
-    chrome.test.assertTrue(extension != undefined);
-    chrome.test.assertTrue(extension.id != undefined);
+    chrome.test.assertNe(undefined, extension);
+    chrome.test.assertNe(undefined, extension.id);
     chrome.management.uninstall(extension.id, chrome.test.callbackPass(() => {
       chrome.test.notifyPass();
     }));

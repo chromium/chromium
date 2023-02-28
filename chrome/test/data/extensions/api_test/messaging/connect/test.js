@@ -384,7 +384,7 @@ chrome.test.getConfig(function(config) {
       } catch(e) {
         error = e;
       }
-      chrome.test.assertTrue(error != undefined);
+      chrome.test.assertNe(undefined, error);
 
       error = undefined;
       try {
@@ -392,7 +392,7 @@ chrome.test.getConfig(function(config) {
       } catch(e) {
         error = e;
       }
-      chrome.test.assertTrue(error != undefined);
+      chrome.test.assertNe(undefined, error);
 
       chrome.test.succeed();
     },

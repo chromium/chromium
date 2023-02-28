@@ -609,7 +609,7 @@ var defaultTests = [
           break;
         }
       }
-      chrome.test.assertTrue(displayId != "-1");
+      chrome.test.assertNe("-1", displayId);
       // SHELF_AUTO_HIDE_ALWAYS_HIDDEN not supported by shelf_prefs.
       // TODO(ricardoq): Use enums in IDL instead of hardcoded strings.
       var behaviors = ["always", "never"];
@@ -641,7 +641,7 @@ var defaultTests = [
           break;
         }
       }
-      chrome.test.assertTrue(displayId != "-1");
+      chrome.test.assertNe("-1", displayId);
       // SHELF_ALIGNMENT_BOTTOM_LOCKED not supported by shelf_prefs.
       var alignments = [chrome.autotestPrivate.ShelfAlignmentType.LEFT,
         chrome.autotestPrivate.ShelfAlignmentType.BOTTOM,
@@ -674,7 +674,7 @@ var defaultTests = [
           break;
         }
       }
-      chrome.test.assertTrue(displayId != "-1");
+      chrome.test.assertNe("-1", displayId);
       chrome.system.display.setDisplayProperties(displayId, {rotation: 90},
         function() {
           chrome.autotestPrivate.waitForDisplayRotation(displayId, 'Rotate90',
@@ -707,7 +707,7 @@ var defaultTests = [
           break;
         }
       }
-      chrome.test.assertTrue(displayId != "-1");
+      chrome.test.assertNe("-1", displayId);
       chrome.system.display.setDisplayProperties(
           displayId, {rotation: 180},
           function() {
@@ -816,7 +816,7 @@ var defaultTests = [
               });
             });
       }
-      chrome.test.assertTrue(-1 != browserFrameIndex);
+      chrome.test.assertNe(browserFrameIndex, -1);
     });
   },
 
@@ -1068,7 +1068,7 @@ var defaultTests = [
   function setAndGetClipboardTextData() {
     const textData = 'foo bar';
     chrome.autotestPrivate.getClipboardTextData(function(beforeData) {
-      chrome.test.assertTrue(textData != beforeData);
+      chrome.test.assertNe(beforeData, textData);
       chrome.autotestPrivate.setClipboardTextData(textData, function() {
         chrome.autotestPrivate.getClipboardTextData(function(afterData) {
           chrome.test.assertEq(afterData, textData);

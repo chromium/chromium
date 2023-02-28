@@ -164,7 +164,7 @@ function runReadGalleriesTest(expectedGalleryCount, expectSucceed,
 }
 
 function checkMetadata(metadata) {
-  chrome.test.assertTrue(metadata != null);
+  chrome.test.assertNe(null, metadata);
   chrome.test.assertTrue(metadata.name.length > 0);
   chrome.test.assertTrue(metadata.galleryId.length > 0);
   chrome.test.assertTrue("isAvailable" in metadata);

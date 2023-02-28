@@ -9,7 +9,7 @@ function testGetService() {
     chrome.test.sendMessage('fail');
     chrome.test.fail(error);
   }
-  chrome.test.assertTrue(service != null);
+  chrome.test.assertNe(null, service);
 
   chrome.test.assertEq(serviceId, service.instanceId);
   chrome.test.assertEq('00001234-0000-1000-8000-00805f9b34fb', service.uuid);

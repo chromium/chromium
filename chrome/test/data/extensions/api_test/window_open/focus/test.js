@@ -41,7 +41,7 @@ function checkUnfocused(win) {
   createdWinId = win.id;
   setTimeout(chrome.test.callbackPass(function () {
       listenDoneCallback();
-      chrome.test.assertTrue(focusedWinId != createdWinId);
+      chrome.test.assertNe(createdWinId, focusedWinId);
       }), 500);
 }
 

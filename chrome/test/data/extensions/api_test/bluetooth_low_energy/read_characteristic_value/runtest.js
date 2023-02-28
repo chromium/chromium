@@ -9,7 +9,7 @@ function testReadCharacteristicValue() {
     chrome.test.sendMessage('fail');
     chrome.test.fail(error);
   }
-  chrome.test.assertTrue(characteristic != null, '\'characteristic\' is null');
+  chrome.test.assertNe(null, characteristic, '\'characteristic\' is null');
   chrome.test.assertEq(charId, characteristic.instanceId);
 
   chrome.test.succeed();

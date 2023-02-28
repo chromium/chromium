@@ -53,7 +53,7 @@ chrome.test.runTests([
   async function testIsPdfOcrAlwaysActive() {
     const isPdfOcrAlwaysActive =
         await chrome.pdfViewerPrivate.isPdfOcrAlwaysActive();
-    chrome.test.assertTrue(isPdfOcrAlwaysActive !== null);
+    chrome.test.assertNe(null, isPdfOcrAlwaysActive);
     chrome.test.succeed();
   },
   /**

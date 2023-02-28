@@ -4,7 +4,7 @@
 
 chrome.app.runtime.onLaunched.addListener(function (launchData) {
   // Complete correctness of launchData is tested in another test.
-  chrome.test.assertTrue(typeof launchData !== 'undefined');
+  chrome.test.assertNe('undefined', typeof launchData);
 
   chrome.app.window.create(
     "main.html",

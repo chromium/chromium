@@ -9,7 +9,7 @@ function testAddressChanged() {
     chrome.test.sendMessage('fail');
     chrome.test.fail(error);
   }
-  chrome.test.assertTrue(service != null);
+  chrome.test.assertNe(null, service);
 
   chrome.test.assertEq(serviceId, service.instanceId);
 

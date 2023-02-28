@@ -7,7 +7,7 @@ chrome.app.runtime.onLaunched.addListener(function (launchData) {
   // can be read in the launch data.
   chrome.test.runTests([
     function testUrlHandler() {
-      chrome.test.assertTrue(typeof launchData != 'undefined', "No launchData");
+      chrome.test.assertNe('undefined', typeof launchData, "No launchData");
       chrome.test.assertFalse(launchData.isKioskSession,
           "launchData.isKioskSession incorrect");
       chrome.test.assertEq(launchData.id, "my_doc_url",
