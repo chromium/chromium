@@ -512,6 +512,10 @@ void RecordAppWindowLaunchMetric(Profile* profile,
     DCHECK_LT(DisplayMode::kUndefined, display);
     DCHECK_LE(display, DisplayMode::kMaxValue);
     base::UmaHistogramEnumeration("Launch.WebAppDisplayMode", display);
+    if (provider->registrar_unsafe().IsShortcutApp(app_id)) {
+      base::UmaHistogramEnumeration(
+          "Launch.Window.CreateShortcutApp.WebAppDisplayMode", display);
+    }
   }
 
   // Reparenting launches don't respect the launch_handler setting.
@@ -520,6 +524,42 @@ void RecordAppWindowLaunchMetric(Profile* profile,
           blink::features::kWebAppEnableLaunchHandler)) {
     base::UmaHistogramEnumeration(
         "Launch.WebAppLaunchHandlerClientMode",
+        web_app->launch_handler().value_or(LaunchHandler()).client_mode);
+  }
+}
+
+void RecordAppTabLaunchMetric(Profile* profile,
+                              const std::string& app_id,
+                              apps::LaunchSource launch_source) {
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  if (!provider) {
+    return;
+  }
+
+  const WebApp* web_app = provider->registrar_unsafe().GetAppById(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  DisplayMode display =
+      provider->registrar_unsafe().GetEffectiveDisplayModeFromManifest(app_id);
+  if (display != DisplayMode::kUndefined) {
+    DCHECK_LT(DisplayMode::kUndefined, display);
+    DCHECK_LE(display, DisplayMode::kMaxValue);
+    base::UmaHistogramEnumeration("Launch.BrowserTab.WebAppDisplayMode",
+                                  display);
+    if (provider->registrar_unsafe().IsShortcutApp(app_id)) {
+      base::UmaHistogramEnumeration(
+          "Launch.BrowserTab.CreateShortcutApp.WebAppDisplayMode", display);
+    }
+  }
+
+  // Reparenting launches don't respect the launch_handler setting.
+  if (launch_source != apps::LaunchSource::kFromReparenting &&
+      base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableLaunchHandler)) {
+    base::UmaHistogramEnumeration(
+        "Launch.BrowserTab.WebAppLaunchHandlerClientMode",
         web_app->launch_handler().value_or(LaunchHandler()).client_mode);
   }
 }
@@ -540,8 +580,12 @@ void RecordLaunchMetrics(const AppId& app_id,
       << "System web apps shouldn't be included in web app launch metrics";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  if (container == apps::LaunchContainer::kLaunchContainerWindow)
+  if (container == apps::LaunchContainer::kLaunchContainerWindow) {
     RecordAppWindowLaunchMetric(profile, app_id, launch_source);
+  }
+  if (container == apps::LaunchContainer::kLaunchContainerTab) {
+    RecordAppTabLaunchMetric(profile, app_id, launch_source);
+  }
 
   base::UmaHistogramEnumeration("WebApp.LaunchSource", launch_source);
   base::UmaHistogramEnumeration("WebApp.LaunchContainer", container);
