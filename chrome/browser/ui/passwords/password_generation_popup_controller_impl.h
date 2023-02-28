@@ -172,8 +172,8 @@ class PasswordGenerationPopupControllerImpl
   GenerationUIState state() const override;
   bool password_selected() const override;
   const std::u16string& password() const override;
-  std::u16string SuggestedText() override;
-  const std::u16string& HelpText() override;
+  std::u16string SuggestedText() const override;
+  const std::u16string& HelpText() const override;
   bool IsUserTypedPasswordWeak() const override;
   bool IsStateMinimized() const override;
 

@@ -47,8 +47,8 @@ class PasswordGenerationPopupController
   virtual bool IsStateMinimized() const = 0;
 
   // Translated strings
-  virtual std::u16string SuggestedText() = 0;
-  virtual const std::u16string& HelpText() = 0;
+  virtual std::u16string SuggestedText() const = 0;
+  virtual const std::u16string& HelpText() const = 0;
 
  protected:
   ~PasswordGenerationPopupController() override = default;

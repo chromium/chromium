@@ -455,14 +455,14 @@ const std::u16string& PasswordGenerationPopupControllerImpl::password() const {
   return current_generated_password_;
 }
 
-std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() {
+std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() const {
   if (state_ == kOfferGeneration)
     return l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_SUGGESTION_GPM);
 
   return l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_EDITING_SUGGESTION);
 }
 
-const std::u16string& PasswordGenerationPopupControllerImpl::HelpText() {
+const std::u16string& PasswordGenerationPopupControllerImpl::HelpText() const {
   return help_text_;
 }
 

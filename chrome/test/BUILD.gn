@@ -3492,6 +3492,7 @@ if (!is_android) {
         "../browser/ui/views/passwords/password_dialog_view_browsertest.cc",
         "../browser/ui/views/passwords/password_generation_popup_view_tester_views.cc",
         "../browser/ui/views/passwords/password_generation_popup_view_tester_views.h",
+        "../browser/ui/views/passwords/password_generation_popup_view_views_browsertest.cc",
         "../browser/ui/views/payments/contact_info_editor_view_controller_browsertest.cc",
         "../browser/ui/views/payments/credit_card_editor_view_controller_browsertest.cc",
         "../browser/ui/views/payments/empty_update_browsertest.cc",
