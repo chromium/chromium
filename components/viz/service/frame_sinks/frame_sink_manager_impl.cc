@@ -286,7 +286,7 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
   }
 
   auto iter = frame_sink_source_map_.find(parent_frame_sink_id);
-  DCHECK(iter != frame_sink_source_map_.end());
+  CHECK(iter != frame_sink_source_map_.end());
 
   // Remove |child_frame_sink_id| from parents list of children.
   auto& mapping = iter->second;
