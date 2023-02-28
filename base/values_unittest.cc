@@ -1219,7 +1219,7 @@ TEST(ValuesTest, SetDoubleKey) {
   dict.Set("minus_one_key", -1.0);
   dict.Set("pi_key", 3.1415);
 
-  // NOTE: Use FindKey() instead of FindDoubleKey() because the latter will
+  // NOTE: Use Find() instead of FindDoubleKey() because the latter will
   // auto-convert integers to doubles as well.
   const Value* value;
 

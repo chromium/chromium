@@ -670,14 +670,6 @@ class BASE_EXPORT GSL_OWNER Value {
 
   // ===== DEPRECATED methods that require `type() == Type::DICT` =====
 
-  // `FindKey` looks up `key` in the underlying dictionary. If found, it returns
-  // a pointer to the element. Otherwise it returns nullptr.
-  //
-  // DEPRECATED: prefer `Value::Dict::Find()`.
-  // TODO(https://crbug.com/1406815): Remove this API.
-  Value* FindKey(StringPiece key);
-  const Value* FindKey(StringPiece key) const;
-
   // `FindKeyOfType` is similar to `FindKey`, but it also requires the found
   // value to have type `type`. If no type is found, or the found value is of a
   // different type nullptr is returned.
