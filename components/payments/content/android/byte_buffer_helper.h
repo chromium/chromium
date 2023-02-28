@@ -21,8 +21,7 @@ namespace android {
 //
 //  mojom::PaymentDetailsPtr details;
 //  bool success = mojom::PaymentDetails::Deserialize(
-//      std::move(JavaByteBufferToNativeByteVector(env, byte_buffer)),
-//      &details);
+//      JavaByteBufferToNativeByteVector(env, byte_buffer), &details);
 std::vector<uint8_t> JavaByteBufferToNativeByteVector(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& buffer);
