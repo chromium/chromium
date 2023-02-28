@@ -7019,10 +7019,12 @@ scoped_refptr<const ComputedStyle> Element::StyleForPseudoElement(
     first_line_inherited_request.pseudo_id =
         IsPseudoElement() ? To<PseudoElement>(this)->GetPseudoId()
                           : kPseudoIdNone;
+    StyleRecalcContext local_recalc_context(style_recalc_context);
+    local_recalc_context.old_style = PostStyleUpdateScope::GetOldStyle(*this);
     Element* target = IsPseudoElement() ? parentElement() : this;
     scoped_refptr<const ComputedStyle> result =
         GetDocument().GetStyleResolver().ResolveStyle(
-            target, style_recalc_context, first_line_inherited_request);
+            target, local_recalc_context, first_line_inherited_request);
     if (result) {
       ComputedStyleBuilder builder(*result);
       builder.SetStyleType(kPseudoIdFirstLineInherited);

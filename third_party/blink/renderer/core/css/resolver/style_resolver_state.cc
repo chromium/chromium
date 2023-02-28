@@ -238,7 +238,10 @@ CSSParserMode StyleResolverState::GetParserMode() const {
 }
 
 Element* StyleResolverState::GetAnimatingElement() const {
-  return styled_element_;
+  // When querying pseudo element styles for an element that does not generate
+  // such a pseudo element, the styled_element_ is the originating element. Make
+  // sure we only do animations for true pseudo elements.
+  return IsForPseudoElement() ? GetPseudoElement() : styled_element_;
 }
 
 PseudoElement* StyleResolverState::GetPseudoElement() const {
