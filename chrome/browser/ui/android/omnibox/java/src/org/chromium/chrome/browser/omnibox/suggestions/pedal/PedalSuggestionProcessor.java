@@ -25,9 +25,9 @@ import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -101,8 +101,13 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
      */
     protected void setPedalList(
             PropertyModel model, @NonNull List<OmniboxPedal> omniboxPedalList, int position) {
-        final int pedalsCount = omniboxPedalList.size();
-        final List<ListItem> modelList = new ArrayList<>(pedalsCount);
+        var modelList = new ModelList();
+
+        // The header item increases lead-in padding before the first actual chip is shown.
+        // In default state, the chips will align with the suggestion text, but when scrolled
+        // the chips may show up under the decoration.
+        modelList.add(
+                new ListItem(PedalSuggestionViewProperties.ViewType.HEADER, new PropertyModel()));
 
         for (OmniboxPedal chip : omniboxPedalList) {
             final var chipIcon = mOmniboxPedalDelegate.getIcon(chip);

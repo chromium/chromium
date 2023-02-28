@@ -7,14 +7,13 @@ package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
-import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 /**
  * The properties associated with rendering the pedal suggestion view.
@@ -25,15 +24,17 @@ public class PedalSuggestionViewProperties {
      * Views below can be used by any instance of the carousel, guaranteeing that each instance
      * will look like every other.
      */
-    @IntDef({ViewType.PEDAL_VIEW})
+    @IntDef({ViewType.HEADER, ViewType.PEDAL_VIEW})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewType {
+        /** Header element, used to provide leading space. */
+        public int HEADER = 0;
         /** Carousel item is a PedalView instance. */
-        public int PEDAL_VIEW = 0;
+        public int PEDAL_VIEW = 1;
     }
 
     /** Omnibox Pedal list descriptions. */
-    public static final WritableObjectPropertyKey<List<ListItem>> PEDAL_LIST =
+    public static final WritableObjectPropertyKey<ModelList> PEDAL_LIST =
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {PEDAL_LIST};

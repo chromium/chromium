@@ -5,10 +5,15 @@
 package org.chromium.chrome.browser.omnibox.suggestions.pedal;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.KeyEvent;
-import android.widget.FrameLayout;
+import android.view.View;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.Px;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
@@ -19,9 +24,8 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
  * Chips should be initially horizontally aligned with the Content view and stretch to the end of
  * the encompassing BaseSuggestionView
  */
-public class PedalView extends FrameLayout {
-    private static final String TAG = "PedalView";
-    private final @NonNull ChipView mPedal;
+public class PedalView extends RecyclerView {
+    private @Nullable PedalViewAdapter mAdapter;
 
     /**
      * Constructs a new pedal view.
@@ -31,43 +35,53 @@ public class PedalView extends FrameLayout {
     public PedalView(Context context) {
         super(context);
 
-        setFocusable(true);
-        mPedal = new ChipView(context, R.style.OmniboxPedalChipThemeOverlay);
+        setItemAnimator(null);
+        setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        setMinimumHeight(getResources().getDimensionPixelSize(
+                R.dimen.omnibox_action_chips_container_height));
 
-        var layoutParams =
-                new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(0, 0, 0,
+        final @Px int actionChipSpacing =
+                getResources().getDimensionPixelSize(R.dimen.omnibox_action_chip_spacing);
+        addItemDecoration(new ItemDecoration() {
+            @Override
+            public void getItemOffsets(
+                    Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+                outRect.right = actionChipSpacing / 2;
+                outRect.left = actionChipSpacing / 2;
+            }
+        });
+
+        setPaddingRelative(0, 0, 0,
                 getResources().getDimensionPixelSize(
                         R.dimen.omnibox_suggestion_semicompact_padding));
-
-        addView(mPedal, layoutParams);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        assert mAdapter != null;
+
         if (event.getKeyCode() == KeyEvent.KEYCODE_TAB) {
-            mPedal.setSelected(!mPedal.isSelected());
+            if (event.isShiftPressed()) {
+                mAdapter.selectPreviousItem();
+            } else {
+                mAdapter.selectNextItem();
+            }
             return true;
-        } else if (KeyNavigationUtil.isEnter(event) && mPedal.isSelected()) {
-            return mPedal.performClick();
+        } else if (KeyNavigationUtil.isEnter(event)) {
+            var chip = mAdapter.getSelectedView();
+            if (chip != null) return chip.performClick();
         }
 
         return super.onKeyDown(keyCode, event);
     }
 
+    public void setAdapter(@Nullable PedalViewAdapter adapter) {
+        super.setAdapter(adapter);
+        mAdapter = adapter;
+    }
+
     @Override
     public void setSelected(boolean isSelected) {
-        super.setSelected(isSelected);
-        mPedal.setSelected(false);
-    }
-
-    /** @return The {@link ChipView} in this view. */
-    ChipView getChipView() {
-        return mPedal;
-    }
-
-    @Override
-    public boolean isFocused() {
-        return super.isFocused() || (isSelected() && !isInTouchMode());
+        mAdapter.resetSelection();
     }
 }

@@ -72,7 +72,8 @@ found in the LICENSE file.
     <dimen name="omnibox_carousel_suggestion_padding">12dp</dimen>
     <dimen name="omnibox_carousel_suggestion_small_bottom_padding">4dp</dimen>
     <dimen name="omnibox_carousel_icon_rounding_radius">4dp</dimen>
-    <dimen name="omnibox_pedal_suggestion_pedal_height">48dp</dimen>
+    <dimen name="omnibox_action_chips_container_height">48dp</dimen>
+    <dimen name="omnibox_action_chip_spacing">8dp</dimen>
     <dimen name="omnibox_pedal_suggestion_icon_size">18dp</dimen>
     <dimen name="omnibox_pedal_suggestion_text_vertical_padding">6dp</dimen>
 

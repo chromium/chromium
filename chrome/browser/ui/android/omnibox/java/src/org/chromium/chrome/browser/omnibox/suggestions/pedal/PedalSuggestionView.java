@@ -10,26 +10,20 @@ import android.view.View;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SimpleVerticalLayoutView;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Base layout for pedals suggestion types. This is a {@link BaseSuggestionView} with a pedal under
- * it.
+ * Base layout for pedals suggestion types. This is a {@link BaseSuggestionView} with a list of
+ * Action chips.
  *
  * @param <T> The type of View being wrapped by BaseSuggestionView.
  */
 public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutView {
     private final @NonNull BaseSuggestionView<T> mBaseSuggestionView;
-    private final @NonNull List<PedalView> mPedalList;
+    private final @NonNull PedalView mPedalView;
 
     /**
      * Constructs a new suggestion view and inflates supplied layout as the contents view.
@@ -39,28 +33,16 @@ public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutVie
      */
     public PedalSuggestionView(Context context, @LayoutRes int layoutId) {
         super(context);
+        setFocusable(true);
         mBaseSuggestionView = new BaseSuggestionView<T>(context, layoutId);
+        mPedalView = new PedalView(context);
         addView(mBaseSuggestionView);
-
-        mPedalList = new ArrayList<>();
-        PedalView pedal = new PedalView(getContext());
-        final @Px int pedalSuggestionSizePx = context.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_pedal_suggestion_pedal_height);
-        final @Px int pedalStartPaddingPx =
-                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
-        pedal.setPaddingRelative(pedalStartPaddingPx, 0, 0, 0);
-        pedal.getChipView().setMinimumHeight(pedalSuggestionSizePx);
-        addView(pedal);
-        mPedalList.add(pedal);
+        addView(mPedalView);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // TODO(crbug/1411871): implement proper keyboard navigation for actions.
-        if (mPedalList.size() > 0) {
-            return mPedalList.get(0).onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
-        }
-        return false;
+        return mPedalView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event);
     }
 
     /** @return base suggestion view. */
@@ -69,14 +51,14 @@ public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutVie
         return mBaseSuggestionView;
     }
 
-    /** @return The {@link ChipView} in this view. */
+    /** @return The {@link PedalView} in this view. */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public ChipView getPedalChipView() {
-        return mPedalList.get(0).getChipView();
+    public PedalView getPedalView() {
+        return mPedalView;
     }
 
-    /** @return The {@link PedalView} in this view. */
-    PedalView getPedalView() {
-        return mPedalList.get(0);
+    @Override
+    public boolean isFocused() {
+        return super.isFocused() || (isSelected() && !isInTouchMode());
     }
 }

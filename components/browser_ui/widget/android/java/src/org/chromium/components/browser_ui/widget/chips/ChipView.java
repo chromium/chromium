@@ -386,21 +386,6 @@ public class ChipView extends LinearLayout {
     }
 
     /**
-     * Specify primary text color.
-     *
-     * This method applies a different text color, and if the caller previously installed a Tinted
-     * icon - updates the icon tint.
-     *
-     * TODO(crbug/1418077): This method is not intended as part of public API. It's exposed only
-     * temporarily until Incognito theming issue is resolved. Reduce visibility or remove the method
-     * once it is no longer needed.
-     */
-    public void setTextColor(@ColorInt int color) {
-        mPrimaryText.setTextColor(color);
-        setTint(mTintWithTextColor);
-    }
-
-    /**
      * @return The corner radius in pixels of this ChipView.
      */
     public @Px int getCornerRadius() {
