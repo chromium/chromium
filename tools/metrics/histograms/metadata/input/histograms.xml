@@ -1052,17 +1052,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.ImeMenu.ActivationChanged"
-    enum="BooleanActivation" expires_after="M95">
-  <owner>dvallet@chromium.org</owner>
-  <owner>azurewei@chromium.org</owner>
-  <owner>shuchen@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Whether the opt-in IME menu in the shelf has been activated.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.ImeMenu.EmojiHandwritingVoiceButton"
     enum="ImeMenuButtonType" expires_after="2022-05-01">
   <owner>dvallet@chromium.org</owner>
