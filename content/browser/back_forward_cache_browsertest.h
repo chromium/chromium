@@ -158,8 +158,6 @@ class BackForwardCacheBrowserTest
   void InstallUnloadHandlerOnSubFrame();
   EvalJsResult GetUnloadRunCount();
 
-  bool IsUnloadAllowedToEnterBackForwardCache();
-
   // Adds a blocklisted feature to the document to prevent caching. Currently
   // this means adding a plugin. We expect that plugins will never become
   // cacheable, so this should be stable (at least until plugins cease to
@@ -209,6 +207,15 @@ class HighCacheSizeBackForwardCacheBrowserTest
   // The number 5 was picked since Android ASAN trybot failed to keep more than
   // 6 pages in memory.
   const size_t kBackForwardCacheSize = 5;
+};
+
+// Test that enables the BackForwardCacheAllowUnload flag.
+class BackForwardCacheUnloadBrowserTest : public BackForwardCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // An implementation of PageLifecycleStateManager::TestDelegate for testing.
