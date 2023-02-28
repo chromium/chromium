@@ -55,12 +55,11 @@ example_value:
 features:
   dynamic_refresh: false
   per_profile: true
-future_on:
-- chrome.*
-- chrome_os
-- android
-- webview_android
-- fuchsia
+supported_on:
+- chrome.*:113-
+- chrome_os:113-
+- android:113-
+- fuchsia:113-
 owners:
 - kaklilu@chromium.com
 - chrome-first-party-sets@chromium.org
