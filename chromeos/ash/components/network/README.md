@@ -152,4 +152,50 @@ Example of retrieving and iterating over `NetworkState` objects:
 
 TODO: Discuss network\_configuration\_handler.h and friends.
 
+### `Device State`s
+
+[`DeviceState`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/device_state.h;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094)
+is a Chrome-layer cached representation of a Shill "Device". Similar to
+`NetworkState`, Chrome caches Shill "Device" properties in a `DeviceState` to
+decrease the amount of D-Bus calls needed. Shill "Devices" refer to connection
+mediums (i.e. Wi-Fi, Cellular, Ethernet, etc.) and each `DeviceState` object
+represent one of those mediums, providing APIs for [accessing properties](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/device_state.h;l=38-99;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094)
+of the medium.
+
+`DeviceState` objects are managed by [`NetworkStateHandler`](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_handler.h;drc=14ccdeb9606a78fadd516d7c1d9dbc7ca28ad019),
+which keeps its cached list up-to-date. Since `DeviceState` objects mirror the
+known properties of Shill "Devices" and are not sources of truth themselves,
+they can only be modified using the limited APIs they provide and both their
+lifecycle and property updates are entirely managed by `NetworkStateHandler`.
+There are a [few exceptions](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/device_state.h;l=42;drc=ad947e92bd398452f42173e7a39ed7ab2e4ad094)
+where `DeviceState` objects are modified, but this should be avoided when
+possible. Beyond this, `DeviceState` objects are frequently updated and they
+should only be considered valid in the scope that they were originally accessed
+in.
+
+`DeviceState` objects can be retrieved in several ways:
+
+* Querying `NetworkStateHandler` for the state using [a specific Shill device
+  path](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_handler.h;l=171-172;drc=14ccdeb9606a78fadd516d7c1d9dbc7ca28ad019).
+* Querying `NetworkStateHandler` for the state based on [its type](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_handler.h;l=174-175;drc=14ccdeb9606a78fadd516d7c1d9dbc7ca28ad019)
+* Querying `NetworkStateHandler` for a list of [all `DeviceState` objects](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_handler.h;l=340-344;drc=14ccdeb9606a78fadd516d7c1d9dbc7ca28ad019)
+* Querying `NetworkStateHandler` for a list of [all `DeviceState` objects with a specific type](https://source.chromium.org/chromium/chromium/src/+/main:chromeos/ash/components/network/network_state_handler.h;l=346-348;drc=14ccdeb9606a78fadd516d7c1d9dbc7ca28ad019)
+
+
+Example of retrieving a single `DeviceState` object:
+```
+  const DeviceState* device =
+    NetworkHandler::Get()->network_state_handler()->GetDeviceState(
+      device_path);
+```
+
+Example of retrieving a list of `DeviceState` objects:
+```
+  NetworkStateHandler::DeviceStateList devices;
+  NetworkHandler::Get()->network_state_handler()->GetDeviceList(&devices);
+  for (const DeviceState* device : devices) {
+    ...
+  }
+```
+
 TODO: Finish README
