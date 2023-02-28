@@ -3544,7 +3544,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NetworkService.MemoryCache.BlockedByRequestHeaderReason"
     enum="NetworkServiceMemoryCacheBlockedByRequestHeaderReason"
-    expires_after="2023-04-09">
+    expires_after="2023-08-28">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
