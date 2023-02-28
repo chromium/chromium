@@ -776,6 +776,17 @@ BASE_FEATURE(kEolWarningNotifications,
              "EolWarningNotifications",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Device End Of Lifetime incentive notifications.
+BASE_FEATURE(kEolIncentive, "EolIncentive", base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<EolIncentiveType>::Option eol_incentive_options[] = {
+    {EolIncentiveType::kNone, "none"},
+    {EolIncentiveType::kPerk, "perk"},
+    {EolIncentiveType::kCoupon, "coupon"}};
+const base::FeatureParam<EolIncentiveType> kEolIncentiveTypeParam{
+    &kEolIncentive, "incentive_type", EolIncentiveType::kNone,
+    &eol_incentive_options};
+
 // Enable or disable support for touchpad with haptic feedback.
 BASE_FEATURE(kExoHapticFeedbackSupport,
              "ExoHapticFeedbackSupport",
@@ -2521,6 +2532,10 @@ bool IsEcheSWADebugModeEnabled() {
 
 bool IsEcheSWAMeasureLatencyEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWAMeasureLatency);
+}
+
+bool IsEOLIncentiveEnabled() {
+  return base::FeatureList::IsEnabled(kEolIncentive);
 }
 
 bool IsExperimentalRgbKeyboardPatternsEnabled() {
