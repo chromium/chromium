@@ -69,15 +69,11 @@ class NavigateEvent final : public Event,
 
   void Finish(bool did_fulfill);
 
-  const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
-    return navigation_action_promises_list_;
-  }
+  ScriptPromise GetReactionPromiseAll(ScriptState*);
   bool HasNavigationActions() const {
     return intercept_state_ != InterceptState::kNone;
   }
   void FinalizeNavigationActionPromisesList();
-
-  bool ShouldSendAxEvents() const;
 
   // FocusedElementChangeObserver implementation:
   void DidChangeFocus() final;

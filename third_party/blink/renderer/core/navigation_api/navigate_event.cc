@@ -166,6 +166,24 @@ void NavigateEvent::DoCommit() {
   }
 }
 
+ScriptPromise NavigateEvent::GetReactionPromiseAll(ScriptState* script_state) {
+  DCHECK(navigation_action_handlers_list_.empty());
+  if (!navigation_action_promises_list_.empty()) {
+    return ScriptPromise::All(script_state, navigation_action_promises_list_);
+  }
+  // There is a subtle timing difference between the fast-path for zero
+  // promises and the path for 1+ promises, in both spec and implementation.
+  // In most uses of ScriptPromise::All / the Web IDL spec's "wait for all",
+  // this does not matter. However for us there are so many events and promise
+  // handlers firing around the same time (navigatesuccess, committed promise,
+  // finished promise, ...) that the difference is pretty easily observable by
+  // web developers and web platform tests. So, let's make sure we always go
+  // down the 1+ promises path.
+  return ScriptPromise::All(
+      script_state,
+      HeapVector<ScriptPromise>({ScriptPromise::CastUndefined(script_state)}));
+}
+
 void NavigateEvent::FinalizeNavigationActionPromisesList() {
   for (auto& function : navigation_action_handlers_list_) {
     ScriptPromise result;
@@ -206,10 +224,6 @@ void NavigateEvent::PotentiallyResetTheFocus() {
 void NavigateEvent::DidChangeFocus() {
   DCHECK(HasNavigationActions());
   did_change_focus_during_intercept_ = true;
-}
-
-bool NavigateEvent::ShouldSendAxEvents() const {
-  return HasNavigationActions();
 }
 
 void NavigateEvent::scroll(ExceptionState& exception_state) {

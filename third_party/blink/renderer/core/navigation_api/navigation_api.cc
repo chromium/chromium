@@ -51,21 +51,20 @@ namespace blink {
 class NavigateReaction final : public ScriptFunction::Callable {
  public:
   enum class ResolveType { kFulfill, kReject };
-  enum class ReactType { kImmediate, kIntercept };
   static void React(ScriptState* script_state,
-                    ScriptPromise promise,
                     NavigationApiNavigation* navigation,
-                    NavigateEvent* navigate_event,
-                    ReactType react_type) {
-    promise.Then(MakeGarbageCollected<ScriptFunction>(
-                     script_state, MakeGarbageCollected<NavigateReaction>(
-                                       navigation, navigate_event,
-                                       ResolveType::kFulfill, react_type)),
-                 MakeGarbageCollected<ScriptFunction>(
-                     script_state, MakeGarbageCollected<NavigateReaction>(
-                                       navigation, navigate_event,
-                                       ResolveType::kReject, react_type)));
-    if (navigate_event->ShouldSendAxEvents()) {
+                    NavigateEvent* navigate_event) {
+    navigate_event->GetReactionPromiseAll(script_state)
+        .Then(MakeGarbageCollected<ScriptFunction>(
+                  script_state,
+                  MakeGarbageCollected<NavigateReaction>(
+                      navigation, navigate_event, ResolveType::kFulfill)),
+              MakeGarbageCollected<ScriptFunction>(
+                  script_state,
+                  MakeGarbageCollected<NavigateReaction>(
+                      navigation, navigate_event, ResolveType::kReject)));
+
+    if (navigate_event->HasNavigationActions()) {
       auto* window = LocalDOMWindow::From(script_state);
       DCHECK(window);
       if (AXObjectCache* cache = window->document()->ExistingAXObjectCache())
@@ -75,12 +74,10 @@ class NavigateReaction final : public ScriptFunction::Callable {
 
   NavigateReaction(NavigationApiNavigation* navigation,
                    NavigateEvent* navigate_event,
-                   ResolveType resolve_type,
-                   ReactType react_type)
+                   ResolveType resolve_type)
       : navigation_(navigation),
         navigate_event_(navigate_event),
-        resolve_type_(resolve_type),
-        react_type_(react_type) {}
+        resolve_type_(resolve_type) {}
 
   void Trace(Visitor* visitor) const final {
     ScriptFunction::Callable::Trace(visitor);
@@ -107,18 +104,16 @@ class NavigateReaction final : public ScriptFunction::Callable {
                                                               value);
     }
 
-    if (react_type_ == ReactType::kIntercept && window->GetFrame()) {
-      window->GetFrame()->Loader().DidFinishNavigation(
-          resolve_type_ == ResolveType::kFulfill
-              ? FrameLoader::NavigationFinishState::kSuccess
-              : FrameLoader::NavigationFinishState::kFailure);
-    }
-
-    if (navigate_event_->ShouldSendAxEvents()) {
-      window = LocalDOMWindow::From(script_state);
-      DCHECK(window);
-      if (AXObjectCache* cache = window->document()->ExistingAXObjectCache())
+    if (navigate_event_->HasNavigationActions()) {
+      if (LocalFrame* frame = window->GetFrame()) {
+        frame->Loader().DidFinishNavigation(
+            resolve_type_ == ResolveType::kFulfill
+                ? FrameLoader::NavigationFinishState::kSuccess
+                : FrameLoader::NavigationFinishState::kFailure);
+      }
+      if (AXObjectCache* cache = window->document()->ExistingAXObjectCache()) {
         cache->HandleLoadComplete(window->document());
+      }
     }
 
     return ScriptValue();
@@ -128,7 +123,6 @@ class NavigateReaction final : public ScriptFunction::Callable {
   Member<NavigationApiNavigation> navigation_;
   Member<NavigateEvent> navigate_event_;
   ResolveType resolve_type_;
-  ReactType react_type_;
 };
 
 template <typename... DOMExceptionArgs>
@@ -862,28 +856,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   if (navigate_event->HasNavigationActions() ||
       params->event_type != NavigateEventType::kCrossDocument) {
-    NavigateReaction::ReactType react_type =
-        navigate_event->HasNavigationActions()
-            ? NavigateReaction::ReactType::kIntercept
-            : NavigateReaction::ReactType::kImmediate;
-
-    // There is a subtle timing difference between the fast-path for zero
-    // promises and the path for 1+ promises, in both spec and implementation.
-    // In most uses of ScriptPromise::All / the Web IDL spec's "wait for all",
-    // this does not matter. However for us there are so many events and promise
-    // handlers firing around the same time (navigatesuccess, committed promise,
-    // finished promise, ...) that the difference is pretty easily observable by
-    // web developers and web platform tests. So, let's make sure we always go
-    // down the 1+ promises path.
-    auto promise_list = navigate_event->GetNavigationActionPromisesList();
-    const HeapVector<ScriptPromise>& tweaked_promise_list =
-        promise_list.empty() ? HeapVector<ScriptPromise>(
-                                   {ScriptPromise::CastUndefined(script_state)})
-                             : promise_list;
-
-    NavigateReaction::React(
-        script_state, ScriptPromise::All(script_state, tweaked_promise_list),
-        ongoing_navigation_, navigate_event, react_type);
+    NavigateReaction::React(script_state, ongoing_navigation_, navigate_event);
   }
 
   // Note: we cannot clean up ongoing_navigation_ for cross-document
