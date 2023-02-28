@@ -2297,7 +2297,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             return true;
         }
 
-        final Tab currentTab = getActivityTab();
+        // crbug.com/1416719: back press on start surface should close the app.
+        final boolean isStartSurfaceHomepageShowing =
+                mStartSurfaceSupplier.hasValue() && mStartSurfaceSupplier.get().isHomepageShown();
+        final Tab currentTab = isStartSurfaceHomepageShowing ? null : getActivityTab();
         if (currentTab == null) {
             BackPressManager.record(BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB);
             MinimizeAppAndCloseTabBackPressHandler.record(MinimizeAppAndCloseTabType.MINIMIZE_APP);
@@ -2379,7 +2382,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void assertOnLastBackPress() {
-        var currentTab = getActivityTab();
+        final boolean isStartSurfaceHomepageShowing =
+                mStartSurfaceSupplier.hasValue() && mStartSurfaceSupplier.get().isHomepageShown();
+        final Tab currentTab = isStartSurfaceHomepageShowing ? null : getActivityTab();
         var activityTab = getActivityTabProvider().get();
         MinimizeAppAndCloseTabBackPressHandler.assertOnLastBackPress(currentTab, activityTab,
                 this::backShouldCloseTab, mLayoutStateProviderSupplier,
