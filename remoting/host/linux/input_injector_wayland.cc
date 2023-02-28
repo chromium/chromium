@@ -162,7 +162,9 @@ void InputInjectorWayland::SetMetadata(InputInjectorMetadata metadata) {
 
 InputInjectorWayland::Core::Core(
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner)
-    : input_task_runner_(input_task_runner) {}
+    : input_task_runner_(input_task_runner) {
+  clipboard_ = std::make_unique<ClipboardWayland>();
+}
 
 void InputInjectorWayland::Core::SetCapabilityCallbacks() {
   if (!input_task_runner_->BelongsToCurrentThread()) {
@@ -244,7 +246,7 @@ void InputInjectorWayland::Core::InjectClipboardEvent(
     pending_clipboard_event_ = absl::make_optional(event);
     return;
   }
-  clipboard_.InjectClipboardEvent(event);
+  clipboard_->InjectClipboardEvent(event);
 }
 
 void InputInjectorWayland::Core::InjectKeyEvent(const KeyEvent& event) {
@@ -298,6 +300,11 @@ void InputInjectorWayland::Core::InjectTextEvent(const TextEvent& event) {
 
 InputInjectorWayland::Core::~Core() {
   CHECK(pressed_keys_.empty());
+
+  // may be called from the network thread when the session is closed
+  if (!input_task_runner_->BelongsToCurrentThread()) {
+    input_task_runner_->DeleteSoon(FROM_HERE, clipboard_.release());
+  }
 }
 
 void InputInjectorWayland::Core::InjectScrollWheelClicks(int button,
@@ -486,12 +493,12 @@ void InputInjectorWayland::Core::SetClipboardSessionDetails(
   }
 
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  clipboard_.SetSessionDetails(session_details);
+  clipboard_->SetSessionDetails(session_details);
   clipboard_initialized_ = true;
 
   // rerun the last pending clipboard task
   if (pending_clipboard_event_.has_value()) {
-    clipboard_.InjectClipboardEvent(pending_clipboard_event_.value());
+    clipboard_->InjectClipboardEvent(pending_clipboard_event_.value());
   }
 }
 
@@ -533,7 +540,7 @@ void InputInjectorWayland::Core::Start(
     return;
   }
   DCHECK(input_task_runner_->BelongsToCurrentThread());
-  clipboard_.Start(std::move(client_clipboard));
+  clipboard_->Start(std::move(client_clipboard));
 }
 
 void InputInjectorWayland::Core::Shutdown() {
