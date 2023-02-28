@@ -230,7 +230,7 @@ FrameSizeButton::FrameSizeButton(PressedCallback callback,
 FrameSizeButton::~FrameSizeButton() = default;
 
 bool FrameSizeButton::IsMultitaskMenuShown() const {
-  return multitask_menu_ && multitask_menu_->IsBubbleShown();
+  return multitask_menu_widget_ && !multitask_menu_widget_->IsClosed();
 }
 
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
@@ -241,13 +241,15 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
     RecordMultitaskMenuEntryType(entry_type);
     // Owned by the bubble which contains this view. If there is an existing
     // bubble, it will be deactivated and then close and destroy itself.
-    multitask_menu_ = new MultitaskMenu(
-        /*anchor=*/this, GetWidget(),
-        base::BindOnce(&FrameSizeButton::OnMultitaskMenuClosed,
-                       weak_factory_.GetWeakPtr()));
-    multitask_menu_->multitask_menu_view()->feedback_button()->SetCallback(
+    auto menu_delegate = std::make_unique<MultitaskMenu>(
+        /*anchor=*/this, GetWidget());
+    auto* menu_delegate_ptr = menu_delegate.get();
+    multitask_menu_widget_ =
+        base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+            std::move(menu_delegate)));
+    menu_delegate_ptr->multitask_menu_view()->feedback_button()->SetCallback(
         feedback_callback_);
-    multitask_menu_->ShowBubble();
+    multitask_menu_widget_->Show();
     delegate_->GetMultitaskMenuNudgeController()->OnMenuOpened(
         /*tablet_mode=*/false);
   }
@@ -256,22 +258,11 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
 void FrameSizeButton::ToggleMultitaskMenu() {
   DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
   DCHECK(!chromeos::TabletState::Get()->InTabletMode());
-  if (!multitask_menu_) {
-    RecordMultitaskMenuEntryType(MultitaskMenuEntryType::kAccel);
-    multitask_menu_ = new MultitaskMenu(
-        /*anchor=*/this, GetWidget(),
-        base::BindOnce(&FrameSizeButton::OnMultitaskMenuClosed,
-                       weak_factory_.GetWeakPtr()));
-    multitask_menu_->multitask_menu_view()->feedback_button()->SetCallback(
-        feedback_callback_);
-    delegate_->GetMultitaskMenuNudgeController()->OnMenuOpened(
-        /*tablet_mode=*/false);
+  if (!multitask_menu_widget_) {
+    ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
+  } else {
+    multitask_menu_widget_->Close();
   }
-  multitask_menu_->ToggleBubble();
-}
-
-void FrameSizeButton::OnMultitaskMenuClosed() {
-  multitask_menu_ = nullptr;
 }
 
 void FrameSizeButton::SetFeedbackButtonCallback(PressedCallback callback) {

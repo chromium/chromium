@@ -44,7 +44,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   ~FrameSizeButton() override;
 
   // Returns true if the multitask menu is created and shown.
-  // TODO(sophiewen): Remove this since it's currently only used for testing.
   bool IsMultitaskMenuShown() const;
 
   // Shows the MultitaskMenu, run when `this` is hovered or pressed. Recreates
@@ -54,9 +53,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // Toggles the MultitaskMenu, called only by accelerators. Hides the menu
   // if it is already shown.
   void ToggleMultitaskMenu();
-
-  // Clears menu references if it is closed. See `MultitaskMenu`.
-  void OnMultitaskMenuClosed();
 
   // Cancel the snap operation if we're currently in snap mode. The snap
   // preview will be deleted and the button will be set back to its normal mode.
@@ -84,6 +80,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   }
 
   bool in_snap_mode_for_testing() const { return in_snap_mode_; }
+  views::Widget* multitask_menu_widget_for_testing() {
+    return multitask_menu_widget_.get();
+  }
 
  private:
   class PieAnimationView;
@@ -126,7 +125,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
 
   // Not owned.
   raw_ptr<FrameSizeButtonDelegate> delegate_;
-  raw_ptr<MultitaskMenu> multitask_menu_ = nullptr;
+  views::UniqueWidgetPtr multitask_menu_widget_;
 
   // The window observer to observe the to-be-snapped window.
   std::unique_ptr<SnappingWindowObserver> snapping_window_observer_;
