@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.ClipData;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -129,15 +128,6 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                         .Builder(tabList.getTabAt(sortedTabIndexList.get(0)).getWindowAndroid(),
                                 tabTitle, tabUrl)
                         .setText(tabText)
-                        .setCallback(new ShareParams.TargetChosenCallback() {
-                            @Override
-                            public void onTargetChosen(ComponentName chosenComponent) {
-                                TabUiMetricsHelper.recordSelectionEditorActionMetrics(actionId);
-                            }
-
-                            @Override
-                            public void onCancel() {}
-                        })
                         .build();
 
         final Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -153,7 +143,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                 AppCompatResources.getDrawable(mContext, R.drawable.chrome_sync_logo),
                 (int) mContext.getResources().getDimension(
                         R.dimen.tab_selection_editor_share_sheet_preview_thumbnail_padding));
-        createShareableImageAndSendIntent(shareIntent, drawable);
+        createShareableImageAndSendIntent(shareIntent, drawable, actionId);
         return true;
     }
 
@@ -162,7 +152,8 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
         return true;
     }
 
-    private void createShareableImageAndSendIntent(Intent shareIntent, Drawable drawable) {
+    private void createShareableImageAndSendIntent(Intent shareIntent, Drawable drawable,
+            @TabSelectionEditorActionMetricGroups int actionId) {
         PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, () -> {
             // Allotted thumbnail size is approx. 72 dp, with the icon left at default size.
             // The padding is adjusted accordingly, taking into account the scaling factor.
@@ -180,6 +171,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
                         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
                             shareIntent.setClipData(ClipData.newRawUri("", uri));
                             mContext.startActivity(Intent.createChooser(shareIntent, null));
+                            TabUiMetricsHelper.recordSelectionEditorActionMetrics(actionId);
                             TabUiMetricsHelper.recordShareStateHistogram(
                                     TabSelectionEditorShareActionState.SUCCESS);
                         });
