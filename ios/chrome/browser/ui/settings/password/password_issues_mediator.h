@@ -18,15 +18,16 @@ struct CredentialUIEntry;
 class FaviconLoader;
 class IOSChromePasswordCheckManager;
 @protocol PasswordIssuesConsumer;
+enum class WarningType;
 
 // This mediator fetches and organises the credentials for its consumer.
 @interface PasswordIssuesMediator
     : NSObject <SuccessfulReauthTimeAccessor, TableViewFaviconDataSource>
 
-- (instancetype)initWithPasswordCheckManager:
-                    (IOSChromePasswordCheckManager*)manager
-                               faviconLoader:(FaviconLoader*)faviconLoader
-                                 syncService:(syncer::SyncService*)syncService
+- (instancetype)initForWarningType:(WarningType)warningType
+              passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+                     faviconLoader:(FaviconLoader*)faviconLoader
+                       syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

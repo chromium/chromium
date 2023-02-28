@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
@@ -203,8 +204,9 @@
 - (void)showPasswordIssues {
   DCHECK(!self.passwordIssuesCoordinator);
   self.passwordIssuesCoordinator = [[PasswordIssuesCoordinator alloc]
-      initWithBaseNavigationController:self.baseNavigationController
-                               browser:self.browser];
+            initForWarningType:WarningType::kCompromisedPasswordsWarning
+      baseNavigationController:self.baseNavigationController
+                       browser:self.browser];
   self.passwordIssuesCoordinator.delegate = self;
   self.passwordIssuesCoordinator.reauthModule = self.reauthModule;
   [self.passwordIssuesCoordinator start];

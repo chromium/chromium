@@ -32,7 +32,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface PasswordIssuesTableViewController ()
+@interface PasswordIssuesTableViewController () {
+  // Text of the header displayed on top of the page.
+  NSString* _headerText;
+  // URL of link in the page header. Nullable.
+  CrURL* _headerURL;
+}
 
 @property(nonatomic) NSArray<id<PasswordIssue>>* passwords;
 
@@ -60,27 +65,40 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)loadModel {
   [super loadModel];
-  self.title = l10n_util::GetNSString(IDS_IOS_PASSWORDS);
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierContent];
 
-  [model setHeader:[self compromisedPasswordsDescriptionItem]
-      forSectionWithIdentifier:SectionIdentifierContent];
+  TableViewLinkHeaderFooterItem* headerItem = [self headerItem];
 
-    for (PasswordIssue* password in self.passwords) {
-      [model addItem:[self passwordIssueItem:password]
-          toSectionWithIdentifier:SectionIdentifierContent];
-    }
+  if (headerItem) {
+    // Set header on top of first section.
+    [model setHeader:headerItem
+        forSectionWithIdentifier:kSectionIdentifierEnumZero];
+  }
+
+  for (PasswordIssue* password in self.passwords) {
+    [model addItem:[self passwordIssueItem:password]
+        toSectionWithIdentifier:SectionIdentifierContent];
+  }
 }
 
 #pragma mark - Items
 
-- (TableViewLinkHeaderFooterItem*)compromisedPasswordsDescriptionItem {
-  TableViewLinkHeaderFooterItem* footerItem =
+- (TableViewLinkHeaderFooterItem*)headerItem {
+  if (!_headerText) {
+    return nil;
+  }
+
+  TableViewLinkHeaderFooterItem* headerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeHeader];
-  footerItem.text = l10n_util::GetNSString(IDS_IOS_PASSWORD_ISSUES_DESCRIPTION);
-  return footerItem;
+  headerItem.text = _headerText;
+
+  if (_headerURL) {
+    headerItem.urls = @[ _headerURL ];
+  }
+
+  return headerItem;
 }
 
 - (PasswordIssueContentItem*)passwordIssueItem:(PasswordIssue*)password {
@@ -133,6 +151,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForHeaderInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForHeaderInSection:section];
+
+  if (section == 0 && [self.tableViewModel headerForSectionIndex:0]) {
+    // Attach self as delegate to handle clicks in page header.
+    TableViewLinkHeaderFooterView* headerView =
+        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+    headerView.delegate = self;
+  }
+
+  return view;
+}
+
 // Asynchronously loads favicon for given index path. The loads are cancelled
 // upon cell reuse automatically.
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
@@ -161,6 +193,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)setPasswordIssues:(NSArray<id<PasswordIssue>>*)passwords {
   self.passwords = passwords;
   [self reloadData];
+}
+
+- (void)setNavigationBarTitle:(NSString*)title {
+  self.title = title;
+}
+
+- (void)setHeader:(NSString*)text URL:(CrURL*)URL {
+  _headerText = text;
+  _headerURL = URL;
+
+  [self reloadData];
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  [self.presenter dismissAndOpenURL:URL];
 }
 
 @end

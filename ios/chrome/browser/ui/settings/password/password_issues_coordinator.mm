@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_issue.h"
@@ -31,7 +33,13 @@
 #endif
 
 @interface PasswordIssuesCoordinator () <PasswordDetailsCoordinatorDelegate,
-                                         PasswordIssuesPresenter>
+                                         PasswordIssuesPresenter> {
+  // Password check manager to power mediator.
+  IOSChromePasswordCheckManager* _manager;
+
+  // Type of insecure credentials issues to display.
+  WarningType _warningType;
+}
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) PasswordIssuesTableViewController* viewController;
@@ -48,12 +56,13 @@
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
+- (instancetype)initForWarningType:(WarningType)warningType
+          baseNavigationController:(UINavigationController*)navigationController
+                           browser:(Browser*)browser {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    _warningType = warningType;
     _baseNavigationController = navigationController;
     _dispatcher = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                      ApplicationCommands);
@@ -65,13 +74,14 @@
   [super start];
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.mediator = [[PasswordIssuesMediator alloc]
-      initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                       GetForBrowserState(browserState)
-                                           .get()
-                     faviconLoader:IOSChromeFaviconLoaderFactory::
-                                       GetForBrowserState(browserState)
-                       syncService:SyncServiceFactory::GetForBrowserState(
-                                       browserState)];
+        initForWarningType:_warningType
+      passwordCheckManager:IOSChromePasswordCheckManagerFactory::
+                               GetForBrowserState(browserState)
+                                   .get()
+             faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
+                               browserState)
+               syncService:SyncServiceFactory::GetForBrowserState(
+                               browserState)];
 
   PasswordIssuesTableViewController* passwordIssuesTableViewController =
       [[PasswordIssuesTableViewController alloc]
@@ -107,6 +117,12 @@
 
 - (void)dismissPasswordIssuesTableViewController {
   [self.delegate passwordIssuesCoordinatorDidRemove:self];
+}
+
+- (void)dismissAndOpenURL:(CrURL*)URL {
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
+  [self.dispatcher closeSettingsUIAndOpenURL:command];
 }
 
 - (void)presentPasswordIssueDetails:(PasswordIssue*)password {
