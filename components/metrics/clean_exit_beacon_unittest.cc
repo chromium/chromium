@@ -208,8 +208,8 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
   if (params.beacon_file_exists) {
     const base::FilePath temp_beacon_file_path =
         user_data_dir_path.Append(kCleanExitBeaconFilename);
-    ASSERT_LT(0, base::WriteFile(temp_beacon_file_path,
-                                 params.beacon_file_contents.data()));
+    ASSERT_TRUE(
+        base::WriteFile(temp_beacon_file_path, params.beacon_file_contents));
   }
 
   TestCleanExitBeacon beacon(&prefs_, user_data_dir_path);
@@ -226,11 +226,10 @@ TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(kCleanExitBeaconFilename);
   const int num_crashes = 2;
-  ASSERT_LT(0, base::WriteFile(
-                   temp_beacon_file_path,
-                   CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                       /*exited_cleanly=*/true, /*crash_streak=*/num_crashes)
-                       .data()));
+  ASSERT_TRUE(base::WriteFile(
+      temp_beacon_file_path,
+      CleanExitBeacon::CreateBeaconFileContentsForTesting(
+          /*exited_cleanly=*/true, /*crash_streak=*/num_crashes)));
 
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
   histogram_tester_.ExpectUniqueSample(
@@ -249,12 +248,11 @@ TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
   const base::FilePath temp_beacon_file_path =
       user_data_dir_path.Append(kCleanExitBeaconFilename);
   const int last_session_num_crashes = 2;
-  ASSERT_LT(0,
-            base::WriteFile(temp_beacon_file_path,
-                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                                /*exited_cleanly=*/false,
-                                /*crash_streak=*/last_session_num_crashes)
-                                .data()));
+  ASSERT_TRUE(
+      base::WriteFile(temp_beacon_file_path,
+                      CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                          /*exited_cleanly=*/false,
+                          /*crash_streak=*/last_session_num_crashes)));
 
   const int updated_num_crashes = last_session_num_crashes + 1;
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
@@ -425,13 +423,11 @@ TEST_P(BeaconFileAndPlatformBeaconConsistencyTest, BeaconConsistency) {
 
   BeaconConsistencyTestParams params = GetParam();
   if (params.beacon_file_beacon_value) {
-    ASSERT_LT(
-        0, base::WriteFile(
-               temp_beacon_file_path,
-               CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                   /*exited_cleanly=*/params.beacon_file_beacon_value.value(),
-                   /*crash_streak=*/0)
-                   .data()));
+    ASSERT_TRUE(base::WriteFile(
+        temp_beacon_file_path,
+        CleanExitBeacon::CreateBeaconFileContentsForTesting(
+            /*exited_cleanly=*/params.beacon_file_beacon_value.value(),
+            /*crash_streak=*/0)));
   }
   if (params.platform_specific_beacon_value) {
     CleanExitBeacon::SetUserDefaultsBeacon(

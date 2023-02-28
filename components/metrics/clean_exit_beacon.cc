@@ -433,17 +433,13 @@ void CleanExitBeacon::WriteBeaconFile(bool exited_cleanly) const {
   JSONStringValueSerializer serializer(&json_string);
   bool success = serializer.Serialize(dict);
   DCHECK(success);
-  int data_size = static_cast<int>(json_string.size());
-  DCHECK_NE(data_size, 0);
-  int bytes_written;
+  DCHECK(!json_string.empty());
   {
     base::ScopedAllowBlocking allow_io;
-    // WriteFile() returns -1 on error.
-    bytes_written =
-        base::WriteFile(beacon_file_path_, json_string.data(), data_size);
+    success = base::WriteFile(beacon_file_path_, json_string);
   }
   base::UmaHistogramBoolean("Variations.ExtendedSafeMode.BeaconFileWrite",
-                            bytes_written != -1);
+                            success);
 }
 
 }  // namespace metrics

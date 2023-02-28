@@ -501,11 +501,9 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAfterCleanShutDown) {
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
       user_data_dir_path().Append(kCleanExitBeaconFilename);
-  ASSERT_LT(0,
-            base::WriteFile(beacon_file_path,
-                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                                /*exited_cleanly=*/true, /*crash_streak=*/1)
-                                .data()));
+  ASSERT_TRUE(base::WriteFile(
+      beacon_file_path, CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                            /*exited_cleanly=*/true, /*crash_streak=*/1)));
 
   TestMetricsServiceClient client;
   TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
@@ -557,11 +555,9 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAtProviderRequest) {
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
       user_data_dir_path().Append(kCleanExitBeaconFilename);
-  ASSERT_LT(0,
-            base::WriteFile(beacon_file_path,
-                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                                /*exited_cleanly=*/true, /*crash_streak=*/1)
-                                .data()));
+  ASSERT_TRUE(base::WriteFile(
+      beacon_file_path, CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                            /*exited_cleanly=*/true, /*crash_streak=*/1)));
 
   TestMetricsService service(GetMetricsStateManager(user_data_dir_path()),
                              &client, GetLocalState());
@@ -802,11 +798,9 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   // crash streak value is arbitrary.
   const base::FilePath beacon_file_path =
       user_data_dir_path().Append(kCleanExitBeaconFilename);
-  ASSERT_LT(0,
-            base::WriteFile(beacon_file_path,
-                            CleanExitBeacon::CreateBeaconFileContentsForTesting(
-                                /*exited_cleanly=*/false, /*crash_streak=*/1)
-                                .data()));
+  ASSERT_TRUE(base::WriteFile(
+      beacon_file_path, CleanExitBeacon::CreateBeaconFileContentsForTesting(
+                            /*exited_cleanly=*/false, /*crash_streak=*/1)));
 
   // Set up prefs to simulate restarting after a crash.
 
