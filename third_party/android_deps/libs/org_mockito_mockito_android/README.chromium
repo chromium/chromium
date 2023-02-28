@@ -1,0 +1,14 @@
+Name: mockito-android
+Short Name: mockito-android
+URL: https://github.com/mockito/mockito
+Version: 5.1.1
+License: The MIT License
+License File: NOT_SHIPPED
+CPEPrefix: unknown
+Security Critical: no
+
+Description:
+Mockito for Android
+
+Local Modifications:
+No modifications.
