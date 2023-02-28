@@ -26,6 +26,7 @@
 #include "components/version_info/version_info.h"
 #include "components/webapps/browser/android/add_to_homescreen_coordinator.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/android/ambient_badge_metrics.h"
 #include "components/webapps/browser/android/bottomsheet/pwa_bottom_sheet_controller.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "components/webapps/browser/android/shortcut_info.h"
@@ -131,6 +132,7 @@ void AppBannerManagerAndroid::RequestAppBanner(const GURL& validated_url) {
 }
 
 void AppBannerManagerAndroid::AddToHomescreenFromBadge() {
+  RecordAmbientBadgeClickEvent(!native_app_data_.is_null());
   ShowBannerUi(InstallableMetrics::GetInstallSource(
       web_contents(), InstallTrigger::AMBIENT_BADGE));
 
@@ -148,7 +150,7 @@ bool AppBannerManagerAndroid::HasSufficientEngagementForAmbientBadge() {
 }
 
 void AppBannerManagerAndroid::BadgeDismissed() {
-  TrackDismissEvent(DISMISS_EVENT_AMBIENT_INFOBAR_DISMISSED);
+  RecordAmbientBadgeDismissEvent(!native_app_data_.is_null());
   badge_state_ = AmbientBadgeState::DISMISSED;
 
   AppBannerSettingsHelper::RecordBannerEvent(
@@ -674,6 +676,7 @@ bool AppBannerManagerAndroid::ShouldSuppressAmbientBadge() {
 }
 
 void AppBannerManagerAndroid::ShowAmbientBadge() {
+  RecordAmbientBadgeDisplayEvent(!native_app_data_.is_null());
   badge_state_ = AmbientBadgeState::SHOWING;
 
   if (base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeMessage) &&

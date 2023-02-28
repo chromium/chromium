@@ -3201,7 +3201,7 @@ Unknown properties are collapsed to zero. -->
       label="User began app install, but it didn't finish in time
              (deprecated)"/>
   <int value="47" label="Banner was dismissed for any reason"/>
-  <int value="48" label="Ambient badge infobar was dismissed"/>
+  <int value="48" label="Ambient badge infobar was dismissed (deprecated)"/>
 </enum>
 
 <enum name="AppBannersDisplayEvent">
@@ -52801,6 +52801,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="43" label="WebAPK install failed"/>
   <int value="44" label="Manifest URL scheme is not eligible for WebAPKs"/>
   <int value="45" label="Service worker not required for install."/>
+</enum>
+
+<enum name="InstallAmbientBadgeAppType">
+  <int value="0" label="Native app"/>
+  <int value="1" label="Web app"/>
 </enum>
 
 <enum name="InstallationCounterReasonEnum">
