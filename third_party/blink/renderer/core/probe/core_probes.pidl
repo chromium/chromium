@@ -58,12 +58,14 @@ interface CoreProbes {
   class FontCustomPlatformData;
   class FontFace;
   class HTMLDocumentParser;
-  class XMLHttpRequest;
   class HTMLInputElement;
   class HTMLPortalElement;
   class PerformanceEntry;
+  class ScriptState;
+  class XMLHttpRequest;
 
   void DidClearDocumentOfWindowObject([Keep] LocalFrame*);
+  void DidCreateMainWorldContext([Keep] LocalFrame*);
   void WillInsertDOMNode([Keep] Node* parent);
   void DidInsertDOMNode([Keep] Node*);
   void WillRemoveDOMNode([Keep] Node*);

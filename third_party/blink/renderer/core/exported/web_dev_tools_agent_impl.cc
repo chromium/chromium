@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_scoped_page_pauser.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -483,6 +484,7 @@ void WebDevToolsAgentImpl::DidShowNewWindow() {
   if (!wait_for_debugger_when_shown_)
     return;
   wait_for_debugger_when_shown_ = false;
+  base::AutoReset<bool> is_paused(&is_paused_for_new_window_shown_, true);
   WaitForDebugger();
 }
 
@@ -492,6 +494,10 @@ void WebDevToolsAgentImpl::WaitForDebuggerWhenShown() {
 
 void WebDevToolsAgentImpl::WaitForDebugger() {
   ClientMessageLoopAdapter::PauseForPageWait(web_local_frame_impl_);
+}
+
+bool WebDevToolsAgentImpl::IsPausedForNewWindow() {
+  return is_paused_for_new_window_shown_;
 }
 
 bool WebDevToolsAgentImpl::IsInspectorLayer(const cc::Layer* layer) {

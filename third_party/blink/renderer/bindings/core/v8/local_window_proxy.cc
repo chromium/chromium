@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/extensions_registry.h"
@@ -199,6 +200,7 @@ void LocalWindowProxy::Initialize() {
   InstallConditionalFeatures();
 
   if (World().IsMainWorld()) {
+    probe::DidCreateMainWorldContext(GetFrame());
     GetFrame()->Loader().DispatchDidClearWindowObjectInMainWorld();
   }
 }

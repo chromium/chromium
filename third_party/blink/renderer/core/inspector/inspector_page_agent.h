@@ -72,6 +72,7 @@ class CORE_EXPORT InspectorPageAgent final
     virtual ~Client() = default;
     virtual void PageLayoutInvalidated(bool resized) {}
     virtual void WaitForDebugger() {}
+    virtual bool IsPausedForNewWindow() { return false; }
   };
 
   enum ResourceType {
@@ -197,7 +198,7 @@ class CORE_EXPORT InspectorPageAgent final
   protocol::Response setInterceptFileChooserDialog(bool enabled) override;
 
   // InspectorInstrumentation API
-  void DidClearDocumentOfWindowObject(LocalFrame*);
+  void DidCreateMainWorldContext(LocalFrame*);
   void DidNavigateWithinDocument(LocalFrame*);
   void DomContentLoadedEventFired(LocalFrame*);
   void LoadEventFired(LocalFrame*);
@@ -287,6 +288,8 @@ class CORE_EXPORT InspectorPageAgent final
                                String world_name,
                                bool grant_universal_access,
                                std::unique_ptr<CreateIsolatedWorldCallback>);
+  void EvaluateScriptOnNewDocument(LocalFrame&,
+                                   const String& script_identifier);
 
   Member<InspectedFrames> inspected_frames_;
   HashMap<String, protocol::Binary> compilation_cache_;

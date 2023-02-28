@@ -188,7 +188,7 @@
       probes: [
         "ApplyCompilationModeOverride",
         "DidChangeViewport",
-        "DidClearDocumentOfWindowObject",
+        "DidCreateMainWorldContext",
         "DidNavigateWithinDocument",
         "WillCommitLoad",
         "DidRestoreFromBackForwardCache",
