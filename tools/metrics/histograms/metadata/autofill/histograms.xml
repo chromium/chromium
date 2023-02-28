@@ -611,6 +611,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.AutocompleteAttributeForFieldsWith.{FieldType}.{PredictionType}.Prediction"
+    enum="AutocompleteValueForStructuredAddressPredictedFields"
+    expires_after="2023-09-13">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records for each autofilled field where {PredictionType} predictions yielded
+    {FieldType}, what was the corresponding autocomplete value.
+  </summary>
+  <token key="FieldType">
+    <variant name="HouseNumber" summary="The house number in the address"/>
+    <variant name="StreetName" summary="The street name in the address"/>
+    <variant name="StreetNameOrHouseNumber" summary="Either"/>
+  </token>
+  <token key="PredictionType">
+    <variant name="Heuristic" summary="Heuristic Predictions"/>
+    <variant name="HeuristicOrServer" summary="Either Predictions"/>
+    <variant name="Server" summary="Server Predictions"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.AutocompleteQuery" enum="BooleanCreated"
     expires_after="M85">
   <owner>battre@chromium.org</owner>
@@ -5157,6 +5179,35 @@ chromium-metrics-reviews@google.com.
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Whether the user changed autofilled field.</summary>
+</histogram>
+
+<histogram
+    name="Autofill.{PrecedenceType}Precedence.OverAutocompleteForStructuredAddressFields.{FieldType}.AutocompleteIs.{AutocompleteStatus}"
+    enum="AutofilledFieldUserEditingStatus" expires_after="2023-09-13">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records at submission time for each autofilled {FieldType} field where
+    precedence was granted to heuristics over {AutocompleteStatus} Autocomplete
+    whether the user edited the autofilled value or not.
+  </summary>
+  <token key="PrecedenceType">
+    <variant name="Heuristic" summary="Heuristic Precedence Correction"/>
+    <variant name="HeuristicOrServer"
+        summary="Any Precedence Correction of Autocomplete"/>
+    <variant name="Server" summary="Server Precedence Correction"/>
+  </token>
+  <token key="FieldType">
+    <variant name="HouseNumber" summary="The house number in the home address"/>
+    <variant name="StreetName" summary="The street name in the home address"/>
+    <variant name="StreetNameOrHouseNumber" summary="Either"/>
+  </token>
+  <token key="AutocompleteStatus">
+    <variant name="Recognized" summary="Anything among predefined fields"/>
+    <variant name="Specified" summary="Any specified autocomplete entry"/>
+    <variant name="Unrecognzied"
+        summary="Anything not among predifined fields"/>
+  </token>
 </histogram>
 
 </histograms>

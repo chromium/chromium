@@ -35,6 +35,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -65,6 +66,7 @@
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_field_data_predictions.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/security_state/core/security_state.h"
@@ -110,7 +112,7 @@ std::string EncodeFieldTypes(const ServerFieldTypeSet& available_field_types) {
   for (; data_end > 0 && !bit_field[data_end - 1]; --data_end) {
   }
 
-  // Print all meaningfull bytes into a string.
+  // Print all meaningful bytes into a string.
   std::string data_presence;
   data_presence.reserve(data_end * 2 + 1);
   for (size_t i = 0; i < data_end; ++i) {
@@ -1028,7 +1030,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
               features::kAutofillRetrieveOverallPredictionsFromCache)) {
         // During import the final field type is used to decide which
         // information to store in an address profile or credit card. As
-        // rationalization is an important component of determinig the final
+        // rationalization is an important component of determining the final
         // field type, the output should be preserved.
         field->SetTypeTo(cached_field->Type());
       }
@@ -1141,6 +1143,16 @@ void FormStructure::LogQualityMetrics(
     if (!field->value.empty() && !field->is_autofilled)
       perfect_filling = false;
 
+    // If the field was identified by heuristic or server predictions as a
+    // street name or a house number, log the value of the autocomplete
+    // attribute that was used to represent the field.
+    if (IsStreetNameOrHouseNumberType(field->server_type()) ||
+        IsStreetNameOrHouseNumberType(field->heuristic_type())) {
+      AutofillMetrics::
+          LogHtmlTypesForAutofilledFieldWithStreetNameOrHouseNumberPredictions(
+              *field);
+    }
+
     // Field filling statistics that are only emitted if the form was submitted
     // but independent of the existence of a possible type.
     if (observed_submission) {
@@ -1149,6 +1161,40 @@ void FormStructure::LogQualityMetrics(
       if (field->is_autofilled || field->previously_autofilled()) {
         AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
             form_interactions_ukm_logger, *this, *field);
+        // To emit the StreetNameOrHouseNumberPrecedenceCorrectness metric, we
+        // should check if the feature
+        // `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete` had an
+        // effect on the current field. This lambda takes care of that.
+        auto precedence_feature_had_effect = [](const AutofillField& field) {
+          // When server override happens, `ComputedType()` isn't called and
+          // hence the feature's logic doesn't apply.
+          bool no_server_override =
+              !field.server_type_prediction_is_override() ||
+              field.server_type() == NO_SERVER_DATA;
+          // When the autocomplete attribute is unspecified, it is
+          // unconditionally overridden, regardless of the feature.
+          bool specified_autocomplete =
+              field.html_type() != HtmlFieldType::kUnspecified;
+          // We are not interested in cases where the autocomplete attribute
+          // agrees with server or heuristic predictions, since in that case
+          // precedence wouldn't change the behavior of the program.
+          bool autocomplete_disagree_with_type =
+              field.Type().GetStorableType() !=
+              AutofillType(field.html_type(), field.html_mode())
+                  .GetStorableType();
+          // The feature is only active for street name and house number types.
+          bool is_street_name_or_house_number =
+              IsStreetNameOrHouseNumberType(field.Type().GetStorableType());
+
+          return no_server_override && specified_autocomplete &&
+                 autocomplete_disagree_with_type &&
+                 is_street_name_or_house_number;
+        };
+        if (precedence_feature_had_effect(*field)) {
+          AutofillMetrics::
+              LogEditedAutofilledFieldWithStreetNameOrHouseNumberPrecedenceAtSubmission(
+                  *field);
+        }
       }
 
       // For any field that belongs to either an address or a credit card form,
@@ -1253,7 +1299,7 @@ void FormStructure::LogQualityMetrics(
     if (observed_submission) {
       if (field->is_autofilled || field->previously_autofilled()) {
         // TODO(crbug.com/1368096): This metric is defective because it is
-        // confitioned on having a possible field type. Remove after M112.
+        // conditioned on having a possible field type. Remove after M112.
         AutofillMetrics::LogEditedAutofilledFieldAtSubmissionDeprecated(
             form_interactions_ukm_logger, *this, *field);
       }
@@ -1291,7 +1337,7 @@ void FormStructure::LogQualityMetrics(
       // Log the number of autofilled fields with an unrecognized autocomplete
       // attribute at submission time.
       // Note that credit card fields are not counted since they generally
-      // ignore an unrecognized autocompelte attribute.
+      // ignore an unrecognized autocomplete attribute.
       AutofillMetrics::
           LogNumberOfAutofilledFieldsWithAutocompleteUnrecognizedAtSubmission(
               num_of_accepted_autofilled_fields_with_autocomplete_unrecognized,

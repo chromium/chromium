@@ -57,6 +57,19 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
+  // These values are persisted to UMA logs. Entries should not be renumbered
+  // and numeric values should never be reused. These are the categories of
+  // interests for looking at what are the autocomplete values that were used to
+  // annotate fields that are being predicted by the server or heuristics as
+  // street name or house number.
+  enum class AutocompleteCategoryForStructuredAddressMetric {
+    kAddressLine1Or2 = 0,
+    kOtherRecognized = 1,
+    kUnrecognized = 2,
+    kUnspecified = 3,
+    kMaxValue = kUnspecified
+  };
+
   enum AutofillProfileAction {
     EXISTING_PROFILE_USED,
     EXISTING_PROFILE_UPDATED,
@@ -894,6 +907,22 @@ class AutofillMetrics {
 
   static void LogUserHappinessByProfileFormType(UserHappinessMetric metric,
                                                 uint32_t profile_form_bitmask);
+
+  // Records for an autofilled field with street name or house number heuristic
+  // or server predictions, the category of values of autocomplete attribute
+  // used to represent that field. The categories can be found in the
+  // `AutocompleteCategoryForStructuredAddressMetric` enum.
+  static void
+  LogHtmlTypesForAutofilledFieldWithStreetNameOrHouseNumberPredictions(
+      const AutofillField& field);
+
+  // Records if an autofilled field that was determined by heuristic or server
+  // predictions as a street name or a house number, and whose street name or
+  // house number prediction was granted precedence over the autocomplete
+  // attribute, was accepted or corrected by the user.
+  static void
+  LogEditedAutofilledFieldWithStreetNameOrHouseNumberPrecedenceAtSubmission(
+      const AutofillField& field);
 
   // Logs |event| to the unmask prompt events histogram.
   static void LogUnmaskPromptEvent(UnmaskPromptEvent event,

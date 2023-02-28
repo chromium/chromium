@@ -300,6 +300,31 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
 BASE_FEATURE(kAutofillFeedback,
              "AutofillFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
+             "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<PrecedenceOverAutocompleteScope>::Option
+    kPrecedenceOverAutocompleteScope[] = {
+        {PrecedenceOverAutocompleteScope::kNone, "none"},
+        {PrecedenceOverAutocompleteScope::kAddressLine1Or2,
+         "address_line_1_and_2"},
+        {PrecedenceOverAutocompleteScope::kRecognized, "recognized"},
+        {PrecedenceOverAutocompleteScope::kSpecified, "specified"}};
+
+const base::FeatureParam<PrecedenceOverAutocompleteScope>
+    kAutofillHeuristicPrecedenceScopeOverAutocomplete{
+        &kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
+        "AutofillHeuristicPrecedenceOverAutocompleteScope",
+        PrecedenceOverAutocompleteScope::kAddressLine1Or2,
+        &kPrecedenceOverAutocompleteScope};
+
+const base::FeatureParam<PrecedenceOverAutocompleteScope>
+    kAutofillServerPrecedenceScopeOverAutocomplete{
+        &kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
+        "AutofillServerPrecedenceOverAutocompleteScope",
+        PrecedenceOverAutocompleteScope::kNone,
+        &kPrecedenceOverAutocompleteScope};
 
 // When enabled, HTML autocomplete values that do not map to any known type, but
 // look reasonable (e.g. contain "address") are simply ignored. Without the

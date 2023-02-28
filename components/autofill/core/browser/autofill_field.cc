@@ -10,10 +10,13 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
@@ -98,6 +101,70 @@ bool AreCollapsibleLogEvents(const AutofillField::FieldLogEventType& event1,
 
   NOTREACHED();
   return false;
+}
+
+// Util function for `ComputedType`. Returns the values of HtmlFieldType that
+// won't be overridden by heuristics or server predictions, up to a few
+// exceptions. Check function `ComputedType` for more details.
+DenseSet<HtmlFieldType> BelievedHtmlTypes(ServerFieldType heuristic_prediction,
+                                          ServerFieldType server_prediction,
+                                          bool is_credit_card_prediction) {
+  DenseSet<HtmlFieldType> believed_html_types = {};
+  constexpr auto kMin = base::to_underlying(HtmlFieldType::kMinValue);
+  constexpr auto kMax = base::to_underlying(HtmlFieldType::kMaxValue);
+  for (auto i = kMin; i <= kMax; ++i) {
+    believed_html_types.insert(static_cast<HtmlFieldType>(i));
+  }
+  // We always override unspecified autocomplete attribute.
+  believed_html_types.erase(HtmlFieldType::kUnspecified);
+  auto is_precedence_feature_enabled = []() {
+    return base::FeatureList::IsEnabled(
+        features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete);
+  };
+
+  // If the feature `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete`
+  // is enabled, the believed autocomplete attributes will depend on its
+  // parameterization via `kPrecedenceOverAutocompleteScope` for either
+  // heuristics or server prediction, and whether the corresponding prediction
+  // gives a street name or house number prediction. This util function takes
+  // care of removing the HtmlFieldType's that should be overridden.
+  auto override_html_types =
+      [&believed_html_types](features::PrecedenceOverAutocompleteScope scope) {
+        switch (scope) {
+          case features::PrecedenceOverAutocompleteScope::kSpecified:
+            believed_html_types.clear();
+            break;
+          case features::PrecedenceOverAutocompleteScope::kRecognized:
+            believed_html_types = {HtmlFieldType::kUnrecognized};
+            break;
+          case features::PrecedenceOverAutocompleteScope::kAddressLine1Or2:
+            believed_html_types.erase_all(
+                {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
+            break;
+          case features::PrecedenceOverAutocompleteScope::kNone:
+            break;
+        }
+      };
+
+  if (IsStreetNameOrHouseNumberType(heuristic_prediction) &&
+      is_precedence_feature_enabled()) {
+    override_html_types(
+        features::kAutofillHeuristicPrecedenceScopeOverAutocomplete.Get());
+  }
+  if (IsStreetNameOrHouseNumberType(server_prediction) &&
+      is_precedence_feature_enabled()) {
+    override_html_types(
+        features::kAutofillServerPrecedenceScopeOverAutocomplete.Get());
+  }
+  // If the field is credit-card related or the feature
+  // `kAutofillFillAndImportFromMoreFields` is enabled, we always override
+  // unrecognized autocomplete attributes.
+  if (is_credit_card_prediction ||
+      base::FeatureList::IsEnabled(
+          features::kAutofillFillAndImportFromMoreFields)) {
+    believed_html_types.erase(HtmlFieldType::kUnrecognized);
+  }
+  return believed_html_types;
 }
 
 }  // namespace
@@ -264,21 +331,11 @@ AutofillType AutofillField::ComputedType() const {
       return AutofillType(heuristic_type());
     }
   }
-
-  // If the autocomplete attribute is unrecognized, it is used to effectively
-  // return an UNKNOWN_TYPE predition, unless either the heuristic or server
-  // prediction suggest that the field is credit-card related, or if the
-  // |kAutofillFillAndImportFromMoreFields| feature is enabled.
-  if (html_type_ == HtmlFieldType::kUnrecognized && !IsCreditCardPrediction() &&
-      !base::FeatureList::IsEnabled(
-          features::kAutofillFillAndImportFromMoreFields)) {
-    return AutofillType(html_type_, html_mode_);
-  }
-
-  // If the autocomplete attribute is neither empty or unrecognized, use it
-  // unconditionally.
-  if (html_type_ != HtmlFieldType::kUnspecified &&
-      html_type_ != HtmlFieldType::kUnrecognized) {
+  // In general, the autocomplete attribute has precedence over the other types
+  // of field detection. Except for cases detailed in `BelievedHtmlTypes()`
+  if (BelievedHtmlTypes(heuristic_type(), server_type(),
+                        IsCreditCardPrediction())
+          .contains(html_type())) {
     return AutofillType(html_type_, html_mode_);
   }
 
@@ -324,7 +381,7 @@ AutofillType AutofillField::ComputedType() const {
     // predictions get precedence over the server predictions.
     believe_server = believe_server && (heuristic_type() != IBAN_VALUE);
 
-    // The numeric quanity heuristic should get granted precedence over the
+    // The numeric quantity heuristic should get granted precedence over the
     // server prediction since it tries to catch false-positive server
     // predictions.
     believe_server =

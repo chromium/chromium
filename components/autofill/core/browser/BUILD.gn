@@ -833,6 +833,7 @@ source_set("unit_tests") {
     "autofill_experiments_unittest.cc",
     "autofill_external_delegate_unittest.cc",
     "autofill_feedback_data_unittest.cc",
+    "autofill_field_unittest.cc",
     "autofill_manager_unittest.cc",
     "autofill_merge_unittest.cc",
     "autofill_optimization_guide_unittest.cc",
