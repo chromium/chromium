@@ -181,9 +181,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     // feature is dependent on embedder behavior and screen reader state. Default false.
     private boolean mIsImageDescriptionsCandidate;
 
-    // If true, the web contents are obscured by another view and we shouldn't
-    // return an AccessibilityNodeProvider or process touch exploration events.
-    private boolean mIsObscuredByAnotherView;
+    // If true, the web contents are obscured by another view and we will return a null
+    // AccessibilityNodeProvider, and will not process touch exploration events or calls to
+    // performAction. If false, all accessibility requests will be honored. When null, treat the
+    // value as false, this is to differentiate between an initial value and a value set by a
+    // client, since we assert the value is changed with each call to the setter. (Default: null).
+    private Boolean mIsObscuredByAnotherView;
 
     // This array maps a given virtualViewId to an |AccessibilityNodeInfoCompat| for that view. We
     // use this to update a node quickly rather than building from one scratch each time.
@@ -400,8 +403,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // Register a broadcast receiver for locale change.
         if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
 
-        // TODO(mschillaci,jacklynch): Move into {refreshNativeState} or similar method once
-        //                            {BrowserAccessibilityState.Listener} has more granularity.
         // Define a set of relevant AccessibilityEvents if the OnDemand feature is enabled.
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             Runnable serviceMaskRunnable = () -> {
@@ -613,6 +614,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // feature, this instance must be a candidate and a screen reader must be enabled.
             WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(mNativeObj,
                     mIsImageDescriptionsCandidate && AccessibilityState.isScreenReaderEnabled());
+
+            // Update the list of events we dispatch to enabled services.
+            if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
+                int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
+                mEventDispatcher.updateRelevantEventTypes(
+                        convertMaskToEventTypes(serviceEventMask));
+            }
         }
     }
 
@@ -636,7 +644,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
      * @return AccessibilityNodeProviderCompat (this)
      */
     public AccessibilityNodeProviderCompat getAccessibilityNodeProviderCompat() {
-        if (mIsObscuredByAnotherView) return null;
+        if (shouldPreventNativeEngineUse()) return null;
 
         if (!isNativeInitialized()) {
             if (mDelegate.getWebContents() != null) {
@@ -789,16 +797,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public void onAccessibilityStateChanged(AccessibilityState.State oldAccessibilityState,
             AccessibilityState.State newAccessibilityState) {
         refreshNativeState();
-
-        // TODO(mschillaci,jacklynch): Move into {refreshNativeState} or similar method once
-        //                            {BrowserAccessibilityState.Listener} has more granularity.
-        // Update the list of events we dispatch to enabled services.
-        if (isNativeInitialized()
-                && ContentFeatureList.isEnabled(
-                        ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
-            int serviceEventMask = AccessibilityState.getAccessibilityServiceEventTypeMask();
-            mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
-        }
     }
 
     public Set<Integer> convertMaskToEventTypes(int serviceEventTypes) {
@@ -818,10 +816,17 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @Override
     public void setObscuredByAnotherView(boolean isObscured) {
-        if (isObscured != mIsObscuredByAnotherView) {
-            mIsObscuredByAnotherView = isObscured;
-            sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
-        }
+        assert mIsObscuredByAnotherView == null
+                || isObscured
+                        != mIsObscuredByAnotherView
+            : "Two clients are both trying to obscure web contents accessibility. These are "
+              + "duplicate requests, or prone to error.";
+        mIsObscuredByAnotherView = isObscured;
+        sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+    }
+
+    private boolean shouldPreventNativeEngineUse() {
+        return mIsObscuredByAnotherView != null && mIsObscuredByAnotherView;
     }
 
     @Override
@@ -865,7 +870,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public boolean performAction(int virtualViewId, int action, Bundle arguments) {
         // We don't support any actions on the host view or nodes
         // that are not (any longer) in the tree.
-        if (!isAccessibilityEnabled()
+        if (!isAccessibilityEnabled() || shouldPreventNativeEngineUse()
                 || !WebContentsAccessibilityImplJni.get().isNodeValid(mNativeObj, virtualViewId)) {
             return false;
         }

@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -93,7 +92,6 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
             webContents.onHide();
             webContents.suspendAllMediaPlayers();
             webContents.setAudioMuted(true);
-            WebContentsAccessibility.fromWebContents(webContents).setObscuredByAnotherView(true);
             if (MediaCaptureDevicesDispatcherAndroid.isCapturingAudio(webContents)
                     || MediaCaptureDevicesDispatcherAndroid.isCapturingVideo(webContents)
                     || MediaCaptureDevicesDispatcherAndroid.isCapturingScreen(webContents)) {
@@ -131,7 +129,6 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
         if (webContents != null) {
             webContents.onShow();
             webContents.setAudioMuted(false);
-            WebContentsAccessibility.fromWebContents(webContents).setObscuredByAnotherView(false);
         }
 
         mView = null;
