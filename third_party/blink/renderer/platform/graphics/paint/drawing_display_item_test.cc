@@ -31,22 +31,28 @@ class DrawingDisplayItemTest : public testing::Test {
       MakeGarbageCollected<FakeDisplayItemClient>();
 };
 
-static PaintRecord CreateRectRecord(const gfx::RectF& record_bounds) {
+static PaintRecord CreateRectRecord(const gfx::RectF& record_bounds,
+                                    SkColor4f color = SkColors::kBlack) {
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
-  canvas->drawRect(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
+  cc::PaintFlags flags;
+  flags.setColor(color);
+  canvas->drawRect(gfx::RectFToSkRect(record_bounds), flags);
   return recorder.finishRecordingAsPicture();
 }
 
 static PaintRecord CreateRectRecordWithTranslate(
     const gfx::RectF& record_bounds,
     float dx,
-    float dy) {
+    float dy,
+    SkColor4f color = SkColors::kBlack) {
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
   canvas->save();
   canvas->translate(dx, dy);
-  canvas->drawRect(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
+  cc::PaintFlags flags;
+  flags.setColor(color);
+  canvas->drawRect(gfx::RectFToSkRect(record_bounds), flags);
   canvas->restore();
   return recorder.finishRecordingAsPicture();
 }
@@ -130,21 +136,25 @@ TEST_F(DrawingDisplayItemTest, SolidColorRect) {
   gfx::RectF record_bounds(5, 6, 10, 10);
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           ToEnclosingRect(record_bounds),
-                          CreateRectRecord(record_bounds),
+                          CreateRectRecord(record_bounds, SkColors::kGreen),
                           client_->VisualRectOutsetForRasterEffects());
   EXPECT_EQ(gfx::Rect(5, 6, 10, 10), item.VisualRect());
-  EXPECT_TRUE(item.IsSolidColor());
+  auto background = item.BackgroundColor();
+  EXPECT_TRUE(background.is_solid_color);
+  EXPECT_EQ(background.color, SkColors::kGreen);
 }
 
 TEST_F(DrawingDisplayItemTest, NonSolidColorSnappedRect) {
   gfx::RectF record_bounds(5.1, 6.9, 10, 10);
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
                           ToEnclosingRect(record_bounds),
-                          CreateRectRecord(record_bounds),
+                          CreateRectRecord(record_bounds, SkColors::kGreen),
                           client_->VisualRectOutsetForRasterEffects());
   EXPECT_EQ(gfx::Rect(5, 6, 11, 11), item.VisualRect());
   // Not solid color if the drawing does not fully cover the visual rect.
-  EXPECT_FALSE(item.IsSolidColor());
+  auto background = item.BackgroundColor();
+  EXPECT_FALSE(background.is_solid_color);
+  EXPECT_EQ(background.color, SkColors::kGreen);
 }
 
 TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
@@ -152,6 +162,8 @@ TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
 
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
+  cc::PaintFlags flags;
+  flags.setColor(SkColors::kGreen);
   canvas->drawOval(gfx::RectFToSkRect(record_bounds), cc::PaintFlags());
 
   DrawingDisplayItem item(client_->Id(), DisplayItem::Type::kDocumentBackground,
@@ -160,7 +172,9 @@ TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
                           client_->VisualRectOutsetForRasterEffects());
   EXPECT_EQ(gfx::Rect(5, 6, 10, 10), item.VisualRect());
   // Not solid color if the drawing does not fully cover the visual rect.
-  EXPECT_FALSE(item.IsSolidColor());
+  auto background = item.BackgroundColor();
+  EXPECT_FALSE(background.is_solid_color);
+  EXPECT_EQ(background.color, SkColors::kTransparent);
 }
 
 // Checks that DrawingDisplayItem::RectKnownToBeOpaque() doesn't cover any

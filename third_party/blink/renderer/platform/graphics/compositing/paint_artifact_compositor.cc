@@ -232,8 +232,8 @@ bool NeedsFullUpdateAfterPaintingChunk(
   }
   // Whether background color is transparent affects cc::Layers's contents
   // opaque property.
-  if ((previous.background_color == Color()) !=
-      (repainted.background_color == Color())) {
+  if ((previous.background_color.color == SkColors::kTransparent) !=
+      (repainted.background_color.color == SkColors::kTransparent)) {
     return true;
   }
 

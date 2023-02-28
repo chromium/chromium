@@ -49,6 +49,14 @@ const char* ViewLayerName() {
 
 }  // namespace
 
+#define EXPECT_SKCOLOR4F_NEAR(expected, actual, error) \
+  do {                                                 \
+    EXPECT_NEAR(expected.fR, actual.fR, error);        \
+    EXPECT_NEAR(expected.fG, actual.fG, error);        \
+    EXPECT_NEAR(expected.fB, actual.fB, error);        \
+    EXPECT_NEAR(expected.fA, actual.fA, error);        \
+  } while (false)
+
 // Tests the integration between blink and cc where a layer list is sent to cc.
 class CompositingTest : public PaintTestConfigurations, public testing::Test {
  public:
@@ -474,7 +482,7 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
   auto* scrollable_area = GetLocalFrameView()->LayoutViewport();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
-  EXPECT_EQ(layer->background_color(), expected_color);
+  EXPECT_SKCOLOR4F_NEAR(layer->background_color(), expected_color, 0.005f);
 
   // Non-root layers set background_color based on the CSS background color of
   // the layer-defining element.
@@ -484,7 +492,7 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
   scrollable_area = scroller_box->GetScrollableArea();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
-  EXPECT_EQ(layer->background_color(), expected_color);
+  EXPECT_SKCOLOR4F_NEAR(layer->background_color(), expected_color, 0.005f);
 }
 
 TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
@@ -543,7 +551,7 @@ TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
   SkColor4f expected_color =
       SkColor4f::FromColor(SkColorSetARGB(roundf(255. * 0.6), 30, 40, 50));
   layer = CcLayerByDOMElementId("scroller");
-  EXPECT_EQ(layer->background_color(), expected_color);
+  EXPECT_SKCOLOR4F_NEAR(layer->background_color(), expected_color, 0.005f);
   scrollable_area = scroller_box->GetScrollableArea();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());

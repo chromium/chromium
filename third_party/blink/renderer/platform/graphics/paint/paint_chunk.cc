@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk.h"
 
+#include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -28,9 +30,8 @@ bool PointerValueEquals(const std::unique_ptr<T>& a,
 struct SameSizeAsPaintChunk {
   wtf_size_t begin_index;
   wtf_size_t end_index;
-  Color background_color;
-  float background_color_area;
   PaintChunk::Id id;
+  PaintChunk::BackgroundColorInfo background_color;
   PropertyTreeState properties;
   gfx::Rect bounds;
   gfx::Rect drawable_bounds;

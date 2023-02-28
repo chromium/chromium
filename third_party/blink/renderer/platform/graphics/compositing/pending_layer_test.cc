@@ -233,6 +233,31 @@ TEST(PendingLayerTest, KnownOpaque) {
             pending_layer.RectKnownToBeOpaque());
 }
 
+TEST(PendingLayerTest, SolidColor) {
+  auto artifact = TestPaintArtifact()
+                      .Chunk()
+                      .RectDrawing(gfx::Rect(100, 100, 250, 250), Color::kBlack)
+                      .IsSolidColor()
+                      .Chunk()
+                      .RectDrawing(gfx::Rect(100, 100, 150, 150), Color::kWhite)
+                      .IsSolidColor()
+                      .Chunk()
+                      .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack)
+                      .RectDrawing(gfx::Rect(100, 100, 150, 150), Color::kWhite)
+                      .Build();
+
+  PendingLayer pending_layer1(artifact, artifact->PaintChunks()[0]);
+  EXPECT_TRUE(pending_layer1.IsSolidColor());
+  EXPECT_EQ(SkColors::kBlack, pending_layer1.ComputeBackgroundColor());
+  PendingLayer pending_layer2(artifact, artifact->PaintChunks()[1]);
+  EXPECT_TRUE(pending_layer2.IsSolidColor());
+  EXPECT_EQ(SkColors::kWhite, pending_layer2.ComputeBackgroundColor());
+  PendingLayer pending_layer3(artifact, artifact->PaintChunks()[2]);
+  EXPECT_FALSE(pending_layer3.IsSolidColor());
+  EXPECT_TRUE(pending_layer1.Merge(pending_layer2));
+  EXPECT_FALSE(pending_layer1.IsSolidColor());
+}
+
 class PendingLayerTextOpaquenessTest
     : public testing::Test,
       public testing::WithParamInterface<bool> {

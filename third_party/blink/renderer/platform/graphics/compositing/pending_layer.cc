@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
@@ -68,6 +69,7 @@ PendingLayer::PendingLayer(scoped_refptr<const PaintArtifact> artifact,
       draws_content_(first_chunk.DrawsContent()),
       text_known_to_be_on_opaque_background_(
           first_chunk.text_known_to_be_on_opaque_background),
+      is_solid_color_(first_chunk.background_color.is_solid_color),
       chunks_(std::move(artifact), first_chunk),
       property_tree_state_(
           first_chunk.properties.GetPropertyTreeState().Unalias()),
@@ -101,17 +103,23 @@ gfx::Vector2dF PendingLayer::LayerOffset() const {
   // The solid color layer optimization is important for performance. Snapping
   // the location could make the solid color drawings not cover the entire
   // cc::Layer which would make the layer non-solid-color.
-  if (IsSolidColor())
+  if (IsSolidColor()) {
     return bounds_.OffsetFromOrigin();
+  }
   // Otherwise return integral offset to reduce chance of additional blurriness.
+  // TODO(crbug.com/1414915): This expansion may harm performance because
+  // opaque layers becomes non-opaque. We can avoid this when we support
+  // subpixel raster translation for render surfaces. We have already supported
+  // that for cc::PictureLayerImpls.
   return gfx::Vector2dF(gfx::ToFlooredVector2d(bounds_.OffsetFromOrigin()));
 }
 
 gfx::Size PendingLayer::LayerBounds() const {
   // Because solid color layers do not adjust their location (see:
   // |PendingLayer::LayerOffset()|), we only expand their size here.
-  if (IsSolidColor())
+  if (IsSolidColor()) {
     return gfx::ToCeiledSize(bounds_.size());
+  }
   return gfx::ToEnclosingRect(bounds_).size();
 }
 
@@ -168,6 +176,7 @@ void PendingLayer::Upcast(const PropertyTreeState& new_state) {
 
   rect_known_to_be_opaque_ = MapRectKnownToBeOpaque(new_state);
   property_tree_state_ = new_state;
+  is_solid_color_ = false;
 }
 
 const PaintChunk& PendingLayer::FirstPaintChunk() const {
@@ -223,6 +232,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
       draws_content_ |= guest.draws_content_;
       text_known_to_be_on_opaque_background_ = true;
       has_text_ |= guest.has_text_;
+      is_solid_color_ = false;
       change_of_decomposited_transforms_ =
           std::max(ChangeOfDecompositedTransforms(),
                    guest.ChangeOfDecompositedTransforms());
@@ -288,6 +298,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
     text_known_to_be_on_opaque_background_ =
         merged_text_known_to_be_on_opaque_background;
     has_text_ |= guest.has_text_;
+    is_solid_color_ = false;
     change_of_decomposited_transforms_ =
         std::max(ChangeOfDecompositedTransforms(),
                  guest.ChangeOfDecompositedTransforms());
@@ -624,16 +635,6 @@ void PendingLayer::UpdateLayerSelection(cc::LayerSelection& layer_selection) {
   }
 }
 
-bool PendingLayer::IsSolidColor() const {
-  if (Chunks().size() != 1)
-    return false;
-  const auto& items = chunks_.begin().DisplayItems();
-  if (items.size() != 1)
-    return false;
-  auto* drawing = DynamicTo<DrawingDisplayItem>(*items.begin());
-  return drawing && drawing->IsSolidColor();
-}
-
 // The heuristic for picking a checkerboarding color works as follows:
 // - During paint, PaintChunker will look for background color display items,
 //   and record the blending of background colors if the background is larger
@@ -643,26 +644,26 @@ bool PendingLayer::IsSolidColor() const {
 // - The blending of background colors of chunks having background larger than
 //   a ratio of the layer is set as the layer's background color.
 SkColor4f PendingLayer::ComputeBackgroundColor() const {
-  Vector<Color, 4> background_colors;
+  Vector<SkColor4f, 4> background_colors;
   float min_background_area =
       kMinBackgroundColorCoverageRatio * bounds_.width() * bounds_.height();
   for (auto it = chunks_.end(); it != chunks_.begin();) {
     const auto& chunk = *(--it);
-    if (chunk.background_color == Color::kTransparent)
+    if (chunk.background_color.color.fA == 0.0f) {
       continue;
-    if (chunk.background_color_area >= min_background_area) {
-      Color chunk_background_color = chunk.background_color;
+    }
+    if (chunk.background_color.area >= min_background_area) {
+      SkColor4f chunk_background_color = chunk.background_color.color;
       const auto& chunk_effect = chunk.properties.Effect().Unalias();
       if (&chunk_effect != &property_tree_state_.Effect()) {
         if (chunk_effect.UnaliasedParent() != &property_tree_state_.Effect() ||
             !chunk_effect.IsOpacityOnly()) {
           continue;
         }
-        chunk_background_color =
-            chunk_background_color.CombineWithAlpha(chunk_effect.Opacity());
+        chunk_background_color.fA *= chunk_effect.Opacity();
       }
       background_colors.push_back(chunk_background_color);
-      if (!chunk_background_color.HasAlpha()) {
+      if (chunk_background_color.isOpaque()) {
         // If this color is opaque, blending it with subsequent colors will have
         // no effect.
         break;
@@ -670,10 +671,19 @@ SkColor4f PendingLayer::ComputeBackgroundColor() const {
     }
   }
 
-  Color background_color;
-  for (Color color : base::Reversed(background_colors))
-    background_color = background_color.Blend(color);
-  return SkColor4f::FromColor(background_color.Rgb());
+  if (background_colors.empty()) {
+    return SkColors::kTransparent;
+  }
+  SkColor4f background_color = background_colors.back();
+  background_colors.pop_back();
+  for (const SkColor4f& color : base::Reversed(background_colors)) {
+    if (auto color_filter =
+            SkColorFilters::Blend(color, nullptr, SkBlendMode::kSrcOver)) {
+      background_color =
+          color_filter->filterColor4f(background_color, nullptr, nullptr);
+    }
+  }
+  return background_color;
 }
 
 }  // namespace blink

@@ -157,15 +157,17 @@ class PLATFORM_EXPORT PendingLayer {
 
   SkColor4f ComputeBackgroundColor() const;
 
+  // True if this contains only a single solid color PaintChunk in the same
+  // property tree state (decomposited 2d translations are allowed) as this
+  // PendingLayer.
+  bool IsSolidColor() const { return is_solid_color_; }
+
  private:
   gfx::RectF MapRectKnownToBeOpaque(const PropertyTreeState&) const;
   bool MergeInternal(const PendingLayer& guest,
                      const PropertyTreeState& guest_state,
                      bool prefers_lcd_text,
                      bool dry_run);
-
-  // True if this contains only a single solid color DrawingDisplayItem.
-  bool IsSolidColor() const;
 
   bool PropertyTreeStateChanged(const PendingLayer* old_pending_layer) const;
 
@@ -187,6 +189,7 @@ class PLATFORM_EXPORT PendingLayer {
   bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
   bool has_decomposited_blend_mode_ = false;
+  bool is_solid_color_ = false;
   PaintChunkSubset chunks_;
   RefCountedPropertyTreeState property_tree_state_;
   gfx::Vector2dF offset_of_decomposited_transforms_;

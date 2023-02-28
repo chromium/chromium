@@ -122,6 +122,7 @@ class TestPaintArtifact {
   TestPaintArtifact& RectKnownToBeOpaque(const gfx::Rect&);
   TestPaintArtifact& TextKnownToBeOnOpaqueBackground();
   TestPaintArtifact& HasText();
+  TestPaintArtifact& IsSolidColor();
   TestPaintArtifact& EffectivelyInvisible();
   TestPaintArtifact& Uncacheable();
   TestPaintArtifact& IsMovedFromCachedSubsequence();

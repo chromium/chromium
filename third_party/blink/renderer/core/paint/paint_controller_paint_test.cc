@@ -562,4 +562,48 @@ TEST_P(PaintControllerPaintTest,
               pos_z_child.FirstFragment().LocalBorderBoxProperties())));
 }
 
+TEST_P(PaintControllerPaintTest, PaintChunkIsSolidColor) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .target {
+        width: 50px;
+        height: 50px;
+        background-color: blue;
+        position: relative;
+      }
+    </style>
+    <div id="target1" class="target"></div>
+    <div id="target2" class="target">TEXT</div>
+    <div id="target3" class="target"
+         style="background-image: linear-gradient(red, blue)"></div>
+    <div id="target4" class="target" style="background-color: transparent">
+      <div style="width: 200px; height: 40px; background: blue"></div>
+    </div>
+    <div id="target5" class="target" style="background-color: transparent">
+      <div style="width: 200px; height: 60px; background: blue"></div>
+    </div>
+  )HTML");
+
+  auto chunks = ContentPaintChunks();
+  ASSERT_EQ(6u, chunks.size());
+  // View background.
+  EXPECT_TRUE(chunks[0].background_color.is_solid_color);
+  EXPECT_EQ(SkColors::kWhite, chunks[0].background_color.color);
+  // target1.
+  EXPECT_TRUE(chunks[1].background_color.is_solid_color);
+  EXPECT_EQ(SkColors::kBlue, chunks[1].background_color.color);
+  // target2.
+  EXPECT_FALSE(chunks[2].background_color.is_solid_color);
+  EXPECT_EQ(SkColors::kBlue, chunks[2].background_color.color);
+  // target3.
+  EXPECT_FALSE(chunks[3].background_color.is_solid_color);
+  EXPECT_EQ(SkColors::kBlue, chunks[3].background_color.color);
+  // target4.
+  EXPECT_FALSE(chunks[4].background_color.is_solid_color);
+  EXPECT_EQ(SkColors::kBlue, chunks[4].background_color.color);
+  // target5.
+  EXPECT_TRUE(chunks[5].background_color.is_solid_color);
+  EXPECT_EQ(SkColors::kBlue, chunks[5].background_color.color);
+}
+
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
+#include "third_party/skia/include/core/SkColorFilter.h"
 
 namespace blink {
 
@@ -26,8 +27,6 @@ void PaintChunker::ResetChunks(Vector<PaintChunk>* chunks) {
 bool PaintChunker::IsInInitialState() const {
   if (current_properties_ != PropertyTreeState::Uninitialized())
     return false;
-  DCHECK(candidate_background_color_ == Color::kTransparent);
-  DCHECK_EQ(candidate_background_area_, 0u);
   DCHECK(will_force_new_chunk_);
   DCHECK(!chunks_ || chunks_->empty());
   return true;
@@ -121,20 +120,13 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
 
   bool created_new_chunk = EnsureCurrentChunk(item.GetId(), client);
   auto& chunk = chunks_->back();
+  chunk.end_index++;
 
   chunk.bounds.Union(item.VisualRect());
   if (item.DrawsContent())
     chunk.drawable_bounds.Union(item.VisualRect());
 
-  // If this paints the background and it's larger than our current candidate,
-  // set the candidate to be this item.
-  if (item.IsDrawing() && item.DrawsContent()) {
-    float item_area;
-    // TODO(https://crbug.com/1351544): This should be SkColor4f and not Color.
-    Color item_color = Color::FromSkColor(
-        To<DrawingDisplayItem>(item).BackgroundColor(item_area));
-    ProcessBackgroundColorCandidate(chunk.id, client, item_color, item_area);
-  }
+  ProcessBackgroundColorCandidate(item);
 
   if (const auto* drawing = DynamicTo<DrawingDisplayItem>(item)) {
     chunk.rect_known_to_be_opaque = gfx::MaximumCoveredRect(
@@ -157,8 +149,6 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
 
   chunk.raster_effect_outset =
       std::max(chunk.raster_effect_outset, item.GetRasterEffectOutset());
-
-  chunk.end_index++;
 
   // When forcing a new chunk, we still need to force new chunk for the next
   // display item. Otherwise reset force_new_chunk_ to false.
@@ -283,25 +273,29 @@ void PaintChunker::CreateScrollHitTestChunk(
   SetWillForceNewChunk(true);
 }
 
-void PaintChunker::ProcessBackgroundColorCandidate(
-    const PaintChunk::Id& id,
-    const DisplayItemClient& client,
-    Color color,
-    float area) {
-  if (color == Color::kTransparent)
-    return;
-
-  bool created_new_chunk = EnsureCurrentChunk(id, client);
-  float min_background_area = kMinBackgroundColorCoverageRatio *
-                              chunks_->back().bounds.width() *
-                              chunks_->back().bounds.height();
-  if (created_new_chunk || area >= candidate_background_area_ ||
-      area >= min_background_area) {
-    candidate_background_color_ =
-        candidate_background_area_ >= min_background_area
-            ? candidate_background_color_.Blend(color)
-            : color;
-    candidate_background_area_ = area;
+void PaintChunker::ProcessBackgroundColorCandidate(const DisplayItem& item) {
+  // If this paints the background and it's larger than our current candidate,
+  // set the candidate to be this item.
+  auto& chunk = chunks_->back();
+  if (item.IsDrawing() && item.DrawsContent()) {
+    PaintChunk::BackgroundColorInfo item_background_color =
+        To<DrawingDisplayItem>(item).BackgroundColor();
+    float min_background_area = kMinBackgroundColorCoverageRatio *
+                                chunk.bounds.width() * chunk.bounds.height();
+    if (item_background_color.area >= chunk.background_color.area ||
+        item_background_color.area >= min_background_area) {
+      if (chunk.background_color.area >= min_background_area &&
+          !item_background_color.color.isOpaque()) {
+        chunk.background_color.area = item_background_color.area;
+        if (auto filter = SkColorFilters::Blend(
+                item_background_color.color, nullptr, SkBlendMode::kSrcOver)) {
+          chunk.background_color.color = filter->filterColor4f(
+              chunk.background_color.color, nullptr, nullptr);
+        }
+      } else {
+        chunk.background_color = item_background_color;
+      }
+    }
   }
 }
 
@@ -311,12 +305,11 @@ void PaintChunker::FinalizeLastChunkProperties() {
     return;
 
   auto& chunk = chunks_->back();
-  if (candidate_background_color_ != Color::kTransparent) {
-    chunk.background_color = candidate_background_color_;
-    chunk.background_color_area = candidate_background_area_;
+  if (chunk.size() > 1 ||
+      chunk.background_color.area !=
+          static_cast<float>(chunk.bounds.width()) * chunk.bounds.height()) {
+    chunk.background_color.is_solid_color = false;
   }
-  candidate_background_color_ = Color::kTransparent;
-  candidate_background_area_ = 0u;
 }
 
 }  // namespace blink
