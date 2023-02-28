@@ -523,7 +523,10 @@ void StatisticsProviderImpl::LoadMachineInfoFile() {
     std::string stub_contents =
         "\"serial_number\"=\"stub_" +
         base::NumberToString(base::Time::Now().ToJavaTime()) + "\"\n";
-    if (!base::WriteFile(sources_.machine_info_filepath, stub_contents)) {
+    int bytes_written =
+        base::WriteFile(sources_.machine_info_filepath, stub_contents.c_str(),
+                        stub_contents.size());
+    if (bytes_written < static_cast<int>(stub_contents.size())) {
       PLOG(ERROR) << "Error writing machine info stub "
                   << sources_.machine_info_filepath;
     }
@@ -552,7 +555,9 @@ void StatisticsProviderImpl::LoadVpdFiles() {
       return;
     } else {
       std::string stub_contents = "\"ActivateDate\"=\"2000-01\"\n";
-      if (!base::WriteFile(sources_.vpd_filepath, stub_contents)) {
+      int bytes_written = base::WriteFile(
+          sources_.vpd_filepath, stub_contents.c_str(), stub_contents.size());
+      if (bytes_written < static_cast<int>(stub_contents.size())) {
         PLOG(ERROR) << "Error writing VPD stub " << sources_.vpd_filepath;
       }
     }
