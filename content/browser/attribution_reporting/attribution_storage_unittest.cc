@@ -2933,13 +2933,6 @@ TEST_F(AttributionStorageTest, GetNextReportTime) {
   EXPECT_EQ(storage()->GetNextReportTime(report_time_c), absl::nullopt);
 }
 
-TEST_F(AttributionStorageTest, SourceEventIdSanitized) {
-  delegate()->set_source_event_id_cardinality(4);
-
-  storage()->StoreSource(SourceBuilder().SetSourceEventId(5).Build());
-  EXPECT_THAT(storage()->GetActiveSources(), ElementsAre(SourceEventIdIs(1)));
-}
-
 TEST_F(AttributionStorageTest, TriggerDataSanitized) {
   delegate()->set_trigger_data_cardinality(/*navigation=*/4, /*event=*/3);
 

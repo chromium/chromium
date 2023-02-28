@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <limits>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -429,12 +428,6 @@ TEST(AttributionStorageDelegateImplTest, SanitizeTriggerData) {
               AttributionStorageDelegateImpl().SanitizeTriggerData(
                   test_case.trigger_data, test_case.source_type));
   }
-}
-
-TEST(AttributionStorageDelegateImplTest, SanitizeSourceEventId) {
-  EXPECT_EQ(AttributionStorageDelegateImpl().SanitizeSourceEventId(
-                std::numeric_limits<uint64_t>::max()),
-            std::numeric_limits<uint64_t>::max());
 }
 
 }  // namespace content

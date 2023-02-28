@@ -138,9 +138,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   uint64_t SanitizeTriggerData(uint64_t trigger_data,
                                attribution_reporting::mojom::SourceType) const;
 
-  // Sanitizes `source_event_id` according to the data limit.
-  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const;
-
  protected:
   uint64_t TriggerDataCardinality(
       attribution_reporting::mojom::SourceType) const;

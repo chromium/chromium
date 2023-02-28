@@ -140,17 +140,6 @@ class AttributionInteropParser {
              config.max_destinations_per_source_site_reporting_origin,
              required);
 
-    uint64_t source_event_id_cardinality;
-    if (ParseUint64(dict, "source_event_id_cardinality",
-                    source_event_id_cardinality, required,
-                    /*allow_zero=*/true)) {
-      if (source_event_id_cardinality == 0u) {
-        config.source_event_id_cardinality = absl::nullopt;
-      } else {
-        config.source_event_id_cardinality = source_event_id_cardinality;
-      }
-    }
-
     int rate_limit_time_window;
     if (ParseInt(dict, "rate_limit_time_window", rate_limit_time_window,
                  required)) {

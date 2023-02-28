@@ -230,8 +230,6 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_trigger_data_cardinality(uint64_t navigation, uint64_t event);
 
-  void set_source_event_id_cardinality(uint64_t cardinality);
-
   // Detaches the delegate from its current sequence in preparation for being
   // moved to storage, which runs on its own sequence.
   void DetachFromSequence();

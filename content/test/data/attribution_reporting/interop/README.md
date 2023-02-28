@@ -30,10 +30,6 @@ and optional in "api_config" field.
   // source origin. Formatted as a base-10 string.
   "max_sources_per_origin": "1024",
 
-  // Non-negative integer that controls the valid range of source event ID. No
-  // limit if zero. Formatted as a base-10 string.
-  "source_event_id_cardinality": "0",
-
   // Positive integer that controls the maximum number of distinct destinations
   // covered by pending sources for a given (source site, reporting origin).
   // Formatted as a base-10 string.

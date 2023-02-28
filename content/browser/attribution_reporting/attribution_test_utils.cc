@@ -146,7 +146,6 @@ base::GUID DefaultExternalReportID() {
 ConfigurableStorageDelegate::ConfigurableStorageDelegate()
     : AttributionStorageDelegate(AttributionConfig{
           .max_sources_per_origin = std::numeric_limits<int>::max(),
-          .source_event_id_cardinality = absl::nullopt,
           .max_destinations_per_source_site_reporting_origin =
               std::numeric_limits<int>::max(),
           .rate_limit =
@@ -339,14 +338,6 @@ void ConfigurableStorageDelegate::set_trigger_data_cardinality(
   config_.event_level_limit.navigation_source_trigger_data_cardinality =
       navigation;
   config_.event_level_limit.event_source_trigger_data_cardinality = event;
-}
-
-void ConfigurableStorageDelegate::set_source_event_id_cardinality(
-    uint64_t cardinality) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(cardinality, 0u);
-
-  config_.source_event_id_cardinality = cardinality;
 }
 
 MockAttributionManager::MockAttributionManager() = default;
