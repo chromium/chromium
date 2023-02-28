@@ -71,6 +71,11 @@ bool PackageId::operator==(const PackageId& rhs) const {
          this->identifier_ == rhs.identifier_;
 }
 
+bool PackageId::operator!=(const PackageId& rhs) const {
+  return this->app_type_ != rhs.app_type_ ||
+         this->identifier_ != rhs.identifier_;
+}
+
 // static
 absl::optional<PackageId> PackageId::FromString(
     base::StringPiece package_id_string) {

@@ -142,8 +142,8 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // apps.
   apps::PromiseAppRegistryCache& PromiseAppRegistryCache();
 
-  // Add a promise app to the Promise App Registry Cache.
-  void AddPromiseApp(PromiseAppPtr app);
+  // Add or update a promise app in the Promise App Registry Cache.
+  void OnPromiseApp(PromiseAppPtr delta);
 
  private:
   // For access to Initialize.

@@ -375,8 +375,8 @@ void AppServiceProxyAsh::ReadIconsForTesting(AppType app_type,
 apps::PromiseAppRegistryCache& AppServiceProxyAsh::PromiseAppRegistryCache() {
   return promise_app_registry_cache_;
 }
-void AppServiceProxyAsh::AddPromiseApp(PromiseAppPtr app) {
-  promise_app_registry_cache_.AddPromiseApp(std::move(app));
+void AppServiceProxyAsh::OnPromiseApp(PromiseAppPtr delta) {
+  promise_app_registry_cache_.OnPromiseApp(std::move(delta));
 }
 
 void AppServiceProxyAsh::Shutdown() {

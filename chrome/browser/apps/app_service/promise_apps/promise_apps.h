@@ -20,6 +20,8 @@ struct PromiseApp {
       : package_id(package_id) {}
   PackageId package_id;
   absl::optional<float> progress;
+
+  std::unique_ptr<PromiseApp> Clone() const;
 };
 
 using PromiseAppPtr = std::unique_ptr<PromiseApp>;

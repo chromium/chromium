@@ -4,6 +4,7 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 
 #include "chrome/browser/apps/app_service/package_id.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_update.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
 
 namespace apps {
@@ -12,18 +13,7 @@ PromiseAppRegistryCache::PromiseAppRegistryCache() = default;
 
 PromiseAppRegistryCache::~PromiseAppRegistryCache() = default;
 
-void PromiseAppRegistryCache::AddPromiseApp(PromiseAppPtr promise_app) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const PackageId& package_id = promise_app->package_id;
-  DCHECK(!promise_app_map_.contains(package_id));
-  promise_app_map_[package_id] = std::move(promise_app);
-
-  // TODO(b/261907495): Notify observers.
-}
-
-void PromiseAppRegistryCache::UpdatePromiseAppProgress(PackageId& package_id,
-                                                       float progress) {
+void PromiseAppRegistryCache::OnPromiseApp(PromiseAppPtr delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check that there isn't an update currently being processed. We do not allow
@@ -31,18 +21,32 @@ void PromiseAppRegistryCache::UpdatePromiseAppProgress(PackageId& package_id,
   DCHECK(!update_in_progress_);
   update_in_progress_ = true;
 
-  auto promise_iter = promise_app_map_.find(package_id);
-  DCHECK(promise_iter != promise_app_map_.end());
-  PromiseApp* promise_app = (promise_iter != promise_app_map_.end())
-                                ? promise_iter->second.get()
-                                : nullptr;
-  if (promise_app) {
-    promise_app->progress = progress;
+  // Retrieve the current promise app state.
+  apps::PromiseApp* state = FindPromiseApp(delta->package_id);
+
+  // Update the promise app with the delta or add the new promise app instance
+  // to the registry.
+  if (state) {
+    PromiseAppUpdate::Merge(state, delta.get());
+  } else {
+    promise_app_map_[delta->package_id] = delta->Clone();
   }
 
   // TODO(b/261907495): Notify observers.
 
   update_in_progress_ = false;
+}
+
+const PromiseApp* PromiseAppRegistryCache::GetPromiseApp(
+    const PackageId& package_id) const {
+  return FindPromiseApp(package_id);
+}
+
+PromiseApp* PromiseAppRegistryCache::FindPromiseApp(
+    const PackageId& package_id) const {
+  auto promise_iter = promise_app_map_.find(package_id);
+  return (promise_iter != promise_app_map_.end()) ? promise_iter->second.get()
+                                                  : nullptr;
 }
 
 }  // namespace apps

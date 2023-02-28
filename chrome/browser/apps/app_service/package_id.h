@@ -40,6 +40,7 @@ class PackageId {
   PackageId& operator=(const PackageId&);
   bool operator<(const PackageId&) const;
   bool operator==(const PackageId&) const;
+  bool operator!=(const PackageId&) const;
 
   // Parses a package ID from the canonical string format. Returns
   // absl::nullopt if parsing failed.

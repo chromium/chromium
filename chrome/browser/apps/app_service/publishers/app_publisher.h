@@ -63,8 +63,8 @@ class AppPublisher {
   // sends the initial list of apps to the App Service.
   void RegisterPublisher(AppType app_type);
 
-  // Publishes a single promise app to the Promise App Registry Cache.
-  void PublishPromiseApp(PromiseAppPtr app);
+  // Publishes a single promise app delta to the Promise App Registry Cache.
+  void PublishPromiseApp(PromiseAppPtr delta);
 #endif
 
   // Requests an icon for an app identified by |app_id|. The icon is identified
