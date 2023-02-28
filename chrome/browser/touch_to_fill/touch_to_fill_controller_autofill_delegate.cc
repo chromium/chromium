@@ -113,6 +113,10 @@ void TouchToFillControllerAutofillDelegate::OnShow(
 void TouchToFillControllerAutofillDelegate::OnCredentialSelected(
     const UiCredential& credential,
     base::OnceClosure action_complete) {
+  if (!driver_) {
+    return;
+  }
+
   action_complete_ = std::move(action_complete);
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedCredential))
