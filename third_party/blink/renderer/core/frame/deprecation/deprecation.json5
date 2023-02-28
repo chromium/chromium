@@ -266,13 +266,13 @@
     },
     {
       name: "NonStandardDeclarativeShadowDOM",
-      message: "The older, non-standardized `shadowroot` attribute is deprecated. Please use the new, standardized `shadowrootmode` attribute instead.",
+      message: "The older, non-standardized `shadowroot` attribute is deprecated, and will *no longer function* in M119. Please use the new, standardized `shadowrootmode` attribute instead.",
       translation_note: "This warning is displayed when a site contains a `<template>` element with the `shadowroot` attribute.",
       web_features: [
         "kDeclarativeShadowRoot",
       ],
       chrome_status_feature: 6239658726391808,
-      milestone: 112,
+      milestone: 119,
     },
     {
       name: "NoSysexWebMIDIWithoutPermission",
