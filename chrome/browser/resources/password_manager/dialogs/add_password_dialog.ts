@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../shared_style.css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -25,6 +26,7 @@ import {getTemplate} from './add_password_dialog.html.js';
 
 export interface AddPasswordDialogElement {
   $: {
+    addButton: CrButtonElement,
     dialog: CrDialogElement,
     noteInput: CrTextareaElement,
     passwordInput: CrInputElement,
@@ -78,7 +80,12 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return {
       website_: String,
       username_: String,
-      password_: String,
+
+      password_: {
+        type: String,
+        value: '',
+      },
+
       note_: String,
 
       urlCollection_: Object,
@@ -97,6 +104,12 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         type: String,
         computed: 'computeUsernameErrorMessage_(urlCollection_, username_, ' +
             'usernamesBySignonRealm_)',
+      },
+
+      canAddPassword_: {
+        type: Boolean,
+        computed: 'computeCanAddPassword_(websiteErrorMessage_, username_, ' +
+            'password_, note_)',
       },
     };
   }
@@ -196,6 +209,39 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         this.i18n(
             'passwordNoteCharacterCount', this.note_.length,
             PASSWORD_NOTE_MAX_CHARACTER_COUNT);
+  }
+
+  private computeCanAddPassword_(): boolean {
+    if (this.isWebsiteInputInvalid_()) {
+      return false;
+    }
+    if (this.isUsernameInputInvalid_()) {
+      return false;
+    }
+    if (this.password_.length === 0) {
+      return false;
+    }
+    if (this.isNoteInputInvalid_()) {
+      return false;
+    }
+    return true;
+  }
+
+  private onAddClick_() {
+    assert(this.computeCanAddPassword_());
+    assert(this.urlCollection_);
+    PasswordManagerImpl.getInstance()
+        .addPassword({
+          url: this.urlCollection_.signonRealm,
+          username: this.username_,
+          password: this.password_,
+          note: this.note_,
+          useAccountStore: false,
+        })
+        .then(() => {
+          this.$.dialog.close();
+        })
+        .catch(() => {});
   }
 }
 

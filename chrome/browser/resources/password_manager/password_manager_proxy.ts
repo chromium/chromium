@@ -158,6 +158,14 @@ export interface PasswordManagerProxy {
       reason: chrome.passwordsPrivate.PlaintextReason): Promise<string>;
 
   /**
+   * Saves a new password entry described by the given |options|.
+   * @param options Details about a new password and storage to be used.
+   * @return A promise that resolves when the new entry is added.
+   */
+  addPassword(options: chrome.passwordsPrivate.AddPasswordOptions):
+      Promise<void>;
+
+  /**
    * Should remove the saved password and notify that the list has changed.
    * @param id The id for the password entry being removed. No-op if |id| is not
    *     in the list.
@@ -329,6 +337,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
   requestPlaintextPassword(
       id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
     return chrome.passwordsPrivate.requestPlaintextPassword(id, reason);
+  }
+
+  addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
+    return chrome.passwordsPrivate.addPassword(options);
   }
 
   removeSavedPassword(

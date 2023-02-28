@@ -52,6 +52,7 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(
         dialog.i18n('missingTLD', 'www.com'),
         dialog.$.websiteInput.errorMessage);
+    assertTrue(dialog.$.addButton.disabled);
   });
 
   test('username validation works', async function() {
@@ -99,6 +100,7 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example2.com'),
         dialog.$.usernameInput.errorMessage);
+    assertTrue(dialog.$.addButton.disabled);
   });
 
   test('show/hide password', async function() {
@@ -158,5 +160,32 @@ suite('AddPasswordDialogTest', function() {
     assertEquals(
         dialog.i18n('passwordNoteCharacterCount', 1000, 1000),
         dialog.$.noteInput.secondFooter);
+    assertTrue(dialog.$.addButton.disabled);
+  });
+
+  test('password is saved', async function() {
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    // Enter website
+    dialog.$.websiteInput.value = 'www.example.com';
+    dialog.$.usernameInput.value = 'test';
+    dialog.$.passwordInput.value = 'lastPass';
+    dialog.$.noteInput.value = 'secret note.';
+    dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
+
+    await passwordManager.whenCalled('getUrlCollection');
+
+    assertFalse(dialog.$.addButton.disabled);
+    dialog.$.addButton.click();
+
+    const params = await passwordManager.whenCalled('addPassword');
+
+    assertEquals('https://www.example.com/login', params.url);
+    assertEquals(dialog.$.usernameInput.value, params.username);
+    assertEquals(dialog.$.passwordInput.value, params.password);
+    assertEquals(dialog.$.noteInput.value, params.note);
+    assertEquals(false, params.useAccountStore);
   });
 });

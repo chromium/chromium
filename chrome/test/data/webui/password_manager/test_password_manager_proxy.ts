@@ -37,6 +37,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
+      'addPassword',
       'cancelExportPasswords',
       'exportPasswords',
       'getBlockedSitesList',
@@ -191,6 +192,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       id: number, reason: chrome.passwordsPrivate.PlaintextReason) {
     this.methodCalled('requestPlaintextPassword', {id, reason});
     return Promise.resolve('plainTextPassword');
+  }
+
+  addPassword(options: chrome.passwordsPrivate.AddPasswordOptions) {
+    this.methodCalled('addPassword', options);
+    return Promise.resolve();
   }
 
   removeSavedPassword(
