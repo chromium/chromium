@@ -220,6 +220,11 @@ class AttestationClientImpl : public AttestationClient {
                     std::move(callback));
   }
 
+  void WaitForServiceToBeAvailable(
+      chromeos::WaitForServiceToBeAvailableCallback callback) override {
+    proxy_->WaitForServiceToBeAvailable(std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) {
     proxy_ = bus->GetObjectProxy(
         ::attestation::kAttestationServiceName,

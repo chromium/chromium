@@ -190,6 +190,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
@@ -1665,6 +1666,7 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
   // Shutdown these services after g_browser_process.
   InstallAttributes::Shutdown();
   DeviceSettingsService::Shutdown();
+  attestation::AttestationFeatures::Shutdown();
 }
 
 void ChromeBrowserMainPartsAsh::StartDeviceActivityController() {

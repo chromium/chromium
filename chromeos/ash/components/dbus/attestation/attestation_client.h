@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 
 namespace dbus {
 class Bus;
@@ -326,6 +327,10 @@ class COMPONENT_EXPORT(ASH_DBUS_ATTESTATION) AttestationClient {
   virtual void GetCertifiedNvIndex(
       const ::attestation::GetCertifiedNvIndexRequest& request,
       GetCertifiedNvIndexCallback callback) = 0;
+
+  // Runs the callback as soon as the service becomes available.
+  virtual void WaitForServiceToBeAvailable(
+      chromeos::WaitForServiceToBeAvailableCallback callback) = 0;
 
   // Returns an interface for testing (fake only), or returns nullptr.
   virtual TestInterface* GetTestInterface() = 0;
