@@ -52,15 +52,13 @@ int main(int argc, char** argv) {
       i += 2;
       CHECK_LE(i, argc);
       std::string nacl_gdb_script(argv[i - 1]);
-      base::WriteFile(base::FilePath::FromUTF8Unsafe(nacl_gdb_script),
-                      kPass, sizeof(kPass) - 1);
+      base::WriteFile(base::FilePath::FromUTF8Unsafe(nacl_gdb_script), kPass);
       continue;
     }
     // Unknown argument.
     NOTREACHED() << "Invalid argument " << argv[i];
   }
   CHECK_EQ(i, argc);
-  base::WriteFile(base::FilePath::FromUTF8Unsafe(mock_nacl_gdb_file),
-                  kPass, sizeof(kPass) - 1);
+  base::WriteFile(base::FilePath::FromUTF8Unsafe(mock_nacl_gdb_file), kPass);
   return 0;
 }
