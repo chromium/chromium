@@ -70,16 +70,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GCM.Crypto.EncryptMessageResult" enum="GCMEncryptionResult"
-    expires_after="M92">
-  <owner>peter@chromium.org</owner>
-  <owner>alexchau@chromium.org</owner>
-  <summary>
-    Result of encryption of outgoing GCM message, which includes successfully
-    encrypted messages and encryption failures.
-  </summary>
-</histogram>
-
 <histogram name="GCM.Crypto.GCMDatabaseUpgradeResult" enum="Boolean"
     expires_after="2021-07-21">
   <owner>nator@chromium.org</owner>

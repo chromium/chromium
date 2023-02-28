@@ -371,8 +371,6 @@ void GCMDriver::EncryptMessage(const std::string& app_id,
 void GCMDriver::OnMessageEncrypted(EncryptMessageCallback callback,
                                    GCMEncryptionResult result,
                                    std::string message) {
-  UMA_HISTOGRAM_ENUMERATION("GCM.Crypto.EncryptMessageResult", result,
-                            GCMEncryptionResult::ENUM_SIZE);
   std::move(callback).Run(result, std::move(message));
 }
 

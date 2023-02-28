@@ -47364,13 +47364,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="12" label="Failure (invalid public key format)"/>
 </enum>
 
-<enum name="GCMEncryptionResult">
-  <int value="0" label="Success (message decrypted per draft 08)"/>
-  <int value="1" label="Failure (no keying material available)"/>
-  <int value="2" label="Failure (unable to compute the shared secret)"/>
-  <int value="3" label="Failure (unable to encrypt using AES-GCM)"/>
-</enum>
-
 <enum name="GCMInvalidationsIncomingMessageStatus">
   <obsolete>
     Deprecated 2020-02, no longer used.
