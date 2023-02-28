@@ -339,12 +339,14 @@ UIStackView* CreateLoadingScreen(UIView* track_button, UIView* menu_button) {
   [super prepareForReuse];
   self.delegate = nil;
   self.loading = NO;
+  [self.trackButton setUserInteractionEnabled:YES];
 }
 
 #pragma mark - Private
 
 // Initiates the user's subscription to the product's price tracking events.
 - (void)trackItem {
+  [self.trackButton setUserInteractionEnabled:NO];
   [self.delegate trackItemForCell:self];
 }
 

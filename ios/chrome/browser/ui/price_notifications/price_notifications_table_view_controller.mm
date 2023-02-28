@@ -309,6 +309,12 @@ const char kBookmarksSettingsURL[] = "settings://open_bookmarks";
   [self addTrackedItem:trackableItem toBeginning:YES];
 }
 
+- (void)resetPriceTrackingItem:(PriceNotificationsTableViewItem*)item {
+  PriceNotificationsTableViewCell* cell = [self.tableView
+      cellForRowAtIndexPath:[self.tableViewModel indexPathForItem:item]];
+  [cell.trackButton setUserInteractionEnabled:YES];
+}
+
 #pragma mark - PriceNotificationsTableViewCellDelegate
 
 - (void)trackItemForCell:(PriceNotificationsTableViewCell*)cell {

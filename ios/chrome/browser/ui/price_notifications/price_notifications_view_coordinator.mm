@@ -170,6 +170,8 @@
 - (void)presentStartPriceTrackingErrorAlertForItem:
     (PriceNotificationsTableViewItem*)item {
   __weak PriceNotificationsPriceTrackingMediator* weakMediator = self.mediator;
+  __weak PriceNotificationsTableViewController* weakController =
+      self.tableViewController;
   NSString* alertTitle = l10n_util::GetNSString(
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_ERROR_ALERT_TITLE);
   NSString* alertMessage = l10n_util::GetNSString(
@@ -186,7 +188,9 @@
                            title:alertTitle
                          message:alertMessage];
   [_alertCoordinator addItemWithTitle:cancelTitle
-                               action:nil
+                               action:^{
+                                 [weakController resetPriceTrackingItem:item];
+                               }
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator addItemWithTitle:tryAgainTitle
                                action:^{
