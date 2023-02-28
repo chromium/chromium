@@ -7127,6 +7127,11 @@ TEST_F(URLLoaderTest, CookieSettingOverridesCopiedToURLRequest) {
   GURL url = test_server()->GetURL("/simple_page.html");
   net::CookieSettingOverrides cookie_setting_overrides =
       net::CookieSettingOverrides::All();
+  // The overrides are not allowed to start out with the
+  // `kStorageAccessGrantEligible` override present.
+  cookie_setting_overrides.Remove(
+      net::CookieSettingOverride::kStorageAccessGrantEligible);
+
   set_cookie_setting_overrides(cookie_setting_overrides);
   bool was_intercepted = false;
   net::URLRequestFilter::GetInstance()->AddUrlInterceptor(

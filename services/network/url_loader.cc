@@ -736,6 +736,12 @@ URLLoader::URLLoader(
         net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
 
+  // The `kStorageAccessGrantEligible` override will be applied (in-place) by
+  // individual request jobs as appropriate, but should not be present
+  // initially.
+  DCHECK(!url_request_->cookie_setting_overrides().Has(
+      net::CookieSettingOverride::kStorageAccessGrantEligible));
+
   // Resolve elements from request_body and prepare upload data.
   if (request.request_body.get()) {
     OpenFilesForUpload(request);
