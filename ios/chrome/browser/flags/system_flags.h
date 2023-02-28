@@ -40,6 +40,10 @@ bool ShouldResetFirstFollowCount();
 // dismissal conditions. The promo will still only show for signed out users.
 bool ShouldForceFeedSigninPromo();
 
+// Returns true if Tile Ablation should be forced regardless of the value of
+// `isTileAblationExperimentComplete`.
+bool ShouldIgnoreTileAblationConditions();
+
 // Should be called after the count has been reset so that the resetting flag
 // can be turned off.
 // TODO(crbug.com/1312124): Remove after launch.
