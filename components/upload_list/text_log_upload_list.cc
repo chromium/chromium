@@ -92,11 +92,62 @@ bool CheckJsonUploadListOutOfRange(const base::Value& dict,
   return CheckFieldOutOfRange(upload_time_string, begin, end) &&
          CheckFieldOutOfRange(capture_time_string, begin, end);
 }
+}  // namespace
 
-// Tries to parse one upload log line based on CSV format, then converts it to
-// a UploadInfo entry. If the conversion succeeds, it returns a valid UploadInfo
-// instance. Otherwise, it returns nullptr.
-std::unique_ptr<UploadList::UploadInfo> TryParseCsvLogEntry(
+TextLogUploadList::TextLogUploadList(const base::FilePath& upload_log_path)
+    : upload_log_path_(upload_log_path) {}
+
+TextLogUploadList::~TextLogUploadList() = default;
+
+std::vector<std::unique_ptr<UploadList::UploadInfo>>
+TextLogUploadList::LoadUploadList() {
+  std::vector<std::unique_ptr<UploadInfo>> uploads;
+
+  if (base::PathExists(upload_log_path_)) {
+    std::string contents;
+    base::ReadFileToString(upload_log_path_, &contents);
+    ParseLogEntries(SplitIntoLines(contents), &uploads);
+  }
+
+  return uploads;
+}
+
+void TextLogUploadList::ClearUploadList(const base::Time& begin,
+                                        const base::Time& end) {
+  if (!base::PathExists(upload_log_path_)) {
+    return;
+  }
+
+  std::string contents;
+  base::ReadFileToString(upload_log_path_, &contents);
+  std::vector<std::string> log_entries = SplitIntoLines(contents);
+
+  std::ostringstream new_contents_stream;
+  for (const std::string& line : log_entries) {
+    absl::optional<base::Value> json = base::JSONReader::Read(line);
+    bool should_copy = false;
+
+    if (json.has_value()) {
+      should_copy = json->is_dict() &&
+                    CheckJsonUploadListOutOfRange(json.value(), begin, end);
+    } else {
+      should_copy = CheckCsvUploadListOutOfRange(line, begin, end);
+    }
+
+    if (should_copy) {
+      new_contents_stream << line << std::endl;
+    }
+  }
+
+  std::string new_contents = new_contents_stream.str();
+  if (new_contents.size() == 0) {
+    base::DeleteFile(upload_log_path_);
+  } else {
+    base::WriteFile(upload_log_path_, new_contents);
+  }
+}
+
+std::unique_ptr<UploadList::UploadInfo> TextLogUploadList::TryParseCsvLogEntry(
     const std::string& log_line) {
   std::vector<std::string> components = SplitIntoComponents(log_line);
   // Skip any blank (or corrupted) lines.
@@ -134,11 +185,7 @@ std::unique_ptr<UploadList::UploadInfo> TryParseCsvLogEntry(
   return info;
 }
 
-// Tries to parse one upload log dictionary based on line-based JSON format (no
-// internal additional newline is permitted), then converts it to a UploadInfo
-// entry. If the conversion succeeds, it returns a valid UploadInfo instance.
-// Otherwise, it returns nullptr.
-std::unique_ptr<UploadList::UploadInfo> TryParseJsonLogEntry(
+std::unique_ptr<UploadList::UploadInfo> TextLogUploadList::TryParseJsonLogEntry(
     const base::Value& dict) {
   // Parse upload_id.
   const base::Value* upload_id_value = dict.GetDict().Find(kJsonLogKeyUploadId);
@@ -188,59 +235,6 @@ std::unique_ptr<UploadList::UploadInfo> TryParseJsonLogEntry(
   }
 
   return info;
-}
-
-}  // namespace
-
-TextLogUploadList::TextLogUploadList(const base::FilePath& upload_log_path)
-    : upload_log_path_(upload_log_path) {}
-
-TextLogUploadList::~TextLogUploadList() = default;
-
-std::vector<std::unique_ptr<UploadList::UploadInfo>>
-TextLogUploadList::LoadUploadList() {
-  std::vector<std::unique_ptr<UploadInfo>> uploads;
-
-  if (base::PathExists(upload_log_path_)) {
-    std::string contents;
-    base::ReadFileToString(upload_log_path_, &contents);
-    ParseLogEntries(SplitIntoLines(contents), &uploads);
-  }
-
-  return uploads;
-}
-
-void TextLogUploadList::ClearUploadList(const base::Time& begin,
-                                        const base::Time& end) {
-  if (!base::PathExists(upload_log_path_))
-    return;
-
-  std::string contents;
-  base::ReadFileToString(upload_log_path_, &contents);
-  std::vector<std::string> log_entries = SplitIntoLines(contents);
-
-  std::ostringstream new_contents_stream;
-  for (const std::string& line : log_entries) {
-    absl::optional<base::Value> json = base::JSONReader::Read(line);
-    bool should_copy = false;
-
-    if (json.has_value()) {
-      should_copy = json->is_dict() &&
-                    CheckJsonUploadListOutOfRange(json.value(), begin, end);
-    } else {
-      should_copy = CheckCsvUploadListOutOfRange(line, begin, end);
-    }
-
-    if (should_copy)
-      new_contents_stream << line << std::endl;
-  }
-
-  std::string new_contents = new_contents_stream.str();
-  if (new_contents.size() == 0) {
-    base::DeleteFile(upload_log_path_);
-  } else {
-    base::WriteFile(upload_log_path_, new_contents);
-  }
 }
 
 void TextLogUploadList::ParseLogEntries(
