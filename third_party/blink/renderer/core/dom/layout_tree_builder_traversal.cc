@@ -42,7 +42,7 @@ inline static bool HasDisplayContentsStyle(const Node& node) {
 }
 
 static bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
-  return layout_object->IsInTopLayer();
+  return layout_object->IsInTopOrViewTransitionLayer();
 }
 
 ContainerNode* LayoutTreeBuilderTraversal::Parent(const Node& node) {

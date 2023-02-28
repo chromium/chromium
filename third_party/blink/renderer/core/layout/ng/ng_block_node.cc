@@ -1778,8 +1778,8 @@ bool NGBlockNode::IsAtomicInlineLevel() const {
   return GetLayoutBox()->IsAtomicInlineLevel() && GetLayoutBox()->IsInline();
 }
 
-bool NGBlockNode::IsInTopLayer() const {
-  return GetLayoutBox()->IsInTopLayer();
+bool NGBlockNode::IsInTopOrViewTransitionLayer() const {
+  return GetLayoutBox()->IsInTopOrViewTransitionLayer();
 }
 
 bool NGBlockNode::HasAspectRatio() const {

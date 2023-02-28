@@ -116,11 +116,6 @@ The test verifies functionality of querying style information for view-transitio
                                         name : pointer-events
                                         value : none
                                     }
-                                    [6] : {
-                                        important : true
-                                        name : top-layer
-                                        value : browser !important
-                                    }
                                 ]
                                 shorthandEntries : [
                                     [0] : {
@@ -1717,11 +1712,6 @@ Dumping styles for : ::view-transition with id undefined{
                             [5] : {
                                 name : pointer-events
                                 value : none
-                            }
-                            [6] : {
-                                important : true
-                                name : top-layer
-                                value : browser !important
                             }
                         ]
                         shorthandEntries : [

@@ -1792,7 +1792,7 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
         *anchor_queries, candidate_style.AnchorDefault(), implicit_anchor,
         *css_containing_block, container_converter, candidate_writing_direction,
         container_converter.ToPhysical(node_info.container_info.rect).offset,
-        node_info.node.IsInTopLayer());
+        node_info.node.IsInTopOrViewTransitionLayer());
   } else if (const NGLogicalAnchorQuery* anchor_query =
                  container_builder_->AnchorQuery()) {
     // Otherwise the |container_builder_| is the containing block.
@@ -1800,7 +1800,7 @@ NGOutOfFlowLayoutPart::TryCalculateOffset(
         *anchor_query, candidate_style.AnchorDefault(), implicit_anchor,
         container_converter, candidate_writing_direction,
         container_converter.ToPhysical(node_info.container_info.rect).offset,
-        node_info.node.IsInTopLayer());
+        node_info.node.IsInTopOrViewTransitionLayer());
   } else {
     anchor_evaluator_storage.emplace();
   }

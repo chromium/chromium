@@ -13,9 +13,6 @@ html::view-transition {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  /* TODO(crbug.com/1417609): ::view-transition is not rendered in the top layer
-     per spec, but our implementation currently does. */
-  top-layer: browser !important;
 }
 
 html::view-transition-group(*) {

@@ -210,8 +210,7 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
       root_block = multi_column_flow_thread;
     for (LayoutObject* child = root_block->FirstChild(); child;
          child = child->NextSibling()) {
-      if (child->StyleRef().TopLayer() == ETopLayer::kBrowser &&
-          child->IsStacked()) {
+      if (child->IsInTopOrViewTransitionLayer() && child->IsStacked()) {
         pos_z_order_list_.push_back(To<LayoutBoxModelObject>(child)->Layer());
       }
     }
@@ -223,8 +222,9 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
                                            HighestLayers* highest_layers) {
   paint_layer.SetNeedsReorderOverlayOverflowControls(false);
 
-  if (paint_layer.IsInTopLayer())
+  if (paint_layer.IsInTopOrViewTransitionLayer()) {
     return;
+  }
 
   if (highest_layers)
     highest_layers->Update(paint_layer);

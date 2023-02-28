@@ -6822,8 +6822,6 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
 
   if (pseudo_id == kPseudoIdBackdrop) {
     GetDocument().AddToTopLayer(pseudo_element, this);
-  } else if (pseudo_id == kPseudoIdViewTransition) {
-    GetDocument().AddToTopLayer(pseudo_element);
   }
 
   pseudo_element->SetComputedStyle(pseudo_style);

@@ -466,7 +466,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   Node* EnclosingNode() const;
 
-  bool IsInTopLayer() const;
+  bool IsInTopOrViewTransitionLayer() const;
 
   // FIXME: This should probably return a ScrollableArea but a lot of internal
   // methods are mistakenly exposed.

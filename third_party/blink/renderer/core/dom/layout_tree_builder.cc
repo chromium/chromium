@@ -58,14 +58,31 @@ LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
   if (node_->IsFirstLetterPseudoElement()) {
     return context_.next_sibling;
   }
+  if (style_->StyleType() == kPseudoIdViewTransition) {
+    // ::view-transition is the last rendered child of LayoutView()
+    return nullptr;
+  }
   if (style_->IsInTopLayer(*node_)) {
-    return LayoutTreeBuilderTraversal::NextInTopLayer(*node_);
+    if (LayoutObject* next_in_top_layer =
+            LayoutTreeBuilderTraversal::NextInTopLayer(*node_)) {
+      return next_in_top_layer;
+    }
+    // We are at the end of the top layer elements. The ::view-transition is
+    // rendered on top of the top layer elements, appended as the last child of
+    // the LayoutView.
+    if (PseudoElement* view_transition_pseudo =
+            node_->GetDocument().documentElement()->GetPseudoElement(
+                kPseudoIdViewTransition)) {
+      return view_transition_pseudo->GetLayoutObject();
+    }
+    return nullptr;
   }
   return LayoutTreeBuilder::NextLayoutObject();
 }
 
 LayoutObject* LayoutTreeBuilderForElement::ParentLayoutObject() const {
-  if (style_->IsInTopLayer(*node_)) {
+  if (style_->StyleType() == kPseudoIdViewTransition ||
+      style_->IsInTopLayer(*node_)) {
     return node_->GetDocument().GetLayoutView();
   }
   return context_.parent;

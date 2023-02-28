@@ -843,8 +843,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
       if ((element && element->IsInTopLayer()) ||
-          builder.StyleType() == kPseudoIdBackdrop ||
-          builder.StyleType() == kPseudoIdViewTransition) {
+          builder.StyleType() == kPseudoIdBackdrop) {
         builder.SetTopLayer(ETopLayer::kBrowser);
       }
     }
@@ -855,7 +854,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // to 'absolute'. Root elements that are in the top layer should just
     // be left alone because the fullscreen.css doesn't apply any style to
     // them.
-    if (builder.TopLayer() == ETopLayer::kBrowser && !is_document_element) {
+    if ((builder.TopLayer() == ETopLayer::kBrowser && !is_document_element) ||
+        builder.StyleType() == kPseudoIdViewTransition) {
       if (builder.GetPosition() == EPosition::kStatic ||
           builder.GetPosition() == EPosition::kRelative) {
         builder.SetPosition(EPosition::kAbsolute);
@@ -931,7 +931,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.SetForcesStackingContext(true);
   }
 
-  if (builder.TopLayer() == ETopLayer::kBrowser) {
+  if (builder.TopLayer() == ETopLayer::kBrowser ||
+      builder.StyleType() == kPseudoIdViewTransition) {
     builder.SetForcesStackingContext(true);
   }
 
