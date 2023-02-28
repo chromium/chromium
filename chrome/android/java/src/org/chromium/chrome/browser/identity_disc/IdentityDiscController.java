@@ -205,7 +205,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     private Drawable getProfileImage(@Nullable String email) {
         assert mIsIdentityDiscShown;
         if (shouldUseSignedOutAvatar(email)) {
-            return AppCompatResources.getDrawable(mContext, R.drawable.account_circle_full);
+            return AppCompatResources.getDrawable(mContext, R.drawable.account_circle);
         }
         return mProfileDataCache.getProfileDataOrDefault(email).getImage();
     }
