@@ -50,6 +50,12 @@ void CloudPolicyStore::RemoveObserver(CloudPolicyStore::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool CloudPolicyStore::HasObserver(CloudPolicyStore::Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return observers_.HasObserver(observer);
+}
+
 void CloudPolicyStore::NotifyStoreLoaded() {
   is_initialized_ = true;
   UpdateFirstPoliciesLoaded();
