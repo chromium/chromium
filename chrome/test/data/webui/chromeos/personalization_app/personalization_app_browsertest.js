@@ -6,7 +6,7 @@
  * @fileoverview E2E test suite for chrome://personalization.
  */
 
-GEN('#include "ash/webui/personalization_app/test/personalization_app_browsertest_fixture.h"');
+GEN('#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_browsertest_fixture.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/ambient/ambient_client.h"');

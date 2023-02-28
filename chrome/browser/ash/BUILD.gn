@@ -4510,6 +4510,8 @@ static_library("test_support") {
     "settings/scoped_testing_cros_settings.h",
     "wallpaper_handlers/mock_wallpaper_handlers.cc",
     "wallpaper_handlers/mock_wallpaper_handlers.h",
+    "web_applications/personalization_app/personalization_app_browsertest_fixture.cc",
+    "web_applications/personalization_app/personalization_app_browsertest_fixture.h",
   ]
   allow_circular_includes_from = [
     "//chrome/test:test_support",
@@ -4601,6 +4603,7 @@ static_library("test_support") {
     "//ash/components/arc:notification_test_support",
     "//ash/components/arc/session",
     "//ash/constants",
+    "//ash/webui/personalization_app:test_support",
     "//ash/webui/personalization_app/mojom",
     "//base/test:test_config",
     "//chrome/browser:browser_process",

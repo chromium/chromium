@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/personalization_app/test/personalization_app_browsertest_fixture.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_browsertest_fixture.h"
 
 #include <memory>
 

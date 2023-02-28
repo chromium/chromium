@@ -46,17 +46,7 @@ static_library("personalization_app") {
   ]
 }
 
-js2gtest("browser_tests_js") {
-  test_type = "mojo_lite_webui"
-
-  sources = [ "test/personalization_app_browsertest.js" ]
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  deps = [ ":browser_test_support" ]
-}
-
-source_set("browser_test_support") {
+source_set("test_support") {
   testonly = true
   sources = [
     "test/fake_personalization_app_ambient_provider.cc",
@@ -69,8 +59,6 @@ source_set("browser_test_support") {
     "test/fake_personalization_app_user_provider.h",
     "test/fake_personalization_app_wallpaper_provider.cc",
     "test/fake_personalization_app_wallpaper_provider.h",
-    "test/personalization_app_browsertest_fixture.cc",
-    "test/personalization_app_browsertest_fixture.h",
     "test/personalization_app_mojom_banned_browsertest_fixture.cc",
     "test/personalization_app_mojom_banned_browsertest_fixture.h",
   ]
