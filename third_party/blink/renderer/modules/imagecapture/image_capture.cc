@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -57,6 +58,94 @@ const char kNoServiceError[] = "ImageCapture service unavailable.";
 
 const char kInvalidStateTrackError[] =
     "The associated Track is in an invalid state";
+
+// This adapter simplifies iteration over all basic and advanced
+// MediaTrackConstraintSets in a MediaTrackConstraints.
+// A MediaTrackConstraints is itself a (basic) MediaTrackConstraintSet and it
+// may contain advanced MediaTrackConstraintSets.
+class AllConstraintSets {
+ public:
+  class ForwardIterator {
+   public:
+    ForwardIterator(const MediaTrackConstraints* constraints, wtf_size_t index)
+        : constraints_(constraints), index_(index) {}
+    const MediaTrackConstraintSet* operator*() const {
+      if (index_ == 0u) {
+        // The basic constraint set.
+        return constraints_;
+      }
+      // The advanced constraint sets.
+      wtf_size_t advanced_index = index_ - 1u;
+      return constraints_->advanced()[advanced_index];
+    }
+    ForwardIterator& operator++() {
+      ++index_;
+      return *this;
+    }
+    ForwardIterator operator++(int) {
+      return ForwardIterator(constraints_, index_++);
+    }
+    bool operator==(const ForwardIterator& other) const {
+      // Equality between iterators related to different MediaTrackConstraints
+      // objects is not defined.
+      DCHECK_EQ(constraints_, other.constraints_);
+      return index_ == other.index_;
+    }
+    bool operator!=(const ForwardIterator& other) const {
+      return !(*this == other);
+    }
+
+   private:
+    Persistent<const MediaTrackConstraints> constraints_;
+    wtf_size_t index_;
+  };
+
+  explicit AllConstraintSets(const MediaTrackConstraints* constraints)
+      : constraints_(constraints) {}
+  ForwardIterator begin() const {
+    return ForwardIterator(GetConstraints(), 0u);
+  }
+  ForwardIterator end() const {
+    const auto* constraints = GetConstraints();
+    return ForwardIterator(
+        constraints,
+        constraints->hasAdvanced() ? 1u + constraints->advanced().size() : 1u);
+  }
+
+  const MediaTrackConstraints* GetConstraints() const { return constraints_; }
+
+ private:
+  Persistent<const MediaTrackConstraints> constraints_;
+};
+
+// This adapter simplifies iteration over supported advanced
+// MediaTrackConstraintSets in a MediaTrackConstraints.
+// A MediaTrackConstraints is itself a (basic) MediaTrackConstraintSet and it
+// may contain advanced MediaTrackConstraintSets. So far, only the first
+// advanced MediaTrackConstraintSet is supported by this implementation.
+// TODO(crbug.com/1408091): Add support for the basic constraint set and for
+// advanced constraint sets beyond the first one and remove this helper class.
+class AllSupportedConstraintSets {
+ public:
+  using ForwardIterator = AllConstraintSets::ForwardIterator;
+
+  explicit AllSupportedConstraintSets(const MediaTrackConstraints* constraints)
+      : all_constraint_sets_(constraints) {}
+  ForwardIterator begin() const {
+    const auto* constraints = all_constraint_sets_.GetConstraints();
+    return ForwardIterator(constraints, 1u);
+  }
+  ForwardIterator end() const {
+    const auto* constraints = all_constraint_sets_.GetConstraints();
+    return ForwardIterator(constraints, constraints->hasAdvanced() &&
+                                                !constraints->advanced().empty()
+                                            ? 2u
+                                            : 1u);
+  }
+
+ private:
+  AllConstraintSets all_constraint_sets_;
+};
 
 using CopyPanTiltZoom = base::StrongAlias<class CopyPanTiltZoomTag, bool>;
 
@@ -449,71 +538,74 @@ void ImageCapture::SetMediaTrackConstraints(
     return;
   }
 
-  const auto& constraint_set_vector = constraints->advanced();
-  DCHECK_GT(constraint_set_vector.size(), 0u);
-  // TODO(mcasas): add support more than one single advanced constraint.
-  const MediaTrackConstraintSet* constraint_set = constraint_set_vector[0];
-
   ExecutionContext* context = GetExecutionContext();
-  if (constraint_set->hasWhiteBalanceMode()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureWhiteBalanceMode);
+  for (const MediaTrackConstraintSet* constraint_set :
+       AllSupportedConstraintSets(constraints)) {
+    if (constraint_set->hasWhiteBalanceMode()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureWhiteBalanceMode);
+    }
+    if (constraint_set->hasExposureMode()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureExposureMode);
+    }
+    if (constraint_set->hasFocusMode()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureFocusMode);
+    }
+    if (constraint_set->hasPointsOfInterest()) {
+      UseCounter::Count(context, WebFeature::kImageCapturePointsOfInterest);
+    }
+    if (constraint_set->hasExposureCompensation()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureExposureCompensation);
+    }
+    if (constraint_set->hasExposureTime()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureExposureTime);
+    }
+    if (constraint_set->hasColorTemperature()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureColorTemperature);
+    }
+    if (constraint_set->hasIso()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureIso);
+    }
+    if (constraint_set->hasBrightness()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureBrightness);
+    }
+    if (constraint_set->hasContrast()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureContrast);
+    }
+    if (constraint_set->hasSaturation()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureSaturation);
+    }
+    if (constraint_set->hasSharpness()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureSharpness);
+    }
+    if (constraint_set->hasFocusDistance()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureFocusDistance);
+    }
+    if (constraint_set->hasPan()) {
+      UseCounter::Count(context, WebFeature::kImageCapturePan);
+    }
+    if (constraint_set->hasTilt()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureTilt);
+    }
+    if (constraint_set->hasZoom()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureZoom);
+    }
+    if (constraint_set->hasTorch()) {
+      UseCounter::Count(context, WebFeature::kImageCaptureTorch);
+    }
+    // TODO(eero.hakkinen@intel.com): count how many times backgroundBlur is
+    // used.
   }
-  if (constraint_set->hasExposureMode()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureExposureMode);
-  }
-  if (constraint_set->hasFocusMode()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureFocusMode);
-  }
-  if (constraint_set->hasPointsOfInterest()) {
-    UseCounter::Count(context, WebFeature::kImageCapturePointsOfInterest);
-  }
-  if (constraint_set->hasExposureCompensation()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureExposureCompensation);
-  }
-  if (constraint_set->hasExposureTime()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureExposureTime);
-  }
-  if (constraint_set->hasColorTemperature()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureColorTemperature);
-  }
-  if (constraint_set->hasIso()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureIso);
-  }
-  if (constraint_set->hasBrightness()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureBrightness);
-  }
-  if (constraint_set->hasContrast()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureContrast);
-  }
-  if (constraint_set->hasSaturation()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureSaturation);
-  }
-  if (constraint_set->hasSharpness()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureSharpness);
-  }
-  if (constraint_set->hasFocusDistance()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureFocusDistance);
-  }
-  if (constraint_set->hasPan()) {
-    UseCounter::Count(context, WebFeature::kImageCapturePan);
-  }
-  if (constraint_set->hasTilt()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureTilt);
-  }
-  if (constraint_set->hasZoom()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureZoom);
-  }
-  if (constraint_set->hasTorch()) {
-    UseCounter::Count(context, WebFeature::kImageCaptureTorch);
-  }
-  // TODO(eero.hakkinen@intel.com): count how many times backgroundBlur is
-  // used.
 
   if (!service_.is_bound()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotFoundError, kNoServiceError));
     return;
   }
+
+  const auto& constraint_set_vector = constraints->advanced();
+  DCHECK_GT(constraint_set_vector.size(), 0u);
+  // TODO(mcasas): add support more than one single advanced constraint.
+  const MediaTrackConstraintSet* constraint_set = constraint_set_vector[0];
 
   if (absl::optional<String> name =
           GetConstraintWithNonExistingCapability(constraint_set)) {
