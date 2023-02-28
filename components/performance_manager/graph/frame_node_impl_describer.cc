@@ -66,6 +66,7 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
           impl->document_.has_nonempty_beforeunload);
   doc.Set("network_almost_idle", impl->document_.network_almost_idle.value());
   doc.Set("had_form_interaction", impl->document_.had_form_interaction.value());
+  ret.Set("had_user_edits", impl->document_.had_user_edits.value());
   ret.Set("document", std::move(doc));
 
   // Frame node properties.
