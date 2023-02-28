@@ -69,6 +69,9 @@ void RendererURLLoaderThrottle::WillStartRequest(
   DCHECK(!blocked_);
   DCHECK(!url_checker_);
 
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.RendererThrottle.RequestDestination", request->destination);
+
   if (KnownSafeUrl(request->url))
     return;
 

@@ -118,6 +118,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".None" summary="neither consumer nor enterprise"/>
 </variants>
 
+<variants name="ThrottleProcess">
+  <variant name="Browser" summary="Browser"/>
+  <variant name="Renderer" summary="Renderer"/>
+</variants>
+
 <variants name="V4StoreNewFileNames">
   <variant name="CertCsdDownloadAllowlist"
       summary="certificate allowlist on downloads"/>
@@ -2789,15 +2794,23 @@ failing to fetch the updates which puts users' security at risk. -->
     response and the start request function is previously called. During this
     interval, Safe Browsing checks are performed in parallel.
   </summary>
-  <token key="Process">
-    <variant name="Browser" summary="browser"/>
-    <variant name="Renderer" summary="renderer"/>
-  </token>
+  <token key="Process" variants="ThrottleProcess"/>
   <token key="ResponseType">
     <variant name="" summary="from local cache or network"/>
     <variant name=".FromCache" summary="from local cache (e.g. HTTP cache)"/>
     <variant name=".FromNetwork" summary="from network"/>
   </token>
+</histogram>
+
+<histogram name="SafeBrowsing.{Process}Throttle.RequestDestination"
+    enum="RequestDestination" expires_after="2023-08-28">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the request destination of the URL that is checked by the {Process} URL
+    loader throttle. Logged each time WillStartRequest is called.
+  </summary>
+  <token key="Process" variants="ThrottleProcess"/>
 </histogram>
 
 <histogram name="SafeBrowsing.{Process}Throttle.TotalDelay2{ResponseType}"
@@ -2811,10 +2824,7 @@ failing to fetch the updates which puts users' security at risk. -->
     SafeBrowsing.{Process}Throttle.TotalDelay as it logs for each request,
     recording zero delay when the request is not deferred.
   </summary>
-  <token key="Process">
-    <variant name="Browser" summary="Browser"/>
-    <variant name="Renderer" summary="Renderer"/>
-  </token>
+  <token key="Process" variants="ThrottleProcess"/>
   <token key="ResponseType">
     <variant name=".FromCache" summary="from local cache (e.g. HTTP cache)"/>
     <variant name=".FromNetwork" summary="from network"/>

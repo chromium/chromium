@@ -315,6 +315,8 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   base::UmaHistogramBoolean(
       "SafeBrowsing.BrowserThrottle.WillStartRequestAfterWillProcessResponse",
       will_process_response_count_ > 0);
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.BrowserThrottle.RequestDestination", request->destination);
 
   if (KnownSafeUrl(request->url)) {
     skip_checks_ = true;
