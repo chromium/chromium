@@ -308,9 +308,6 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.ResizeRestart.bullseye_stable",
   "crostini.ResizeRestart.buster_stable",
 
-  # http://b/270400217 
-  "login.AuthError",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
