@@ -277,6 +277,8 @@ COMPONENT_EXPORT(ONC) extern const char kWEP_8021X[];
 COMPONENT_EXPORT(ONC) extern const char kWPA_PSK[];
 COMPONENT_EXPORT(ONC) extern const char kWPA2_PSK[];
 COMPONENT_EXPORT(ONC) extern const char kWPA_EAP[];
+COMPONENT_EXPORT(ONC) extern const char kPasspointId[];
+COMPONENT_EXPORT(ONC) extern const char kPasspointMatchType[];
 }  // namespace wifi
 
 namespace wimax_deprecated {

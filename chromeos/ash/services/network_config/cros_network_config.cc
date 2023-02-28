@@ -220,6 +220,24 @@ std::string MojoSecurityTypeToOnc(mojom::SecurityType security_type) {
   return std::string();
 }
 
+mojom::MatchType PasspointMatchTypeToMojo(
+    const absl::optional<std::string>& match_type) {
+  if (!match_type || match_type->empty()) {
+    return mojom::MatchType::kNoMatch;
+  }
+  if (*match_type == shill::kPasspointMatchTypeHome) {
+    return mojom::MatchType::kHome;
+  }
+  if (*match_type == shill::kPasspointMatchTypeRoaming) {
+    return mojom::MatchType::kRoaming;
+  }
+  if (*match_type == shill::kPasspointMatchTypeUnknown) {
+    return mojom::MatchType::kUnknown;
+  }
+  NOTREACHED() << "Unsupported Passpoint match type: " << *match_type;
+  return mojom::MatchType::kUnknown;
+}
+
 mojom::VpnType OncVpnTypeToMojo(const std::string& onc_vpn_type) {
   if (onc_vpn_type == ::onc::vpn::kIPsec)
     return mojom::VpnType::kIKEv2;
@@ -1972,6 +1990,9 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
           wifi->security, result->source,
           /*log_result=*/false);
       wifi->is_configured_by_active_user = GetIsConfiguredByUser(result->guid);
+      wifi->passpoint_id = GetString(wifi_dict, ::onc::wifi::kPasspointId);
+      wifi->passpoint_match_type = PasspointMatchTypeToMojo(
+          GetString(wifi_dict, ::onc::wifi::kPasspointMatchType));
 
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewWifi(std::move(wifi));

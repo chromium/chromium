@@ -69,6 +69,20 @@ enum SecurityType {
   kWpaPsk,
 };
 
+// The network match type for WiFi Passpoint networks.
+enum MatchType {
+  // The Wi-Fi network had no match with Passpoint credentials.
+  kNoMatch,
+  // The WiFi network matched with a set of Passpoint credentials as a provider
+  // home network.
+  kHome,
+  // The WiFI network matched with a set of Passpoint credentials as a provider
+  // roaming network.
+  kRoaming,
+  // The match type of the network is unknown.
+  kUnknown,
+};
+
 // The configuration type for virtual networks.
 enum VpnType {
   // Internal VPN types.
@@ -749,6 +763,12 @@ struct ManagedWiFiProperties {
   // True for unshared networks and for shared networks configured by the
   // active user.  Updated whenever the passphrase is modified.
   bool is_configured_by_active_user;
+  // Identifier of the set of Passpoint credentials that populated this service.
+  // Will be used to display the credentials.
+  string? passpoint_id;
+  // Network tier deduced from the match between the Wi-Fi network and the
+  // Passpoint credentials.
+  MatchType passpoint_match_type;
 };
 
 union NetworkTypeManagedProperties {

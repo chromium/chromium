@@ -175,6 +175,8 @@ const FieldTranslationEntry wifi_fields[] = {
     // { ::onc::wifi::kSecurity, shill::kSecurityClassProperty },
     {::onc::wifi::kSignalStrength, shill::kSignalStrengthProperty},
     {::onc::wifi::kSignalStrengthRssi, shill::kWifiSignalStrengthRssiProperty},
+    {::onc::wifi::kPasspointId, shill::kPasspointIDProperty},
+    {::onc::wifi::kPasspointMatchType, shill::kPasspointMatchTypeProperty},
     {nullptr}};
 
 const FieldTranslationEntry cellular_apn_fields[] = {
