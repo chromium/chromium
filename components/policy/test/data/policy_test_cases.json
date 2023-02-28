@@ -19189,17 +19189,6 @@
             "value": 1
           }
         }
-      },
-      {
-        "policies": {
-          "LacrosSelection": "stateful"
-        },
-        "prefs": {
-          "lacros_selection": {
-            "location": "local_state",
-            "value": 2
-          }
-        }
       }
     ]
   },

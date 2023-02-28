@@ -1163,18 +1163,6 @@ TEST_F(BrowserUtilTest, LacrosSelection) {
   }
 
   {
-    // LacrosSelection policy has precedence over command line.
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kStateful);
-    base::test::ScopedCommandLine cmd_line;
-    cmd_line.GetProcessCommandLine()->AppendSwitchASCII(
-        browser_util::kLacrosSelectionSwitch,
-        browser_util::kLacrosSelectionRootfs);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kStateful);
-  }
-
-  {
     // LacrosSelection allows command line check, but command line is not set.
     ScopedLacrosSelectionCache cache(
         browser_util::LacrosSelectionPolicy::kUserChoice);
@@ -1222,15 +1210,6 @@ TEST_F(BrowserUtilTest, LacrosSelectionPolicyIgnoreNonGoogle) {
     EXPECT_EQ(browser_util::DetermineLacrosSelection(),
               LacrosSelection::kRootfs);
   }
-
-  {
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kStateful);
-    EXPECT_EQ(browser_util::GetCachedLacrosSelectionPolicy(),
-              browser_util::LacrosSelectionPolicy::kStateful);
-    EXPECT_EQ(browser_util::DetermineLacrosSelection(),
-              LacrosSelection::kStateful);
-  }
 }
 
 // LacrosSelection has an effect on googlers.
@@ -1244,14 +1223,6 @@ TEST_F(BrowserUtilTest, LacrosSelectionPolicyIgnoreGoogleDisableToUserChoice) {
   {
     ScopedLacrosSelectionCache cache(
         browser_util::LacrosSelectionPolicy::kRootfs);
-    EXPECT_EQ(browser_util::GetCachedLacrosSelectionPolicy(),
-              browser_util::LacrosSelectionPolicy::kUserChoice);
-    EXPECT_FALSE(browser_util::DetermineLacrosSelection());
-  }
-
-  {
-    ScopedLacrosSelectionCache cache(
-        browser_util::LacrosSelectionPolicy::kStateful);
     EXPECT_EQ(browser_util::GetCachedLacrosSelectionPolicy(),
               browser_util::LacrosSelectionPolicy::kUserChoice);
     EXPECT_FALSE(browser_util::DetermineLacrosSelection());

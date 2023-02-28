@@ -94,7 +94,6 @@ constexpr auto kLacrosSelectionPolicyMap =
     base::MakeFixedFlatMap<base::StringPiece, LacrosSelectionPolicy>({
         {"user_choice", LacrosSelectionPolicy::kUserChoice},
         {"rootfs", LacrosSelectionPolicy::kRootfs},
-        {"stateful", LacrosSelectionPolicy::kStateful},
     });
 
 // Some account types require features that aren't yet supported by lacros.
@@ -886,8 +885,6 @@ absl::optional<LacrosSelection> DetermineLacrosSelection() {
   switch (GetCachedLacrosSelectionPolicy()) {
     case LacrosSelectionPolicy::kRootfs:
       return LacrosSelection::kRootfs;
-    case LacrosSelectionPolicy::kStateful:
-      return LacrosSelection::kStateful;
     case LacrosSelectionPolicy::kUserChoice:
       break;
   }

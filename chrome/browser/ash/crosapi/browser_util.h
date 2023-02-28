@@ -66,14 +66,15 @@ enum class LacrosLaunchSwitchSource {
 // LacrosSelection. The values shall be consistent with the controlling
 // policy. Unlike `LacrosSelection` representing which lacros to select,
 // `LacrosSelectionPolicy` represents how to decide which lacros to select.
+// Stateful option from `LacrosSelection` is omitted due to a breakage risks in
+// case of version skew (e.g. when the latest stateful Lacros available in omaha
+// is older than the rootfs Lacros on the device).
 enum class LacrosSelectionPolicy {
   // Indicates that the user decides which Lacros browser to launch: rootfs or
   // stateful.
   kUserChoice = 0,
   // Indicates that rootfs Lacros will always be launched.
   kRootfs = 1,
-  // Indicates that stateful Lacros will always be launched.
-  kStateful = 2,
 };
 
 // Represents the different options available for lacros selection.

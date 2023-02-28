@@ -276,22 +276,6 @@ TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsRootfs) {
   EXPECT_EQ(selection, LacrosSelection::kRootfs);
 }
 
-TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsStateful) {
-  ScopedLacrosSelectionCache cache(
-      browser_util::LacrosSelectionPolicy::kStateful);
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      browser_util::kLacrosSelectionSwitch,
-      browser_util::kLacrosSelectionRootfs);
-
-  base::test::TestFuture<base::FilePath, LacrosSelection, base::Version> future;
-  browser_loader_->Load(future.GetCallback<const base::FilePath&,
-                                           LacrosSelection, base::Version>());
-
-  const LacrosSelection selection = future.Get<1>();
-  EXPECT_EQ(selection, LacrosSelection::kStateful);
-}
-
 TEST_F(BrowserLoaderTest,
        OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsRootfs) {
   ScopedLacrosSelectionCache cache(
