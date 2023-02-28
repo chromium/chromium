@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 
 class Profile;
 
@@ -20,7 +19,7 @@ class WebContents;
 namespace apps {
 
 // BrowserAppLauncher receives app launch requests and forwards them to
-// extensions or WebAppLaunchManager, based on the app type.
+// extensions or LaunchWebAppCommand, based on the app type.
 //
 // TODO(crbug.com/1061843): Remove BrowserAppLauncher and merge the interfaces
 // to AppServiceProxy when publishers(ExtensionApps and WebApps) can run on
@@ -66,7 +65,6 @@ class BrowserAppLauncher {
 
  private:
   const raw_ptr<Profile> profile_;
-  web_app::WebAppLaunchManager web_app_launch_manager_;
 };
 
 }  // namespace apps
