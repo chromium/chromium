@@ -13,6 +13,9 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
+#include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler.h"
+#include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler.h"
+#include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -28,8 +31,11 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       public SessionObserver {
  public:
   InputDeviceSettingsControllerImpl();
-  explicit InputDeviceSettingsControllerImpl(
-      std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler);
+  InputDeviceSettingsControllerImpl(
+      std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler,
+      std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler,
+      std::unique_ptr<MousePrefHandler> mouse_pref_handler,
+      std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler);
   InputDeviceSettingsControllerImpl(const InputDeviceSettingsControllerImpl&) =
       delete;
   InputDeviceSettingsControllerImpl& operator=(
@@ -87,6 +93,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 
   std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler_;
+  std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler_;
+  std::unique_ptr<MousePrefHandler> mouse_pref_handler_;
+  std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler_;
 
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
   base::flat_map<DeviceId, mojom::TouchpadPtr> touchpads_;
