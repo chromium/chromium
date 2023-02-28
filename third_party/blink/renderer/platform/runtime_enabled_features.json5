@@ -3807,6 +3807,7 @@
       name: "WebViewXRequestedWithDeprecation",
       origin_trial_feature_name: "WebViewXRequestedWithDeprecation",
       origin_trial_allows_insecure: true,
+      origin_trial_allows_third_party: true,
       origin_trial_os: ["android"],
       origin_trial_type: "deprecation",
       status: "experimental",

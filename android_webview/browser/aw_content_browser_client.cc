@@ -358,6 +358,7 @@ void AwContentBrowserClient::AppendExtraCommandLineSwitches(
         ::switches::kEnableCrashReporter,
         ::switches::kEnableCrashReporterForTesting,
         embedder_support::kOriginTrialDisabledFeatures,
+        embedder_support::kOriginTrialPublicKey,
     };
 
     command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),

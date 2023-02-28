@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -262,6 +263,15 @@ std::unique_ptr<TrialToken> TrialToken::Parse(const std::string& token_payload,
 }
 
 bool TrialToken::ValidateOrigin(const url::Origin& origin) const {
+  // TODO(crbug.com/1418906): Remove override for persistent origin trials.
+  // This override is currently in place to let sites enable persistent origin
+  // trials on behalf of services they make requests to, who do not have the
+  // option to enable the trial on their own.
+  if (is_third_party_ &&
+      origin_trials::IsTrialPersistentToNextResponse(feature_name_)) {
+    return true;
+  }
+
   if (match_subdomains_) {
     return origin.scheme() == origin_.scheme() &&
            origin.DomainIs(origin_.host()) && origin.port() == origin_.port();
