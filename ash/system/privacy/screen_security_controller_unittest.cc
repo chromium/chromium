@@ -69,34 +69,34 @@ INSTANTIATE_TEST_SUITE_P(
     /*IsPrivacyIndicatorsFeatureEnabled()=*/::testing::Bool());
 
 TEST_P(ScreenSecurityControllerTest, ShowScreenCaptureNotification) {
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::DoNothing(), base::RepeatingClosure(), std::u16string());
-  EXPECT_TRUE(FindNotification(kScreenCaptureNotificationId));
+  EXPECT_TRUE(FindNotification(kScreenAccessNotificationId));
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 
-  EXPECT_FALSE(FindNotification(kScreenCaptureNotificationId));
+  EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 }
 
 TEST_P(ScreenSecurityControllerTest, ShowScreenShareNotification) {
-  Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
-      base::DoNothing(), std::u16string());
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
+      base::DoNothing());
 
-  EXPECT_TRUE(FindNotification(kScreenShareNotificationId));
+  EXPECT_TRUE(FindNotification(kRemotingScreenShareNotificationId));
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenShareStop();
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
 
-  EXPECT_FALSE(FindNotification(kScreenShareNotificationId));
+  EXPECT_FALSE(FindNotification(kRemotingScreenShareNotificationId));
 }
 
-// Tests that `NotifyScreenShareStop()` does not crash if called with no
+// Tests that `NotifyRemotingScreenShareStop()` does not crash if called with no
 // notification with VideoConference enabled and disabled.
 TEST_P(ScreenSecurityControllerTest, NotifyScreenShareStopNoNotification) {
-  Shell::Get()->system_tray_notifier()->NotifyScreenShareStop();
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kVideoConference);
-  Shell::Get()->system_tray_notifier()->NotifyScreenShareStop();
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
 }
 
 // Tests that screen share notifications do not show when VideoConference is
@@ -106,20 +106,20 @@ TEST_P(ScreenSecurityControllerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kVideoConference);
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
-      base::DoNothing(), std::u16string());
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
+      base::DoNothing());
 
-  EXPECT_FALSE(FindNotification(kScreenShareNotificationId));
+  EXPECT_FALSE(FindNotification(kRemotingScreenShareNotificationId));
 }
 
-// Tests that calling `NotifyScreenCaptureStop()` does not crash if called with
+// Tests that calling `NotifyScreenAccessStop()` does not crash if called with
 // no notification with VideoConference enabled and disabled.
 TEST_P(ScreenSecurityControllerTest, NotifyScreenCaptureStopNoNotification) {
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kVideoConference);
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 }
 
 // Tests that screen capture notifications show with video conference enabled.
@@ -128,26 +128,26 @@ TEST_P(ScreenSecurityControllerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kVideoConference);
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::DoNothing(), base::RepeatingClosure(), std::u16string());
 
-  EXPECT_TRUE(FindNotification(kScreenCaptureNotificationId));
+  EXPECT_TRUE(FindNotification(kScreenAccessNotificationId));
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
 
-  EXPECT_FALSE(FindNotification(kScreenCaptureNotificationId));
+  EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 }
 
 TEST_P(ScreenSecurityControllerTest,
        DoNotShowScreenCaptureNotificationWhenCasting) {
   Shell::Get()->OnCastingSessionStartedOrStopped(true /* started */);
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
       base::DoNothing(), base::RepeatingClosure(), std::u16string());
-  EXPECT_FALSE(FindNotification(kScreenCaptureNotificationId));
+  EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
   Shell::Get()->OnCastingSessionStartedOrStopped(false /* started */);
-  EXPECT_FALSE(FindNotification(kScreenCaptureNotificationId));
+  EXPECT_FALSE(FindNotification(kScreenAccessNotificationId));
 }
 
 class PrivacyIndicatorsScreenSecurityTest : public AshTestBase {
@@ -173,10 +173,10 @@ class PrivacyIndicatorsScreenSecurityTest : public AshTestBase {
 // Tests that the screen share notification is created with proper metadata when
 // the `SystemTrayNotifier` notifies observers of screen share start.
 TEST_F(PrivacyIndicatorsScreenSecurityTest, ScreenShareNotification) {
-  Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
-      base::DoNothing(), std::u16string());
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
+      base::DoNothing());
 
-  auto* notification = FindNotification(kScreenShareNotificationId);
+  auto* notification = FindNotification(kRemotingScreenShareNotificationId);
   EXPECT_TRUE(notification);
 
   // Notification should have the correct notifier id so that it will be grouped
@@ -195,11 +195,11 @@ TEST_F(PrivacyIndicatorsScreenSecurityTest, TrayItemIndicator) {
 
   ExpectPrivacyIndicatorsVisible(/*visible=*/false);
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
-      base::DoNothing(), std::u16string());
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
+      base::DoNothing());
   ExpectPrivacyIndicatorsVisible(/*visible=*/true);
 
-  Shell::Get()->system_tray_notifier()->NotifyScreenShareStop();
+  Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
   ExpectPrivacyIndicatorsVisible(/*visible=*/false);
 }
 

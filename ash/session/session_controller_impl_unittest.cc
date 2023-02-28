@@ -655,7 +655,7 @@ class CanSwitchUserTest : public AshTestBase {
   // Accessing the capture session functionality.
   // Simulates a screen capture session start.
   void StartCaptureSession() {
-    Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStart(
+    Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
         base::BindRepeating(&CanSwitchUserTest::StopCaptureCallback,
                             base::Unretained(this)),
         base::RepeatingClosure(), std::u16string());
@@ -663,7 +663,7 @@ class CanSwitchUserTest : public AshTestBase {
 
   // The callback which gets called when the screen capture gets stopped.
   void StopCaptureSession() {
-    Shell::Get()->system_tray_notifier()->NotifyScreenCaptureStop();
+    Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
   }
 
   // Simulates a screen capture session stop.
@@ -672,15 +672,14 @@ class CanSwitchUserTest : public AshTestBase {
   // Accessing the share session functionality.
   // Simulate a Screen share session start.
   void StartShareSession() {
-    Shell::Get()->system_tray_notifier()->NotifyScreenShareStart(
+    Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStart(
         base::BindRepeating(&CanSwitchUserTest::StopShareCallback,
-                            base::Unretained(this)),
-        std::u16string());
+                            base::Unretained(this)));
   }
 
   // Simulates a screen share session stop.
   void StopShareSession() {
-    Shell::Get()->system_tray_notifier()->NotifyScreenShareStop();
+    Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
   }
 
   // The callback which gets called when the screen share gets stopped.

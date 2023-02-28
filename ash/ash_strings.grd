@@ -2600,12 +2600,18 @@ Connect your device to power.
         Continue
       </message>
 
-      <!-- Status tray screen capture strings. -->
-      <message name="IDS_ASH_STATUS_TRAY_SCREEN_CAPTURE_STOP" desc="label used for screen capture stop button">
+      <!-- Status tray screen security strings. -->
+      <message name="IDS_ASH_STATUS_TRAY_SCREEN_ACCESS_STOP" desc="label used for screen access or screen sharing stop button">
         Stop
       </message>
       <message name="IDS_ASH_STATUS_TRAY_SCREEN_CAPTURE_CHANGE_SOURCE" desc="label used for screen capture change source button">
         Change source
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE" desc="The title for screen sharing notification">
+        You're sharing your screen
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_SCREEN_SHARE_BEING_HELPED" desc="label for screen sharing notification">
+        Sharing control of your screen via Remote Assistance.
       </message>
 
       <!-- Status tray media recording state strings. -->
@@ -2617,20 +2623,6 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_MEDIA_RECORDING_AUDIO_VIDEO" desc="label used to indicate that the camera and microphone are used by a background user">
         Camera and microphone are in use.
-      </message>
-
-      <!-- Status tray screen share strings. -->
-      <message name="IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE" desc="The title for screen sharing notification">
-        You're sharing your screen
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_SCREEN_SHARE_STOP" desc="label used for screen sharing stop button">
-        Stop
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_SCREEN_SHARE_BEING_HELPED" desc="label for screen sharing notification">
-        Sharing control of your screen via Remote Assistance.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_SCREEN_SHARE_BEING_HELPED_NAME" desc="label for screen sharing notification with name">
-        Sharing control of your screen with <ph name="HELPER_NAME">$1<ex>Walder Frey</ex></ph> via Remote Assistance.
       </message>
 
       <!-- Status tray audio strings. -->
