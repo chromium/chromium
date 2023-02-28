@@ -39,6 +39,20 @@
         }
       }
 
+      :host-context([chrome-refresh-2023]):host {
+        --cr-radio-button-ink-size: 32px;
+        --cr-radio-button-checked-color:
+            var(--color-radio-button-foreground-checked,
+                var(--cr-fallback-color-primary));
+        --cr-radio-button-checked-ripple-color:
+            var(--cr-active-background-color);
+        --cr-radio-button-unchecked-color:
+            var(--color-radio-button-foreground-unchecked,
+                var(--cr-fallback-color-outline));
+        --cr-radio-button-unchecked-ripple-color:
+            var(--cr-active-background-color);
+      }
+
       @media (forced-colors: active) {
         :host {
           --cr-radio-button-checked-color: SelectedItem;
@@ -52,6 +66,15 @@
         pointer-events: none;
       }
 
+      :host-context([chrome-refresh-2023]):host([disabled]) {
+        opacity: 1;
+        --cr-radio-button-checked-color: var(--color-radio-foreground-disabled,
+            rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+        --cr-radio-button-unchecked-color:
+            var(--color-radio-foreground-disabled,
+                rgba(var(--cr-fallback-color-on-surface-rgb), .12));
+      }
+
       :host(:not([disabled])) {
         cursor: pointer;
       }
@@ -59,6 +82,10 @@
       #labelWrapper {
         flex: 1;
         margin-inline-start: var(--cr-radio-button-label-spacing, 20px);
+      }
+
+      :host-context([chrome-refresh-2023]):host([disabled]) #labelWrapper {
+        opacity: var(--cr-disabled-opacity);
       }
 
       #label {
@@ -116,6 +143,29 @@
       :host([checked]) .disc {
         background-color: var(--cr-radio-button-checked-color);
         transform: scale(0.5);
+      }
+
+      :host-context([chrome-refresh-2023]) #overlay {
+        border-radius: 50%;
+        box-sizing: border-box;
+        display: none;
+        height: var(--cr-radio-button-ink-size);
+        left: 50%;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: var(--cr-radio-button-ink-size);
+      }
+
+      :host-context([chrome-refresh-2023]) #button:hover #overlay {
+        background-color: var(--cr-hover-background-color);
+        display: block;
+      }
+
+      :host-context([chrome-refresh-2023]) #button:focus-visible #overlay {
+        border: 2px solid var(--cr-focus-outline-color);
+        display: block;
       }
 
       paper-ripple {

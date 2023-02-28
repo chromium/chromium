@@ -86,11 +86,9 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorButtonBorder] = {button_border};
   mixer[ui::kColorButtonBorderDisabled] = {button_bg_disabled};
   mixer[ui::kColorButtonForeground] = {GetFgColor("button.text-button label")};
-  mixer[ui::kColorButtonForegroundChecked] = {ui::kColorAccent};
   mixer[ui::kColorButtonForegroundDisabled] = {
       GetFgColor("button.text-button:disabled label")};
   mixer[ui::kColorButtonForegroundProminent] = {accent};
-  mixer[ui::kColorButtonForegroundUnchecked] = {ui::kColorButtonForeground};
   mixer[ui::kColorDialogForeground] = {ui::kColorPrimaryForeground};
   mixer[ui::kColorDropdownBackground] = {GetBgColor(base::StrCat(
       {"combobox window.background.popup ", "menu(gtk-combobox-popup-menu) ",
@@ -140,6 +138,9 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorOverlayScrollbarStroke] = {GetBgColor("scrollbar trough")};
   mixer[ui::kColorOverlayScrollbarStrokeHovered] = {
       GetBgColor("scrollbar trough:hover")};
+  mixer[ui::kColorRadioButtonForegroundChecked] = {ui::kColorAccent};
+  mixer[ui::kColorRadioButtonForegroundUnchecked] = {
+      ui::kColorButtonForeground};
   mixer[ui::kColorSliderThumb] = {GetBgColor("scale highlight")};
   mixer[ui::kColorSliderThumbMinimal] = {
       GetBgColor("scale:disabled highlight")};

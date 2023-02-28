@@ -1514,8 +1514,8 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
     const gfx::VectorIcon& radio_icon =
         toggled ? kMenuRadioSelectedIcon : kMenuRadioEmptyIcon;
     const SkColor radio_icon_color = GetColorProvider()->GetColor(
-        toggled ? ui::kColorButtonForegroundChecked
-                : ui::kColorButtonForegroundUnchecked);
+        toggled ? ui::kColorRadioButtonForegroundChecked
+                : ui::kColorRadioButtonForegroundUnchecked);
     radio_check_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
         radio_icon, radio_icon_color, kMenuCheckSize));
   }

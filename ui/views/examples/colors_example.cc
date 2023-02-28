@@ -76,7 +76,8 @@ void CreateAllColorsView(ScrollView* scroll_view) {
   InsertColorRow(container, COLOR_LABEL_ARGS(kColorFocusableBorderUnfocused));
   InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonForeground));
   InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonForegroundDisabled));
-  InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonForegroundUnchecked));
+  InsertColorRow(container,
+                 COLOR_LABEL_ARGS(kColorRadioButtonForegroundUnchecked));
   InsertColorRow(container, COLOR_LABEL_ARGS(kColorButtonBackgroundProminent));
   InsertColorRow(container,
                  COLOR_LABEL_ARGS(kColorButtonBackgroundProminentFocused));

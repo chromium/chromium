@@ -36,10 +36,8 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonBorder] = {kColorSysOutline};
   mixer[kColorButtonBorderDisabled] = {kColorSysStateDisabled};
   mixer[kColorButtonForeground] = {kColorSysOnSurfacePrimary};
-  mixer[kColorButtonForegroundChecked] = {kColorButtonForeground};
   mixer[kColorButtonForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorButtonForegroundProminent] = {kColorSysOnPrimary};
-  mixer[kColorButtonForegroundUnchecked] = {kColorSysOnSurfaceVariant};
   mixer[kColorCheckboxBackgroundDisabled] = {kColorSysStateDisabledContainer};
   mixer[kColorCheckboxForegroundChecked] = {kColorSysOnSurfacePrimary};
   mixer[kColorCheckboxForegroundDisabled] = {kColorSysStateDisabled};
@@ -52,6 +50,10 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorFrameActive] = {kColorSysHeader};
   mixer[kColorFrameActiveUnthemed] = {kColorSysHeader};
   mixer[kColorFrameInactive] = {kColorSysHeaderInactive};
+  mixer[kColorRadioButtonForegroundChecked] = {kColorSysOnSurfacePrimary};
+  mixer[kColorRadioButtonForegroundDisabled] = {
+      kColorSysStateDisabledContainer};
+  mixer[kColorRadioButtonForegroundUnchecked] = {kColorSysOutline};
   mixer[kColorSliderThumb] = {kColorSysPrimary};
   mixer[kColorSliderThumbMinimal] = {kColorSysSecondary};
   mixer[kColorSliderTrack] = {kColorSysOnPrimary};

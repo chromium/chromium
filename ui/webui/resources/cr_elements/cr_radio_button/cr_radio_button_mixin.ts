@@ -86,7 +86,9 @@ export const CrRadioButtonMixin = dedupingMixin(
         override connectedCallback() {
           super.connectedCallback();
           this.addEventListener('blur', this.hideRipple_.bind(this));
-          this.addEventListener('focus', this.onFocus_.bind(this));
+          if (!document.documentElement.hasAttribute('chrome-refresh-2023')) {
+            this.addEventListener('focus', this.onFocus_.bind(this));
+          }
           this.addEventListener('up', this.hideRipple_.bind(this));
         }
 

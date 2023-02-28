@@ -222,11 +222,9 @@
   E_CPONLY(kColorButtonBorder) \
   E_CPONLY(kColorButtonBorderDisabled) \
   E_CPONLY(kColorButtonForeground) \
-  E_CPONLY(kColorButtonForegroundChecked) \
   E_CPONLY(kColorButtonForegroundDisabled) \
   E_CPONLY(kColorButtonForegroundProminent) \
   E_CPONLY(kColorButtonForegroundTonal) \
-  E_CPONLY(kColorButtonForegroundUnchecked) \
   E_CPONLY(kColorMultitaskFeedbackButtonLabelBackground) \
   E_CPONLY(kColorMultitaskFeedbackButtonLabelForeground) \
   E_CPONLY(kColorMultitaskMenuNudgePulse) \
@@ -310,6 +308,9 @@
   E_CPONLY(kColorOverlayScrollbarStrokeHoveredLight) \
   E_CPONLY(kColorProgressBar) \
   E_CPONLY(kColorProgressBarPaused) \
+  E_CPONLY(kColorRadioButtonForegroundUnchecked) \
+  E_CPONLY(kColorRadioButtonForegroundDisabled) \
+  E_CPONLY(kColorRadioButtonForegroundChecked) \
   E_CPONLY(kColorScrollbarArrowBackgroundHovered) \
   E_CPONLY(kColorScrollbarArrowBackgroundPressed) \
   E_CPONLY(kColorScrollbarArrowForeground) \
