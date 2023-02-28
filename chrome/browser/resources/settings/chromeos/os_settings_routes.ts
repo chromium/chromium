@@ -104,6 +104,7 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   A11Y_DISPLAY_AND_MAGNIFICATION: Route;
   A11Y_KEYBOARD_AND_TEXT_INPUT: Route;
   A11Y_TEXT_TO_SPEECH: Route;
+  A11Y_CHROMEVOX: Route;
   A11Y_SELECT_TO_SPEAK: Route;
   ABOUT: Route;
   ABOUT_ABOUT: Route;
@@ -418,6 +419,13 @@ function createOsSettingsRoutes(): OsSettingsRoutes {
   r.A11Y_AUDIO_AND_CAPTIONS = createSubpage(
       r.OS_ACCESSIBILITY, routesMojomWebui.AUDIO_AND_CAPTIONS_SUBPAGE_PATH,
       Subpage.kAudioAndCaptions);
+  if (loadTimeData.valueExists(
+          'isAccessibilityChromeVoxPageMigrationEnabled') &&
+      loadTimeData.getBoolean('isAccessibilityChromeVoxPageMigrationEnabled')) {
+    r.A11Y_CHROMEVOX = createSubpage(
+        r.A11Y_TEXT_TO_SPEECH, routesMojomWebui.CHROME_VOX_SUBPAGE_PATH,
+        Subpage.kChromeVox);
+  }
   if (loadTimeData.valueExists(
           'isAccessibilitySelectToSpeakPageMigrationEnabled') &&
       loadTimeData.getBoolean(

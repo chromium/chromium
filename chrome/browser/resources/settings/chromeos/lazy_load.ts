@@ -37,6 +37,7 @@ import './os_a11y_page/text_to_speech_page.js';
 import './os_a11y_page/display_and_magnification_page.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
 import './os_a11y_page/cursor_and_touchpad_page.js';
+import './os_a11y_page/chromevox_subpage.js';
 import './os_a11y_page/select_to_speak_subpage.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.js';
 import './os_a11y_page/switch_access_action_assignment_pane.js';

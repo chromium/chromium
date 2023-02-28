@@ -59,6 +59,14 @@ class SettingsTextToSpeechPageElement extends
        */
       hasKeyboard_: Boolean,
 
+      isAccessibilityChromeVoxPageMigrationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityChromeVoxPageMigrationEnabled');
+        },
+      },
+
       isAccessibilitySelectToSpeakPageMigrationEnabled_: {
         type: Boolean,
         value() {
@@ -82,6 +90,8 @@ class SettingsTextToSpeechPageElement extends
 
   private deviceBrowserProxy_: DevicePageBrowserProxy;
   private hasKeyboard_: boolean;
+  private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
+  private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
   private route_: Route;
   private textToSpeechBrowserProxy_: TextToSpeechPageBrowserProxy;
   private showPdfOcrSetting_: boolean;
@@ -159,6 +169,10 @@ class SettingsTextToSpeechPageElement extends
 
   private onChromeVoxSettingsTap_(): void {
     this.textToSpeechBrowserProxy_.showChromeVoxSettings();
+  }
+
+  private onChromeVoxNewSettingsTap_(): void {
+    Router.getInstance().navigateTo(routes.A11Y_CHROMEVOX);
   }
 
   private onChromeVoxTutorialTap_(): void {

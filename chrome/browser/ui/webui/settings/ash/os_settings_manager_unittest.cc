@@ -52,7 +52,8 @@ class OsSettingsManagerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kAccessibilitySelectToSpeakPageMigration,
+        {::features::kAccessibilityChromeVoxPageMigration,
+         ::features::kAccessibilitySelectToSpeakPageMigration,
          ash::features::kInputDeviceSettingsSplit},
         {});
     ASSERT_TRUE(profile_manager_.SetUp());

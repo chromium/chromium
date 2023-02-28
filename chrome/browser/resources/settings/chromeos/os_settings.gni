@@ -115,6 +115,7 @@ web_component_files = [
   "chromeos/nearby_share_page/nearby_share_subpage.ts",
   "chromeos/os_a11y_page/audio_and_captions_page.ts",
   "chromeos/os_a11y_page/change_dictation_locale_dialog.ts",
+  "chromeos/os_a11y_page/chromevox_subpage.ts",
   "chromeos/os_a11y_page/cursor_and_touchpad_page.ts",
   "chromeos/os_a11y_page/display_and_magnification_page.ts",
   "chromeos/os_a11y_page/keyboard_and_text_input_page.ts",

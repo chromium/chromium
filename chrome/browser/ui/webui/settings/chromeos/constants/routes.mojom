@@ -162,6 +162,7 @@ enum Subpage {
   kCursorAndTouchpad = 1508,
   kAudioAndCaptions = 1509,
   kSelectToSpeak = 1510,
+  kChromeVox = 1511,
 
   // Note: Reset section has no subpages.
 
@@ -297,6 +298,7 @@ const string kDisplayAndMagnificationSubpagePath = "displayAndMagnification";
 const string kKeyboardAndTextInputSubpagePath = "keyboardAndTextInput";
 const string kCursorAndTouchpadSubpagePath = "cursorAndTouchpad";
 const string kSelectToSpeakSubpagePath = "textToSpeech/selectToSpeak";
+const string kChromeVoxSubpagePath = "textToSpeech/chromeVox";
 const string kAudioAndCaptionsSubpagePath = "audioAndCaptions";
 const string kTextToSpeechSubpagePath = "manageAccessibility/tts";
 const string kSwitchAccessOptionsSubpagePath =

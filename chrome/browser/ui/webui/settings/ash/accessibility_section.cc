@@ -49,6 +49,7 @@ namespace ash::settings {
 namespace mojom {
 using ::chromeos::settings::mojom::kAccessibilitySectionPath;
 using ::chromeos::settings::mojom::kAudioAndCaptionsSubpagePath;
+using ::chromeos::settings::mojom::kChromeVoxSubpagePath;
 using ::chromeos::settings::mojom::kCursorAndTouchpadSubpagePath;
 using ::chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath;
 using ::chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath;
@@ -419,6 +420,10 @@ GetA11yFullscreenMagnifierFocusFollowingSearchConcepts() {
 
 bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
+}
+
+bool IsAccessibilityChromeVoxPageMigrationEnabled() {
+  return ::features::IsAccessibilityChromeVoxPageMigrationEnabled();
 }
 
 bool IsAccessibilitySelectToSpeakPageMigrationEnabled() {
@@ -963,6 +968,9 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          chrome::kTabletModeGesturesLearnMoreURL);
 
+  html_source->AddBoolean("isAccessibilityChromeVoxPageMigrationEnabled",
+                          IsAccessibilityChromeVoxPageMigrationEnabled());
+
   html_source->AddBoolean("isAccessibilitySelectToSpeakPageMigrationEnabled",
                           IsAccessibilitySelectToSpeakPageMigrationEnabled());
 
@@ -1049,6 +1057,13 @@ void AccessibilitySection::RegisterHierarchy(
       IDS_SETTINGS_ACCESSIBILITY_TEXT_TO_SPEECH_LINK_TITLE,
       mojom::Subpage::kTextToSpeechPage, mojom::SearchResultIcon::kA11y,
       mojom::SearchResultDefaultRank::kMedium, mojom::kTextToSpeechPagePath);
+  // ChromeVox settings page.
+  if (IsAccessibilityChromeVoxPageMigrationEnabled()) {
+    generator->RegisterTopLevelSubpage(
+        IDS_SETTINGS_CHROMEVOX_OPTIONS_LABEL, mojom::Subpage::kChromeVox,
+        mojom::SearchResultIcon::kA11y, mojom::SearchResultDefaultRank::kMedium,
+        mojom::kChromeVoxSubpagePath);
+  }
   // Select to speak options page.
   if (IsAccessibilitySelectToSpeakPageMigrationEnabled()) {
     generator->RegisterTopLevelSubpage(

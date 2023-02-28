@@ -77241,6 +77241,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1508" label="Cursor And Touchpad Page"/>
   <int value="1509" label="Audio And Captions Page"/>
   <int value="1510" label="Select-to-speak Subpage"/>
+  <int value="1511" label="ChromeVox Subpage"/>
   <int value="1700" label="About Chrome OS Details"/>
   <int value="1701" label="Detailed Build Info"/>
   <int value="1800" label="Kerberos Accounts V2"/>
@@ -109157,6 +109158,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-512116630" label="/search"/>
   <int value="-442978022" label="/networks"/>
   <int value="-378866134" label="/networkDetail"/>
+  <int value="-358922358" label="/textToSpeech/chromeVox"/>
   <int value="-319293467" label="/multidevice"/>
   <int value="-295702530" label="/smbShares"/>
   <int value="-237154443" label="/manageAccessibility/tts/googleTtsEngine"/>

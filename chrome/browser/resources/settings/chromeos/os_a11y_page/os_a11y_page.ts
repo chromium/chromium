@@ -18,6 +18,7 @@ import './display_and_magnification_page.js';
 import './keyboard_and_text_input_page.js';
 import './cursor_and_touchpad_page.js';
 import './audio_and_captions_page.js';
+import './chromevox_subpage.js';
 import './select_to_speak_subpage.js';
 import './switch_access_subpage.js';
 import './tts_subpage.js';
@@ -74,6 +75,17 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
       },
 
       /**
+       * Whether ChromeVox page migration is enabled.
+       */
+      isAccessibilityChromeVoxPageMigrationEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isAccessibilityChromeVoxPageMigrationEnabled');
+        },
+      },
+
+      /**
        * Whether Select-to-speak page migration is enabled.
        */
       isAccessibilitySelectToSpeakPageMigrationEnabled_: {
@@ -125,6 +137,8 @@ class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
   private isKioskModeActive_: boolean;
   private route_: Route;
   private showAccessibilityLabelsSetting_: boolean;
+  private isAccessibilityChromeVoxPageMigrationEnabled_: boolean;
+  private isAccessibilitySelectToSpeakPageMigrationEnabled_: boolean;
 
   constructor() {
     super();
