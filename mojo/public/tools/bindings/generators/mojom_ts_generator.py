@@ -395,10 +395,6 @@ class Generator(generator.Generator):
         for method in interface.methods:
           referenced_kinds.extend(method.parameters or [])
           referenced_kinds.extend(method.response_parameters or [])
-      for struct in self.module.structs:
-        referenced_kinds.extend(struct.fields)
-      for union in self.module.unions:
-        referenced_kinds.extend(union.fields)
 
       # Determine whether Remote and/or PendingReceiver are referenced.
       imports = []
