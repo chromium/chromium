@@ -3427,15 +3427,15 @@ void CrosNetworkConfig::PopulateTrafficCounters(
   std::vector<mojom::TrafficCounterPtr> counters;
   for (const base::Value& tc : traffic_counters->GetList()) {
     DCHECK(tc.is_dict());
-    const base::Value* source =
-        tc.FindKeyOfType("source", base::Value::Type::STRING);
+    const base::Value::Dict& tc_dict = tc.GetDict();
+    const std::string* source = tc_dict.FindString("source");
     DCHECK(source);
 
     // Since rx_bytes may be larger than the maximum value representable by
     // uint32_t, we must check whether it was implicitly converted to a double
     // during D-Bus deserialization.
     uint64_t rx_bytes;
-    const base::Value* rb = tc.GetDict().Find("rx_bytes");
+    const base::Value* rb = tc_dict.Find("rx_bytes");
     DCHECK(rb);
     if (rb->type() == base::Value::Type::INTEGER) {
       rx_bytes = rb->GetInt();
@@ -3449,7 +3449,7 @@ void CrosNetworkConfig::PopulateTrafficCounters(
     // uint32_t, we must check whether it was implicitly converted to a double
     // during D-Bus deserialization.
     uint64_t tx_bytes;
-    const base::Value* tb = tc.GetDict().Find("tx_bytes");
+    const base::Value* tb = tc_dict.Find("tx_bytes");
     DCHECK(tb);
     if (tb->type() == base::Value::Type::INTEGER) {
       tx_bytes = tb->GetInt();
@@ -3459,10 +3459,9 @@ void CrosNetworkConfig::PopulateTrafficCounters(
       NOTREACHED();
     }
 
-    counters.push_back(
-        mojom::TrafficCounter::New(ConvertToTrafficCounterSourceEnum(
-                                       base::ToLowerASCII(source->GetString())),
-                                   rx_bytes, tx_bytes));
+    counters.push_back(mojom::TrafficCounter::New(
+        ConvertToTrafficCounterSourceEnum(base::ToLowerASCII(*source)),
+        rx_bytes, tx_bytes));
   }
   std::move(callback).Run(std::move(counters));
 }
