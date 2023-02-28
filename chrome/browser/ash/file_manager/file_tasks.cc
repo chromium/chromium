@@ -418,7 +418,7 @@ bool ExecuteWebDriveOfficeTask(Profile* profile,
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   if (integration_service && integration_service->IsMounted() &&
       integration_service->GetDriveFsInterface()) {
-    return ash::cloud_upload::OpenFilesWithCloudProvider(
+    return ash::cloud_upload::CloudOpenTask::Execute(
         profile, file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive);
   } else {
     UMA_HISTOGRAM_ENUMERATION(kDriveErrorMetricName,
@@ -444,7 +444,7 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
     // TODO(petermarshall): UMAs.
   }
 
-  return ash::cloud_upload::OpenFilesWithCloudProvider(
+  return ash::cloud_upload::CloudOpenTask::Execute(
       profile, file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
 }
 
@@ -1121,7 +1121,7 @@ std::string ToSwaActionId(const std::string& action_id) {
 
 }  // namespace
 
-void SetWordFileHandler(Profile* profile, TaskDescriptor& task) {
+void SetWordFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".doc", ".docx"},
       {"application/msword",
@@ -1135,7 +1135,7 @@ void SetWordFileHandlerToFilesSWA(Profile* profile,
   SetWordFileHandler(profile, task);
 }
 
-void SetExcelFileHandler(Profile* profile, TaskDescriptor& task) {
+void SetExcelFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".xls", ".xlsx"},
       {"application/vnd.ms-excel",
@@ -1149,7 +1149,7 @@ void SetExcelFileHandlerToFilesSWA(Profile* profile,
   SetExcelFileHandler(profile, task);
 }
 
-void SetPowerPointFileHandler(Profile* profile, TaskDescriptor& task) {
+void SetPowerPointFileHandler(Profile* profile, const TaskDescriptor& task) {
   UpdateDefaultTask(
       profile, task, {".ppt", ".pptx"},
       {"application/vnd.ms-powerpoint",

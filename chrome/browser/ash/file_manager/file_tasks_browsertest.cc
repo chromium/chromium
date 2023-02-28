@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -1139,8 +1140,8 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-// Test that OpenOrMoveFiles() will open a DriveFs office file when the cloud
-// provider specified is Google Drive.
+// Test that CloudOpenTask::Execute() will open a DriveFs office file when the
+// cloud provider specified is Google Drive.
 IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
   // Add test file to fake DriveFs.
   SetUpTest();
@@ -1155,8 +1156,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OpenFileInDrive) {
       expected_web_drive_office_url);
   navigation_observer_office.StartWatchingNewWebContents();
 
-  ash::cloud_upload::OpenOrMoveFiles(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive);
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kGoogleDrive));
+  task->OpenOrMoveFiles();
 
   // Wait for file to open in web drive office.
   navigation_observer_office.Wait();
@@ -1530,7 +1532,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   SetConnectionOnline();
 
   // Run dialog callback, simulate user choosing to "try-again". Will succeed
-  // because system is online.
+  // because system is online, and the file doesn't need to be moved.
   OnDialogChoiceReceived(profile(), open_in_office_task, file_urls,
                          ash::office_fallback::kDialogChoiceTryAgain);
 
@@ -1597,8 +1599,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromODFS) {
   web_app_publisher_->ClearPastLaunches();
 
   // Open file directly from ODFS.
-  ash::cloud_upload::OpenOrMoveFiles(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
@@ -1620,8 +1623,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileNotFromODFS) {
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Triggers Move Confirmation dialog.
-  ash::cloud_upload::OpenOrMoveFiles(
-      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive);
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+      profile(), file_urls, ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   // Wait for setup flow dialog to open.
   navigation_observer_dialog.Wait();
@@ -1649,9 +1653,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OpenFileFromAndroidOneDriveViaODFS) {
   web_app_publisher_->ClearPastLaunches();
 
   // Open the file indirectly from Android OneDrive (via ODFS).
-  ash::cloud_upload::OpenOrMoveFiles(
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url},
-      ash::cloud_upload::CloudProvider::kOneDrive);
+      ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(1u, launches.size());
@@ -1685,9 +1690,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as the email accounts don't match.
-  ash::cloud_upload::OpenOrMoveFiles(
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url},
-      ash::cloud_upload::CloudProvider::kOneDrive);
+      ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(0u, launches.size());
@@ -1716,9 +1722,10 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
 
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as there is not an equivalent ODFS file path.
-  ash::cloud_upload::OpenOrMoveFiles(
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url},
-      ash::cloud_upload::CloudProvider::kOneDrive);
+      ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(0u, launches.size());
@@ -1751,9 +1758,10 @@ IN_PROC_BROWSER_TEST_F(
 
   // Attempt to open the file indirectly from Android OneDrive (via ODFS). It
   // will fail as there is not an equivalent ODFS file path.
-  ash::cloud_upload::OpenOrMoveFiles(
+  auto task = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
       profile(), {android_onedrive_url},
-      ash::cloud_upload::CloudProvider::kOneDrive);
+      ash::cloud_upload::CloudProvider::kOneDrive));
+  task->OpenOrMoveFiles();
 
   auto launches = web_app_publisher_->GetLaunches();
   ASSERT_EQ(0u, launches.size());
