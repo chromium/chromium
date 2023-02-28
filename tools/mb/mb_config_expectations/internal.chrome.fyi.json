@@ -1,4 +1,17 @@
 {
+  "android-buildspeed-dbg": {
+    "gn_args": {
+      "android_static_analysis": "off",
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_remoteexec": true
+    }
+  },
   "chromeos-arm-generic-cfi-thin-lto-chrome-reclient": {
     "args_file": "//build/args/chromeos/arm-generic.gni",
     "gn_args": {

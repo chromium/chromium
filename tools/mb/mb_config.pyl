@@ -849,6 +849,7 @@
     },
 
     'internal.chrome.fyi': {
+      'android-buildspeed-dbg': 'android_debug_bot_reclient_fastbuild',
       'chromeos-arm-generic-cfi-thin-lto-chrome-reclient': 'chromeos_arm-generic_cfi_thin_lto_official_reclient',
       'lacros-arm-generic-chrome-fyi-reclient': 'chromeos_arm-generic_lacros_official_skylab_reclient',
       'linux-finch-smoke-chrome': 'official_reclient',
@@ -1564,6 +1565,10 @@
 
     'android_debug_bot_reclient_external_fastbuild': [
       'android', 'debug_bot_reclient', 'android_external', 'android_fastbuild',
+    ],
+
+    'android_debug_bot_reclient_fastbuild': [
+      'android', 'debug_bot_reclient', 'android_fastbuild',
     ],
 
     'android_debug_static_bot_arm64_reclient': [
@@ -2966,7 +2971,7 @@
     ],
 
     # Meant for local development of fuzzers where no reclient/goma is needed.
-	'libfuzzer_chromeos_asan_local': [
+    'libfuzzer_chromeos_asan_local': [
       'libfuzzer', 'asan', 'no_reclient', 'release', 'chromeos_with_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 

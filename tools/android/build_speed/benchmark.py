@@ -343,6 +343,10 @@ def _run_autoninja(out_dir: str, target: str) -> float:
     return _run_and_time_cmd(['autoninja', '-C', out_dir, target])
 
 
+def _run_ninja(out_dir: str, target: str, j: str) -> float:
+    return _run_and_time_cmd(['ninja', '-j', j, '-C', out_dir, target])
+
+
 def _run_install(out_dir: str, target: str, device_serial: str) -> float:
     # Example script path: out/Debug/bin/chrome_public_apk
     script_path = os.path.join(out_dir, 'bin', target)
@@ -357,9 +361,12 @@ def _run_install(out_dir: str, target: str, device_serial: str) -> float:
 
 
 def _run_and_maybe_install(out_dir: str, target: str,
-                           emulator: Optional[device_utils.DeviceUtils]
-                           ) -> float:
-    total_time = _run_autoninja(out_dir, target)
+                           emulator: Optional[device_utils.DeviceUtils],
+                           j: Optional[str]) -> float:
+    if j is None:
+        total_time = _run_autoninja(out_dir, target)
+    else:
+        total_time = _run_ninja(out_dir, target, j)
     if emulator:
         total_time += _run_install(out_dir, target, emulator.serial)
     return total_time
@@ -367,11 +374,11 @@ def _run_and_maybe_install(out_dir: str, target: str,
 
 def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
                                to_string: str, change_file: str,
-                               emulator: Optional[device_utils.DeviceUtils]
-                               ) -> Iterator[float]:
+                               emulator: Optional[device_utils.DeviceUtils],
+                               j: Optional[str]) -> float:
     # This ensures that the only change is the one that this script makes.
     logging.info(f'Prepping incremental benchmark...')
-    prep_time = _run_and_maybe_install(out_dir, target, emulator)
+    prep_time = _run_and_maybe_install(out_dir, target, emulator, j)
     logging.info(f'Took {prep_time:.1f}s to prep. Sleeping for 1 minute.')
     # 60s is enough to sufficiently reduce load and improve consistency. 30s
     # did not sufficiently lower standard deviation and 90s did not further
@@ -387,11 +394,11 @@ def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
             assert content != new_content, (
                 f'Need to update {from_string} in {change_file}')
             f.write(new_content)
-        return _run_and_maybe_install(out_dir, target, emulator)
+        return _run_and_maybe_install(out_dir, target, emulator, j)
 
 
 def _run_benchmark(*, kind: str, emulator: Optional[device_utils.DeviceUtils],
-                   **kwargs: Dict) -> Iterator[float]:
+                   **kwargs: Dict) -> float:
     if kind == 'incremental_build':
         assert not emulator, f'Install not supported for {kwargs}.'
         return _run_incremental_benchmark(emulator=None, **kwargs)
@@ -428,8 +435,8 @@ def _parse_benchmarks(benchmarks: List[str]) -> Iterator[Benchmark]:
 
 def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                    output_directory: str, target: str, repeat: int,
-                   no_server: bool,
-                   emulator_avd_name: Optional[str]) -> Dict[str, List[float]]:
+                   no_server: bool, emulator_avd_name: Optional[str],
+                   j: Optional[str]) -> Dict[str, List[float]]:
     out_dir = os.path.relpath(output_directory, _SRC_ROOT)
     args_gn_path = os.path.join(out_dir, 'args.gn')
     if emulator_avd_name is None:
@@ -456,6 +463,7 @@ def run_benchmarks(benchmarks: List[str], gn_args: List[str],
                     elapsed = _run_benchmark(out_dir=out_dir,
                                              target=target,
                                              emulator=emulator,
+                                             j=j,
                                              **benchmark.info)
                 logging.info(f'Completed {benchmark.name}: {elapsed:.1f}s')
                 timings[benchmark.name].append(elapsed)
@@ -508,6 +516,8 @@ def main():
                         help='Specify this to override the default emulator.')
     parser.add_argument('--target',
                         help='Specify this to override the default target.')
+    parser.add_argument('-j',
+                        help='Pass -j to use ninja instead of autoninja.')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -545,7 +555,8 @@ def main():
     else:
         target = _TARGETS['bundle' if args.bundle else 'apk']
     results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
-                             args.repeat, args.no_server, args.emulator)
+                             args.repeat, args.no_server, args.emulator,
+                             args.j)
     server_str = f'{"not " if args.no_server else ""}using build server'
     print(f'Summary ({server_str})')
     print(f'emulator: {args.emulator}')
