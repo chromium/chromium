@@ -1517,6 +1517,12 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disallow-managed-profile-signout",
+    "owners": [ "ydago", "//chrome/browser/data_saver/OWNERS" ],
+    // This is a web-developer facing flag and should not be removed.
+    "expiry_milestone": 116
+  },
+  {
     "name": "display-alignment-assistance",
     "owners": [ "cros-peripherals@google.com" ],
     "expiry_milestone": 120
