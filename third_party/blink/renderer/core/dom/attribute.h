@@ -30,6 +30,9 @@
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+#include "base/record_replay.h"
+#include "third_party/blink/renderer/core/html_names.h"
+
 namespace blink {
 
 // This value is set fairly arbitrarily, to get above what we expect to be
@@ -50,7 +53,12 @@ class Attribute {
 
  public:
   Attribute(const QualifiedName& name, const AtomicString& value)
-      : name_(name), value_(value) {}
+      : name_(name), value_(value) {
+    if (name == html_names::kSrcAttr) {
+      recordreplay::Assert("[RUN-658-1438] Attribute::Attribute %s",
+                           value.IsNull() ? "(null)" : value.Utf8().c_str());
+    }
+  }
   Attribute(QualifiedName&& name, AtomicString&& value)
       : name_(std::move(name)), value_(std::move(value)) {}
 
@@ -68,7 +76,13 @@ class Attribute {
   bool Matches(const QualifiedName&) const;
   bool MatchesCaseInsensitive(const QualifiedName&) const;
 
-  void SetValue(const AtomicString& value) { value_ = value; }
+  void SetValue(const AtomicString& value) {
+    if (name_ == html_names::kSrcAttr) {
+      recordreplay::Assert("[RUN-658-1438] Attribute::SetValue %s",
+                           value.IsNull() ? "(null)" : value.Utf8().c_str());
+    }
+    value_ = value;
+  }
 
   // Note: This API is only for HTMLTreeBuilder.  It is not safe to change the
   // name of an attribute once parseAttribute has been called as DOM
