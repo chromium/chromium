@@ -249,8 +249,10 @@ void CheckInstallation(UpdaterScope scope,
       if (!is_active_and_sxs && !is_internal_service)
         continue;
 
+      const std::wstring service_name(GetServiceName(is_internal_service));
       EXPECT_EQ(is_installed,
-                !IsServiceGone(GetServiceName(is_internal_service)));
+                !IsServiceGone(GetServiceName(is_internal_service)))
+          << ": " << service_name << ": " << is_internal_service;
 
 // TODO(crbug.com/1378769) - this code can be enabled after the the new CIPD
 // build containing fix r1105318 is published.
