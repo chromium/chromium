@@ -533,6 +533,7 @@ android_library("content_javatests") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
     "//ui/base/cursor/mojom:cursor_type_java",

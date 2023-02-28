@@ -166,7 +166,7 @@ public class AwContentsGarbageCollectionTest {
                 webContentsA11y.setAccessibilityEnabledForTesting();
                 // Initialize native object.
                 containerView.getAccessibilityNodeProvider();
-                Assert.assertTrue(webContentsA11y.isAccessibilityEnabled());
+                Assert.assertTrue(webContentsA11y.isNativeInitialized());
             });
 
             return null;

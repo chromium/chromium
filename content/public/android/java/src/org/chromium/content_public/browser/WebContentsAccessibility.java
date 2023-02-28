@@ -28,28 +28,16 @@ public interface WebContentsAccessibility {
     }
 
     /**
-     *  Determines if a11y enabled.
-     *  @return {@code true} if a11y is enabled.
+     *  Determines if the underlying native C++ a11y framework has been initialized.
+     *  @return {@code true} if the framework has been initialized.
      */
-    boolean isAccessibilityEnabled();
+    boolean isNativeInitialized();
 
     /**
      *  Enables a11y for testing.
      */
     @VisibleForTesting
     void setAccessibilityEnabledForTesting();
-
-    /**
-     * Enables a11y service mask flags in the BrowserAccessibilityState for testing.
-     */
-    @VisibleForTesting
-    void setBrowserAccessibilityStateForTesting();
-
-    /**
-     *  Add a spelling error.
-     */
-    @VisibleForTesting
-    void addSpellingErrorForTesting(int virtualViewId, int startOffset, int endOffset);
 
     /**
      * If native accessibility is enabled and no other views are temporarily

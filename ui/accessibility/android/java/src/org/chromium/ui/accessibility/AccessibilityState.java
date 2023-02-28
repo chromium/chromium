@@ -43,6 +43,9 @@ import java.util.WeakHashMap;
 public class AccessibilityState {
     private static final String TAG = "A11yState";
 
+    public static final int EVENT_TYPE_MASK_ALL = ~0;
+    public static final int EVENT_TYPE_MASK_NONE = 0;
+
     /**
      * Interface for the observers of the system's accessibility state.
      */
@@ -204,11 +207,11 @@ public class AccessibilityState {
     }
 
     @VisibleForTesting
-    public static void setEventTypeMaskForTesting() {
+    public static void setEventTypeMaskForTesting(int mask) {
         if (!sInitialized) updateAccessibilityServices();
 
-        // Explicitly set mask so all events are relevant to currently enabled service.
-        sEventTypeMask = ~0;
+        // Explicitly set mask so events can be (ir)relevant to currently enabled service.
+        sEventTypeMask = mask;
         // Explicitly set accessibility enabled
         State newState = new State(sState.isScreenReaderEnabled, sState.isTouchExplorationEnabled,
                 true, sState.isAccessibilityToolPresent, sState.isSpokenFeedbackServicePresent,
@@ -216,17 +219,6 @@ public class AccessibilityState {
 
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
-    }
-
-    @VisibleForTesting
-    public static void setEventTypeMaskEmptyForTesting() {
-        if (!sInitialized) updateAccessibilityServices();
-
-        // Explicitly set mask so no events are relevant to currently enabled service.
-        sEventTypeMask = 0;
-
-        // Inform all listeners of this change.
-        updateAndNotifyStateChange(sState);
     }
 
     @VisibleForTesting

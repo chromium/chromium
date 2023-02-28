@@ -425,7 +425,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mNativeObj = 0;
     }
 
-    protected boolean isNativeInitialized() {
+    @Override
+    public boolean isNativeInitialized() {
         return mNativeObj != 0;
     }
 
@@ -434,66 +435,54 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                                      : false;
     }
 
-    @VisibleForTesting
+    public boolean isAccessibilityEnabled() {
+        return isNativeInitialized()
+                && (mAccessibilityEnabledOverride || mAccessibilityManager.isEnabled());
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @Override
     public void setAccessibilityEnabledForTesting() {
         mAccessibilityEnabledOverride = true;
         mIsObscuredByAnotherView = false;
     }
 
-    @VisibleForTesting
-    @Override
-    public void setBrowserAccessibilityStateForTesting() {
-        AccessibilityState.setEventTypeMaskForTesting();
-    }
-
-    @VisibleForTesting
-    @Override
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void addSpellingErrorForTesting(int virtualViewId, int startOffset, int endOffset) {
         WebContentsAccessibilityImplJni.get().addSpellingErrorForTesting(
                 mNativeObj, virtualViewId, startOffset, endOffset);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setMaxContentChangedEventsToFireForTesting(int maxEvents) {
         WebContentsAccessibilityImplJni.get().setMaxContentChangedEventsToFireForTesting(
                 mNativeObj, maxEvents);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public int getMaxContentChangedEventsToFireForTesting() {
         return WebContentsAccessibilityImplJni.get().getMaxContentChangedEventsToFireForTesting(
                 mNativeObj);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setAccessibilityTrackerForTesting(AccessibilityActionAndEventTracker tracker) {
         mTracker = tracker;
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void signalEndOfTestForTesting() {
         WebContentsAccessibilityImplJni.get().signalEndOfTestForTesting(mNativeObj);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void forceRecordUMAHistogramsForTesting() {
         mHistogramRecorder.recordEventsHistograms();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void forceRecordCacheUMAHistogramsForTesting() {
         mHistogramRecorder.recordCacheHistograms();
-    }
-
-    @VisibleForTesting
-    public void setEventTypeMaskEmptyForTesting() {
-        AccessibilityState.setEventTypeMaskEmptyForTesting();
-    }
-
-    @VisibleForTesting
-    public void setScreenReaderModeForTesting(boolean enabled) {
-        AccessibilityState.setScreenReaderModeForTesting(enabled);
     }
 
     @CalledByNative
@@ -1477,12 +1466,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             return null;
         }
         return event;
-    }
-
-    @Override
-    public boolean isAccessibilityEnabled() {
-        return isNativeInitialized()
-                && (mAccessibilityEnabledOverride || mAccessibilityManager.isEnabled());
     }
 
     private AccessibilityNodeInfoCompat createNodeForHost(int rootId) {
