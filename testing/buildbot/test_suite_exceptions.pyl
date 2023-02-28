@@ -1532,6 +1532,7 @@
     ],
     'modifications': {
       'android-12-x64-rel': {
+        'ci_only': True,
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter',
         ],

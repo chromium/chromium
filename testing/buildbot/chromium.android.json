@@ -7510,6 +7510,7 @@
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter"
         ],
+        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
