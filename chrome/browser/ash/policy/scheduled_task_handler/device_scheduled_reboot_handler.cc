@@ -54,16 +54,16 @@ constexpr char DeviceScheduledRebootHandler::kRebootTimerTag[];
 DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
     ash::CrosSettings* cros_settings,
     std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
-    std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler)
+    RebootNotificationsScheduler* notifications_scheduler)
     : DeviceScheduledRebootHandler(cros_settings,
                                    std::move(scheduled_task_executor),
-                                   std::move(notifications_scheduler),
+                                   notifications_scheduler,
                                    base::BindRepeating(GetBootTime)) {}
 
 DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
     ash::CrosSettings* cros_settings,
     std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
-    std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler,
+    RebootNotificationsScheduler* notifications_scheduler,
     GetBootTimeCallback get_boot_time_callback)
     : cros_settings_(cros_settings),
       cros_settings_subscription_(cros_settings_->AddSettingsObserver(
@@ -72,7 +72,7 @@ DeviceScheduledRebootHandler::DeviceScheduledRebootHandler(
               &DeviceScheduledRebootHandler::OnScheduledRebootDataChanged,
               base::Unretained(this)))),
       scheduled_task_executor_(std::move(scheduled_task_executor)),
-      notifications_scheduler_(std::move(notifications_scheduler)),
+      notifications_scheduler_(notifications_scheduler),
       get_boot_time_callback_(std::move(get_boot_time_callback)) {
   DCHECK(get_boot_time_callback_);
 

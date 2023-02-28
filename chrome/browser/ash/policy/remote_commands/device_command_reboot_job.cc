@@ -11,7 +11,10 @@
 #include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -25,6 +28,10 @@ namespace {
 const char kKioskRebootDescription[] = "Reboot remote command (kiosk)";
 const char kLoginScreenRebootDescription[] =
     "Reboot remote command (login screen)";
+const char kUserSessionRebootDescription[] =
+    "Reboot remote command (user session)";
+
+constexpr base::TimeDelta kUserSessionRebootTimeout = base::Minutes(5);
 
 base::TimeTicks GetBootTime() {
   return base::TimeTicks::Now() - base::SysInfo::Uptime();
@@ -36,16 +43,25 @@ DeviceCommandRebootJob::DeviceCommandRebootJob()
     : DeviceCommandRebootJob(chromeos::PowerManagerClient::Get(),
                              ash::LoginState::Get(),
                              ash::SessionTerminationManager::Get(),
+                             RebootNotificationsScheduler::Get(),
+                             base::DefaultClock::GetInstance(),
+                             base::DefaultTickClock::GetInstance(),
                              base::BindRepeating(GetBootTime)) {}
 
 DeviceCommandRebootJob::DeviceCommandRebootJob(
     chromeos::PowerManagerClient* power_manager_client,
     ash::LoginState* loging_state,
     ash::SessionTerminationManager* session_termination_manager,
+    RebootNotificationsScheduler* in_session_notifications_scheduler,
+    const base::Clock* clock,
+    const base::TickClock* tick_clock,
     GetBootTimeCallback get_boot_time_callback)
     : power_manager_client_(power_manager_client),
       login_state_(loging_state),
       session_termination_manager_(session_termination_manager),
+      in_session_notifications_scheduler_(in_session_notifications_scheduler),
+      in_session_reboot_timer_(clock, tick_clock),
+      clock_(clock),
       get_boot_time_callback_(std::move(get_boot_time_callback)) {
   DCHECK(get_boot_time_callback_);
 }
@@ -69,7 +85,7 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult result_callback) {
   if (delta.is_positive()) {
     LOG(WARNING) << "Ignoring reboot command issued " << delta
                  << " before current boot time";
-    RunAsyncCallback(std::move(result_callback_), FROM_HERE);
+    RunAsyncSuccesCallback(std::move(result_callback_), FROM_HERE);
     return;
   }
 
@@ -89,9 +105,18 @@ void DeviceCommandRebootJob::RunImpl(CallbackWithResult result_callback) {
 }
 
 void DeviceCommandRebootJob::RebootUserSession() {
+  const auto reboot_time = clock_->Now() + kUserSessionRebootTimeout;
+  in_session_notifications_scheduler_->SchedulePendingRebootNotifications(
+      base::BindOnce(&DeviceCommandRebootJob::OnRebootButtonClicked,
+                     weak_factory_.GetWeakPtr()),
+      reboot_time, RebootNotificationsScheduler::Requester::kRebootCommand);
+  in_session_reboot_timer_.Start(
+      FROM_HERE, reboot_time,
+      base::BindOnce(&DeviceCommandRebootJob::OnRebootTimeoutExpired,
+                     weak_factory_.GetWeakPtr()));
+
   // TODO(b/265784089): Make reboot on user logout robust. If the browser
   // crashes, all the reboot information is gone while it should be preserved.
-
   session_termination_manager_->SetDeviceRebootOnSignoutForRemoteCommand(
       base::BindOnce(&DeviceCommandRebootJob::OnSignout,
                      weak_factory_.GetWeakPtr()));
@@ -100,7 +125,24 @@ void DeviceCommandRebootJob::RebootUserSession() {
 void DeviceCommandRebootJob::OnSignout() {
   // `session_termination_manager_` will initiate the reboot, just report the
   // command finished.
-  RunAsyncCallback(std::move(result_callback_), FROM_HERE);
+  RunAsyncSuccesCallback(std::move(result_callback_), FROM_HERE);
+}
+
+void DeviceCommandRebootJob::OnRebootButtonClicked() {
+  ResetTriggeringEvents();
+  DoReboot(kUserSessionRebootDescription);
+}
+
+void DeviceCommandRebootJob::OnRebootTimeoutExpired() {
+  ResetTriggeringEvents();
+  in_session_notifications_scheduler_->SchedulePostRebootNotification();
+  DoReboot(kUserSessionRebootDescription);
+}
+
+void DeviceCommandRebootJob::ResetTriggeringEvents() {
+  in_session_notifications_scheduler_->CancelRebootNotifications(
+      RebootNotificationsScheduler::Requester::kRebootCommand);
+  in_session_reboot_timer_.Stop();
 }
 
 void DeviceCommandRebootJob::DoReboot(const std::string& reason) {
@@ -110,16 +152,21 @@ void DeviceCommandRebootJob::DoReboot(const std::string& reason) {
   // guarantee the callback reaching `RemoteCommandsService` and is very
   // unlikely to be reported to DMServer. So the callback is mostly used for
   // testing purposes.
+  // The implementation relies on `RemoteCommandsQueue` running one command at
+  // the time: two reboot commands cannot exist simultaneously and will not
+  // compete for the notification. The
+  // callback is called at the very end of execution in order to not to have two
+  // commands executed simultaneously .
   // TODO(b/252980103): Come up with a mechanism to deliver the execution result
   // to DMServer.
-  RunAsyncCallback(std::move(result_callback_), FROM_HERE);
+  RunAsyncSuccesCallback(std::move(result_callback_), FROM_HERE);
   power_manager_client_->RequestRestart(
       power_manager::REQUEST_RESTART_REMOTE_ACTION_REBOOT, reason);
 }
 
 // static
-void DeviceCommandRebootJob::RunAsyncCallback(CallbackWithResult callback,
-                                              base::Location from_where) {
+void DeviceCommandRebootJob::RunAsyncSuccesCallback(CallbackWithResult callback,
+                                                    base::Location from_where) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       from_where,
       base::BindOnce(std::move(callback), ResultType::kSuccess, absl::nullopt));

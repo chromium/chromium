@@ -96,6 +96,10 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         mock_user_manager_(new ash::MockUserManager),
         user_manager_enabler_(base::WrapUnique(mock_user_manager_)),
+        prefs_(std::make_unique<TestingPrefServiceSimple>()),
+        notifications_scheduler_(task_environment_.GetMockClock(),
+                                 task_environment_.GetMockTickClock(),
+                                 prefs_.get()),
         start_time_(task_environment_.GetMockClock()->Now()) {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
@@ -107,17 +111,11 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
     auto task_executor = std::make_unique<FakeScheduledTaskExecutor>(
         task_environment_.GetMockClock());
     scheduled_task_executor_ = task_executor.get();
-    prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    auto notifications_scheduler =
-        std::make_unique<FakeRebootNotificationsScheduler>(
-            task_environment_.GetMockClock(),
-            task_environment_.GetMockTickClock(), prefs_.get());
-    notifications_scheduler_ = notifications_scheduler.get();
     RebootNotificationsScheduler::RegisterProfilePrefs(prefs_->registry());
     device_scheduled_reboot_handler_ =
         std::make_unique<DeviceScheduledRebootHandlerForTest>(
             ash::CrosSettings::Get(), std::move(task_executor),
-            std::move(notifications_scheduler),
+            &notifications_scheduler_,
             /*get_boot_time_callback=*/base::BindLambdaForTesting([this]() {
               return start_time_;
             }));
@@ -158,18 +156,18 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
   }
 
   bool CheckNotificationStats(int notifications_shown, int dialogs_shown) {
-    if (notifications_scheduler_->GetShowNotificationCalls() !=
+    if (notifications_scheduler_.GetShowNotificationCalls() !=
         notifications_shown) {
       LOG(ERROR) << "Current notifications shown count: "
-                 << notifications_scheduler_->GetShowNotificationCalls()
+                 << notifications_scheduler_.GetShowNotificationCalls()
                  << " Expected notifications shown count: "
                  << notifications_shown;
       return false;
     }
 
-    if (notifications_scheduler_->GetShowDialogCalls() != dialogs_shown) {
+    if (notifications_scheduler_.GetShowDialogCalls() != dialogs_shown) {
       LOG(ERROR) << "Current dialogs shown count: "
-                 << notifications_scheduler_->GetShowDialogCalls()
+                 << notifications_scheduler_.GetShowDialogCalls()
                  << " Expected dialogs shown count: " << dialogs_shown;
       return false;
     }
@@ -203,7 +201,7 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
   ash::ScopedTestingCrosSettings cros_settings_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   device::TestWakeLockProvider wake_lock_provider_;
-  FakeRebootNotificationsScheduler* notifications_scheduler_;
+  FakeRebootNotificationsScheduler notifications_scheduler_;
   base::test::ScopedFeatureList scoped_feature_list_;
   const base::Time start_time_;
 };
@@ -643,7 +641,7 @@ TEST_F(DeviceScheduledRebootHandlerTest, SimulateNotificationButtonClick) {
 
   // Simulate reboot button click on the notification. This should execute the
   // reboot.
-  notifications_scheduler_->SimulateRebootButtonClick();
+  notifications_scheduler_.SimulateRebootButtonClick();
   expected_reboot_requests += 1;
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 
@@ -656,6 +654,9 @@ class ScheduledRebootTimerFailureTest : public testing::Test {
   ScheduledRebootTimerFailureTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        notifications_scheduler_(task_environment_.GetMockClock(),
+                                 task_environment_.GetMockTickClock(),
+                                 nullptr),
         start_time_(task_environment_.GetMockClock()->Now()) {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
@@ -666,15 +667,10 @@ class ScheduledRebootTimerFailureTest : public testing::Test {
     auto task_executor =
         std::make_unique<ScheduledTaskExecutorImpl>("test_tag");
     scheduled_task_executor_ = task_executor.get();
-    auto notifications_scheduler =
-        std::make_unique<FakeRebootNotificationsScheduler>(
-            task_environment_.GetMockClock(),
-            task_environment_.GetMockTickClock(), nullptr);
-    notifications_scheduler_ = notifications_scheduler.get();
     device_scheduled_reboot_handler_ =
         std::make_unique<DeviceScheduledRebootHandlerForTest>(
             ash::CrosSettings::Get(), std::move(task_executor),
-            std::move(notifications_scheduler),
+            &notifications_scheduler_,
             /*get_boot_time_callback=*/base::BindLambdaForTesting([this]() {
               return start_time_;
             }));
@@ -694,7 +690,7 @@ class ScheduledRebootTimerFailureTest : public testing::Test {
       device_scheduled_reboot_handler_;
   ash::ScopedTestingCrosSettings cros_settings_;
   device::TestWakeLockProvider wake_lock_provider_;
-  FakeRebootNotificationsScheduler* notifications_scheduler_;
+  FakeRebootNotificationsScheduler notifications_scheduler_;
   base::test::MockLog log_;
   const base::Time start_time_;
 };
@@ -710,9 +706,10 @@ TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
       kRebootTaskTimeFieldName);
 
   // Simulate timer creation failure.
-  chromeos::NativeTimer::SimulateTimerCreationFailureForTesting();
+  auto scoped_timer_failure =
+      chromeos::NativeTimer::ScopedFailureSimulatorForTesting();
   int expected_close_notification_calls =
-      notifications_scheduler_->GetCloseNotificationCalls() + 1;
+      notifications_scheduler_.GetCloseNotificationCalls() + 1;
 
   // Verify timer start failure once the policy is set. Notification scheduler
   // should close all pending notifications and reset state.
@@ -723,7 +720,7 @@ TEST_F(ScheduledRebootTimerFailureTest, SimulateTimerStartFailure) {
       std::move(policy_and_next_reboot_time.first));
 
   // Verify that the notifications are closed.
-  EXPECT_EQ(notifications_scheduler_->GetCloseNotificationCalls(),
+  EXPECT_EQ(notifications_scheduler_.GetCloseNotificationCalls(),
             expected_close_notification_calls);
   // Verify that the state is reset.
   EXPECT_EQ(device_scheduled_reboot_handler_->GetScheduledRebootDataForTest(),
@@ -752,6 +749,9 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
   ScheduledRebootDelayedServiceTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        notifications_scheduler_(task_environment_.GetMockClock(),
+                                 task_environment_.GetMockTickClock(),
+                                 nullptr),
         start_time_(task_environment_.GetMockClock()->Now()) {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
@@ -760,15 +760,10 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
     auto task_executor = std::make_unique<FakeScheduledTaskExecutor>(
         task_environment_.GetMockClock());
     scheduled_task_executor_ = task_executor.get();
-    auto notifications_scheduler =
-        std::make_unique<FakeRebootNotificationsScheduler>(
-            task_environment_.GetMockClock(),
-            task_environment_.GetMockTickClock(), nullptr);
-    notifications_scheduler_ = notifications_scheduler.get();
     device_scheduled_reboot_handler_ =
         std::make_unique<DeviceScheduledRebootHandlerForTest>(
             ash::CrosSettings::Get(), std::move(task_executor),
-            std::move(notifications_scheduler),
+            &notifications_scheduler_,
             /*get_boot_time_callback=*/base::BindLambdaForTesting([this]() {
               return start_time_;
             }));
@@ -785,7 +780,7 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
   std::unique_ptr<DeviceScheduledRebootHandlerForTest>
       device_scheduled_reboot_handler_;
   ash::ScopedTestingCrosSettings cros_settings_;
-  FakeRebootNotificationsScheduler* notifications_scheduler_;
+  FakeRebootNotificationsScheduler notifications_scheduler_;
   DelayedFakePowerManagerClient* power_manager_;
   device::TestWakeLockProvider wake_lock_provider_;
   const base::Time start_time_;

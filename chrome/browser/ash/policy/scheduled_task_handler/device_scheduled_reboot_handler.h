@@ -31,7 +31,7 @@ class DeviceScheduledRebootHandler
   DeviceScheduledRebootHandler(
       ash::CrosSettings* cros_settings,
       std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
-      std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler);
+      RebootNotificationsScheduler* notifications_scheduler);
   DeviceScheduledRebootHandler(const DeviceScheduledRebootHandler&) = delete;
   DeviceScheduledRebootHandler& operator=(const DeviceScheduledRebootHandler&) =
       delete;
@@ -63,11 +63,12 @@ class DeviceScheduledRebootHandler
  protected:
   using GetBootTimeCallback = base::RepeatingCallback<base::Time()>;
 
-  // Extended constructor for testing purposes.
+  // Extended constructor for testing purposes. `cros_settings` and
+  // `notifications_scheduler` must outlive the handler.
   DeviceScheduledRebootHandler(
       ash::CrosSettings* cros_settings,
       std::unique_ptr<ScheduledTaskExecutor> scheduled_task_executor,
-      std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler,
+      RebootNotificationsScheduler* notifications_scheduler,
       GetBootTimeCallback get_boot_time_callback);
 
   // Called when scheduled timer fires. Triggers a reboot and
@@ -116,8 +117,8 @@ class DeviceScheduledRebootHandler
   // Delay added to scheduled reboot time, used for testing.
   absl::optional<base::TimeDelta> reboot_delay_for_testing_;
 
-  // Scheduler for reboot notification and dialog.
-  std::unique_ptr<RebootNotificationsScheduler> notifications_scheduler_;
+  // Scheduler for reboot notification and dialog. Unowned.
+  base::raw_ptr<RebootNotificationsScheduler> notifications_scheduler_;
 
   // Indicating if the reboot should be skipped.
   bool skip_reboot_ = false;

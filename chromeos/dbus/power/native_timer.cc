@@ -132,10 +132,6 @@ void NativeTimer::Start(base::TimeTicks absolute_expiration_time,
                      std::move(result_callback)));
 }
 
-void NativeTimer::SimulateTimerCreationFailureForTesting() {
-  simulate_timer_creation_failure_for_testing_ = true;
-}
-
 void NativeTimer::OnCreateTimer(
     base::ScopedFD expiration_fd,
     absl::optional<std::vector<int32_t>> timer_ids) {
@@ -245,6 +241,16 @@ void NativeTimer::ProcessAndResetInFlightStartParams(bool result) {
 
   // This state has been processed and must be reset to indicate that.
   in_flight_start_timer_params_.reset();
+}
+
+NativeTimer::ScopedFailureSimulatorForTesting::
+    ScopedFailureSimulatorForTesting() {
+  NativeTimer::simulate_timer_creation_failure_for_testing_ = true;
+}
+
+NativeTimer::ScopedFailureSimulatorForTesting::
+    ~ScopedFailureSimulatorForTesting() {
+  NativeTimer::simulate_timer_creation_failure_for_testing_ = false;
 }
 
 }  // namespace chromeos
