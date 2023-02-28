@@ -9,6 +9,13 @@
        null,
        {}
       ]
+     ],
+     "Blob-stream-sync-xhr-crash.html": [
+      "fe54fb615b1579a8a75396184f24f0b4ed3d2984",
+      [
+       null,
+       {}
+      ]
      ]
     }
    },
@@ -3016,6 +3023,13 @@
      ],
      "first-line-first-letter-insert-crash.html": [
       "bc22aae409b80ee62f3079cb31e89b2130da8270",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-line-inherited-transition-crash.html": [
+      "223a0060ebf9a5f9a564c7ccaef0aa09be663878",
       [
        null,
        {}
@@ -17680,6 +17694,45 @@
        [
         [
          "/css/printing/transition-in-media-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "zero-size-001-print.tentative.html": [
+      "98f77a7b8635a688ac6641e1d0bc58290f20f1cc",
+      [
+       null,
+       [
+        [
+         "/css/printing/zero-size-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "zero-size-002-print.tentative.html": [
+      "e243c34e7c01ee2d7de0018582829690c0e4f05e",
+      [
+       null,
+       [
+        [
+         "/css/printing/zero-size-print-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "zero-size-003-print.tentative.html": [
+      "c514f72360f63bff53e1e249155ac5b321f64b3e",
+      [
+       null,
+       [
+        [
+         "/css/printing/zero-size-print-ref.html",
          "=="
         ]
        ],
@@ -265248,16 +265301,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "b2acd03241b2376caf08637504914d34ff402bc8",
-     []
-    ],
-    "mtime.json": [
-     "4d0912fe7628b77c96ea98964ef18e2882323977",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -322959,19 +323002,7 @@
       []
      ],
      "signs-abs-computed-expected.txt": [
-      "d2f1550dda12e1b99c3a68e8ca375f6e91dd10d4",
-      []
-     ],
-     "signs-abs-computed.html.ini": [
-      "1ac87eaeb8394d61cd2ad0f7c34a743eb5ad1733",
-      []
-     ],
-     "signs-abs-serialize-expected.txt": [
-      "39973d9c104b22ed4c2768388883428586c7c133",
-      []
-     ],
-     "signs-abs-serialize.html.ini": [
-      "f46ffb3742abb09f3f74d9ecf5ce75e7d7638830",
+      "4e3305394609ca29539c799503a5784780e76ab1",
       []
      ],
      "support": {
@@ -329152,6 +329183,10 @@
      ],
      "transition-in-media-print-ref.html": [
       "2f25c06131e9372512e23ab9ff8428c594f74391",
+      []
+     ],
+     "zero-size-print-ref.html": [
+      "569af797ed98a9166481b17d71698f8ae85447e8",
       []
      ]
     },
@@ -449212,6 +449247,20 @@
         {}
        ]
       ],
+      "text-wrap-balance-001.html": [
+       "3360681d0fc771e30730479fdf3262f4565dcd32",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-wrap-white-space-001.html": [
+       "0600b8249e5c17e3feee30eebe854043c60ccb49",
+       [
+        null,
+        {}
+       ]
+      ],
       "trailing-space-before-br-001.html": [
        "fcc2bdfa43633783151aaa8c0f65458d13e764f1",
        [
@@ -454595,7 +454644,7 @@
       ]
      ],
      "signs-abs-computed.html": [
-      "74dff7c9c0c157a06db97868cac7abf3b1804d45",
+      "774ca34cb74e384f9dcae455a6e557ecc5deab5d",
       [
        null,
        {}
@@ -454609,7 +454658,7 @@
       ]
      ],
      "signs-abs-serialize.html": [
-      "28d04b9695de213b7258c68e5ef1ca0aabbc0026",
+      "ea3d0cb433bb9ae631d67dcd3b6b96d494baab6c",
       [
        null,
        {}
