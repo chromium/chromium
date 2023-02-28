@@ -23,8 +23,10 @@ namespace {
 const char kOldId[] = "oooooooooooooooooooooooooooooooo";
 const char kNewId[] = "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn";
 
-scoped_refptr<const Extension> CreateExtension(const std::string& id) {
-  return ExtensionBuilder("test").SetID(id).Build();
+scoped_refptr<const Extension> CreateExtension(
+    const std::string& id,
+    mojom::ManifestLocation location) {
+  return ExtensionBuilder("test").SetID(id).SetLocation(location).Build();
 }
 
 }  // namespace
@@ -58,9 +60,12 @@ class ExtensionMigratorTest : public ExtensionServiceTestBase {
         Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT));
   }
 
-  void AddExtension(const std::string& id) {
-    scoped_refptr<const Extension> fake_app = CreateExtension(id);
+  scoped_refptr<const Extension> AddExtension(
+      const std::string& id,
+      mojom::ManifestLocation location) {
+    scoped_refptr<const Extension> fake_app = CreateExtension(id, location);
     service()->AddExtension(fake_app.get());
+    return fake_app;
   }
 
   bool HasNewExtension() {
@@ -78,7 +83,7 @@ TEST_F(ExtensionMigratorTest, NoExistingOld) {
 
 TEST_F(ExtensionMigratorTest, HasExistingOld) {
   InitWithExistingProfile();
-  AddExtension(kOldId);
+  AddExtension(kOldId, mojom::ManifestLocation::kExternalPrefDownload);
   service()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(HasNewExtension());
@@ -87,7 +92,7 @@ TEST_F(ExtensionMigratorTest, HasExistingOld) {
 
 TEST_F(ExtensionMigratorTest, KeepExistingNew) {
   InitWithExistingProfile();
-  AddExtension(kNewId);
+  AddExtension(kNewId, mojom::ManifestLocation::kExternalPrefDownload);
   service()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(registry()->GetInstalledExtension(kNewId));
@@ -95,12 +100,26 @@ TEST_F(ExtensionMigratorTest, KeepExistingNew) {
 
 TEST_F(ExtensionMigratorTest, HasBothOldAndNew) {
   InitWithExistingProfile();
-  AddExtension(kOldId);
-  AddExtension(kNewId);
+  AddExtension(kOldId, mojom::ManifestLocation::kExternalPrefDownload);
+  AddExtension(kNewId, mojom::ManifestLocation::kExternalPrefDownload);
   service()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(registry()->GetInstalledExtension(kOldId));
   EXPECT_TRUE(registry()->GetInstalledExtension(kNewId));
+}
+
+// Tests that a previously-force-installed extension can be uninstalled.
+// crbug.com/1416682
+TEST_F(ExtensionMigratorTest, HasPreviouslyForceInstalledNew) {
+  InitWithExistingProfile();
+  scoped_refptr<const Extension> extension =
+      AddExtension(kNewId, mojom::ManifestLocation::kExternalPolicyDownload);
+  service()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
+  service()->CheckForExternalUpdates();
+  base::RunLoop().RunUntilIdle();
+  // A previously-force-installed-extension should not be persisted by the
+  // ExtensionMigrator.
+  EXPECT_FALSE(registry()->GetInstalledExtension(kNewId));
 }
 
 }  // namespace extensions
