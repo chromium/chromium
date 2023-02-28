@@ -4,7 +4,6 @@
 
 #include "content/common/font_list.h"
 
-#import <Cocoa/Cocoa.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreText/CoreText.h>
 

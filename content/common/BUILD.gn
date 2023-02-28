@@ -309,21 +309,21 @@ source_set("common") {
 
   if (is_ios) {
     # TOOD: Create ios file instead of stealing android
-    sources += [
-      "cursors/webcursor_android.cc",
-      "font_list_android.cc",
-    ]
+    sources += [ "cursors/webcursor_android.cc" ]
   }
 
   if (is_mac) {
     sources += [
-      "font_list_mac.mm",
       "mac/attributed_string_type_converters.h",
       "mac/attributed_string_type_converters.mm",
       "mac/task_port_policy.cc",
       "mac/task_port_policy.h",
     ]
     deps += [ "//sandbox/mac:seatbelt" ]
+  }
+
+  if (is_apple) {
+    sources += [ "font_list_mac.mm" ]
   }
 
   if (is_win) {
