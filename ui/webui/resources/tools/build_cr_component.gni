@@ -119,30 +119,42 @@ template("build_cr_component") {
     }
   }
 
-  preprocess_if_expr("preprocess") {
+  preprocess_if_expr("preprocess_ts_files") {
     visibility = [
       ":build_ts",
-      ":css_wrapper_files",
       ":html_wrapper_files",
     ]
 
     in_folder = "."
     out_folder = preprocess_dir
     in_files = ts_files
+  }
 
-    if (defined(html_files)) {
-      in_files += html_files
-    }
+  if (defined(html_files) || defined(invoker.css_files)) {
+    preprocess_if_expr("preprocess_html_css_files") {
+      visibility = [
+        ":css_wrapper_files",
+        ":html_wrapper_files",
+      ]
 
-    if (defined(invoker.css_files)) {
-      in_files += invoker.css_files
+      in_folder = "."
+      out_folder = preprocess_dir
+
+      in_files = []
+      if (defined(html_files)) {
+        in_files += html_files
+      }
+
+      if (defined(invoker.css_files)) {
+        in_files += invoker.css_files
+      }
     }
   }
 
   if (defined(html_files)) {
     html_to_wrapper("html_wrapper_files") {
       visibility = [ ":build_ts" ]
-      deps = [ ":preprocess" ]
+      deps = [ ":preprocess_html_css_files" ]
       in_folder = preprocess_dir
       out_folder = preprocess_dir
       in_files = html_files
@@ -151,6 +163,9 @@ template("build_cr_component") {
 
       if (defined(invoker.html_to_wrapper_template)) {
         template = invoker.html_to_wrapper_template
+        if (invoker.html_to_wrapper_template == "detect") {
+          deps += [ ":preprocess_ts_files" ]
+        }
       }
     }
   }
@@ -158,7 +173,7 @@ template("build_cr_component") {
   if (defined(invoker.css_files)) {
     css_to_wrapper("css_wrapper_files") {
       visibility = [ ":build_ts" ]
-      deps = [ ":preprocess" ]
+      deps = [ ":preprocess_html_css_files" ]
       in_folder = preprocess_dir
       out_folder = preprocess_dir
       in_files = invoker.css_files
@@ -190,7 +205,7 @@ template("build_cr_component") {
 
     in_files = ts_files
 
-    extra_deps = [ ":preprocess" ]
+    extra_deps = [ ":preprocess_ts_files" ]
 
     if (defined(html_files)) {
       in_files += html_wrapper_files
