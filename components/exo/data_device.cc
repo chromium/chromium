@@ -8,12 +8,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/data_device_delegate.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
-#include "components/exo/extended_drag_source.h"
 #include "components/exo/seat.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
@@ -125,24 +123,7 @@ aura::client::DragUpdateInfo DataDevice::OnDragUpdated(
   aura::client::DragUpdateInfo drag_info(
       ui::DragDropTypes::DRAG_NONE, ui::DataTransferEndpoint(endpoint_type));
 
-  bool prevent_motion_drag_events = false;
-
-  // chromeos::kCanAttachToAnotherWindowKey controls if a drag operation should
-  // trigger swallow/unswallow tab.
-  if (focused_surface_) {
-    // The ExtendedDragSource instance can be null for tests.
-    auto* extended_drag_source = ExtendedDragSource::Get();
-    bool is_extended_drag_source_active =
-        extended_drag_source && extended_drag_source->IsActive();
-
-    prevent_motion_drag_events =
-        is_extended_drag_source_active &&
-        !focused_surface_->get()->window()->GetToplevelWindow()->GetProperty(
-            chromeos::kCanAttachToAnotherWindowKey);
-  }
-
-  if (!prevent_motion_drag_events)
-    delegate_->OnMotion(event.time_stamp(), event.location_f());
+  delegate_->OnMotion(event.time_stamp(), event.location_f());
 
   // TODO(hirono): dnd_action() here may not be updated. Chrome needs to provide
   // a way to update DND action asynchronously.
