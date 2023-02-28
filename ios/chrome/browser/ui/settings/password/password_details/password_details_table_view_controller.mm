@@ -1244,6 +1244,10 @@ const CGFloat kRecommendationSymbolSize = 22;
         DCHECK_GE(position, 0);
         DCHECK(self.handler);
         [self.handler moveCredentialToAccountStore:self.passwords[position]];
+        [self showToast:l10n_util::GetNSStringF(
+                            IDS_IOS_PASSWORD_SAVED_TO_ACCOUNT_SNACKBAR_MESSAGE,
+                            base::SysNSStringToUTF16(self.userEmail))
+             forSuccess:YES];
       };
   [self.reauthModule
       attemptReauthWithLocalizedReason:
