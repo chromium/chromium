@@ -307,6 +307,37 @@ ColorTransform PickGoogleColor(ColorTransform color,
                              std::move(background_color), min_contrast);
 }
 
+ColorTransform PickGoogleColorTwoBackgrounds(
+    ColorTransform foreground_transform,
+    ColorTransform background_a_transform,
+    ColorTransform background_b_transform,
+    float min_contrast) {
+  const auto generator = [](ui::ColorTransform foreground_transform,
+                            ui::ColorTransform background_a_transform,
+                            ui::ColorTransform background_b_transform,
+                            float min_contrast, SkColor input_color,
+                            const ui::ColorMixer& mixer) {
+    const SkColor foreground_color =
+        foreground_transform.Run(input_color, mixer);
+    const SkColor background_a_color =
+        background_a_transform.Run(input_color, mixer);
+    const SkColor background_b_color =
+        background_b_transform.Run(input_color, mixer);
+    const SkColor result_color = color_utils::PickGoogleColorTwoBackgrounds(
+        foreground_color, background_a_color, background_b_color, min_contrast);
+    DVLOG(2) << "ColorTransform PickGoogleColor:"
+             << " Foreground Color: " << ui::SkColorName(foreground_color)
+             << " Background Color A: " << ui::SkColorName(background_a_color)
+             << " Background Color B: " << ui::SkColorName(background_b_color)
+             << " Min Contrast: " << base::NumberToString(min_contrast)
+             << " Result Color: " << ui::SkColorName(result_color);
+    return result_color;
+  };
+  return base::BindRepeating(generator, std::move(foreground_transform),
+                             std::move(background_a_transform),
+                             std::move(background_b_transform), min_contrast);
+}
+
 ColorTransform HSLShift(ColorTransform color, color_utils::HSL hsl) {
   const auto generator = [](ColorTransform transform, color_utils::HSL hsl,
                             SkColor input_color, const ColorMixer& mixer) {

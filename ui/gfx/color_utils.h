@@ -171,10 +171,10 @@ GFX_EXPORT SkColor PickGoogleColor(SkColor color,
 
 // Like the version above, but tries to contrast sufficiently with both
 // `background_color_a` and `background_color_b` simultaneously.
-GFX_EXPORT SkColor PickGoogleColor(SkColor color,
-                                   SkColor background_color_a,
-                                   SkColor background_color_b,
-                                   float min_contrast);
+GFX_EXPORT SkColor PickGoogleColorTwoBackgrounds(SkColor color,
+                                                 SkColor background_color_a,
+                                                 SkColor background_color_b,
+                                                 float min_contrast);
 
 // Creates an rgba string for an SkColor. For example: 'rgba(255,0,255,0.5)'.
 GFX_EXPORT std::string SkColorToRgbaString(SkColor color);

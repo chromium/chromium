@@ -126,6 +126,15 @@ ColorTransform PickGoogleColor(ColorTransform color,
                                ColorTransform background_color,
                                float min_contrast = 0.0f);
 
+// Like the version above, but attempts to contrast sufficiently against both
+// supplied backgrounds.
+COMPONENT_EXPORT(COLOR)
+ColorTransform PickGoogleColorTwoBackgrounds(
+    ColorTransform foreground_transform,
+    ColorTransform background_a_transform,
+    ColorTransform background_b_transform,
+    float min_contrast);
+
 // A transform that returns the HSL shifted color given the input color.
 COMPONENT_EXPORT(COLOR)
 ColorTransform HSLShift(ColorTransform color, color_utils::HSL hsl);
