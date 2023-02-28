@@ -6112,9 +6112,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="top10"
       label="Custom histogram for Alexa's Top10 non-Google sites"/>
   <suffix name="youtube" label="Custom histogram for Youtube"/>
-  <affected-histogram name="V8.MemoryExternalFragmentationTotal"/>
   <affected-histogram name="V8.MemoryHeapSampleTotalCommitted"/>
-  <affected-histogram name="V8.MemoryHeapSampleTotalUsed"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="V8WasmSeparateAsmAndWasm" separator=".">
