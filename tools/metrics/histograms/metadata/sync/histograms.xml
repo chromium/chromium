@@ -453,8 +453,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Histogram of the run failures for the different sync datatypes. These are
     failures that occur after startup while the datatype is syncing. This is one
-    of the base sync health metrics. The Sync.ModelTypeStoreBackendError
-    histograms may help diagnosing the problem.
+    of the base sync health metrics. The Sync.ModelTypeStoreBackendError and
+    Sync.ModelTypeErrorSite histograms may help diagnosing the problem.
   </summary>
 </histogram>
 
@@ -468,7 +468,8 @@ chromium-metrics-reviews@google.com.
     are failures that occur during startup before the data type is fully loaded.
     These errors are caused by failures in reading metadata (or data) from the
     DB or by another failure in interaction with the model. The
-    Sync.ModelTypeStoreBackendError histograms may help diagnosing the problem.
+    Sync.ModelTypeStoreBackendError and Sync.ModelTypeErrorSite histograms may
+    help diagnosing the problem.
   </summary>
 </histogram>
 
@@ -863,7 +864,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ModelTypeErrorSite{SyncModelType}"
-    enum="SyncModelTypeErrorSite" expires_after="2023-04-10">
+    enum="SyncModelTypeErrorSite" expires_after="2024-02-28">
   <owner>treib@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
