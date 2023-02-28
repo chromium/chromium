@@ -80,6 +80,6 @@ template("build_webui_tests") {
       manifest_files +=
           [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
     }
-    resource_path_prefix = invoker.resource_path_prefix
+    resource_path_prefix = rebase_path(".", "//chrome/test/data/webui")
   }
 }
