@@ -99,11 +99,11 @@ BASE_FEATURE(kSyncEnableContactInfoDataType,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode,
-             "kSyncEnableContactInfoDataTypeInTransportMode",
+             "SyncEnableContactInfoDataTypeInTransportMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
-             "kSyncEnableContactInfoDataTypeForCustomPassphraseUsers",
+             "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncEnforceBookmarksCountLimit,
