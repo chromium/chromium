@@ -497,37 +497,12 @@ void SyncAuthManager::AccessTokenFetched(
   DCHECK_EQ(access_token_.empty(),
             error.state() != GoogleServiceAuthError::NONE);
 
-  switch (error.state()) {
-    case GoogleServiceAuthError::NONE:
-      SetLastAuthError(GoogleServiceAuthError::AuthErrorNone());
-      break;
-    case GoogleServiceAuthError::CONNECTION_FAILED:
-    case GoogleServiceAuthError::REQUEST_CANCELED:
-    case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
-      // Transient error. Retry after some time.
-      DCHECK(error.IsTransientError());
-      [[fallthrough]];
-      // TODO(crbug.com/1156584): SERVICE_ERROR is actually considered a
-      // persistent error. Should we use .IsTransientError() instead of manually
-      // listing cases here?
-    case GoogleServiceAuthError::SERVICE_ERROR:
-      request_access_token_backoff_.InformOfRequest(false);
-      ScheduleAccessTokenRequest();
-      break;
-    case GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS:
-      DCHECK(error.IsPersistentError());
-      SetLastAuthError(error);
-      break;
-    case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
-    case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
-    case GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR:
-      DCHECK(error.IsPersistentError());
-      DLOG(ERROR) << "Unexpected persistent error: " << error.ToString();
-      SetLastAuthError(error);
-      break;
-    case GoogleServiceAuthError::NUM_STATES:
-      NOTREACHED();
-      break;
+  if (error.IsTransientError()) {
+    // Transient error. Retry after some time.
+    request_access_token_backoff_.InformOfRequest(false);
+    ScheduleAccessTokenRequest();
+  } else {
+    SetLastAuthError(error);
   }
 
   credentials_changed_callback_.Run();
