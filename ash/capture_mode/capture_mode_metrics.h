@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -63,7 +64,8 @@ enum class CaptureModeConfiguration {
   kFullscreenRecording,
   kRegionRecording,
   kWindowRecording,
-  kMaxValue = kWindowRecording,
+  kRegionGifRecording,
+  kMaxValue = kRegionGifRecording,
 };
 
 // Enumeration of actions that can be taken to enter capture mode. Note that
@@ -131,15 +133,17 @@ void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type);
 // Records a user's configuration when they perform a capture.
 void RecordCaptureModeConfiguration(CaptureModeType type,
                                     CaptureModeSource source,
+                                    RecordingType recording_type,
                                     bool audio_on,
                                     bool is_in_projector_mode);
 
 // Records the method the user enters capture mode given by |entry_type|.
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type);
 
-// Records the length in seconds of a recording taken by capture mode.
-void RecordCaptureModeRecordTime(int64_t length_in_seconds,
-                                 bool is_in_projector_mode);
+// Records the duration of a recording taken by capture mode.
+void RecordCaptureModeRecordTime(base::TimeDelta recording_duration,
+                                 bool is_in_projector_mode,
+                                 bool is_gif);
 
 // Records if the user has switched modes during a capture session.
 void RecordCaptureModeSwitchesFromInitialMode(bool switched);
@@ -174,9 +178,12 @@ void RecordSaveToLocation(CaptureModeSaveToLocation save_location);
 // downloads folder.
 void RecordSwitchToDefaultFolderReason(CaptureModeSwitchToDefaultReason reason);
 
-// Maps given `type` and `source` to CaptureModeConfiguration enum.
-ASH_EXPORT CaptureModeConfiguration GetConfiguration(CaptureModeType type,
-                                                     CaptureModeSource source);
+// Maps given `type`, `source` and `recording_type` to CaptureModeConfiguration
+// enum.
+ASH_EXPORT CaptureModeConfiguration
+GetConfiguration(CaptureModeType type,
+                 CaptureModeSource source,
+                 RecordingType recording_type);
 // Records how often recording starts with a camera on.
 void RecordRecordingStartsWithCamera(bool starts_with_camera,
                                      bool is_in_projector_mode);

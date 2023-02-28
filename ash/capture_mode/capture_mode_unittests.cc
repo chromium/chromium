@@ -5940,7 +5940,9 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
     histogram_tester_.ExpectBucketCount(
         GetCaptureModeHistogramName(
             kProjectorCaptureConfigurationHistogramBase),
-        GetConfiguration(CaptureModeType::kVideo, capture_source), 0);
+        GetConfiguration(CaptureModeType::kVideo, capture_source,
+                         RecordingType::kWebM),
+        0);
 
     StartRecordingForProjectorFromSource(capture_source);
     WaitForSeconds(1);
@@ -5950,7 +5952,9 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
     histogram_tester_.ExpectUniqueSample(
         GetCaptureModeHistogramName(
             kProjectorCaptureConfigurationHistogramBase),
-        GetConfiguration(CaptureModeType::kVideo, capture_source), 1);
+        GetConfiguration(CaptureModeType::kVideo, capture_source,
+                         RecordingType::kWebM),
+        1);
 
     WaitForCaptureFileToBeSaved();
   }

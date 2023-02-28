@@ -1309,6 +1309,7 @@ void CaptureModeController::OnVideoFileSaved(
   if (!success) {
     ShowFailureNotification();
   } else {
+    const bool is_gif = saved_video_file_path.MatchesExtension(".gif");
     if (!in_projector_mode) {
       ShowPreviewNotification(saved_video_file_path,
                               gfx::Image(video_thumbnail),
@@ -1316,16 +1317,15 @@ void CaptureModeController::OnVideoFileSaved(
       // NOTE: Holding space `client` may be `nullptr` in tests.
       if (auto* client = HoldingSpaceController::Get()->client()) {
         client->AddScreenCapture(
-            saved_video_file_path.MatchesExtension(".gif")
-                ? HoldingSpaceItem::Type::kScreenRecordingGif
-                : HoldingSpaceItem::Type::kScreenRecording,
+            is_gif ? HoldingSpaceItem::Type::kScreenRecordingGif
+                   : HoldingSpaceItem::Type::kScreenRecording,
             saved_video_file_path);
       }
     }
     DCHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordTime(
-        (base::TimeTicks::Now() - recording_start_time_).InSeconds(),
-        in_projector_mode);
+        (base::TimeTicks::Now() - recording_start_time_), in_projector_mode,
+        is_gif);
   }
   if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
     RecordSaveToLocation(GetSaveToOption(saved_video_file_path));
@@ -1853,6 +1853,7 @@ void CaptureModeController::
   RecordCaptureModeEntryType(CaptureModeEntryType::kCaptureAllDisplays);
   RecordCaptureModeConfiguration(
       CaptureModeType::kImage, CaptureModeSource::kFullscreen,
+      recording_type_,  // This parameter will be ignored.
       /*audio_on=*/false, /*is_in_projector_mode=*/false);
 }
 

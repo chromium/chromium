@@ -14349,6 +14349,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Fullscreen recording"/>
   <int value="4" label="Region recording"/>
   <int value="5" label="Window recording"/>
+  <int value="6" label="Region GIF recording"/>
 </enum>
 
 <enum name="CaptureModeEntryType">
