@@ -5602,6 +5602,7 @@ static_library("ui") {
     if (enable_screen_ai_service) {
       deps += [
         "//components/services/screen_ai/public/cpp:screen_ai_install_state",
+        "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
       ]
     }
   }

@@ -14,6 +14,11 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
+#include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
+#endif
+
 ReadAnythingController::ReadAnythingController(ReadAnythingModel* model,
                                                Browser* browser)
     : model_(model), browser_(browser) {
@@ -259,9 +264,16 @@ void ReadAnythingController::OnActiveWebContentsChanged() {
 void ReadAnythingController::StateChanged(
     screen_ai::ScreenAIInstallState::State state) {
   DCHECK(features::IsReadAnythingWithScreen2xEnabled());
-  if (state != screen_ai::ScreenAIInstallState::State::kReady) {
+  // If Screen AI library is downloaded but not initialized yet, ensure it is
+  // loadable and initializes without any problems.
+  if (state == screen_ai::ScreenAIInstallState::State::kDownloaded) {
+    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
+        browser_->profile())
+        ->LaunchIfNotRunning();
     return;
   }
-  model_->ScreenAIServiceReady();
+  if (state == screen_ai::ScreenAIInstallState::State::kReady) {
+    model_->ScreenAIServiceReady();
+  }
 }
 #endif

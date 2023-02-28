@@ -117,8 +117,8 @@ void ScreenAIInstallState::SetComponentFolder(
   // session will continue using that and the new one will be used after next
   // Chrome restart. Otherwise the new component will be used when a service
   // request arrives as its path is stored in |component_binary_path_|.
-  if (state_ != State::kReady) {
-    SetState(State::kReady);
+  if (state_ != State::kReady && state_ != State::kDownloaded) {
+    SetState(State::kDownloaded);
   }
 }
 
@@ -135,8 +135,8 @@ void ScreenAIInstallState::SetDownloadProgress(double progress) {
     observer->DownloadProgressChanged(progress);
 }
 
-bool ScreenAIInstallState::IsComponentReady() {
-  return state_ == State::kReady;
+bool ScreenAIInstallState::IsComponentAvailable() {
+  return state_ == State::kDownloaded || state_ == State::kReady;
 }
 
 void ScreenAIInstallState::SetComponentReadyForTesting() {

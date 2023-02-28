@@ -72,7 +72,8 @@ interface ScreenAIService {
   LoadAndInitializeLibrary(
     mojo_base.mojom.ReadOnlyFile screen2x_model_config,
     mojo_base.mojom.ReadOnlyFile screen2x_model,
-    mojo_base.mojom.FilePath library_path);
+    mojo_base.mojom.FilePath library_path) =>
+      (bool initialized);
 
   // Binds a new annotator to the service.
   BindAnnotator(pending_receiver<ScreenAIAnnotator> annotator);

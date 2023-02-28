@@ -18,10 +18,10 @@ class ScreenAIInstallStateTest : public testing::Test,
   }
 
   void StartObservation() {
-    component_ready_observer_.Observe(ScreenAIInstallState::GetInstance());
+    component_downloaded_observer_.Observe(ScreenAIInstallState::GetInstance());
   }
 
-  void MakeComponentReady() {
+  void MakeComponentDownloaded() {
     // The passed file path is not used and just indicates that the component
     // exists.
     ScreenAIInstallState::GetInstance()->SetComponentFolder(
@@ -29,35 +29,36 @@ class ScreenAIInstallStateTest : public testing::Test,
   }
 
   void StateChanged(ScreenAIInstallState::State state) override {
-    if (state == ScreenAIInstallState::State::kReady)
-      component_ready_received_ = true;
+    if (state == ScreenAIInstallState::State::kDownloaded) {
+      component_downloaded_received_ = true;
+    }
   }
 
-  bool ComponentReadyReceived() { return component_ready_received_; }
+  bool ComponentDownloadedReceived() { return component_downloaded_received_; }
 
  private:
   base::ScopedObservation<screen_ai::ScreenAIInstallState,
                           ScreenAIInstallState::Observer>
-      component_ready_observer_{this};
+      component_downloaded_observer_{this};
 
-  bool component_ready_received_ = false;
+  bool component_downloaded_received_ = false;
 };
 
-TEST_F(ScreenAIInstallStateTest, NeverReady) {
+TEST_F(ScreenAIInstallStateTest, NeverDownloaded) {
   StartObservation();
-  EXPECT_FALSE(ComponentReadyReceived());
+  EXPECT_FALSE(ComponentDownloadedReceived());
 }
 
-TEST_F(ScreenAIInstallStateTest, ReadyBeforeObservation) {
-  MakeComponentReady();
+TEST_F(ScreenAIInstallStateTest, DownloadedBeforeObservation) {
+  MakeComponentDownloaded();
   StartObservation();
-  EXPECT_TRUE(ComponentReadyReceived());
+  EXPECT_TRUE(ComponentDownloadedReceived());
 }
 
-TEST_F(ScreenAIInstallStateTest, ReadyAfterObservation) {
+TEST_F(ScreenAIInstallStateTest, DownloadedAfterObservation) {
   StartObservation();
-  MakeComponentReady();
-  EXPECT_TRUE(ComponentReadyReceived());
+  MakeComponentDownloaded();
+  EXPECT_TRUE(ComponentDownloadedReceived());
 }
 
 }  // namespace screen_ai
