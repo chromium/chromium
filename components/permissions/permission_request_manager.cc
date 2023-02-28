@@ -353,18 +353,24 @@ bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
   return true;
 }
 
-bool PermissionRequestManager::ValidateRequest(PermissionRequest* request) {
+bool PermissionRequestManager::ValidateRequest(PermissionRequest* request,
+                                               bool should_finalize) {
   const auto iter = request_sources_map_.find(request);
-  if (iter == request_sources_map_.end())
+  if (iter == request_sources_map_.end()) {
     return false;
+  }
 
-  if (!iter->second.IsSourceFrameInactiveAndDisallowActivation())
+  if (!iter->second.IsSourceFrameInactiveAndDisallowActivation()) {
     return true;
+  }
 
-  request->Cancelled();
-  request->RequestFinished();
-  validated_requests_set_.erase(request);
-  request_sources_map_.erase(request);
+  if (should_finalize) {
+    request->Cancelled();
+    request->RequestFinished();
+    validated_requests_set_.erase(request);
+    request_sources_map_.erase(request);
+  }
+
   return false;
 }
 
@@ -730,8 +736,9 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   // not been validated" requests added to the queue could have effect to
   // priority order
   for (auto* request : pending_permission_requests_) {
-    if (ValidateRequest(request))
+    if (ValidateRequest(request, /* should_finalize */ false)) {
       validated_requests_set_.insert(request);
+    }
   }
 
   if (!permission_ui_selectors_.empty()) {
