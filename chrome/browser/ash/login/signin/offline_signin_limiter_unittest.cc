@@ -12,10 +12,14 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
+#include "chrome/browser/ash/login/login_constants.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
+#include "chrome/browser/ash/login/saml/mock_lock_handler.h"
+#include "chrome/browser/ash/login/signin/offline_signin_limiter_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -57,6 +61,10 @@ class OfflineSigninLimiterTest : public testing::Test {
   user_manager::User* AddGaiaUser();
   user_manager::User* AddSAMLUser();
 
+  void LockScreen();
+  void UnlockScreen();
+  void CheckAuthTypeOnLock(AccountId account_id, bool expect_online_auth);
+
   const AccountId test_gaia_account_id_ =
       AccountId::FromUserEmail(kTestGaiaUser);
   const AccountId test_saml_account_id_ =
@@ -71,8 +79,10 @@ class OfflineSigninLimiterTest : public testing::Test {
       std::make_unique<FakeChromeUserManager>()};
 
   std::unique_ptr<TestingProfile> profile_;
+
+  std::unique_ptr<MockLockHandler> lock_handler_;
+
   base::raw_ptr<base::WallClockTimer> timer_ = nullptr;
-  base::raw_ptr<base::WallClockTimer> lockscreen_timer_ = nullptr;
 
   std::unique_ptr<OfflineSigninLimiter> limiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
@@ -92,7 +102,6 @@ void OfflineSigninLimiterTest::DestroyLimiter() {
     limiter_->Shutdown();
     limiter_.reset();
     timer_ = nullptr;
-    lockscreen_timer_ = nullptr;
   }
 }
 
@@ -104,7 +113,6 @@ void OfflineSigninLimiterTest::CreateLimiter() {
   limiter_ = base::WrapUnique(new OfflineSigninLimiter(
       profile_.get(), task_environment_.GetMockClock()));
   timer_ = limiter_->GetTimerForTesting();
-  lockscreen_timer_ = limiter_->GetLockscreenTimerForTesting();
 }
 
 void OfflineSigninLimiterTest::SetUp() {
@@ -139,6 +147,42 @@ user_manager::User* OfflineSigninLimiterTest::AddSAMLUser() {
   return user;
 }
 
+void OfflineSigninLimiterTest::LockScreen() {
+  lock_handler_ = std::make_unique<MockLockHandler>();
+  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
+}
+
+void OfflineSigninLimiterTest::UnlockScreen() {
+  proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
+}
+
+// Check that correct auth type is set when the screen is locked. Ideally we
+// would test `limiter_->OnSessionStateChanged()` here, but these tests do not
+// support session manager, so we test private method `UpdateLockScreenLimit()`
+// instead.
+// TODO(b/270052429): add browser tests to be able to simulate lockscreen reauth
+// flow instead of having to call private function UpdateLockScreenLimit() in
+// unittests.
+void OfflineSigninLimiterTest::CheckAuthTypeOnLock(AccountId account_id,
+                                                   bool expect_online_auth) {
+  //  Lock the screen and call UpdateLockScreenLimit which is the function
+  //  called when the session state changes
+  LockScreen();
+
+  // When UpdateLockScreenLimit is called, it will check whether or not online
+  // reauthentication is required, if reauth is required then SetAuthType will
+  // be called and if reauth is not required SetAuthType will not be called
+  EXPECT_CALL(
+      *lock_handler_,
+      SetAuthType(account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
+                  std::u16string()))
+      .Times(expect_online_auth ? 1 : 0);
+  limiter_->UpdateLockScreenLimit();
+
+  // Unlock afterwards to clear lockhandler
+  UnlockScreen();
+}
+
 TEST_F(OfflineSigninLimiterTest, NoGaiaDefaultLimit) {
   auto* user = AddGaiaUser();
   PrefService* prefs = profile_->GetPrefs();
@@ -156,7 +200,7 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaDefaultLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, NoGaiaNoLimit) {
@@ -164,7 +208,8 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaNoLimit) {
   PrefService* prefs = profile_->GetPrefs();
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, -1);
+  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Authenticate offline. Verify that the flag enforcing online login is not
   // changed and the time of last login with SAML is not set.
@@ -179,7 +224,7 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaNoLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, NoGaiaZeroLimitWhenOffline) {
@@ -193,7 +238,8 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaZeroLimitWhenOffline) {
   prefs->SetTime(prefs::kGaiaLastOnlineSignInTime,
                  task_environment_.GetMockClock()->Now());
   // Remove time limit.
-  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, -1);
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Authenticate against Gaia with SAML. Verify that the flag enforcing
   // online login and the time of last login without SAML are cleared.
@@ -207,7 +253,7 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaZeroLimitWhenOffline) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out.
   DestroyLimiter();
@@ -223,7 +269,7 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaZeroLimitWhenOffline) {
   EXPECT_FALSE(user->force_online_signin());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, NoGaiaSetLimitWhileLoggedIn) {
@@ -231,7 +277,8 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaSetLimitWhileLoggedIn) {
   PrefService* prefs = profile_->GetPrefs();
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, -1);
+  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Set the time of last login without SAML.
   prefs->SetTime(prefs::kGaiaLastOnlineSignInTime,
@@ -249,19 +296,20 @@ TEST_F(OfflineSigninLimiterTest, NoGaiaSetLimitWhileLoggedIn) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that timer is running due to Gaia log in with SAML.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Remove the time limit from SAML.
-  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, -1);
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Set a zero time limit.
   prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, 0);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, GaiaDefaultLimit) {
@@ -279,7 +327,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaDefaultLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -297,7 +345,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaDefaultLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -317,7 +365,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaDefaultLimit) {
   EXPECT_EQ(gaia_signin_time, last_gaia_signin_time);
 
   // Verify that no the timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, GaiaNoLimit) {
@@ -325,7 +373,8 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLimit) {
   PrefService* prefs = profile_->GetPrefs();
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, -1);
+  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Authenticate against Gaia without SAML. Verify that the flag enforcing
   // online login is cleared and the time of last login without SAML is set.
@@ -338,7 +387,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -356,7 +405,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -376,7 +425,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLimit) {
   EXPECT_EQ(gaia_signin_time, last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, GaiaZeroLimit) {
@@ -404,7 +453,8 @@ TEST_F(OfflineSigninLimiterTest, GaiaSetLimitWhileLoggedIn) {
   PrefService* prefs = profile_->GetPrefs();
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, -1);
+  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Authenticate against Gaia without SAML. Verify that the flag enforcing
   // online login is cleared and the time of last login without SAML is set.
@@ -417,7 +467,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaSetLimitWhileLoggedIn) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Set a zero time limit. Verify that the flag enforcing online login is set.
   prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, 0);
@@ -444,10 +494,11 @@ TEST_F(OfflineSigninLimiterTest, GaiaRemoveLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, -1);
+  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   EXPECT_FALSE(user->force_online_signin());
 }
@@ -475,7 +526,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInWithExpiredLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithExpiredLimit) {
@@ -508,7 +559,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithExpiredLimit) {
   EXPECT_EQ(gaia_signin_time, last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, GaiaLimitExpiredWhileSuspended) {
@@ -559,7 +610,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaLogInOfflineWithOnLockReauth) {
   // Verify that we enter InSessionPasswordSyncManager::ForceReauthOnLockScreen.
   EXPECT_TRUE(password_sync_manager->IsLockReauthEnabled());
   // After changing the re-auth flag timer should be stopped.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, GaiaNoLastOnlineSigninWithLimit) {
@@ -581,7 +632,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLastOnlineSigninWithLimit) {
   EXPECT_TRUE(last_gaia_signin_time.is_null());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out.
   DestroyLimiter();
@@ -596,7 +647,7 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLastOnlineSigninWithLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out.
   DestroyLimiter();
@@ -616,7 +667,213 @@ TEST_F(OfflineSigninLimiterTest, GaiaNoLastOnlineSigninWithLimit) {
   EXPECT_EQ(gaia_signin_time, last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
+}
+
+TEST_F(OfflineSigninLimiterTest, GaiaLockscreenReauthNoLimit) {
+  // Test that the gaia only user is not forced to reauthenticate on the
+  // lockscreen after some time has passed.
+
+  AddGaiaUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with only Gaia.
+  prefs->SetTime(prefs::kGaiaLastOnlineSignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Remove the time limit.
+  prefs->SetInteger(prefs::kGaiaLockScreenOfflineSigninTimeLimitDays,
+                    constants::kOfflineSigninTimeLimitNotSet);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by four weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
+
+  // Authenticate offline
+  limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+
+  CheckAuthTypeOnLock(test_gaia_account_id_, false /*expect_online_auth*/);
+}
+
+TEST_F(OfflineSigninLimiterTest, GaiaLockscreenReauthZeroLimit) {
+  // Test that the gaia only user is required to go through online
+  // reauthentication on the lock screen every time the screen is locked.
+
+  AddGaiaUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with only Gaia
+  prefs->SetTime(prefs::kGaiaLastOnlineSignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Set a zero time limit which requires online reauth every time.
+  prefs->SetInteger(prefs::kGaiaLockScreenOfflineSigninTimeLimitDays, 0);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by 4 days.
+  task_environment_.FastForwardBy(base::Days(4));
+
+  // Authenticate online and check that lockscreen timer is not running as
+  // reauthentication is required.
+  limiter_->SignedIn(UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML);
+
+  const base::Time last_gaia_signin_time =
+      prefs->GetTime(prefs::kGaiaLastOnlineSignInTime);
+  EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
+
+  CheckAuthTypeOnLock(test_gaia_account_id_, true /*expect_online_auth*/);
+
+  // Advance time by 2 hours.
+  task_environment_.FastForwardBy(base::Hours(2));
+
+  CheckAuthTypeOnLock(test_gaia_account_id_, true /*expect_online_auth*/);
+}
+
+TEST_F(OfflineSigninLimiterTest, GaiaLockscreenReauthWithLimit) {
+  // Test that the gaia only user is required to go through online
+  // reauthentication on the lock screen when the time limit for the lockscreen
+  // has passed.
+
+  AddGaiaUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with only Gaia
+  prefs->SetTime(prefs::kGaiaLastOnlineSignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Add reauth time limit of 2 weeks.
+  prefs->SetInteger(prefs::kGaiaLockScreenOfflineSigninTimeLimitDays, 14);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by four days.
+  task_environment_.FastForwardBy(base::Days(4));
+
+  // Authenticate offline and check if lockscreen timer is still running.
+  limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+  EXPECT_TRUE(limiter_->GetLockscreenTimerForTesting()->IsRunning());
+
+  // Advance time by four weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
+
+  CheckAuthTypeOnLock(test_gaia_account_id_, true /*expect_online_auth*/);
+}
+
+// Test that the lockscreen time limit matches the login time limit which is
+// done by giving lockscreen limit a value of -2 and this will make
+// "kGaiaLockScreenOfflineSigninTimeLimitDays" get the value set for
+// "kGaiaOfflineSigninTimeLimitDays"
+// ---------------------------------------------------
+// Test when login limit is not set (policy value = -1)
+// ---------------------------------------------------
+TEST_F(OfflineSigninLimiterTest, GaiaLockscreenReauthMatchLoginNoLimit) {
+  AddGaiaUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with only Gaia
+  prefs->SetTime(prefs::kGaiaLastOnlineSignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Set time limit of loginscreen to -1 (no limit).
+  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays,
+                    constants::kOfflineSigninTimeLimitNotSet);
+
+  // Set a value of -2 which matches the lockscreen limit to the login limit
+  // which is now -1.
+  prefs->SetInteger(prefs::kGaiaLockScreenOfflineSigninTimeLimitDays,
+                    constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by four weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
+
+  // Authenticate offline
+  limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+
+  CheckAuthTypeOnLock(test_gaia_account_id_, false /*expect_online_auth*/);
+}
+
+// ---------------------------------------------------
+// Test when login limit is Zero
+// ---------------------------------------------------
+TEST_F(OfflineSigninLimiterTest, GaiaLockscreenReauthMatchLoginZeroLimit) {
+  AddGaiaUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with only Gaia
+  prefs->SetTime(prefs::kGaiaLastOnlineSignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Set time limit of loginscreen to 0.
+  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, 0);
+
+  // Set a value of -2 which matches the lockscreen limit to the login limit
+  // which is now zero.
+  prefs->SetInteger(prefs::kGaiaLockScreenOfflineSigninTimeLimitDays,
+                    constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by 4 days.
+  task_environment_.FastForwardBy(base::Days(4));
+
+  // Authenticate online and check that lockscreen timer is not running as
+  // reauthentication is required.
+  limiter_->SignedIn(UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML);
+
+  const base::Time last_gaia_signin_time =
+      prefs->GetTime(prefs::kGaiaLastOnlineSignInTime);
+  EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
+
+  CheckAuthTypeOnLock(test_gaia_account_id_, true /*expect_online_auth*/);
+
+  // Advance time by 2 hours.
+  task_environment_.FastForwardBy(base::Hours(2));
+
+  CheckAuthTypeOnLock(test_gaia_account_id_, true /*expect_online_auth*/);
+}
+
+// -------------------------------------------------------------
+// Test when login limit is 14 days (reauth every 2 weeks)
+// -------------------------------------------------------------
+TEST_F(OfflineSigninLimiterTest, GaiaLockscreenReauthMatchLoginWithLimit) {
+  AddGaiaUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with only Gaia
+  prefs->SetTime(prefs::kGaiaLastOnlineSignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Set time limit of loginscreen to 14.
+  prefs->SetInteger(prefs::kGaiaOfflineSigninTimeLimitDays, 14);
+
+  // Set a value of -2 which matches the lockscreen limit to the login limit
+  // which is now 14.
+  prefs->SetInteger(prefs::kGaiaLockScreenOfflineSigninTimeLimitDays,
+                    constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by four days.
+  task_environment_.FastForwardBy(base::Days(4));
+
+  // Authenticate offline and check if lockscreen timer is still running.
+  limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+  EXPECT_TRUE(limiter_->GetLockscreenTimerForTesting()->IsRunning());
+
+  // Advance time by four weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
+
+  CheckAuthTypeOnLock(test_gaia_account_id_, true /*expect_online_auth*/);
 }
 
 TEST_F(OfflineSigninLimiterTest, NoSAMLDefaultLimit) {
@@ -639,7 +896,7 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLDefaultLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
 
@@ -655,7 +912,7 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLDefaultLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, NoSAMLNoLimit) {
@@ -663,7 +920,8 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLNoLimit) {
   PrefService* prefs = profile_->GetPrefs();
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, -1);
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Set the time of last login with SAML.
   prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
@@ -681,7 +939,7 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLNoLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -698,7 +956,7 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLNoLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, NoSAMLZeroLimit) {
@@ -724,7 +982,7 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLZeroLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -741,7 +999,7 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLZeroLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, NoSAMLSetLimitWhileLoggedIn) {
@@ -749,7 +1007,8 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLSetLimitWhileLoggedIn) {
   PrefService* prefs = profile_->GetPrefs();
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, -1);
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Set the time of last login with SAML.
   prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
@@ -767,13 +1026,13 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLSetLimitWhileLoggedIn) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Set a zero time limit.
   prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, 0);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, NoSAMLRemoveLimitWhileLoggedIn) {
@@ -796,13 +1055,14 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLRemoveLimitWhileLoggedIn) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, -1);
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, NoSAMLLogInWithExpiredLimit) {
@@ -828,7 +1088,7 @@ TEST_F(OfflineSigninLimiterTest, NoSAMLLogInWithExpiredLimit) {
   EXPECT_FALSE(pref->HasUserSetting());
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, SAMLDefaultLimit) {
@@ -846,7 +1106,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLDefaultLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -864,7 +1124,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLDefaultLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -884,7 +1144,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLDefaultLimit) {
   EXPECT_EQ(gaia_signin_time, last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Advance time by four weeks.
   task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
@@ -896,7 +1156,8 @@ TEST_F(OfflineSigninLimiterTest, SAMLNoLimit) {
   PrefService* prefs = profile_->GetPrefs();
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, -1);
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Authenticate against GAIA with SAML. Verify that the flag enforcing online
   // login is cleared and the time of last login with SAML is set.
@@ -909,7 +1170,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLNoLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -927,7 +1188,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLNoLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Log out. Verify that the flag enforcing online login is not set.
   DestroyLimiter();
@@ -947,7 +1208,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLNoLimit) {
   EXPECT_EQ(gaia_signin_time, last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, SAMLZeroLimit) {
@@ -974,7 +1235,8 @@ TEST_F(OfflineSigninLimiterTest, SAMLSetLimitWhileLoggedIn) {
   PrefService* prefs = profile_->GetPrefs();
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, -1);
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   // Authenticate against GAIA with SAML. Verify that the flag enforcing online
   // login is cleared and the time of last login with SAML is set.
@@ -987,7 +1249,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLSetLimitWhileLoggedIn) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that no timer is running.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Set a zero time limit. Verify that the flag enforcing online login is set.
   prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, 0);
@@ -1009,10 +1271,11 @@ TEST_F(OfflineSigninLimiterTest, SAMLRemoveLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 
   // Remove the time limit.
-  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, -1);
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
 
   EXPECT_FALSE(user->force_online_signin());
   // TODO: check timer_ condition here.
@@ -1040,7 +1303,7 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInWithExpiredLimit) {
   EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
 
   // Verify that the timer is running.
-  EXPECT_TRUE(timer_->IsRunning());
+  EXPECT_TRUE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
 TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithExpiredLimit) {
@@ -1119,25 +1382,212 @@ TEST_F(OfflineSigninLimiterTest, SAMLLogInOfflineWithOnLockReauth) {
   // Verify that we enter InSessionPasswordSyncManager::ForceReauthOnLockScreen.
   EXPECT_TRUE(password_sync_manager->IsLockReauthEnabled());
   // After changing the re-auth flag timer should be stopped.
-  EXPECT_FALSE(timer_->IsRunning());
+  EXPECT_FALSE(limiter_->GetTimerForTesting()->IsRunning());
 }
 
-TEST_F(OfflineSigninLimiterTest, SAMLLockscreenReauthDefaultLimit) {
+TEST_F(OfflineSigninLimiterTest, SAMLLockscreenReauthNoLimit) {
+  // Test that the saml user is not forced to reauthenticate on the lockscreen
+  // after some time has passed.
+
   AddSAMLUser();
   PrefService* prefs = profile_->GetPrefs();
 
-  // Set the time of last login with SAML, time limit defaults to -1 which is no
-  // limit.
+  // Set the time of last login with SAML.
   prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
                  task_environment_.GetMockClock()->Now());
+
+  // Remove the time limit.
+  prefs->SetInteger(prefs::kSamlLockScreenOfflineSigninTimeLimitDays,
+                    constants::kOfflineSigninTimeLimitNotSet);
+
+  // Create limiter instance
+  CreateLimiter();
 
   // Advance time by four weeks.
   task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
 
-  // Authenticate offline and check if lockscreen timer is not running.
-  CreateLimiter();
+  // Authenticate offline
   limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
-  EXPECT_FALSE(lockscreen_timer_->IsRunning());
+
+  CheckAuthTypeOnLock(test_saml_account_id_, false /*expect_online_auth*/);
+}
+
+TEST_F(OfflineSigninLimiterTest, SAMLLockscreenReauthZeroLimit) {
+  // Test that the saml user is required to go through online reauthentication
+  // on the lock screen every time the screen is locked.
+
+  AddSAMLUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with SAML
+  prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Set a zero time limit which requires online reauth every time.
+  prefs->SetInteger(prefs::kSamlLockScreenOfflineSigninTimeLimitDays, 0);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by 4 days.
+  task_environment_.FastForwardBy(base::Days(4));
+
+  // Authenticate online and check that lockscreen timer is not running as
+  // reauthentication is required.
+  limiter_->SignedIn(UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+
+  const base::Time last_gaia_signin_time =
+      prefs->GetTime(prefs::kSAMLLastGAIASignInTime);
+  EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
+
+  CheckAuthTypeOnLock(test_saml_account_id_, true /*expect_online_auth*/);
+
+  // Advance time by 2 hours.
+  task_environment_.FastForwardBy(base::Hours(2));
+
+  CheckAuthTypeOnLock(test_saml_account_id_, true /*expect_online_auth*/);
+}
+
+TEST_F(OfflineSigninLimiterTest, SAMLLockscreenReauthWithLimit) {
+  // Test that the saml user is required to go through online reauthentication
+  // on the lock screen when the time limit for the lockscreen has passed.
+
+  AddSAMLUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with SAML
+  prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Add reauth time limit of 2 weeks.
+  prefs->SetInteger(prefs::kSamlLockScreenOfflineSigninTimeLimitDays, 14);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by four days.
+  task_environment_.FastForwardBy(base::Days(4));
+
+  // Authenticate offline and check if lockscreen timer is still running.
+  limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+  EXPECT_TRUE(limiter_->GetLockscreenTimerForTesting()->IsRunning());
+
+  // Advance time by four weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
+
+  CheckAuthTypeOnLock(test_saml_account_id_, true /*expect_online_auth*/);
+}
+
+// Test that the lockscreen time limit matches the login time limit which is
+// done by giving lockscreen limit a value of -2 and this will make
+// "kSamlLockScreenOfflineSigninTimeLimitDays" get the value set for
+// "kSAMLOfflineSigninTimeLimit"
+// ---------------------------------------------------
+// Test when login limit is not set (policy value = -1)
+// ---------------------------------------------------
+TEST_F(OfflineSigninLimiterTest, SAMLLockscreenReauthMatchLoginNoLimit) {
+  AddSAMLUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with SAML
+  prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Set time limit of loginscreen to -1 (no limit).
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit,
+                    constants::kOfflineSigninTimeLimitNotSet);
+
+  // Set a value of -2 which matches the lockscreen limit to the login limit
+  // which is now -1.
+  prefs->SetInteger(prefs::kSamlLockScreenOfflineSigninTimeLimitDays,
+                    constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by four weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
+
+  // Authenticate offline
+  limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+
+  CheckAuthTypeOnLock(test_saml_account_id_, false /*expect_online_auth*/);
+}
+
+// ---------------------------------------------------
+// Test when login limit is Zero
+// ---------------------------------------------------
+TEST_F(OfflineSigninLimiterTest, SAMLLockscreenReauthMatchLoginZeroLimit) {
+  AddSAMLUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with SAML
+  prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Set time limit of loginscreen to 0.
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, 0);
+
+  // Set a value of -2 which matches the lockscreen limit to the login limit
+  // which is now zero.
+  prefs->SetInteger(prefs::kSamlLockScreenOfflineSigninTimeLimitDays,
+                    constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by 4 days.
+  task_environment_.FastForwardBy(base::Days(4));
+
+  // Authenticate online and check that lockscreen timer is not running as
+  // reauthentication is required.
+  limiter_->SignedIn(UserContext::AUTH_FLOW_GAIA_WITH_SAML);
+
+  const base::Time last_gaia_signin_time =
+      prefs->GetTime(prefs::kSAMLLastGAIASignInTime);
+  EXPECT_EQ(task_environment_.GetMockClock()->Now(), last_gaia_signin_time);
+
+  CheckAuthTypeOnLock(test_saml_account_id_, true /*expect_online_auth*/);
+
+  // Advance time by 2 hours.
+  task_environment_.FastForwardBy(base::Hours(2));
+
+  CheckAuthTypeOnLock(test_saml_account_id_, true /*expect_online_auth*/);
+}
+
+// -------------------------------------------------------------
+// Test when login limit is 14 days (reauth every 2 weeks)
+// -------------------------------------------------------------
+TEST_F(OfflineSigninLimiterTest, SAMLLockscreenReauthMatchLoginWithLimit) {
+  AddSAMLUser();
+  PrefService* prefs = profile_->GetPrefs();
+
+  // Set the time of last login with SAML
+  prefs->SetTime(prefs::kSAMLLastGAIASignInTime,
+                 task_environment_.GetMockClock()->Now());
+
+  // Set time limit of loginscreen to 14.
+  prefs->SetInteger(prefs::kSAMLOfflineSigninTimeLimit, 14);
+
+  // Set a value of -2 which matches the lockscreen limit to the login limit
+  // which is now 14.
+  prefs->SetInteger(prefs::kSamlLockScreenOfflineSigninTimeLimitDays,
+                    constants::kLockScreenOfflineSigninTimeLimitDaysMatchLogin);
+
+  // Create limiter instance
+  CreateLimiter();
+
+  // Advance time by four days.
+  task_environment_.FastForwardBy(base::Days(4));
+
+  // Authenticate offline and check if lockscreen timer is still running.
+  limiter_->SignedIn(UserContext::AUTH_FLOW_OFFLINE);
+  EXPECT_TRUE(limiter_->GetLockscreenTimerForTesting()->IsRunning());
+
+  // Advance time by four weeks.
+  task_environment_.FastForwardBy(base::Days(28));  // 4 weeks.
+
+  CheckAuthTypeOnLock(test_saml_account_id_, true /*expect_online_auth*/);
 }
 
 }  //  namespace ash
