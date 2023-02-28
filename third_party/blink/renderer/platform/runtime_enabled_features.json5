@@ -1054,7 +1054,7 @@
     // `text-wrap: balance`. crbug.com/1251079
     {
       name: "CSSTextWrap",
-      status: "test",
+      status: "experimental",
     },
     // Support for CSS Toggles, https://tabatkins.github.io/css-toggle/
     {
