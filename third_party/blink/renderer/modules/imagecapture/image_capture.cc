@@ -856,8 +856,15 @@ void ImageCapture::OnSetPanTiltZoomSettingsFromTrack(
                     WrapPersistent(this), std::move(done_callback)));
 }
 
-const MediaTrackConstraintSet* ImageCapture::GetMediaTrackConstraints() const {
-  return current_constraints_;
+MediaTrackConstraints* ImageCapture::GetMediaTrackConstraints() const {
+  if (!current_constraints_) {
+    return nullptr;
+  }
+  MediaTrackConstraints* constraints = MediaTrackConstraints::Create();
+  HeapVector<Member<MediaTrackConstraintSet>> advanced_constraints;
+  advanced_constraints.push_back(current_constraints_);
+  constraints->setAdvanced(advanced_constraints);
+  return constraints;
 }
 
 void ImageCapture::ClearMediaTrackConstraints() {
