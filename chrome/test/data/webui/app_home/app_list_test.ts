@@ -667,7 +667,8 @@ suite('AppListTest', () => {
     const linkContainer: HTMLElement =
         deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
             '#container')!;
-    assertTrue(linkContainer!.hidden, 'Deprecation link is not hidden');
+    assertEquals(
+        linkContainer!.style.display, 'none', 'Deprecation link is not hidden');
 
     const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
     assertTrue(!!appItems, 'No apps.');
@@ -692,8 +693,9 @@ suite('AppListTest', () => {
     const linkContainer: HTMLElement =
         deprecatedAppsLink.shadowRoot!.querySelector<HTMLImageElement>(
             '#container')!;
-    assertFalse(
-        linkContainer.hidden, 'Removal link is hidden when it shouldn\'t be.');
+    assertEquals(
+        linkContainer!.style.display, 'inline-flex',
+        'Removal link is hidden when it shouldn\'t be.');
   });
 
   test('Deprecated app icon', async () => {
