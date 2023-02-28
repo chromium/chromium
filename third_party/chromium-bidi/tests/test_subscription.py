@@ -281,6 +281,7 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
 
     # 3.2 Navigate second context.
     command_id_2 = get_next_command_id()
+    assert command_id_1 != command_id_2
     await send_JSON_command(
         websocket, {
             "id": command_id_2,
