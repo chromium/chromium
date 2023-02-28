@@ -189,8 +189,6 @@ class DomainReliabilityUploaderTest : public testing::Test {
         uploader_(
             DomainReliabilityUploader::Create(&time_,
                                               url_request_context_.get())) {
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
     expected_isolation_info_ = net::IsolationInfo::CreateTransient();
 
     auto interceptor =
@@ -216,7 +214,6 @@ class DomainReliabilityUploaderTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 

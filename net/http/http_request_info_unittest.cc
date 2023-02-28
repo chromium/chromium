@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "net/http/http_request_info.h"
-#include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
@@ -12,30 +11,20 @@
 namespace net {
 
 TEST(HTTPRequestInfoTest, IsConsistent) {
-  // TODO(brgoldstein): refactor this test with new testing config enum when
-  // you update NetworkAnonymizationKey tests and IsolationInfo tests.
-
   const SchemefulSite kTestSiteA = SchemefulSite(GURL("http://a.test/"));
   const SchemefulSite kTestSiteB = SchemefulSite(GURL("http://b.test/"));
 
-  net::HttpRequestInfo triple_nik_double_nak_request_info;
-  triple_nik_double_nak_request_info.network_isolation_key =
+  net::HttpRequestInfo with_anon_nak;
+  with_anon_nak.network_isolation_key =
       NetworkIsolationKey(kTestSiteA, kTestSiteB);
+  EXPECT_FALSE(with_anon_nak.IsConsistent());
 
-  // Triple key NIK and double key NAK.
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
-      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-
-  EXPECT_FALSE(triple_nik_double_nak_request_info.IsConsistent());
-
-  net::HttpRequestInfo triple_nik_double_xsite_bit_nak_request_info;
-  triple_nik_double_xsite_bit_nak_request_info.network_isolation_key =
+  net::HttpRequestInfo cross_site;
+  cross_site.network_isolation_key =
       NetworkIsolationKey(kTestSiteA, kTestSiteB);
-  triple_nik_double_xsite_bit_nak_request_info.network_anonymization_key =
+  cross_site.network_anonymization_key =
       NetworkAnonymizationKey(kTestSiteA, kTestSiteB, true);
 
-  EXPECT_TRUE(triple_nik_double_xsite_bit_nak_request_info.IsConsistent());
+  EXPECT_TRUE(cross_site.IsConsistent());
 }
 }  // namespace net

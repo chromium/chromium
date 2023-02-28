@@ -8902,7 +8902,6 @@
                 {
                     "name": "enabled_triple_nik_cross_site_flag_nak_rollout",
                     "enable_features": [
-                        "EnableCrossSiteFlagNetworkAnonymizationKey",
                         "PartitionConnectionsByNetworkIsolationKey",
                         "PartitionDomainReliabilityByNetworkIsolationKey",
                         "PartitionHttpServerPropertiesByNetworkIsolationKey",

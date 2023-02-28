@@ -29,9 +29,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
 
   static bool is_cross_site(const net::NetworkAnonymizationKey& input) {
-    if (!net::NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled()) {
-      return false;
-    }
     return input.GetIsCrossSite().value_or(false);
   }
 

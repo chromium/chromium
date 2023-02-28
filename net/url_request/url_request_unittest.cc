@@ -12883,12 +12883,7 @@ TEST_F(URLRequestTest, SetURLChain) {
   }
 }
 
-TEST_F(URLRequestTest,
-       SetIsolationInfoFromNakTripleNikDoublePlusCrossSiteBitNak) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-
+TEST_F(URLRequestTest, SetIsolationInfoFromNak) {
   TestDelegate d;
   SchemefulSite site_a = SchemefulSite(GURL("https://a.com/"));
   SchemefulSite site_b = SchemefulSite(GURL("https://b.com/"));
@@ -12942,119 +12937,6 @@ TEST_F(URLRequestTest,
   EXPECT_TRUE(r->is_created_from_network_anonymization_key());
   EXPECT_EQ(r->isolation_info().network_anonymization_key(), empty_nak);
   EXPECT_TRUE(r->isolation_info().IsEqualForTesting(net::IsolationInfo()));
-  r->Start();
-  d.RunUntilComplete();
-}
-
-TEST_F(URLRequestTest, SetIsolationInfoFromNakTripleNikDoubleNak) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndDisableFeature(
-      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-
-  TestDelegate d;
-  SchemefulSite site_a = SchemefulSite(GURL("https://a.com/"));
-  SchemefulSite site_b = SchemefulSite(GURL("https://b.com/"));
-  base::UnguessableToken nak_nonce = base::UnguessableToken::Create();
-  NetworkAnonymizationKey populated_cross_site_nak(site_a, site_b, true,
-                                                   nak_nonce);
-  NetworkAnonymizationKey populated_same_site_nak(site_a, site_a, false,
-                                                  nak_nonce);
-  IsolationInfo expected_isolation_info_populated_same_site_nak =
-      IsolationInfo::Create(IsolationInfo::RequestType::kOther,
-                            url::Origin::Create(GURL("https://a.com/")),
-                            url::Origin::Create(GURL("https://a.com/")),
-                            SiteForCookies(),
-                            /*party_context=*/absl::nullopt, &nak_nonce);
-  NetworkAnonymizationKey empty_nak;
-
-  GURL original_url("http://localhost");
-  std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-      original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-
-  r->set_isolation_info_from_network_anonymization_key(
-      populated_cross_site_nak);
-  r->SetLoadFlags(LOAD_DISABLE_CACHE);
-  r->set_allow_credentials(false);
-  EXPECT_TRUE(r->is_created_from_network_anonymization_key());
-  EXPECT_EQ(r->isolation_info().network_anonymization_key(),
-            populated_cross_site_nak);
-  EXPECT_EQ(r->isolation_info().top_frame_origin(),
-            url::Origin::Create(GURL("https://a.com/")));
-  // When double key is enabled for NAK but not for NIK, the frame site of the
-  // IsolationInfo will be set to the top level site.
-  EXPECT_EQ(r->isolation_info().frame_origin(),
-            url::Origin::Create(GURL("https://a.com/")));
-
-  r->set_isolation_info_from_network_anonymization_key(populated_same_site_nak);
-  EXPECT_TRUE(r->is_created_from_network_anonymization_key());
-  EXPECT_TRUE(r->load_flags() & LOAD_DISABLE_CACHE);
-  EXPECT_EQ(r->isolation_info().network_anonymization_key(),
-            populated_same_site_nak);
-  EXPECT_TRUE(r->isolation_info().IsEqualForTesting(
-      expected_isolation_info_populated_same_site_nak));
-
-  r->set_isolation_info_from_network_anonymization_key(empty_nak);
-  EXPECT_TRUE(r->is_created_from_network_anonymization_key());
-  EXPECT_TRUE(r->load_flags() & LOAD_DISABLE_CACHE);
-  EXPECT_EQ(r->isolation_info().network_anonymization_key(), empty_nak);
-  EXPECT_FALSE(r->isolation_info().top_frame_origin());
-  EXPECT_FALSE(r->isolation_info().frame_origin());
-  r->Start();
-  d.RunUntilComplete();
-}
-
-TEST_F(URLRequestTest,
-       SetIsolationInfoFromNakTripleNikDoubleWithCrossSiteFlagNak) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-
-  TestDelegate d;
-  SchemefulSite site_a = SchemefulSite(GURL("https://a.com/"));
-  SchemefulSite site_b = SchemefulSite(GURL("https://b.com/"));
-  base::UnguessableToken nak_nonce = base::UnguessableToken::Create();
-  NetworkAnonymizationKey populated_cross_site_nak(
-      site_a, site_b, /*is_cross_site=*/true, nak_nonce);
-  NetworkAnonymizationKey populated_same_site_nak(
-      site_a, site_a, /*is_cross_site=*/false, nak_nonce);
-
-  NetworkAnonymizationKey empty_nak;
-  GURL original_url("http://localhost");
-  std::unique_ptr<URLRequest> r(default_context().CreateRequest(
-      original_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
-
-  r->set_isolation_info_from_network_anonymization_key(
-      populated_cross_site_nak);
-  r->SetLoadFlags(LOAD_DISABLE_CACHE);
-  r->set_allow_credentials(false);
-  EXPECT_TRUE(r->is_created_from_network_anonymization_key());
-  EXPECT_TRUE(r->load_flags() & LOAD_DISABLE_CACHE);
-  EXPECT_EQ(r->isolation_info().network_anonymization_key().ToDebugString(),
-            populated_cross_site_nak.ToDebugString());
-  EXPECT_EQ(r->isolation_info().top_frame_origin(),
-            url::Origin::Create(GURL("https://a.com/")));
-  // When double key is enabled for NAK but not for NIK, the frame site of the
-  // IsolationInfo will be set to the top level site.
-  EXPECT_TRUE(r->isolation_info().frame_origin());
-
-  r->set_isolation_info_from_network_anonymization_key(populated_same_site_nak);
-  EXPECT_TRUE(r->is_created_from_network_anonymization_key());
-  EXPECT_TRUE(r->load_flags() & LOAD_DISABLE_CACHE);
-  EXPECT_EQ(r->isolation_info().network_anonymization_key().ToDebugString(),
-            populated_same_site_nak.ToDebugString());
-  EXPECT_EQ(r->isolation_info().top_frame_origin(),
-            url::Origin::Create(GURL("https://a.com/")));
-  // Cross site double keyed NAKs should set a cross site dummy origin on the
-  // IsolationInfo.
-  EXPECT_TRUE(r->isolation_info().frame_origin());
-
-  r->set_isolation_info_from_network_anonymization_key(empty_nak);
-  EXPECT_TRUE(r->is_created_from_network_anonymization_key());
-  EXPECT_TRUE(r->load_flags() & LOAD_DISABLE_CACHE);
-  EXPECT_EQ(r->isolation_info().network_anonymization_key(), empty_nak);
-  EXPECT_FALSE(r->isolation_info().top_frame_origin());
-  EXPECT_FALSE(r->isolation_info().frame_origin());
-
   r->Start();
   d.RunUntilComplete();
 }
@@ -13172,53 +13054,14 @@ INSTANTIATE_TEST_SUITE_P(,
                          URLRequestMaybeAsyncFirstPartySetsTest,
                          testing::Bool());
 
-namespace {
-
-// `EnabledFeatureFlagsTestingParam ` allows enabling and disabling
-// the feature flags that control the key schemes for NetworkAnonymizationKey.
-// This allows us to test the possible combinations of flags that will be
-// allowed for experimentation.
-//
-// Presently, only one flag is used, but future experiments will add more.
-struct EnabledFeatureFlagsTestingParam {
-  // True = 2.5-keyed NAK, false = double-keyed NAK.
-  const bool enable_cross_site_flag_network_anonymization_key;
-};
-
-const EnabledFeatureFlagsTestingParam kFlagsParam[] = {
-    // 0. Double-keying is enabled for NetworkAnonymizationKey.
-    {/*enable_cross_site_flag_network_anonymization_key=*/false},
-
-    // 1. Double-keying + cross-site-bit is enabled for NetworkAnonymizationKey.
-    {/*enable_cross_site_flag_network_anonymization_key=*/true}};
-
-}  // namespace
-
-class PartitionConnectionsByNetworkAnonymizationKey
-    : public URLRequestTest,
-      public testing::WithParamInterface<EnabledFeatureFlagsTestingParam> {
+class PartitionConnectionsByNetworkAnonymizationKey : public URLRequestTest {
  public:
   PartitionConnectionsByNetworkAnonymizationKey() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        net::features::kPartitionConnectionsByNetworkIsolationKey,
-        net::features::kPartitionSSLSessionsByNetworkIsolationKey};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-
-    if (IsCrossSiteFlagEnabled()) {
-      enabled_features.push_back(
-          net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-    } else {
-      disabled_features.push_back(
-          net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatures(
+        {net::features::kPartitionConnectionsByNetworkIsolationKey,
+         net::features::kPartitionSSLSessionsByNetworkIsolationKey},
+        {});
   }
-
-  bool IsCrossSiteFlagEnabled() const {
-    return GetParam().enable_cross_site_flag_network_anonymization_key;
-  }
-
   const SchemefulSite kTestSiteA = SchemefulSite(GURL("http://a.test/"));
   const SchemefulSite kTestSiteB = SchemefulSite(GURL("http://b.test/"));
   const SchemefulSite kTestSiteC = SchemefulSite(GURL("http://c.test/"));
@@ -13229,7 +13072,7 @@ class PartitionConnectionsByNetworkAnonymizationKey
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
+TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
        DifferentTopFrameSitesNeverShareConnections) {
   // Start server
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -13289,7 +13132,7 @@ TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
   }
 }
 
-TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
+TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
        FirstPartyIsSeparatedFromCrossSiteFrames) {
   // Start server
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -13343,17 +13186,12 @@ TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
     d.RunUntilComplete();
 
     EXPECT_THAT(d.request_status(), IsOk());
-    // We should only share a connection with r1 if double key
-    // NetworkAnonymizationKey scheme is enabled.
-    if (!IsCrossSiteFlagEnabled()) {
-      EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, r2->ssl_info().handshake_type);
-    } else {
-      EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
-    }
+    // We should not share a connection with r1.
+    EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
   }
 }
 
-TEST_P(
+TEST_F(
     PartitionConnectionsByNetworkAnonymizationKey,
     DifferentCrossSiteFramesAreSeparatedOnlyWhenNetworkAnonymizationKeyIsTripleKeyed) {
   // Start server
@@ -13415,7 +13253,7 @@ TEST_P(
   }
 }
 
-TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
+TEST_F(PartitionConnectionsByNetworkAnonymizationKey,
        DifferentNoncesAreAlwaysSeparated) {
   // Start server
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
@@ -13478,9 +13316,5 @@ TEST_P(PartitionConnectionsByNetworkAnonymizationKey,
     EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, r2->ssl_info().handshake_type);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PartitionConnectionsByNetworkAnonymizationKey,
-                         testing::ValuesIn(kFlagsParam));
 
 }  // namespace net

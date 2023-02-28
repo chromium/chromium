@@ -148,7 +148,7 @@ TEST(ClientSocketPool, GroupIdToString) {
                 SecureDnsPolicy::kAllow)
                 .ToString());
 
-  EXPECT_EQ("https://foo <https://foo.test>",
+  EXPECT_EQ("https://foo <https://foo.test cross_site>",
             ClientSocketPool::GroupId(
                 url::SchemeHostPort(url::kHttpsScheme, "foo", 443),
                 PrivacyMode::PRIVACY_MODE_DISABLED,

@@ -148,15 +148,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPartitionSSLSessionsByNetworkIsolationKey);
 // testing.
 NET_EXPORT BASE_DECLARE_FEATURE(kPartitionNelAndReportingByNetworkIsolationKey);
 
-// Creates a <double key + is_cross_site> NetworkAnonymizationKey which is used
-// to partition the network state. This double key will have the following
-// properties: `top_frame_site` -> the schemeful site of the top level page.
-// `frame_site ` -> nullopt
-// `is_cross_site` -> true if the `top_frame_site` is cross site when compared
-// to the frame site. The frame site will not be stored in this key so the value
-// of is_cross_site will be computed at key construction.
-NET_EXPORT BASE_DECLARE_FEATURE(kEnableCrossSiteFlagNetworkAnonymizationKey);
-
 // Enables sending TLS 1.3 Key Update messages on TLS 1.3 connections in order
 // to ensure that this corner of the spec is exercised. This is currently
 // disabled by default because we discovered incompatibilities with some

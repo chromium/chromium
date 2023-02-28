@@ -1188,8 +1188,7 @@ IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
       network_anonymization_key.GetTopFrameSite()->site_as_origin_;
 
   absl::optional<url::Origin> frame_origin;
-  if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
-      network_anonymization_key.GetIsCrossSite().value()) {
+  if (network_anonymization_key.GetIsCrossSite().value()) {
     // If we know that the origin is cross site to the top level site, create an
     // empty origin to use as the frame origin for the isolation info. This
     // should be cross site with the top level origin.

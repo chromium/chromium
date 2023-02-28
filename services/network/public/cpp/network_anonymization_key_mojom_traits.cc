@@ -23,8 +23,7 @@ bool StructTraits<network::mojom::NetworkAnonymizationKeyDataView,
 
   // Read is_cross_site boolean flag value.
   absl::optional<bool> is_cross_site = absl::nullopt;
-  if (net::NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
-      top_frame_site.has_value()) {
+  if (top_frame_site.has_value()) {
     is_cross_site = data.is_cross_site();
   }
 

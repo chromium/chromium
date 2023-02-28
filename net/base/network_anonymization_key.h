@@ -31,12 +31,9 @@ namespace net {
 // In order to separate first and third party context from each other this field
 // will always be populated.
 
-//`is_cross_site` is an expiremental boolean that will be used with the
-//`top_frame_site` to create a partition key that separates the
-//`top_frame_site`s first party partition from any cross-site iframes. This will
-// be used only when `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled.
-// When `kEnableCrossSiteFlagNetworkAnonymizationKey` is disabled,
-// `is_cross_site_` will be an empty optional.
+// `is_cross_site` is used with the `top_frame_site` to create a partition key
+// that separates the `top_frame_site`s first party partition from any
+// cross-site iframes.
 
 // The following show how the `is_cross_site` boolean is populated for the
 // innermost frame in the chain.
@@ -146,29 +143,6 @@ class NET_EXPORT NetworkAnonymizationKey {
   const absl::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
   }
-
-  // Returns true if the NetworkAnonymizationKey has a triple keyed scheme. This
-  // means the values of the NetworkAnonymizationKey are as follows:
-  // `top_frame_site` -> the schemeful site of the top level page.
-  // `frame_site ` -> the schemeful site of the requestor frame
-  // `is_cross_site` -> nullopt
-  static bool IsFrameSiteEnabled();
-
-  // Returns true if the NetworkAnonymizationKey has a double keyed scheme. This
-  // means the values of the NetworkAnonymizationKey are as follows:
-  // `top_frame_site` -> the schemeful site of the top level page.
-  // `frame_site ` -> nullopt
-  // `is_cross_site` -> nullopt
-  static bool IsDoubleKeySchemeEnabled();
-
-  // Returns true if the NetworkAnonymizationKey has a <double keyed +
-  // is_cross_site> scheme. This means the values of the NetworkAnonymizationKey
-  // are as follows:
-  // `top_frame_site` -> the schemeful site of the top level page.
-  // `frame_site ` -> nullopt
-  // `is_cross_site` -> a boolean indicating if the requestor frame site is
-  // cross site from the top level site.
-  static bool IsCrossSiteFlagSchemeEnabled();
 
   // Returns a representation of |this| as a base::Value. Returns false on
   // failure. Succeeds if either IsEmpty() or !IsTransient().
