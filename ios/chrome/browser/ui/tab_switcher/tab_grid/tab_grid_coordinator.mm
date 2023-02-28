@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
@@ -129,6 +130,9 @@
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
 // Mediator for pinned Tabs.
 @property(nonatomic, strong) PinnedTabsMediator* pinnedTabsMediator;
+// Mediator for the inactive tabs button.
+@property(nonatomic, strong)
+    InactiveTabsButtonMediator* inactiveTabsButtonMediator;
 // Coordinator for history, which can be started from recent tabs.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
 // Coordinator for the thumb strip.
@@ -167,7 +171,7 @@
 @implementation TabGridCoordinator
 // Superclass property.
 @synthesize baseViewController = _baseViewController;
-// Ivars are not auto-synthesized when both accessor and mutator are overridden.
+// Ivars are not auto-synthesized when accessors are overridden.
 @synthesize regularBrowser = _regularBrowser;
 
 - (instancetype)initWithWindow:(nullable UIWindow*)window
@@ -670,6 +674,12 @@
     self.pinnedTabsMediator.browser = _regularBrowser;
     baseViewController.pinnedTabsDelegate = self.pinnedTabsMediator;
     baseViewController.pinnedTabsImageDataSource = self.pinnedTabsMediator;
+  }
+
+  if (IsInactiveTabsEnabled()) {
+    self.inactiveTabsButtonMediator = [[InactiveTabsButtonMediator alloc]
+        initWithConsumer:baseViewController.regularTabsConsumer
+            webStateList:_inactiveBrowser->GetWebStateList()->AsWeakPtr()];
   }
 
   self.incognitoTabsMediator = [[TabGridMediator alloc]

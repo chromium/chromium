@@ -1338,6 +1338,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self updateVisibleCellIdentifiers];
 }
 
+- (void)dismissModals {
+  ios::provider::DismissModalsForCollectionView(self.collectionView);
+}
+
+#pragma mark - InactiveTabsCountConsumer
+
 - (void)advertizeInactiveTabsWithCount:(NSUInteger)count {
   DCHECK(IsInactiveTabsEnabled());
   NSUInteger oldCount = self.inactiveTabsCount;
@@ -1364,10 +1370,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     // supplementary view is not an InactiveTabsButtonHeader.
     header.button.count = count;
   }
-}
-
-- (void)dismissModals {
-  ios::provider::DismissModalsForCollectionView(self.collectionView);
 }
 
 #pragma mark - LayoutSwitcher

@@ -72,6 +72,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_button",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
