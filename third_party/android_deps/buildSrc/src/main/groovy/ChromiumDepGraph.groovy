@@ -62,7 +62,7 @@ class ChromiumDepGraph {
             licenseName: 'Apache 2.0'),
         com_google_code_gson_gson: new PropertyOverride(
             url: 'https://github.com/google/gson',
-            description: "A Java serialization/deserialization library to convert Java Objects into JSON and back",
+            description: 'A Java serialization/deserialization library to convert Java Objects into JSON and back',
             licenseUrl: 'https://raw.githubusercontent.com/google/gson/master/LICENSE',
             licenseName: 'Apache 2.0'),
         com_google_errorprone_error_prone_annotation: new PropertyOverride(
@@ -760,7 +760,7 @@ class ChromiumDepGraph {
         // file: URLs happen when using fetch_all_androidx.py --local-repo.
         if (url.startsWith('file:')) {
             if (!new File(new URI(url).getPath()).exists()) {
-                throw new RuntimeException("File not found: " + url)
+                throw new RuntimeException('File not found: ' + url)
             }
             return
         }
