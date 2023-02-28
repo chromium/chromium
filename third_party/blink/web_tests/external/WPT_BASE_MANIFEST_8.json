@@ -1816,6 +1816,15 @@
       ]
      ]
     },
+    "css-font-loading": {
+     "fontfaceset-loading-worker-crash.html": [
+      "552722b6edd15818389bc82e09ff424053f85524",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-fonts": {
      "font-face-local-css-wide-keyword-crash.html": [
       "3ece8c7c48c2b4ab7c17d32275f70a2c10220b8e",
@@ -241135,6 +241144,19 @@
        {}
       ]
      ],
+     "case-insensitive-parent.html": [
+      "a684bbb97c870b587b73e616ca1bfa4fa423f4ff",
+      [
+       null,
+       [
+        [
+         "/css/selectors/case-insensitive-parent-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "child-indexed-no-parent.html": [
       "c77564bf554c0c9ebaa00b784afb7787abb2db62",
       [
@@ -290066,6 +290088,12 @@
        "79f63ced683e6342866d734b04f3c687f6dd942f",
        []
       ]
+     },
+     "support": {
+      "fontfaceset-loading-worker.js": [
+       "73579756614c2e5b191c9264a32701f57aade84b",
+       []
+      ]
      }
     },
     "css-fonts": {
@@ -329303,6 +329331,10 @@
        }
       }
      },
+     "case-insensitive-parent-ref.html": [
+      "0138b79972c3e1c2689df30ec72150e5993269f4",
+      []
+     ],
      "child-indexed-no-parent-ref.html": [
       "069c86cf080264e2cead8ab783aac028a84a2f7b",
       []
@@ -372074,7 +372106,7 @@
       []
      ],
      "frame-timing.js": [
-      "019bd424b55065451eb4ad0a132d3a6befbbb5fc",
+      "65710e22c8fc39b4cc3ef5aa93460a2f4736f8d6",
       []
      ],
      "frameset-timing-frame.html": [
@@ -372199,6 +372231,14 @@
      ],
      "notify_parent.html": [
       "c104f3c8f0695a96646cf24a730eef0342f95876",
+      []
+     ],
+     "object-frame-options-200.asis": [
+      "122445326bdef6d058e1adf4d6a2b51e4f6889da",
+      []
+     ],
+     "object-frame-options-403.asis": [
+      "fd64f0bcdbb7c17f60f485a25cfa78c6317e0ce6",
       []
      ],
      "object-navigate-back.html": [
@@ -372394,7 +372434,7 @@
       []
      ],
      "mock-direct-sockets.js": [
-      "e2e02453f7f4d446c528051fc44974878150b809",
+      "6d557f7a01530664d619c1568f1482bfd121e4b7",
       []
      ],
      "mock-facedetection.js": [
@@ -582870,6 +582910,15 @@
       {}
      ]
     ],
+    "entries-for-object-frame-options-deny.html": [
+     "a69b642971ba6adfbde8afcd451b29603cb7fcf3",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "entry-attributes.html": [
      "94f219f229107e4764134187f111dcc7757f617d",
      [
@@ -582967,7 +583016,7 @@
      ]
     ],
     "iframe-sequence-of-events.html": [
-     "02d1c362c9df491439fd81ed9be48d5859a2e94f",
+     "5d719fb9153f18f35d239c3135f3fd844aa8558c",
      [
       null,
       {}
