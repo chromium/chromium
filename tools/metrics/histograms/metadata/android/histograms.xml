@@ -988,24 +988,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Download.InfoBar.CloseButtonClicked"
-    enum="DownloadInfoBarState" expires_after="M85">
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Records the state of the download infobar when the user taps on the
-    infobar's close button.
-  </summary>
-</histogram>
-
-<histogram name="Android.Download.InfoBar.Shown"
-    enum="DownloadInfoBar.ShownState" expires_after="2020-04-26">
-  <owner>shaktisahu@chromium.org</owner>
-  <summary>
-    Records various types of messages representing the state of the downloads as
-    they are shown on the download infobar.
-  </summary>
-</histogram>
-
 <histogram name="Android.Download.Rename.Dialog.Action"
     enum="Android.Download.Rename.Dialog.Action" expires_after="2021-08-09">
   <owner>hesen@chromium.org</owner>

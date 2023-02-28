@@ -2904,13 +2904,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Android.Download.InfoBar.CloseButtonClicked">
-  <owner>shaktisahu@chromium.org</owner>
-  <description>
-    User tapped on the close button to close the infobar.
-  </description>
-</action>
-
 <action name="Android.Download.InfoBar.LinkClicked.OpenDownload">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -2937,11 +2930,6 @@ should be able to be added at any place in this file.
     user had switched tabs. The infobar which was previously being shown on the
     old tab was closed and was shown on the new active tab.
   </description>
-</action>
-
-<action name="Android.Download.InfoBar.Shown">
-  <owner>shaktisahu@chromium.org</owner>
-  <description>The infobar was created and shown.</description>
 </action>
 
 <action name="Android.DownloadManager.CheckForExternallyRemovedItems"
