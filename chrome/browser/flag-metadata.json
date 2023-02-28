@@ -2720,7 +2720,7 @@
   {
     "name": "enable-long-press-surrounding-text",
     "owners": [ "erahmaoui@google.com", "djean@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 111
+    "expiry_milestone": 116
   },
   {
     "name": "enable-machine-learning-model-loader-web-platform-api",
@@ -3612,7 +3612,7 @@
   {
     "name": "experience-kit-maps",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 116
   },
   {
     "name": "explore-sites",
@@ -4379,12 +4379,12 @@
   {
     "name": "intents-on-email",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 116
   },
   {
     "name": "intents-on-phone-number",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 113
+    "expiry_milestone": 116
   },
   {
     "name": "interest-feed-v1-clicks-and-views-cond-upload",
@@ -5475,7 +5475,7 @@
   {
     "name": "one-tap-experience-maps",
     "owners": [ "djean@google.com", "erahmaoui@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 114
+    "expiry_milestone": 116
   },
   {
     "name": "oobe-hid-detection-revamp",
