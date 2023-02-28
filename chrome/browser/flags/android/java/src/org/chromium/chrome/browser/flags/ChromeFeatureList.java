@@ -452,6 +452,8 @@ public abstract class ChromeFeatureList {
             "RequestDesktopSiteDefaultsControlSynthetic";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS_DOWNGRADE =
             "RequestDesktopSiteDefaultsDowngrade";
+    public static final String REQUEST_DESKTOP_SITE_DEFAULTS_LOGGING =
+            "RequestDesktopSiteDefaultsLogging";
     public static final String REQUEST_DESKTOP_SITE_DEFAULTS_SYNTHETIC =
             "RequestDesktopSiteDefaultsSynthetic";
     public static final String REQUEST_DESKTOP_SITE_OPT_IN_CONTROL_SYNTHETIC =

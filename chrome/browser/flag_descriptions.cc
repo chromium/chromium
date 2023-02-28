@@ -3922,6 +3922,12 @@ const char kRequestDesktopSiteDefaultsDowngradeDescription[] =
     "Disable the request desktop site global setting if it was enabled by "
     "default based on device conditions.";
 
+const char kRequestDesktopSiteDefaultsLoggingName[] =
+    "Silently report crashes for debugging request desktop site on Android.";
+const char kRequestDesktopSiteDefaultsLoggingDescription[] =
+    "Silently report crashes with display spec when ineligible device shows "
+    "up in cohort or device screen size exceeds threshold.";
+
 const char kRequestDesktopSiteExceptionsDowngradeName[] =
     "Downgrade request desktop site exceptions on Android.";
 const char kRequestDesktopSiteExceptionsDowngradeDescription[] =

@@ -6127,6 +6127,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "request-desktop-site-defaults-logging",
+    "owners": [ "shuyng@google.com", "clank-app-team@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "request-desktop-site-exceptions",
     "owners": [ "shuyng@google.com", "twellington", "clank-app-team@google.com" ],
     "expiry_milestone": 114
