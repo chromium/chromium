@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
-#import "ios/chrome/browser/passwords/password_generation_utils.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"

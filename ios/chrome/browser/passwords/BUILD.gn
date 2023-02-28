@@ -98,11 +98,8 @@ source_set("passwords") {
   ]
   public_deps = [
     ":password_controller_delegate",
-    ":passwords_generation_utils",
     ":store_factory",
   ]
-
-  allow_circular_includes_from = [ ":passwords_generation_utils" ]
 }
 
 source_set("password_controller_delegate") {
@@ -184,16 +181,6 @@ source_set("public") {
     "ios_chrome_password_infobar_metrics_recorder.mm",
   ]
   deps = [ "//base" ]
-}
-
-source_set("passwords_generation_utils") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "password_generation_utils.h",
-    "password_generation_utils.mm",
-  ]
-  deps = [ "//base:i18n" ]
-  frameworks = [ "CoreGraphics.framework" ]
 }
 
 source_set("unit_tests") {

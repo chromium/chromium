@@ -55,7 +55,6 @@ source_set("autofill") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
-    "//ios/chrome/browser/passwords:passwords_generation_utils",
     "//ios/chrome/browser/paths",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/image_util",

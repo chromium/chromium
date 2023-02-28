@@ -38,7 +38,6 @@ source_set("autofill") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/metrics",
     "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/passwords:passwords_generation_utils",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ssl",
     "//ios/chrome/browser/sync",
