@@ -474,9 +474,9 @@ void BruschettaInstallerImpl::StartVm() {
   NotifyObserver(State::kStartVm);
 
   auto launch_policy_opt = GetLaunchPolicyForConfig(profile_, config_id_);
+  auto full_policy_opt = GetInstallableConfig(profile_, config_id_);
 
-  if (!HasInstallableConfig(profile_, config_id_) ||
-      !launch_policy_opt.has_value()) {
+  if (!full_policy_opt.has_value() || !launch_policy_opt.has_value()) {
     // Policy has changed to prohibit installation, so bail out before actually
     // starting the VM.
     install_running_ = false;
@@ -485,6 +485,7 @@ void BruschettaInstallerImpl::StartVm() {
     return;
   }
   auto launch_policy = *launch_policy_opt;
+  const auto* full_policy = *full_policy_opt;
 
   auto* client = ash::ConciergeClient::Get();
   DCHECK(client) << "This code requires a ConciergeClient";
@@ -505,8 +506,11 @@ void BruschettaInstallerImpl::StartVm() {
   disk->set_path(std::move(disk_path_));
   disk->set_writable(true);
 
-  request.add_oem_strings("com.google.glinux.installer.arg:track=testing");
-  request.add_oem_strings("com.google.glinux.bruschetta.alpha");
+  for (const auto& oem_string :
+       *full_policy->FindList(prefs::kPolicyOEMStringsKey)) {
+    request.add_oem_strings(oem_string.GetString());
+  }
+
   request.set_timeout(240);
 
   // fds and request.fds must have the same order.

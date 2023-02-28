@@ -116,6 +116,12 @@ schema:
               - NONE
               - FORCE_SHUTDOWN_IF_MORE_RESTRICTED
               - FORCE_SHUTDOWN_ALWAYS
+        oem_strings:
+          type: array
+          description: SMBIOS OEM strings to pass to the VM during install.
+           Defaults to the empty list.
+          items:
+            type: string
 
 example_value:
   vm-type:
@@ -133,6 +139,8 @@ example_value:
     vtpm:
       enabled: true
       policy_update_action: NONE
+    oem_strings:
+      - example config string
 
 tags:
  - system-security

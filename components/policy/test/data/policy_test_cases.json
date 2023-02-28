@@ -11493,7 +11493,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11518,7 +11519,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11543,7 +11545,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11572,7 +11575,8 @@
                 "vtpm": {
                   "enabled": true,
                   "policy_update_action": 0
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11601,7 +11605,8 @@
                 "vtpm": {
                   "enabled": true,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11630,9 +11635,62 @@
                 "vtpm": {
                   "enabled": true,
                   "policy_update_action": 2
-                }
+                },
+                "oem_strings": []
               }
             }
+          }
+        }
+      },
+      {
+        "note": "Check that OEM strings are translated correctly",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "name": "Standard Virtual Machine",
+              "enabled_state": "INSTALL_ALLOWED",
+              "oem_strings": [
+                "oem string 1",
+                "oem string 2"
+              ]
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "name": "Standard Virtual Machine",
+                "enabled_state": 1,
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                },
+                "oem_strings": [
+                  "oem string 1",
+                  "oem string 2"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check that OEM strings must be strings",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "name": "Standard Virtual Machine",
+              "enabled_state": "INSTALL_ALLOWED",
+              "oem_strings": [
+                1
+              ]
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "default_value": {}
           }
         }
       },
@@ -11663,7 +11721,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11704,7 +11763,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11737,7 +11797,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11799,7 +11860,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11861,7 +11923,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11898,7 +11961,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }
@@ -11945,7 +12009,10 @@
               "vtpm": {
                 "enabled": false,
                 "policy_update_action": "FORCE_SHUTDOWN_ALWAYS"
-              }
+              },
+              "oem_strings": [
+                "some weird config"
+              ]
             },
             "old-vm-type": {
               "name": "Legacy VM",
@@ -11994,7 +12061,8 @@
                 "vtpm": {
                   "enabled": true,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               },
               "another-vm-type": {
                 "name": "Weird Virtual Machine",
@@ -12014,7 +12082,10 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 2
-                }
+                },
+                "oem_strings": [
+                  "some weird config"
+                ]
               },
               "old-vm-type": {
                 "name": "Legacy VM",
@@ -12022,7 +12093,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               },
               "old-vm-type-2": {
                 "name": "Legacy VM",
@@ -12030,7 +12102,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               },
               "vulnerable-vm-type": {
                 "name": "Forbidden VM",
@@ -12038,7 +12111,8 @@
                 "vtpm": {
                   "enabled": false,
                   "policy_update_action": 1
-                }
+                },
+                "oem_strings": []
               }
             }
           }

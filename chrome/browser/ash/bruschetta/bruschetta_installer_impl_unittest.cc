@@ -83,6 +83,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     base::Value::Dict image;
     image.Set(prefs::kPolicyURLKey, kVmConfigUrl);
     image.Set(prefs::kPolicyHashKey, kVmConfigHash);
+    base::Value::List oem_strings;
+    oem_strings.Append("OEM string");
     base::Value::Dict config;
     config.Set(prefs::kPolicyEnabledKey,
                static_cast<int>(prefs::PolicyEnabledState::INSTALL_ALLOWED));
@@ -91,6 +93,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     config.Set(prefs::kPolicyImageKey, image.Clone());
     config.Set(prefs::kPolicyUefiKey, image.Clone());
     config.Set(prefs::kPolicyPflashKey, image.Clone());
+    config.Set(prefs::kPolicyOEMStringsKey, oem_strings.Clone());
     prefs_installable_.Set(kVmConfigId, config.Clone());
 
     config.Set(prefs::kPolicyEnabledKey,
