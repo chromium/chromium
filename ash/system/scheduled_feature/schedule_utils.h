@@ -12,21 +12,22 @@
 namespace ash::schedule_utils {
 
 struct ASH_EXPORT Position {
-  // The most recent `SunsetToSunriseCheckpoint` that was hit.
-  SunsetToSunriseCheckpoint current_checkpoint;
-  // The next `SunsetToSunriseCheckpoint` that will be hit.
-  SunsetToSunriseCheckpoint next_checkpoint;
+  // The most recent `ScheduleCheckpoint` that was hit.
+  ScheduleCheckpoint current_checkpoint;
+  // The next `ScheduleCheckpoint` that will be hit.
+  ScheduleCheckpoint next_checkpoint;
   // Time from now until the `next_checkpoint`.
   base::TimeDelta time_until_next_checkpoint;
 };
 
-// Returns the current position in the schedule using local `sunrise_time`
-// and `sunset_time`. The date of the provided sunrise/sunset times are
-// irrelevant; their corresponding times of day are extracted and used
-// internally.
-ASH_EXPORT Position GetCurrentPosition(const base::Time sunrise_time,
-                                       const base::Time sunset_time,
-                                       const base::Time now);
+// Returns the current position in a schedule where the feature is enabled from
+// the `start_time` until the `end_time` with the specified `schedule_type`. The
+// date of the provided start/end times are irrelevant; their corresponding
+// times of day are extracted and used internally.
+ASH_EXPORT Position GetCurrentPosition(const base::Time now,
+                                       const base::Time start_time,
+                                       const base::Time end_time,
+                                       const ScheduleType schedule_type);
 
 // Shifts `time_in` by a whole number of days such that it's < 1 day from the
 // `origin`:

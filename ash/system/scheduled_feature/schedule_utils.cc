@@ -19,10 +19,10 @@ namespace {
 
 constexpr base::TimeDelta kOneDay = base::Days(1);
 
-// Pairs together a `SunsetToSunriseCheckpoint` and the time at which it's
+// Pairs together a `ScheduleCheckpoint` and the time at which it's
 // hit.
 struct Slot {
-  SunsetToSunriseCheckpoint checkpoint;
+  ScheduleCheckpoint checkpoint;
   base::Time time;
 };
 
@@ -36,7 +36,7 @@ std::string ToString(const std::vector<Slot>& schedule) {
   return ss.str();
 }
 
-// The returned vector has one `Slot` per `SunsetToSunriseCheckpoint` and is
+// The returned vector has one `Slot` per `ScheduleCheckpoint` and is
 // sorted by `Slot::time`. The time at which `Slot` <i> ends is by definition
 // `Slot` <i + 1>'s `time`. Also note that:
 // * The schedule is cyclic. The next `Slot` after the last one is the first
@@ -45,34 +45,49 @@ std::string ToString(const std::vector<Slot>& schedule) {
 //   * `schedule[0].time` <= `now` < `schedule[0].time + kOneDay`
 //   * `schedule[0].time` <= `schedule[i].time` < `schedule[0].time + kOneDay`
 //     for all indices <i> in the returned `schedule`.
-std::vector<Slot> BuildSchedule(base::Time sunrise_time,
-                                base::Time sunset_time,
-                                const base::Time now) {
+std::vector<Slot> BuildSchedule(const base::Time now,
+                                base::Time start_time,
+                                base::Time end_time,
+                                const ScheduleType schedule_type) {
   DCHECK(!now.is_null());
   // The `schedule` could theoretically start with any checkpoint because it's
-  // cyclic. Sunrise has been picked arbitrarily since it's easiest to set the
-  // rest of the checkpoints relative to it.
+  // cyclic. `end_time` has been picked arbitrarily since it's easiest in the
+  // case of a `kSunsetToSunrise` to set the rest of the checkpoints relative to
+  // sunrise (`end_time` for that `ScheduleType`).
   //
-  // Sunrise must first be shifted by a whole number of days such that
-  // `sunrise_time` <= `now` < `sunrise_time + kOneDay`.
-  const base::TimeDelta amount_to_advance_sunrise =
-      (now - sunrise_time).FloorToMultiple(kOneDay);
-  sunrise_time += amount_to_advance_sunrise;
+  // `end_time` must first be shifted by a whole number of days such that
+  // `end_time` <= `now` < `end_time + kOneDay`.
+  const base::TimeDelta amount_to_advance_end_time =
+      (now - end_time).FloorToMultiple(kOneDay);
+  end_time += amount_to_advance_end_time;
 
-  // Shift `sunset_time` such that
-  // `sunrise_time` <= `sunset_time` < `sunrise_time + kOneDay`.
-  sunset_time = ShiftWithinOneDayFrom(sunrise_time, sunset_time);
+  // Shift `start_time` such that
+  // `end_time` <= `start_time` < `end_time + kOneDay`.
+  start_time = ShiftWithinOneDayFrom(end_time, start_time);
 
-  const base::TimeDelta daylight_duration = sunset_time - sunrise_time;
-  DCHECK_GE(daylight_duration, base::TimeDelta());
   std::vector<Slot> schedule;
-  schedule.push_back({SunsetToSunriseCheckpoint::kSunrise, sunrise_time});
-  schedule.push_back({SunsetToSunriseCheckpoint::kMorning,
-                      sunrise_time + daylight_duration / 3});
-  schedule.push_back({SunsetToSunriseCheckpoint::kLateAfternoon,
-                      sunrise_time + daylight_duration * 5 / 6});
-  schedule.push_back({SunsetToSunriseCheckpoint::kSunset, sunset_time});
-  DVLOG(1) << "Sunset-to-sunrise schedule: " << ToString(schedule);
+  switch (schedule_type) {
+    case ScheduleType::kCustom:
+      schedule.push_back({ScheduleCheckpoint::kDisabled, end_time});
+      schedule.push_back({ScheduleCheckpoint::kEnabled, start_time});
+      break;
+    case ScheduleType::kSunsetToSunrise: {
+      const base::TimeDelta daylight_duration = start_time - end_time;
+      DCHECK_GE(daylight_duration, base::TimeDelta());
+      schedule.push_back({ScheduleCheckpoint::kSunrise, end_time});
+      schedule.push_back(
+          {ScheduleCheckpoint::kMorning, end_time + daylight_duration / 3});
+      schedule.push_back({ScheduleCheckpoint::kLateAfternoon,
+                          end_time + daylight_duration * 5 / 6});
+      schedule.push_back({ScheduleCheckpoint::kSunset, start_time});
+      break;
+    }
+    case ScheduleType::kNone:
+      NOTREACHED() << "kNone ScheduleType does not support any automatic "
+                      "feature changes";
+      break;
+  }
+  DVLOG(1) << "Schedule: " << ToString(schedule);
   return schedule;
 }
 
@@ -102,15 +117,15 @@ Slot GetNextSlot(const size_t current_idx, const std::vector<Slot>& schedule) {
 
 }  // namespace
 
-Position GetCurrentPosition(const base::Time sunrise_time,
-                            const base::Time sunset_time,
-                            const base::Time now) {
+Position GetCurrentPosition(const base::Time now,
+                            const base::Time start_time,
+                            const base::Time end_time,
+                            const ScheduleType schedule_type) {
   const std::vector<Slot> schedule =
-      BuildSchedule(sunrise_time, sunset_time, now);
+      BuildSchedule(now, start_time, end_time, schedule_type);
   DCHECK(!schedule.empty());
   DCHECK_GE(now, schedule.front().time);
   DCHECK_LT(now - schedule.front().time, kOneDay);
-  DVLOG(1) << "Sunset-to-sunrise schedule: " << ToString(schedule);
 
   for (size_t idx = 0; idx < schedule.size(); ++idx) {
     const Slot next_slot = GetNextSlot(idx, schedule);
@@ -119,7 +134,7 @@ Position GetCurrentPosition(const base::Time sunrise_time,
               next_slot.time - now};
     }
   }
-  NOTREACHED() << "Failed to find SunsetToSunriseCheckpoint for now=" << now
+  NOTREACHED() << "Failed to find ScheduleCheckpoint for now=" << now
                << " schedule:\n"
                << ToString(schedule);
   return Position();

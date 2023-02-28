@@ -50,7 +50,7 @@ class ScheduleUtilsTest : public ::testing::Test {
   base::SimpleTestClock clock_;
 };
 
-TEST_F(ScheduleUtilsTest, DetectsAllCheckpoints) {
+TEST_F(ScheduleUtilsTest, SunsetToSunriseDetectsAllCheckpoints) {
   // Sunrise: 6 AM
   // Morning: 10 AM
   // LateAfternoon: 4 PM
@@ -58,49 +58,55 @@ TEST_F(ScheduleUtilsTest, DetectsAllCheckpoints) {
   const base::Time sunrise_time = BuildTime("06:00:00");
   const base::Time sunset_time = BuildTime("18:00:00");
   AdvanceClockTo("05:59:59");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunset,
-                        SunsetToSunriseCheckpoint::kSunrise, base::Seconds(1)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunset,
+                        ScheduleCheckpoint::kSunrise, base::Seconds(1)));
 
   AdvanceClockTo("06:00:00");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunrise,
-                        SunsetToSunriseCheckpoint::kMorning, base::Hours(4)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunrise,
+                        ScheduleCheckpoint::kMorning, base::Hours(4)));
 
   AdvanceClockTo("09:59:59");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunrise,
-                        SunsetToSunriseCheckpoint::kMorning, base::Seconds(1)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunrise,
+                        ScheduleCheckpoint::kMorning, base::Seconds(1)));
 
   AdvanceClockTo("10:00:00");
-  EXPECT_THAT(
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-      FieldsAre(SunsetToSunriseCheckpoint::kMorning,
-                SunsetToSunriseCheckpoint::kLateAfternoon, base::Hours(6)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kMorning,
+                        ScheduleCheckpoint::kLateAfternoon, base::Hours(6)));
 
   AdvanceClockTo("15:59:59");
-  EXPECT_THAT(
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-      FieldsAre(SunsetToSunriseCheckpoint::kMorning,
-                SunsetToSunriseCheckpoint::kLateAfternoon, base::Seconds(1)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kMorning,
+                        ScheduleCheckpoint::kLateAfternoon, base::Seconds(1)));
 
   AdvanceClockTo("16:00:00");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kLateAfternoon,
-                        SunsetToSunriseCheckpoint::kSunset, base::Hours(2)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kLateAfternoon,
+                        ScheduleCheckpoint::kSunset, base::Hours(2)));
 
   AdvanceClockTo("17:59:59");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kLateAfternoon,
-                        SunsetToSunriseCheckpoint::kSunset, base::Seconds(1)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kLateAfternoon,
+                        ScheduleCheckpoint::kSunset, base::Seconds(1)));
 
   AdvanceClockTo("18:00:00");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunset,
-                        SunsetToSunriseCheckpoint::kSunrise, base::Hours(12)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunset,
+                        ScheduleCheckpoint::kSunrise, base::Hours(12)));
 }
 
-TEST_F(ScheduleUtilsTest, SunsetJustAfterSunrise) {
+TEST_F(ScheduleUtilsTest, SunsetToSunriseSunsetJustAfterSunrise) {
   // Sunrise: 12:00 PM
   // Morning: 12:00 PM + (1.5 hours / 3) = 12:30 PM (usually 10 AM)
   // LateAfternoon: 1:30 PM - (1.5 hours / 6) = 1:15 PM (usually 4 PM)
@@ -108,30 +114,32 @@ TEST_F(ScheduleUtilsTest, SunsetJustAfterSunrise) {
   const base::Time sunrise_time = BuildTime("12:00:00");
   const base::Time sunset_time = BuildTime("13:30:00");
   AdvanceClockTo("12:00:00");
-  EXPECT_THAT(
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-      FieldsAre(SunsetToSunriseCheckpoint::kSunrise,
-                SunsetToSunriseCheckpoint::kMorning, base::Minutes(30)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunrise,
+                        ScheduleCheckpoint::kMorning, base::Minutes(30)));
 
   AdvanceClockTo("12:30:00");
-  EXPECT_THAT(
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-      FieldsAre(SunsetToSunriseCheckpoint::kMorning,
-                SunsetToSunriseCheckpoint::kLateAfternoon, base::Minutes(45)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kMorning,
+                        ScheduleCheckpoint::kLateAfternoon, base::Minutes(45)));
 
   AdvanceClockTo("13:15:00");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kLateAfternoon,
-                        SunsetToSunriseCheckpoint::kSunset, base::Minutes(15)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kLateAfternoon,
+                        ScheduleCheckpoint::kSunset, base::Minutes(15)));
 
   AdvanceClockTo("13:30:00");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunset,
-                        SunsetToSunriseCheckpoint::kSunrise,
-                        base::Days(1) - base::Minutes(90)));
+  EXPECT_THAT(
+      GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                         ScheduleType::kSunsetToSunrise),
+      FieldsAre(ScheduleCheckpoint::kSunset, ScheduleCheckpoint::kSunrise,
+                base::Days(1) - base::Minutes(90)));
 }
 
-TEST_F(ScheduleUtilsTest, SunriseJustAfterSunset) {
+TEST_F(ScheduleUtilsTest, SunsetToSunriseSunriseJustAfterSunset) {
   // Sunrise: 2:00 PM
   // Morning: 2:00 PM + (22 hours / 3) = 9:20 PM (usually 10 AM)
   // LateAfternoon: 12:00 PM - (22 hours / 6) = 8:20 AM (usually 4 PM)
@@ -139,30 +147,33 @@ TEST_F(ScheduleUtilsTest, SunriseJustAfterSunset) {
   const base::Time sunrise_time = BuildTime("14:00:00");
   const base::Time sunset_time = BuildTime("12:00:00");
   AdvanceClockTo("14:00:00");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunrise,
-                        SunsetToSunriseCheckpoint::kMorning,
-                        base::Hours(7) + base::Minutes(20)));
+  EXPECT_THAT(
+      GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                         ScheduleType::kSunsetToSunrise),
+      FieldsAre(ScheduleCheckpoint::kSunrise, ScheduleCheckpoint::kMorning,
+                base::Hours(7) + base::Minutes(20)));
 
   AdvanceClockTo("21:20:00");
-  EXPECT_THAT(
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-      FieldsAre(SunsetToSunriseCheckpoint::kMorning,
-                SunsetToSunriseCheckpoint::kLateAfternoon, base::Hours(11)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kMorning,
+                        ScheduleCheckpoint::kLateAfternoon, base::Hours(11)));
 
   AdvanceClockTo("08:20:00");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kLateAfternoon,
-                        SunsetToSunriseCheckpoint::kSunset,
-                        base::Hours(3) + base::Minutes(40)));
+  EXPECT_THAT(
+      GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                         ScheduleType::kSunsetToSunrise),
+      FieldsAre(ScheduleCheckpoint::kLateAfternoon, ScheduleCheckpoint::kSunset,
+                base::Hours(3) + base::Minutes(40)));
 
   AdvanceClockTo("12:00:00");
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunset,
-                        SunsetToSunriseCheckpoint::kSunrise, base::Hours(2)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunset,
+                        ScheduleCheckpoint::kSunrise, base::Hours(2)));
 }
 
-TEST_F(ScheduleUtilsTest, ShiftsScheduleToMatchDate) {
+TEST_F(ScheduleUtilsTest, SunsetToSunriseShiftsScheduleToMatchDate) {
   // Sunrise: 6 AM
   // Morning: 10 AM
   // LateAfternoon: 4 PM
@@ -171,22 +182,25 @@ TEST_F(ScheduleUtilsTest, ShiftsScheduleToMatchDate) {
   const base::Time sunset_time = BuildTime("18:00:00");
   const auto test_all_checkpoints = [this, sunrise_time, sunset_time]() {
     AdvanceClockTo("08:00:00");
-    EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-                FieldsAre(SunsetToSunriseCheckpoint::kSunrise,
-                          SunsetToSunriseCheckpoint::kMorning, base::Hours(2)));
+    EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                   ScheduleType::kSunsetToSunrise),
+                FieldsAre(ScheduleCheckpoint::kSunrise,
+                          ScheduleCheckpoint::kMorning, base::Hours(2)));
     AdvanceClockTo("12:00:00");
-    EXPECT_THAT(
-        GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-        FieldsAre(SunsetToSunriseCheckpoint::kMorning,
-                  SunsetToSunriseCheckpoint::kLateAfternoon, base::Hours(4)));
+    EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                   ScheduleType::kSunsetToSunrise),
+                FieldsAre(ScheduleCheckpoint::kMorning,
+                          ScheduleCheckpoint::kLateAfternoon, base::Hours(4)));
     AdvanceClockTo("17:00:00");
-    EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-                FieldsAre(SunsetToSunriseCheckpoint::kLateAfternoon,
-                          SunsetToSunriseCheckpoint::kSunset, base::Hours(1)));
+    EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                   ScheduleType::kSunsetToSunrise),
+                FieldsAre(ScheduleCheckpoint::kLateAfternoon,
+                          ScheduleCheckpoint::kSunset, base::Hours(1)));
     AdvanceClockTo("00:00:00");
-    EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-                FieldsAre(SunsetToSunriseCheckpoint::kSunset,
-                          SunsetToSunriseCheckpoint::kSunrise, base::Hours(6)));
+    EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                   ScheduleType::kSunsetToSunrise),
+                FieldsAre(ScheduleCheckpoint::kSunset,
+                          ScheduleCheckpoint::kSunrise, base::Hours(6)));
   };
 
   // Set now to be 5 days earlier. The schedule should still hold.
@@ -197,52 +211,54 @@ TEST_F(ScheduleUtilsTest, ShiftsScheduleToMatchDate) {
   test_all_checkpoints();
 }
 
-TEST_F(ScheduleUtilsTest, MinimalSpaceFromSunriseToSunset) {
+TEST_F(ScheduleUtilsTest, SunsetToSunriseMinimalSpaceFromSunriseToSunset) {
   // 6 seconds from sunrise to sunset
   base::Time sunrise_time = BuildTime("00:00:00");
   base::Time sunset_time = sunrise_time + base::Microseconds(6);
   AdvanceClockTo("00:00:00");
-  EXPECT_THAT(
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-      FieldsAre(SunsetToSunriseCheckpoint::kSunrise,
-                SunsetToSunriseCheckpoint::kMorning, base::Microseconds(2)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunrise,
+                        ScheduleCheckpoint::kMorning, base::Microseconds(2)));
   clock_.Advance(base::Microseconds(2));
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kMorning,
-                        SunsetToSunriseCheckpoint::kLateAfternoon,
-                        base::Microseconds(3)));
-  clock_.Advance(base::Microseconds(3));
   EXPECT_THAT(
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-      FieldsAre(SunsetToSunriseCheckpoint::kLateAfternoon,
-                SunsetToSunriseCheckpoint::kSunset, base::Microseconds(1)));
+      GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                         ScheduleType::kSunsetToSunrise),
+      FieldsAre(ScheduleCheckpoint::kMorning,
+                ScheduleCheckpoint::kLateAfternoon, base::Microseconds(3)));
+  clock_.Advance(base::Microseconds(3));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kLateAfternoon,
+                        ScheduleCheckpoint::kSunset, base::Microseconds(1)));
   clock_.Advance(base::Microseconds(1));
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunset, _, _));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunset, _, _));
 }
 
-TEST_F(ScheduleUtilsTest, SunriseExactlyEqualsSunset) {
+TEST_F(ScheduleUtilsTest, SunsetToSunriseSunriseExactlyEqualsSunset) {
   // Sunrise and sunset are equal. In this case, there literally is no sunset
   // or sunrise. The main thing is that this does not crash the device or cause
   // the code to enter some bad unpredictable state.
   const base::Time sunrise_time = BuildTime("00:00:00");
   const base::Time sunset_time = sunrise_time;
   AdvanceClockTo("00:00:00");
-  Position current_position =
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now());
+  Position current_position = GetCurrentPosition(
+      clock_.Now(), sunset_time, sunrise_time, ScheduleType::kSunsetToSunrise);
   EXPECT_EQ(current_position.current_checkpoint,
             current_position.next_checkpoint);
   EXPECT_EQ(current_position.time_until_next_checkpoint, base::Days(1));
 
   AdvanceClockTo("12:00:00");
-  current_position =
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now());
+  current_position = GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                        ScheduleType::kSunsetToSunrise);
   EXPECT_EQ(current_position.current_checkpoint,
             current_position.next_checkpoint);
   EXPECT_EQ(current_position.time_until_next_checkpoint, base::Hours(12));
 }
 
-TEST_F(ScheduleUtilsTest, NoSpaceForMorningAndLateAfternoon) {
+TEST_F(ScheduleUtilsTest, SunsetToSunriseNoSpaceForMorningAndLateAfternoon) {
   // Sunrise and sunset are 1 microsecond apart. It's impossible to place
   // morning and late afternoon between them since that's the smallest
   // resolution of `base::Time`. In this case, morning and late afternoon
@@ -250,18 +266,49 @@ TEST_F(ScheduleUtilsTest, NoSpaceForMorningAndLateAfternoon) {
   const base::Time sunrise_time = BuildTime("00:00:00");
   const base::Time sunset_time = sunrise_time + base::Microseconds(1);
   AdvanceClockTo("00:00:00");
-  EXPECT_THAT(
-      GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-      FieldsAre(SunsetToSunriseCheckpoint::kSunrise,
-                SunsetToSunriseCheckpoint::kSunset, base::Microseconds(1)));
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                                 ScheduleType::kSunsetToSunrise),
+              FieldsAre(ScheduleCheckpoint::kSunrise,
+                        ScheduleCheckpoint::kSunset, base::Microseconds(1)));
   clock_.Advance(base::Microseconds(1));
-  EXPECT_THAT(GetCurrentPosition(sunrise_time, sunset_time, clock_.Now()),
-              FieldsAre(SunsetToSunriseCheckpoint::kSunset,
-                        SunsetToSunriseCheckpoint::kSunrise,
-                        base::Days(1) - base::Microseconds(1)));
+  EXPECT_THAT(
+      GetCurrentPosition(clock_.Now(), sunset_time, sunrise_time,
+                         ScheduleType::kSunsetToSunrise),
+      FieldsAre(ScheduleCheckpoint::kSunset, ScheduleCheckpoint::kSunrise,
+                base::Days(1) - base::Microseconds(1)));
 }
 
-TEST_F(ScheduleUtilsTest, GetTimeUntilNextEvent) {
+TEST_F(ScheduleUtilsTest, CustomDetectsAllCheckpoints) {
+  // End: 6 AM
+  // Start: 6 PM
+  const base::Time end_time = BuildTime("06:00:00");
+  const base::Time start_time = BuildTime("18:00:00");
+  AdvanceClockTo("05:59:59");
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), start_time, end_time,
+                                 ScheduleType::kCustom),
+              FieldsAre(ScheduleCheckpoint::kEnabled,
+                        ScheduleCheckpoint::kDisabled, base::Seconds(1)));
+
+  AdvanceClockTo("06:00:00");
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), start_time, end_time,
+                                 ScheduleType::kCustom),
+              FieldsAre(ScheduleCheckpoint::kDisabled,
+                        ScheduleCheckpoint::kEnabled, base::Hours(12)));
+
+  AdvanceClockTo("17:59:59");
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), start_time, end_time,
+                                 ScheduleType::kCustom),
+              FieldsAre(ScheduleCheckpoint::kDisabled,
+                        ScheduleCheckpoint::kEnabled, base::Seconds(1)));
+
+  AdvanceClockTo("18:00:00");
+  EXPECT_THAT(GetCurrentPosition(clock_.Now(), start_time, end_time,
+                                 ScheduleType::kCustom),
+              FieldsAre(ScheduleCheckpoint::kEnabled,
+                        ScheduleCheckpoint::kDisabled, base::Hours(12)));
+}
+
+TEST_F(ScheduleUtilsTest, SunsetToSunriseGetTimeUntilNextEvent) {
   const base::Time origin = clock_.Now();
   // Event time is same as now.
   EXPECT_EQ(ShiftWithinOneDayFrom(origin, origin), origin);

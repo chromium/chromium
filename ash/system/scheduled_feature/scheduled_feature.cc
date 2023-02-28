@@ -39,13 +39,15 @@ constexpr int kDefaultStartTimeOffsetMinutes = 18 * 60;
 // Default end time at 6:00 AM as an offset from 00:00.
 constexpr int kDefaultEndTimeOffsetMinutes = 6 * 60;
 
-bool IsEnabledAtCheckpoint(SunsetToSunriseCheckpoint checkpoint) {
+bool IsEnabledAtCheckpoint(ScheduleCheckpoint checkpoint) {
   switch (checkpoint) {
-    case SunsetToSunriseCheckpoint::kSunrise:
-    case SunsetToSunriseCheckpoint::kMorning:
-    case SunsetToSunriseCheckpoint::kLateAfternoon:
+    case ScheduleCheckpoint::kDisabled:
+    case ScheduleCheckpoint::kSunrise:
+    case ScheduleCheckpoint::kMorning:
+    case ScheduleCheckpoint::kLateAfternoon:
       return false;
-    case SunsetToSunriseCheckpoint::kSunset:
+    case ScheduleCheckpoint::kEnabled:
+    case ScheduleCheckpoint::kSunset:
       return true;
   }
 }
@@ -304,7 +306,7 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
   }
 }
 
-// The `SunsetToSunriseCheckpoint` usage in this method does not directly apply
+// The `ScheduleCheckpoint` usage in this method does not directly apply
 // to `ScheduleType::kCustom`, but the business logic still works for that
 // `ScheduleType` with no caller-facing impact. The internal `timer_` may just
 // fire a couple more times a day and be no-ops.
@@ -313,7 +315,8 @@ void ScheduledFeature::RefreshScheduleTimer(
     base::Time end_time,
     bool did_schedule_change,
     bool keep_manual_toggles_during_schedules) {
-  DCHECK(GetScheduleType() != ScheduleType::kNone);
+  const ScheduleType schedule_type = GetScheduleType();
+  DCHECK(schedule_type != ScheduleType::kNone);
 
   if (keep_manual_toggles_during_schedules && MaybeRestoreSchedule()) {
     RefreshFeatureState();
@@ -322,8 +325,8 @@ void ScheduledFeature::RefreshScheduleTimer(
 
   const base::Time now = clock_->Now();
   const schedule_utils::Position schedule_position =
-      schedule_utils::GetCurrentPosition(
-          /*sunrise_time=*/end_time, /*sunset_time=*/start_time, now);
+      schedule_utils::GetCurrentPosition(now, start_time, end_time,
+                                         schedule_type);
   const bool enable_now =
       IsEnabledAtCheckpoint(schedule_position.current_checkpoint);
   const bool current_enabled = GetEnabled();

@@ -144,7 +144,7 @@ class ASH_EXPORT ScheduledFeature
   // Schedule the next upcoming refresh of the feature state. `target_status`
   // may actually be the same as `GetEnabled()` in some cases. For example, if
   // it is currently `kSunrise` (`GetEnabled()` is false), that means the next
-  // `SunsetToSunriseCheckpoint` is `kMorning` (`target_status` is still false).
+  // `ScheduleCheckpoint` is `kMorning` (`target_status` is still false).
   void ScheduleNextRefresh(base::TimeDelta delay, bool target_status);
 
   // The pref service of the currently active user. Can be null in
