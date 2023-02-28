@@ -17,5 +17,4 @@ settings_private.idl
 speech_recognition_private.idl
 tabs.json
 tts.json
-users_private.idl
 windows.json
