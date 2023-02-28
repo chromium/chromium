@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/tools/mwc_path_mappings.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -20,6 +21,7 @@ ts_library("trusted_ts") {
     "main.ts",
     "page_handler.ts",
     "timer.ts",
+    "component_playground.ts",
   ]
 
   composite = true
@@ -29,9 +31,15 @@ ts_library("trusted_ts") {
   path_mappings =
       [ "/*|" + rebase_path("$root_gen_dir/mojom-webui/*", target_gen_dir) ]
 
+  foreach(_mwc_mapping, mwc_path_mappings) {
+    path_mappings +=
+        [ _mwc_mapping[0] + "|" + rebase_path(_mwc_mapping[1], target_gen_dir) ]
+  }
+
   deps = [
     ":worker_ts",
     "../../mojom:mojom_ts",
+    "//third_party/material_web_components:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
 }
@@ -62,7 +70,6 @@ generate_grd("trusted_grd") {
   input_files = [
     "app_icon_192.png",
     "component_playground.html",
-    "component_playground.js",
     "index.html",
     "inter_frame_communication.html",
     "share.html",
