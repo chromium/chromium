@@ -448,6 +448,12 @@ void Layer::RemoveAllChildren() {
   }
 }
 
+struct LayerHash {
+   size_t operator() (const Layer* layer) const {
+     return std::hash<int>{}(layer->id());
+   }
+};
+
 void Layer::SetChildLayerList(LayerList new_children) {
   DCHECK(IsUsingLayerLists());
 
@@ -458,7 +464,7 @@ void Layer::SetChildLayerList(LayerList new_children) {
 
   // Remove existing children that will not be in the new child list.
   {
-    std::unordered_set<Layer*> children_to_remove;
+    std::unordered_set<Layer*, LayerHash> children_to_remove;
     for (auto& existing_child : children())
       children_to_remove.insert(existing_child.get());
     for (auto& new_child : new_children)
