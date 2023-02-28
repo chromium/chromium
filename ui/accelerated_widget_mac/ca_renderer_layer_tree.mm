@@ -39,12 +39,6 @@ class ComparatorSkColor4f {
   }
 };
 
-// TODO(https://crbug.com/1313999): Remove debug prints after the code is
-// stable.
-constexpr bool g_print_ca_layers = false;
-// Output level for VLOG.
-constexpr int kOutputLevel = 4;
-
 BASE_FEATURE(kCALayerTreeOptimization,
              "CALayerTreeOptimization",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -366,12 +360,6 @@ void CARendererLayerTree::CommitScheduledCALayers(
   RecordIOSurfaceHistograms(changed_io_surfaces_during_commit_,
                             unchanged_io_surfaces_during_commit_,
                             total_updated_io_surface_size_during_commit_);
-
-// TODO(https://crbug.com/1313999): Remove verfication after the code is stable.
-#ifndef NDEBUG
-  if (ca_layer_tree_optimization_)
-    VerifyCommittedCALayers();
-#endif
 }
 
 void CARendererLayerTree::MatchLayersToOldTreeDefault(
@@ -399,7 +387,6 @@ void CARendererLayerTree::MatchLayersToOldTree(CARendererLayerTree* old_tree) {
   if (old_tree->scale_factor_ != scale_factor_)
     return;
 
-  VLOG(kOutputLevel) << "--Mapping....";
   DCHECK(ca_layer_map_.empty()) << "ca_layer_map_ is not empty.";
 
   root_layer_.old_layer_ =
@@ -419,8 +406,6 @@ void CARendererLayerTree::MatchLayersToOldTree(CARendererLayerTree* old_tree) {
   // Try to match unused old layers to saving reallocation of CALayer even
   // though the IOSurface will be different.
   root_layer_.CALayerFallBack();
-
-  VLOG(kOutputLevel) << "--";
 }
 
 void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
@@ -445,14 +430,6 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
 
   auto matched_content_layer = it->second;
 
-  if (matched_content_layer->ca_layer_used_) {
-    VLOG(kOutputLevel) << "     Skip. The matched content layer has been used. "
-                       << matched_content_layer->ca_layer_;
-  } else if (matched_content_layer->layer_order_ < last_old_layer_order) {
-    VLOG(kOutputLevel) << "     Skip. Wrong order. "
-                       << matched_content_layer->ca_layer_;
-  }
-
   // Should we try multimap for the same IOSurface used twice in the old tree?
   if (matched_content_layer->ca_layer_used_)
     return;
@@ -471,8 +448,6 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
       parent_layer_->parent_layer_->old_layer_ =
           matched_clip_layer->weak_factory_for_new_layer_.GetWeakPtr();
       matched_clip_layer->ca_layer_used_ = true;
-      VLOG(kOutputLevel) << "ClipAndSort: "
-                         << matched_clip_layer->clipping_ca_layer_;
     } else {
       [matched_transform_layer->ca_layer_ removeFromSuperlayer];
     }
@@ -485,8 +460,6 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
       parent_layer_->old_layer_ =
           matched_transform_layer->weak_factory_for_new_layer_.GetWeakPtr();
       matched_transform_layer->ca_layer_used_ = true;
-      VLOG(kOutputLevel) << " Transform: "
-                         << matched_transform_layer->ca_layer_;
     } else {
       [matched_content_layer->ca_layer_ removeFromSuperlayer];
     }
@@ -518,8 +491,6 @@ void CARendererLayerTree::ContentLayer::UpdateMapAndMatchOldLayers(
     str = ", transform layer's superlayer has changed";
   if ([matched_content_layer->ca_layer_ superlayer] == nil)
     str = ",  clip layer's superlayer has changed ";
-  VLOG(kOutputLevel) << "   Content: " << matched_content_layer->ca_layer_
-                     << " io_surface_ref: " << io_surface_ref << str;
 }
 
 void CARendererLayerTree::RootLayer::CALayerFallBack() {
@@ -1088,20 +1059,6 @@ void CARendererLayerTree::ClipAndSortingLayer::CommitToCA(
     }
   }
 
-  if (g_print_ca_layers) {
-    std::string str;
-    if (old_layer_) {
-      str = " Reuse, ";
-    } else {
-      str = " New, ";
-    }
-    if (!update_is_clipped && !update_clip_rect)
-      str = str + "HIT";
-
-    VLOG(kOutputLevel) << "ClipAndSortingLayer: clip: " << clipping_ca_layer_
-                       << " round:" << rounded_corner_ca_layer_ << str;
-  }
-
   CALayer* last_committed_transform_ca_layer = nullptr;
   for (auto& child_layer : transform_layers_) {
     child_layer.CommitToCA(last_committed_transform_ca_layer);
@@ -1145,19 +1102,6 @@ void CARendererLayerTree::TransformLayer::CommitToCA(
 
     CATransform3D ca_transform = ToCATransform3D(conjugated_transform);
     [ca_layer_ setTransform:ca_transform];
-  }
-
-  if (g_print_ca_layers) {
-    std::string str;
-    if (old_layer_) {
-      str = " Reuse, ";
-    } else {
-      str = " New, ";
-    }
-    if (!update_transform)
-      str = str + "HIT";
-
-    VLOG(kOutputLevel) << " TransformLayer: " << ca_layer_ << str;
   }
 
   CALayer* last_committed_content_ca_layer_ = nullptr;
@@ -1398,85 +1342,6 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
     }
   }
 #endif
-
-  // Print CALayer optimizaton info
-  if (g_print_ca_layers) {
-    IOSurfaceRef io_surface_ref = io_surface_.get();
-
-    std::string str;
-    if (io_surface_ref) {
-      if (old_layer_ && old_layer_->type_ == type_) {
-        if (update_contents) {
-          IOSurfaceRef old_io_surface = nullptr;
-          if (old_layer_->io_surface_) {
-            old_io_surface = old_layer_->io_surface_.get();
-          } else if (old_layer_->solid_color_contents_) {
-            old_io_surface =
-                old_layer_->solid_color_contents_->GetIOSurfaceRef();
-          }
-
-          str = ", Missed, Reuse " +
-                base::StringPrintf("0x%lx", (unsigned long)old_io_surface);
-        } else {
-          str = ", HIT";
-        }
-      } else {
-        str = ", insert_new";
-      }
-    }
-
-    VLOG(kOutputLevel) << "   ContentLayer: " << ca_layer_
-                       << " io_surface_ref: " << io_surface_ref << str;
-  }
-}
-
-void CARendererLayerTree::VerifyCommittedCALayers() {
-  bool print_whole_tree = false;
-
-  NSArray<__kindof CALayer*>* _Nullable clip_sublayers =
-      [root_layer_.ca_layer_ sublayers];
-  if (print_whole_tree) {
-    VLOG(kOutputLevel) << "Veryfy Committed CALayers.";
-    VLOG(kOutputLevel) << "Clip and Sorting Sublayers: " << clip_sublayers;
-  }
-
-  int clip_index = 0;
-  for (auto& clip_and_sorting_layer : root_layer_.clip_and_sorting_layers_) {
-    DCHECK_EQ(clip_and_sorting_layer.clipping_ca_layer_.get(),
-              clip_sublayers[clip_index]);
-
-    NSArray<__kindof CALayer*>* _Nullable transform_sublayers =
-        [clip_and_sorting_layer.rounded_corner_ca_layer_ sublayers];
-    if (print_whole_tree) {
-      VLOG(kOutputLevel) << "Transform Sublayers of Clip[" << clip_index
-                         << "]: " << transform_sublayers;
-    }
-
-    int transform_index = 0;
-    for (auto& transform_layer : clip_and_sorting_layer.transform_layers_) {
-      DCHECK_EQ(transform_layer.ca_layer_.get(),
-                transform_sublayers[transform_index]);
-
-      NSArray<__kindof CALayer*>* _Nullable content_sublayers =
-          [transform_layer.ca_layer_ sublayers];
-      if (print_whole_tree) {
-        VLOG(kOutputLevel) << "Content Sublayers of Transform["
-                           << transform_index << "]: " << content_sublayers;
-      }
-
-      int content_index = 0;
-      for (auto& content_layer : transform_layer.content_layers_) {
-        DCHECK_EQ(content_layer.ca_layer_.get(),
-                  content_sublayers[content_index])
-            << "Incorrect content layer "
-            << " ( " << clip_index << ", " << transform_index << ", "
-            << content_index << ")";
-        content_index++;
-      }
-      transform_index++;
-    }
-    clip_index++;
-  }
 }
 
 }  // namespace ui

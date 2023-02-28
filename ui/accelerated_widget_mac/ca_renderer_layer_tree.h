@@ -95,7 +95,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
 
   void MatchLayersToOldTreeDefault(CARendererLayerTree* old_tree);
   void MatchLayersToOldTree(CARendererLayerTree* old_tree);
-  void VerifyCommittedCALayers();
 
   class RootLayer {
    public:
