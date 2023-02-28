@@ -7,7 +7,7 @@ import './tile.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Cluster} from '../../history_cluster_types.mojom-webui.js';
+import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
 import {I18nMixin} from '../../i18n_setup.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
@@ -65,16 +65,15 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
   const element = new HistoryClustersModuleElement();
   element.cluster = data.cluster!;
 
+  // History cluster visits include a visit entry for the SRP, which is intended
+  // to be used for the module header's title and for opening the cluster in a
+  // tab group.
   const visits = element.cluster.visits;
   // Count number of visits with images.
-  const imageCount = visits
-                         .filter((visit) => {
-                           return !!visit.imageUrl;
-                         })
-                         .length;
-  // Subtract the SRP from the visit count.
-  // The SRP is a visit that is included to be used in the module header
-  // and for opening the cluster in tab group.
+  const imageCount =
+      visits.filter((visit: URLVisit) => visit.hasUrlKeyedImage).length;
+  // We subtract the SRP from the  visit count to get the actual number of
+  // visits that are eligible for layout selection.
   const visitCount = visits.length - 1;
 
   // Calculate which layout to use.

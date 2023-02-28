@@ -26,11 +26,9 @@ export class TileModuleElement extends I18nMixin
       /* The visit to display. */
       visit: Object,
 
+      // TODO(crbug.com/1419917): Image service integration.
       /* The icon to display. */
-      iconStyle_: {
-        type: String,
-        computed: `computeIconStyle_(visit.imageUrl)`,
-      },
+      iconStyle_: String,
 
       /* The label to display. */
       label_: {
@@ -55,12 +53,7 @@ export class TileModuleElement extends I18nMixin
     super.disconnectedCallback();
   }
 
-  private computeIconStyle_(): string {
-    return `-webkit-mask-image: url(${this.visit.imageUrl})`;
-  }
-
   private computeLabel_(): string {
-    // TODO: Figure out better way to strip host name
     return this.visit.urlForDisplay;
   }
 }

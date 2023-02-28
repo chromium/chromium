@@ -64,7 +64,7 @@ suite('history-clusters', () => {
       debugInfo: {},
       rawVisitData: rawVisitData,
       isKnownToSync: false,
-      imageUrl: undefined,
+      hasUrlKeyedImage: false,
     };
 
     const cluster1: Cluster = {

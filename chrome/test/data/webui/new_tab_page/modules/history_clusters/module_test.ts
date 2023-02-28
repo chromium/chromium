@@ -59,9 +59,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         annotations: [],
         debugInfo: {},
         rawVisitData: rawVisitData,
-        imageUrl: i >= numImageVisits ? undefined : {
-          url: `https://image.com/${i}`,
-        },
+        hasUrlKeyedImage: i < numImageVisits,
         isKnownToSync: false,
       });
     }

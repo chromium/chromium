@@ -25,14 +25,13 @@ mojom::URLVisitPtr VisitToMojom(const TemplateURLService* template_url_service,
   visit_mojom->visit_id = visit.annotated_visit.visit_row.visit_id;
   visit_mojom->normalized_url = visit.normalized_url;
   visit_mojom->url_for_display = base::UTF16ToUTF8(visit.url_for_display);
-  if (!visit.image_url.is_empty()) {
-    visit_mojom->image_url = visit.image_url;
-  }
   visit_mojom->is_known_to_sync =
       visit.annotated_visit.visit_row.is_known_to_sync;
 
   // Add the raw URLs and visit times so the UI can perform deletion.
   auto& annotated_visit = visit.annotated_visit;
+  visit_mojom->has_url_keyed_image =
+      annotated_visit.content_annotations.has_url_keyed_image;
   visit_mojom->raw_visit_data = mojom::RawVisitData::New(
       annotated_visit.url_row.url(), annotated_visit.visit_row.visit_time);
   for (const auto& duplicate : visit.duplicate_visits) {
