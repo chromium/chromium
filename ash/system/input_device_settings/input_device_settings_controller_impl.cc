@@ -23,6 +23,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/devices/input_device.h"
@@ -227,18 +228,11 @@ InputDeviceSettingsControllerImpl::GetConnectedPointingSticks() {
   return pointing_stick_vector;
 }
 
+// TODO(dpad): Implement updating of keyboard settings.
 void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     DeviceId id,
-    mojom::KeyboardSettingsPtr settings) {
-  DCHECK(base::Contains(keyboards_, id));
-  DCHECK(active_pref_service_);
-  auto it = keyboards_.find(id);
-  it->second->settings = std::move(settings);
-  keyboard_pref_handler_->UpdateKeyboardSettings(active_pref_service_,
-                                                 *it->second);
-  for (auto& observer : observers_) {
-    observer.OnKeyboardSettingsUpdated(*it->second);
-  }
+    const mojom::KeyboardSettings& settings) {
+  NOTIMPLEMENTED();
 }
 
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
