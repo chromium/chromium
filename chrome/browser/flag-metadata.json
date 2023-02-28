@@ -6225,11 +6225,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "screen-ai",
-    "owners": [ "rhalavati", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "screen-saver-preview",
     "owners": [ "safarli", "assistive-eng@google.com" ],
     "expiry_milestone": 116
