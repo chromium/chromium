@@ -135,7 +135,7 @@ class MODULES_EXPORT ImageCapture final
   // Get the name a constraint for which there are no corresponding
   // capabilities or permission to access them.
   const absl::optional<String> GetConstraintWithNonExistingCapability(
-      const MediaTrackConstraintSet* constraints);
+      const MediaTrackConstraintSet* constraint_set);
 
   Member<MediaStreamTrack> stream_track_;
   std::unique_ptr<ImageCaptureFrameGrabber> frame_grabber_;
@@ -150,7 +150,7 @@ class MODULES_EXPORT ImageCapture final
 
   Member<MediaTrackCapabilities> capabilities_;
   Member<MediaTrackSettings> settings_;
-  Member<MediaTrackConstraintSet> current_constraints_;
+  Member<MediaTrackConstraintSet> current_constraint_set_;
   Member<PhotoSettings> photo_settings_;
 
   Member<PhotoCapabilities> photo_capabilities_;
