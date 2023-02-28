@@ -3175,6 +3175,18 @@ TEST_P(OverviewSessionTest, ClosingTransientTree) {
   EXPECT_TRUE(child_widget_observer.widget_destroyed());
 }
 
+// Tests that enabling or disabling ChromeVox works in overview mode. Regression
+// test for b/270929836.
+TEST_P(OverviewSessionTest, ToggleChromeVox) {
+  ToggleOverview();
+  PressAndReleaseKey(ui::VKEY_Z, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_TRUE(
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+  PressAndReleaseKey(ui::VKEY_Z, ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN);
+  EXPECT_FALSE(
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+}
+
 TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();

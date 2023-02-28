@@ -1362,7 +1362,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
     }
     case ui::VKEY_Z: {
       // Ctrl + Z undos a close all operation if the toast has not yet expired.
-      if (!is_control_down) {
+      // Ctrl + Alt + Z triggers ChromeVox so we don't do anything here to
+      // interrupt that.
+      if (!is_control_down || (is_control_down && event->IsAltDown())) {
         return;
       }
 
