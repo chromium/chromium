@@ -257,6 +257,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.Ash.Hotspot.Upstream.Cellular.Capability.AllowStatus"
+    enum="HotspotAllowStatus" expires_after="2023-10-01">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures and tracks the hotspot allow status on the cellular-capable
+    devices. This metric is emitted each time the allow status is updated, for
+    example: when user connects/disconnect to a cellular network, enterprise
+    policy applied, etc.
+  </summary>
+</histogram>
+
+<histogram
+    name="Network.Ash.Hotspot.Upstream.Cellular.Capability.AllowStatusAtLogin"
+    enum="HotspotAllowStatus" expires_after="2023-10-01">
+  <owner>jiajunz@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Measures and tracks the hotspot allow status on the cellular-capable devices
+    only when user logins in. This metric is emitted after a 5 minutes delay
+    when user login which gives the user enough time to connect to their
+    upstream cellular network.
+  </summary>
+</histogram>
+
 <histogram name="Network.Ash.VPN.{VPNProviderType}.ConfigurationSource"
     enum="VPNConfigurationSource" expires_after="2023-12-31">
   <owner>chadduffin@chromium.org</owner>

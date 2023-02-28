@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
 #include "chromeos/ash/components/network/metrics/hidden_network_metrics_helper.h"
+#include "chromeos/ash/components/network/metrics/hotspot_metrics_helper.h"
 #include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
 #include "chromeos/ash/components/network/network_activation_handler_impl.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
@@ -81,6 +82,7 @@ NetworkHandler::NetworkHandler()
     hotspot_capabilities_provider_.reset(new HotspotCapabilitiesProvider());
     hotspot_state_handler_.reset(new HotspotStateHandler());
     hotspot_controller_.reset(new HotspotController());
+    hotspot_metrics_helper_.reset(new HotspotMetricsHelper());
   }
   if (NetworkCertLoader::IsInitialized()) {
     network_cert_migrator_.reset(new NetworkCertMigrator());
@@ -149,6 +151,7 @@ void NetworkHandler::Init() {
     hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
                               hotspot_state_handler_.get(),
                               technology_state_controller_.get());
+    hotspot_metrics_helper_->Init(hotspot_capabilities_provider_.get());
   }
   managed_cellular_pref_handler_->Init(network_state_handler_.get());
   esim_policy_login_metrics_logger_->Init(
