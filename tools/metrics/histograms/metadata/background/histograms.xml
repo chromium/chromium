@@ -249,16 +249,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackgroundMode.TimeBeforeOptimizedRestart" units="ms"
-    expires_after="2020-09-01">
-  <owner>peter@chromium.org</owner>
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <summary>
-    The duration of a session before the browser got restarted in the background
-    by the BackgroundOptimizer to purge the memory.
-  </summary>
-</histogram>
-
 <histogram name="BackgroundSync.Event.BatchSize" units="units"
     expires_after="2024-02-06">
   <owner>nator@chromium.org</owner>
