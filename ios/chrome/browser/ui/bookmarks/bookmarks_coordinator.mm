@@ -349,7 +349,7 @@ enum class PresentedState {
   for (UIViewController* controller in self.bookmarkNavigationController
            .viewControllers) {
     BookmarksHomeViewController* bookmarksHomeViewController =
-        base::mac::ObjCCast<BookmarksHomeViewController>(controller);
+        base::mac::ObjCCastStrict<BookmarksHomeViewController>(controller);
     [bookmarksHomeViewController shutdown];
   }
   // TODO(crbug.com/940856): Make sure navigaton
@@ -681,7 +681,12 @@ enum class PresentedState {
     (UIPresentationController*)presentationController {
   DCHECK_EQ(PresentedState::BOOKMARK_BROWSER, self.currentPresentedState);
   DCHECK(self.bookmarkNavigationController);
-  [self.bookmarkBrowser willDismissBySwipeDown];
+  for (UIViewController* controller in self.bookmarkNavigationController
+           .viewControllers) {
+    BookmarksHomeViewController* bookmarksHomeViewController =
+        base::mac::ObjCCastStrict<BookmarksHomeViewController>(controller);
+    [bookmarksHomeViewController willDismissBySwipeDown];
+  }
 }
 
 - (BOOL)presentationControllerShouldDismiss:
