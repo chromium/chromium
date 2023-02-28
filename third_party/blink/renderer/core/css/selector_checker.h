@@ -379,6 +379,10 @@ class CORE_EXPORT EasySelectorChecker {
   static ALWAYS_INLINE bool AttributeMatches(const Element& element,
                                              const QualifiedName& attr,
                                              const AtomicString& value);
+  static ALWAYS_INLINE bool AttributeItemHasName(
+      const Attribute& attribute_item,
+      const Element& element,
+      const QualifiedName& name);
 };
 
 }  // namespace blink

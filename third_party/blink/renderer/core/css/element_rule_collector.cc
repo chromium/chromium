@@ -404,10 +404,6 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         static_cast<wtf_size_t>(rules.size()));
   }
 
-  const bool case_sensitive_tag_matching =
-      context.element->IsHTMLElement() ||
-      !IsA<HTMLDocument>(context.element->GetDocument());
-
   for (const RuleData& rule_data : rules) {
     if (perf_trace_enabled) {
       selector_statistics_collector.EndCollectionForCurrentRule();
@@ -458,7 +454,8 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       }
       DCHECK(SlowMatchWithNoResultFlags(checker, context, selector, rule_data,
                                         result.proximity));
-    } else if (case_sensitive_tag_matching && rule_data.SelectorIsEasy()) {
+    } else if (context.vtt_originating_element == nullptr &&
+               rule_data.SelectorIsEasy()) {
       if (pseudo_style_request_.pseudo_id != kPseudoIdNone) {
         continue;
       }
