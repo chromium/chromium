@@ -22,13 +22,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/port_util.h"
 #include "net/base/proxy_delegate.h"
-#include "net/base/trace_constants.h"
 #include "net/cert/cert_verifier.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -559,12 +557,10 @@ void HttpStreamFactory::Job::OnPreconnectsComplete(int result) {
 }
 
 void HttpStreamFactory::Job::OnIOComplete(int result) {
-  TRACE_EVENT0(NetTracingCategory(), "HttpStreamFactory::Job::OnIOComplete");
   RunLoop(result);
 }
 
 void HttpStreamFactory::Job::RunLoop(int result) {
-  TRACE_EVENT0(NetTracingCategory(), "HttpStreamFactory::Job::RunLoop");
   result = DoLoop(result);
 
   if (result == ERR_IO_PENDING)
