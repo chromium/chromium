@@ -198,6 +198,10 @@ void BruschettaInstallerImpl::StartDownload(GURL url,
       net::MutableNetworkTrafficAnnotationTag(kBruschettaTrafficAnnotation);
 
   params.request_params.url = std::move(url);
+  // Disable Safe Browsing/checks because the download is system-initiated,
+  // the target is specified via enterprise policy, and contents will be
+  // validated by comparing hashes.
+  params.request_params.require_safety_checks = false;
 
   download_service->StartDownload(std::move(params));
 }

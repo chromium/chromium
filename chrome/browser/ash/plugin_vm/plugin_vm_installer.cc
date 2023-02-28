@@ -967,6 +967,10 @@ download::DownloadParams PluginVmInstaller::GetDownloadParams(const GURL& url) {
   // RequestParams
   params.request_params.url = url;
   params.request_params.method = "GET";
+  // Disable Safe Browsing/checks because the download is system-initiated,
+  // the target is specified via enterprise policy, and contents will be
+  // validated by comparing hashes.
+  params.request_params.require_safety_checks = false;
 
   // SchedulingParams
   // User initiates download by clicking on PluginVm icon so priorities should
