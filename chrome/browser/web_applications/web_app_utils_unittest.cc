@@ -21,7 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -229,57 +229,63 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
   EXPECT_TRUE(AreWebAppsEnabled(
       lock_screen_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
 
-  using MockUserManager = testing::NiceMock<ash::MockUserManager>;
+  const AccountId account_id = AccountId::FromUserEmail("test@test");
   {
-    auto user_manager = std::make_unique<MockUserManager>();
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(features::kKioskEnableAppService);
-    auto user_manager = std::make_unique<MockUserManager>();
-    EXPECT_CALL(*user_manager, IsLoggedInAsKioskApp())
-        .WillOnce(testing::Return(true));
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* user = user_manager->AddKioskAppUser(account_id);
+    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                               /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(features::kKioskEnableAppService);
-    auto user_manager = std::make_unique<MockUserManager>();
-    EXPECT_CALL(*user_manager, IsLoggedInAsWebKioskApp())
-        .WillRepeatedly(testing::Return(true));
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* user = user_manager->AddWebKioskAppUser(account_id);
+    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                               /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(features::kKioskEnableAppService);
-    auto user_manager = std::make_unique<MockUserManager>();
-    EXPECT_CALL(*user_manager, IsLoggedInAsArcKioskApp())
-        .WillOnce(testing::Return(true));
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* user = user_manager->AddArcKioskAppUser(account_id);
+    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                               /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
   {
-    auto user_manager = std::make_unique<MockUserManager>();
-    EXPECT_CALL(*user_manager, IsLoggedInAsKioskApp())
-        .WillOnce(testing::Return(true));
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* user = user_manager->AddKioskAppUser(account_id);
+    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                               /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
   {
-    auto user_manager = std::make_unique<MockUserManager>();
-    EXPECT_CALL(*user_manager, IsLoggedInAsWebKioskApp())
-        .WillRepeatedly(testing::Return(true));
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* user = user_manager->AddWebKioskAppUser(account_id);
+    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                               /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }
   {
-    auto user_manager = std::make_unique<MockUserManager>();
-    EXPECT_CALL(*user_manager, IsLoggedInAsArcKioskApp())
-        .WillOnce(testing::Return(true));
+    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* user = user_manager->AddArcKioskAppUser(account_id);
+    user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
+                               /*browser_restart=*/false, /*is_child=*/false);
     user_manager::ScopedUserManager enabler(std::move(user_manager));
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
