@@ -174,9 +174,6 @@ class NewCertVerifyProcChromeRootStoreFactory
 // TrialComparisonCertVerifier.
 bool IsTrialVerificationOn(
     const mojom::CertVerifierCreationParams* creation_params) {
-#if BUILDFLAG(IS_CHROMEOS)
-#error "Trial comparisons not supported on ChromeOS yet. Code changes needed."
-#endif
   // Check to see if we have trial comparison cert verifier params.
   return creation_params &&
          creation_params->trial_comparison_cert_verifier_params;
