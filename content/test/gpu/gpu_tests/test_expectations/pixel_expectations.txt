@@ -306,6 +306,9 @@ crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRound
 # Flaky on Fuchsia.
 crbug.com/1368748 [ fuchsia ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 
+# Failing likely due to protected memory, but cause TBD.
+crbug.com/1420067 [ fuchsia fuchsia-board-astro ] Pixel_Video* [ Failure ]
+crbug.com/1420067 [ fuchsia fuchsia-board-sherlock ] Pixel_Video* [ Failure ]
 
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUToDataURL [ Failure ]
