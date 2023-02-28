@@ -316,7 +316,7 @@ export class Panel extends PanelInterface {
       const touchScreen = (eventSource === EventSourceType.TOUCH_GESTURE);
 
       // Build the top-level menus.
-      const searchMenu = this.addSearchMenu_('panel_search_menu');
+      const searchMenu = this.menuManager_.addSearchMenu('panel_search_menu');
       const jumpMenu = this.menuManager_.addMenu('panel_menu_jump');
       const speechMenu = this.menuManager_.addMenu('panel_menu_speech');
       const touchMenu = touchScreen ?
@@ -679,43 +679,6 @@ export class Panel extends PanelInterface {
         cellCount += groups[i][1].length;
       }
     }
-  }
-
-  /**
-   * Create a new search menu with the given name and add it to the menu bar.
-   * @param {string} menuMsg The msg id of the new menu to add.
-   * @return {!PanelMenu} The menu just created.
-   * @private
-   */
-  addSearchMenu_(menuMsg) {
-    this.menuManager_.searchMenu = new PanelSearchMenu(menuMsg);
-    // Add event listeners to search bar.
-    this.menuManager_.searchMenu.searchBar.addEventListener(
-        'input', event => this.menuManager_.onSearchBarQuery(event), false);
-    this.menuManager_.searchMenu.searchBar.addEventListener(
-        'mouseup', event => {
-          // Clicking in the panel causes us to either activate an item or close
-          // the menus altogether. Prevent that from happening if we click the
-          // search bar.
-          event.preventDefault();
-          event.stopPropagation();
-        }, false);
-
-    $('menu-bar').appendChild(this.menuManager_.searchMenu.menuBarItemElement);
-    this.menuManager_.searchMenu.menuBarItemElement.addEventListener(
-        'mouseover',
-        () => this.menuManager_.activateMenu(
-            this.menuManager_.searchMenu, false /* activateFirstItem */),
-        false);
-    this.menuManager_.searchMenu.menuBarItemElement.addEventListener(
-        'mouseup',
-        event => this.menuManager_.onMouseUpOnMenuTitle(
-            this.menuManager_.searchMenu, event),
-        false);
-    $('menus_background')
-        .appendChild(this.menuManager_.searchMenu.menuContainerElement);
-    this.menuManager_.menus.push(this.menuManager_.searchMenu);
-    return this.menuManager_.searchMenu;
   }
 
   /**

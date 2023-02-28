@@ -103,6 +103,38 @@ export class MenuManager {
   }
 
   /**
+   * Create a new search menu with the given name and add it to the menu bar.
+   * @param {string} menuMsg The msg id of the new menu to add.
+   * @return {!PanelMenu} The menu just created.
+   */
+  addSearchMenu(menuMsg) {
+    this.searchMenu_ = new PanelSearchMenu(menuMsg);
+    // Add event listeners to search bar.
+    this.searchMenu_.searchBar.addEventListener(
+        'input', event => this.onSearchBarQuery(event), false);
+    this.searchMenu_.searchBar.addEventListener('mouseup', event => {
+      // Clicking in the panel causes us to either activate an item or close the
+      // menus altogether. Prevent that from happening if we click the search
+      // bar.
+      event.preventDefault();
+      event.stopPropagation();
+    }, false);
+
+    $('menu-bar').appendChild(this.searchMenu_.menuBarItemElement);
+    this.searchMenu_.menuBarItemElement.addEventListener(
+        'mouseover',
+        () =>
+            this.activateMenu(this.searchMenu_, false /* activateFirstItem */),
+        false);
+    this.searchMenu_.menuBarItemElement.addEventListener(
+        'mouseup', event => this.onMouseUpOnMenuTitle(this.searchMenu_, event),
+        false);
+    $('menus_background').appendChild(this.searchMenu_.menuContainerElement);
+    this.menus_.push(this.searchMenu_);
+    return this.searchMenu_;
+  }
+
+  /**
    * Clear any previous menus. The menus are all regenerated each time the
    * menus are opened.
    */
