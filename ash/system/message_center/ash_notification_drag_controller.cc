@@ -13,6 +13,7 @@
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/point.h"
@@ -28,13 +29,32 @@ AshNotificationDragController::AshNotificationDragController() = default;
 
 AshNotificationDragController::~AshNotificationDragController() = default;
 
-void AshNotificationDragController::OnDragCompleted(
-    const ui::DropTargetEvent& event) {
-  OnNotificationViewDragEnded();
+void AshNotificationDragController::OnDragStarted() {
+  if (drag_in_progress_) {
+    // A drag-and-drop session could start before an async drop finishes. In
+    // this case, neither `OnDropCompleted()` nor `OnDragCancelled()` is called.
+    // Therefore, clean up the active notification drag handling.
+    CleanUp();
+  } else {
+    drag_in_progress_ = true;
+  }
 }
 
 void AshNotificationDragController::OnDragCancelled() {
-  OnNotificationViewDragEnded();
+  CleanUp();
+}
+
+void AshNotificationDragController::OnDropCompleted(
+    ui::mojom::DragOperation drag_operation) {
+  // Remove the dragged notification from the message center if drag-and-drop
+  // ends with copy. `MessageCenter::RemoveNotification()` guarantees that only
+  // unpinned notifications are removable to users.
+  if (drag_operation == ui::mojom::DragOperation::kCopy) {
+    message_center::MessageCenter::Get()->RemoveNotification(
+        *dragged_notification_id_, /*by_user=*/true);
+  }
+
+  CleanUp();
 }
 
 void AshNotificationDragController::WriteDragDataForView(
@@ -91,16 +111,23 @@ bool AshNotificationDragController::CanStartDragForView(
   // start when `CanStartDragForView()` returns true. We should come up with a
   // general solution to observe drag start.
   if (can_start_drag) {
-    OnNotificationViewDragStarted(notification_view);
+    // A drag-and-drop session could start before an async drop finishes. In
+    // this case, neither `OnDropCompleted()` nor `OnDragCancelled()` is called.
+    // Therefore, clean up the active notification drag handling.
+    if (drag_in_progress_) {
+      CleanUp();
+    }
+
+    OnNotificationDragWillStart(notification_view);
   }
 
   return can_start_drag;
 }
 
-void AshNotificationDragController::OnNotificationViewDragStarted(
+void AshNotificationDragController::OnNotificationDragWillStart(
     AshNotificationView* dragged_view) {
   DCHECK(dragged_view);
-  DCHECK(!dragged_notification_id_);
+  DCHECK(!drag_in_progress_);
   dragged_notification_id_ = dragged_view->notification_id();
 
   // The drag drop client in Ash, i.e. `DragDropController`, is a singleton.
@@ -155,8 +182,9 @@ void AshNotificationDragController::OnNotificationViewDragStarted(
       /*mark_notification_as_read=*/true);
 }
 
-void AshNotificationDragController::OnNotificationViewDragEnded() {
-  DCHECK(dragged_notification_id_);
+void AshNotificationDragController::CleanUp() {
+  DCHECK(drag_in_progress_);
+  drag_in_progress_ = false;
   dragged_notification_id_.reset();
   drag_drop_client_observer_.Reset();
 }

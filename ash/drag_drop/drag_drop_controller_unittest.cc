@@ -39,6 +39,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
+#include "ui/base/data_transfer_policy/mock_data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -1710,29 +1711,6 @@ TEST_F(DragDropControllerTest, DragImageWidgetNotCreatedIfNoImage) {
   EXPECT_TRUE(GetDragImageWindow());
 }
 
-namespace {
-
-class MockDataTransferPolicyController
-    : public ui::DataTransferPolicyController {
- public:
-  MOCK_METHOD3(IsClipboardReadAllowed,
-               bool(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst,
-                    const absl::optional<size_t> size));
-  MOCK_METHOD5(PasteIfAllowed,
-               void(const ui::DataTransferEndpoint* const data_src,
-                    const ui::DataTransferEndpoint* const data_dst,
-                    const absl::optional<size_t> size,
-                    content::RenderFrameHost* rfh,
-                    base::OnceCallback<void(bool)> callback));
-  MOCK_METHOD3(DropIfAllowed,
-               void(const ui::OSExchangeData* drag_data,
-                    const ui::DataTransferEndpoint* data_dst,
-                    base::OnceClosure drop_cb));
-};
-
-}  // namespace
-
 // Verifies drag-and-drop with a data transfer policy controller.
 class DragDropControllerDlpTest : public DragDropControllerTest {
  public:
@@ -1779,7 +1757,7 @@ class DragDropControllerDlpTest : public DragDropControllerTest {
 
   // A mock data transfer policy controller. Customized to allow/disallow data
   // drop in tests.
-  MockDataTransferPolicyController dlp_contoller_;
+  ui::MockDataTransferPolicyController dlp_contoller_;
 
   std::unique_ptr<EventTargetTestDelegate> delegate_;
 

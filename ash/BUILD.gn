@@ -3740,6 +3740,8 @@ static_library("test_support") {
     "display/screen_orientation_controller_test_api.cc",
     "display/screen_orientation_controller_test_api.h",
     "drag_drop/drag_drop_controller_test_api.h",
+    "drag_drop/draggable_test_view.cc",
+    "drag_drop/draggable_test_view.h",
     "drag_drop/mock_drag_drop_observer.cc",
     "drag_drop/mock_drag_drop_observer.h",
     "events/keyboard_capability_delegate_impl.cc",

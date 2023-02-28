@@ -44,8 +44,9 @@ class AshNotificationDragController
 
  private:
   // aura::client::DragDropClientObserver:
-  void OnDragCompleted(const ui::DropTargetEvent& event) override;
+  void OnDragStarted() override;
   void OnDragCancelled() override;
+  void OnDropCompleted(ui::mojom::DragOperation drag_operation) override;
 
   // views::DragController:
   void WriteDragDataForView(views::View* sender,
@@ -57,8 +58,18 @@ class AshNotificationDragController
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
 
-  void OnNotificationViewDragStarted(AshNotificationView* dragged_view);
-  void OnNotificationViewDragEnded();
+  void OnNotificationDragWillStart(AshNotificationView* dragged_view);
+
+  // Cleans up the data members for the current drag-and-drop session. This
+  // method gets called when:
+  // 1. Drag is cancelled; or
+  // 2. Drop is completed; or
+  // 3. A new drag-and-drop session starts without waiting for the current
+  // async drop to finish.
+  void CleanUp();
+
+  // True if there is a notification drag being handled.
+  bool drag_in_progress_ = false;
 
   // Corresponds to the notification view under drag. Set/reset when the drag on
   // a notification view starts/ends.

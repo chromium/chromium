@@ -749,6 +749,8 @@ if (use_blink) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "data_transfer_policy/mock_data_transfer_policy_controller.cc",
+    "data_transfer_policy/mock_data_transfer_policy_controller.h",
     "interaction/element_test_util.cc",
     "interaction/element_test_util.h",
     "interaction/expect_call_in_scope.h",
@@ -838,6 +840,7 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:ui_data_pack",
+    "//ui/base/data_transfer_policy",
     "//ui/display:test_support",
     "//ui/events:events_base",
     "//ui/events:test_support",
