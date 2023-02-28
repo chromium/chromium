@@ -362,6 +362,8 @@ RestrictedCookieManager::RestrictedCookieManager(
           net::features::kSamePartyAttributeEnabled)),
       metrics_updater_(metrics_updater) {
   DCHECK(cookie_store);
+  DCHECK(!cookie_setting_overrides_.Has(
+      net::CookieSettingOverride::kStorageAccessGrantEligible));
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
