@@ -426,11 +426,12 @@ mojom_webui_files = [
   "mojom-webui/input_device_settings.mojom-webui.js",
   "mojom-webui/modifier_key.mojom-webui.js",
   "mojom-webui/routes.mojom-webui.js",
-  "mojom-webui/search/personalization_search.mojom-webui.ts",
-  "mojom-webui/search/search.mojom-webui.js",
-  "mojom-webui/search/search_result_icon.mojom-webui.js",
-  "mojom-webui/search/user_action_recorder.mojom-webui.js",
   "mojom-webui/setting.mojom-webui.js",
+
+  "mojom-webui/search/personalization_search.mojom-webui.ts",
+  "mojom-webui/search/search.mojom-webui.ts",
+  "mojom-webui/search/search_result_icon.mojom-webui.ts",
+  "mojom-webui/search/user_action_recorder.mojom-webui.ts",
 ]
 
 # Files sourced from their checked-in version under src

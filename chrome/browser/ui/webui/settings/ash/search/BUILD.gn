@@ -20,4 +20,5 @@ mojom("mojo_bindings") {
   ]
 
   webui_module_path = "/search"
+  use_typescript_sources = true
 }

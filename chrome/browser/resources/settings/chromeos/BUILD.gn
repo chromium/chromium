@@ -130,9 +130,9 @@ css_to_wrapper("generate_css_wrapper_files") {
 group("generate_mojom_webui") {
   public_deps = [
     ":copy_mojom_ts",
-    ":generate_ash_search_mojo_webui",
     ":generate_input_device_settings_mojom",
     ":generate_personalization_search_mojom",
+    ":generate_search_mojom",
     ":generate_settings_mojo_webui",
   ]
 }
@@ -185,13 +185,14 @@ copy("generate_personalization_search_mojom") {
   ]
 }
 
-copy("generate_ash_search_mojo_webui") {
-  deps =
-      [ "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_webui_js" ]
+copy("generate_search_mojom") {
+  deps = [
+    "//chrome/browser/ui/webui/settings/ash/search:mojo_bindings_ts__generator",
+  ]
   sources = [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/search/search.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-webui.js",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/search_result_icon.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/settings/ash/search/user_action_recorder.mojom-webui.ts",
   ]
   outputs = [ "$tsc_input_dir/mojom-webui/search/{{source_file_part}}" ]
 }
