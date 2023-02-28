@@ -18,6 +18,7 @@
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
+class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -66,7 +67,11 @@ BookmarkModelType GetBookmarkModelType(
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);
 
-#pragma mark - Updating Bookmarks
+// Whether the Cloud Slash icon should be displayed for `bookmark_node`.
+bool ShouldDisplayCloudSlashIcon(SyncSetupService* sync_setup_service);
+
+// An image view containing the cloud slash icon.
+UIImageView* CloudSlashIcon();
 
 // Creates the bookmark if `node` is NULL. Otherwise updates `node`.
 // `folder` is the intended parent of `node`.
@@ -133,8 +138,6 @@ bool MoveBookmarks(std::set<const bookmarks::BookmarkNode*> bookmarks,
 // Category name for all bookmarks related snackbars.
 extern NSString* const kBookmarksSnackbarCategory;
 
-#pragma mark - Useful bookmark manipulation.
-
 // Sorts a vector full of folders by title.
 void SortFolders(NodeVector* vector);
 
@@ -153,8 +156,6 @@ BOOL IsSubvectorOfNodes(const NodeVector& vector1, const NodeVector& vector2);
 std::vector<NodeVector::size_type> MissingNodesIndices(
     const NodeVector& vector1,
     const NodeVector& vector2);
-
-#pragma mark - Cache position in table view.
 
 // Creates bookmark path for `folderId` passed in. For eg: for folderId = 76,
 // Root node(0) --> MobileBookmarks (3) --> Test1(76) will be returned as [0, 3,

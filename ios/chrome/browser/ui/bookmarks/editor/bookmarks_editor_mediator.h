@@ -11,13 +11,17 @@
 
 @protocol BookmarksEditorConsumer;
 @protocol BookmarksEditorMediatorDelegate;
+class PrefService;
+class SyncSetupService;
 
 namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-class PrefService;
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 // Mediator for the bookmark editor
 @interface BookmarksEditorMediator : NSObject <BookmarksEditorMutator>
@@ -40,6 +44,8 @@ class PrefService;
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                              bookmark:(const bookmarks::BookmarkNode*)bookmark
                                 prefs:(PrefService*)prefs
+                     syncSetupService:(SyncSetupService*)syncSetupService
+                          syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

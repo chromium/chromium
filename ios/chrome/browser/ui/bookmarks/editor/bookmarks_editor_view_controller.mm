@@ -294,6 +294,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   }
 
   self.folderItem.title = folderName;
+  self.folderItem.shouldDisplayCloudSlashIcon =
+      [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
   [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
                         withRowAnimation:UITableViewRowAnimationNone];
 }
@@ -322,6 +324,8 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
       [[BookmarkParentFolderItem alloc] initWithType:ItemTypeFolder];
   self.folderItem.title =
       bookmark_utils_ios::TitleForBookmarkNode([self.mutator folder]);
+  self.folderItem.shouldDisplayCloudSlashIcon =
+      [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
   [model addItem:self.folderItem toSectionWithIdentifier:SectionIdentifierInfo];
 
   self.URLItem = [[BookmarkTextFieldItem alloc] initWithType:ItemTypeURL];
@@ -340,6 +344,16 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
 
   // Save button state.
   [self updateSaveButtonState];
+}
+
+- (void)updateSync {
+  self.folderItem.shouldDisplayCloudSlashIcon =
+      [self.mutator shouldDisplayCloudSlashSymbolForParentFolder];
+  NSIndexPath* indexPath =
+      [self.tableViewModel indexPathForItemType:ItemTypeFolder
+                              sectionIdentifier:SectionIdentifierInfo];
+  [self.tableView reloadRowsAtIndexPaths:@[ indexPath ]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - Actions

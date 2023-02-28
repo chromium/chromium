@@ -21,6 +21,9 @@ class BookmarkNode;
 // Update the UI’s folder using current `folder` value.
 - (void)updateFolderLabel;
 
+// Update the UI related to bookmark sync.
+- (void)updateSync;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_EDITOR_BOOKMARKS_EDITOR_CONSUMER_H_

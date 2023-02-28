@@ -23,13 +23,17 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/query_parser/query_parser.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
+#import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "third_party/skia/include/core/SkColor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -43,6 +47,13 @@
 using bookmarks::BookmarkNode;
 
 namespace bookmark_utils_ios {
+
+namespace {
+
+// The size of the cloud.slash icon.
+constexpr CGFloat kCloudSlashPointSize = 24;
+
+}  // namespace
 
 NSString* const kBookmarksSnackbarCategory = @"BookmarksSnackbarCategory";
 
@@ -110,6 +121,8 @@ NSString* TitleForBookmarkNode(const BookmarkNode* node) {
   return title;
 }
 
+#pragma mark - Profile and account
+
 BookmarkModelType GetBookmarkModelType(
     const bookmarks::BookmarkNode* bookmark_node,
     bookmarks::BookmarkModel* profile_model,
@@ -121,6 +134,27 @@ BookmarkModelType GetBookmarkModelType(
   DCHECK(account_model &&
          bookmark_node->HasAncestor(account_model->root_node()));
   return BookmarkModelType::kAccount;
+}
+
+// TODO (crbug.com/1404250): Implements the distinction of profile/account
+// models when both models are used.
+bool ShouldDisplayCloudSlashIcon(SyncSetupService* sync_setup_service) {
+  if (!base::FeatureList::IsEnabled(
+          bookmarks::kEnableBookmarksAccountStorage)) {
+    return false;
+  }
+  return !(
+      sync_setup_service->IsSyncRequested() &&
+      sync_setup_service->IsDataTypePreferred(syncer::ModelType::BOOKMARKS));
+}
+
+UIImageView* CloudSlashIcon() {
+  UIImage* cloudSlashedImage = CustomSymbolWithPointSize(
+      kCloudSlashSymbol, bookmark_utils_ios::kCloudSlashPointSize);
+  UIImageView* cloudSlashedView =
+      [[UIImageView alloc] initWithImage:cloudSlashedImage];
+  cloudSlashedView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  return cloudSlashedView;
 }
 
 #pragma mark - Updating Bookmarks

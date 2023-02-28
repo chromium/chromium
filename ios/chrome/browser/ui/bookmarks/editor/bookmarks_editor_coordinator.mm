@@ -9,6 +9,8 @@
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_mediator.h"
@@ -86,7 +88,11 @@
   _mediator = [[BookmarksEditorMediator alloc]
       initWithBookmarkModel:model
                    bookmark:_node
-                      prefs:browserState->GetPrefs()];
+                      prefs:browserState->GetPrefs()
+           syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
+                                browserState)
+                syncService:SyncServiceFactory::GetForBrowserState(
+                                browserState)];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
