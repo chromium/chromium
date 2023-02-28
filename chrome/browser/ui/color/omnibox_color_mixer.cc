@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -205,4 +206,15 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
         security_chip_color(gfx::kGoogleGrey500, gfx::kGoogleGrey700);
     mixer[kColorOmniboxSecurityChipDefault] = {kColorOmniboxSecurityChipSecure};
   }
+
+  // TODO(manukh): Figure out if we can use the blending defined above and in
+  //   `ui::` instead of hard coding these colors. That'll probably be safer for
+  //   e.g. when users use high contrast mode. But this is (hopefully) fine for
+  //   non-launch experiments.
+  mixer[kColorOmniboxResultsIconGM3Background] = ui::SelectBasedOnDarkInput(
+      kColorToolbar, SkColorSetRGB(48, 48, 48), SkColorSetRGB(242, 242, 242));
+  mixer[kColorOmniboxAnswerIconGM3Background] = ui::SelectBasedOnDarkInput(
+      kColorToolbar, SkColorSetRGB(0, 74, 119), SkColorSetRGB(211, 227, 253));
+  mixer[kColorOmniboxAnswerIconGM3Foreground] = ui::SelectBasedOnDarkInput(
+      kColorToolbar, SkColorSetRGB(194, 231, 255), SkColorSetRGB(4, 30, 73));
 }

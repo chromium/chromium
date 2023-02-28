@@ -569,6 +569,46 @@ class ImageWithCircleBackgroundSource : public gfx::CanvasImageSource {
   const gfx::ImageSkia image_;
 };
 
+// Image source to create an image with a rounded rect background.
+class ImageWithRoundRectBackgroundSource : public gfx::CanvasImageSource {
+ public:
+  ImageWithRoundRectBackgroundSource(float size,
+                                     int radius,
+                                     SkColor color,
+                                     const gfx::ImageSkia& image)
+      : gfx::CanvasImageSource(gfx::Size(size, size)),
+        size_(size),
+        radius_(radius),
+        color_(color),
+        image_(image) {}
+
+  ImageWithRoundRectBackgroundSource(
+      const ImageWithRoundRectBackgroundSource&) = delete;
+  ImageWithRoundRectBackgroundSource& operator=(
+      const ImageWithRoundRectBackgroundSource&) = delete;
+
+  ~ImageWithRoundRectBackgroundSource() override = default;
+
+  // gfx::CanvasImageSource:
+  void Draw(gfx::Canvas* canvas) override {
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setColor(color_);
+    canvas->DrawRoundRect(RectF{size_, size_}, radius_, flags);
+    // Center the image.
+    const int x = (size_ - image_.width()) / 2;
+    const int y = (size_ - image_.height()) / 2;
+    canvas->DrawImageInt(image_, x, y);
+  }
+
+ private:
+  const float size_;
+  const int radius_;
+  const SkColor color_;
+  const gfx::ImageSkia image_;
+};
+
 // Image source to create an image with a roundrect clip path.
 class ImageWithRoundRectClipSource : public gfx::CanvasImageSource {
  public:
@@ -769,6 +809,17 @@ ImageSkia ImageSkiaOperations::CreateImageWithCircleBackground(
   DCHECK_GE(radius * 2, image.height());
   return gfx::CanvasImageSource::MakeImageSkia<ImageWithCircleBackgroundSource>(
       radius, color, image);
+}
+
+ImageSkia ImageSkiaOperations::CreateImageWithRoundRectBackground(
+    float size,
+    int radius,
+    SkColor color,
+    const ImageSkia& image) {
+  DCHECK_GE(size, image.width());
+  DCHECK_GE(size, image.height());
+  return gfx::CanvasImageSource::MakeImageSkia<
+      ImageWithRoundRectBackgroundSource>(size, radius, color, image);
 }
 
 ImageSkia ImageSkiaOperations::CreateImageWithRoundRectClip(

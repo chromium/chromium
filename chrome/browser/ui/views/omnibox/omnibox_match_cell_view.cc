@@ -43,18 +43,40 @@
 
 namespace {
 
-// The diameter of the answer layout images.
-static constexpr int kAnswerImageSize = 24;
+// The edge length of the favicon, answer icon, and entity backgrounds if the
+// kUniformRowHeight flag is enabled.
+static constexpr int kUniformRowHeightIconSize = 28;
+
+// The edge length of favicon backgrounds.
+int GetIconSize() {
+  // When `kSquareSuggestIconIcons` is disabled, icons don't have backgrounds
+  // and aren't resized in `OmniboxMatchCellView`.
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconIcons.Get());
+  return kUniformRowHeightIconSize;
+}
+
+// The size (edge length or diameter) of the answer icon backgrounds (which may
+// be squares or circles).
+int GetAnswerImageSize() {
+  return OmniboxFieldTrial::kSquareSuggestIconAnswers.Get()
+             ? kUniformRowHeightIconSize  // Square edge length.
+             : 24;                        // Circle diameter.
+}
 
 // The edge length of the entity suggestions images.
-static constexpr int kEntityImageSize = 32;
-// The edge length of the entity suggestions if the
-// kUniformRowHeight flag is enabled
-static constexpr int kEntityImageSizeSmall = 28;
-
 int GetEntityImageSize() {
-  return OmniboxFieldTrial::IsUniformRowHeightEnabled() ? kEntityImageSizeSmall
-                                                        : kEntityImageSize;
+  return OmniboxFieldTrial::IsUniformRowHeightEnabled()
+             ? kUniformRowHeightIconSize
+             : 32;
+}
+
+// The radius of the rounded square backgrounds of icons, answers, and entities.
+int GetIconAndImageCornerRadius() {
+  // When both params are disabled, icons and images won't have rounded square
+  // backgrounds.
+  DCHECK(OmniboxFieldTrial::kSquareSuggestIconAnswers.Get() ||
+         OmniboxFieldTrial::kSquareSuggestIconIcons.Get());
+  return 4;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -240,17 +262,32 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
   icon_view_->SetSize(has_image_ ? gfx::Size()
                                  : icon_view_->GetPreferredSize());
 
+  // Used for non-weather answer images (e.g. calc answers).
   const auto apply_vector_icon = [=](const gfx::VectorIcon& vector_icon) {
     const auto* color_provider = GetColorProvider();
+    const auto foreground_color_id =
+        OmniboxFieldTrial::kSquareSuggestIconAnswers.Get()
+            ? kColorOmniboxAnswerIconGM3Foreground
+            : kColorOmniboxAnswerIconForeground;
+    const auto background_color_id =
+        OmniboxFieldTrial::kSquareSuggestIconAnswers.Get()
+            ? kColorOmniboxAnswerIconGM3Background
+            : kColorOmniboxAnswerIconBackground;
     const auto& icon = gfx::CreateVectorIcon(
-        vector_icon,
-        color_provider->GetColor(kColorOmniboxAnswerIconForeground));
+        vector_icon, color_provider->GetColor(foreground_color_id));
     answer_image_view_->SetImageSize(
-        gfx::Size(kAnswerImageSize, kAnswerImageSize));
-    answer_image_view_->SetImage(
-        gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            kAnswerImageSize / 2,
-            color_provider->GetColor(kColorOmniboxAnswerIconBackground), icon));
+        gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
+    if (OmniboxFieldTrial::kSquareSuggestIconAnswers.Get()) {
+      answer_image_view_->SetImage(
+          gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+              GetAnswerImageSize(), GetIconAndImageCornerRadius(),
+              color_provider->GetColor(background_color_id), icon));
+    } else {
+      answer_image_view_->SetImage(
+          gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+              GetAnswerImageSize() / 2,
+              color_provider->GetColor(background_color_id), icon));
+    }
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
     apply_vector_icon(omnibox::kAnswerCalculatorIcon);
@@ -266,7 +303,7 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
       if (match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER) {
         // Weather icons are downloaded. We just need to set the correct size.
         answer_image_view_->SetImageSize(
-            gfx::Size(kAnswerImageSize, kAnswerImageSize));
+            gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
       } else {
         apply_vector_icon(
             AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer->type()));
@@ -292,6 +329,18 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
           : std::u16string());
 }
 
+void OmniboxMatchCellView::SetIcon(const gfx::ImageSkia& image) {
+  if (OmniboxFieldTrial::kSquareSuggestIconIcons.Get()) {
+    icon_view_->SetImage(
+        gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
+            GetIconSize(), GetIconAndImageCornerRadius(),
+            GetColorProvider()->GetColor(kColorOmniboxResultsIconGM3Background),
+            image));
+  } else {
+    icon_view_->SetImage(image);
+  }
+}
+
 void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
   answer_image_view_->SetImage(image);
 
@@ -311,9 +360,8 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image) {
 
 gfx::Insets OmniboxMatchCellView::GetInsets() const {
   const bool single_line = layout_style_ == LayoutStyle::ONE_LINE_SUGGESTION;
-
   const int vertical_margin =
-      OmniboxFieldTrial::IsUniformRowHeightEnabled() && has_image_
+      OmniboxFieldTrial::IsUniformRowHeightEnabled()
           ? OmniboxFieldTrial::kRichSuggestionVerticalMargin.Get()
           : ChromeLayoutProvider::Get()->GetDistanceMetric(
                 single_line ? DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING

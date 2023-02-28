@@ -45,6 +45,7 @@
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button.h"
@@ -303,7 +304,8 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   //       SetMatch() once (rather than repeatedly, as happens here). There may
   //       be an optimization opportunity here.
   // TODO(dschuyler): determine whether to optimize the color changes.
-  suggestion_view_->icon()->SetImage(GetIcon().ToImageSkia());
+  suggestion_view_->SetIcon(*GetIcon().ToImageSkia());
+
   keyword_view_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
       omnibox::kKeywordSearchIcon, icon_color_id,
       GetLayoutConstant(LOCATION_BAR_ICON_SIZE)));
