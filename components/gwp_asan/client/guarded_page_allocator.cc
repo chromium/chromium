@@ -171,16 +171,20 @@ void GuardedPageAllocator::PartitionAllocSlotFreeList::Free(
 
 GuardedPageAllocator::GuardedPageAllocator() {}
 
-void GuardedPageAllocator::Init(size_t max_alloced_pages,
-                                size_t num_metadata,
-                                size_t total_pages,
-                                OutOfMemoryCallback oom_callback,
-                                bool is_partition_alloc) {
+void GuardedPageAllocator::Init(
+    size_t max_alloced_pages,
+    size_t num_metadata,
+    size_t total_pages,
+    OutOfMemoryCallback oom_callback,
+    bool is_partition_alloc,
+    LightweightDetectorState lightweight_detector_state,
+    size_t num_lightweight_detector_metadata) {
   CHECK_GT(max_alloced_pages, 0U);
   CHECK_LE(max_alloced_pages, num_metadata);
   CHECK_LE(num_metadata, AllocatorState::kMaxMetadata);
   CHECK_LE(num_metadata, total_pages);
   CHECK_LE(total_pages, AllocatorState::kMaxRequestedSlots);
+  CHECK_LE(num_lightweight_detector_metadata, AllocatorState::kMaxMetadata);
   max_alloced_pages_ = max_alloced_pages;
   state_.num_metadata = num_metadata;
   state_.total_requested_pages = total_pages;
@@ -238,6 +242,16 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
       std::make_unique<AllocatorState::SlotMetadata[]>(state_.num_metadata);
   state_.metadata_addr = reinterpret_cast<uintptr_t>(metadata_.get());
 
+  if (lightweight_detector_state == LightweightDetectorState::kEnabled) {
+    state_.num_lightweight_detector_metadata =
+        num_lightweight_detector_metadata;
+    lightweight_detector_metadata_ =
+        std::make_unique<AllocatorState::SlotMetadata[]>(
+            state_.num_lightweight_detector_metadata);
+    state_.lightweight_detector_metadata_addr =
+        reinterpret_cast<uintptr_t>(lightweight_detector_metadata_.get());
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   // Explicitly allow memory ranges the crash_handler needs to read. This is
   // required for WebView because it has a stricter set of privacy constraints
@@ -256,6 +270,11 @@ GuardedPageAllocator::GetInternalMemoryRegions() {
   regions.emplace_back(
       slot_to_metadata_idx_.data(),
       sizeof(AllocatorState::MetadataIdx) * state_.total_reserved_pages);
+  if (lightweight_detector_metadata_) {
+    regions.emplace_back(lightweight_detector_metadata_.get(),
+                         sizeof(AllocatorState::SlotMetadata) *
+                             state_.num_lightweight_detector_metadata);
+  }
   return regions;
 }
 

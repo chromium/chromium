@@ -85,6 +85,10 @@ bool AllocatorState::IsValid() const {
   if (!metadata_addr || !slot_to_metadata_addr)
     return false;
 
+  if (num_lightweight_detector_metadata > kMaxMetadata) {
+    return false;
+  }
+
   return true;
 }
 

@@ -195,6 +195,12 @@ class AllocatorState {
   // If an invalid pointer has been free()d, this is the address of that invalid
   // pointer.
   uintptr_t free_invalid_address = 0;
+
+  // Number of entries in |lightweight_detector_metadata_addr|.
+  size_t num_lightweight_detector_metadata = 0;
+  // Similar to |metadata_addr|, but used exclusively by the lightweight UAF
+  // detector.
+  uintptr_t lightweight_detector_metadata_addr = 0;
 };
 
 // Ensure that the allocator state is a plain-old-data. That way we can safely

@@ -78,7 +78,7 @@ void InstallPartitionAllocHooks(
       kPartitionAllocCrashKey);
   gpa = new GuardedPageAllocator();
   gpa->Init(max_allocated_pages, num_metadata, total_pages, std::move(callback),
-            true);
+            true, LightweightDetectorState::kDisabled, 0);
   pa_crash_key.Set(gpa->GetCrashKey());
   sampling_state.Init(sampling_frequency);
   // TODO(vtsyrklevich): Allow SetOverrideHooks to be passed in so we can hook

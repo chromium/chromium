@@ -289,7 +289,7 @@ void InstallMallocHooks(size_t max_allocated_pages,
   static crash_reporter::CrashKeyString<24> malloc_crash_key(kMallocCrashKey);
   gpa = new GuardedPageAllocator();
   gpa->Init(max_allocated_pages, num_metadata, total_pages, std::move(callback),
-            false);
+            false, LightweightDetectorState::kDisabled, 0);
   malloc_crash_key.Set(gpa->GetCrashKey());
   sampling_state.Init(sampling_frequency);
   allocator_shim::InsertAllocatorDispatch(&g_allocator_dispatch);

@@ -36,7 +36,7 @@ class BaseGpaTest : public testing::Test {
     gpa_.Init(max_allocated_pages, max_metadata, max_slots,
               base::BindLambdaForTesting(
                   [&](size_t allocations) { allocator_oom_ = true; }),
-              is_partition_alloc);
+              is_partition_alloc, LightweightDetectorState::kDisabled, 0);
   }
 
   GuardedPageAllocator gpa_;
