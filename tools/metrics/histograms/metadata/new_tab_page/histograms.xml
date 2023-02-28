@@ -941,6 +941,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.HistoryClusters.DisplayLayout"
+    enum="NTPHistoryClustersModuleDisplayLayout" expires_after="2023-08-08">
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the layout selected and displayed for the NTP History Clusters
+    module. Logged at module UI creation time when determining if there is
+    necessary data to display the module. Only logged on the 1P NTP when the
+    history clusters module is enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.HistoryClusters.HasClusterToShow" enum="Boolean"
     expires_after="2023-08-08">
   <owner>sophiechang@chromium.org</owner>
@@ -962,6 +975,33 @@ chromium-metrics-reviews@google.com.
     Logs the number of clusters that match the desired filtering criteria
     configurable via Finch for the history clusters module. Only logged on the
     1P NTP and the history clusters module is enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.HistoryClusters.NumRelatedSearches" units="counts"
+    expires_after="2023-08-08">
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of related searches present in the candidate cluster that
+    might be rendered by the NTP history clusters module. Logged at module UI
+    creation time when determining if there is necessary data to display the
+    module. Only logged on the 1P NTP and when the history clusters module is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.HistoryClusters.NumVisits" units="counts"
+    expires_after="2023-08-08">
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the number of URL visits present in the candidate cluster that might be
+    rendered by the NTP history clusters module. Logged at module UI creation
+    time when determining if there is necessary data to display the module. Only
+    logged on the 1P NTP and when the history clusters module is enabled.
   </summary>
 </histogram>
 

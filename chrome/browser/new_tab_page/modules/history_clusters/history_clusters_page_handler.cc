@@ -97,6 +97,12 @@ void HistoryClustersPageHandler::CallbackWithClusterData(
     return;
   }
 
+  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.Candidate.Visits",
+                              clusters.front().visits.size());
+  base::UmaHistogramCounts100(
+      "NewTabPage.HistoryClusters.Candidate.RelatedSearches",
+      clusters.front().related_searches.size());
+
   auto cluster_mojom = history_clusters::ClusterToMojom(
       TemplateURLServiceFactory::GetForProfile(profile_), clusters.front());
   std::move(callback).Run(std::move(cluster_mojom));

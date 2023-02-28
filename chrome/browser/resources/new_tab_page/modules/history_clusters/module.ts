@@ -19,10 +19,16 @@ export const LAYOUT_2_IMAGE_VISITS = 1;
 export const LAYOUT_2_MIN_VISITS = 3;
 export const LAYOUT_3_MIN_VISITS = 4;
 
+/**
+ * Available module UI layouts. This enum must match the numbering for
+ * NTPHistoryClustersModuleDisplayLayout in enums.xml. These values are
+ * persisted to logs. Entries should not be renumbered, removed or reused.
+ */
 export enum HistoryClusterLayoutType {
-  LAYOUT_1 = 'layout_1',  // 2 image visits
-  LAYOUT_2 = 'layout_2',  // 1 image visit & 2 non-image visits
-  LAYOUT_3 = 'layout_3',  // 2 image visits & 2 non-image visits
+  NONE = 0,
+  LAYOUT_1 = 1,  // 2 image visits
+  LAYOUT_2 = 2,  // 1 image visit & 2 non-image visits
+  LAYOUT_3 = 3,  // 2 image visits & 2 non-image visits
 }
 
 // TODO:(crbug.com/1410808): Add module UI logic.
@@ -38,7 +44,7 @@ export class HistoryClustersModuleElement extends I18nMixin
 
   static get properties() {
     return {
-      layoutType: String,
+      layoutType: Number,
       /** The cluster displayed by this element. */
       cluster: Object,
     };
@@ -60,10 +66,17 @@ export class HistoryClustersModuleElement extends I18nMixin
 customElements.define(
     HistoryClustersModuleElement.is, HistoryClustersModuleElement);
 
+function recordSelectedLayout(option: HistoryClusterLayoutType) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'NewTabPage.HistoryClusters.DisplayLayout', option,
+      Object.keys(HistoryClusterLayoutType).length);
+}
+
 async function createElement(): Promise<HistoryClustersModuleElement|null> {
   const data =
       await HistoryClustersProxyImpl.getInstance().handler.getCluster();
   if (!data.cluster) {
+    recordSelectedLayout(HistoryClusterLayoutType.NONE);
     return null;
   }
 
@@ -77,7 +90,7 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
   // Count number of visits with images.
   const imageCount =
       visits.filter((visit: URLVisit) => visit.hasUrlKeyedImage).length;
-  // We subtract the SRP from the  visit count to get the actual number of
+  // We subtract the SRP from the visit count to get the actual number of
   // visits that are eligible for layout selection.
   const visitCount = visits.length - 1;
 
@@ -96,9 +109,11 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
     element.layoutType = HistoryClusterLayoutType.LAYOUT_2;
   } else {
     // If the data doesn't fit any layout, don't show the module.
+    recordSelectedLayout(HistoryClusterLayoutType.NONE);
     return null;
   }
 
+  recordSelectedLayout(element.layoutType);
   return element;
 }
 

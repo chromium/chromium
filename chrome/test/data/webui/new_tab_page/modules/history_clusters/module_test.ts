@@ -9,13 +9,17 @@ import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-we
 import {HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 import {installMock} from '../../test_support.js';
 
+const DISPLAY_LAYOUT_METRIC_NAME = 'NewTabPage.HistoryClusters.DisplayLayout';
+
 suite('NewTabPageModulesHistoryClustersModuleTest', () => {
   let handler: TestMock<PageHandlerRemote>;
+  let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -23,6 +27,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         PageHandlerRemote,
         mock => HistoryClustersProxyImpl.setInstance(
             new HistoryClustersProxyImpl(mock)));
+    metrics = fakeMetricsPrivate();
   });
 
   function createSampleCluster(
@@ -78,6 +83,11 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     // Assert.
     await handler.whenCalled('getCluster');
     assertEquals(null, moduleElement);
+    assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
+    assertEquals(
+        1,
+        metrics.count(
+            DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.NONE));
   });
 
   test('No module created when data does not match layouts', async () => {
@@ -92,6 +102,11 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     // Assert.
     await handler.whenCalled('getCluster');
     assertEquals(null, moduleElement);
+    assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
+    assertEquals(
+        1,
+        metrics.count(
+            DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.NONE));
   });
 
   test('Layout 1 is used', async () => {
@@ -112,6 +127,11 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     assertEquals(HistoryClusterLayoutType.LAYOUT_1, moduleElement.layoutType);
     assertEquals(layoutElements.length, 1);
     assertEquals(layoutElements[0]!.id, 'layout1');
+    assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
+    assertEquals(
+        1,
+        metrics.count(
+            DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.LAYOUT_1));
   });
 
   test('Layout 2 is used', async () => {
@@ -132,6 +152,11 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     assertEquals(HistoryClusterLayoutType.LAYOUT_2, moduleElement.layoutType);
     assertEquals(layoutElements.length, 1);
     assertEquals(layoutElements[0]!.id, 'layout2');
+    assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
+    assertEquals(
+        1,
+        metrics.count(
+            DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.LAYOUT_2));
   });
 
   test('Layout 3 is used', async () => {
@@ -152,6 +177,11 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     assertEquals(HistoryClusterLayoutType.LAYOUT_3, moduleElement.layoutType);
     assertEquals(layoutElements.length, 1);
     assertEquals(layoutElements[0]!.id, 'layout3');
+    assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
+    assertEquals(
+        1,
+        metrics.count(
+            DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.LAYOUT_3));
   });
 
   test('Tile element populated with correct data', async () => {

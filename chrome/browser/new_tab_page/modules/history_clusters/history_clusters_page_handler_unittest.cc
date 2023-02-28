@@ -143,6 +143,10 @@ TEST_F(HistoryClustersPageHandlerTest, GetCluster) {
       "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumClusterCandidates", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.Candidate.Visits", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.Candidate.RelatedSearches", 0, 1);
 }
 
 TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
@@ -182,6 +186,10 @@ TEST_F(HistoryClustersPageHandlerTest, MultipleClusters) {
       "NewTabPage.HistoryClusters.HasClusterToShow", true, 1);
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.HistoryClusters.NumClusterCandidates", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.Candidate.Visits", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "NewTabPage.HistoryClusters.Candidate.RelatedSearches", 0, 1);
 }
 
 TEST_F(HistoryClustersPageHandlerTest, NoClusters) {
