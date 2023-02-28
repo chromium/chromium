@@ -1024,6 +1024,10 @@
       base_feature: "none",
     },
     {
+      name: "CSSSignRelatedFunctions",
+      status: "test",
+    },
+    {
       // Support for CSS ::spelling-error, ::grammar-error, and the
       // spelling-error and grammar-error values in text-decoration-line.
       //

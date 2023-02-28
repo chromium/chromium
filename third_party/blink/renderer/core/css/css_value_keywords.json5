@@ -1387,6 +1387,10 @@
     "atan2",
     "acos",
 
+    // Sign related functions
+    "sign",
+    "abs",
+
     //<calc-constant>
     //https://drafts.csswg.org/css-values/#calc-syntax
     "infinity",

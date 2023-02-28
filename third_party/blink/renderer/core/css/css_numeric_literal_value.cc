@@ -40,7 +40,9 @@ CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
   // At this point, we know that value is in a small range,
   // so we can use a simple cast instead of ClampTo<int>.
   int int_value = static_cast<int>(value);
-  if (value != int_value) {
+  // To handle negative zero, detect signed zero
+  // https://en.wikipedia.org/wiki/Signed_zero
+  if (value != int_value || (value == 0 && std::signbit(value))) {
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
   }
 

@@ -758,6 +758,18 @@
     "args": ["--disable-blink-features=CSSTrigonometricFunctions"],
     "expires": "Jul 1, 2023"
   },
+   {
+    "prefix": "css-sign-related-functions-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/css/css-values/signs-abs-computed.html",
+      "external/wpt/css/css-values/signs-abs-serialize.html",
+      "external/wpt/css/css-values/signs-abs-invalid.html"
+    ],
+    "args": ["--disable-blink-features=CSSSignRelatedFunctions"],
+    "expires": "Jul 1, 2023"
+  },
+
   {
     "prefix": "import-maps-disabled",
     "platforms": ["Linux", "Mac", "Win"],
