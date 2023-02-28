@@ -63,17 +63,17 @@ class PreferencesTest : public LoginManagerTest {
     prefs->SetBoolean(prefs::kNaturalScroll, variant);
     prefs->SetBoolean(prefs::kTapToClickEnabled, variant);
     prefs->SetBoolean(prefs::kPrimaryMouseButtonRight, !variant);
-    prefs->SetBoolean(::prefs::kPrimaryPointingStickButtonRight, !variant);
+    prefs->SetBoolean(prefs::kPrimaryPointingStickButtonRight, !variant);
     prefs->SetBoolean(prefs::kMouseAcceleration, variant);
     prefs->SetBoolean(prefs::kMouseScrollAcceleration, variant);
-    prefs->SetBoolean(::prefs::kPointingStickAcceleration, variant);
+    prefs->SetBoolean(prefs::kPointingStickAcceleration, variant);
     prefs->SetBoolean(prefs::kTouchpadAcceleration, variant);
     prefs->SetBoolean(prefs::kTouchpadScrollAcceleration, variant);
     prefs->SetBoolean(prefs::kTouchpadHapticFeedback, variant);
     prefs->SetBoolean(prefs::kEnableTouchpadThreeFingerClick, !variant);
     prefs->SetInteger(prefs::kMouseSensitivity, !variant);
     prefs->SetInteger(prefs::kMouseScrollSensitivity, variant ? 1 : 4);
-    prefs->SetInteger(::prefs::kPointingStickSensitivity, !variant);
+    prefs->SetInteger(prefs::kPointingStickSensitivity, !variant);
     prefs->SetInteger(prefs::kTouchpadSensitivity, variant);
     prefs->SetInteger(prefs::kTouchpadHapticClickSensitivity, variant ? 1 : 3);
     prefs->SetInteger(prefs::kTouchpadScrollSensitivity, variant ? 1 : 4);
@@ -91,7 +91,7 @@ class PreferencesTest : public LoginManagerTest {
     EXPECT_EQ(
         prefs->GetBoolean(prefs::kPrimaryMouseButtonRight),
         input_settings_->current_mouse_settings().GetPrimaryButtonRight());
-    EXPECT_EQ(prefs->GetBoolean(::prefs::kPrimaryPointingStickButtonRight),
+    EXPECT_EQ(prefs->GetBoolean(prefs::kPrimaryPointingStickButtonRight),
               input_settings_->current_pointing_stick_settings()
                   .GetPrimaryButtonRight());
     EXPECT_EQ(prefs->GetBoolean(prefs::kMouseReverseScroll),
@@ -102,7 +102,7 @@ class PreferencesTest : public LoginManagerTest {
         prefs->GetBoolean(prefs::kMouseScrollAcceleration),
         input_settings_->current_mouse_settings().GetScrollAcceleration());
     EXPECT_EQ(
-        prefs->GetBoolean(::prefs::kPointingStickAcceleration),
+        prefs->GetBoolean(prefs::kPointingStickAcceleration),
         input_settings_->current_pointing_stick_settings().GetAcceleration());
     EXPECT_EQ(prefs->GetBoolean(prefs::kTouchpadAcceleration),
               input_settings_->current_touchpad_settings().GetAcceleration());
@@ -119,7 +119,7 @@ class PreferencesTest : public LoginManagerTest {
     EXPECT_EQ(prefs->GetInteger(prefs::kMouseScrollSensitivity),
               input_settings_->current_mouse_settings().GetScrollSensitivity());
     EXPECT_EQ(
-        prefs->GetInteger(::prefs::kPointingStickSensitivity),
+        prefs->GetInteger(prefs::kPointingStickSensitivity),
         input_settings_->current_pointing_stick_settings().GetSensitivity());
     EXPECT_EQ(prefs->GetInteger(prefs::kTouchpadSensitivity),
               input_settings_->current_touchpad_settings().GetSensitivity());
@@ -151,7 +151,7 @@ class PreferencesTest : public LoginManagerTest {
               prefs->GetBoolean(prefs::kPrimaryMouseButtonRight));
     EXPECT_EQ(
         local_state->GetBoolean(::prefs::kOwnerPrimaryPointingStickButtonRight),
-        prefs->GetBoolean(::prefs::kPrimaryPointingStickButtonRight));
+        prefs->GetBoolean(prefs::kPrimaryPointingStickButtonRight));
   }
 
   LoginManagerMixin login_mixin_{&mixin_host_};

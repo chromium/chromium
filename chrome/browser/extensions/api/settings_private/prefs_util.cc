@@ -853,7 +853,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kPrimaryMouseButtonRight] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kPrimaryPointingStickButtonRight] =
+  (*s_allowlist)[ash::prefs::kPrimaryPointingStickButtonRight] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kMouseReverseScroll] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
@@ -861,7 +861,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kMouseScrollAcceleration] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kPointingStickAcceleration] =
+  (*s_allowlist)[ash::prefs::kPointingStickAcceleration] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kTouchpadAcceleration] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
@@ -871,7 +871,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kMouseScrollSensitivity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[::prefs::kPointingStickSensitivity] =
+  (*s_allowlist)[ash::prefs::kPointingStickSensitivity] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[::prefs::kLanguageRemapSearchKeyTo] =
       settings_api::PrefType::PREF_TYPE_NUMBER;

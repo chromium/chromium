@@ -208,10 +208,7 @@ extern const char kPrintingAPIExtensionsAllowlist[];
 extern const char kEnableSyncConsent[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kPrimaryPointingStickButtonRight[];
 extern const char kOwnerPrimaryPointingStickButtonRight[];
-extern const char kPointingStickAcceleration[];
-extern const char kPointingStickSensitivity[];
 extern const char kUse24HourClock[];
 extern const char kUserTimezone[];
 extern const char kResolveTimezoneByGeolocationMethod[];

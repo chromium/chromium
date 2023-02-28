@@ -1398,6 +1398,19 @@ const char kTouchpadHapticFeedback[] = "settings.touchpad.haptic_feedback";
 const char kTouchpadHapticClickSensitivity[] =
     "settings.touchpad.haptic_click_sensitivity";
 
+// A integer pref for pointing stick sensitivity.
+const char kPointingStickSensitivity[] = "settings.pointing_stick.sensitivity";
+
+// A boolean pref set to true if primary pointing stick button is the left
+// button.
+const char kPrimaryPointingStickButtonRight[] =
+    "settings.pointing_stick.primary_right";
+
+// A boolean pref set to true if pointing stick acceleration is enabled. When
+// disabled only simple linear scaling is applied based on sensitivity.
+const char kPointingStickAcceleration[] =
+    "settings.pointing_stick.acceleration";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

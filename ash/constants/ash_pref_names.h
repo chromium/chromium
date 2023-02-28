@@ -657,6 +657,14 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kTouchpadHapticFeedback[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kTouchpadHapticClickSensitivity[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPointingStickSensitivity[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPrimaryPointingStickButtonRight[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kPointingStickAcceleration[];
 }  // namespace prefs
 }  // namespace ash
 

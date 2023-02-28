@@ -4,9 +4,12 @@
 
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -19,6 +22,10 @@ const std::string kDictFakeValue = "fake_value";
 
 const std::string kPointingStickKey1 = "device_key1";
 const std::string kPointingStickKey2 = "device_key2";
+
+const int kTestSensitivity = 2;
+const bool kTestSwapRight = false;
+const bool kTestAccelerationEnabled = false;
 
 const mojom::PointingStickSettings kPointingStickSettingsDefault(
     /*swap_right=*/kDefaultSwapRight,
@@ -62,6 +69,12 @@ class PointingStickPrefHandlerTest : public AshTestBase {
 
     pref_service_->registry()->RegisterDictionaryPref(
         prefs::kPointingStickDeviceSettingsDictPref);
+    pref_service_->registry()->RegisterIntegerPref(
+        prefs::kPointingStickSensitivity, kTestSensitivity);
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kPrimaryPointingStickButtonRight, kTestSwapRight);
+    pref_service_->registry()->RegisterBooleanPref(
+        prefs::kPointingStickAcceleration, kTestAccelerationEnabled);
   }
 
   void CheckPointingStickSettingsAndDictAreEqual(
@@ -242,6 +255,21 @@ TEST_F(PointingStickPrefHandlerTest, NewPointingStickDefaultSettings) {
   ASSERT_NE(nullptr, settings_dict);
   CheckPointingStickSettingsAndDictAreEqual(kPointingStickSettingsDefault,
                                             *settings_dict);
+}
+
+TEST_F(PointingStickPrefHandlerTest,
+       PointingStickObserveredInTransitionPeriod) {
+  mojom::PointingStick pointing_stick;
+  pointing_stick.device_key = kPointingStickKey1;
+  Shell::Get()->input_device_tracker()->OnPointingStickConnected(
+      pointing_stick);
+  // Initialize PointingStick settings for the device and check that the global
+  // prefs were used as defaults.
+  mojom::PointingStickSettingsPtr settings =
+      CallInitializePointingStickSettings(pointing_stick.device_key);
+  ASSERT_EQ(settings->sensitivity, kTestSensitivity);
+  ASSERT_EQ(settings->swap_right, kTestSwapRight);
+  ASSERT_EQ(settings->acceleration_enabled, kTestAccelerationEnabled);
 }
 
 class PointingStickSettingsPrefConversionTest
