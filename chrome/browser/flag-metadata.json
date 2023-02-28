@@ -2455,12 +2455,12 @@
   {
     "name": "enable-get-display-media-set",
     "owners": [ "simonha" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "enable-get-display-media-set-auto-select-all-screens",
     "owners": [ "simonha" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 125
   },
   {
     "name": "enable-global-vaapi-lock",
