@@ -110,7 +110,7 @@ TEST_F(NetworkPrefStateObserverTest, LoginUser) {
   base::RunLoop().RunUntilIdle();
 
   // Mode should now be MODE_PAC_SCRIPT.
-  ui_proxy_config = base::Value::Dict();
+  ui_proxy_config.clear();
   EXPECT_TRUE(
       NetworkHandler::GetUiProxyConfigService()->MergeEnforcedProxyConfig(
           kNetworkId, &ui_proxy_config));
