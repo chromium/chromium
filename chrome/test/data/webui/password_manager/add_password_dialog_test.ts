@@ -123,4 +123,40 @@ suite('AddPasswordDialogTest', function() {
         'icon-visibility-off',
         dialog.$.showPasswordButton.getAttribute('class'));
   });
+
+  test('note validation works', async function() {
+    const dialog = document.createElement('add-password-dialog');
+    document.body.appendChild(dialog);
+    await flushTasks();
+
+    assertFalse(dialog.$.noteInput.invalid);
+
+    // Make note 899 characters long.
+    dialog.$.noteInput.value = '.'.repeat(899);
+    assertFalse(dialog.$.noteInput.invalid);
+    assertEquals('', dialog.$.noteInput.firstFooter);
+    assertEquals('', dialog.$.noteInput.secondFooter);
+
+    // After 900 characters there are footers.
+    dialog.$.noteInput.value = '.'.repeat(900);
+    await flushTasks();
+    assertFalse(dialog.$.noteInput.invalid);
+    assertEquals(
+        dialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        dialog.$.noteInput.firstFooter);
+    assertEquals(
+        dialog.i18n('passwordNoteCharacterCount', 900, 1000),
+        dialog.$.noteInput.secondFooter);
+
+    // After 1000 characters note is no longer valid.
+    dialog.$.noteInput.value = '.'.repeat(1000);
+    await flushTasks();
+    assertTrue(dialog.$.noteInput.invalid);
+    assertEquals(
+        dialog.i18n('passwordNoteCharacterCountWarning', 1000),
+        dialog.$.noteInput.firstFooter);
+    assertEquals(
+        dialog.i18n('passwordNoteCharacterCount', 1000, 1000),
+        dialog.$.noteInput.secondFooter);
+  });
 });

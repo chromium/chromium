@@ -13,6 +13,7 @@ import '../shared_style.css.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,12 +26,25 @@ import {getTemplate} from './add_password_dialog.html.js';
 export interface AddPasswordDialogElement {
   $: {
     dialog: CrDialogElement,
+    noteInput: CrTextareaElement,
     passwordInput: CrInputElement,
     showPasswordButton: CrIconButtonElement,
     usernameInput: CrInputElement,
     websiteInput: CrInputElement,
   };
 }
+
+/**
+ * When user enters more than or equal to 900 characters in the note field, a
+ * footer will be displayed below the note to warn the user.
+ */
+const PASSWORD_NOTE_WARNING_CHARACTER_COUNT = 900;
+
+/**
+ * When user enters more than 1000 characters, the note will become invalid and
+ * save button will be disabled.
+ */
+const PASSWORD_NOTE_MAX_CHARACTER_COUNT = 1000;
 
 const AddPasswordDialogElementBase =
     ShowPasswordMixin(I18nMixin(PolymerElement));
@@ -65,6 +79,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
       website_: String,
       username_: String,
       password_: String,
+      note_: String,
 
       urlCollection_: Object,
 
@@ -89,6 +104,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   private website_: string;
   private username_: string;
   private password_: string;
+  private note_: string;
   private usernamesBySignonRealm_: Map<string, Set<string>>;
   private websiteErrorMessage_: string|null;
   private usernameErrorMessage_: string|null;
@@ -160,6 +176,26 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
 
   private isUsernameInputInvalid_(): boolean {
     return !!this.usernameErrorMessage_;
+  }
+
+  private isNoteInputInvalid_(): boolean {
+    return this.note_.length >= PASSWORD_NOTE_MAX_CHARACTER_COUNT;
+  }
+
+  private getFirstNoteFooter_(): string {
+    return this.note_.length < PASSWORD_NOTE_WARNING_CHARACTER_COUNT ?
+        '' :
+        this.i18n(
+            'passwordNoteCharacterCountWarning',
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT);
+  }
+
+  private getSecondNoteFooter_(): string {
+    return this.note_.length < PASSWORD_NOTE_WARNING_CHARACTER_COUNT ?
+        '' :
+        this.i18n(
+            'passwordNoteCharacterCount', this.note_.length,
+            PASSWORD_NOTE_MAX_CHARACTER_COUNT);
   }
 }
 
