@@ -3288,9 +3288,6 @@
           'has_native_resultdb_integration',
           'mac_12_x64',
           'mac_toolchain',
-          'out_dir_arg',
-          'xcode_14_main',
-          'xctest',
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_tests_ios',

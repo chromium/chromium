@@ -5520,6 +5520,17 @@
     },
 
     'wpt_tests_ios': {
+      'ios_cwt_chromedriver_tests_module': {
+        'mixins': [
+          'out_dir_arg',
+          'xcode_14_main',
+          'xctest',
+          'xcode_parallelization',
+        ],
+        'variants': [
+          'SIM_IPHONE_X_16_2',
+        ]
+      },
       'wpt_tests_ios': {
         'args': [
           '--log-wptreport',
