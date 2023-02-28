@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -79,7 +80,6 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             LayerTitleCache layerTitleCache, ResourceManager resourceManager,
             StripLayoutTab[] stripLayoutTabsToRender, float yOffset, int selectedTabId) {
         if (mNativePtr == 0) return;
-
         final boolean visible = yOffset > -layoutHelper.getHeight();
         // This will hide the tab strips if necessary.
         TabStripSceneLayerJni.get().beginBuildingFrame(
@@ -106,9 +106,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 scrim.getX(), scrim.getY(), width, height, scrim.getColor(), scrim.getAlpha());
     }
 
-    private boolean shouldReaddBackground(int orientation) {
+    private boolean shouldReadBackground(int orientation) {
         // Sometimes layer trees do not get updated on rotation on Nexus 10.
-        // This is a workaround that readds the background to prevent it.
+        // This is a workaround that reads the background to prevent it.
         // See https://crbug.com/503930 for more.
         if (Build.MODEL == null || !Build.MODEL.contains("Nexus 10")) return false;
         if (mOrientation != orientation) {
@@ -125,7 +125,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
         TabStripSceneLayerJni.get().updateTabStripLayer(mNativePtr, TabStripSceneLayer.this, width,
-                height, yOffset * mDpToPx, shouldReaddBackground(layoutHelper.getOrientation()),
+                height, yOffset * mDpToPx, shouldReadBackground(layoutHelper.getOrientation()),
                 layoutHelper.getBackgroundColor());
 
         updateStripScrim(layoutHelper.getStripScrim());
@@ -250,5 +250,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 ResourceManager resourceManager);
         void setContentTree(
                 long nativeTabStripSceneLayer, TabStripSceneLayer caller, SceneLayer contentTree);
+    }
+
+    @VisibleForTesting
+    public void initializeNativeForTesting() {
+        this.initializeNative();
     }
 }
