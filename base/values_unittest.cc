@@ -2113,47 +2113,6 @@ TEST(ValuesTest, Merge) {
   EXPECT_EQ("sub_merge_key_value_merge", *sub_merge_key_value);  // Merged in.
 }
 
-TEST(ValuesTest, MergeDictionaryDeepCopy) {
-  // Note: This test still uses the old and deprecated MergeDictionary() API, as
-  // the new API doesn't support what this test expects. The test expects that
-  // the dictionary passed as an argument to MergeDictionary() be left unchanged
-  // (which is pretty much implied anyway, by the constness). However, the new
-  // API, Value::Dict::Merge(), will std::move() any values from the dict
-  // argument.
-  //
-  // Just remove this test when the old API is removed.
-
-  Value::Dict child;
-  child.Set("test", "value");
-  EXPECT_EQ(1U, child.size());
-
-  std::string* value = child.FindString("test");
-  ASSERT_TRUE(value);
-  EXPECT_EQ("value", *value);
-
-  Value base(Value::Type::DICT);
-  base.GetDict().Set("dict", std::move(child));
-  EXPECT_EQ(1U, base.GetDict().size());
-
-  base::Value::Dict* original_child = base.GetDict().FindDict("dict");
-  EXPECT_FALSE(original_child->empty());
-
-  Value merged(Value::Type::DICT);
-  merged.MergeDictionary(&base);
-  EXPECT_EQ(1U, merged.GetDict().size());
-  base::Value::Dict* ptr = merged.GetDict().FindDict("dict");
-  EXPECT_FALSE(ptr->empty());
-  EXPECT_NE(original_child, ptr);
-  value = ptr->FindString("test");
-  ASSERT_TRUE(value);
-  EXPECT_EQ("value", *value);
-
-  original_child->Set("test", "overwrite");
-  value = ptr->FindString("test");
-  ASSERT_TRUE(value);
-  EXPECT_EQ("value", *value);
-}
-
 TEST(ValuesTest, DictionaryIterator) {
   Value::Dict dict;
   for (Value::Dict::iterator it = dict.begin(); it != dict.end(); ++it) {

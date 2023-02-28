@@ -855,17 +855,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::Dict::empty()`.
   bool DictEmpty() const;
 
-  // Merge `dictionary` into this value. This is done recursively, i.e. any
-  // sub-dictionaries will be merged as well. In case of key collisions, the
-  // passed in dictionary takes precedence and data already present will be
-  // replaced. Values within `dictionary` are deep-copied, so `dictionary` may
-  // be freed any time after this call.
-  // Note: This requires that `type()` and `dictionary->type()` is
-  // Type::DICT.
-  //
-  // DEPRECATED: prefer `Value::Dict::Merge()`.
-  void MergeDictionary(const Value* dictionary);
-
   // Note: Do not add more types. See the file-level comment above for why.
 
   // Comparison operators so that Values can easily be used with standard

@@ -1249,10 +1249,6 @@ bool Value::DictEmpty() const {
   return GetDict().empty();
 }
 
-void Value::MergeDictionary(const Value* dictionary) {
-  return GetDict().Merge(dictionary->GetDict().Clone());
-}
-
 bool operator==(const Value& lhs, const Value& rhs) {
   return lhs.data_ == rhs.data_;
 }
