@@ -343,8 +343,7 @@ TEST_F(FileSequenceHelperTest, UpdateDynamicRules) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking_for_testing;
     std::string data = "Invalid JSON";
-    ASSERT_EQ(data.size(), static_cast<size_t>(base::WriteFile(
-                               source.json_path(), data.c_str(), data.size())));
+    ASSERT_TRUE(base::WriteFile(source.json_path(), data));
   }
 
   {

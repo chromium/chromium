@@ -35,14 +35,12 @@ class JsonFileSanitizerTest : public testing::Test {
 
   void CreateValidJsonFile(const base::FilePath& path) {
     std::string kJson = "{\"hello\":\"bonjour\"}";
-    ASSERT_EQ(static_cast<int>(kJson.size()),
-              base::WriteFile(path, kJson.data(), kJson.size()));
+    ASSERT_TRUE(base::WriteFile(path, kJson));
   }
 
   void CreateInvalidJsonFile(const base::FilePath& path) {
     std::string kJson = "sjkdsk;'<?js";
-    ASSERT_EQ(static_cast<int>(kJson.size()),
-              base::WriteFile(path, kJson.data(), kJson.size()));
+    ASSERT_TRUE(base::WriteFile(path, kJson));
   }
 
   const base::FilePath& GetJsonFilePath() const { return temp_dir_.GetPath(); }

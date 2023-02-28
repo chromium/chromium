@@ -274,10 +274,8 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
 
   if (!base::JSONWriter::Write(top_dictionary, &json))
     return false;
-  int written = base::WriteFile(path, json.data(), json.size());
-  if (static_cast<unsigned>(written) != json.size()) {
-    LOG(ERROR) << "Error writing " << path.AsUTF8Unsafe()
-               << " ; write result:" << written << " expected:" << json.size();
+  if (!base::WriteFile(path, json)) {
+    LOG(ERROR) << "Error writing " << path.AsUTF8Unsafe();
     return false;
   }
   return true;

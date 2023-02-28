@@ -137,7 +137,7 @@ class ImageSanitizerTest : public testing::Test {
       return false;
 
     base::FilePath path = temp_dir_.GetPath().Append(file_name);
-    return base::WriteFile(path, binary.data(), binary.size());
+    return base::WriteFile(path, binary);
   }
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }

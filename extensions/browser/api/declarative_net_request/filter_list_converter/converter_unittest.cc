@@ -27,9 +27,7 @@ void TestConversion(std::vector<std::string> filter_list_rules,
 
   base::FilePath input_path = temp_dir.GetPath().AppendASCII("filterlist.txt");
   std::string filterlist = base::JoinString(filter_list_rules, "\n");
-  CHECK_EQ(filterlist.size(),
-           static_cast<size_t>(base::WriteFile(input_path, filterlist.c_str(),
-                                               filterlist.size())));
+  CHECK(base::WriteFile(input_path, filterlist));
 
   absl::optional<base::Value> expected_json =
       base::JSONReader::Read(json_result);

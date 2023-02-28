@@ -485,8 +485,7 @@ TEST_F(SandboxedUnpackerTest, TestRewriteManifestInjections) {
   std::string fingerprint = "1.0123456789abcdef";
   base::WriteFile(extensions_dir_.GetPath().Append(
                       FILE_PATH_LITERAL("manifest.fingerprint")),
-                  fingerprint.c_str(),
-                  base::checked_cast<int>(fingerprint.size()));
+                  fingerprint);
   absl::optional<base::Value::Dict> manifest(RewriteManifestFile(
       DictionaryBuilder().Set(kVersionStr, kTestVersion).Build()));
   auto* key = manifest->FindString("key");
