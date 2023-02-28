@@ -37,7 +37,7 @@ namespace {
 // The default delay between the user pressing the size button and the buttons
 // adjacent to the size button morphing into buttons for snapping left and
 // right.
-const int kSetButtonsToSnapModeDelayMs = 150;
+constexpr base::TimeDelta kSetButtonsToSnapModeDelay = base::Milliseconds(150);
 
 // The amount that a user can overshoot one of the caption buttons while in
 // "snap mode" and keep the button hovered/pressed.
@@ -218,7 +218,7 @@ FrameSizeButton::FrameSizeButton(PressedCallback callback,
                                 views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
                                 HTMAXBUTTON),
       delegate_(delegate),
-      set_buttons_to_snap_mode_delay_ms_(kSetButtonsToSnapModeDelayMs) {
+      long_tap_delay_(kSetButtonsToSnapModeDelay) {
   display_observer_.emplace(this);
 
   if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
@@ -272,25 +272,11 @@ void FrameSizeButton::SetFeedbackButtonCallback(PressedCallback callback) {
 }
 
 bool FrameSizeButton::OnMousePressed(const ui::MouseEvent& event) {
-  // Note that this triggers `StateChanged()`, and we want the changes to
-  // `pie_animation_view_` below to come after `StateChanged()`.
-  views::FrameCaptionButton::OnMousePressed(event);
-
   if (IsTriggerableEvent(event)) {
-    // Add a visual indicator of when snap mode will get triggered.
-    StartPieAnimation(kPieAnimationPressDuration,
-                      MultitaskMenuEntryType::kFrameSizeButtonLongPress);
-
-    // The minimize and close buttons are set to snap left and right when
-    // snapping is enabled. Do not enable snapping if the minimize button is not
-    // visible. The close button is always visible.
-    if (!in_snap_mode_ && delegate_->CanSnap() &&
-        delegate_->IsMinimizeButtonVisible()) {
-      StartSetButtonsToSnapModeTimer(event);
-    }
+    StartLongTapDelayTimer(event);
   }
 
-  return true;
+  return views::FrameCaptionButton::OnMousePressed(event);
 }
 
 bool FrameSizeButton::OnMouseDragged(const ui::MouseEvent& event) {
@@ -306,6 +292,10 @@ bool FrameSizeButton::OnMouseDragged(const ui::MouseEvent& event) {
 void FrameSizeButton::OnMouseReleased(const ui::MouseEvent& event) {
   if (IsTriggerableEvent(event))
     CommitSnap(event);
+
+  if (pie_animation_view_) {
+    pie_animation_view_->Stop();
+  }
 
   views::FrameCaptionButton::OnMouseReleased(event);
 }
@@ -327,16 +317,10 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
   if (event->type() == ui::ET_GESTURE_TAP_DOWN && delegate_->CanSnap()) {
-    StartSetButtonsToSnapModeTimer(*event);
+    StartLongTapDelayTimer(*event);
 
     // Go through FrameCaptionButton's handling so that the button gets pressed.
     views::FrameCaptionButton::OnGestureEvent(event);
-
-    // Add a visual indicator of when snap mode will get triggered. Note that
-    // order matters as the subclasses will call `StateChanged()` and we want
-    // the changes there to run first.
-    StartPieAnimation(kPieAnimationPressDuration,
-                      MultitaskMenuEntryType::kFrameSizeButtonLongTouch);
     return;
   }
 
@@ -396,19 +380,19 @@ void FrameSizeButton::OnDisplayTabletStateChanged(display::TabletState state) {
     if (pie_animation_view_) {
       pie_animation_view_->Stop();
     }
-    set_buttons_to_snap_mode_timer_.Stop();
+    long_tap_delay_timer_.Stop();
   }
 }
 
-void FrameSizeButton::StartSetButtonsToSnapModeTimer(
-    const ui::LocatedEvent& event) {
-  set_buttons_to_snap_mode_timer_event_location_ = event.location();
-  if (set_buttons_to_snap_mode_delay_ms_ == 0) {
-    AnimateButtonsToSnapMode();
+void FrameSizeButton::StartLongTapDelayTimer(const ui::LocatedEvent& event) {
+  const bool is_mouse = event.IsMouseEvent();
+  if (long_tap_delay_.is_zero()) {
+    OnLongTapDelayTimerEnded(is_mouse, event.location());
   } else {
-    set_buttons_to_snap_mode_timer_.Start(
-        FROM_HERE, base::Milliseconds(set_buttons_to_snap_mode_delay_ms_), this,
-        &FrameSizeButton::AnimateButtonsToSnapMode);
+    long_tap_delay_timer_.Start(
+        FROM_HERE, long_tap_delay_,
+        base::BindOnce(&FrameSizeButton::OnLongTapDelayTimerEnded,
+                       base::Unretained(this), is_mouse, event.location()));
   }
 }
 
@@ -458,7 +442,7 @@ void FrameSizeButton::UpdateSnapPreview(const ui::LocatedEvent& event) {
     // button is pressed).
     gfx::Vector2d delta(event.location() -
                         set_buttons_to_snap_mode_timer_event_location_);
-    if (!set_buttons_to_snap_mode_timer_.IsRunning() ||
+    if (!long_tap_delay_timer_.IsRunning() ||
         !views::View::ExceededDragThreshold(delta)) {
       return;
     }
@@ -533,8 +517,25 @@ void FrameSizeButton::SetButtonsToNormalMode(
   if (pie_animation_view_) {
     pie_animation_view_->Stop();
   }
-  set_buttons_to_snap_mode_timer_.Stop();
+  long_tap_delay_timer_.Stop();
   delegate_->SetButtonsToNormal(animate);
+}
+
+void FrameSizeButton::OnLongTapDelayTimerEnded(bool is_mouse,
+                                               const gfx::Point& location) {
+  StartPieAnimation(kPieAnimationPressDuration,
+                    is_mouse
+                        ? MultitaskMenuEntryType::kFrameSizeButtonLongPress
+                        : MultitaskMenuEntryType::kFrameSizeButtonLongTouch);
+
+  // The minimize and close buttons are set to snap left and right when
+  // snapping is enabled. Do not enable snapping if the minimize button is not
+  // visible. The close button is always visible.
+  if (!in_snap_mode_ && delegate_->CanSnap() &&
+      delegate_->IsMinimizeButtonVisible()) {
+    set_buttons_to_snap_mode_timer_event_location_ = location;
+    AnimateButtonsToSnapMode();
+  }
 }
 
 BEGIN_METADATA(FrameSizeButton, views::FrameCaptionButton)

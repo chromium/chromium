@@ -75,8 +75,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
-  void set_delay_to_set_buttons_to_snap_mode(int delay_ms) {
-    set_buttons_to_snap_mode_delay_ms_ = delay_ms;
+  void set_long_tap_delay_for_testing(base::TimeDelta delay) {
+    long_tap_delay_ = delay;
   }
 
   bool in_snap_mode_for_testing() const { return in_snap_mode_; }
@@ -88,8 +88,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   class PieAnimationView;
   class SnappingWindowObserver;
 
-  // Starts |set_buttons_to_snap_mode_timer_|.
-  void StartSetButtonsToSnapModeTimer(const ui::LocatedEvent& event);
+  // Starts `long_tap_delay_timer_`.
+  void StartLongTapDelayTimer(const ui::LocatedEvent& event);
 
   // Starts the pie animation, which gives a visual indicator of when the
   // multitask menu will show up on long press or long touch, where `entry_type`
@@ -123,6 +123,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // whether the buttons should animate back to their original icons.
   void SetButtonsToNormalMode(FrameSizeButtonDelegate::Animate animate);
 
+  // Callback function for `long_tap_delay_timer_`. Starts the pie animation to
+  // show the multitask menu and maybe enter snap mode.
+  void OnLongTapDelayTimerEnded(bool is_mouse, const gfx::Point& location);
+
   // Not owned.
   raw_ptr<FrameSizeButtonDelegate> delegate_;
   views::UniqueWidgetPtr multitask_menu_widget_;
@@ -130,16 +134,18 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   // The window observer to observe the to-be-snapped window.
   std::unique_ptr<SnappingWindowObserver> snapping_window_observer_;
 
-  // Location of the event which started |set_buttons_to_snap_mode_timer_| in
-  // view coordinates.
+  // Location of the event which started `long_tap_delay_timer_` in view
+  // coordinates.
   gfx::Point set_buttons_to_snap_mode_timer_event_location_;
 
-  // The delay between the user pressing the size button and the buttons
-  // adjacent to the size button morphing into buttons for snapping left and
-  // right.
-  int set_buttons_to_snap_mode_delay_ms_;
+  // The delay between the user pressing the size button and the multitask menu
+  // showing and/or the buttons adjacent to the size button morphing into
+  // buttons for snapping left and right.
+  base::TimeDelta long_tap_delay_;
 
-  base::OneShotTimer set_buttons_to_snap_mode_timer_;
+  // Timer that is fired when the button is tapped. On timer end we start the
+  // pie animation to show the multitask menu and/or enter snap mode.
+  base::OneShotTimer long_tap_delay_timer_;
 
   // Creates an animation to add indication to when long hover and long press to
   // show multitask menu and snap buttons will trigger. The pointer is owned by

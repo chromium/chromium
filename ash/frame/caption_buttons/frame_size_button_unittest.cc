@@ -175,7 +175,7 @@ class FrameSizeButtonTest : public AshTestBase {
     minimize_button_ = test.minimize_button();
     size_button_ = test.size_button();
     static_cast<FrameSizeButton*>(size_button_)
-        ->set_delay_to_set_buttons_to_snap_mode(0);
+        ->set_long_tap_delay_for_testing(base::Milliseconds(0));
     close_button_ = test.close_button();
   }
 
