@@ -1,7 +1,0 @@
-CONSOLE ERROR: Unrecognized Content-Security-Policy directive 'script-img'.
-
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS

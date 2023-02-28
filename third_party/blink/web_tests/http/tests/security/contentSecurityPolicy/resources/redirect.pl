@@ -19,10 +19,6 @@ if ($resourceType eq "image") {
     print "Location: http://127.0.0.1:8000/resources/square20.jpg";
 }
 
-if ($resourceType eq "plugin") {
-    print "Location: http://127.0.0.1:8000/plugins/resources/mock-plugin.pl";
-}
-
 if ($resourceType eq "frame") {
     print "Location: http://127.0.0.1:8000/security/contentSecurityPolicy/resources/iframe-redirect-not-allowed.html";
 }

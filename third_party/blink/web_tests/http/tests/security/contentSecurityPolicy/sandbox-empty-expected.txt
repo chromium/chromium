@@ -1,2 +1,0 @@
-CONSOLE ERROR: Blocked script execution in 'http://127.0.0.1:8000/security/contentSecurityPolicy/resources/sandbox.php?sandbox=' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.
- This test passes if the iframe doesn't log a message.

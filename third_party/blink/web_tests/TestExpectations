@@ -2137,7 +2137,6 @@ crbug.com/528062 [ Win ] http/tests/css/missing-repaint-after-slow-style-sheet.p
 crbug.com/528062 [ Win ] http/tests/local/blob/send-data-blob.html [ Failure Timeout ]
 crbug.com/528062 [ Win ] http/tests/local/blob/send-hybrid-blob.html [ Failure Timeout ]
 crbug.com/528062 [ Win ] http/tests/security/XFrameOptions/x-frame-options-cached.html [ Failure ]
-crbug.com/528062 [ Win ] http/tests/security/contentSecurityPolicy/cached-frame-csp.html [ Failure ]
 
 # When drawing subpixel smoothed glyphs, CoreGraphics will fake bold the glyphs.
 # In this configuration, the pixel smoothed glyphs will be created from subpixel smoothed glyphs.
@@ -3632,7 +3631,6 @@ crbug.com/703518 http/tests/devtools/tracing/worker-js-frames.js [ Failure Pass 
 crbug.com/674720 http/tests/loading/preload-img-test.html [ Failure Pass ]
 
 # Sheriff failures 2017-05-11
-crbug.com/724027 http/tests/security/contentSecurityPolicy/directive-parsing-03.html [ Crash Failure Pass Timeout ]
 crbug.com/724027 http/tests/security/contentSecurityPolicy/source-list-parsing-04.html [ Crash Failure Pass Timeout ]
 
 # Sheriff failures 2017-05-16

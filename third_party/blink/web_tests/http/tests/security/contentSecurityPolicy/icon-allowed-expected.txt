@@ -1,2 +1,0 @@
-main frame - didChangeIcons
-Use callbacks to show that favicons are loaded as allowed by CSP when link tags are dynamically added to the page.

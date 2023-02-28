@@ -1,3 +1,0 @@
-CONSOLE MESSAGE: PASS (1/2): Script can execute
-CONSOLE MESSAGE: PASS (2/2): Eval works
-

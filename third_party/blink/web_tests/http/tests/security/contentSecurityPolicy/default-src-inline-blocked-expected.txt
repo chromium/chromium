@@ -1,5 +1,0 @@
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "default-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-tfI8qh894SA5Ci6mTaIpM7Yc7ipVIuo6Z6xxEBkkQBA='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'script-src' was not explicitly set, so 'default-src' is used as a fallback.
-
-CONSOLE ERROR: Refused to execute inline script because it violates the following Content Security Policy directive: "default-src 'self'". Either the 'unsafe-inline' keyword, a hash ('sha256-Oyx3ttLvegYcsNPXU1IceH1NLku4Or68MYQJkVE4Igk='), or a nonce ('nonce-...') is required to enable inline execution. Note also that 'script-src' was not explicitly set, so 'default-src' is used as a fallback.
-
-This test passes if it doesn't alert fail.

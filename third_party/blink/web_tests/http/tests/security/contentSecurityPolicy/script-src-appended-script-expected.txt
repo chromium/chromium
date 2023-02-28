@@ -1,3 +1,0 @@
-CONSOLE ERROR: Refused to load the script 'http://localhost:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "script-src 'unsafe-inline'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
-
-PASS

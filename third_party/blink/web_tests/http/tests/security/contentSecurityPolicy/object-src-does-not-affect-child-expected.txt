@@ -1,2 +1,0 @@
-CONSOLE MESSAGE: Blink Test Plugin: initializing
-This tests that an object-src directive on a top-level page is not inherited by a PluginDocument embedded in an iframe on the page. This test passes if the plugin logs a message that it loaded.

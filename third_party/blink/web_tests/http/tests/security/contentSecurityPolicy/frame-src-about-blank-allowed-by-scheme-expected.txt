@@ -1,1 +1,0 @@
-This iframe should not be blocked by Content-Security-Policy: 

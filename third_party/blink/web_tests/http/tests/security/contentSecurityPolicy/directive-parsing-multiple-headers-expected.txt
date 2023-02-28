@@ -1,8 +1,0 @@
-CONSOLE ERROR: Refused to load the script 'http://localhost:8000/security/contentSecurityPolicy/resources/script.js' because it violates the following Content Security Policy directive: "default-src 'self'". Note that 'script-src-elem' was not explicitly set, so 'default-src' is used as a fallback.
-
-This script should not execute even through the second CSP header would allow it.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-PASS

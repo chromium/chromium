@@ -1,3 +1,0 @@
-Loads an external script. Since no content security policy is present, the script should get executed.
-
-PASS

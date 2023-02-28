@@ -1,3 +1,0 @@
-CONSOLE ERROR: Refused to load plugin data from 'http://127.0.0.1:8000/plugins/resources/mock-plugin-with-csp.pl' because it violates the following Content Security Policy directive: "object-src 'none'".
-
-This tests that a plugin served with a CSP header will block the plugin from running in an iframe. This test passes if a console error says that the plugin was blocked.
