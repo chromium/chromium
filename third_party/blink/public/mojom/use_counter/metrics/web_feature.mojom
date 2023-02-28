@@ -3819,6 +3819,7 @@ enum WebFeature {
   kURLSearchParams_Has_Delete_MultipleArguments = 4478,
   kPaymentHandlerMinimalHeaderUX = 4479,
   kPopoverTypeHint = 4480,
+  kWebGPUWebCodecs = 4481,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

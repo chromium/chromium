@@ -3730,6 +3730,12 @@
       base_feature: "none",
     },
     {
+      name: "WebGPUWebCodecs",
+      base_feature: "none",
+      origin_trial_feature_name: "WebGPUWebCodecs",
+      public: true,
+    },
+    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
       base_feature: "none",
