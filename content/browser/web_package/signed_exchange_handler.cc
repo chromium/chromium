@@ -43,6 +43,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/filter/source_stream.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/features.h"
@@ -725,6 +726,8 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
           render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
           render_frame_host ? render_frame_host->GetRoutingID()
                             : MSG_ROUTING_NONE,
+          render_frame_host ? render_frame_host->GetCookieSettingOverrides()
+                            : net::CookieSettingOverrides(),
           cookie_manager_.BindNewPipeAndPassReceiver(),
           render_frame_host ? render_frame_host->CreateCookieAccessObserver()
                             : mojo::NullRemote());

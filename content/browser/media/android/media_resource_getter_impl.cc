@@ -24,6 +24,7 @@
 #include "net/base/auth.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/http/http_auth.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
@@ -71,6 +72,8 @@ GetRestrictedCookieManagerForContext(
           render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
           render_frame_host ? render_frame_host->GetRoutingID()
                             : MSG_ROUTING_NONE,
+          render_frame_host ? render_frame_host->GetCookieSettingOverrides()
+                            : net::CookieSettingOverrides(),
           pipe.InitWithNewPipeAndPassReceiver(),
           render_frame_host ? render_frame_host->CreateCookieAccessObserver()
                             : mojo::NullRemote());

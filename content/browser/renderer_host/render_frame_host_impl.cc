@@ -1130,51 +1130,6 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
   }
 }
 
-// Checks Blink runtime-enabled feature (BREF) for third-party cookie
-// deprecation user bypass. This pulls the BREF from the committed frame
-// context; for a committing navigation the overload taking a NavigationRequest
-// should be called. For a subframe, the BREF is pulled from the main frame
-// context. If the main frame has no committed navigation (eg. an empty
-// initial document), then false is returned.
-// TODO(crbug.com/1386190): Follow up on whether any inner page scenarios
-// (eg. portals, guestview) require escaping out using GetOutermostMainFrame
-// or GetOutermostMainFrameOrEmbedder.
-// TODO(crbug.com/1386190): Currently a popup frame is an empty doc that returns
-// false. Follow up on whether it should instead use the BREF from its opener.
-bool GetIsThirdPartyCookiesUserBypassEnabled(RenderFrameHostImpl& frame) {
-  RenderFrameHost* main_frame = frame.GetMainFrame();
-  auto* document_data =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_frame);
-  if (document_data) {
-    blink::RuntimeFeatureStateReadContext read_context =
-        document_data->runtime_feature_read_context();
-    return read_context.IsThirdPartyCookiesUserBypassEnabled();
-  }
-  return false;
-}
-
-// Checks Blink runtime-enabled feature (BREF) for third-party cookie
-// deprecation user bypass. This pulls the BREF from a pending navigation
-// request context; for a committed frame the overload taking a
-// RenderFrameHostImpl should be called. For a subframe, the BREF is *not*
-// pulled from the pending navigation request and is instead pulled from the
-// committed context on the main frame.
-// The passed in NavigationRequest must have a non-null RFH.
-// TODO(crbug.com/1386190): Follow up on whether any inner page scenarios
-// (eg. portals, guestview) require escaping out using GetOutermostMainFrame
-// or GetOutermostMainFrameOrEmbedder.
-bool GetIsThirdPartyCookiesUserBypassEnabled(
-    NavigationRequest& navigation_request) {
-  if (navigation_request.IsInMainFrame()) {
-    blink::RuntimeFeatureStateContext state_context =
-        navigation_request.GetRuntimeFeatureStateContext();
-    return state_context.IsThirdPartyCookiesUserBypassEnabled();
-  }
-  DCHECK(navigation_request.GetRenderFrameHost());
-  return GetIsThirdPartyCookiesUserBypassEnabled(
-      *navigation_request.GetRenderFrameHost());
-}
-
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -1194,7 +1149,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
     result.ukm_source_id_ =
         ukm::SourceIdObj::FromInt64(frame.GetPageUkmSourceId());
 
-    if (GetIsThirdPartyCookiesUserBypassEnabled(frame)) {
+    if (frame.GetIsThirdPartyCookiesUserBypassEnabled()) {
       result.cookie_setting_overrides_.Put(
           net::CookieSettingOverride::kForceThirdPartyByUser);
     }
@@ -1233,7 +1188,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
               navigation_request.GetRenderFrameHost(),
               navigation_request.commit_params(), result.origin());
 
-      if (GetIsThirdPartyCookiesUserBypassEnabled(navigation_request)) {
+      if (navigation_request.GetIsThirdPartyCookiesUserBypassEnabled()) {
         result.cookie_setting_overrides_.Put(
             net::CookieSettingOverride::kForceThirdPartyByUser);
       }
@@ -11180,20 +11135,25 @@ void RenderFrameHostImpl::BindFederatedAuthRequestReceiver(
 
 void RenderFrameHostImpl::BindRestrictedCookieManager(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
-  BindRestrictedCookieManagerWithOrigin(std::move(receiver),
-                                        GetIsolationInfoForSubresources(),
-                                        GetLastCommittedOrigin());
+  BindRestrictedCookieManagerWithOrigin(
+      std::move(receiver), GetIsolationInfoForSubresources(),
+      GetLastCommittedOrigin(), GetCookieSettingOverrides());
 }
 
 void RenderFrameHostImpl::BindRestrictedCookieManagerWithOrigin(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
     const net::IsolationInfo& isolation_info,
-    const url::Origin& origin) {
+    const url::Origin& origin,
+    net::CookieSettingOverrides cookie_setting_overrides) {
+  // CookieSettingOverrides is passesd in instead of calling
+  // GetCookieSettingOverrides, because this call can happen before the frame
+  // is committed.
   GetStoragePartition()->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
       isolation_info,
       /*is_service_worker=*/false, GetProcess()->GetID(), GetRoutingID(),
-      std::move(receiver), CreateCookieAccessObserver());
+      cookie_setting_overrides, std::move(receiver),
+      CreateCookieAccessObserver());
 }
 
 void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
@@ -12683,10 +12643,14 @@ void RenderFrameHostImpl::SendCommitNavigation(
               .value() == origin_to_commit) {
     cookie_manager_info = mojom::CookieManagerInfo::New();
     cookie_manager_info->origin = origin_to_commit;
+    auto subresource_loader_factories_config =
+        SubresourceLoaderFactoriesConfig::ForPendingNavigation(
+            *navigation_request);
+
     BindRestrictedCookieManagerWithOrigin(
         cookie_manager_info->cookie_manager.InitWithNewPipeAndPassReceiver(),
-        navigation_request->isolation_info_for_subresources(),
-        origin_to_commit);
+        navigation_request->isolation_info_for_subresources(), origin_to_commit,
+        subresource_loader_factories_config.cookie_setting_overrides());
 
     // Some tests need the StorageArea interfaces to come through DomStorage,
     // so ignore the optimizations in those cases.
@@ -14795,6 +14759,9 @@ std::ostream& operator<<(std::ostream& o,
 }
 
 net::CookieSettingOverrides RenderFrameHostImpl::GetCookieSettingOverrides() {
+  // This shouldn't be called before committing the document.
+  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
+  DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPendingCommit);
   auto subresource_loader_factories_config =
       SubresourceLoaderFactoriesConfig::ForLastCommittedNavigation(*this);
   return subresource_loader_factories_config.cookie_setting_overrides();
@@ -14825,6 +14792,20 @@ RenderFrameHostImpl::CookieChangeListener::CookieChangeInfo
 RenderFrameHostImpl::GetCookieChangeInfo() {
   return cookie_change_listener_ ? cookie_change_listener_->cookie_change_info()
                                  : CookieChangeListener::CookieChangeInfo{};
+}
+
+// TODO(crbug.com/1386190): Follow up on whether any inner page scenarios
+// (eg. portals, guestview) require escaping out using GetOutermostMainFrame
+// or GetOutermostMainFrameOrEmbedder.
+bool RenderFrameHostImpl::GetIsThirdPartyCookiesUserBypassEnabled() {
+  auto* document_data =
+      RuntimeFeatureStateDocumentData::GetForCurrentDocument(GetMainFrame());
+  if (!document_data) {
+    return false;
+  }
+  blink::RuntimeFeatureStateReadContext read_context =
+      document_data->runtime_feature_read_context();
+  return read_context.IsThirdPartyCookiesUserBypassEnabled();
 }
 
 }  // namespace content

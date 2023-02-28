@@ -88,6 +88,7 @@
 #include "content/browser/quota/quota_context.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
@@ -121,6 +122,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/net_errors.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/ssl/client_cert_store.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -1485,15 +1487,16 @@ void StoragePartitionImpl::CreateRestrictedCookieManager(
     bool is_service_worker,
     int process_id,
     int routing_id,
+    net::CookieSettingOverrides cookie_setting_overrides,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer) {
   DCHECK(initialized_);
   if (!GetContentClient()->browser()->WillCreateRestrictedCookieManager(
           role, browser_context_, origin, isolation_info, is_service_worker,
           process_id, routing_id, &receiver)) {
-    GetNetworkContext()->GetRestrictedCookieManager(std::move(receiver), role,
-                                                    origin, isolation_info,
-                                                    std::move(cookie_observer));
+    GetNetworkContext()->GetRestrictedCookieManager(
+        std::move(receiver), role, origin, isolation_info,
+        cookie_setting_overrides, std::move(cookie_observer));
   }
 }
 

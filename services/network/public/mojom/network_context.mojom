@@ -880,6 +880,7 @@ interface NetworkContext {
       RestrictedCookieManagerRole role,
       url.mojom.Origin origin,
       IsolationInfo isolation_info,
+      CookieSettingOverrides cookie_setting_overrides,
       pending_remote<CookieAccessObserver>? cookie_observer);
 
   // Provides a TrustTokenQueryAnswerer scoped to the given top-frame origin

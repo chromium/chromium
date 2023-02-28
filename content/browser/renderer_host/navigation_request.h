@@ -1135,6 +1135,16 @@ class CONTENT_EXPORT NavigationRequest
     return std::move(cookie_change_listener_);
   }
 
+  // When this returns true, the user has specified that third-party cookies
+  // should remain enabled for this navigation.
+  // It does so by checking the Blink runtime-enabled feature (BREF) for
+  // third-party cookie deprecation user bypass. This pulls the BREF from a
+  // pending navigation request context; for a committed frame use
+  // RenderFrameHostImpl::GetIsThirdPartyCookiesUserBypassEnabled.
+  // For a subframe, the BREF is *not* pulled from the pending navigation
+  // request and is instead pulled from the committed context on the main frame.
+  bool GetIsThirdPartyCookiesUserBypassEnabled();
+
  private:
   friend class NavigationRequestTest;
 

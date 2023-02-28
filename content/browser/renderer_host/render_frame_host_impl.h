@@ -98,6 +98,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/net_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/sensor_provider.mojom-forward.h"
@@ -2005,7 +2006,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void BindRestrictedCookieManagerWithOrigin(
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
       const net::IsolationInfo& isolation_info,
-      const url::Origin& origin);
+      const url::Origin& origin,
+      net::CookieSettingOverrides cookie_setting_overrides);
 
   // Requires the following preconditions, reporting a bad message otherwise.
   //
@@ -2840,6 +2842,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // a CookieSettingOverrides pertaining to the last committed document in the
   // frame. Can only be called on a frame with a committed navigation.
   net::CookieSettingOverrides GetCookieSettingOverrides();
+
+  // When this returns true, the user has specified that third-party cookies
+  // should remain enabled for this frame.
+  // It does so by checking the Blink runtime-enabled feature (BREF) for
+  // third-party cookie deprecation user bypass. This pulls the BREF from the
+  // committed document context; for a committing navigation use
+  // NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled.
+  // For a subframe, the BREF is pulled from the main frame context. If the main
+  // frame has no committed navigation (eg. an empty initial document), then
+  // false is returned.
+  bool GetIsThirdPartyCookiesUserBypassEnabled();
 
   // Retrieves the information about the cookie changes that are observed on the
   // last committed document.

@@ -1219,6 +1219,68 @@ TEST_F(RenderFrameHostImplTest, GetCookieSettingOverrides) {
   }
 }
 
+TEST_F(RenderFrameHostImplTest, GetIsThirdPartyCookiesUserBypassEnabled) {
+  GURL url = GURL("https://example.test/");
+  GURL child_url = GURL("https://example.test/child");
+
+  std::unique_ptr<NavigationSimulator> simulator =
+      NavigationSimulator::CreateRendererInitiated(url, main_rfh());
+  simulator->Start();
+
+  // Set user bypass BREF and prepare to commit.
+  {
+    blink::RuntimeFeatureStateContext& context =
+        NavigationRequest::From(simulator->GetNavigationHandle())
+            ->GetMutableRuntimeFeatureStateContext();
+    context.SetThirdPartyCookiesUserBypassEnabled(true);
+  }
+  simulator->ReadyToCommit();
+
+  // Verify that GetIsThirdPartyCookiesUserBypassEnabled returns false
+  // (because the BREF is not yet committed).
+  {
+    auto* rfh = static_cast<TestRenderFrameHost*>(
+        simulator->GetNavigationHandle()->GetRenderFrameHost());
+    EXPECT_FALSE(rfh->GetIsThirdPartyCookiesUserBypassEnabled());
+
+    // Check that a child frame gives the same result.
+    EXPECT_FALSE(
+        rfh->AppendChild("child1")->GetIsThirdPartyCookiesUserBypassEnabled());
+  }
+
+  // Commit the navigation and check that
+  // GetIsThirdPartyCookiesUserBypassEnabled now returns true.
+  simulator->Commit();
+  {
+    auto* rfh =
+        static_cast<TestRenderFrameHost*>(simulator->GetFinalRenderFrameHost());
+    EXPECT_TRUE(rfh->GetIsThirdPartyCookiesUserBypassEnabled());
+
+    // Check that a child frame gives the same result.
+    EXPECT_TRUE(
+        rfh->AppendChild("child1")->GetIsThirdPartyCookiesUserBypassEnabled());
+  }
+
+  // Start a different navigation on a new child frame and verify that the
+  // value comes from the committed main frame.
+  {
+    auto* main_rfh =
+        static_cast<TestRenderFrameHost*>(simulator->GetFinalRenderFrameHost());
+    TestRenderFrameHost* child_rfh = main_rfh->AppendChild("child3");
+    std::unique_ptr<NavigationSimulator> child_simulator =
+        NavigationSimulator::CreateRendererInitiated(child_url, child_rfh);
+    child_simulator->Start();
+    blink::RuntimeFeatureStateContext& context =
+        NavigationRequest::From(child_simulator->GetNavigationHandle())
+            ->GetMutableRuntimeFeatureStateContext();
+    context.SetThirdPartyCookiesUserBypassEnabled(false);
+    child_simulator->ReadyToCommit();
+    EXPECT_TRUE(child_rfh->GetIsThirdPartyCookiesUserBypassEnabled());
+    child_simulator->Commit();
+    EXPECT_TRUE(child_rfh->GetIsThirdPartyCookiesUserBypassEnabled());
+  }
+}
+
 class RenderFrameHostImplThirdPartyStorageTest
     : public RenderViewHostImplTestHarness,
       public testing::WithParamInterface<bool> {

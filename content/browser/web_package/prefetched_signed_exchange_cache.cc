@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_util.h"
@@ -798,6 +799,8 @@ PrefetchedSignedExchangeCache::MaybeCreateInterceptor(
             render_frame_host ? render_frame_host->GetProcess()->GetID() : -1,
             render_frame_host ? render_frame_host->GetRoutingID()
                               : MSG_ROUTING_NONE,
+            render_frame_host ? render_frame_host->GetCookieSettingOverrides()
+                              : net::CookieSettingOverrides(),
             cookie_manager.BindNewPipeAndPassReceiver(),
             render_frame_host ? render_frame_host->CreateCookieAccessObserver()
                               : mojo::NullRemote());

@@ -62,6 +62,7 @@
 #include "net/cert/coalescing_cert_verifier.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
@@ -759,12 +760,14 @@ void NetworkContext::GetRestrictedCookieManager(
     mojom::RestrictedCookieManagerRole role,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
+    const net::CookieSettingOverrides& cookie_setting_overrides,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer) {
   RestrictedCookieManager::ComputeFirstPartySetMetadata(
       origin, url_request_context_->cookie_store(), isolation_info,
       base::BindOnce(&NetworkContext::OnComputedFirstPartySetMetadata,
                      weak_factory_.GetWeakPtr(), std::move(receiver), role,
-                     origin, isolation_info, std::move(cookie_observer)));
+                     origin, isolation_info, cookie_setting_overrides,
+                     std::move(cookie_observer)));
 }
 
 void NetworkContext::OnComputedFirstPartySetMetadata(
@@ -772,13 +775,15 @@ void NetworkContext::OnComputedFirstPartySetMetadata(
     mojom::RestrictedCookieManagerRole role,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
+    const net::CookieSettingOverrides& cookie_setting_overrides,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     net::FirstPartySetMetadata first_party_set_metadata) {
   restricted_cookie_manager_receivers_.Add(
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
-          std::move(cookie_observer), std::move(first_party_set_metadata),
+          cookie_setting_overrides, std::move(cookie_observer),
+          std::move(first_party_set_metadata),
           network_service_->metrics_updater()),
       std::move(receiver));
 }

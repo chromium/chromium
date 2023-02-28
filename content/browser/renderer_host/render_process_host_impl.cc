@@ -176,6 +176,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "sandbox/policy/switches.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
@@ -2023,6 +2024,8 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // TODO(crbug.com/1386190): Consider whether/how to get cookie setting
+  // overrides for a service worker.
   storage_partition_impl_->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
       net::IsolationInfo::Create(
@@ -2033,7 +2036,7 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
           storage_key.nonce().has_value() ? &storage_key.nonce().value()
                                           : nullptr),
       true /* is_service_worker */, GetID(), MSG_ROUTING_NONE,
-      std::move(receiver),
+      net::CookieSettingOverrides(), std::move(receiver),
       storage_partition_impl_->CreateCookieAccessObserverForServiceWorker());
 }
 
