@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -41,6 +42,8 @@ constexpr uint64_t kInternalMicFrontId = 10040;
 constexpr uint64_t kInternalMicRearId = 10050;
 constexpr uint64_t kInternalMicId = 10060;
 
+constexpr base::TimeDelta kMetricsDelayTimerInterval = base::Seconds(2);
+
 // Histogram names.
 constexpr char kOutputMuteChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.OutputMuteStateChange";
@@ -48,6 +51,10 @@ constexpr char kInputMuteChangeHistogramName[] =
     "ChromeOS.CrosAudioConfig.InputMuteStateChange";
 constexpr char kNoiseCancellationEnabledHistogramName[] =
     "ChromeOS.CrosAudioConfig.NoiseCancellationEnabled";
+constexpr char kOutputVolumeChangeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.OutputVolumeSetTo";
+constexpr char kInputGainChangeHistogramName[] =
+    "ChromeOS.CrosAudioConfig.InputGainSetTo";
 
 struct AudioNodeInfo {
   bool is_input;
@@ -124,7 +131,8 @@ class FakeAudioSystemPropertiesObserver
 
 class CrosAudioConfigImplTest : public testing::Test {
  public:
-  CrosAudioConfigImplTest() = default;
+  CrosAudioConfigImplTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~CrosAudioConfigImplTest() override = default;
 
   void SetUp() override {
@@ -297,6 +305,8 @@ class CrosAudioConfigImplTest : public testing::Test {
     cras_audio_handler_->SetNoiseCancellationState(noise_cancellation_on);
     base::RunLoop().RunUntilIdle();
   }
+
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
   base::HistogramTester histogram_tester_;
 
@@ -1019,6 +1029,62 @@ TEST_F(CrosAudioConfigImplTest,
   SetNoiseCancellationState(/*noise_cancellation_on=*/false);
 
   EXPECT_EQ(expected_call_count, fake_observer->num_properties_updated_calls_);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetOutputVolumeHistogram) {
+  // Bind mojo remote.
+  Observe();
+
+  // Move the output volume up slider 3 times. Move the slider at half of the
+  // delay interval time so each change shouldn't be recorded.
+  SetOutputVolumePercent(/*volume_percent=*/10);
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval / 2);
+  SetOutputVolumePercent(/*volume_percent=*/20);
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval / 2);
+  SetOutputVolumePercent(/*volume_percent=*/30);
+
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval);
+  histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 10, 0);
+  histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 20, 0);
+  histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 30, 1);
+
+  // Move the output volume up slider 2 times. Move the slider at half of the
+  // delay interval time so each change shouldn't be recorded.
+  SetOutputVolumePercent(/*volume_percent=*/50);
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval / 2);
+  SetOutputVolumePercent(/*volume_percent=*/100);
+
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval);
+  histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 50, 0);
+  histogram_tester_.ExpectBucketCount(kOutputVolumeChangeHistogramName, 100, 1);
+}
+
+TEST_F(CrosAudioConfigImplTest, SetInputGainHistogram) {
+  // Bind mojo remote.
+  Observe();
+
+  // Move the input gain up slider 3 times. Move the slider at half of the
+  // delay interval time so each change shouldn't be recorded.
+  SetInputGainPercentFromFrontEnd(/*gain_percent=*/10);
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval / 2);
+  SetInputGainPercentFromFrontEnd(/*gain_percent=*/20);
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval / 2);
+  SetInputGainPercentFromFrontEnd(/*gain_percent=*/30);
+
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval);
+  histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 10, 0);
+  histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 20, 0);
+  histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 30, 1);
+
+  // Move the input gain up slider 2 times. Move the slider at half of the
+  // delay interval time so each change shouldn't be recorded.
+  SetInputGainPercentFromFrontEnd(/*gain_percent=*/50);
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval / 2);
+  SetInputGainPercentFromFrontEnd(/*gain_percent=*/100);
+
+  task_environment()->FastForwardBy(kMetricsDelayTimerInterval);
+  histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 50, 0);
+  histogram_tester_.ExpectBucketCount(kInputGainChangeHistogramName, 100, 1);
 }
 
 }  // namespace ash::audio_config

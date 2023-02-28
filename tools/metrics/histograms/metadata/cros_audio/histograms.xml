@@ -22,6 +22,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="ChromeOS.CrosAudioConfig.InputGainSetTo" units="%"
+    expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the input gain set by the user from a WebUI, such as the OS Audio
+    Settings page. To account for changes via a UI slider, the histogram is only
+    recorded after the user stops changing the gain for a predetermined amount
+    of seconds.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.CrosAudioConfig.InputMuteStateChange"
     enum="AudioMuteButtonAction" expires_after="2024-02-14">
   <owner>gavinwill@chromium.org</owner>
@@ -49,6 +61,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Recorded when the user changes the output audio mute state from a WebUI,
     such as the OS Audio Settings page.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.CrosAudioConfig.OutputVolumeSetTo" units="%"
+    expires_after="2024-02-14">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the output volume set by the user from a WebUI, such as the OS Audio
+    Settings page. To account for changes via a UI slider, the histogram is only
+    recorded after the user stops changing the volume for a predetermined amount
+    of seconds.
   </summary>
 </histogram>
 
