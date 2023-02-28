@@ -280,6 +280,11 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
 }
 
 IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, NavigateNotificationCenter) {
+  // TODO: (b/270605638) test the revamped notification center.
+  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
+    return;
+  }
+
   EnableChromeVox();
 
   sm_.Call([this]() {
@@ -912,6 +917,11 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
 // with parameterized tests).
 #if !defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
+  // TODO: (b/270609503) test the revapmped power button.
+  if (base::FeatureList::IsEnabled(features::kQsRevamp)) {
+    return;
+  }
+
   EnableChromeVox();
 
   sm_.Call([this]() {

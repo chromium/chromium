@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -55,17 +56,17 @@ void WaitForShutdownButtonVisibility(bool visible) {
 
 }  // namespace
 
-class ShutdownPolicyBaseTest
-    : public policy::DevicePolicyCrosBrowserTest,
-      public DeviceSettingsService::Observer {
+class ShutdownPolicyBaseTest : public policy::DevicePolicyCrosBrowserTest,
+                               public DeviceSettingsService::Observer {
  protected:
   ShutdownPolicyBaseTest() {}
   ~ShutdownPolicyBaseTest() override {}
 
   // DeviceSettingsService::Observer:
   void DeviceSettingsUpdated() override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   // policy::DevicePolicyCrosBrowserTest:
@@ -99,8 +100,9 @@ class ShutdownPolicyBaseTest
     ASSERT_TRUE(oobe_ui);
     base::RunLoop run_loop;
     const bool oobe_ui_ready = oobe_ui->IsJSReady(run_loop.QuitClosure());
-    if (!oobe_ui_ready)
+    if (!oobe_ui_ready) {
       run_loop.Run();
+    }
   }
 
   bool result_;
@@ -108,8 +110,7 @@ class ShutdownPolicyBaseTest
   std::unique_ptr<SystemTrayTestApi> tray_test_api_;
 };
 
-class ShutdownPolicyInSessionTest
-    : public ShutdownPolicyBaseTest {
+class ShutdownPolicyInSessionTest : public ShutdownPolicyBaseTest {
  public:
   ShutdownPolicyInSessionTest(const ShutdownPolicyInSessionTest&) = delete;
   ShutdownPolicyInSessionTest& operator=(const ShutdownPolicyInSessionTest&) =
@@ -135,6 +136,11 @@ class ShutdownPolicyInSessionTest
 
 // Tests that by default the shutdown button tooltip is "Shut down".
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyInSessionTest, TestBasic) {
+  // TODO: (b/270609503) test the revapmped power button.
+  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
+    return;
+  }
+
   OpenSystemTrayMenu();
   EXPECT_TRUE(HasShutdownButtonTooltip("Shut down"));
   CloseSystemTrayMenu();

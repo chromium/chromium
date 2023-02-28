@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -40,8 +41,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 
-using testing::Return;
 using testing::_;
+using testing::Return;
 using testing::WithParamInterface;
 
 namespace ash {
@@ -79,8 +80,9 @@ void EnableSelectToSpeak(bool enabled) {
 
 void EnableDictation(bool enabled) {
   bool already_enabled = AccessibilityManager::Get()->IsDictationEnabled();
-  if (enabled == already_enabled)
+  if (enabled == already_enabled) {
     return;
+  }
   AccessibilityManager::Get()->ToggleDictation();
   base::RunLoop().RunUntilIdle();
 }
@@ -144,9 +146,8 @@ void EnableStickyKeys(bool enabled) {
 
 // Uses InProcessBrowserTest instead of OobeBaseTest because most of the tests
 // don't need to test the login screen.
-class TrayAccessibilityTest
-    : public InProcessBrowserTest,
-      public WithParamInterface<PrefSettingMechanism> {
+class TrayAccessibilityTest : public InProcessBrowserTest,
+                              public WithParamInterface<PrefSettingMechanism> {
  public:
   TrayAccessibilityTest()
       : disable_animations_(
@@ -570,6 +571,10 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest,
 }
 
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, KeepMenuVisibilityOnLockScreen) {
+  // TODO: (b/270609503) test the revapmped view.
+  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
+    return;
+  }
   // Enables high contrast mode.
   EnableHighContrast(true);
   EXPECT_TRUE(IsMenuButtonVisible());
@@ -593,6 +598,10 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, KeepMenuVisibilityOnLockScreen) {
 // Do not use a feature which requires an enable/disable confirmation dialog
 // here, as the dialogs change focus and close the detail menu.
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DetailMenuRemainsOpen) {
+  // TODO: (b/270609503) test the revapmped view.
+  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
+    return;
+  }
   CreateDetailedMenu();
 
   ClickVirtualKeyboardOnDetailMenu();
@@ -631,6 +640,10 @@ class TrayAccessibilityLoginTest : public TrayAccessibilityTest {
 
 IN_PROC_BROWSER_TEST_P(TrayAccessibilityLoginTest,
                        ShowMenuWithShowOnLoginScreen) {
+  // TODO: (b/270609503) test the revapmped view.
+  if (base::FeatureList::IsEnabled(ash::features::kQsRevamp)) {
+    return;
+  }
   EXPECT_FALSE(user_manager::UserManager::Get()->IsUserLoggedIn());
 
   // Confirms that the menu is visible.
