@@ -2043,6 +2043,11 @@ const char kOmniboxDisableCGIParamMatchingName[] =
 const char kOmniboxDisableCGIParamMatchingDescription[] =
     "Disables using matches in CGI parameter names while scoring suggestions.";
 
+const char kOmniboxDiscardTemporaryInputOnTabSwitchName[] =
+    "Omnibox discard temporary input on tab switch";
+const char kOmniboxDiscardTemporaryInputOnTabSwitchDescription[] =
+    "Discards temporary input in the omnibox when switching tabs.";
+
 const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
 const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "

@@ -1143,6 +1143,9 @@ extern const char kOmniboxDefaultBrowserPedalDescription[];
 extern const char kOmniboxDisableCGIParamMatchingName[];
 extern const char kOmniboxDisableCGIParamMatchingDescription[];
 
+extern const char kOmniboxDiscardTemporaryInputOnTabSwitchName[];
+extern const char kOmniboxDiscardTemporaryInputOnTabSwitchDescription[];
+
 extern const char kOmniboxDomainSuggestionsName[];
 extern const char kOmniboxDomainSuggestionsDescription[];
 

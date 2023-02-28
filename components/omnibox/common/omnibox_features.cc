@@ -425,6 +425,12 @@ BASE_FEATURE(kOmniboxSteadyStateHeight,
              "OmniboxSteadyStateHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, switching tabs will not restore the omnibox state.
+// TODO(manukh): Should also blur the omnibox on tab switch.
+BASE_FEATURE(kDiscardTemporaryInputOnTabSwitch,
+             "OmniboxDiscardTemporaryInputOnTabSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kClosePopupWithEscape,
              "OmniboxClosePopupWithEscape",
              base::FEATURE_DISABLED_BY_DEFAULT);
