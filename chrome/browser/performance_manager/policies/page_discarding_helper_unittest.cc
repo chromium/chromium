@@ -206,6 +206,13 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithFormInteractions) {
           page_node()));
 }
 
+TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithUserEdits) {
+  frame_node()->SetHadUserEdits();
+  EXPECT_FALSE(
+      PageDiscardingHelper::GetFromGraph(graph())->CanUrgentlyDiscardForTesting(
+          page_node()));
+}
+
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardIsActiveTab) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node())
       ->SetIsActiveTabForTesting(true);

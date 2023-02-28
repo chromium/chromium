@@ -402,7 +402,9 @@ PageDiscardingHelper::CanUrgentlyDiscard(
 #endif
   }
 
-  if (page_node->HadFormInteraction()) {
+  // `HadUserEdits()` is currently a superset of `HadFormInteraction()` but
+  // that may change so check both here (the check is not expensive).
+  if (page_node->HadFormInteraction() || page_node->HadUserEdits()) {
     return CanUrgentlyDiscardResult::kProtected;
   }
 
