@@ -53,7 +53,6 @@
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/object_navigation_fallback_body_loader.h"
-#include "content/browser/loader/resource_timing_utils.h"
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/network/cross_origin_opener_policy_reporter.h"
@@ -141,6 +140,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
@@ -170,6 +170,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
@@ -1099,7 +1100,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
     blink::mojom::NavigationInitiatorActivationAndAdStatus
         initiator_activation_and_ad_status,
     bool is_pdf,
-    bool is_embedder_initiated_fenced_frame_navigation) {
+    bool is_embedder_initiated_fenced_frame_navigation,
+    bool is_container_initiated) {
   TRACE_EVENT1("navigation", "NavigationRequest::Create", "browser_initiated",
                browser_initiated);
 
@@ -1129,7 +1131,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
       nullptr /* trust_token_params */, impression,
       base::TimeTicks() /* renderer_before_unload_start */,
       base::TimeTicks() /* renderer_before_unload_end */,
-      std::move(web_bundle_token_params), initiator_activation_and_ad_status);
+      std::move(web_bundle_token_params), initiator_activation_and_ad_status,
+      is_container_initiated);
 
   // Shift-Reload forces bypassing caches and service workers.
   if (common_params->navigation_type ==
@@ -1632,6 +1635,24 @@ NavigationRequest::NavigationRequest(
     if (initiator_rfh)
       initiator_document_ = initiator_rfh->GetWeakDocumentPtr();
   }
+
+  // Spec: https://github.com/whatwg/html/issues/8846
+  // We only allow the parent to access a subframe resource timing if the
+  // navigation is container-initiated, e.g. iframe changed src.
+  if (begin_params_->is_container_initiated) {
+    // Only same-origin navigations without cross-origin redirects can
+    // expose response details (status-code / mime-type).
+    // https://github.com/whatwg/fetch/issues/1602
+    // Note that this condition checks this navigation is not cross origin.
+    // Cross-origin redirects are checked as part of OnRequestRedirected().
+    commit_params_->navigation_timing->parent_resource_timing_access =
+        GetParentFrame()->GetLastCommittedOrigin().IsSameOriginWith(GetURL())
+            ? blink::mojom::ParentResourceTimingAccess::
+                  kReportWithResponseDetails
+            : blink::mojom::ParentResourceTimingAccess::
+                  kReportWithoutResponseDetails;
+  }
+
   navigation_or_document_handle_ =
       NavigationOrDocumentHandle::CreateForNavigation(*this);
 
@@ -3067,6 +3088,18 @@ void NavigationRequest::OnRequestRedirected(
   const bool is_same_origin_redirect =
       url::Origin::Create(common_params_->url)
           .IsSameOriginWith(redirect_info.new_url);
+
+  // Only same-origin navigations without cross-origin redirects can
+  // expose response details (status-code / mime-type).
+  // https://github.com/whatwg/fetch/issues/1602
+  if (!is_same_origin_redirect &&
+      commit_params_->navigation_timing->parent_resource_timing_access ==
+          blink::mojom::ParentResourceTimingAccess::
+              kReportWithResponseDetails) {
+    commit_params_->navigation_timing->parent_resource_timing_access =
+        blink::mojom::ParentResourceTimingAccess::kReportWithoutResponseDetails;
+  }
+
   did_receive_early_hints_before_cross_origin_redirect_ |=
       did_create_early_hints_manager_params_ && !is_same_origin_redirect;
 
@@ -3787,6 +3820,12 @@ void NavigationRequest::OnResponseStarted(
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
     return;
+  }
+
+  // See https://github.com/whatwg/fetch/pull/1579
+  if (!response_head_->timing_allow_passed) {
+    commit_params_->navigation_timing->parent_resource_timing_access =
+        blink::mojom::ParentResourceTimingAccess::kDoNotReport;
   }
 
   MaybeInjectIsolatedAppHeaders();
@@ -4718,34 +4757,40 @@ void NavigationRequest::MaybeAddResourceTimingEntryForCancelledNavigation() {
     return;
   }
 
-  RenderFrameHostImpl* parent_rfh = GetParentFrame();
-
-  // Do not add ResourceTiming entries if the navigated URL does not have a
-  // parent.
-  if (!parent_rfh) {
-    return;
-  }
-
   // Some navigation are cancelled even before requesting and receiving a
   // response. Those cases are not supported and the ResourceTiming is not
   // reported to the parent.
-  if (!response_head_) {
+  if (!response()) {
     return;
   }
 
-  if (initiator_document_.AsRenderFrameHostIfValid() != parent_rfh) {
+  network::URLLoaderCompletionStatus status;
+  status.encoded_data_length = response()->encoded_data_length;
+  status.completion_time = base::TimeTicks::Now();
+  AddResourceTimingEntryForFailedSubframeNavigation(status);
+}
+
+void NavigationRequest::AddResourceTimingEntryForFailedSubframeNavigation(
+    const network::URLLoaderCompletionStatus& status) {
+  // For TAO-fail navigations, we would resort to fallback timing.
+  // See HTMLFrameOwnerElement::ReportFallbackResourceTimingIfNeeded().
+  DCHECK(response());
+  if (commit_params().navigation_timing->parent_resource_timing_access ==
+      blink::mojom::ParentResourceTimingAccess::kDoNotReport) {
     return;
   }
 
-  blink::mojom::ResourceTimingInfoPtr timing_info =
-      GenerateResourceTimingForNavigation(parent_rfh->GetLastCommittedOrigin(),
-                                          *common_params_, *commit_params_,
-                                          *response_head_);
-  timing_info->response_end = base::TimeTicks::Now();
-  parent_rfh->GetAssociatedLocalFrame()
-      ->AddResourceTimingEntryFromNonNavigatedFrame(
-          std::move(timing_info),
-          frame_tree_node()->frame_owner_element_type());
+  network::mojom::URLResponseHeadPtr response_head = response()->Clone();
+
+  bool allow_response_details =
+      commit_params().navigation_timing->parent_resource_timing_access ==
+      blink::mojom::ParentResourceTimingAccess::kReportWithResponseDetails;
+
+  GetParentFrame()->AddResourceTimingEntryForFailedSubframeNavigation(
+      frame_tree_node(), common_params().navigation_start,
+      commit_params().navigation_timing->redirect_end,
+      commit_params().original_url, common_params().url,
+      std::move(response_head), allow_response_details, status);
 }
 
 void NavigationRequest::OnRedirectChecksComplete(
@@ -4993,8 +5038,8 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
       // fallback / resource timing are only reported if the navigation request
       // is logically still pending.
       ObjectNavigationFallbackBodyLoader::CreateAndStart(
-          *this, *common_params_, *commit_params_, *response(),
-          std::move(response_body_), std::move(url_loader_client_endpoints_),
+          *this, std::move(response_body_),
+          std::move(url_loader_client_endpoints_),
           base::BindOnce(&NavigationRequest::OnRequestFailedInternal,
                          weak_factory_.GetWeakPtr(),
                          network::URLLoaderCompletionStatus(net::ERR_ABORTED),
@@ -5016,6 +5061,7 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
       result.action() == NavigationThrottle::CANCEL ||
       !response_should_be_rendered_) {
     MaybeAddResourceTimingEntryForCancelledNavigation();
+
     // Reset the RenderFrameHost that had been computed for the commit of the
     // navigation.
     render_frame_host_ = nullptr;

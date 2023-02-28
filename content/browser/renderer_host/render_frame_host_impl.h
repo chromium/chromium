@@ -1435,6 +1435,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const absl::optional<std::string>& error_page_content,
       const blink::DocumentToken& document_token);
 
+  void AddResourceTimingEntryForFailedSubframeNavigation(
+      FrameTreeNode* child_frame,
+      base::TimeTicks start_time,
+      base::TimeTicks redirect_time,
+      const GURL& initial_url,
+      const GURL& final_url,
+      network::mojom::URLResponseHeadPtr response_head,
+      bool allow_response_details,
+      const network::URLLoaderCompletionStatus& completion_status);
+
   // Sends a renderer-debug URL to the renderer process for handling.
   void HandleRendererDebugURL(const GURL& url);
 

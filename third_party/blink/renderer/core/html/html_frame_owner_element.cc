@@ -482,7 +482,7 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
 void HTMLFrameOwnerElement::AddResourceTiming(
     mojom::blink::ResourceTimingInfoPtr info) {
   // Resource timing info should only be reported if the subframe is attached.
-  DCHECK(ContentFrame() && ContentFrame()->IsLocalFrame());
+  DCHECK(ContentFrame());
 
   // Make sure we don't double-report, e.g. in the case of restored iframes.
   if (!HasPendingFallbackTimingInfo()) {
@@ -510,17 +510,6 @@ bool HTMLFrameOwnerElement::HasPendingFallbackTimingInfo() const {
 
 void HTMLFrameOwnerElement::DidReportResourceTiming() {
   fallback_timing_info_.reset();
-}
-
-void HTMLFrameOwnerElement::WillPerformContainerInitiatedNavigation(
-    const KURL& url) {
-  if (!url.ProtocolIsInHTTPFamily() &&
-      !url.ProtocolIs(url::kUuidInPackageScheme)) {
-    return;
-  }
-
-  fallback_timing_info_ = CreateResourceTimingInfo(base::TimeTicks::Now(), url,
-                                                   /*response=*/nullptr);
 }
 
 // This will report fallback timing only if the "real" resource timing had not
@@ -704,6 +693,15 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
     bool replace_current_item) {
   TRACE_EVENT0("navigation", "HTMLFrameOwnerElement::LoadOrRedirectSubframe");
 
+  // If the subframe navigation is aborted or TAO fails, we report a "fallback"
+  // entry that starts at navigation and ends at load/error event.
+  if (url.ProtocolIsInHTTPFamily() ||
+      url.ProtocolIs(url::kUuidInPackageScheme)) {
+    fallback_timing_info_ =
+        CreateResourceTimingInfo(base::TimeTicks::Now(), url,
+                                 /*response=*/nullptr);
+  }
+
   // Update the |should_lazy_load_children_| value according to the "loading"
   // attribute immediately, so that it still gets respected even if the "src"
   // attribute gets parsed in ParseAttribute() before the "loading" attribute
@@ -730,6 +728,7 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
 
   if (ContentFrame()) {
     FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
+    frame_load_request.SetIsContainerInitiated(true);
     frame_load_request.SetClientRedirectReason(
         ClientNavigationReason::kFrameNavigation);
     WebFrameLoadType frame_load_type = WebFrameLoadType::kStandard;
@@ -790,6 +789,7 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   }
 
   FrameLoadRequest frame_load_request(GetDocument().domWindow(), request);
+  frame_load_request.SetIsContainerInitiated(true);
   child_frame->Loader().StartNavigation(frame_load_request, child_load_type);
 
   return true;

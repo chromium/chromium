@@ -191,6 +191,10 @@ struct BLINK_EXPORT WebNavigationInfo {
 
   // The initiator frame's LocalDOMWindow's has_storage_access state.
   bool has_storage_access = false;
+  // Whether this navigation was initiated by the container, e.g. iframe changed
+  // src. Only container-initiated navigation report resource timing to the
+  // parent.
+  bool is_container_initiated = false;
 };
 
 // This structure holds all information provided by the embedder that is

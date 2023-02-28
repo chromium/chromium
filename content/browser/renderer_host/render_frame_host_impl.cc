@@ -8278,6 +8278,17 @@ void RenderFrameHostImpl::BeginNavigation(
     return;
   }
 
+  // Container-initiated navigations must come from the same process as the
+  // parent.
+  if (begin_params->is_container_initiated) {
+    if (!GetParent() ||
+        (initiator_process_id != GetParent()->GetProcess()->GetID())) {
+      mojo::ReportBadMessage(
+          "container initiated navigation from non-parent process");
+      return;
+    }
+  }
+
   // If the request is bearing Private State Tokens parameters:
   // - it must not be a main-frame navigation, and
   // - for certain Private State Tokens operations, the frame's parent needs the
@@ -9766,6 +9777,48 @@ void RenderFrameHostImpl::FailedNavigation(
   has_committed_any_navigation_ = true;
   DCHECK(navigation_request && navigation_request->IsNavigationStarted() &&
          navigation_request->DidEncounterError());
+}
+
+void RenderFrameHostImpl::AddResourceTimingEntryForFailedSubframeNavigation(
+    FrameTreeNode* child_frame,
+    base::TimeTicks start_time,
+    base::TimeTicks redirect_time,
+    const GURL& initial_url,
+    const GURL& final_url,
+    network::mojom::URLResponseHeadPtr response_head,
+    bool allow_response_details,
+    const network::URLLoaderCompletionStatus& completion_status) {
+  uint32_t status_code = 0;
+  std::string mime_type;
+  std::string normalized_server_timing;
+
+  response_head->headers->GetNormalizedHeader("Server-Timing",
+                                              &normalized_server_timing);
+
+  if (allow_response_details) {
+    status_code = response_head->headers->response_code();
+    mime_type = response_head->mime_type;
+  }
+
+  // To avoid cross-origin leaks, make sure to only to pass here data that
+  // is OK when TAO-gated (as in, timing information only).
+
+  absl::optional<blink::FrameToken> child_token_in_parent =
+      child_frame->GetRenderFrameHostManager()
+          .GetFrameTokenForSiteInstanceGroup(GetSiteInstance()->group());
+
+  if (!child_token_in_parent) {
+    return;
+  }
+
+  GetAssociatedLocalFrame()->AddResourceTimingEntryForFailedSubframeNavigation(
+      child_token_in_parent.value(), initial_url, start_time, redirect_time,
+      response_head->request_start, response_head->response_start, status_code,
+      mime_type, response_head->load_timing, response_head->connection_info,
+      response_head->alpn_negotiated_protocol,
+      base::Contains(url::GetSecureSchemes(),
+                     url::Origin::Create(final_url).scheme()),
+      response_head->is_validated, normalized_server_timing, completion_status);
 }
 
 void RenderFrameHostImpl::HandleRendererDebugURL(const GURL& url) {

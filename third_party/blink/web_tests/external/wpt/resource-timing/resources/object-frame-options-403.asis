@@ -1,0 +1,6 @@
+HTTP/1.0 403 OK
+Content-Type: text/html
+X-Frame-Options: DENY
+Content-Security-Policy: frame-ancestors 'none'
+
+Hello
