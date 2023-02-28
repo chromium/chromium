@@ -120,9 +120,10 @@ std::vector<std::wstring> GetFileExtensionsForProgId(
   base::win::RegKey file_extensions_key(HKEY_CURRENT_USER, prog_id_path.c_str(),
                                         KEY_QUERY_VALUE);
   std::wstring handled_file_extensions;
-  DCHECK_EQ(file_extensions_key.ReadValue(L"FileExtensions",
-                                          &handled_file_extensions),
-            ERROR_SUCCESS);
+  LONG result = file_extensions_key.ReadValue(L"FileExtensions",
+                                              &handled_file_extensions);
+  DCHECK_EQ(result, ERROR_SUCCESS);
+
   return base::SplitString(handled_file_extensions, std::wstring(L";"),
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 }
@@ -220,16 +221,14 @@ bool OsIntegrationTestOverride::IsFileExtensionHandled(
                                    base::FilePath::kSeparators[0] + extension +
                                    base::FilePath::kSeparators[0] +
                                    ShellUtil::kRegOpenWithProgids;
-      DCHECK_EQ(ERROR_SUCCESS,
-                key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ));
+      LONG result = key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ);
+      DCHECK_EQ(ERROR_SUCCESS, result);
       return key.HasValue(file_handler_prog_id.data());
     }
   }
 #elif BUILDFLAG(IS_MAC)
-  base::ScopedTempDir temp_test_dir;
-  DCHECK(temp_test_dir.CreateUniqueTempDirUnderPath(chrome_apps_folder()));
   const base::FilePath test_file_path =
-      temp_test_dir.GetPath().AppendASCII("test" + file_extension);
+      chrome_apps_folder().AppendASCII("test" + file_extension);
   const base::File test_file(
       test_file_path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   const GURL test_file_url = net::FilePathToFileURL(test_file_path);
@@ -237,6 +236,7 @@ bool OsIntegrationTestOverride::IsFileExtensionHandled(
       GetShortcutPath(profile, chrome_apps_folder(), app_id, app_name);
   is_file_handled =
       shell_integration::CanApplicationHandleURL(app_path, test_file_url);
+  base::DeleteFile(test_file_path);
 #elif BUILDFLAG(IS_LINUX)
   for (const LinuxFileRegistration& command : linux_file_registration()) {
     if (base::Contains(command.xdg_command, app_id) &&

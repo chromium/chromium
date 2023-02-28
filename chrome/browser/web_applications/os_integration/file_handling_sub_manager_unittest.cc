@@ -437,14 +437,8 @@ TEST_P(FileHandlingSubManagerConfigureAndExecuteTest, Uninstall) {
   }
 }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_All DISABLED_All
-#else
-#define MAYBE_All All
-#endif
-
 INSTANTIATE_TEST_SUITE_P(
-    MAYBE_All,
+    All,
     FileHandlingSubManagerConfigureAndExecuteTest,
     ::testing::Values(OsIntegrationSubManagersState::kSaveStateToDB,
                       OsIntegrationSubManagersState::kSaveStateAndExecute,
