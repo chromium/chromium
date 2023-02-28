@@ -12,16 +12,23 @@
 // the 2 values in e.data with the doubler, and returns the value to the caller.
 // This is meant to be called by the foreground page.
 
+// Add an empty export to tell TypeScript this is a module so we can re-declare
+// `self` below.
+export {};
+// Re-declare self as a SharedWorkerGlobalScope so we can use shared worker
+// functions.
+declare const self: SharedWorkerGlobalScope;
+
 let doubler = 2;
-const connectedPagePorts = new Set();
-onconnect = (event) => {
-  const port = event.ports[0];
+const connectedPagePorts = new Set<MessagePort>();
+self.onconnect = (event) => {
+  const port = event.ports[0]!;
   port.onmessage = function(e) {
     if (e.data[0] == 'doubler') {
       doubler = e.data[1];
       port.postMessage(e.data[1]);
-      connectedPagePorts.forEach(foreground_port => {
-        foreground_port.postMessage(
+      connectedPagePorts.forEach(foregroundPort => {
+        foregroundPort.postMessage(
             ['New additional value: ' + doubler, doubler]);
       });
     } else {

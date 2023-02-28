@@ -19,10 +19,7 @@ ts_library("trusted_ts") {
     "inter_frame_communication.ts",
     "main.ts",
     "page_handler.ts",
-
-    # TODO(crbug.com/1002798): Migrate these Shared Worker files to TS.
-    "timer.js",
-    "worker.js",
+    "timer.ts",
   ]
 
   composite = true
@@ -33,9 +30,20 @@ ts_library("trusted_ts") {
       [ "/*|" + rebase_path("$root_gen_dir/mojom-webui/*", target_gen_dir) ]
 
   deps = [
+    ":worker_ts",
     "../../mojom:mojom_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
+}
+
+ts_library("worker_ts") {
+  tsconfig_base = "tsconfig_worker.json"
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+
+  in_files = [ "worker.ts" ]
+
+  composite = true
 }
 
 generate_grd("trusted_grd") {
@@ -66,6 +74,8 @@ generate_grd("trusted_grd") {
   # to the grd.
   manifest_files =
       filter_include(get_target_outputs(":trusted_ts"), [ "*.manifest" ])
+  manifest_files +=
+      filter_include(get_target_outputs(":worker_ts"), [ "*.manifest" ])
 
   # Flatten out the dependency tree of your mojom and add generated bindings
   # grdp files here.
@@ -79,6 +89,7 @@ generate_grd("trusted_grd") {
 
   deps = [
     ":trusted_ts",
+    ":worker_ts",
     "../../mojom:shared_webui_grdp",
     "../../mojom:trusted_webui_grdp",
   ]

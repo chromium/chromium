@@ -12,9 +12,6 @@ const additional = document.querySelector<HTMLInputElement>('#additional')!;
 
 const result = document.querySelector('#result')!;
 
-// TODO(crbug.com/1002798): Replace this with real type definitions.
-declare const trustedTypes: any;
-
 declare global {
   interface Window {
     pageHandler: PageHandlerRemote;
@@ -23,10 +20,15 @@ declare global {
   }
 }
 
-const workerUrlPolicy = trustedTypes.createPolicy(
-    'worker-js-static',
-    {createScriptURL: () => 'chrome://sample-system-web-app/worker.js'});
-const myWorker = new SharedWorker(workerUrlPolicy.createScriptURL(''));
+const workerUrlPolicy = window.trustedTypes!.createPolicy('worker-js-static', {
+  createScriptURL: (_ignored: string) =>
+      'chrome://sample-system-web-app/worker.js',
+});
+
+// Currently TypeScript doesn't support trusted types so cast TrustedScriptURL
+// to URL. See https://github.com/microsoft/TypeScript/issues/30024.
+const myWorker = new SharedWorker(
+    workerUrlPolicy.createScriptURL('') as unknown as URL, {type: 'module'});
 
 first.onchange = () => {
   myWorker.port.postMessage([first.value, second.value]);
@@ -40,7 +42,6 @@ myWorker.port.onmessage = (event: any) => {
   result.textContent = event.data[0];
   additional.value = event.data[1];
 };
-
 
 // Exposes the pageHandler to the user as a window's global variable for
 // testing.
