@@ -40,6 +40,7 @@ example_value:
     - drive.google.com
     - company.com
   name: Support agent work flows
+  rule_id: rules/00examplerule
   restrictions:
   - class: CLIPBOARD
     level: ALLOW
@@ -106,6 +107,8 @@ schema:
             type: array
         type: object
       name:
+        type: string
+      rule_id:
         type: string
       restrictions:
         items:
