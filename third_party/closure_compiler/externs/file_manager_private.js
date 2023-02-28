@@ -335,8 +335,8 @@ chrome.fileManagerPrivate.VmType = {
 
 /** @enum {string} */
 chrome.fileManagerPrivate.UserType = {
-  UNMANAGED: 'kUnmanaged',
-  ORGANIZATION: 'kOrganization',
+  UNMANAGED: 'unmanaged',
+  ORGANIZATION: 'organization',
 };
 
 /** @enum {string} */

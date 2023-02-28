@@ -338,9 +338,9 @@ enum VmType { termina, plugin_vm, borealis, bruschetta, arcvm };
 
 enum UserType {
   // User doesn't belong to any organization.
-  kUnmanaged,
+  unmanaged,
   // User is a member of an organization.
-  kOrganization
+  organization
 };
 
 enum DlpLevel {
@@ -392,19 +392,19 @@ dictionary FileTask {
   DOMString title;
 
   // Task icon url (from chrome://extension-icon/...)
-  DOMString iconUrl;
+  DOMString? iconUrl;
 
   // True if this task is a default task for the selected files.
-  boolean isDefault;
+  boolean? isDefault;
 
   // True if this task is from generic file handler. Generic file handler is a
   // file handler which handles any type of files (e.g. extensions: ["*"],
   // types: ["*/*"]). Partial wild card (e.g. types: ["image/*"]) is not
   // generic file handler.
-  boolean isGenericFileHandler;
+  boolean? isGenericFileHandler;
 
   // True if this is task is blocked by Data Leak Prevention (DLP).
-  boolean isDlpBlocked;
+  boolean? isDlpBlocked;
 };
 
 // Represents a set of tasks capable of handling file entries.
@@ -892,6 +892,17 @@ dictionary Provider {
   ProviderSource source;
 };
 
+// chrome/common/extensions/api/file_system_provider.idl:Action
+// Information about an action for an entry.
+dictionary FileSystemProviderAction {
+  // The identifier of the action. Any string or $(ref:CommonActionId) for
+  // common actions.
+  DOMString id;
+
+  // The title of the action. It may be ignored for common actions.
+  DOMString? title;
+};
+
 // Information about a Linux package in response to GetLinuxPackageInfo.
 dictionary LinuxPackageInfo {
   DOMString name;
@@ -1274,7 +1285,7 @@ callback ComputeChecksumCallback = void(DOMString checksum);
 callback GetProvidersCallback = void(Provider[] extensions);
 
 // |actions| List of actions.
-callback GetCustomActionsCallback = void(fileSystemProvider.Action[] actions);
+callback GetCustomActionsCallback = void(FileSystemProviderAction[] actions);
 
 // |size| result size.
 callback GetDirectorySizeCallback = void(double size);

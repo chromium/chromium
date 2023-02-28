@@ -216,7 +216,7 @@ export class MockChromeFileManagerPrivateDirectoryChanged {
 
   /**
    * Returns the stubbed out drive quota metadata for a directory change.
-   * @param {!Entry} entry
+   * @param {Entry} entry
    * @param {!function((!chrome.fileManagerPrivate.DriveQuotaMetadata|undefined))}
    *     callback
    * @private
