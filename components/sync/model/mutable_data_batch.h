@@ -18,7 +18,7 @@ namespace syncer {
 
 // An implementation of DataBatch that's purpose is to transfer ownership of
 // EntityData objects. As soon as this batch recieves the EntityData, it owns
-// them until Next() is invoked, when it gives up ownerhsip. Because a vector
+// them until Next() is invoked, when it gives up ownership. Because a vector
 // is used internally, this impl is unaware when duplcate storage_keys are used,
 // and it is the caller's job to avoid this.
 class MutableDataBatch : public DataBatch {
