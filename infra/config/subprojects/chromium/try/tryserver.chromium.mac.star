@@ -377,7 +377,6 @@ ios_builder(
     mirrors = ["ci/ios-m1-simulator"],
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
-    goma_backend = goma.backend.RBE_PROD,
 )
 
 ios_builder(

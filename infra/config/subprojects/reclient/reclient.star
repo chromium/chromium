@@ -38,7 +38,6 @@ ci.defaults.set(
     free_space = builders.free_space.standard,
     build_numbers = True,
     execution_timeout = 3 * time.hour,
-    goma_backend = None,
     service_account = (
         "chromium-ci-builder@chops-service-accounts.iam.gserviceaccount.com"
     ),
