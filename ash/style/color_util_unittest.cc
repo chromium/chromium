@@ -4,14 +4,12 @@
 
 #include "ash/style/color_util.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
-#include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/test/sk_color_eq.h"
 
@@ -25,10 +23,7 @@ constexpr SkColor kTestDefaultColor = SK_ColorYELLOW;
 
 class ColorUtilTest : public AshTestBase {
  public:
-  ColorUtilTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDarkLightModeKMeansColor);
-  }
+  ColorUtilTest() = default;
 
   ColorUtilTest(const ColorUtilTest&) = delete;
   ColorUtilTest& operator=(const ColorUtilTest&) = delete;
@@ -45,7 +40,6 @@ class ColorUtilTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<WallpaperControllerTestApi> wallpaper_controller_test_api_;
 };
 

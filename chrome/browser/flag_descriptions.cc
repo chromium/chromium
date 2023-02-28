@@ -745,12 +745,6 @@ const char kChromeWhatsNewUIName[] =
 const char kChromeWhatsNewUIDescription[] =
     "Enables Chrome What's New page at chrome://whats-new.";
 
-const char kDarkLightModeKMeansColorName[] =
-    "K Means color algorithm for dark light mode";
-const char kDarkLightModeKMeansColorDescription[] =
-    "Enables the alternate K Means color algorithm for extracting color from "
-    "user wallpaper to mix into system UI for dark light mode";
-
 extern const char kDeviceForceScheduledRebootName[] =
     "Enable DeviceScheduledReboot policy for all sessions.";
 extern const char kDeviceForceScheduledRebootDescription[] =
