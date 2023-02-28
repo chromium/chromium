@@ -255,22 +255,3 @@
 }
 
 @end
-
-@interface BrowserViewControllerWith3PIntentsInIncognitoFeatureTestCase
-    : BrowserViewControllerTestCase
-@end
-
-@implementation BrowserViewControllerWith3PIntentsInIncognitoFeatureTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kTrendingQueriesModule);
-  config.features_enabled.push_back(kIOS3PIntentsInIncognito);
-  return config;
-}
-
-// This is currently needed to prevent this test case from being ignored.
-- (void)testEmpty {
-}
-
-@end

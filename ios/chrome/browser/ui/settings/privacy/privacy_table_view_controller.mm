@@ -170,12 +170,10 @@ const char kSyncSettingsURL[] = "settings://open_sync";
                    prefName:prefs::kHttpsOnlyModeEnabled];
     [_HTTPSOnlyModePref setObserver:self];
 
-    if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
-      _incognitoInterstitialPref = [[PrefBackedBoolean alloc]
-          initWithPrefService:browser->GetBrowserState()->GetPrefs()
-                     prefName:prefs::kIncognitoInterstitialEnabled];
-      [_incognitoInterstitialPref setObserver:self];
-    }
+    _incognitoInterstitialPref = [[PrefBackedBoolean alloc]
+        initWithPrefService:browser->GetBrowserState()->GetPrefs()
+                   prefName:prefs::kIncognitoInterstitialEnabled];
+    [_incognitoInterstitialPref setObserver:self];
   }
   return self;
 }
@@ -216,9 +214,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
 
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
-  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
-    [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-  }
+  [model addSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Clear Browsing item.
   [model addItem:[self clearBrowsingDetailItem]
@@ -228,10 +224,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   [model addItem:[self safeBrowsingDetailItem]
       toSectionWithIdentifier:SectionIdentifierSafeBrowsing];
   [model setFooter:[self showPrivacyFooterItem]
-      forSectionWithIdentifier:base::FeatureList::IsEnabled(
-                                   kIOS3PIntentsInIncognito)
-                                   ? SectionIdentifierIncognitoInterstitial
-                                   : SectionIdentifierIncognitoAuth];
+      forSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 
   // Web Services item.
   [model addItem:[self handoffDetailItem]
@@ -249,18 +242,16 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
 
   // Show "Ask to Open Links from Other Apps in Incognito" setting.
-  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
-    // Incognito interstitial item is added. If Incognito mode is
-    // disabled or forced, a disabled version is shown with information
-    // to learn more.
-    TableViewItem* incognitoInterstitialItem =
-        (IsIncognitoModeDisabled(_browserState->GetPrefs()) ||
-         IsIncognitoModeForced(_browserState->GetPrefs()))
-            ? self.incognitoInterstitialItemDisabled
-            : self.incognitoInterstitialItem;
-    [model addItem:incognitoInterstitialItem
-        toSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
-  }
+  // Incognito interstitial item is added. If Incognito mode is
+  // disabled or forced, a disabled version is shown with information
+  // to learn more.
+  TableViewItem* incognitoInterstitialItem =
+      (IsIncognitoModeDisabled(_browserState->GetPrefs()) ||
+       IsIncognitoModeForced(_browserState->GetPrefs()))
+          ? self.incognitoInterstitialItemDisabled
+          : self.incognitoInterstitialItem;
+  [model addItem:incognitoInterstitialItem
+      toSectionWithIdentifier:SectionIdentifierIncognitoInterstitial];
 }
 
 #pragma mark - Model Objects

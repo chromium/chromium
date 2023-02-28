@@ -40,10 +40,6 @@ BASE_FEATURE(kIncognitoNtpRevamp,
              "IncognitoNtpRevamp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIOS3PIntentsInIncognito,
-             "IOS3pIntentsInIncognito",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDefaultBrowserFullscreenPromoExperiment,
              "DefaultBrowserFullscreenPromoExperiment",
              base::FEATURE_DISABLED_BY_DEFAULT);

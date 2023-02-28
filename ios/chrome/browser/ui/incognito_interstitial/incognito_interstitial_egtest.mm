@@ -33,12 +33,6 @@ using chrome_test_util::NTPIncognitoView;
   ScopedPolicyList scopedPolicies;
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_enabled.push_back(kIOS3PIntentsInIncognito);
-  return config;
-}
-
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey setBoolValue:YES

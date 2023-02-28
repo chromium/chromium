@@ -41,9 +41,6 @@ BASE_DECLARE_FEATURE(kModernTabStrip);
 // Feature flag to enable revamped Incognito NTP page.
 BASE_DECLARE_FEATURE(kIncognitoNtpRevamp);
 
-// Feature flag to enable third-party intents in Incognito.
-BASE_DECLARE_FEATURE(kIOS3PIntentsInIncognito);
-
 // Feature flag that experiments with the default browser fullscreen promo UI.
 BASE_DECLARE_FEATURE(kDefaultBrowserFullscreenPromoExperiment);
 

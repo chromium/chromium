@@ -2349,9 +2349,7 @@ void InjectNTP(Browser* browser) {
   if (targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
     PrefService* prefs = self.mainInterface.browserState->GetPrefs();
     BOOL canShowIncognitoInterstitial =
-        base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito) &&
         prefs->GetBoolean(prefs::kIncognitoInterstitialEnabled);
-
     if (!canShowIncognitoInterstitial) {
       targetMode = [self isIncognitoForced]
                        ? ApplicationModeForTabOpening::INCOGNITO

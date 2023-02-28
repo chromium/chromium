@@ -56,9 +56,7 @@ class GURL;
 @property(nonatomic, assign) std::map<std::string, std::string>
     externalURLParams;
 
-// The mode in which the tab must be opened. Defaults to NORMAL, unless the flag
-// `kIOS3PIntentsInIncognito` is enabled, in which case it is UNDETERMINED.
-// TODO(crbug.com/1318750): Change this comment when flag is enabled by default.
+// The mode in which the tab must be opened. Defaults to UNDETERMINED.
 @property(nonatomic, assign) ApplicationModeForTabOpening applicationMode;
 // Action to be taken after loading the URL.
 @property(nonatomic, readwrite, assign)

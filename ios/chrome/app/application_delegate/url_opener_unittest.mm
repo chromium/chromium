@@ -80,16 +80,15 @@ enum class ExternalFilesLoadedInWebStateFeature {
 
 #pragma mark -
 
-class URLOpenerTest : public base::test::WithFeatureOverride,
-                      public PlatformTest {
+class URLOpenerTest : public PlatformTest {
  protected:
-  URLOpenerTest() : WithFeatureOverride(kIOS3PIntentsInIncognito) {}
+  URLOpenerTest() {}
 
  private:
   web::WebTaskEnvironment task_environment_;
 };
 
-TEST_P(URLOpenerTest, HandleOpenURL) {
+TEST_F(URLOpenerTest, HandleOpenURL) {
   // A set of tests for robustness of
   // application:openURL:options:tabOpener:startupInformation:
   // It verifies that the function handles correctly different URLs parsed by
@@ -223,7 +222,7 @@ TEST_P(URLOpenerTest, HandleOpenURL) {
 }
 
 // Tests that -handleApplication set startup parameters as expected.
-TEST_P(URLOpenerTest, VerifyLaunchOptions) {
+TEST_F(URLOpenerTest, VerifyLaunchOptions) {
   // Setup.
   NSURL* url = [NSURL URLWithString:@"chromium://www.google.com"];
   NSDictionary* launchOptions = @{
@@ -268,7 +267,7 @@ TEST_P(URLOpenerTest, VerifyLaunchOptions) {
 
 // Tests that -handleApplication set startup parameters as expected with options
 // as nil.
-TEST_P(URLOpenerTest, VerifyLaunchOptionsNil) {
+TEST_F(URLOpenerTest, VerifyLaunchOptionsNil) {
   // Creates a mock with no stub. This test will pass only if we don't use these
   // objects.
   id startupInformationMock =
@@ -288,7 +287,7 @@ TEST_P(URLOpenerTest, VerifyLaunchOptionsNil) {
 
 // Tests that -handleApplication set startup parameters as expected with no
 // source application.
-TEST_P(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
+TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
   // Setup.
   NSURL* url = [NSURL URLWithString:@"chromium://www.google.com"];
   NSDictionary* launchOptions = @{
@@ -331,7 +330,7 @@ TEST_P(URLOpenerTest, VerifyLaunchOptionsWithNoSourceApplication) {
 }
 
 // Tests that -handleApplication set startup parameters as expected with no url.
-TEST_P(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
+TEST_F(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
   // Setup.
   NSDictionary* launchOptions = @{
     UIApplicationLaunchOptionsSourceApplicationKey : @"com.apple.mobilesafari"
@@ -358,7 +357,7 @@ TEST_P(URLOpenerTest, VerifyLaunchOptionsWithNoURL) {
 
 // Tests that -handleApplication set startup parameters as expected with a bad
 // url.
-TEST_P(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
+TEST_F(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
   // Setup.
   NSURL* url = [NSURL URLWithString:@"chromium.www.google.com"];
   NSDictionary* launchOptions = @{
@@ -395,7 +394,7 @@ TEST_P(URLOpenerTest, VerifyLaunchOptionsWithBadURL) {
 }
 
 // Tests URL is not opened if the FRE is presented.
-TEST_P(URLOpenerTest, PresentingFirstRunUI) {
+TEST_F(URLOpenerTest, PresentingFirstRunUI) {
   // Setup.
   NSURL* url = [NSURL URLWithString:@"chromium://www.google.com"];
   NSDictionary* launchOptions = @{
@@ -436,5 +435,3 @@ TEST_P(URLOpenerTest, PresentingFirstRunUI) {
   EXPECT_OCMOCK_VERIFY(startupInformationMock);
   EXPECT_OCMOCK_VERIFY(appStateMock);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(URLOpenerTest);
