@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_server_socket.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_server_socket_open_info.h"
@@ -86,9 +87,33 @@ TCPServerSocket* TCPServerSocket::Create(ScriptState* script_state,
   return socket;
 }
 
-ScriptPromise TCPServerSocket::close(ScriptState*, ExceptionState&) {
-  NOTIMPLEMENTED();
-  return closed(GetScriptState());
+ScriptPromise TCPServerSocket::close(ScriptState* script_state,
+                                     ExceptionState& exception_state) {
+  if (GetState() == State::kOpening) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Socket is not properly initialized.");
+    return ScriptPromise();
+  }
+
+  if (GetState() != State::kOpen) {
+    return closed(script_state);
+  }
+
+  if (readable_stream_wrapper_->Locked()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Close called on locked streams.");
+    return ScriptPromise();
+  }
+
+  auto* reason = MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kAbortError, "Stream closed.");
+
+  auto readable_cancel = readable_stream_wrapper_->Readable()->cancel(
+      script_state, ScriptValue::From(script_state, reason), exception_state);
+  DCHECK(!exception_state.HadException()) << exception_state.Message();
+  readable_cancel.MarkAsHandled();
+
+  return closed(script_state);
 }
 
 bool TCPServerSocket::Open(const String& local_addr,
@@ -121,7 +146,10 @@ void TCPServerSocket::OnTCPServerSocketOpened(
     DCHECK(local_addr);
     readable_stream_wrapper_ =
         MakeGarbageCollected<TCPServerReadableStreamWrapper>(
-            GetScriptState(), base::DoNothing(), std::move(tcp_server_remote));
+            GetScriptState(),
+            WTF::BindOnce(&TCPServerSocket::OnReadableStreamClosed,
+                          WrapPersistent(this)),
+            std::move(tcp_server_remote));
 
     auto* open_info = TCPServerSocketOpenInfo::Create();
     open_info->setReadable(readable_stream_wrapper_->Readable());
@@ -132,7 +160,15 @@ void TCPServerSocket::OnTCPServerSocketOpened(
 
     SetState(State::kOpen);
   } else {
-    NOTIMPLEMENTED();
+    // Error codes are negative.
+    base::UmaHistogramSparse("DirectSockets.TCPServerNetworkFailures", -result);
+    ReleaseResources();
+
+    auto* exception = CreateDOMExceptionFromNetErrorCode(result);
+    GetOpenedPromiseResolver()->Reject(exception);
+    GetClosedPromiseResolver()->Reject(exception);
+
+    SetState(State::kAborted);
   }
 
   DCHECK_NE(GetState(), State::kOpening);
@@ -143,6 +179,31 @@ void TCPServerSocket::Trace(Visitor* visitor) const {
 
   ScriptWrappable::Trace(visitor);
   Socket::Trace(visitor);
+}
+
+void TCPServerSocket::ContextDestroyed() {
+  // Release resources as quickly as possible.
+  ReleaseResources();
+}
+
+void TCPServerSocket::ReleaseResources() {
+  ResetServiceAndFeatureHandle();
+  readable_stream_wrapper_.Clear();
+}
+
+void TCPServerSocket::OnReadableStreamClosed(ScriptValue exception) {
+  DCHECK_EQ(GetState(), State::kOpen);
+
+  if (!exception.IsEmpty()) {
+    GetClosedPromiseResolver()->Reject(exception);
+    SetState(State::kAborted);
+  } else {
+    GetClosedPromiseResolver()->Resolve();
+    SetState(State::kClosed);
+  }
+  ReleaseResources();
+
+  DCHECK_NE(GetState(), State::kOpen);
 }
 
 }  // namespace blink

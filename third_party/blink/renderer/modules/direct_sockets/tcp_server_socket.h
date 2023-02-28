@@ -49,9 +49,14 @@ class MODULES_EXPORT TCPServerSocket final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
   // Socket:
-  void ContextDestroyed() override {}
+  void ContextDestroyed() override;
 
  private:
+  // Resets mojo resources held by this class.
+  void ReleaseResources();
+
+  void OnReadableStreamClosed(ScriptValue exception);
+
   Member<TCPServerReadableStreamWrapper> readable_stream_wrapper_;
 };
 

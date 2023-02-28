@@ -274,7 +274,7 @@ async function exchangeSingleTcpPacketBetweenClientAndServer() {
 
     await clientSocket.close();
     await acceptedSocket.close();
-    // TODO(crbug.com/1408140): await serverSocket.close();
+    await serverSocket.close();
 
     return "exchangeSingleTcpPacketBetweenClientAndServer succeeded.";
   } catch (error) {

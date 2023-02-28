@@ -4842,6 +4842,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DirectSockets.TCPServerNetworkFailures" enum="NetErrorCodes"
+    expires_after="2023-09-13">
+  <owner>bartfab@chromium.org</owner>
+  <owner>greengrape@google.com</owner>
+  <summary>
+    How often tcp server socket opening finishes with a network failure.
+  </summary>
+</histogram>
+
 <histogram name="DirectSockets.UDPNetworkFailures" enum="NetErrorCodes"
     expires_after="2023-09-13">
   <owner>bartfab@chromium.org</owner>

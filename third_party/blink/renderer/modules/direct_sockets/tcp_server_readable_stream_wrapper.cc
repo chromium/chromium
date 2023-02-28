@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_server_readable_stream_wrapper.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -50,11 +52,36 @@ void TCPServerReadableStreamWrapper::Pull() {
 }
 
 void TCPServerReadableStreamWrapper::CloseStream() {
-  NOTIMPLEMENTED();
+  if (GetState() != State::kOpen) {
+    return;
+  }
+  SetState(State::kClosed);
+
+  tcp_server_socket_.reset();
+
+  std::move(on_close_).Run(/*exception=*/ScriptValue());
 }
 
 void TCPServerReadableStreamWrapper::ErrorStream(int32_t error_code) {
-  NOTIMPLEMENTED();
+  if (GetState() != State::kOpen) {
+    return;
+  }
+  SetState(State::kAborted);
+
+  tcp_server_socket_.reset();
+
+  auto* script_state = GetScriptState();
+  // Scope is needed because there's no ScriptState* on the call stack for
+  // ScriptValue::From.
+  ScriptState::Scope scope{script_state};
+
+  auto exception = ScriptValue::From(
+      script_state,
+      V8ThrowDOMException::CreateOrDie(
+          script_state->GetIsolate(), DOMExceptionCode::kNetworkError,
+          String{"Server socket closed: " + net::ErrorToString(error_code)}));
+  Controller()->Error(exception);
+  std::move(on_close_).Run(exception);
 }
 
 void TCPServerReadableStreamWrapper::Trace(Visitor* visitor) const {
@@ -72,7 +99,7 @@ void TCPServerReadableStreamWrapper::OnAccept(
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   if (result != net::OK) {
-    NOTIMPLEMENTED();
+    ErrorStream(result);
     return;
   }
 
