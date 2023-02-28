@@ -29,6 +29,7 @@
 #include "services/device/geolocation/fake_position_cache.h"
 #include "services/device/geolocation/location_arbitrator.h"
 #include "services/device/geolocation/wifi_data_provider.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -36,7 +37,7 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -138,13 +139,14 @@ class GeolocationNetworkProviderTest : public testing::Test {
   std::unique_ptr<LocationProvider> CreateProvider(
       bool set_permission_granted,
       const std::string& api_key = std::string()) {
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
     fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
     auto provider = std::make_unique<NetworkLocationProvider>(
         test_url_loader_factory_.GetSafeWeakWrapper(),
         fake_geolocation_manager_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), api_key,
         &position_cache_);
+    // TODO(janlan): have a look at this
     // For macOS we must simulate the granting of location permission
     if (grant_system_permission_by_default_) {
       fake_geolocation_manager_->SetSystemPermission(
@@ -166,7 +168,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
 
   bool grant_system_permission_by_default_ = true;
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 
@@ -646,9 +648,10 @@ TEST_F(GeolocationNetworkProviderTest, NetworkRequestResponseMalformed) {
   EXPECT_TRUE(position->error_technical.empty());
 }
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 // Tests that, callbacks and network requests are never made until we have
 // system location permission.
+// TODO:(janlanik): rename
 TEST_F(GeolocationNetworkProviderTest, MacOSSystemPermissionsTest) {
   // Do not grant system permission when creating the provider.
   grant_system_permission_by_default_ = false;

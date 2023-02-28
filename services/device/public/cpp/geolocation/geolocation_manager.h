@@ -9,7 +9,11 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+#define PLATFORM_REQUIRES_GEOLOCATION_PERMISSION \
+  (BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS))
+#define PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER BUILDFLAG(IS_APPLE)
+
+#if PLATFORM_REQUIRES_GEOLOCATION_PERMISSION
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
@@ -18,13 +22,13 @@
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/mojom/geoposition.mojom.h"
 #endif
 
 namespace device {
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_CHROMEOS)
+#if !PLATFORM_REQUIRES_GEOLOCATION_PERMISSION
 // Default empty implementation of Geolocation Manager. It is used on operation
 // systems for which we don't support system-level geolocation. A separate class
 // (as opposed to nullptr) makes sure no unsupported calls are made in such
@@ -46,7 +50,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   using PermissionObserverList =
       base::ObserverListThreadSafe<PermissionObserver>;
 
-#if BUILDFLAG(IS_APPLE)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   class PositionObserver : public base::CheckedObserver {
    public:
     virtual void OnPositionUpdated(const mojom::Geoposition& position) = 0;
@@ -71,7 +75,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   // Returns the list of permission observers.
   scoped_refptr<PermissionObserverList> GetObserverList() const;
 
-#if BUILDFLAG(IS_APPLE)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   // Starts the system level process for watching position updates. These
   // updates will trigger a call to and observers in the |position_observers_|
   // list. Upon call the |position_observers_| will be notified of the current
@@ -94,7 +98,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
  private:
   void UpdateSystemPermission(LocationSystemPermissionStatus status);
   void NotifyPermissionObservers();
-#if BUILDFLAG(IS_APPLE)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   void NotifyPositionObservers(const mojom::Geoposition& position);
 #endif
 
@@ -106,7 +110,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
   LocationSystemPermissionStatus permission_cache_ =
       LocationSystemPermissionStatus::kNotDetermined;
 
-#if BUILDFLAG(IS_APPLE)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   mojom::Geoposition last_position_;
   // Using scoped_refptr so objects can hold a reference and ensure this list
   // is not destroyed on shutdown before it had a chance to remove itself from

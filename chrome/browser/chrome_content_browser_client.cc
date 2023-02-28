@@ -3478,7 +3478,7 @@ std::string ChromeContentBrowserClient::GetGeolocationApiKey() {
 
 device::GeolocationManager*
 ChromeContentBrowserClient::GetGeolocationManager() {
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   return g_browser_process->platform_part()->geolocation_manager();
 #else
   return nullptr;

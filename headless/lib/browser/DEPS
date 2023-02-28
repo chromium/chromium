@@ -10,6 +10,7 @@ include_rules = [
   "+printing",
   "+services/cert_verifier/public/mojom",
   "+services/network",
+  "+services/device/public/cpp/geolocation",
   "+storage/browser/quota",
   "+storage/common/quota",
   "+third_party/skia/include",

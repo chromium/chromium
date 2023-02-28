@@ -71,6 +71,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -88,7 +89,6 @@
 #include "base/mac/mac_util.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/media/webrtc/system_media_capture_permissions_mac.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #endif
 
 using base::UserMetricsAction;
@@ -838,7 +838,7 @@ ContentSettingMediaStreamBubbleModel::ContentSettingMediaStreamBubbleModel(
 #if BUILDFLAG(IS_MAC)
     InitializeSystemMediaPermissionBubble();
     return;
-#endif  // BUILDFLAG(IS_MAC)
+#endif
   }
 
   SetTitle();
@@ -902,7 +902,7 @@ void ContentSettingMediaStreamBubbleModel::OnDoneButtonClicked() {
           base::mac::SystemSettingsPane::kPrivacySecurity_Microphone);
     }
     return;
-#endif  // BUILDFLAG(IS_MAC)
+#endif
   }
 }
 
@@ -1112,7 +1112,7 @@ void ContentSettingMediaStreamBubbleModel::
   SetCustomLink();
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
 }
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 
 bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
 #if BUILDFLAG(IS_MAC)
@@ -1126,7 +1126,7 @@ bool ContentSettingMediaStreamBubbleModel::ShouldShowSystemMediaPermissions() {
           !(MicrophoneAccessed() && MicrophoneBlocked()));
 #else
   return false;
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 }
 
 void ContentSettingMediaStreamBubbleModel::UpdateDefaultDeviceForType(
@@ -1262,7 +1262,7 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
     // the bubble to enable the user to trigger the system dialog.
     InitializeSystemGeolocationPermissionBubble();
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 }
 
 ContentSettingGeolocationBubbleModel::~ContentSettingGeolocationBubbleModel() =
@@ -1279,7 +1279,7 @@ void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
     base::mac::OpenSystemSettingsPane(
         base::mac::SystemSettingsPane::kPrivacySecurity_LocationServices);
     return;
-#endif  // BUILDFLAG(IS_MAC)
+#endif
   }
 }
 
@@ -1294,9 +1294,9 @@ void ContentSettingGeolocationBubbleModel::CommitChanges() {
   ContentSettingSingleRadioGroup::CommitChanges();
 }
 
+#if BUILDFLAG(IS_MAC)
 void ContentSettingGeolocationBubbleModel::
     InitializeSystemGeolocationPermissionBubble() {
-#if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kLocationPermissionsExperiment)) {
     set_title(l10n_util::GetStringUTF16(
         IDS_GEOLOCATION_TURNED_OFF_IN_MACOS_SETTINGS));
@@ -1313,8 +1313,8 @@ void ContentSettingGeolocationBubbleModel::
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
   set_radio_group(RadioGroup());
   show_system_geolocation_bubble_ = true;
-#endif  // BUILDFLAG(IS_MAC)
 }
+#endif
 
 void ContentSettingGeolocationBubbleModel::SetCustomLink() {
   auto* map = HostContentSettingsMapFactory::GetForProfile(

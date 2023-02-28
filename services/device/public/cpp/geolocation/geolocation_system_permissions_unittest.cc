@@ -31,7 +31,7 @@ class SourceImpl : public device::SystemGeolocationSource {
     callback_ = callback;
   }
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   // This methods are not used in the tests, but need to be implemented on Mac.
   void RegisterPositionUpdateCallback(PositionUpdateCallback) override {}
   void StartWatchingPosition(bool) override {}

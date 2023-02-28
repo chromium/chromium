@@ -18,6 +18,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/position_cache.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -58,7 +59,7 @@ NetworkLocationProvider::NetworkLocationProvider(
           base::BindRepeating(&NetworkLocationProvider::OnLocationResponse,
                               base::Unretained(this)))) {
   DCHECK(position_cache_);
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   geolocation_manager_ = geolocation_manager;
   permission_observers_ = geolocation_manager->GetObserverList();
   permission_observers_->AddObserver(this);
@@ -73,7 +74,7 @@ NetworkLocationProvider::NetworkLocationProvider(
 
 NetworkLocationProvider::~NetworkLocationProvider() {
   DCHECK(thread_checker_.CalledOnValidThread());
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   permission_observers_->RemoveObserver(this);
 #endif
   if (IsStarted())
@@ -93,7 +94,7 @@ void NetworkLocationProvider::OnPermissionGranted() {
     RequestPosition();
 }
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 void NetworkLocationProvider::OnSystemPermissionUpdated(
     LocationSystemPermissionStatus new_status) {
   is_awaiting_initial_permission_status_ = false;
@@ -119,7 +120,7 @@ void NetworkLocationProvider::OnSystemPermissionUpdated(
 void NetworkLocationProvider::OnWifiDataUpdate() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(IsStarted());
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   if (!is_system_permission_granted_) {
     if (!is_awaiting_initial_permission_status_) {
       mojom::Geoposition error_position;
@@ -215,7 +216,7 @@ void NetworkLocationProvider::RequestPosition() {
                          << is_new_data_available_ << " is_wifi_data_complete_="
                          << is_wifi_data_complete_;
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   if (!is_system_permission_granted_) {
     return;
   }

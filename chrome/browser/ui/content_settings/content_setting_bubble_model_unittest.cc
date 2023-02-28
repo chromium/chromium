@@ -49,12 +49,12 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
@@ -725,7 +725,7 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, Geolocation) {
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   auto fake_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   device::FakeGeolocationManager* geolocation_manager =
@@ -733,7 +733,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
   TestingBrowserProcess::GetGlobal()
       ->GetTestPlatformPart()
       ->SetGeolocationManager(std::move(fake_geolocation_manager));
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
@@ -748,7 +748,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
                                          CONTENT_SETTING_ALLOW);
   content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   // System-level geolocation permission is blocked.
   {
     auto content_setting_bubble_model =
@@ -788,7 +788,7 @@ TEST_F(ContentSettingBubbleModelTest, Geolocation) {
     // This should be a no-op.
     content_setting_bubble_model->CommitChanges();
   }
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 
   // Go from allow by default to block by default to allow by default.
   {

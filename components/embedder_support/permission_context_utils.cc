@@ -24,9 +24,10 @@
 #include "components/permissions/contexts/nfc_permission_context_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
+// TODO(257906959): rename the file and class to not contain 'mac'
 #include "components/permissions/contexts/geolocation_permission_context_mac.h"
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 
 namespace embedder_support {
 
@@ -47,9 +48,9 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
 
   DCHECK(delegates.camera_pan_tilt_zoom_permission_context_delegate);
   DCHECK(delegates.geolocation_permission_context_delegate);
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   DCHECK(delegates.geolocation_manager);
-#endif  // BUILDFLAG(IS_MAC)
+#endif
   DCHECK(delegates.media_stream_device_enumerator);
   DCHECK(delegates.nfc_permission_context_delegate);
 
@@ -77,7 +78,7 @@ CreateDefaultPermissionContexts(content::BrowserContext* browser_context,
       std::make_unique<permissions::GeolocationPermissionContextAndroid>(
           browser_context,
           std::move(delegates.geolocation_permission_context_delegate));
-#elif BUILDFLAG(IS_MAC)
+#elif PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   permission_contexts[ContentSettingsType::GEOLOCATION] =
       std::make_unique<permissions::GeolocationPermissionContextMac>(
           browser_context,

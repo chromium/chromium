@@ -11,16 +11,11 @@
 #include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/contexts/nfc_permission_context.h"
 #include "components/permissions/permission_manager.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 
 namespace content {
 class BrowserContext;
 }  // namespace content
-
-#if BUILDFLAG(IS_MAC)
-namespace device {
-class GeolocationManager;
-}  // namespace device
-#endif  // BUILDFLAG(IS_MAC)
 
 namespace webrtc {
 class MediaStreamDeviceEnumerator;
@@ -40,9 +35,9 @@ struct PermissionContextDelegates {
       camera_pan_tilt_zoom_permission_context_delegate;
   std::unique_ptr<permissions::GeolocationPermissionContext::Delegate>
       geolocation_permission_context_delegate;
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   raw_ptr<device::GeolocationManager> geolocation_manager;
-#endif  // BUILDFLAG(IS_MAC)
+#endif
   raw_ptr<webrtc::MediaStreamDeviceEnumerator> media_stream_device_enumerator;
   std::unique_ptr<permissions::NfcPermissionContext::Delegate>
       nfc_permission_context_delegate;

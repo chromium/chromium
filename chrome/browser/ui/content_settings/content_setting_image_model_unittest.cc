@@ -46,13 +46,13 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/cookies/cookie_options.h"
 #include "services/device/public/cpp/device_features.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
@@ -298,7 +298,7 @@ TEST_F(ContentSettingImageModelTest, SensorAccessed) {
       /* explanatory_string_id = */ 0);
 }
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 // Test the correct ContentSettingImageModel for various permutations of site
 // and system level Geolocation permissions
 TEST_F(ContentSettingImageModelTest, GeolocationAccessPermissionsChanged) {

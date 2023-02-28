@@ -9,6 +9,7 @@ include_rules = [
   "+components/version_info",
   "+content/public/browser",
   "+content/public/common",
+  "+services/device/public/cpp/geolocation/geolocation_manager.h",
   "+net",
   "+third_party/blink/public/common",
   "+third_party/re2",

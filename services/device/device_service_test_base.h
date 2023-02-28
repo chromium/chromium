@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -52,7 +53,7 @@ class DeviceServiceTestBase : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
 #endif
 

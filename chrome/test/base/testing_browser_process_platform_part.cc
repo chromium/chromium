@@ -6,13 +6,13 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
 TestingBrowserProcessPlatformPart::TestingBrowserProcessPlatformPart() {
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   auto fake_geolocation_manager =
       std::make_unique<device::FakeGeolocationManager>();
   fake_geolocation_manager->SetSystemPermission(
@@ -23,7 +23,7 @@ TestingBrowserProcessPlatformPart::TestingBrowserProcessPlatformPart() {
 
 TestingBrowserProcessPlatformPart::~TestingBrowserProcessPlatformPart() {
 }
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 void TestingBrowserProcessPlatformPart::SetGeolocationManager(
     std::unique_ptr<device::GeolocationManager> geolocation_manager) {
   geolocation_manager_ = std::move(geolocation_manager);

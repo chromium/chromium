@@ -22,13 +22,14 @@
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/lib/headless_content_main_delegate.h"
 #include "headless/public/headless_web_contents.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/v8_context_snapshot/buildflags.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -92,7 +93,7 @@ void HeadlessBrowserTest::PostRunTestOnMainThread() {
   base::RunLoop().RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 void HeadlessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
   auto fake_geolocation_manager =

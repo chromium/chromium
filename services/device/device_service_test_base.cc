@@ -12,11 +12,12 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "services/device/device_service.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "services/device/public/cpp/geolocation/location_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -63,7 +64,7 @@ DeviceServiceTestBase::~DeviceServiceTestBase() = default;
 
 void DeviceServiceTestBase::SetUp() {
   GeolocationManager* geolocation_manager = nullptr;
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   fake_geolocation_manager_ = std::make_unique<FakeGeolocationManager>();
   geolocation_manager = fake_geolocation_manager_.get();
 #endif

@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 
 // A TestingBrowserProcessPlatformPart is essentially a
 // BrowserProcessPlatformPart except it doesn't have an OomPriorityManager on
@@ -19,7 +20,7 @@ class TestingBrowserProcessPlatformPart : public BrowserProcessPlatformPart {
   TestingBrowserProcessPlatformPart& operator=(
       const TestingBrowserProcessPlatformPart&) = delete;
   ~TestingBrowserProcessPlatformPart() override;
-#if BUILDFLAG(IS_MAC)
+#if PLATFORM_REQUIRES_SINGLETON_GEOPOSITION_OBSERVER
   void SetGeolocationManager(
       std::unique_ptr<device::GeolocationManager> geolocation_manager);
 #endif
