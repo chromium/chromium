@@ -33,7 +33,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.DnsOptions.StaleDnsOptions;
@@ -240,8 +239,7 @@ public class ExperimentalOptionsTest {
         CronetUrlRequestContext context = (CronetUrlRequestContext) mBuilder.build();
 
         // Create a HostCache entry for "host-cache-test-host".
-        ExperimentalOptionsTestJni.get().writeToHostCache(
-                context.getUrlRequestContextAdapter(), realHost);
+        nativeWriteToHostCache(context.getUrlRequestContextAdapter(), realHost);
 
         // Do a request for the test URL to make sure it's cached.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
@@ -812,14 +810,9 @@ public class ExperimentalOptionsTest {
         }
     }
 
-    @NativeMethods
-    interface Natives {
-        // Sets a host cache entry with hostname "host-cache-test-host" and an AddressList
-        // containing the provided address.
-        void writeToHostCache(long adapter, String address);
-
-        // Whether Cronet engine creation can fail due to failure during experimental options
-        // parsing.
-        boolean experimentalOptionsParsingIsAllowedToFail();
-    }
+    // Sets a host cache entry with hostname "host-cache-test-host" and an AddressList containing
+    // the provided address.
+    private static native void nativeWriteToHostCache(long adapter, String address);
+    // Whether Cronet engine creation can fail due to failure during experimental options parsing.
+    private static native boolean nativeExperimentalOptionsParsingIsAllowedToFail();
 }
