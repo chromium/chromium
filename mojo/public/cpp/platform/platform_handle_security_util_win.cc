@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "mojo/core/platform_handle_security_util_win.h"
+#include "mojo/public/cpp/platform/platform_handle_security_util_win.h"
 
 #include <windows.h>
 #include <winternl.h>
@@ -18,7 +18,7 @@
 #include "base/win/scoped_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace mojo::core {
+namespace mojo {
 
 namespace {
 
@@ -108,4 +108,4 @@ void DcheckIfFileHandleIsUnsafe(HANDLE handle) {
 #endif  // DCHECK_IS_ON();
 }
 
-}  // namespace mojo::core
+}  // namespace mojo

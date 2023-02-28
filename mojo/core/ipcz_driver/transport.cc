@@ -29,7 +29,7 @@
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 #if BUILDFLAG(IS_WIN)
-#include "mojo/core/platform_handle_security_util_win.h"
+#include "mojo/public/cpp/platform/platform_handle_security_util_win.h"
 #endif
 
 namespace mojo::core::ipcz_driver {
